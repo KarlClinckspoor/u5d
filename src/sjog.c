@@ -54,6 +54,9 @@ static char S_0x8654[] = "a simple trap!\n";
 static char S_0x8664[] = "a complex trap!\n";
 static char S_0x8676[] = "a trap!\n";
 static char S_0x8680[] = "a strange rock!\n";
+char S_0x8692[] = "mandrake root!";
+char S_0x86a2[] = "mandrake root!";
+char S_0x86b2[] = "nightshade!";
 static char S_0x86be[] = " sprigs of\n";
 static char S_0x86ca[] = "\n";
 static char S_0x86cc[] = "nothing of note.\n";
@@ -136,6 +139,22 @@ static char S_0x8bbe[] = "It's open!\n";
 static char S_0x8bca[] = "Too heavy!\n";
 static char S_0x8bd6[] = "Locked!\n";
 static char S_0x8be0[] = "Opened!\n";
+char S_0x8bea[] = "blue";
+char S_0x8bf0[] = "yellow";
+char S_0x8bf8[] = "red";
+char S_0x8bfc[] = "green";
+char S_0x8c02[] = "orange";
+char S_0x8c0a[] = "purple";
+char S_0x8c12[] = "black";
+char S_0x8c18[] = "white";
+char S_0x8c1e[] = "VL";
+char S_0x8c22[] = "RH";
+char S_0x8c26[] = "IS";
+char S_0x8c2a[] = "IA";
+char S_0x8c2e[] = "IQW";
+char S_0x8c32[] = "KXC";
+char S_0x8c36[] = "IMC";
+char S_0x8c3a[] = "AT";
 static char S_0x8c3e[] = "Open it first!\n";
 static char S_0x8c4e[] = "A moonstone!\n";
 static char S_0x8c5c[] = "A magic carpet!\n";
@@ -203,6 +222,7 @@ static char S_0x8f4c[] = "Invalid!\n";
 static char S_0x8f56[] = " passes out!";
 // END DGROUP
 #endif
+
 
 void ULTIMA_6794(int param_1);
 

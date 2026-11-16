@@ -52,6 +52,15 @@ static char S_0x7364[] = "Hythloth\n";
 static char S_0x736e[] = "Doom\n";
 static char S_0x7374[] = "LOOK2.DAT";
 static char S_0x737e[] = "LOOK2.DAT";
+char S_0x7388[] = "g              g";
+char S_0x739a[] = "jlllllllnllllllk";
+char S_0x73ac[] = "8lllllllmllllll9";
+char S_0x73be[] = "jllllllllllllllk";
+char S_0x73d0[] = "8llllllllllllll9";
+char S_0x73e2[] = "hllllk    jlllli";
+char S_0x73f4[] = "jlllli    hllllk";
+char S_0x7406[] = "     g    g     ";
+char S_0x7418[] = "     hlllli     ";
 static char S_0x742a[] = "abbbbbbbbbbbbbbc\ng              g\ng  LIVE@BY@[E  g\n";
 static char S_0x745e[] = "g  EIGHT@LAWS  g\ng              g\ndeeeeeeeeeeeeeef\n";
 static char S_0x7492[] = "abbbbbbbbbbbbbc\ng   ";
@@ -70,6 +79,7 @@ static char S_0x751c[] = "\nThou dost see\n";
 static char S_0x752c[] = "\n";
 // END DGROUP
 #endif
+
 
 void ULTIMA_0c64_GRAP_30_Pset(int param_1, int param_2);
 int ULTIMA_2e8e();

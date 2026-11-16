@@ -25,6 +25,7 @@ static char S_0xa3da[] = "None!\n";
 // END DGROUP
 #endif
 
+
 void MAINOUT_0000(void);
 
 void ULTIMA_400c(void)

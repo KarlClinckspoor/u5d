@@ -31,6 +31,7 @@ static char S_0xa0d6[] = "SAVED.GAM";
 // END DGROUP
 #endif
 
+
 // CHECKED
 // param_1: image, param_2: text
 void FONT_0000(byte* param_1, char* param_2)

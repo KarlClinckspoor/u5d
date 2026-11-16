@@ -18,7 +18,46 @@
 #undef _STATIC_TEXT
 #define _STATIC_TEXT(addr, text) S_##addr
 static char S_0x81fe[] = "END.DAT";
+char S_0x8206[] = "One";
+char S_0x820a[] = "Two";
+char S_0x820e[] = "Three";
+char S_0x8214[] = "Four";
+char S_0x821a[] = "Five";
+char S_0x8220[] = "Six";
+char S_0x8224[] = "Seven";
+char S_0x822a[] = "Eight";
+char S_0x8230[] = "Nine";
+char S_0x8236[] = "Ten";
+char S_0x823a[] = "Eleven";
+char S_0x8242[] = "Twelve";
+char S_0x824a[] = "Thirteen";
+char S_0x8254[] = "Fourteen";
+char S_0x825e[] = "Fifteen";
+char S_0x8266[] = "Sixteen";
+char S_0x826e[] = "Seventeen";
+char S_0x8278[] = "Eighteen";
+char S_0x8282[] = "Nineteen";
+char S_0x828c[] = "Twenty";
+char S_0x8294[] = "Thirty";
+char S_0x829c[] = "Forty";
+char S_0x82a2[] = "Fifty";
+char S_0x82a8[] = "Sixty";
+char S_0x82ae[] = "Seventy";
+char S_0x82b6[] = "Eighty";
+char S_0x82be[] = "Ninety";
 static char S_0x82c6[] = "-";
+char S_0x82c8[] = "First";
+char S_0x82ce[] = "Second";
+char S_0x82d6[] = "Third";
+char S_0x82dc[] = "Fourth";
+char S_0x82e4[] = "Fifth";
+char S_0x82ea[] = "Sixth";
+char S_0x82f0[] = "Seventh";
+char S_0x82f8[] = "Eighth";
+char S_0x8300[] = "Ninth";
+char S_0x8306[] = "Tenth";
+char S_0x830c[] = "Eleventh";
+char S_0x8316[] = "Twelfth";
 static char S_0x831e[] = "th";
 static char S_0x8322[] = "Twent";
 static char S_0x8328[] = "ieth";
@@ -63,6 +102,7 @@ static char S_0x84cc[] = "\n\nHe says:\n\n";
 static char S_0x84da[] = "\"I see...\n";
 // END DGROUP
 #endif
+
 
 // CHECKED (nop)
 static void ENDGAME_0000(void)

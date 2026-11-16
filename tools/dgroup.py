@@ -25,7 +25,7 @@ import u5  # noqa: E402
 
 LIT = r'(?:(?:"(?:[^"\\]|\\.)*"\s*)+|[A-Z_][A-Z0-9_]*\b)'
 # _TEXT(0x96b4, "...") or _STATIC_TEXT(0x2626, "...") or _TEXT(0x96c6, CLASS_LIST)
-STR_RE = re.compile(r'_(?:STATIC_)?TEXT\(\s*0x([0-9a-fA-F]+)\s*,\s*(' + LIT + r')\s*\)')
+STR_RE = re.compile(r'_(?:STATIC_)?TEXT\(\s*0x([0-9a-fA-F]{1,4})\s*,\s*(' + LIT + r')\s*\)')
 # a string whose address u5d wrote in a comment: /*0x2626*/ "TOWNE.DAT", /*0x96c6*/ CLASS_LIST
 ANNOT_RE = re.compile(r'/\*\s*0x([0-9a-fA-F]{4})\s*\*/\s*(' + LIT + r')')
 MACROS = {}
@@ -88,7 +88,7 @@ def build():
         f = os.path.basename(p)
         s = open(p, encoding='utf-8', errors='replace').read()
         files[f] = s
-        if f not in u5.MODULES or f == 'vars.c':
+        if f not in u5.MODULES:
             continue
         seen = set()
         for m in list(STR_RE.finditer(s)) + [x for x in ANNOT_RE.finditer(s) if literal(x.group(2))]:
@@ -96,9 +96,10 @@ def build():
             if a in seen:
                 continue
             seen.add(a)
-            items.append([a, c_string_len(m.group(2)), 'str', m.group(2)[:40], f, function_at(s, m.start())])
+            items.append([a, c_string_len(m.group(2)), 'str', m.group(2)[:40], f, function_at(s, m.start()),
+                          m.group(2).strip()])
     for m in VAR_RE.finditer(files['vars.c']):
-        items.append([int(m.group(2), 16), None, 'var', m.group(1), 'vars.c', None])
+        items.append([int(m.group(2), 16), None, 'var', m.group(1), 'vars.c', None, None])
     items.sort(key=lambda x: (x[0], x[2] != 'var'))
     # extents of variables: up to the next item
     for i, it in enumerate(items):
@@ -115,11 +116,29 @@ def build():
     return items, users
 
 
+def module_run(cfile, items):
+    """(start, end) of a module's data: the largest cluster of its own strings (a module
+    sometimes uses a string that lives in another module's data; gaps under 0x400)."""
+    own = sorted((it for it in items if it[2] == 'str' and it[4] == cfile), key=lambda x: x[0])
+    if not own:
+        return None
+    runs, cur = [], [own[0]]
+    for x in own[1:]:
+        if x[0] - (cur[-1][0] + cur[-1][1]) < 0x400:
+            cur.append(x)
+        else:
+            runs.append(cur)
+            cur = [x]
+    runs.append(cur)
+    run = max(runs, key=len)
+    return run[0][0], run[-1][0] + run[-1][1]
+
+
 def module_extents(items):
     """{file: [start, end)} from the strings, each running to the next module's start."""
     first = {}
-    for a, l, kind, name, f, fn in items:
-        if kind == 'str':
+    for a, l, kind, name, f, fn, lit in items:
+        if kind == 'str' and f != 'vars.c':
             first.setdefault(f, a)
     order = sorted(first.items(), key=lambda kv: kv[1])
     ext = {}

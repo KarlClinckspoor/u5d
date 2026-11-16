@@ -53,6 +53,7 @@ static char S_0x7744[] = "Bad taste.\n";
 // END DGROUP
 #endif
 
+
 // CHECKED (code structure)
 void DNGLOOK_0000_LookCmdInDungeon(void)
 {

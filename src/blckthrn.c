@@ -53,6 +53,7 @@ static char S_0x71ea[] = "\n\nVertigo...\n";
 // END DGROUP
 #endif
 
+
 static void BLCKTHRN_0000(int param_1)
 {
     int local_4;

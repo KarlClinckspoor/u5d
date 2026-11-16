@@ -94,7 +94,26 @@ def annotate(src):
     return ''.join(out)
 
 
-def build(src):
+def all_strings():
+    """{addr: (spellings, literal, files)} for every addressed string in every module file."""
+    out = {}
+    for f in u5.MODULES:
+        p = os.path.join(u5.SRC, f)
+        if not os.path.exists(p):
+            continue
+        s = open(p, encoding='utf-8', errors='replace').read()
+        for m in list(dgroup.STR_RE.finditer(s)) + list(dgroup.ANNOT_RE.finditer(s)):
+            if not dgroup.literal(m.group(2)):
+                continue
+            spell = re.search(r'0x[0-9a-fA-F]+', m.group(0)).group(0)
+            a = int(spell, 16)
+            e = out.setdefault(a, (set(), m.group(2).strip(), set()))
+            e[0].add(spell)
+            e[2].add(f)
+    return out
+
+
+def build(src, cfile):
     src = annotate(strip_block(src))
     strs = collect(src)
     tabs = table_defs(src)
@@ -102,14 +121,34 @@ def build(src):
     for a in sorted(tabs, key=lambda k: -tabs[k][0]):
         s, e, _ = tabs[a]
         src = src[:s] + src[e:]
+    # every string inside the module's data belongs to it, wherever u5d writes it (vars.c's
+    # tables point at strings of several array modules); one the module uses but which lies
+    # outside its data belongs to another module and is declared extern
+    allstr = all_strings()
+    items_, _ = dgroup.build()
+    run = dgroup.module_run(cfile, items_)
+    extern = []
+    for a in list(strs):
+        if run and not run[0] <= a < run[1]:
+            extern.append((a, strs.pop(a)[0]))
+    if run:
+        for a, (spells, lit, files) in allstr.items():
+            if run[0] <= a < run[1] and a not in strs:
+                strs[a] = (spells, lit)
     items = [(a, 'S', v) for a, v in strs.items()] + [(a, 'T', v[2]) for a, v in tabs.items()]
     lines = ['#if defined(TARGET_DOS16)', BEGIN, '#undef _TEXT', '#define _TEXT(addr, text) S_##addr',
              '#undef _STATIC_TEXT', '#define _STATIC_TEXT(addr, text) S_##addr']
+    for a, spells in sorted(extern):
+        lines.append('extern char S_%s[];' % sorted(spells)[0])
+        for other in sorted(spells)[1:]:
+            lines.append('#define S_%s S_%s' % (other, sorted(spells)[0]))
     for a, kind, v in sorted(items, key=lambda x: x[0]):
         if kind == 'S':
             spells, lit = v
+            spells = set(spells) | allstr.get(a, (set(), None, None))[0]
             first = sorted(spells)[0]
-            lines.append('static char S_%s[] = %s;' % (first, lit))
+            shared = allstr.get(a, (None, None, {cfile}))[2] - {cfile}
+            lines.append('%schar S_%s[] = %s;' % ('' if shared else 'static ', first, lit))
             for other in sorted(spells)[1:]:
                 lines.append('#define S_%s S_%s' % (other, first))
         else:
@@ -132,7 +171,7 @@ def main():
     a = ap.parse_args()
     p = a.file if os.path.exists(a.file) else os.path.join(u5.SRC, a.file)
     src = open(p, encoding='utf-8', newline='').read()
-    new = build(src)
+    new = build(src, os.path.basename(p))
     if a.apply:
         open(p, 'w', encoding='utf-8', newline='').write(new)
         print('wrote the DGROUP block of %s' % p)

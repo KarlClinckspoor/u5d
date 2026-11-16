@@ -24,6 +24,7 @@ static char S_0xa438[] = "*** CONFLICT ***\n";
 // END DGROUP
 #endif
 
+
 // NOTE: combine arrays?
 static void ULTIMA_60ec_LoadSpecialMap(int param_1)
 {

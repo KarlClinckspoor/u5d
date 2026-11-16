@@ -111,6 +111,24 @@ class Module:
                 first[tname] = (d, base)
         for seg in votes:
             self.data_base[seg] = first[seg][1]
+        # for _DATA, prefer the candidate base at which the most of our initialised data
+        # agrees with DGROUP (a misplaced function's references must not decide it)
+        dseg = self.obj.seg('_DATA')
+        if dseg and dseg.length and '_DATA' in votes:
+            masked = {k for fx in dseg.fixups for k in range(fx.loc, fx.loc + fx.size)}
+            # also: where the start of our data occurs in DGROUP, if exactly once
+            head = bytes(dseg.data[:16])
+            if len(head) == 16 and not any(k in masked for k in range(16)):
+                at = self.ds.find(head)
+                if at >= 0 and self.ds.find(head, at + 1) < 0:
+                    votes['_DATA'].setdefault(at, 0)
+
+            def score(b):
+                t = self.ds[b:b + dseg.length]
+                return sum(1 for k in range(len(t)) if k not in masked and t[k] == dseg.data[k])
+            best = max(votes['_DATA'], key=lambda b: (score(b), b == first['_DATA'][1]))
+            if score(best) > score(first['_DATA'][1]):
+                self.data_base['_DATA'] = best
 
     def orig_loc(self, loc, funcs):
         for name, a, b, o, oe in funcs:

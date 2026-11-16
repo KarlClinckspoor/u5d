@@ -29,6 +29,14 @@ static char S_0x9532[] = "Oops...\n";
 static char S_0x953c[] = "Not dead!\n";
 static char S_0x9548[] = "\", ";
 static char S_0x954c[] = "Field destroyed!\n";
+char S_0x955e[] = "hone";
+char S_0x9564[] = "comp";
+char S_0x956a[] = "valo";
+char S_0x9570[] = "just";
+char S_0x9576[] = "sacr";
+char S_0x957c[] = "hono";
+char S_0x9582[] = "spir";
+char S_0x9588[] = "humi";
 static char S_0x958e[] = "\nMantra:";
 static char S_0x9598[] = "\"\n";
 static char S_0x959c[] = " gp\n";
@@ -55,12 +63,10 @@ static char S_0x968e[] = "UNDER.OOL";
 static char S_0x9698[] = "SAVED.GAM";
 static char S_0x96a2[] = "SAVED.OOL";
 static char S_0x96ac[] = "Done.\n";
-static char S_0x4c114[] = "\nSave game? ";
-static char S_0x4c124[] = "No\n";
-static char S_0x4c128[] = "Yes\nSaving...\n";
-static char S_0x4c174[] = "Done.\n";
 // END DGROUP
 #endif
+
+
 
 void CAST2_0000_CastEffect(int param_1)
 {
@@ -1193,8 +1199,12 @@ void CAST2_0e76_Shrine(void)
 // Region: Savegame
 //
 
-// NOTE: IBM version; not compatible with modern platforms
+// NOTE: IBM version (the original); not compatible with modern platforms
+#if defined(TARGET_DOS16)
+void CAST2_10fe_SaveGame(void)
+#else
 static void CAST2_10fe_SaveGameIBM(void)
+#endif
 {
     byte local_4;
     byte local_6_an;
@@ -1236,7 +1246,7 @@ static void CAST2_10fe_SaveGameIBM(void)
     }
 }
 
-// NOT MATCHING
+#if !defined(TARGET_DOS16)
 // based on FMT
 static void CAST2_10fe_SaveGameFMT(void)
 {
@@ -1289,3 +1299,4 @@ void CAST2_10fe_SaveGame(void)
 {
     CAST2_10fe_SaveGameFMT();
 }
+#endif

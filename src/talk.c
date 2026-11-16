@@ -19,7 +19,7 @@
 #define _TEXT(addr, text) S_##addr
 #undef _STATIC_TEXT
 #define _STATIC_TEXT(addr, text) S_##addr
-static char S_0x4a9a[] = "IMPE";
+extern char S_0x4a9a[];
 static char S_0x9052[] = "\n\nDost thou pay?\n\n:";
 static char S_0x9066[] = "Yes\n";
 static char S_0x906c[] = "No!\n";
@@ -38,6 +38,45 @@ static char S_0x91c4[] = "when\nit's open!\"\n";
 static char S_0x91d6[] = "\nNobody's here!\n";
 static char S_0x91e8[] = "\n\"Zzzzzz...\"\n";
 static char S_0x91f6[] = "\nNo response!\n";
+char S_0x9206[] = "TOWNE.TLK";
+char S_0x9210[] = "DWELLING.TLK";
+char S_0x921e[] = "CASTLE.TLK";
+char S_0x922a[] = "KEEP.TLK";
+char S_0x9234[] = "NAME";
+char S_0x923a[] = "JOB";
+char S_0x923e[] = "WORK";
+char S_0x9244[] = "BYE";
+char S_0x9248[] = "THANK";
+char S_0x924e[] = "FUCK";
+char S_0x9254[] = "SHIT";
+char S_0x925a[] = "DAMN";
+char S_0x9260[] = "DICK";
+char S_0x9266[] = "PRICK";
+char S_0x926c[] = "PUSSY";
+char S_0x9272[] = "CUNT";
+char S_0x9278[] = "ASS";
+char S_0x927c[] = "BUTT";
+char S_0x9282[] = "BOOGER";
+char S_0x928a[] = "PISS";
+char S_0x9290[] = "JACK OFF";
+char S_0x929a[] = "MASTURBATE";
+char S_0x92a6[] = "SUCK";
+char S_0x92ac[] = "FART";
+char S_0x92b2[] = "TITS";
+char S_0x92b8[] = "BOOB";
+char S_0x92be[] = "MELONS";
+char S_0x92c6[] = "BLOW";
+char S_0x92cc[] = "PENIS";
+char S_0x92d2[] = "BREAST";
+char S_0x92da[] = "CLIT";
+char S_0x92e0[] = "BALLS";
+char S_0x92e6[] = "SCROTUM";
+char S_0x92ee[] = "NUTS";
+char S_0x92f4[] = "BULLSHIT";
+char S_0x92fe[] = "CUM";
+char S_0x9302[] = "CROTCH";
+char S_0x930a[] = "MOTHERFUCKER";
+char S_0x9318[] = "ELECTRONIC ARTS";
 static char S_0x9328[] = "Thou hast not enough gold!";
 static char S_0x9344[] = "\n\n";
 static char S_0x9348[] = "\"Thou hast no room for me in thy party! ";
@@ -60,6 +99,7 @@ static char S_0x94ce[] = "\"I am called ";
 static char S_0x94dc[] = "\nSomething was stolen!\n";
 // END DGROUP
 #endif
+
 
 #define TALK_KEY_NAME 0
 #define TALK_KEY_DESC 1

@@ -77,6 +77,7 @@ static char S_0x6f5e[] = " regurgitated!\n";
 // END DGROUP
 #endif
 
+
 static void COMBAT_063e_ProcessCommand(void);
 static int COMBAT_0d30(int a);
 static int COMBAT_0ee4(int param_1);

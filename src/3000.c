@@ -85,6 +85,7 @@ static char S_0xa386[] = "None posted!\n\n";
 // END DGROUP
 #endif
 
+
 int MAINOUT_06ec_AttackCmd(void);
 int MAINOUT_08de_EnterCmd(void);
 
