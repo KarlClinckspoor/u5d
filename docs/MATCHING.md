@@ -250,6 +250,47 @@ remaining places where u5d's files do not follow the original's objects:
   word-aligns every char array, with `ORG $+1`), so that object is 5.1 and the source
   has yet to be found.
 
+**The resident data.** `vars.c` held all of the resident data. It belongs to modules, in
+link order, like everything else:
+
+| DS | Owner | What |
+|---|---|---|
+| 0000-0042 | runtime (chksum) | |
+| 0042-2626 | `ultima.c` | the global tables, defined before `main` |
+| 2626-520e | the overlays | |
+| 520e-52ba | runtime | |
+| 52ba-5306 | A0878.ASM | video driver parameters |
+| 5306-5322 | `r0d72.c` | logo frame sizes |
+| 5322-5402 | A0DE0.ASM | driver names and pointer, text windows, file state |
+| 5402, 540c | `r1850.c`, `r1b38.c` | powers of ten, cursor index |
+| 540e-545e | A1B94, A1EAC, A2056, A2192 (.ASM) | key tables, drive, timer, sound |
+| 545e-55a6 | `r2320.c`, `2000.c` | |
+| 55a6-6a0a | `3000.c` | saved game and game state (all zero) |
+| 6a0a-6aa4 | `3000.c`, `4000.c`, `5000.c` | their tables |
+| 6aa4-6acc | A6F1E.ASM | |
+| 6acc-... | runtime CDATA, then CONST | |
+
+How ultima.c's data comes out in that order: MSC 5.1 emits a string literal as soon as it
+meets it, but holds a definition's variables back until the end of the next function. So
+the tables' initialiser literals (the item and monster names, 0042), then `main`'s two
+strings (1393), then the tables themselves (13a6) are one object's `_DATA`. Both compilers
+put zero-initialised data in `_DATA` and uninitialised data in communal variables.
+
+An assembly module's data is written by `tools/asmdata.py NAME.ASM LO HI --apply`: a
+`_DATA` segment holding the original bytes, a PUBLIC label at each named variable and at
+each address the code uses by number, and those numeric operands turned into the labels
+(`ds:[544ch]` becomes `D_544C`; MASM encodes it the same, now with a fixup). asmbuild
+must still report the module identical.
+
+Things the original's bytes corrected: D_1a58 (class-name padding) was reversed;
+D_1724/D_172c and D_6a48 are two bytes longer than they had been; the weapon names at
+DS:174c-17f0 are word-aligned char arrays, not literals; D_24e8, D_514a and the bytes at
+DS:5548 are unused. DGROUP now differs from DATA.OVL only in ZSTATS's two swapped strings.
+Left: the uninitialised data above DS:a524 (all zero in DATA.OVL) is communal, and the
+link still finds those 72 names only by the addresses in them. Communal records carry sizes,
+not types, yet the layout has type alignment and unnamed gaps, so the allocation rule is
+still to be found.
+
 **A 5.0 module's own data.** u5d first had these modules' strings as generated char arrays
 (`tools/strings.py`, a stand-in for 5.0's aligned literals) and their tables in `vars.c`.
 `tools/own50.py FILE.c FIRST LAST --apply` gives a 5.0 module its own data:

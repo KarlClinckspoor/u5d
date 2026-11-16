@@ -20,6 +20,7 @@ passes only when they are identical.
 | 2026-11-16, 5.0 modules own their data; slot renames by observation | 511 | 4 | 5 | 71 | 14 | 605 |
 | 2026-11-16, 2000.c split in three; overlay assembly (FLAMES, FONT, INTRO, NPC) | 529 | 1 | 0 | 57 | 9 | 596 |
 | 2026-11-16, boundary audit: FONT/TOWN data, 5f86 into 6000.c, r1850 is 5.0 | 530 | 1 | 0 | 57 | 9 | 597 |
+| 2026-11-16, vars.c into its modules: DGROUP = DATA.OVL but 44 bytes (ZSTATS) | 530 | 1 | 0 | 57 | 9 | 597 |
 
 Most `SIZE` verdicts in `0000.c` and `1000.c` are routines that were hand-written assembly in
 the original and are C in u5d (step 5).
