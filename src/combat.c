@@ -764,7 +764,7 @@ int COMBAT_0b94_MainLoop(void)
 {
     int local_a_ac;
     CombatEntity* local_8;
-    u8 local_6;
+    int local_6;
     int local_4_ab;
 
     local_4_ab = 1;
@@ -792,9 +792,7 @@ int COMBAT_0b94_MainLoop(void)
     do
     {
         // ae5a
-        //for (D_589e = 0; D_589e < 0x20; D_589e++)
-        D_589e = 0;
-        do
+        for (D_589e = 0; D_589e < 0x20; D_589e++)
         {
             // ae5f
             D_594f = 0;
@@ -893,7 +891,7 @@ int COMBAT_0b94_MainLoop(void)
                     }
                 }
             }
-        } while (++D_589e < 0x20); // af98
+        } // af98
     } while (local_a_ac == 0); // afa6
 
     // afaf
