@@ -1088,10 +1088,9 @@ static int TALK_0c5c(void)
         if (local_6 == 0)
             continue;
 
-        // NOT MATCHING by 2 bytes: the original tests 096e's result with the same code as
-        // 0960's (one more tail merge than MSC 5.0 does here) and places the PrintCr block
-        // before the else branch. The code after the loop must stay inside it, or local_6 is
-        // stored when the loop ends.
+        // The PrintCr tail is written in both branches: MSC merges the two copies (the
+        // original's shared "or ax,ax; je" and PrintCr block placed before the else). One
+        // copy after the if/else gives a test per branch.
         if (TALK_0bd4() == 0)
         {
             TALK_04da_PrintQuoteMark();
@@ -1099,6 +1098,10 @@ static int TALK_0c5c(void)
             {
                 return 1;
             }
+            TALK_04da_PrintQuoteMark();
+            TALK_04d2_PrintCr();
+            TALK_04d2_PrintCr();
+            return TALK_0b04();
         }
         else
         {
@@ -1107,12 +1110,11 @@ static int TALK_0c5c(void)
             {
                 return 1;
             }
+            TALK_04da_PrintQuoteMark();
+            TALK_04d2_PrintCr();
+            TALK_04d2_PrintCr();
+            return TALK_0b04();
         }
-
-        TALK_04da_PrintQuoteMark();
-        TALK_04d2_PrintCr();
-        TALK_04d2_PrintCr();
-        return TALK_0b04();
     }
 }
 
