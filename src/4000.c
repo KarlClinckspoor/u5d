@@ -411,10 +411,10 @@ void ULTIMA_4552_AnimateActors(void)
 			}
 		}
 
-        // NOT MATCHING (4 bytes short): the original keeps a dead "jmp" to case 0's code
-        // (the copy at the end of case 6) right after the jump-table dispatch, where case 0,
-        // first in the switch, was; ours drops it. And case 1-4 jump to case 5's
-        // "local_a = 1; break" where ours has case 5 jump to theirs.
+        // The gotos are the original's shape: case 0's "goto" stays as a dead jmp after the
+        // jump-table dispatch (the table goes straight to L_restart), and cases 1-4 end in
+        // case 5's "local_a = 1; break". Written out, MSC drops case 0's copy and merges
+        // case 5's tail into cases 1-4's instead.
         local_a = 0;
         do
         {
@@ -422,8 +422,7 @@ void ULTIMA_4552_AnimateActors(void)
             switch (local_6)
             {
             case 0:
-                local_14_am = 0;
-                break;
+                goto L_restart;
 
             case 1:
             case 2:
@@ -431,8 +430,7 @@ void ULTIMA_4552_AnimateActors(void)
             case 4:
                 local_8->_1_animTile = local_4_ab + local_6 - 1;
                 local_14_am++;
-                local_a = 1;
-                break;
+                goto L_done;
 
             case 5:
                 if (ULTIMA_2092_RandomRange(0, 0xff) < 0x40)
@@ -441,11 +439,11 @@ void ULTIMA_4552_AnimateActors(void)
                     if (local_4_ab == 0x5c)
                     {
                         local_14_am++;
-                        local_a = 1;
-                        break;
+                        goto L_done;
                     }
 
                     local_c = 6;
+                L_done:
                     local_a = 1;
                     break;
                 }
@@ -456,6 +454,7 @@ void ULTIMA_4552_AnimateActors(void)
             case 6:
                 if (ULTIMA_2092_RandomRange(0, 0xff) < 0xc0)
                 {
+                L_restart:
                     local_14_am = 0;
                     break;
                 }
