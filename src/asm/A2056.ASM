@@ -64,13 +64,34 @@ ULTIMA_207E_SRAND:
 	pop si
 	pop bp
 	ret 2
-	db	000h, 055h, 08bh, 0ech, 056h, 057h, 01eh, 0a1h
-	db	020h, 054h, 005h, 048h, 092h, 0d1h, 0c8h, 0d1h
-	db	0c8h, 0d1h, 0c8h, 035h, 048h, 092h, 005h, 011h
-	db	000h, 0a3h, 020h, 054h, 025h, 0ffh, 07fh, 08bh
-	db	05eh, 006h, 08bh, 04eh, 004h, 02bh, 0cbh, 041h
-	db	033h, 0d2h, 0f7h, 0f1h, 003h, 0d3h, 08bh, 0c2h
-	db	01fh, 05fh, 05eh, 05dh, 0c2h, 004h, 000h
+L_2091:
+	add [di-75h],dl
+	in al,dx
+	push si
+	push di
+	push ds
+	mov ax,WORD PTR D_5420
+	add ax,9248h
+	ror ax,1
+	ror ax,1
+	ror ax,1
+	xor ax,9248h
+	add ax,11h
+	mov WORD PTR D_5420,ax
+	and ax,7fffh
+	mov bx,[bp+6]
+	mov cx,[bp+4]
+	sub cx,bx
+	inc cx
+	xor dx,dx
+	div cx
+	add dx,bx
+	mov ax,dx
+	pop ds
+	pop di
+	pop si
+	pop bp
+	ret 4
 
 	PUBLIC	ULTIMA_20C8_SOMEDELAY
 ULTIMA_20C8_SOMEDELAY:
@@ -150,9 +171,19 @@ L_2152:
 	pop si
 	pop bp
 	ret 2
-	db	0fbh, 01eh, 050h, 056h, 0b8h, 064h, 00fh, 08eh
-	db	0d8h, 08dh, 036h, 048h, 054h, 0ffh, 004h, 05eh
-	db	058h, 01fh, 0cfh
+L_2159:
+	sti
+	push ds
+	push ax
+	push si
+	mov	ax,DGROUP
+	mov ds,ax
+	lea si,D_5448
+	inc word ptr [si]
+	pop si
+	pop ax
+	pop ds
+	iret
 
 _TEXT	ENDS
 	END

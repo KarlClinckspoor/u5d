@@ -226,8 +226,13 @@ ULTIMA_230E_PCSPKOFF:
 	and al,0fch
 	out 61h,al
 	ret
-	db	000h, 055h, 08bh, 0ech, 083h, 0ech, 006h, 08bh
-	db	0e5h, 05dh, 0c3h
+L_2315:
+	add [di-75h],dl
+	in al,dx
+	sub sp,6
+	mov sp,bp
+	pop bp
+	ret
 
 _TEXT	ENDS
 	END

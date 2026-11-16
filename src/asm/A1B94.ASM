@@ -223,9 +223,20 @@ ULTIMA_1CCA_SETTEXTFOREGROUNDCO:
 	pop si
 	pop bp
 	ret 2
-	db	055h, 08bh, 0ech, 056h, 057h, 01eh, 08bh, 036h
-	db	09ah, 053h, 08ah, 044h, 005h, 032h, 0e4h, 01fh
-	db	05fh, 05eh, 05dh, 0c3h
+L_1cee:
+	push bp
+	mov bp,sp
+	push si
+	push di
+	push ds
+	mov si,WORD PTR D_539A_CURRENTTEXTWINDOW
+	mov al,[si+5]
+	xor ah,ah
+	pop ds
+	pop di
+	pop si
+	pop bp
+	ret
 
 	PUBLIC	ULTIMA_1D02_LOADCHARSET
 ULTIMA_1D02_LOADCHARSET:

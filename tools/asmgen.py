@@ -83,8 +83,43 @@ class Gen:
         return next(iter(d))
 
     def walk(self):
-        """Instruction starts reached from the entries."""
-        seen, todo = {}, list(self.entries)
+        """Instruction starts reached from the entries, plus code nothing calls directly
+        (interrupt handlers installed through a vector): an unreached stretch that decodes
+        as valid instructions up to a return or jump is taken as code too."""
+        seen = self._walk(self.entries)
+        while True:
+            covered = set()
+            for a, x in seen.items():
+                covered.update(range(a, a + x.len))
+            extra = []
+            a = self.start
+            while a < self.end:
+                if a in covered:
+                    a += 1
+                    continue
+                b = a
+                ok = False
+                while b < self.end and b not in covered:
+                    x = self.decode_at(b)
+                    if x.code == I.Code.INVALID or b + x.len > self.end:
+                        break
+                    b += x.len
+                    if x.flow_control in (I.FlowControl.RETURN, I.FlowControl.UNCONDITIONAL_BRANCH,
+                                          I.FlowControl.INDIRECT_BRANCH) or x.mnemonic == I.Mnemonic.IRET:
+                        ok = True
+                        break
+                # padding (zeros) is not code
+                if ok and any(self.img[k] for k in range(a, b)) and b - a > 2:
+                    extra.append(a)
+                    break
+                a += 1
+            if not extra:
+                return seen
+            self.entries = sorted(set(self.entries) | set(extra))
+            seen = self._walk(self.entries)
+
+    def _walk(self, entries):
+        seen, todo = {}, list(entries)
         while todo:
             a = todo.pop()
             while self.start <= a < self.end and a not in seen:
@@ -172,8 +207,21 @@ class Gen:
 
     def instr_text(self, x, fmt, externs, datarefs, a):
         """MASM text for one instruction, symbolic where it can be; None to write bytes."""
-        if any(r in self.relocs for r in range(a, a + x.len)):
-            return None                          # far pointers: written as bytes (with a SEG fixup later)
+        rel = [r for r in self.relocs if a <= r < a + x.len]
+        if rel:
+            # a word the EXE relocates is a segment: write it as one, so the object carries a
+            # segment fixup and the link rebuilds the relocation entry
+            r = rel[0]
+            val = struct.unpack_from('<H', self.img, r)[0]
+            seg = {0: '_TEXT', u5.DGROUP_SEG: 'DGROUP'}.get(val)
+            if seg is None:
+                return None
+            if x.mnemonic == I.Mnemonic.MOV and x.op1_kind == I.OpKind.IMMEDIATE16 and r == a + x.len - 2:
+                return 'mov\t%s,%s' % (fmt.format_operand(x, 0), seg)
+            if x.code in (I.Code.CALL_PTR1616, I.Code.JMP_PTR1616) and r == a + 3 and val == 0:
+                tgt = struct.unpack_from('<H', self.img, a + 1)[0]
+                return 'db\t0%02xh\r\n\tdw\tOFFSET %s\r\n\tdw\tSEG %s' % (self.img[a], self.label(tgt), self.label(tgt))
+            return None
         t = fmt.format(x)
         if x.op0_kind == I.OpKind.NEAR_BRANCH16:
             tgt = x.near_branch16

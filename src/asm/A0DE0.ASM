@@ -627,9 +627,19 @@ L_11e5:
 	int 12h
 	mov WORD PTR D_5358,ax
 	ret
-	db	0fbh, 01eh, 056h, 050h, 0b8h, 064h, 00fh, 08eh
-	db	0d8h, 0beh, 05ah, 053h, 0ffh, 004h, 058h, 05eh
-	db	01fh, 0cfh
+L_1214:
+	sti
+	push ds
+	push si
+	push ax
+	mov	ax,DGROUP
+	mov ds,ax
+	mov si,535ah
+	inc word ptr [si]
+	pop ax
+	pop si
+	pop ds
+	iret
 
 	PUBLIC	ULTIMA_1226_INITTEXTVARS
 ULTIMA_1226_INITTEXTVARS:
@@ -638,9 +648,23 @@ ULTIMA_1226_INITTEXTVARS:
 	mov WORD PTR D_53A6,ax
 	mov WORD PTR D_53A8_INVERSE,ax
 	ret
-	db	0cbh, 0fbh, 01eh, 053h, 0bbh, 064h, 00fh, 08eh
-	db	0dbh, 0bbh, 05ch, 053h, 0c7h, 007h, 001h, 000h
-	db	032h, 0c0h, 05bh, 01fh, 0cfh, 0fbh, 0f8h, 0cfh
+	db	0cbh
+L_1233:
+	sti
+	push ds
+	push bx
+	mov	bx,DGROUP
+	mov ds,bx
+	mov bx,535ch
+	mov word ptr [bx],1
+	xor al,al
+	pop bx
+	pop ds
+	iret
+L_1247:
+	sti
+	clc
+	iret
 L_124a:
 	mov ax,3
 	int 10h

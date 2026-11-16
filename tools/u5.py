@@ -47,6 +47,9 @@ MODULES['vars.c'] = ('data', None)
 
 EXE_HEADER = 0x800  # 0x80 paragraphs
 DATA_OVL_HEADER = 0x10  # DATA.OVL is a 16-byte header, then DGROUP from DS:0000
+# DGROUP's paragraph, relative to the load segment: right after overlay area 4's largest
+# member (0xe1e0 + 0x1460 = 0xf640). Relocated words with this value are 'DGROUP'.
+DGROUP_SEG = 0x0f64
 
 # Overlay numbers, as the stubs pass them to the overlay manager: the position (from 1) of
 # the file name in the table in ULTIMA.EXE.

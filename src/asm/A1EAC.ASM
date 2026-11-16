@@ -74,9 +74,20 @@ L_1f01:
 L_1f10:
 	stc
 	ret
-	db	055h, 08bh, 0ech, 056h, 057h, 01eh, 08bh, 036h
-	db	09ah, 053h, 08ah, 044h, 004h, 032h, 0e4h, 01fh
-	db	05fh, 05eh, 05dh, 0c3h
+L_1f12:
+	push bp
+	mov bp,sp
+	push si
+	push di
+	push ds
+	mov si,WORD PTR D_539A_CURRENTTEXTWINDOW
+	mov al,[si+4]
+	xor ah,ah
+	pop ds
+	pop di
+	pop si
+	pop bp
+	ret
 
 	PUBLIC	ULTIMA_1F26_SETTEXTBACKGROUNDCO
 ULTIMA_1F26_SETTEXTBACKGROUNDCO:
