@@ -793,7 +793,7 @@ void ULTIMA_4be8(void)
 	{
 		ULTIMA_1bf2_SetTextPosition(5, 0);
 		ULTIMA_4c2a();
-		ULTIMA_1850_PrintString(D_a3e2);
+		ULTIMA_1850_PrintString(_TEXT(0xa3e2, "            "));
 		ULTIMA_4cce();
 	}
 

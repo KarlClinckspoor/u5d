@@ -775,7 +775,6 @@ STUB u8 D_6aa8[0x24];
 
 // a300
 
-STUB char D_a3e2[0xd];
 
 //////// (static) data: ..a522]
 
