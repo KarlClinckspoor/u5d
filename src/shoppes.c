@@ -1532,6 +1532,11 @@ static int SHOPPES_146a(void)
 }
 
 // CHECKED
+// NOT MATCHING (12 bytes short): the original places the code after the switch (the
+// "Is there any other way" block, ending in a jump back to the loop test) right after
+// case C's local_8 == -1 test, which falls into it; ours keeps it after the last case,
+// which falls through into it. Tried: continue instead of break in the Enter case
+// (worse).
 void SHOPPES_14f8(int unused)
 {
     int local_6;
