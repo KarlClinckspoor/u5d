@@ -119,7 +119,8 @@ L_737f:
 	jne	L_738f
 	ret
 L_738f:
-	db	09ah, 07bh, 000h, 02eh, 007h
+	db	09ah, 07bh, 000h
+	dw	PLMGR_TEXT	; call 072eh:007bh
 	db	026h, 08bh, 09dh, 00eh, 000h	; mov bx,es:[di+0eh]
 	mov ds:[8eh],bx
 L_739d:
@@ -373,7 +374,8 @@ L_756c:
 L_7571:
 	ret
 L_7572:
-	db	0eah, 097h, 002h, 02eh, 007h
+	db	0eah, 097h, 002h
+	dw	PLMGR_TEXT	; jmp 072eh:0297h
 L_7577:
 	cld
 	push bp
@@ -437,7 +439,8 @@ L_75cc:
 	mov	ax,SEG_076C
 	mov ds,ax
 	mov ah,0
-	db	09ah, 092h, 002h, 02eh, 007h
+	db	09ah, 092h, 002h
+	dw	PLMGR_TEXT	; call 072eh:0292h
 	pop es
 	pop ds
 	pop di
@@ -496,7 +499,8 @@ L_7658:
 	push di
 	push cx
 	mov ah,0
-	db	09ah, 092h, 002h, 02eh, 007h
+	db	09ah, 092h, 002h
+	dw	PLMGR_TEXT	; call 072eh:0292h
 	pop cx
 	pop di
 	jae	L_7679
@@ -537,11 +541,13 @@ L_76a1:
 	ret
 L_76ac:
 	pushf
-	db	09ah, 07bh, 000h, 02eh, 007h
+	db	09ah, 07bh, 000h
+	dw	PLMGR_TEXT	; call 072eh:007bh
 	popf
 	ret
 L_76b4:
-	db	09ah, 07bh, 000h, 02eh, 007h
+	db	09ah, 07bh, 000h
+	dw	PLMGR_TEXT	; call 072eh:007bh
 	mov al,0ffh
 	mov ah,4ch
 	int 21h

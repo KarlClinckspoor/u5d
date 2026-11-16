@@ -287,7 +287,17 @@ class Gen:
             if x.code in (I.Code.CALL_PTR1616, I.Code.JMP_PTR1616) and r == a + 3 and val == 0:
                 tgt = struct.unpack_from('<H', self.img, a + 1)[0]
                 return 'db\t0%02xh\r\n\tdw\tOFFSET %s\r\n\tdw\tSEG %s' % (self.img[a], self.label(tgt), self.label(tgt))
-            return None
+            # any other form: its bytes, with the relocated word as the segment it holds
+            parts, k = [], a
+            while k < a + x.len:
+                if k == r:
+                    parts.append('dw\t%s' % seg)
+                    k += 2
+                else:
+                    n = (r - k) if k < r else (a + x.len - k)
+                    parts.append('db\t%s' % ', '.join('0%02xh' % c for c in self.img[k:k + n]))
+                    k += n
+            return '\r\n\t'.join(parts) + '\t; %s' % fmt.format(x)
         t = fmt.format(x)
         if x.mnemonic == I.Mnemonic.RETF or x.code in (I.Code.CALL_PTR1616, I.Code.JMP_PTR1616):
             # MASM 4.0 has no RETF outside a FAR PROC, nor a far jump to a literal seg:offset
