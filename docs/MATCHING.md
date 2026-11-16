@@ -400,13 +400,21 @@ Each entry gives the evidence. Add to this list as you learn.
 - **Where an assignment goes.** `if ((x = f()) == K)` and `x = f(); if (x == K)` can choose
   registers differently. In SJOG_095C the first form gave the original's DX/CX for two loop
   variables; the second swapped them.
-- **Tail merging keeps the other copy.** When two blocks end in the same instructions and
-  the same jump, MSC keeps one copy and the other block jumps into it. In NPC_0d00 (switch
-  cases 2 and 1/4 both calling NPC_0c50) and TALK_0c5c, the original keeps the *later*
-  copy; we keep the earlier one. MSC 5.1 does the same as 5.0 here, so the compiler isn't
-  the cause. Neither `return` for `break` nor a fall-through between the cases changes it.
-  ENDGAME's Y/N switches keep the earlier copy in both. Open; ULTIMA_4402 and 4552 may be
-  the same thing.
+- **Which copy tail merging keeps.** When two blocks end in the same instructions and the
+  same jump, MSC keeps one copy and the other block jumps into it. Usually the earlier copy
+  is kept, but a copy that ends an if/else's then-branch wins.
+  - The fix in NPC_0d00: `if (c) NPC_0c50(...); else NPC_06e4(...); break;` instead of
+    `if (c) { NPC_0c50(...); break; } NPC_06e4(...); break;`. With that, case 2's identical
+    call jumps forward into case 4's copy, as in the original.
+  - A copy that falls through to the merge point is always kept.
+  - A forward jump `mov ax,imm; jmp` into another block's `push ax` is the sign in a
+    listing. The original has dozens of them, so look for an if/else when ours jumps back
+    instead.
+  - Still open: ZSTATS_0c5c (all its messages jump to the ammunition one; an if/else
+    around the rest of the function is not enough) and probably ULTIMA_4402 and 4552.
+- **A label stops constant propagation.** SHOPPES2_00ac sets `local_4 = 0` and then
+  indexes with it. The original reloads local_4 from the stack, where MSC would fold the 0.
+  A label between the two statements gives the original's code.
 - **A loop's register locals are stored when it ends.** The original's TALK_0c5c has
   no such store, because its code after the loop is inside it (`if (local_6 == 0)
   continue;` and the rest, instead of `do ... while (local_6 == 0);`). Moving SHOPPES2_0508's

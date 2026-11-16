@@ -864,9 +864,11 @@ static void NPC_0d00(int param_1, int param_2)
         if (NPC_06a0(D_5896_map_x, D_5897_map_y, local_6->x[param_2], local_6->y[param_2]) >= 4)
         {
             NPC_0c50(local_4_c, 3, param_2, param_1, local_6);
-            break;
         }
-        NPC_06e4(param_1, param_2);
+        else
+        {
+            NPC_06e4(param_1, param_2);
+        }
         break;
 
     case 1:

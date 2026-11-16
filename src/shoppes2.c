@@ -53,13 +53,17 @@ static void SHOPPES2_006a(void)
     }
 }
 
-// CHECKED (NOT MATCHING: optimization)
+// CHECKED
+// NOT MATCHING by 3 bytes: the original stores 0xff through AL (mov al,0FFh; mov [587B],al),
+// MSC's form for a chained assignment (DUNGEON and ULTIMA.EXE have D_589e = D_587b = 0xff).
+// The label keeps MSC from folding local_4 = 0 into the index, as the original doesn't.
 static void SHOPPES2_00ac(void)
 {
     int local_4;
 
     D_587b = 0xff;
     local_4 = 0;
+L_e297:
     if (D_55a8_party[local_4].gender == 0xb)
     {
         ULTIMA_1850_PrintString(_TEXT(0x9ac2, "sir"));
