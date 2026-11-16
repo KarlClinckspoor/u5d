@@ -492,7 +492,15 @@ STUB u16 D_520c; // AFONT.ASM's: where FONT_0e52 saves the video page
 // char** D_52a6;  // environ
 
 STUB VideoDriverParams D_52ba_vdp;
+#if defined(TARGET_DOS16)
+// A0878.ASM's own names for two fields: the C modules read them as plain globals, which MSC
+// optimizes differently from a struct field (LOOKOBJ_0cf4)
+STUB int D_52c4;
+STUB int D_52c8;
+#else
+#define D_52c4 D_52ba_vdp._52c4
 #define D_52c8 D_52ba_vdp._52c8_videoDriverSelection
+#endif
 
 STUB int D_52da_pen_color;
 

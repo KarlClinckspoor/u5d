@@ -203,7 +203,6 @@ static int NPC_032c(int param_1, int param_2, int param_3, int param_4, int para
     local_2e_an_am[0] = param_1;
     local_50_am[0] = param_2;
 
-    //while (1)
     do
     {
         if (local_e_am != 0)
@@ -295,23 +294,19 @@ static int NPC_032c(int param_1, int param_2, int param_3, int param_4, int para
         }
 
         if (local_e_am == 1)
-        {
-            return 1;
-        }
+            break;
 
         local_c++;
         if (local_c == 0x20)
         {
             local_c = 0;
         }
-
-        // NOT MATCHING: in the original, both the "== 1" exit and the loop
-        // condition reach one block placed right after the "== 1" test: store local_e_am,
-        // then "if (local_e_am) return 1; return local_e_am;". A break and that code after
-        // the loop puts the block after the loop instead; a goto into it costs the loop
-        // its registers.
     } while (local_c != local_4_ab);
 
+    // NOT MATCHING by its block order only: the original places this exit block (store
+    // local_e_am, "return 1") right after the "== 1" test, ahead of local_c++.
+    if (local_e_am != 0)
+        return 1;
     return local_e_am;
 }
 

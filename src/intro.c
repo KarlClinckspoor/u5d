@@ -649,11 +649,11 @@ void INTRO_0986_Main(void)
     local_8 = D_5356;
 
     // force cga if low memory
-    if (D_52ba_vdp._52c8_videoDriverSelection == VDP_VIDEO_TANDY && D_5358 < 0x170)
+    if (D_52c8 == VDP_VIDEO_TANDY && D_5358 < 0x170)
     {
         D_52f1_forceTandy = 0;
         D_52ba_vdp._52ba_forceCga = 1;
-        D_52ba_vdp._52c8_videoDriverSelection = VDP_VIDEO_CGA;
+        D_52c8 = VDP_VIDEO_CGA;
     }
 
     // 09d2
@@ -663,7 +663,7 @@ void INTRO_0986_Main(void)
 
     ULTIMA_0892_InitializeVideoDriver(1);
 
-    if (D_52ba_vdp._52c8_videoDriverSelection != VDP_VIDEO_CGA && D_52ba_vdp._52c8_videoDriverSelection != VDP_VIDEO_HERC)
+    if (D_52c8 != VDP_VIDEO_CGA && D_52c8 != VDP_VIDEO_HERC)
     {
         D_13b2_blueColor = 1;
         D_13ae_redColor = 4;
@@ -700,7 +700,7 @@ void INTRO_0986_Main(void)
         ULTIMA_0878_RestoreVideoMode();
         exit(1);
     }
-    if (D_52ba_vdp._52c8_videoDriverSelection == VDP_VIDEO_HERC)
+    if (D_52c8 == VDP_VIDEO_HERC)
     {
         // 0a64
         while (ULTIMA_1d02_LoadCharset(/*0x3182*/ "ibm.hcs", 0) == 0)

@@ -232,8 +232,8 @@ static void DUNGEON_127e(int param_1, int param_2)
     int local_6;
     int local_4_ab;
 
-    local_4_ab = D_52ba_vdp._52c4;
-    D_52ba_vdp._52c4 = 0;
+    local_4_ab = D_52c4;
+    D_52c4 = 0;
 
     switch (param_2)
     {
@@ -262,7 +262,7 @@ static void DUNGEON_127e(int param_1, int param_2)
         ULTIMA_0c9c_GRAP_39_HorizLine(local_6, ULTIMA_2092_RandomRange(D_2e42[param_1], D_2e4a[param_1]), D_2e5a[param_1] + local_6);
     }
 
-    D_52ba_vdp._52c4 = local_4_ab;
+    D_52c4 = local_4_ab;
 }
 
 static void DUNGEON_134a(int param_1, int param_2, int param_3)
@@ -418,7 +418,7 @@ static int DUNGEON_150a(int param_1, int param_2, int param_3)
 
     if ((local_6 & 0xf0) == 0xe0 && param_3 == 0)
     {
-        D_52ba_vdp._52c4 = 1;
+        D_52c4 = 1;
 
         return 1;
     }
@@ -620,7 +620,7 @@ void DUNGEON_1a90(int param_1)
     ULTIMA_0a70_GRAP_2d_SetPenColor(0);
     ULTIMA_0aa6_GRAP_3f_FillRect(0x60, 0xe, 0xaf, 0xb2);
     ULTIMA_0c3c(0x28, 0x2a, 0x98, 0xb7);
-    D_52ba_vdp._52c4 = 0;
+    D_52c4 = 0;
 
     if (D_58a6 != 0 || D_58a7 != 0)
     {
@@ -664,7 +664,7 @@ void DUNGEON_1a90(int param_1)
     }
 
     ULTIMA_0c22_GRAP_0f_SelectPage(0);
-    D_52ba_vdp._52c4 = 0;
+    D_52c4 = 0;
 }
 
 void DUNGEON_1be0(void)

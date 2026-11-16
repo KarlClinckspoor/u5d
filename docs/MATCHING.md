@@ -400,6 +400,18 @@ Each entry gives the evidence. Add to this list as you learn.
 - **Where an assignment goes.** `if ((x = f()) == K)` and `x = f(); if (x == K)` can choose
   registers differently. In SJOG_095C the first form gave the original's DX/CX for two loop
   variables; the second swapped them.
+- **Tail merging keeps the other copy.** When two blocks end in the same instructions and
+  the same jump, MSC keeps one copy and the other block jumps into it. In NPC_0d00 (switch
+  cases 2 and 1/4 both calling NPC_0c50) and TALK_0c5c, the original keeps the *later*
+  copy; we keep the earlier one. MSC 5.1 does the same as 5.0 here, so the compiler isn't
+  the cause. Neither `return` for `break` nor a fall-through between the cases changes it.
+  ENDGAME's Y/N switches keep the earlier copy in both. Open; ULTIMA_4402 and 4552 may be
+  the same thing.
+- **A loop's register locals are stored when it ends.** The original's TALK_0c5c has
+  no such store, because its code after the loop is inside it (`if (local_6 == 0)
+  continue;` and the rest, instead of `do ... while (local_6 == 0);`). Moving SHOPPES2_0508's
+  code into its inner loop the same way lost every register local, so that one is still
+  open.
 - **Same-length instructions with another encoding** (`and bx,0Fh` as `81 e3 0f 00`
   instead of `83 e3 0f`) are not produced by bitfields, `unsigned` or other mask
   spellings. Open.
