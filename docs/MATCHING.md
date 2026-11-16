@@ -447,7 +447,8 @@ Each entry gives the evidence. Add to this list as you learn.
   give it either (the last takes a stack slot). Still open.
 - **A label stops constant propagation.** SHOPPES2_00ac sets `local_4 = 0` and then
   indexes with it. The original reloads local_4 from the stack, where MSC would fold the 0.
-  A label between the two statements gives the original's code.
+  A label between the two statements gives the original's code. INTRO_1016 is the same:
+  the original pushes local_10_ad (set to 8) from the stack instead of the constant.
 - **Where a repeated value lives.** A value the source reads twice can become a common
   subexpression in a register, and the source's shape picks the register:
   - ULTIMA_25D8 keeps D_a9bd[0] in SI, besides storing it in local_6, only when the test
@@ -464,6 +465,17 @@ Each entry gives the evidence. Add to this list as you learn.
   original only the store after them. Naming the overworld map with a symbol of its own
   (D_6608_overworld, the same address) gives the original's code: the merge compares
   fixup targets by name.
+- **Shapes the decompiler rewrote.** Ghidra's output often describes MSC's code rather than
+  the source. Each of these was a whole function's difference:
+  - `inc ax; jne` after a call is `if ((x = f()) + 1 == 0)`; `x = f(); if (x + 1 == 0)`
+    compares with -1, and `++x == 0` also stores x (DNGLOOK_0000, SJOG_0646, where the
+    decompiled `++` even read the wrong party member);
+  - `x = 0; if (n > 0) { c = n; x += n; do { ... } while (--c != 0); }` is MSC's closed
+    form of `for (x = 0; x < n; x++)`: the counter in DI, x set once (SHOPPES_0f64);
+  - a value stored to two locals when a loop ends is a loop over one of them followed by
+    `other = it;` (SHOPPES_07BE);
+  - `mov ax,[bp+4]; jmp` to the epilogue from inside an if is an early `return param;`
+    in that branch (SHOPPES_0502).
 - **A loop's register locals are stored when it ends.** The original's TALK_0c5c has
   no such store, because its code after the loop is inside it (`if (local_6 == 0)
   continue;` and the rest, instead of `do ... while (local_6 == 0);`). Moving SHOPPES2_0508's
