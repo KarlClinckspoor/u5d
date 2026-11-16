@@ -84,8 +84,8 @@ D_5390	LABEL	WORD
 	PUBLIC	D_5392
 D_5392	LABEL	WORD
 	db	004h, 000h
-	PUBLIC	D_5394
-D_5394	LABEL	WORD
+	PUBLIC	D_5394_FN
+D_5394_FN	LABEL	WORD
 	db	032h, 012h, 000h, 000h	; 2...
 	PUBLIC	D_5398_CURRENTCHARSET
 D_5398_CURRENTCHARSET	LABEL	WORD
@@ -331,7 +331,7 @@ L_0f12:
 	or bx,bx
 	je	L_0f21
 	mov WORD PTR D_535C,ax
-	call dword ptr D_5394
+	call dword ptr D_5394_FN
 	xor ax,ax
 	jmp	SHORT L_0f24
 L_0f21:
@@ -446,7 +446,7 @@ L_0fc6:
 	jmp	SHORT L_0fd4
 L_0fcb:
 	mov WORD PTR D_535C,ax
-	call dword ptr D_5394
+	call dword ptr D_5394_FN
 	xor ax,ax
 L_0fd4:
 	pop ds
@@ -498,7 +498,7 @@ L_100b:
 	jmp	SHORT L_1026
 L_101d:
 	mov WORD PTR D_535C,ax
-	call dword ptr D_5394
+	call dword ptr D_5394_FN
 	xor ax,ax
 L_1026:
 	pop ds
@@ -1361,7 +1361,7 @@ ULTIMA_1674_TESTOPENFILE:
 	jmp	SHORT L_169f
 L_1696:
 	mov WORD PTR D_535C,ax
-	call dword ptr D_5394
+	call dword ptr D_5394_FN
 	xor ax,ax
 L_169f:
 	pop ds

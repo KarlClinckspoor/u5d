@@ -749,7 +749,12 @@ STUB S_6608_Map D_6608_map; // ~6a08) map data: layer4 * y16 * x16 / y32 * x32
 #define D_6608 D_6608_map.raw
 #define D_6a07 (D_6608[1023])
 
+#if defined(TARGET_DOS16)
+// in the original, DS:6708 is a place inside D_6608_map, not a variable of its own
+#define D_6708_map (*(S_6608_Map*)(D_6608_map.raw + 0x100))
+#else
 STUB S_6608_Map D_6708_map; // copy of 6608
+#endif
 #define D_6708 D_6708_map.raw
 
 STUB u8 D_6a08; // some audio related
