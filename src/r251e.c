@@ -70,9 +70,8 @@ static void FAR ULTIMA_25ca_WriteError(void)
     ULTIMA_1dda_WaitForKeystroke(0);
 }
 
-// NOT MATCHING: the original keeps local_6 in SI as well as at [bp-4] and indexes D_a9c8
-// with SI. In the loop, both compilers push SI as TestOpenFile's fileName without ever
-// loading it (MSC 5.0's code, not a decompilation slip): the original passes D_a9bd[0].
+// D_a9c8[D_a9bd[0]] rather than D_a9c8[local_6]: the repeated D_a9bd[0] is what MSC keeps
+// in SI (a common subexpression), besides storing it in local_6.
 void ULTIMA_25d8_WriteFileToDisk(char* fileName, void* addr, u16 size)
 {
 #if !defined(TARGET_DOS16)
@@ -86,7 +85,7 @@ void ULTIMA_25d8_WriteFileToDisk(char* fileName, void* addr, u16 size)
     local_4_b = 0;
 
     local_6 = D_a9bd[0];
-    if (D_a9bd[0] == 3 && D_a9c8[local_6] == 0xff)
+    if (D_a9bd[0] == 3 && D_a9c8[D_a9bd[0]] == 0xff)
     {
         ULTIMA_2322_DiskSwapMessage(); // in another object: a far call
     }
