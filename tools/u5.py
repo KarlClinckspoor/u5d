@@ -57,7 +57,7 @@ MODULES['vars.c'] = ('data', None)
 # _DATA, packed. Each module is compiled with the one the original used (docs/MATCHING.md).
 COMPILER_BY_FILE = {f: 'msc50' for f in (
     '3000.c', '4000.c', '6000.c', 'blckthrn.c', 'cast2.c', 'combat.c', 'comsubs.c', 'dnglook.c',
-    'endgame.c', 'font.c', 'lookobj.c', 'npc.c', 'r251e.c', 'shoppes.c', 'shoppes2.c', 'sjog.c',
+    'endgame.c', 'font.c', 'lookobj.c', 'npc.c', 'r1850.c', 'r251e.c', 'shoppes.c', 'shoppes2.c', 'sjog.c',
     'talk.c', 'zstats.c')}
 # Overlays built from two objects: NAME.c (MSC 5.1) and NAMEb.c (MSC 5.0), linked in that
 # order. The 5.0 part holds the functions that use CONST strings; its _DATA follows the 5.1

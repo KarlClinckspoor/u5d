@@ -214,7 +214,8 @@ strings, from DS:6ada).
 follows it, and for 5.0 rewrites `//` comments as `/* */` in the staged copies (5.0 knows
 only the latter). MSC 5.0 modules so far: 3000, 4000, 6000, BLCKTHRN, CAST2, DNGLOOK,
 COMBAT, COMSUBS, ENDGAME, FONT, LOOKOBJ, NPC, SHOPPES, SHOPPES2, SJOG, TALK, ZSTATS, and
-the resident `r251e.c`.
+the resident `r1850.c` and `r251e.c`. (r1850 has no strings; its word-wrap loop recomputes an
+address for each test as only 5.0 does, and its locals fall in place only by 5.0's slot rule.)
 
 **The resident 2000.c range is three objects.** CONST holds one string between FONT's and
 3000.c's: DS:a0e0, ULTIMA_25ca's "Your disk may be write-protected". So the original had a
