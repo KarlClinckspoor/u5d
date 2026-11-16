@@ -213,7 +213,22 @@ strings, from DS:6ada).
 `tools/u5.py` `COMPILER_BY_FILE` says which compiler builds which file. `dosbuild.py`
 follows it, and for 5.0 rewrites `//` comments as `/* */` in the staged copies (5.0 knows
 only the latter). MSC 5.0 modules so far: 3000, 4000, 6000, BLCKTHRN, CAST2, DNGLOOK,
-COMBAT, COMSUBS, ENDGAME, FONT, LOOKOBJ, NPC, SHOPPES, SHOPPES2, SJOG, TALK, ZSTATS.
+COMBAT, COMSUBS, ENDGAME, FONT, LOOKOBJ, NPC, SHOPPES, SHOPPES2, SJOG, TALK, ZSTATS, and
+the resident `r251e.c`.
+
+**The resident 2000.c range is three objects.** CONST holds one string between FONT's and
+3000.c's: DS:a0e0, ULTIMA_25ca's "Your disk may be write-protected". So the original had a
+5.0 module in the middle of what u5d had as 2000.c. ULTIMA_256e and ULTIMA_25d8 call
+ULTIMA_2322 with a far call, which MSC makes only for a far function of another object, so
+that module starts after 2322. They are now:
+- `r2320.c`, CS:2320-251e, MSC 5.1: 2320 and the GOG-patched 2322; its strings at DS:545f;
+- `r251e.c`, CS:251e-266c, MSC 5.0: 251e, 256e, 25ca, 25d8; its string at DS:a0e0;
+- `2000.c`, from CS:266c, MSC 5.1. Its `_DATA` holds the walkable-tile tables between its
+  strings (D_54d4-D_5547, then 12 bytes of zeros no code reads, D_5548), and D_559e after
+  the last string. They moved there from `vars.c`.
+
+256e, 25ca, 2e96 and 2fd0 became exact, and 2000.c's `_DATA` is the original's.
+
 **A 5.0 module's own data.** u5d first had these modules' strings as generated char arrays
 (`tools/strings.py`, a stand-in for 5.0's aligned literals) and their tables in `vars.c`.
 `tools/own50.py FILE.c FIRST LAST --apply` gives a 5.0 module its own data:

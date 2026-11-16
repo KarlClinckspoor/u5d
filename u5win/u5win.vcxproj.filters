@@ -47,6 +47,12 @@
     <ClCompile Include="..\src\2000.c">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\r2320.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\r251e.c">
+      <Filter>src</Filter>
+    </ClCompile>
     <ClCompile Include="..\src\3000.c">
       <Filter>src</Filter>
     </ClCompile>

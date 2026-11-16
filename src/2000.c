@@ -171,270 +171,6 @@ void ULTIMA_230e_PcspkOff(void)
 }
 #endif
 
-void FAR ULTIMA_2320_NoDiskSwapMessage(void)
-{
-    // nop
-}
-
-#if !defined(TARGET_DOS16)
-void FAR ULTIMA_2322_DiskSwapMessage(void)
-{
-    D_5394_fn = ULTIMA_2320_NoDiskSwapMessage;
-
-    if (D_a9bd[0] == 4)
-    {
-        ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
-        ULTIMA_1850_PrintString(_TEXT(0x11400, "Please place the Ultima IV 'party.sav' file into the 'U4SAVE' directory."));
-        ULTIMA_2032_ToUpper(ULTIMA_1dda_WaitForKeystroke(0));
-        ULTIMA_16ba_PrintChar('\n');
-    }
-
-    D_5394_fn = ULTIMA_2322_DiskSwapMessage;
-}
-#else
-// CHECKED
-// GOG patched: skip drive selection
-void FAR ULTIMA_2322_DiskSwapMessage(void)
-{
-    byte local_6_an;
-    byte local_4;
-
-    D_5394_fn = ULTIMA_2320_NoDiskSwapMessage;
-
-    local_6_an = D_a9c8[D_a9bd[0]];
-    if (local_6_an != 0xff && D_545e != D_a9bd[0] && ULTIMA_16a6_GetDefaultDrive() != local_6_an)
-    {
-        // 235a
-        ULTIMA_1eac_SetDefaultDrive(D_a9c8[D_a9bd[0]]);
-        // 236d
-        D_545e = D_a9bd[0];
-    }
-    else
-    {
-        // 2374
-        if (D_a9c8[D_a9bd[0]] < 0x43 && D_a9c2 > 1)
-        {
-            D_a9c8[D_a9bd[0]] ^= 3;
-            ULTIMA_1eac_SetDefaultDrive(D_a9c8[D_a9bd[0]]);
-            // 2394
-            if (D_545e != D_a9bd[0])
-            {
-                // -> 236d
-                D_545e = D_a9bd[0];
-                goto L_250c; // TODO: remove goto
-            }
-        }
-
-        // 239d
-        if (D_a9c8[D_a9bd[0]] >= 'C' && D_a9c8[D_a9bd[0]] != 0xff)
-        {
-            D_a9c8[D_a9bd[0]] = 'A';
-            ULTIMA_1eac_SetDefaultDrive('A');
-            D_545e = 0xff;
-        }
-        else
-        {
-            if (D_a9bd[1] == 2)
-            {
-                ULTIMA_0c22_GRAP_0f_SelectPage(0);
-                ULTIMA_1c22_SetTextWindowSize(0, 6, 0xc, 0x21, 0xd);
-                ULTIMA_0a70_GRAP_2d_SetPenColor(0);
-                ULTIMA_0aa6_GRAP_3f_FillRect(0x28, 0x58, 0x117, 0x77);
-            }
-
-            // 2400
-            D_545e = 0xff;
-
-#if defined(GOG_BUILD)
-            // 2405 GOG: PATCHED (different instructions)
-            local_4 = ULTIMA_16a6_GetDefaultDrive();
-            goto L_GOG_247d;
-#endif
-
-            // 2405
-            ULTIMA_1850_PrintString(_TEXT(0x545f, "\nPlease insert the Ultima "));
-            if (D_a9bd[0] == 4)
-            {
-                ULTIMA_16ba_PrintChar('I');
-            }
-
-            ULTIMA_1850_PrintString(_TEXT(0x547a, "V "));
-
-            // 360k: 0=Program 1,3=Britannia 4=Player 2=Dungeon 5=Underworld
-            // 720k: 0=Program 1,3=Britannia 4=Player (2, 5 => 1)
-            switch (D_a9bd[0])
-            {
-            case 0:
-                ULTIMA_1850_PrintString(_TEXT(0x547d, "Program"));
-                break;
-            case 1:
-            case 3:
-                ULTIMA_1850_PrintString(_TEXT(0x5485, "Britannia"));
-                break;
-
-            case 4:
-                ULTIMA_1850_PrintString(_TEXT(0x548f, "Player"));
-                break;
-            }
-
-            ULTIMA_1850_PrintString(_TEXT(0x5496, " Disk"));
-
-            if (D_a9c8[D_a9bd[0]] == 0xff)
-            {
-                ULTIMA_1850_PrintString(_TEXT(0x549c, " and press drive letter: "));
-            }
-            else
-            {
-                ULTIMA_16ba_PrintChar('.');
-            }
-
-            do
-            {
-                // 2473
-                local_4 = ULTIMA_2032_ToUpper(ULTIMA_1dda_WaitForKeystroke(0));
-
-#if defined(GOG_BUILD)
-L_GOG_247d:
-#endif
-                // 247d
-                if (D_a9c8[D_a9bd[0]] != 0xff)
-                    break;
-
-            } while (ULTIMA_1eac_SetDefaultDrive(local_4) == 0);
-
-            // 2497
-            if (D_a9c8[D_a9bd[0]] == 0xff)
-            {
-                // 24aa
-#if !defined(GOG_BUILD)
-                // GOG: PATCHED (3 nops)
-                ULTIMA_16ba_PrintChar(local_4);
-#endif
-
-                if (local_4 == 'B')
-                {
-                    D_a9c2 = 2;
-                }
-
-                D_a9c8[D_a9bd[0]] = local_4;
-                if (D_a9bd[0] == 3 && D_a9c9 == 0xff)
-                {
-                    D_a9c9 = local_4;
-                }
-            }
-
-            if (D_a9bd[1] == 0)
-            {
-                ULTIMA_16ba_PrintChar('\n');
-            }
-            else if (D_a9bd[1] == 2)
-            {
-                ULTIMA_0c22_GRAP_0f_SelectPage(1);
-                ULTIMA_1c22_SetTextWindowSize(0, 0, 0, 0x27, 0x18);
-                ULTIMA_0f6e_GRAP_1b_TransferFullscreen(1, 0);
-            }
-        }
-    }
-
-L_250c:
-    D_5394_fn = ULTIMA_2322_DiskSwapMessage;
-}
-#endif
-
-void ULTIMA_251e_SwitchDisks(int param_1)
-{
-    D_5394_fn = ULTIMA_2320_NoDiskSwapMessage;
-
-    if (param_1 == 2 || param_1 == 5)
-    {
-        param_1 = 1;
-    }
-
-    D_a9bd[0] = param_1;
-
-    if (D_a9c8[param_1] != 0xff)
-    {
-        ULTIMA_1eac_SetDefaultDrive(D_a9c8[param_1]);
-        D_545e = 0xff;
-    }
-
-    D_5394_fn = ULTIMA_2322_DiskSwapMessage;
-}
-
-// CHECKED
-void ULTIMA_256e_ReadFileFromDisk(char* fileName, void* addr, u16 size, u16 offset)
-{
-    int local_4 = 0;
-
-#if !defined(TARGET_DOS16)
-    while (local_4 == 0)
-    {
-        local_4 = ULTIMA_7234_ReadFile(fileName, addr, size, offset);
-        if (local_4 == 0)
-        {
-            EVT_Yield();
-        }
-    }
-    return;
-#endif
-
-    if (D_a9bd[0] == 3 && D_a9c8[D_a9bd[0]] == 0xff)
-    {
-        // NOT MATCHING: callf (original: call far ptr, ours push cs / call near)
-        ULTIMA_2322_DiskSwapMessage();
-    }
-
-    ULTIMA_1eac_SetDefaultDrive(D_a9c8[D_a9bd[0]]);
-
-    while (local_4 == 0)
-    {
-        local_4 = ULTIMA_7234_ReadFile(fileName, addr, size, offset);
-    }
-}
-
-static void FAR ULTIMA_25ca_WriteError(void)
-{
-    ULTIMA_1850_PrintString(_TEXT(0xa0e0, "\nYour disk may be write-protected. Try again.\n"));
-    ULTIMA_1dda_WaitForKeystroke(0);
-}
-
-// CHECKED
-void ULTIMA_25d8_WriteFileToDisk(char* fileName, void* addr, u16 size)
-{
-#if !defined(TARGET_DOS16)
-    ULTIMA_7296_WriteFile(fileName, addr, size);
-    return;
-#endif
-
-    int local_6_p;
-    int local_4;
-
-    local_4 = 0;
-
-    local_6_p = D_a9bd[0];
-    if (D_a9bd[0] == 3 && D_a9c8[local_6_p] == 0xff)
-    {
-        // NOT MATCHING: callf (original: call far ptr, ours push cs / call near)
-        ULTIMA_2322_DiskSwapMessage();
-    }
-
-    ULTIMA_1eac_SetDefaultDrive(D_a9c8[D_a9bd[0]]);
-
-    while (local_4 == 0)
-    {
-        while (ULTIMA_1674_TestOpenFile(fileName) == 0) {}
-
-        D_5394_fn = ULTIMA_25ca_WriteError;
-
-        local_4 = ULTIMA_7296_WriteFile(fileName, addr, size);
-
-        D_5394_fn = ULTIMA_2322_DiskSwapMessage;
-    }
-
-    D_a9bd[0] = local_6_p;
-    ULTIMA_1eac_SetDefaultDrive(D_a9c8[D_a9bd[0]]);
-}
-
 int ULTIMA_266c_GetChar(void)
 {
     int local_4;
@@ -779,6 +515,46 @@ void ULTIMA_2ae8(void)
     ULTIMA_400c();
 }
 
+// IsWalkableTile's tables, in this module's _DATA between its strings (DS:54d4)
+u8 D_54d4[32] =
+{
+    0x70, 0x0c, 0x00, 0x28, 0x01, 0xf3, 0x00, 0xbd,
+    0x72, 0x3f, 0xff, 0xff, 0xff, 0xcf, 0xff, 0xff,
+    0xfc, 0xf6, 0x0f, 0xff, 0xff, 0xc7, 0xff, 0xf7,
+    0xf0, 0x3f, 0xff, 0xf3, 0xff, 0xff, 0xff, 0xbe
+};
+
+// 0: normal
+// 1: sea monsters
+// 2: flying (magic carpet, lb, ...)
+// 3: horse
+// 4: ghost / shadowlord
+// 5: skiff (boat)
+// 6: frigate
+// 7: rotworm
+// 8: corpser
+// 9: whirlpool
+// 10: sand trap
+// 0xff / -1: invalid
+u8 D_54f4[64] =
+{
+    0x00, 0x00, 0x00, 0x00, 0x03, 0x02, 0x00, 0x00,
+    0x06, 0x06, 0x05, 0x06, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x02,
+    0x01, 0x01, 0x01, 0x01, 0x00, 0x02, 0x00, 0x04,
+    0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x02,
+    0x0a, 0x00, 0xff, 0x09, 0x02, 0x08, 0x07, 0x04
+};
+
+u8 D_5534[16] = { 0x0a, 0x05, 0x03, 0x09, 0x0c, 0x06, 0x0b, 0x0d, 0x0e, 0x07, 0x0a, 0x05, 0x08, 0x04, 0x02, 0x01 };
+
+u8 D_5544[4] = { 0x06, 0x03, 0x09, 0x0c };
+
+// DS:5548: 12 bytes of zeros that no code refers to
+u8 D_5548[12] = { 0 };
+
 // walkable for normal walk type?
 static bool ULTIMA_2bd4(byte actorTile, int targetTile)
 {
@@ -1071,3 +847,6 @@ void ULTIMA_2fd0(int param_1)
         break;
     }
 }
+
+// after the last string (DS:559e), used by ULTIMA_2fd0 above
+u8 D_559e[8] = { 0x00, 0x00, 0x00, 0x01, 0x01, 0x02, 0x02, 0x03 };
