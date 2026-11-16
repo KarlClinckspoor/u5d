@@ -116,26 +116,30 @@ s8 D_2f28[4] = {0xff, 0x00, 0x01, 0x00};
 
 s8 D_2f2c[4] = {0x00, 0xff, 0x00, 0x01};
 
-// CHECKED (register)
+// CHECKED
+// An early return, not if { ... }: MSC then keeps the map id in BX, where the if
+// form makes it a register temporary in SI.
 static void DUNGEON_104c(int param_1)
 {
     int local_4;
 
-    if (param_1 <= D_2df0[D_5893_map_id - 0x21])
+    if (param_1 > D_2df0[D_5893_map_id - 0x21])
     {
-        // 1063 (ok)
-        local_4 = D_2de8[D_5893_map_id - 0x21] + param_1 - 1;
-        ULTIMA_1c22_SetTextWindowSize(0, D_2df8[local_4], D_2e04[local_4], 0x27, 0x18);
-        ULTIMA_1b94_SelectTextWindow(0);
-        ULTIMA_1c9e_SelectCharset(1);
-        ULTIMA_1bf2_SetTextPosition(0, 0);
-        ULTIMA_16ba_PrintChar(CTRL_CHAR_TOGGLE_INVERSION);
-        ULTIMA_1850_PrintString(D_2e10[local_4]);
-        ULTIMA_16ba_PrintChar(CTRL_CHAR_TOGGLE_INVERSION);
-        ULTIMA_1c9e_SelectCharset(0);
-        ULTIMA_1b94_SelectTextWindow(2);
-        ULTIMA_1c22_SetTextWindowSize(0, 0, 0, 0x27, 0x18);
+        return;
     }
+
+    // 1063 (ok)
+    local_4 = D_2de8[D_5893_map_id - 0x21] + param_1 - 1;
+    ULTIMA_1c22_SetTextWindowSize(0, D_2df8[local_4], D_2e04[local_4], 0x27, 0x18);
+    ULTIMA_1b94_SelectTextWindow(0);
+    ULTIMA_1c9e_SelectCharset(1);
+    ULTIMA_1bf2_SetTextPosition(0, 0);
+    ULTIMA_16ba_PrintChar(CTRL_CHAR_TOGGLE_INVERSION);
+    ULTIMA_1850_PrintString(D_2e10[local_4]);
+    ULTIMA_16ba_PrintChar(CTRL_CHAR_TOGGLE_INVERSION);
+    ULTIMA_1c9e_SelectCharset(0);
+    ULTIMA_1b94_SelectTextWindow(2);
+    ULTIMA_1c22_SetTextWindowSize(0, 0, 0, 0x27, 0x18);
 }
 
 static int DUNGEON_10dc(int param_1, int param_2)
@@ -255,7 +259,13 @@ static void DUNGEON_127e(int param_1, int param_2)
         break;
     }
 
-    // 12be NOT MATCHING
+    // 12be NOT MATCHING: the original hoists D_2e52/5a/4a/42[param_1] and 4a - 5a out of
+    // the loop (temporaries at bp-0c..-14, the count in DI, counted down) although the loop
+    // makes calls, and keeps the second RandomRange result in a local at bp-8. Making the
+    // four tables really const (#undef const) gives that loop almost byte for byte, but
+    // puts the tables in CONST, where the original's are in _DATA. MSC 5.0 rejects an
+    // extern const declaration before a plain definition (C2086), and a const-qualified
+    // cast on the reads changes nothing.
     for (local_8 = 0; local_8 < D_2e52[param_1]; local_8++)
     {
         local_6 = ULTIMA_2092_RandomRange(D_2e42[param_1], D_2e4a[param_1] - D_2e5a[param_1]);

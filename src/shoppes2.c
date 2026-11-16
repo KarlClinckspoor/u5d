@@ -57,6 +57,10 @@ static void SHOPPES2_006a(void)
 // NOT MATCHING by 3 bytes: the original stores 0xff through AL (mov al,0FFh; mov [587B],al),
 // MSC's form for a chained assignment (DUNGEON and ULTIMA.EXE have D_589e = D_587b = 0xff).
 // The label keeps MSC from folding local_4 = 0 into the index, as the original doesn't.
+// Tried for the store: -1, (u8)-1, (char)0xff, ~0, (u8)~0, (int)0xff, 0xffL, -(1): all
+// mov byte ptr imm; local_4 = 0xff then D_587b = local_4, or D_587b = local_4 = 0xff:
+// AL, but local_4 is stored too (4 bytes longer); the label before either statement, or
+// local_4 = 0 first: worse; a second label: no change.
 static void SHOPPES2_00ac(void)
 {
     int local_4;
