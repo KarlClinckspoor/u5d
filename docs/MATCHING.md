@@ -229,6 +229,26 @@ that module starts after 2322. They are now:
 
 256e, 25ca, 2e96 and 2fd0 became exact, and 2000.c's `_DATA` is the original's.
 
+**Checks for object boundaries.** Three checks, run over the whole build, look for the
+remaining places where u5d's files do not follow the original's objects:
+
+- *DGROUP coverage.* Every byte of DGROUP from the overlays' `_DATA` (DS:2626) to the end
+  of CONST should belong to some module's data. Three ranges did not: D_28c6 (TOWN's, at
+  the end of its `_DATA`), DS:50ea-520c (FONT's tables, with the four chapter titles that
+  start FONT's CONST at a010) and D_520c (AFONT.ASM's variable). Now only one-byte
+  alignment gaps are left there. The large ranges still unclaimed (DS:0042-1393,
+  13a6-2626, 52ba-545f, 55a6-6acc) are the resident data in `vars.c`.
+- *Far calls.* MSC calls a far function with `call far` from another object and with
+  `push cs; call near` from its own. The only far calls left in the resident code are
+  256e's and 25d8's to 2322, which the split of 2000.c explains.
+- *Both compilers.* Compiling every module with both compilers and comparing per function
+  found ULTIMA_5f86: right length and 19 bytes off under 5.0, 251 under 5.1. It is the
+  last function before 6000.c (a 5.0 module) and uses no strings, so it is the first
+  function of 6000.c's object; it is now exact there. INTRO_0986 compiles exactly under
+  5.0 too, but INTRO's strings are packed at odd addresses, which 5.0 never does (it
+  word-aligns every char array, with `ORG $+1`), so that object is 5.1 and the source
+  has yet to be found.
+
 **A 5.0 module's own data.** u5d first had these modules' strings as generated char arrays
 (`tools/strings.py`, a stand-in for 5.0's aligned literals) and their tables in `vars.c`.
 `tools/own50.py FILE.c FIRST LAST --apply` gives a 5.0 module its own data:
