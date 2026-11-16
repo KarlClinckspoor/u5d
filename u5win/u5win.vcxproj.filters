@@ -62,6 +62,24 @@
     <ClCompile Include="..\src\7000.c">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\r0d72.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\r1850.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\r1b38.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\r1dda.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\r1fa0.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\r216c.c">
+      <Filter>src</Filter>
+    </ClCompile>
     <ClCompile Include="..\src\blckthrn.c">
       <Filter>src</Filter>
     </ClCompile>

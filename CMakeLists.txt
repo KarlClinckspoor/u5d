@@ -38,6 +38,12 @@ set(SOURCES
 	src/5000.c
 	src/6000.c
 	src/7000.c
+	src/r0d72.c
+	src/r1850.c
+	src/r1b38.c
+	src/r1dda.c
+	src/r1fa0.c
+	src/r216c.c
 	src/savegame.c
 	src/grap_drv.c
 	src/audio/audio.c

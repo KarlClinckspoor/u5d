@@ -24,7 +24,7 @@ def function_tags():
     for p in sorted(glob.glob(os.path.join(u5.SRC, '*.c'))):
         f = os.path.basename(p)
         s = open(p, encoding='utf-8', errors='replace').read()
-        for m in re.finditer(r'^(?:static\s+)?(?:FAR\s+)?[\w\s\*]*?\b(ULTIMA_([0-9a-f]{4})\w*)\s*\([^;{)]*\)\s*\n\{', s, re.M | re.I):
+        for m in re.finditer(r'^(?:static\s+)?(?:FAR\s+)?[\w\s\*]*?\b(ULTIMA_([0-9a-f]{4})\w*)\s*\([^;{)]*\)\s*(?://[^\n]*)?\s*\{', s, re.M | re.I):
             pre = s[max(0, m.start() - 200):m.start()]
             last = pre.strip().split('\n')[-3:]
             tag = 'C'

@@ -20,13 +20,16 @@
 
 void DRV_66(int ax, int bx, int cx, int dx, int si, int di, int cf);
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 void ULTIMA_102e_UnloadTileset(void)
 {
     debug("ULTIMA_102e_UnloadTileset");
     DRV_5a_FreeTileset();
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 void ULTIMA_1044_GRAP_4e_CopyBitImageIntoPage(byte* img, int idx, int x, int y)
 {
@@ -34,7 +37,9 @@ void ULTIMA_1044_GRAP_4e_CopyBitImageIntoPage(byte* img, int idx, int x, int y)
     // ax = a, bx = idx, si = c, di = d
     DRV_4e(img, idx, x, y);
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 int ULTIMA_1068(int param_1, int param_2, int param_3)
 {
@@ -79,7 +84,9 @@ int ULTIMA_1068(int param_1, int param_2, int param_3)
 
     return iVar1;
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 void ULTIMA_10e0_GRAP_51_PutTile(uint tile, int x, int y)
 {
@@ -91,7 +98,9 @@ void ULTIMA_10e0_GRAP_51_PutTile(uint tile, int x, int y)
     // si = 52c0, di = 52c2
     DRV_51_PutTile(x, y, tile, D_52ba_vdp._52bc_tileXOffset, D_52ba_vdp._52be_tileYOffset, D_52ba_vdp._52c0, D_52ba_vdp._52c2);
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 void ULTIMA_1112_GRAP_60(int a, int b, int c)
 {
@@ -104,17 +113,21 @@ void ULTIMA_1112_GRAP_60(int a, int b, int c)
     // cf: code path
     DRV_60(a, D_5893_map_id, D_52ba_vdp._52bc_tileXOffset, D_52ba_vdp._52be_tileYOffset, b, c, 1);
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 int ULTIMA_1140_GRAP_6f_AnimateOriginLogo(void)
 {
     return DRV_6f(D_5356);
 }
+#endif
 
 static void ULTIMA_1184_InitTextWindow(void);
 static void ULTIMA_11b4_CalibrateTimer(void);
 static void ULTIMA_1226_InitTextVars(void);
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 void ULTIMA_1158_InitTimer(void)
 {
@@ -124,7 +137,9 @@ void ULTIMA_1158_InitTimer(void)
     ULTIMA_1226_InitTextVars();
     ULTIMA_11b4_CalibrateTimer();
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 static void ULTIMA_1184_InitTextWindow(void)
 {
@@ -149,7 +164,9 @@ static void ULTIMA_1184_InitTextWindow(void)
 
     D_5386_current_text_window_idx = 0;
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // STUB (asm)
 static void ULTIMA_11b4_CalibrateTimer(void)
 {
@@ -157,15 +174,19 @@ static void ULTIMA_11b4_CalibrateTimer(void)
 
     // calibrates D_5356, D_535a
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 static void ULTIMA_1226_InitTextVars(void)
 {
     D_53a8_inverse = D_53a6 = D_53a4_underline = 0;
 }
+#endif
 
 static int ULTIMA_1588_IsFileCompressed(char* fileName);
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 // return: BX
 // - CF==0: ok
@@ -199,10 +220,12 @@ void* ULTIMA_125d_LoadResourceFileImpl(char* file_name)
 
     return buf;
 }
+#endif
 
 // ASM
 // ULTIMA_135a_ReadLzwCompressedFile(...)
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 // NOTE: ret: carry
 static int ULTIMA_1588_IsFileCompressed(char* fileName)
@@ -253,6 +276,7 @@ static int ULTIMA_1588_IsFileCompressed(char* fileName)
         }
     }
 }
+#endif
 
 // ASM
 // ULTIMA_15c6_AllocateMemory
@@ -260,6 +284,7 @@ static int ULTIMA_1588_IsFileCompressed(char* fileName)
 // ULTIMA_1649_DosReadFile
 // ULTIMA_1654_DosGetFileSize
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 int ULTIMA_1674_TestOpenFile(char* file_name)
 {
@@ -278,7 +303,9 @@ int ULTIMA_1674_TestOpenFile(char* file_name)
     return 1;
 #endif
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // STUB (asm)
 int ULTIMA_16a6_GetDefaultDrive(void)
 {
@@ -286,6 +313,7 @@ int ULTIMA_16a6_GetDefaultDrive(void)
     // FMT (dummy)
     return 'D';
 }
+#endif
 
 //
 // REGION: TEXT
@@ -294,6 +322,7 @@ int ULTIMA_16a6_GetDefaultDrive(void)
 static void ULTIMA_17f4_ApplyCharEffects(byte* es, int di);
 static void ULTIMA_1f77_ConvertCharCoordToPixel(TextWindow* window, int* pAX, int* pBX, int* pCX, int* pDX);
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 void ULTIMA_16ba_PrintChar(uint ch)
 {
@@ -410,7 +439,9 @@ LAB_1000_1745:
         DRV_27(ax, bx, cx, dx, -8);
     }
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 // ptr = (es:)di
 static void ULTIMA_17f4_ApplyCharEffects(byte* es, int di)
@@ -457,236 +488,9 @@ static void ULTIMA_17f4_ApplyCharEffects(byte* es, int di)
         }
     }
 }
+#endif
 
-// CHECKED (NOT MATCHING: register, loop optimization)
-// 0000:1850
-void ULTIMA_1850_PrintString(char* param_1)
-{
-    int local_44_aj;
-    char local_42_al[40];
-    uint local_1a;
-    int local_18;
-    int local_16;
-    int local_14_aa;
-    TextWindow* local_12;
-    int local_10;
-    int local_e;
-    int local_c;
-    int local_a;
-    int local_8;
-    int local_6;
-    int local_4;
 
-    // debug("GRAP_PrintString(%s)", param_1);
-
-    local_8 = 0;
-    local_a = 0;
-    local_4 = 0;
-    if (*param_1 != '\0')
-    {
-        // 1872
-        local_12 = &D_535e_textWindows[D_5386_current_text_window_idx];
-        local_1a = local_12->flags & 2;
-        local_44_aj = (uint)local_12->right - (uint)local_12->left; // text_window_width = r - l;
-
-        // 189a
-        do
-        {
-            if (local_4 != 0)
-            {
-                ULTIMA_16ba_PrintChar('\n');
-            }
-
-            // 18a7 (NOT MATCHING: si register)
-            local_4 = local_6 = local_14_aa = 0;
-            local_10 =
-                local_44_aj - ULTIMA_1f12_GetCurrentTextX(); // remaining_length = text_window_length - column
-
-            for (local_c = 0; param_1[local_8] != '\n' && param_1[local_8] != '\r' && param_1[local_8] != '\0' &&
-                              local_c <= local_10;
-                 local_8++, local_c++)
-            {
-                local_42_al[local_c] = param_1[local_8];
-            }
-
-            // 18f4 (after loop)
-            if (local_c == 0)
-            {
-                if (param_1[local_8] != '\0')
-                {
-                    ULTIMA_16ba_PrintChar((byte)param_1[local_8++]);
-                }
-                else
-                {
-                    local_a++;
-                }
-            }
-            else
-            {
-                // 191c
-                if (local_c > local_10)
-                {
-                    // 1927
-                    local_18 = local_c;
-                    local_16 = local_8;
-
-                    // 1939 (NOT MATCHING: optimization)
-                    for (; param_1[local_8] != ' ' && local_c != 0 && param_1[local_8] != '\n' &&
-                           param_1[local_8] != '\0' && param_1[local_8] != '\r';
-                         local_c--, local_8--)
-                    {
-                    }
-
-                    // 1968
-                    if (local_c == 0)
-                    {
-                        local_c = local_18;
-                        local_8 = local_16;
-
-                        if (local_12->currentX != 0)
-                        {
-                            ULTIMA_16ba_PrintChar('\n');
-                            local_6 = 1;
-                        }
-                    }
-                    else
-                    {
-                        // 1996
-                        do
-                        {
-                            local_c--;
-                        } while (local_42_al[local_c] == ' ' || local_42_al[local_c] == '\r' || local_42_al[local_c] == '\n');
-
-                        if (param_1[local_8] != '\0')
-                            local_8++;
-
-                        // 19bf
-                        if (local_c < local_10)
-                            local_4++;
-                    }
-
-                    // 19ca
-                    if (local_c > local_10)
-                        local_c--;
-                }
-                else
-                {
-                    local_c--;
-                }
-
-                // 19d5
-                if (local_1a != 0)
-                {
-                    if (local_c > local_44_aj)
-                    {
-                        ULTIMA_16ba_PrintChar('\n');
-                    }
-
-                    // 19ea
-                    ULTIMA_1bf2_SetTextPosition((local_10 - local_c) / 2, ULTIMA_1cee_GetCurrentTextY());
-                }
-
-                // 19fd (NOT MATCHING: loop optimization)
-                if (local_6 != 0)
-                {
-                    // 1a03
-                    for (; local_42_al[local_14_aa] == ' '; local_14_aa++)
-                    {
-                    }
-                }
-
-                // 1a14 (NOT MATCHING: loop optimization)
-                for (; local_14_aa <= local_c; local_14_aa++)
-                {
-                    // 1a1c
-                    ULTIMA_16ba_PrintChar((byte)local_42_al[local_14_aa]);
-                }
-            }
-        } while (local_a == 0);
-    }
-    return;
-}
-
-// CHECKED (NOT MATCHING: optimization)
-// print_integer(val, min_len, filler)
-void ULTIMA_1a3e_PrintNumber(int param_1, int param_2, int param_3)
-{
-    int l_2a = 1; // required_length
-    int l_2c;     // space
-    int l_2e = 0; // is_negative
-    int l_30;
-    char local_28[40];
-
-    register s16 *si;
-
-    if (param_2 > 39)
-    {
-        param_2 = 39;
-    }
-
-    // 1a5b
-    if (param_1 < 0) // is negative?
-    {
-        l_2e++; // is_negative = true
-        param_1 = -param_1;
-    }
-
-    // 1a6c
-    l_30 = 5;
-
-    si = &D_5402[1];
-    do
-    {
-        // 1a7a
-        if (*si <= param_1) // cmp order?
-        {
-            l_2a++;
-        }
-        si++;
-    } while (si < &D_5402[5]); // 1a7f
-
-    if (l_2e)
-    {
-        l_2a++;
-    }
-
-    // 1a94
-    l_2c = param_2 - l_2a;
-    if (l_2c <= 0)
-    {
-        l_2c = 0;
-    }
-    else
-    {
-        // 1aa8: NOT MATCHING (loop optimization)
-        for (l_30 = 0; l_30 != l_2c; l_30++)
-        {
-            local_28[l_30] = param_3;
-        }
-    }
-
-    // 1ac0
-    if (l_2e)
-    {
-        local_28[l_2c++] = '-';
-        l_2a--;
-    }
-
-    // 1ad3: NOT MATCHING
-    do
-    {
-        l_30 = D_5402[l_2a - 1];
-        l_2e = param_1 / l_30;
-        local_28[l_2c++] = (char)l_2e + '0';
-
-        param_1 -= l_30 * l_2e;
-    } while (--l_2a != 0);
-
-    // 1afb
-    local_28[l_2c] = '\0';
-
-    ULTIMA_1850_PrintString(local_28);
-}
 
 //
 // REGION: KEYBOARD
@@ -694,6 +498,7 @@ void ULTIMA_1a3e_PrintNumber(int param_1, int param_2, int param_3)
 
 static void ULTIMA_1b24_ClearKbdBufferImpl();
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // STUB (asm)
 void ULTIMA_1b16_ClearKbdBuffer(void)
 {
@@ -701,7 +506,9 @@ void ULTIMA_1b16_ClearKbdBuffer(void)
     ULTIMA_1b24_ClearKbdBufferImpl();
     // pop ds
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // STUB (asm)
 static void ULTIMA_1b24_ClearKbdBufferImpl(void)
 {
@@ -713,41 +520,9 @@ static void ULTIMA_1b24_ClearKbdBufferImpl(void)
     // *headPtr = 0x1e;
     // *tailPtr = 0x1e;
 }
-
-u16 ULTIMA_1b38_PollKeyWithCursor(void)
-{
-    int local_6_an;
-    int local_4;
-
-    local_4 = D_538e;
-    D_538e = 0;
-
-    ULTIMA_16ba_PrintChar(D_5390 + D_540c++); // animate cursor
-
-    local_6_an = ULTIMA_1d5e_PollKey();
-    if ((int)D_540c >= (int)D_5392)
-    {
-        D_540c = 0;
-    }
-
-    if (local_6_an != 0)
-    {
-        ULTIMA_16ba_PrintChar(' ');
-    }
-    else
-    {
-#if defined(TARGET_DOS32)
-        // Temporary
-        ULTIMA_20c8_SomeDelay(1, 21);
-#else
-        ULTIMA_20fa_WaitTicks(1);
 #endif
-    }
 
-    D_538e = local_4;
-    return local_6_an;
-}
-
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 void ULTIMA_1b94_SelectTextWindow(int id)
 {
@@ -772,7 +547,9 @@ void ULTIMA_1b94_SelectTextWindow(int id)
         D_53a8_inverse = (b & 4) >> 2;
     }
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 void ULTIMA_1bf2_SetTextPosition(int x, int y)
 {
@@ -786,9 +563,11 @@ void ULTIMA_1bf2_SetTextPosition(int x, int y)
         D_539a_currentTextWindow->currentY = y;
     }
 }
+#endif
 
 static byte ULTIMA_1c5b_ClipTextWindow(int* x1, int* y1, int* x2, int* y2);
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 void ULTIMA_1c22_SetTextWindowSize(int idx, int x1, int y1, int x2, int y2)
 {
@@ -807,7 +586,9 @@ void ULTIMA_1c22_SetTextWindowSize(int idx, int x1, int y1, int x2, int y2)
         win->bottom = (u8)y2;
     }
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 static byte ULTIMA_1c5b_ClipTextWindow(int* x1, int* y1, int* x2, int* y2)
 {
@@ -853,7 +634,9 @@ static byte ULTIMA_1c5b_ClipTextWindow(int* x1, int* y1, int* x2, int* y2)
 
     return *x1;
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 void ULTIMA_1c9e_SelectCharset(int param_1)
 {
@@ -867,7 +650,9 @@ void ULTIMA_1c9e_SelectCharset(int param_1)
         D_5388_current_charset_idx = param_1;
     }
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 void ULTIMA_1cca_SetTextForegroundColor(int a)
 {
@@ -878,10 +663,14 @@ void ULTIMA_1cca_SetTextForegroundColor(int a)
     D_53aa_text_fg_color = a & 0xf;
     D_539a_currentTextWindow->colors = (D_539a_currentTextWindow->colors & 0xf0) | (a & 0xf);
 }
+#endif
 
 // ASM
+#if !defined(TARGET_DOS16) // an entry point inside SetTextForegroundColor: src/asm
 int ULTIMA_1cee_GetCurrentTextY(void) { return D_539a_currentTextWindow->currentY; }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 int ULTIMA_1d02_LoadCharset(char* a, int b)
 {
@@ -892,80 +681,19 @@ int ULTIMA_1d02_LoadCharset(char* a, int b)
     // FMT
     return 1;
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 int ULTIMA_1d5e_PollKey(void)
 {
     return KEY_PollKey();
 }
-
-int ULTIMA_1dda_WaitForKeystroke(int param_1)
-{
-    int local_8;
-    int local_6;
-    int local_4_ab;
-
-    local_4_ab = -1;
-    if (param_1 != 0)
-    {
-        local_4_ab++;
-    }
-
-    if (param_1 > 1)
-    {
-        local_6 = D_5356;
-        D_5356 = 500;
-    }
-
-    do
-    {
-        local_8 = ULTIMA_1b38_PollKeyWithCursor();
-        if (param_1 != 0)
-        {
-            local_4_ab++;
-        }
-    } while (local_4_ab < param_1 && local_8 == 0);
-
-    if (param_1 > 1)
-    {
-        D_5356 = local_6;
-    }
-
-    return local_8;
-}
-
-void ULTIMA_1e38_IntroGetString(char* param_1, int param_2)
-{
-    int local_6_an;
-    int local_4;
-
-    local_4 = 0;
-    do
-    {
-        local_6_an = ULTIMA_1dda_WaitForKeystroke(0);
-        if ((local_6_an == U5_KEY_BACKSPACE || local_6_an == U5_KEY_LEFT) && local_4 != 0)
-        {
-            ULTIMA_1fa0_Backspace(1);
-            local_4--;
-        }
-        else if (local_6_an == U5_KEY_ESC && local_4 != 0)
-        {
-            ULTIMA_1fa0_Backspace(local_4);
-            local_4 = 0;
-        }
-        else if (local_6_an > 0x1f && local_6_an < 0x80 && local_4 < param_2)
-        {
-            param_1[local_4] = local_6_an;
-            local_4++;
-            ULTIMA_16ba_PrintChar(local_6_an);
-        }
-    } while (local_6_an != U5_KEY_ENTER);
-
-    param_1[local_4] = 0;
-}
+#endif
 
 static int ULTIMA_1ef7_ConvertDriveLetterToNumber(char* al, char* dl);
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 int ULTIMA_1eac_SetDefaultDrive(int param_1)
 {
@@ -1002,7 +730,9 @@ int ULTIMA_1eac_SetDefaultDrive(int param_1)
 
     return 1;
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 static int ULTIMA_1ef7_ConvertDriveLetterToNumber(char* al, char* dl)
 {
@@ -1019,10 +749,14 @@ static int ULTIMA_1ef7_ConvertDriveLetterToNumber(char* al, char* dl)
 
     return 1;
 }
+#endif
 
 // ASM
+#if !defined(TARGET_DOS16) // an entry point inside SetTextBackgroundColor: src/asm
 int ULTIMA_1f12_GetCurrentTextX(void) { return D_539a_currentTextWindow->currentX; }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 void ULTIMA_1f26_SetTextBackgroundColor(int a)
 {
@@ -1033,14 +767,18 @@ void ULTIMA_1f26_SetTextBackgroundColor(int a)
     D_53ab_text_bg_color = a & 0xf;
     D_539a_currentTextWindow->colors = (D_539a_currentTextWindow->colors & 0xf) | ((a & 0xf) << 4);
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // STUB (asm)
 static void ULTIMA_1f4e(int param_1)
 {
     // call ULTIMA_1f77_ConvertCharCoordToPixel
     // far call DRV_27(-(param_1 * 8)
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 // param: SI = window
 static void ULTIMA_1f77_ConvertCharCoordToPixel(TextWindow* window, int* pAX, int* pBX, int* pCX, int* pDX)
@@ -1055,34 +793,4 @@ static void ULTIMA_1f77_ConvertCharCoordToPixel(TextWindow* window, int* pAX, in
     *pCX = cx;
     *pDX = dx;
 }
-
-void ULTIMA_1fa0_Backspace(int char_count)
-{
-    u16 local_4;
-    TextWindow* local_6;
-    int local_8;
-    int local_a;
-
-    if ((ULTIMA_1f12_GetCurrentTextX() != 0 || ULTIMA_1cee_GetCurrentTextY() != 0) && char_count != 0)
-    {
-        local_4 = D_538e;
-        local_6 = &D_535e_textWindows[D_5386_current_text_window_idx];
-        D_538e = 0;
-
-        for (local_8 = 0; local_8 < char_count; local_8++)
-        {
-            local_a = ULTIMA_1f12_GetCurrentTextX();
-            ULTIMA_16ba_PrintChar(' ');
-            if (local_a != 0)
-            {
-                ULTIMA_1bf2_SetTextPosition(local_a - 1, ULTIMA_1cee_GetCurrentTextY());
-            }
-            else
-            {
-                ULTIMA_1bf2_SetTextPosition(local_6->right - local_6->left, ULTIMA_1cee_GetCurrentTextY() - 1);
-            }
-        }
-
-        D_538e = local_4;
-    }
-}
+#endif

@@ -33,18 +33,23 @@
 // 082a: aNlshl
 // 0836: _myalloc
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // STUB
 void ULTIMA_0878_RestoreVideoMode(void)
 {
     debug("ULTIMA_0878_RestoreVideoMode");
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // STUB
 void ULTIMA_0892_InitializeVideoDriver(int a)
 {
     debug("ULTIMA_0892_InitializeVideoDriver(%d)", a);
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 // AX, BX => CARRY
 static int ULTIMA_08ca_InsideClipWindow(int ax, int bx)
@@ -60,7 +65,9 @@ static int ULTIMA_08ca_InsideClipWindow(int ax, int bx)
 
 	return -1;
 }
+#endif
 
+#if !defined(TARGET_DOS16) // used only by the C versions of assembly routines
 // xchg
 static void SWAP(int* a, int* b)
 {
@@ -68,7 +75,9 @@ static void SWAP(int* a, int* b)
 	*a = *b;
 	*b = temp;
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 int ULTIMA_08e6_ClipRectCoord(int *x1, int *y1, int *x2, int *y2)
 {
@@ -114,10 +123,12 @@ int ULTIMA_08e6_ClipRectCoord(int *x1, int *y1, int *x2, int *y2)
 	// 0934
 	return *x1; // void?
 }
+#endif
 
 static void ULTIMA_0991(int* ax, int* bx, int* cx, int* dx);
 static void ULTIMA_0a22(int ax, int bx, int cx, int dx, int* si, int* di);
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 static bool ULTIMA_0935_ClipLineCoord(int* x1, int* y1, int* x2, int* y2)
 {
@@ -162,7 +173,9 @@ static bool ULTIMA_0935_ClipLineCoord(int* x1, int* y1, int* x2, int* y2)
 	*y2 = D_5300;
 	return 0;
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 static void ULTIMA_0991(int* ax, int* bx, int* cx, int* dx)
 {
@@ -234,7 +247,9 @@ static void ULTIMA_0991(int* ax, int* bx, int* cx, int* dx)
 			return;
 	}
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 static void ULTIMA_0a22(int ax, int bx, int cx, int dx, int *si, int *di)
 {
@@ -267,7 +282,9 @@ static void ULTIMA_0a22(int ax, int bx, int cx, int dx, int *si, int *di)
 	if (y2 < D_52ba_vdp._52d4_clipWindowY1)
 		*di |= 8;
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 void ULTIMA_0a70_GRAP_2d_SetPenColor(int param_1)
 {
@@ -283,7 +300,9 @@ void ULTIMA_0a70_GRAP_2d_SetPenColor(int param_1)
 		DRV_2d(param_1);
 	}
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 void ULTIMA_0aa6_GRAP_3f_FillRect(int x1, int y1, int x2, int y2)
 {
@@ -294,7 +313,9 @@ void ULTIMA_0aa6_GRAP_3f_FillRect(int x1, int y1, int x2, int y2)
     ASSERT(y1 < y2);
 	DRV_3f(x1, y1, x2, y2, 0);
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 // src_page, dst_page, x1, y1, x2, y2
 void ULTIMA_0ace_GRAP_18_TransferArea(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6)
@@ -323,15 +344,19 @@ void ULTIMA_0ace_GRAP_18_TransferArea(int param_1, int param_2, int param_3, int
         DRV_18(ax, bx, cx, dx, si, di, carry);
     }
 }
+#endif
 
 static void ULTIMA_0b2d_GRAP_Line(int ax, int bx, int cx, int dx, byte carry);
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 void ULTIMA_0b10_GRAP_Line(int x1, int y1, int x2, int y2)
 {
 	ULTIMA_0b2d_GRAP_Line(x1, y1, x2, y2, 0);
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 static void ULTIMA_0b2d_GRAP_Line(int ax, int bx, int cx, int dx, byte carry)
 {
@@ -386,16 +411,20 @@ static void ULTIMA_0b2d_GRAP_Line(int ax, int bx, int cx, int dx, byte carry)
 
 	// 0b84
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 void ULTIMA_0b86_GRAP_XorFillRect(int x1, int y1, int x2, int y2)
 {
     ULTIMA_08e6_ClipRectCoord(&x1, &y1, &x2, &y2);
     DRV_3f(x1, y1, x2, y2, 1);
 }
+#endif
 
 void* ULTIMA_125d_LoadResourceFileImpl(char* file_name);
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 void* ULTIMA_0bae_LoadImageFile(char* file_name)
 {
@@ -410,7 +439,9 @@ void* ULTIMA_0bae_LoadImageFile(char* file_name)
 	// else
 	//     DRV_42(); // prepare image data for ega (swizzle)
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 void ULTIMA_0be4_FreeImage(void* ptr)
 {
@@ -418,7 +449,9 @@ void ULTIMA_0be4_FreeImage(void* ptr)
 	// int 21,49h
     //free(ptr);
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 // put image (forced hflip)
 void ULTIMA_0bfc_GRAP_63(byte* param_1, int param_2, int param_3, int param_4, int param_5)
@@ -427,13 +460,17 @@ void ULTIMA_0bfc_GRAP_63(byte* param_1, int param_2, int param_3, int param_4, i
 
     DRV_63(param_1, param_2, param_3, param_4, param_5);
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 void ULTIMA_0c22_GRAP_0f_SelectPage(int a)
 {
 	DRV_0f(a);
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 // set clip window coord
 void ULTIMA_0c3c(int a, int b, int c, int d)
@@ -443,7 +480,9 @@ void ULTIMA_0c3c(int a, int b, int c, int d)
     D_52ba_vdp._52d2_clipWindowX2 = c;
     D_52ba_vdp._52d6_clipWindowY2 = d;
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 void ULTIMA_0c64_GRAP_30_Pset(int param_1, int param_2)
 {
@@ -460,9 +499,11 @@ void ULTIMA_0c64_GRAP_30_Pset(int param_1, int param_2)
         DRV_30(param_1, param_2);
     }
 }
+#endif
 
 static bool ULTIMA_0ccd(int* pAX, int* pCX);
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 void ULTIMA_0c9c_GRAP_39_HorizLine(int x1, int y, int x2)
 {
@@ -480,7 +521,9 @@ void ULTIMA_0c9c_GRAP_39_HorizLine(int x1, int y, int x2)
 
 	DRV_39(ax, bx, cx);
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 static bool ULTIMA_0ccd(int *pAX, int *pCX)
 {
@@ -497,9 +540,11 @@ static bool ULTIMA_0ccd(int *pAX, int *pCX)
 
 	return true; // STC
 }
+#endif
 
 static int ULTIMA_0d2b(int bx, int dx);
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 // vline
 void ULTIMA_0cf2_GRAP_3c_VertLine(int param_1, int param_2, int param_3)
@@ -524,7 +569,9 @@ void ULTIMA_0cf2_GRAP_3c_VertLine(int param_1, int param_2, int param_3)
         DRV_3c(ax, bx, dx);
 	}
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 static int ULTIMA_0d2b(int bx, int dx)
 {
@@ -535,7 +582,9 @@ static int ULTIMA_0d2b(int bx, int dx)
 
     return -1; // stc
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 // put_image(rsrc, imageIdx, x, y, vflip?)
 void ULTIMA_0d4c_GRAP_4b_PutImage(void* rsrc, int idx, int x, int y, int flags)
@@ -544,36 +593,19 @@ void ULTIMA_0d4c_GRAP_4b_PutImage(void* rsrc, int idx, int x, int y, int flags)
 	
 	DRV_4b(rsrc, idx, x, y, flags);
 }
+#endif
 
-// NOT MATCHING
-int ULTIMA_0d72_AnimateOriginLogo(byte* image)
-{
-    int iVar1;
-    int iStack_4;
 
-    iStack_4 = 0;
-    ULTIMA_0c22_GRAP_0f_SelectPage(1);
-    ULTIMA_0a70_GRAP_2d_SetPenColor(0);
-    ULTIMA_0aa6_GRAP_3f_FillRect(0, 0, 319, 199);
-
-    for (iVar1 = 0; iVar1 < 7; iVar1++)
-    {
-        ULTIMA_1044_GRAP_4e_CopyBitImageIntoPage(image, iVar1, (320 - D_5306[iVar1]) >> 1, iStack_4);
-        iStack_4 += D_5314[iVar1];
-    }
-
-    ULTIMA_0c22_GRAP_0f_SelectPage(0);
-
-    return ULTIMA_1140_GRAP_6f_AnimateOriginLogo();
-}
-
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 void ULTIMA_0de0_DetectVideo(void)
 {
     debug("ULTIMA_0de0_DetectVideo");
     D_52ba_vdp._52c8_videoDriverSelection = VDP_VIDEO_EGA;
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // STUB (asm)
 int ULTIMA_0e94_LoadVideoDriver(void)
 {
@@ -581,7 +613,9 @@ int ULTIMA_0e94_LoadVideoDriver(void)
     // DUMMY
     return 1;
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // STUB (asm)
 int ULTIMA_0f2a_GRAP_06_AllocPageBuffer(void)
 {
@@ -589,7 +623,9 @@ int ULTIMA_0f2a_GRAP_06_AllocPageBuffer(void)
     // DUMMY
     return 1;
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 void ULTIMA_0f46_GRAP_66_Reveal(int x1, int y1, int x2, int y2)
 {
@@ -597,7 +633,9 @@ void ULTIMA_0f46_GRAP_66_Reveal(int x1, int y1, int x2, int y2)
     ULTIMA_08e6_ClipRectCoord(&x1, &y1, &x2, &y2);
 	DRV_66(x1, y1, x2, y2, 0, 0, 0);
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 void ULTIMA_0f6e_GRAP_1b_TransferFullscreen(int from, int to)
 {
@@ -607,15 +645,19 @@ void ULTIMA_0f6e_GRAP_1b_TransferFullscreen(int from, int to)
         DRV_1b(from, to);
     }
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 void ULTIMA_0f90_GRAP_Pen(int x, int y)
 {
 	ULTIMA_0b2d_GRAP_Line(D_52ba_vdp._52cc_penX, D_52ba_vdp._52ce_penY, x, y, 0);
 }
+#endif
 
 void* ULTIMA_125d_LoadResourceFileImpl(char* file_name);
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 byte* ULTIMA_0fae_LoadResourceFile(char* file_name)
 {
@@ -637,7 +679,9 @@ byte* ULTIMA_0fae_LoadResourceFile(char* file_name)
 
 	return mem;
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 // NOTE: same as 0be4
 void ULTIMA_0fdc_FreeBitImage(void* ptr)
@@ -646,7 +690,9 @@ void ULTIMA_0fdc_FreeBitImage(void* ptr)
 	// int 21,49
     //free(ptr);
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 int ULTIMA_0ff4_LoadTileset(char* file_name)
 {
@@ -658,3 +704,4 @@ int ULTIMA_0ff4_LoadTileset(char* file_name)
 
 	return 1;
 }
+#endif

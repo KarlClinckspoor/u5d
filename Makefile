@@ -37,7 +37,7 @@ OBJS += \
 	src/5000.o \
 	src/6000.o \
 	src/7000.o \
-	src/savegame.o \
+	src/r0d72.o \n	src/r1850.o \n	src/r1b38.o \n	src/r1dda.o \n	src/r1fa0.o \n	src/r216c.o \n	src/savegame.o \
 	src/grap_drv.o \
 	src/audio/audio.o \
 	src/audio/aud_adl.o \

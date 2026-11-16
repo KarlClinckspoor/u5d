@@ -815,6 +815,7 @@ u8 DAT_000738d8[] = {0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x28,
                      0x10, 0x42, 0x42, 0x42, 0x42, 0x42, 0x42, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
                      0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x10, 0x10, 0x10, 0x10, 0x20};
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 // from FMT (27c98)
 int ULTIMA_6f1e(byte* param_1, char* param_2)
@@ -846,14 +847,18 @@ int ULTIMA_6f1e(byte* param_1, char* param_2)
 
     return local_18;
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 static int ULTIMA_6f90(char* di)
 {
     // repne scasb
     return strlen(di);
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 void ULTIMA_6f9e(int param_1)
 {
@@ -863,7 +868,9 @@ void ULTIMA_6f9e(int param_1)
     int ax = param_1 + 3;
     DRV_6c(ax, bl, bh);
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 void ULTIMA_6fbc(int param_1)
 {
@@ -872,9 +879,11 @@ void ULTIMA_6fbc(int param_1)
     byte bh = 0;
     DRV_6c(param_1, bl, bh);
 }
+#endif
 
 void DRV_60_CF0(void* ax);
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 void ULTIMA_6fd6_GRAP_AnimateTiles(void)
 {
@@ -883,7 +892,9 @@ void ULTIMA_6fd6_GRAP_AnimateTiles(void)
     DRV_60_CF0(D_539c);
     //debug("ULTIMA_6fd6");
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 int ULTIMA_6ff0(register int param_1, register int param_2)
 {
@@ -906,3 +917,4 @@ int ULTIMA_6ff0(register int param_1, register int param_2)
 
     return 0;
 }
+#endif

@@ -891,7 +891,9 @@ L_606c:
     D_5893_map_id = D_5894;
     D_24e6 = 1;
 
+#if defined(ENABLE_BGM)
     AUDIO_PlayBgmPerMap();
+#endif
 
     ULTIMA_2900_UpdateVitalsDisplay();
 

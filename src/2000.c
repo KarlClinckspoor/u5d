@@ -11,22 +11,15 @@
 #include <stdlib.h>
 #include <time.h>
 
-u16 ULTIMA_2032_ToUpper(u8 x)
-{
-    if (x >= 0x61 && x <= 0x7a)
-    {
-        return x - 0x20;
-    }
-
-    return x;
-}
-
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 uint ULTIMA_2056_GetTime(void)
 {
     return time((time_t*)0) & 0xffff; // MSC 5.1's <time.h> has no NULL
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 void ULTIMA_207e_srand(uint param_1)
 {
@@ -36,6 +29,7 @@ void ULTIMA_207e_srand(uint param_1)
     D_5420 = param_1;
 #endif
 }
+#endif
 
 // ASM
 // range: [min..max]
@@ -58,6 +52,7 @@ int ULTIMA_2092_RandomRange(int param_1, int param_2) // inclusive_min, inclusiv
 #endif
 }
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 // some busy-wait delay?
 void ULTIMA_20c8_SomeDelay(int param_1, int param_2)
@@ -101,7 +96,9 @@ void ULTIMA_20c8_SomeDelay(int param_1, int param_2)
     } while (--D_5424 != 0);
 #endif
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 void ULTIMA_20fa_WaitTicks(int a)
 {
@@ -111,19 +108,9 @@ void ULTIMA_20fa_WaitTicks(int a)
     TIME_SleepMs(a * 55); // 18.2 ticks per second
 #endif
 }
+#endif
 
-int ULTIMA_216c_strlen(char* param_1)
-{
-    int local_4;
-
-    local_4 = 0;
-    while (*param_1++ != '\0')
-    {
-        local_4++;
-    }
-    return local_4;
-}
-
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 // audio: pulse (pwm)
 // FMT debug msg: pulse_(Freq, Delay, Dura, P_Wid, P_Inc)
@@ -134,7 +121,9 @@ void ULTIMA_2192_AudioPulse(int freq, int delay, int dur, int pulseWidth, int pu
     return;
 #endif
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 // audio: white noise
 // FMT debug msg: white_noise(Rate, Dura, Limit)
@@ -145,7 +134,9 @@ void ULTIMA_223c_AudioWhiteNoise(uint rate, uint dur, uint limit)
     return;
 #endif
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 // audio: tone
 // FMT debug msg: tone(freq, dur)
@@ -164,7 +155,9 @@ void ULTIMA_22c0_AudioTone(uint freq, uint dur)
     ULTIMA_20c8_SomeDelay(1, dur);
     ULTIMA_230e_PcspkOff();
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // STUB (asm)
 // FMT: dummy
 void ULTIMA_22e2_PcspkOn(uint freq)
@@ -175,7 +168,9 @@ void ULTIMA_22e2_PcspkOn(uint freq)
         // NOTE / REF: https://fragglet.github.io/dos-help-files/alang.hlp/x_at_L848b.html
     }
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // STUB (asm)
 // FMT: dummy
 void ULTIMA_230e_PcspkOff(void)
@@ -183,6 +178,7 @@ void ULTIMA_230e_PcspkOff(void)
     // speaker off
     // NOTE / REF: https://fragglet.github.io/dos-help-files/alang.hlp/x_at_L848b.html
 }
+#endif
 
 void FAR ULTIMA_2320_NoDiskSwapMessage(void)
 {

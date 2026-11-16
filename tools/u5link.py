@@ -269,9 +269,23 @@ def gather(lk):
             m = Module(n, omf.Object(have[n]), 'ovl', ovl)
             m.cfile = f
             lk.add(m)
-        elif kind == 'root' and f == 'ultima.c':
-            m = Module(n, omf.Object(have[n]), 'root')
-            m.addr, m.cfile = 0, f
+        elif kind == 'root':
+            obj = omf.Object(have[n])
+            seg = lk.code_segment(obj)
+            if not seg:
+                continue                  # all of it is assembly in the original (src/asm)
+            # placed so that its functions land at the addresses their names give (main: 0)
+            base = None
+            for pn, off in sorted(seg.publics.items(), key=lambda kv: kv[1]):
+                a = ('code', 0) if pn.upper() == '_MAIN' else u5.name_address(pn)
+                if a and a[0] == 'code':
+                    base = a[1] - off
+                    break
+            if base is None:
+                lk.notes.append('%s: no function with an address; not placed' % f)
+                continue
+            m = Module(n, obj, 'root')
+            m.addr, m.cfile = base, f
             lk.add(m)
     # the runtime library modules, where tools/libmatch.py finds them
     img = lk.orig_img

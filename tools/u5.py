@@ -44,6 +44,8 @@ MODULES = {o.lower() + '.c': ('ovl', o) for o in OVERLAYS}
 MODULES['flames.c'] = ('ovl', 'FLAMES')
 MODULES.update({'%d000.c' % i: ('root', None) for i in range(8)})
 MODULES['ultima.c'] = ('root', None)
+# the small C modules between the resident assembly modules (named by their CS address)
+MODULES.update({n + '.c': ('root', None) for n in ('r0d72', 'r1850', 'r1b38', 'r1dda', 'r1fa0', 'r216c')})
 MODULES['vars.c'] = ('data', None)
 
 EXE_HEADER = 0x800  # 0x80 paragraphs

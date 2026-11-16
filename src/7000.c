@@ -74,6 +74,7 @@ void ULTIMA_70a6(void)
     }
 }
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // NOT MATCHING: driver
 void ULTIMA_71aa(void)
 {
@@ -82,7 +83,9 @@ void ULTIMA_71aa(void)
     byte bh = D_5881;
     DRV_6c(ax, bl, bh);
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // NOT MATCHING: driver
 void ULTIMA_71ca_DRV_27_ScrollTextWindow1(int param_1, int param_2, int param_3, int param_4, int param_5)
 {
@@ -99,7 +102,9 @@ void ULTIMA_71ca_DRV_27_ScrollTextWindow1(int param_1, int param_2, int param_3,
     // scroll text window
     DRV_27(param_1, param_2, param_3, param_4, -param_5);
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // NOT MATCHING: driver
 void ULTIMA_7200_DRV_27_ScrollTextWindow2(int param_1, int param_2, int param_3, int param_4, int param_5)
 {
@@ -116,7 +121,9 @@ void ULTIMA_7200_DRV_27_ScrollTextWindow2(int param_1, int param_2, int param_3,
     // scroll text window
     DRV_27(param_1, param_2, param_3, param_4, param_5);
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // STUB
 int ULTIMA_7234_ReadFile(char* fileName, void* addr, u16 size, u16 offset)
 {
@@ -131,7 +138,9 @@ int ULTIMA_7234_ReadFile(char* fileName, void* addr, u16 size, u16 offset)
 
     return 1;
 }
+#endif
 
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // STUB
 int ULTIMA_7296_WriteFile(char* fileName, void* addr, u16 size)
 {
@@ -146,5 +155,6 @@ int ULTIMA_7296_WriteFile(char* fileName, void* addr, u16 size)
 
     return 1;
 }
+#endif
 
 // ULTIMA:1000 MAX: < ULTIMA_7296

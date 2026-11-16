@@ -74,7 +74,9 @@ L_1f01:
 L_1f10:
 	stc
 	ret
-L_1f12:
+
+	PUBLIC	ULTIMA_1F12_GETCURRENTTEXTX
+ULTIMA_1F12_GETCURRENTTEXTX:
 	push bp
 	mov bp,sp
 	push si
