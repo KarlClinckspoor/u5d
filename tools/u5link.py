@@ -34,6 +34,11 @@ import asmgen  # noqa: E402
 OBJ = os.path.join(u5.BUILD, 'obj')
 OUT = os.path.join(u5.BUILD, 'out')
 ROOT_END = 0x86f0
+# Runtime data segments no code refers to and whose bytes are not unique, measured: the
+# message table's terminators. PAD is a COMMON segment (every module's 'ff ff' overlaid),
+# followed by EPAD. crt0's STACK lies beyond DGROUP and is not part of DATA.OVL.
+FIXED_DATA = {'PAD': 0xa520, 'EPAD': 0xa522}
+SKIP_SEGMENTS = {'STACK', '_BSS', 'c_common'}
 
 
 class Module:
@@ -83,6 +88,8 @@ class Linker:
                     m.data = dict(mm.data_base)
                 except Exception as e:                       # noqa: BLE001
                     self.notes.append('%s: no data placement (%s)' % (m.name, e))
+            elif m.kind in ('lib', 'asm') and m.code:
+                m.data = self.place_data_by_code(m)
         for m in self.modules:
             if not m.code:
                 continue
@@ -94,6 +101,35 @@ class Linker:
                 if s:
                     for n, off in s.publics.items():
                         self.publics.setdefault(n, ('data', dsbase + off, m))
+
+    def place_data_by_code(self, m):
+        """For a module whose code is the original's byte for byte (library, assembly): each
+        reference from its code into one of its own data segments shows, in the original,
+        where that segment starts. Segments no code refers to are found by their bytes."""
+        import libmatch
+        seg, base = m.code
+        votes = {}
+        for fx in seg.fixups:
+            kind, name = fx.target
+            if fx.self_rel or fx.kind != omf.LOC_OFFSET or kind != 'seg' or name == seg.name:
+                continue
+            s = m.obj.seg(name)
+            if not s or s.cls == 'CODE':
+                continue
+            w = struct.unpack_from('<H', self.orig_img, base + fx.loc)[0]
+            b = (w - fx.disp - struct.unpack_from('<H', seg.data, fx.loc)[0]) & 0xffff
+            votes.setdefault(name, {}).setdefault(b, 0)
+            votes[name][b] += 1
+        out = {n: max(v, key=v.get) for n, v in votes.items()}
+        for n, at in FIXED_DATA.items():
+            if m.obj.seg(n) and n not in out:
+                out[n] = at
+        for s in m.obj.segs[1:]:
+            if s.cls != 'CODE' and s.length and s.name not in out and any(s.data):
+                at = libmatch.find(self.ds_orig, s)
+                if len(at) == 1:
+                    out[s.name] = at[0]
+        return out
 
     # -- resolution
     def resolve(self, name, src):
@@ -194,7 +230,7 @@ class Linker:
                     self.apply(m, seg, base, root, 0)
             for sname, dsbase in m.data.items():
                 s = m.obj.seg(sname)
-                if s and s.length and sname != '_BSS':
+                if s and s.length and sname not in SKIP_SEGMENTS:
                     self.apply(m, s, dsbase, dgroup, 0, data_seg=True)
         return root, overlays, dgroup
 
