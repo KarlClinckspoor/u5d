@@ -1073,8 +1073,9 @@ static int INTRO_1016_ConvertU4Savegame(void)
     D_a9bd[1] = 1;
     D_a9bd[0] = 4;
 
-    D_a9cc = ULTIMA_16a6_GetDefaultDrive(); // NOT MATCHING
-
+    D_a9c8[D_a9bd[0]] = ULTIMA_16a6_GetDefaultDrive();
+    // the label keeps MSC from folding local_10_ad = 8 into the call, as the original doesn't
+L_1048:
     ULTIMA_256e_ReadFileFromDisk(/*0x3278*/ "party.sav", &D_bc88, 0x28, local_10_ad);
 
     if (D_bc88.str > 0x46 || D_bc88.dex > 0x46 || D_bc88.intel > 0x46 || D_bc88.exp > 9999 || D_bc88.hp > 9999 ||
