@@ -155,7 +155,7 @@ static int TALK_01e2(void)
 {
     int local_16_an;
     int local_14;
-    char local_12[0xf];
+    char local_12_aa[0xf];
 
     if (D_5893_map_id != 0x12)
     {
@@ -230,11 +230,11 @@ static int TALK_01e2(void)
             ULTIMA_1850_PrintString(_TEXT(0x90fc, "Give now the\npassword, bearer\nof the Badge!"));
             ULTIMA_16ba_PrintChar('\"');
             ULTIMA_1850_PrintString(_TEXT(0x9128, "\n\nYour response?\n"));
-            ULTIMA_3b1c_GetString(local_12, 0xe);
+            ULTIMA_3b1c_GetString(local_12_aa, 0xe);
             ULTIMA_16ba_PrintChar('\n');
-            local_12[4] = 0;
+            local_12_aa[4] = 0;
 
-            if (TALK_0000_CompareStringNoCase(D_4a9a, local_12) != 0)
+            if (TALK_0000_CompareStringNoCase(D_4a9a, local_12_aa) != 0)
             {
                 // 02f2
                 ULTIMA_16ba_PrintChar('\n');
@@ -256,7 +256,7 @@ static int TALK_01e2(void)
 // talk to npc
 int TALK_031e_TalkToNpc(int param_1)
 {
-    int local_4;
+    int local_4_aa;
     NpcFmt* local_6;
     NpcScheduleFmt* local_8;
 
@@ -277,8 +277,8 @@ int TALK_031e_TalkToNpc(int param_1)
         return 0;
     }
 
-    local_4 = local_6->_a;
-    if (local_4 == 0)
+    local_4_aa = local_6->_a;
+    if (local_4_aa == 0)
     {
         ULTIMA_1850_PrintString(_TEXT(0x9168, "No response!\n"));
         return 0;
@@ -286,13 +286,13 @@ int TALK_031e_TalkToNpc(int param_1)
     else
     {
         // c316
-        if (local_4 < 0x80)
+        if (local_4_aa < 0x80)
         {
-            TALK_127e_StartTalk(local_4);
+            TALK_127e_StartTalk(local_4_aa);
             return 0;
         }
 
-        if (local_4 == 0xfd)
+        if (local_4_aa == 0xfd)
         {
             ULTIMA_16ba_PrintChar('\"');
             ULTIMA_1850_PrintString(_TEXT(0x9176, "Don't hurt me!\nPlease go away!"));
@@ -302,7 +302,7 @@ int TALK_031e_TalkToNpc(int param_1)
         }
 
         // c34c
-        if (local_4 == 0xfe)
+        if (local_4_aa == 0xfe)
         {
 #if !defined(MATCHING_BUILD)
             TOWN_10da(param_1); // TODO: validate param (reference apple?)
@@ -312,14 +312,14 @@ int TALK_031e_TalkToNpc(int param_1)
             return 0;
         }
 
-        if (local_4 == 0xff)
+        if (local_4_aa == 0xff)
         {
             return TALK_01e2();
         }
 
         if ((local_6->_e & 1) != 0 && (NPC_12e0(D_bcdc, D_587f) & 1) != 0)
         {
-            TALK_00e6_TalkToMerchant(local_4);
+            TALK_00e6_TalkToMerchant(local_4_aa);
             return 0;
         }
         else
@@ -685,14 +685,14 @@ static void TALK_07e4_PrintAvatarName(void)
 // CHECKED
 static int TALK_080a_Join(void)
 {
-    int local_30_ab; // 30..2f
-    byte* local_2e_an;   // 2e..2d
-    char local_2c[4]; // 2c..29
+    int local_30_a; // 30..2f
+    byte* local_2e_ab;   // 2e..2d
+    char local_2c_ad[4]; // 2c..29
     S_55a8 local_28;  // 28..09 (size: 0x20)
     char local_8[4];  // 08..05
     int local_4_ab;      // 04..03
 
-    local_2e_an = D_bcde;
+    local_2e_ab = D_bcde;
     local_4_ab = 0xf;
 
     if (D_585b == 6)
@@ -706,26 +706,26 @@ static int TALK_080a_Join(void)
 
     TALK_075a_SelectNthTalkString(0);
 
-    local_30_ab = 0;
+    local_30_a = 0;
 
     // 3 bytes
     memcpy(local_8, D_bcde, 3);
-    local_30_ab += 3;
+    local_30_a += 3;
     D_bcde += 3;
 
     local_8[3] = 0;
-    local_2c[3] = 0;
+    local_2c_ad[3] = 0;
 
     // c7e6
     while (1)
     {
         // 3 bytes
-        memcpy(local_2c, D_55a8_party[local_4_ab].name, 3);
+        memcpy(local_2c_ad, D_55a8_party[local_4_ab].name, 3);
 
         // c805
-        if (TALK_0000_CompareStringNoCase(local_8, local_2c) != 0)
+        if (TALK_0000_CompareStringNoCase(local_8, local_2c_ad) != 0)
         {
-            // local_30_ab = DI;
+            // local_30_a = DI;
             break;
         }
 
@@ -735,8 +735,8 @@ static int TALK_080a_Join(void)
             TALK_0574_BuildOrPrintWord(0x22);
             TALK_0574_BuildOrPrintWord(10);
             ULTIMA_1850_PrintString(_TEXT(0x93a8, "\nSystem Error -\nNo Match!"));
-            D_bcde = local_2e_an;
-            // local_30_ab = DI;
+            D_bcde = local_2e_ab;
+            // local_30_a = DI;
 
             // -> c8b3
             return 1;
@@ -758,7 +758,7 @@ static int TALK_080a_Join(void)
     ULTIMA_2900_UpdateVitalsDisplay();
     TALK_04e2_PrintWord();
 
-    D_bcde = local_2e_an;
+    D_bcde = local_2e_ab;
 
     return 1;
 }
@@ -1203,7 +1203,7 @@ static int TALK_0dbe(byte param_1)
 // CHECKED
 static void TALK_0e78_AskName(void)
 {
-    int local_e;
+    int local_e_am;
     int local_c;
     int local_a;
     char local_8[5];
@@ -1232,8 +1232,8 @@ static void TALK_0e78_AskName(void)
 
             local_8[4] = 0;
 
-            local_e = ULTIMA_6f1e(local_8, D_bcf8);
-            if (local_e != -1 && (local_e == 0 || (D_bcf8[local_e - 1] == ' ')))
+            local_e_am = ULTIMA_6f1e(local_8, D_bcf8);
+            if (local_e_am != -1 && (local_e_am == 0 || (D_bcf8[local_e_am - 1] == ' ')))
             {
                 TALK_0d42(D_bcdc);
                 ULTIMA_1850_PrintString(_TEXT(0x94a0, "\n\n\"A pleasure!"));

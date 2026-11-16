@@ -16,14 +16,14 @@
 
 void ULTIMA_1fa0_Backspace(int char_count)
 {
-    u16 local_4;
-    TextWindow* local_6;
-    int local_8;
     int local_a;
+    int local_8;
+    TextWindow* local_6;
+    u16 local_4_ab;
 
     if ((ULTIMA_1f12_GetCurrentTextX() != 0 || ULTIMA_1cee_GetCurrentTextY() != 0) && char_count != 0)
     {
-        local_4 = D_538e;
+        local_4_ab = D_538e;
         local_6 = &D_535e_textWindows[D_5386_current_text_window_idx];
         D_538e = 0;
 
@@ -41,7 +41,7 @@ void ULTIMA_1fa0_Backspace(int char_count)
             }
         }
 
-        D_538e = local_4;
+        D_538e = local_4_ab;
     }
 }
 

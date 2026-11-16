@@ -717,14 +717,14 @@ void ULTIMA_3b1c_GetString(char* param_1, int param_2)
 
 int ULTIMA_3b9e(int param_1_maxLen)
 {
-    int local_10_ad;
-    uint local_e;
+    int local_10_aa;
+    uint local_e_am;
     int local_c;
     int local_a;
     byte local_8[6];
 
     local_c = 0;
-    local_10_ad = 0;
+    local_10_aa = 0;
     local_a = 0;
     if (param_1_maxLen > 5)
     {
@@ -733,36 +733,36 @@ int ULTIMA_3b9e(int param_1_maxLen)
 
     do
     {
-        local_e = ULTIMA_266c_GetChar();
-        if (local_e >= '0' && local_e <= '9')
+        local_e_am = ULTIMA_266c_GetChar();
+        if (local_e_am >= '0' && local_e_am <= '9')
         {
             if (local_c < param_1_maxLen)
             {
-                local_8[local_c] = local_e;
+                local_8[local_c] = local_e_am;
                 local_c++;
-                ULTIMA_16ba_PrintChar(local_e);
+                ULTIMA_16ba_PrintChar(local_e_am);
             }
         }
         else
         {
-            if (((int)local_e == U5_KEY_MINUS || (int)local_e == U5_KEY_PLUS) && local_c == 0)
+            if (((int)local_e_am == U5_KEY_MINUS || (int)local_e_am == U5_KEY_PLUS) && local_c == 0)
             {
-                local_8[local_c] = local_e;
+                local_8[local_c] = local_e_am;
                 local_c++;
-                ULTIMA_16ba_PrintChar(local_e);
+                ULTIMA_16ba_PrintChar(local_e_am);
             }
-            else if ((local_e == U5_KEY_BACKSPACE || local_e == U5_KEY_LEFT) && local_c != 0)
+            else if ((local_e_am == U5_KEY_BACKSPACE || local_e_am == U5_KEY_LEFT) && local_c != 0)
             {
                 local_c--;
                 ULTIMA_1fa0_Backspace(1);
             }
-            else if (local_e == U5_KEY_ESC && local_c != 0)
+            else if (local_e_am == U5_KEY_ESC && local_c != 0)
             {
                 ULTIMA_1fa0_Backspace(local_c);
                 local_c = 0;
             }
         }
-    } while (local_e != U5_KEY_ENTER);
+    } while (local_e_am != U5_KEY_ENTER);
 
 #if !defined(MATCHING_BUILD)
     if (local_c == 0)
@@ -773,20 +773,20 @@ int ULTIMA_3b9e(int param_1_maxLen)
 
     while (--local_c > 0)
     {
-        local_10_ad += (local_8[local_c] - 0x30) * D_6a0a[local_a];
+        local_10_aa += (local_8[local_c] - 0x30) * D_6a0a[local_a];
         local_a++;
     }
 
     if (local_8[0] == U5_KEY_MINUS)
     {
-        local_10_ad = -local_10_ad;
+        local_10_aa = -local_10_aa;
     }
     else if (local_8[0] >= 0x30)
     {
-        local_10_ad += D_6a0a[local_a] * (local_8[0] - 0x30);
+        local_10_aa += D_6a0a[local_a] * (local_8[0] - 0x30);
     }
 
-    return local_10_ad;
+    return local_10_aa;
 }
 
 void DNGLOOK_109e(void); // NOTE: SIC
@@ -796,20 +796,20 @@ int MAINOUT_1a60(void);
 // hole up from outside
 static void ULTIMA_3c9a_HoleUpCmd(void)
 {
-    int local_10_ad;
-    byte local_e;
+    int local_10_aa;
+    byte local_e_am;
     int local_c;
     ActorFmt* local_a;
     int local_8;
     int local_6;
-    byte local_4;
+    byte local_4_aa;
 
     local_a = &D_5c5a[0];
-    local_e = D_5c5a[0]._1_animTile;
+    local_e_am = D_5c5a[0]._1_animTile;
 
     ULTIMA_1850_PrintString(_TEXT(0xa2c2, "Hole up & "));
 
-    if ((local_e & 0xf8) == TILE_ACTOR_FRIGATE_20)
+    if ((local_e_am & 0xf8) == TILE_ACTOR_FRIGATE_20)
     {
         ULTIMA_1850_PrintString(_TEXT(0xa2ce, "\nrepair...\n\n"));
 
@@ -852,10 +852,10 @@ static void ULTIMA_3c9a_HoleUpCmd(void)
 
         if (D_5893_map_id < 0x21)
         {
-            local_e = *ULTIMA_4402_GetTileAddr(D_5896_map_x, D_5897_map_y);
+            local_e_am = *ULTIMA_4402_GetTileAddr(D_5896_map_x, D_5897_map_y);
         }
 
-        if (D_5893_map_id < 0x21 && local_e != 0 && local_e < 4)
+        if (D_5893_map_id < 0x21 && local_e_am != 0 && local_e_am < 4)
         {
             ULTIMA_1850_PrintString(_TEXT(0xa30e, "On land or ship!\n\n"));
         }
@@ -869,19 +869,19 @@ static void ULTIMA_3c9a_HoleUpCmd(void)
             {
                 ULTIMA_1850_PrintString(_TEXT(0xa32c, "For how many hours? (1-9) "));
 
-                while ((local_4 = ULTIMA_266c_GetChar()) != U5_KEY_SPACE && (local_4 < 0x30 || local_4 > 0x39))
+                while ((local_4_aa = ULTIMA_266c_GetChar()) != U5_KEY_SPACE && (local_4_aa < 0x30 || local_4_aa > 0x39))
                 {
                 }
 
-                ULTIMA_16ba_PrintChar(local_4);
+                ULTIMA_16ba_PrintChar(local_4_aa);
                 ULTIMA_16ba_PrintChar('\n');
 
-                if (local_4 == U5_KEY_SPACE || local_4 == 0x30)
+                if (local_4_aa == U5_KEY_SPACE || local_4_aa == 0x30)
                 {
                     return;
                 }
 
-                local_10_ad = local_4 - 0x30;
+                local_10_aa = local_4_aa - 0x30;
 
                 local_6 = 0;
                 for (local_c = 0; local_c != D_585b; local_c++)
@@ -896,11 +896,11 @@ static void ULTIMA_3c9a_HoleUpCmd(void)
                 {
                     ULTIMA_1850_PrintString(_TEXT(0xa348, "\nWilt thou set a watch? "));
 
-                    while ((local_4 = ULTIMA_266c_GetChar()) != 'Y' && local_4 != 'N')
+                    while ((local_4_aa = ULTIMA_266c_GetChar()) != 'Y' && local_4_aa != 'N')
                     {
                     }
 
-                    if (local_4 == 'N')
+                    if (local_4_aa == 'N')
                     {
                         ULTIMA_1850_PrintString(_TEXT(0xa362, "No\n\n"));
                         local_8 = -1;
@@ -928,7 +928,7 @@ static void ULTIMA_3c9a_HoleUpCmd(void)
                     D_58a1 = 6;
                     DNGLOOK_1130();
                     DNGLOOK_0d3e();
-                    ULTIMA_5f86_SpecialMapHandler(D_58a1, local_8, local_10_ad);
+                    ULTIMA_5f86_SpecialMapHandler(D_58a1, local_8, local_10_aa);
                     ULTIMA_251e_SwitchDisks(2);
                     DNGLOOK_109e(); // NOTE: sic (bug?)
 
@@ -938,7 +938,7 @@ static void ULTIMA_3c9a_HoleUpCmd(void)
                 }
                 else
                 {
-                    ULTIMA_6360_Camping(local_8, local_10_ad);
+                    ULTIMA_6360_Camping(local_8, local_10_aa);
                 }
             }
         }

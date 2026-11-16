@@ -72,18 +72,18 @@ int ULTIMA_4080(int param_1)
 // CHECKED
 void ULTIMA_4102_AudioPlayAmbientSfx(void)
 {
-    int local_16_an;
-	int local_14;
-	int local_12_ab;
-	int local_10_ad;
-	int local_e;
+    int local_16_ak;
+	int local_14_am;
+	int local_12_a;
+	int local_10_aa;
+	int local_e_am;
 	int local_c;
 	int local_a;
 	int local_8;
 	int local_6;
 	int local_4_ab;
 
-	local_e = 0;
+	local_e_am = 0;
 	local_4_ab = 0x33;
 
 	if (D_5893_map_id < 0x80)
@@ -96,30 +96,30 @@ void ULTIMA_4102_AudioPlayAmbientSfx(void)
 		local_8 = local_a = 5;
 	}
 
-    for (local_c = local_8 - 5, local_12_ab = 0; local_c < local_8 + 6; local_c++, local_12_ab++)
+    for (local_c = local_8 - 5, local_12_a = 0; local_c < local_8 + 6; local_c++, local_12_a++)
 	{
-        for (local_10_ad = local_a - 5, local_16_an = 0; local_10_ad < local_a + 6; local_10_ad++, local_16_an++)
+        for (local_10_aa = local_a - 5, local_16_ak = 0; local_10_aa < local_a + 6; local_10_aa++, local_16_ak++)
 		{
-			local_6 = (local_10_ad - local_a) * (local_10_ad - local_a) + (local_c - local_8) * (local_c - local_8);
+			local_6 = (local_10_aa - local_a) * (local_10_aa - local_a) + (local_c - local_8) * (local_c - local_8);
 			if (local_6 < local_4_ab)
 			{
-				local_14 = *ULTIMA_4402_GetTileAddr(local_c, local_10_ad);
-				if ((local_14 & 0xfe) == TILE_MAP_CLOCK)
+				local_14_am = *ULTIMA_4402_GetTileAddr(local_c, local_10_aa);
+				if ((local_14_am & 0xfe) == TILE_MAP_CLOCK)
 				{
-					local_e = 1;
+					local_e_am = 1;
 				}
-				else if ((local_14 & 0xfc) == TILE_MAP_WATERFALL)
+				else if ((local_14_am & 0xfc) == TILE_MAP_WATERFALL)
 				{
-					local_e = 2;
+					local_e_am = 2;
 				}
-				else if ((local_14 & 0xfc) == TILE_MAP_FOUNTAIN)
+				else if ((local_14_am & 0xfc) == TILE_MAP_FOUNTAIN)
 				{
-					local_e = 3;
+					local_e_am = 3;
 				}
-                else if (GetMapViewport(local_12_ab, local_16_an) == 0 && (GetActorMap(local_12_ab, local_16_an) & 0xfc) == TILE_ACTOR_BARD)
+                else if (GetMapViewport(local_12_a, local_16_ak) == 0 && (GetActorMap(local_12_a, local_16_ak) & 0xfc) == TILE_ACTOR_BARD)
 				{
 					// BGM/NOTE: no jingle when bgm is activated
-					local_e = 4;
+					local_e_am = 4;
 				}
 				else
 				{
@@ -131,7 +131,7 @@ void ULTIMA_4102_AudioPlayAmbientSfx(void)
 		}
 	}
 
-	switch (local_e)
+	switch (local_e_am)
 	{
     case 1:
 		// clock
@@ -339,29 +339,29 @@ static void ULTIMA_44b8_AnimateTiles(void)
 // animate_actors
 void ULTIMA_4552_AnimateActors(void)
 {
-	int local_14;
-	int local_10_ad;
-	int local_e;
+	int local_14_am;
+	byte* local_12;
+	int local_10_aa;
+	int local_e_am;
 	int local_c;
 	bool local_a;
+	ActorFmt* local_8;
 	int local_6;
 	int local_4_ab;
-	ActorFmt* local_8;
-	byte* local_12;
 
-	for (local_10_ad = 0; local_10_ad < 0x20; local_10_ad++)
+	for (local_10_aa = 0; local_10_aa < 0x20; local_10_aa++)
 	{
-		local_8 = &D_5c5a[local_10_ad];
+		local_8 = &D_5c5a[local_10_aa];
 		if (local_8->_0_tile == 0)
 		{
 			continue;
 		}
 
         local_c = local_8->_6 & 0xf;
-        local_14 = local_8->_6 >> 4;
+        local_14_am = local_8->_6 >> 4;
         local_4_ab = local_8->_0_tile & 0xfc;
-        local_e = D_1b18[((local_4_ab - 0x34) >> 2) + 0xb0];
-		local_12 = &D_1b18[local_e * 0x10];
+        local_e_am = D_1b18[((local_4_ab - 0x34) >> 2) + 0xb0];
+		local_12 = &D_1b18[local_e_am * 0x10];
 
 		if (local_c == 0xf)
 		{
@@ -396,7 +396,7 @@ void ULTIMA_4552_AnimateActors(void)
         local_a = 0;
         do
         {
-            local_6 = local_12[local_14];
+            local_6 = local_12[local_14_am];
             switch (local_6)
             {
             case 1:
@@ -404,7 +404,7 @@ void ULTIMA_4552_AnimateActors(void)
             case 3:
             case 4:
                 local_8->_1_animTile = local_4_ab + local_6 - 1;
-                local_14++;
+                local_14_am++;
                 local_a = 1;
                 break;
 
@@ -414,7 +414,7 @@ void ULTIMA_4552_AnimateActors(void)
                     local_8->_1_animTile = local_8->_0_tile;
                     if (local_4_ab == 0x5c)
                     {
-                        local_14++;
+                        local_14_am++;
                         local_a = 1;
                         break;
                     }
@@ -424,34 +424,34 @@ void ULTIMA_4552_AnimateActors(void)
                     break;
                 }
 
-                local_14++;
+                local_14_am++;
                 break;
 
             case 6:
                 if (ULTIMA_2092_RandomRange(0, 0xff) >= 0xc0)
                 {
-                    local_14++;
+                    local_14_am++;
                     break;
                 }
-                local_14 = 0;
+                local_14_am = 0;
                 break;
 
             case 0:
-                local_14 = 0;
+                local_14_am = 0;
                 break;
 
             case 7:
-                local_14 = 2;
+                local_14_am = 2;
                 break;
 
             default:
                 local_c = local_6 + 0x80;
-                local_14++;
+                local_14_am++;
                 local_a = 1;
                 break;
             }
 
-            local_8->_6 = local_14 * 0x10 + local_c;
+            local_8->_6 = local_14_am * 0x10 + local_c;
         } while (!local_a);
     }
 
@@ -694,7 +694,7 @@ void ULTIMA_4a84(void)
 	u16 local_16_an;
 	int local_14;
 	byte local_12_aa[12 + 1];
-	int local_4;
+	int local_4_aa;
 
 	if (D_5893_map_id < 0x21)
 	{
@@ -710,38 +710,38 @@ void ULTIMA_4a84(void)
 		ULTIMA_1c9e_SelectCharset(1);
 
 		// 4ac3
-		local_4 = -((int)D_587f - 17);
-		if (local_4 < 12 && local_4 >= 0)
+		local_4_aa = -((int)D_587f - 17);
+		if (local_4_aa < 12 && local_4_aa >= 0)
 		{
-			local_12_aa[local_4] = 0x2a;
+			local_12_aa[local_4_aa] = 0x2a;
 		}
 
 		// 4adf
 		D_5885 = D_1eda[(D_587e - 1) * 2];
-		local_4 = -(D_587f - 8);
-		if (local_4 < -12)
+		local_4_aa = -(D_587f - 8);
+		if (local_4_aa < -12)
 		{
-			local_4 += 24;
+			local_4_aa += 24;
 		}
 
 		// 4b04
-		if (local_4 < 12 && local_4 >= 0)
+		if (local_4_aa < 12 && local_4_aa >= 0)
 		{
-			local_12_aa[local_4] = D_5885;
+			local_12_aa[local_4_aa] = D_5885;
 		}
 
 		// 4b19
 		D_5886 = D_1eda[(D_587e - 1) * 2 + 1];
-		local_4 = -(D_587f - 2);
-		if (local_4 < -12)
+		local_4_aa = -(D_587f - 2);
+		if (local_4_aa < -12)
 		{
-			local_4 += 24;
+			local_4_aa += 24;
 		}
 
 		// 4b3e
-		if (local_4 < 12 && local_4 >= 0)
+		if (local_4_aa < 12 && local_4_aa >= 0)
 		{
-			local_12_aa[local_4] = D_5886;
+			local_12_aa[local_4_aa] = D_5886;
 		}
 
 		// 4b53
@@ -803,23 +803,23 @@ void ULTIMA_4be8(void)
 // print >
 void ULTIMA_4c2a(void)
 {
-	TextWindow* win;
+	int local_8_al;
+	int local_6_an;
 	int local_4;
-	int local_6;
-	int local_8;
+	TextWindow* win;
 
 	win = &D_535e_textWindows[D_5386_current_text_window_idx];
 
-	local_6 = ((uint)win->left + ULTIMA_1f12_GetCurrentTextX()) * 8;
-	local_8 = ((uint)win->top + ULTIMA_1cee_GetCurrentTextY()) * 8;
+	local_6_an = ((uint)win->left + ULTIMA_1f12_GetCurrentTextX()) * 8;
+	local_8_al = ((uint)win->top + ULTIMA_1cee_GetCurrentTextY()) * 8;
 
 	local_4 = (uint)win->colors;
 	ULTIMA_1cca_SetTextForegroundColor(D_13b2_blueColor);
 	ULTIMA_1f26_SetTextBackgroundColor(0);
 	ULTIMA_16ba_PrintChar(2);
 	ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
-	ULTIMA_0b10_GRAP_Line(local_6, local_8, local_6 + 5, local_8 + 3);
-	ULTIMA_0b10_GRAP_Line(local_6 + 5, local_8 + 4, local_6, local_8 + 7);
+	ULTIMA_0b10_GRAP_Line(local_6_an, local_8_al, local_6_an + 5, local_8_al + 3);
+	ULTIMA_0b10_GRAP_Line(local_6_an + 5, local_8_al + 4, local_6_an, local_8_al + 7);
 	ULTIMA_1cca_SetTextForegroundColor(local_4 & 0xf);
 	ULTIMA_1f26_SetTextBackgroundColor(local_4 >> 4);
 }
@@ -827,23 +827,23 @@ void ULTIMA_4c2a(void)
 // print <
 void ULTIMA_4cce(void)
 {
-	TextWindow* win;
+	int local_8_al;
+	int local_6_an;
 	int local_4;
-	int local_6;
-	int local_8;
+	TextWindow* win;
 
 	win = &D_535e_textWindows[D_5386_current_text_window_idx];
 
-	local_6 = ((uint)win->left + ULTIMA_1f12_GetCurrentTextX()) * 8;
-	local_8 = ((uint)win->top + ULTIMA_1cee_GetCurrentTextY()) * 8;
+	local_6_an = ((uint)win->left + ULTIMA_1f12_GetCurrentTextX()) * 8;
+	local_8_al = ((uint)win->top + ULTIMA_1cee_GetCurrentTextY()) * 8;
 
 	local_4 = (uint)win->colors;
 	ULTIMA_1cca_SetTextForegroundColor(D_13b2_blueColor);
 	ULTIMA_1f26_SetTextBackgroundColor(0);
 	ULTIMA_16ba_PrintChar(1);
 	ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
-	ULTIMA_0b10_GRAP_Line(local_6 + 7, local_8, local_6 + 2, local_8 + 3);
-	ULTIMA_0b10_GRAP_Line(local_6 + 2, local_8 + 4, local_6 + 7, local_8 + 7);
+	ULTIMA_0b10_GRAP_Line(local_6_an + 7, local_8_al, local_6_an + 2, local_8_al + 3);
+	ULTIMA_0b10_GRAP_Line(local_6_an + 2, local_8_al + 4, local_6_an + 7, local_8_al + 7);
 	ULTIMA_1cca_SetTextForegroundColor(local_4 & 0xf);
 	ULTIMA_1f26_SetTextBackgroundColor(local_4 >> 4);
 }

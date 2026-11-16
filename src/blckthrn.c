@@ -108,19 +108,19 @@ static void BLCKTHRN_00be(byte* param_1)
 {
     int local_18_al;
     int local_16_an;
-    int local_14;
+    int local_14_ap;
     int local_12_ab;
     int local_10_ad;
-    int local_e;
-    bool local_c; // di
-    bool local_a;
-    int local_8;
+    int local_e_a;
+    bool local_c_ac; // di
+    bool local_a_ae;
+    int local_8_an;
     int local_6;
     int local_4_ab;
 
-    local_c = 1;
+    local_c_ac = 1;
     local_6 = 1; // a35c
-    local_a = 0; // -> a4ce
+    local_a_ae = 0; // -> a4ce
 
     while ((local_4_ab = *param_1++) != 0)
     {
@@ -131,7 +131,7 @@ static void BLCKTHRN_00be(byte* param_1)
             {
             case 1:
                 // a360
-                local_a = 1;
+                local_a_ae = 1;
                 break;
 
             case 2:
@@ -142,12 +142,12 @@ static void BLCKTHRN_00be(byte* param_1)
 
             case 3:
                 // a378
-                local_c = 1;
+                local_c_ac = 1;
                 break;
 
             case 4:
                 // a37e
-                local_c = 0;
+                local_c_ac = 0;
                 break;
 
             case 5:
@@ -157,10 +157,10 @@ static void BLCKTHRN_00be(byte* param_1)
 
             case 6:
                 // a396
-                local_e = *param_1++;
+                local_e_a = *param_1++;
                 local_12_ab = *param_1++;
                 local_16_an = *param_1++;
-                GetCombatMap(local_12_ab, local_16_an) = local_e;
+                GetCombatMap(local_12_ab, local_16_an) = local_e_a;
                 //param_1 += 4;
                 break;
 
@@ -177,8 +177,8 @@ static void BLCKTHRN_00be(byte* param_1)
 
             case 9:
                 // a3e0
-                local_e = *param_1++;
-                D_5c5a[local_e]._0_tile = D_5c5a[local_e]._1_animTile = 0;
+                local_e_a = *param_1++;
+                D_5c5a[local_e_a]._0_tile = D_5c5a[local_e_a]._1_animTile = 0;
                 break;
             }
 
@@ -186,38 +186,38 @@ static void BLCKTHRN_00be(byte* param_1)
         }
 
         // a41c
-        local_e = BLCKTHRN_002e(local_4_ab);
+        local_e_a = BLCKTHRN_002e(local_4_ab);
         local_12_ab = D_5876;
         local_16_an = D_5878;
-        if (local_a)
+        if (local_a_ae)
         {
             local_10_ad = BLCKTHRN_002e(*param_1++);
-            local_14 = D_5876;
+            local_14_ap = D_5876;
             local_18_al = D_5878;
         }
 
         // a454 ->
-        local_8 = 0;
+        local_8_an = 0;
         for (; local_6 > 0; local_6--)
         {
             // a495
-            D_5c5a[local_e]._2_x += local_12_ab;
-            D_5c5a[local_e]._3_y += local_16_an;
-            if (local_a)
+            D_5c5a[local_e_a]._2_x += local_12_ab;
+            D_5c5a[local_e_a]._3_y += local_16_an;
+            if (local_a_ae)
             {
-                D_5c5a[local_10_ad]._2_x += local_14;
+                D_5c5a[local_10_ad]._2_x += local_14_ap;
                 D_5c5a[local_10_ad]._3_y += local_18_al;
             }
 
-            if (local_c)
+            if (local_c_ac)
             {
                 BLCKTHRN_0000(1);
             }
-            local_8++;
+            local_8_an++;
         }
 
         local_6 = 1; // a4c9
-        local_a = 0; // a4ce
+        local_a_ae = 0; // a4ce
     }
 }
 
@@ -285,9 +285,9 @@ static int BLCKTHRN_02ea(int param_1)
 // CHECKED
 static void BLCKTHRN_03ae(int param_1)
 {
-    int local_24;
-    int local_26;
     int local_28;
+    int local_26;
+    int local_24_aa;
     S_55a8 local_22_ab;
 
     if (param_1 != 0)
@@ -301,14 +301,14 @@ static void BLCKTHRN_03ae(int param_1)
 
     ULTIMA_3ae6(10);
 
-    for (local_24 = 2000; local_24 < 25000; local_24 += 0x32)
+    for (local_24_aa = 2000; local_24_aa < 25000; local_24_aa += 0x32)
     {
-        ULTIMA_2192_AudioPulse(0xa50, 1, 200, local_24, 0);
+        ULTIMA_2192_AudioPulse(0xa50, 1, 200, local_24_aa, 0);
     }
 
-    for (local_24 = 25000; 2000 < local_24; local_24 -= 0x32)
+    for (local_24_aa = 25000; 2000 < local_24_aa; local_24_aa -= 0x32)
     {
-        ULTIMA_2192_AudioPulse(0xa50, 1, 200, local_24, 0);
+        ULTIMA_2192_AudioPulse(0xa50, 1, 200, local_24_aa, 0);
     }
 
     ULTIMA_3522(D_5c5a[1]._2_x, D_5c5a[1]._3_y);
@@ -331,10 +331,10 @@ static void BLCKTHRN_03ae(int param_1)
     local_22_ab = D_55a8_party[local_28];
 
     // NOT MATCHING
-    for (local_24 = local_28; local_24 < 0xf; local_24++)
+    for (local_24_aa = local_28; local_24_aa < 0xf; local_24_aa++)
     {
         // a73b
-        D_55a8_party[local_24] = D_55a8_party[local_24 + 1];
+        D_55a8_party[local_24_aa] = D_55a8_party[local_24_aa + 1];
     }
 
     // a752
@@ -438,8 +438,8 @@ static void BLCKTHRN_054a(int param_1, int param_2)
 
 void BLCKTHRN_060e_Capture(void)
 {
-    int local_10_ad;
-    int local_e;
+    int local_10_a;
+    int local_e_ae;
     int local_c_h;
     int local_a_i;
     int local_8;
@@ -468,7 +468,7 @@ void BLCKTHRN_060e_Capture(void)
 
     if (local_c_h < 8)
     {
-        local_10_ad = 0;
+        local_10_a = 0;
 
         ULTIMA_3ae6(2);
         ULTIMA_0a70_GRAP_2d_SetPenColor(0);
@@ -504,9 +504,9 @@ void BLCKTHRN_060e_Capture(void)
 
         for (local_8 = 0; local_8 < 0xb; local_8++)
         {
-            for (local_e = 0; local_e < 0xb; local_e++)
+            for (local_e_ae = 0; local_e_ae < 0xb; local_e_ae++)
             {
-                GetCombatMap(local_e, local_8) = D_ac64[local_8 * 0x10 + local_e];
+                GetCombatMap(local_e_ae, local_8) = D_ac64[local_8 * 0x10 + local_e_ae];
             }
         }
 

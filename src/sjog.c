@@ -428,16 +428,16 @@ static void SJOG_0514(int param_1, int param_2)
 // CHECKED
 static void SJOG_0646_SearchInDungeon(void)
 {
-    int local_10_ad;
-    int local_e;
+    int local_10_aa;
+    int local_e_am;
     int local_c;
     int local_a;
     int local_8;
     int local_6;
     int local_4_ab;
 
-    local_10_ad = ULTIMA_4988();
-    if (++local_10_ad == 0)
+    local_10_aa = ULTIMA_4988();
+    if (++local_10_aa == 0)
     {
         return;
     }
@@ -456,12 +456,12 @@ static void SJOG_0646_SearchInDungeon(void)
 
     local_a = D_5876;
     local_c = D_5878;
-    local_e = GetDungeonMap(local_a & 7, local_c & 7, (uint)D_5895_map_level);
-    local_4_ab = D_55a8_party[local_10_ad].dex;
+    local_e_am = GetDungeonMap(local_a & 7, local_c & 7, (uint)D_5895_map_level);
+    local_4_ab = D_55a8_party[local_10_aa].dex;
     local_6 = (D_5895_map_level * 2 - local_4_ab + 0x1e) >> 1;
     ULTIMA_1850_PrintString(_TEXT(0x86f4, "You find:\n"));
 
-    switch (local_e & 0xf0)
+    switch (local_e_am & 0xf0)
     {
     case 0x0:
         // 0704
@@ -479,7 +479,7 @@ static void SJOG_0646_SearchInDungeon(void)
         // 0710
         if (ULTIMA_2092_RandomRange(1, 0x1e) > local_6)
         {
-            if (local_e == 0x40)
+            if (local_e_am == 0x40)
             {
                 ULTIMA_1850_PrintString(_TEXT(0x8732, "No trap\n"));
                 break;
@@ -516,7 +516,7 @@ static void SJOG_0646_SearchInDungeon(void)
 
     case 0x60:
         // 0766
-        switch (local_e)
+        switch (local_e_am)
         {
         case 0x60:
             // 077c
@@ -526,7 +526,7 @@ static void SJOG_0646_SearchInDungeon(void)
         case 0x61:
             // 0782
             ULTIMA_1850_PrintString(_TEXT(0x87a2, "A pit!\n"));
-            GetDungeonMap(local_a & 7, local_c & 7, D_5895_map_level) = (local_e & 0x8) + 0x60;
+            GetDungeonMap(local_a & 7, local_c & 7, D_5895_map_level) = (local_e_am & 0x8) + 0x60;
             if (D_5895_map_level < 7)
             {
                 GetDungeonMap(local_a & 7, local_c & 7, D_5895_map_level + 1) |= 8;
@@ -562,7 +562,7 @@ static void SJOG_0646_SearchInDungeon(void)
 
     case 0x80:
         // 080e
-        switch (local_e)
+        switch (local_e_am)
         {
         case 0x80:
             ULTIMA_1850_PrintString(_TEXT(0x87d6, "A sleep field.\n"));
@@ -616,7 +616,7 @@ static void SJOG_0646_SearchInDungeon(void)
             ULTIMA_1850_PrintString(_TEXT(0x88c8, "Nothing hidden on the skeleton.\n"));
             ULTIMA_1850_PrintString(_TEXT(0x88ea, "It crumbles away.\n"));
 
-            GetDungeonMap(local_a & 7, local_c & 7, D_5895_map_level) = (local_e & 8) - 0x50;
+            GetDungeonMap(local_a & 7, local_c & 7, D_5895_map_level) = (local_e_am & 8) - 0x50;
             DUNGEON_1a90(1);
             ULTIMA_0f46_GRAP_66_Reveal(8, 8, 0xb7, 0xb7);
             break;
@@ -627,7 +627,7 @@ static void SJOG_0646_SearchInDungeon(void)
         // 08c2
         ULTIMA_1850_PrintString(_TEXT(0x88fe, "A hidden door!\n"));
 
-        GetDungeonMap(local_a & 7, local_c & 7, D_5895_map_level) = (local_e & 8) - 0x20;
+        GetDungeonMap(local_a & 7, local_c & 7, D_5895_map_level) = (local_e_am & 8) - 0x20;
         DUNGEON_1a90(1);
         ULTIMA_0f46_GRAP_66_Reveal(8, 8, 0xb7, 0xb7);
         break;
@@ -643,8 +643,8 @@ static void SJOG_0646_SearchInDungeon(void)
 // CHECKED
 void SJOG_095c_SearchCmd(void)
 {
-    int local_10_ad;
-    int local_e;
+    int local_10_aa;
+    int local_e_am;
     int local_a;
     int local_c;
     int local_6;
@@ -666,12 +666,12 @@ void SJOG_095c_SearchCmd(void)
 
     local_a = D_5896_map_x + D_5876;
     local_c = D_5897_map_y + D_5878;
-    if ((local_e = ULTIMA_4988()) == -1)
+    if ((local_e_am = ULTIMA_4988()) == -1)
     {
         return;
     }
 
-    local_10_ad = *ULTIMA_4402_GetTileAddr(local_a, local_c);
+    local_10_aa = *ULTIMA_4402_GetTileAddr(local_a, local_c);
 
     for (local_6 = 1; local_6 < 0x20; local_6++)
     {
@@ -688,7 +688,7 @@ void SJOG_095c_SearchCmd(void)
     if (local_6 < 0x20)
     {
         ULTIMA_1850_PrintString(_TEXT(0x892c, "\nThou dost find\n"));
-        SJOG_02ea(local_6, local_e);
+        SJOG_02ea(local_6, local_e_am);
         return;
     }
 
@@ -696,11 +696,11 @@ void SJOG_095c_SearchCmd(void)
     if (local_8 == 0x1f)
     {
         ULTIMA_1850_PrintString(_TEXT(0x893e, "\nThou dost find\n"));
-        SJOG_01f2(D_5876, local_e);
+        SJOG_01f2(D_5876, local_e_am);
         return;
     }
 
-    switch (local_10_ad)
+    switch (local_10_aa)
     {
     case TILE_MAP_STUMP:
         ULTIMA_1850_PrintString(_TEXT(0x8950, "\nIn the stump\nt"));
@@ -762,7 +762,7 @@ void SJOG_095c_SearchCmd(void)
     }
 
     ULTIMA_1850_PrintString(_TEXT(0x8a38, "hou dost find\n"));
-    if (local_10_ad == TILE_MAP_HIDDEN_DOOR)
+    if (local_10_aa == TILE_MAP_HIDDEN_DOOR)
     {
         ULTIMA_1850_PrintString(_TEXT(0x8a48, "a hidden door!\n"));
         if (D_5895_map_level < 0x80)
@@ -775,7 +775,7 @@ void SJOG_095c_SearchCmd(void)
         }
         D_24e6 |= 2;
     }
-    else if ((local_10_ad == TILE_MAP_MOONGATE || (local_4_ab = SJOG_03a8(local_a, local_c, D_5895_map_level)) == 0) && (local_4_ab = SJOG_045a(local_a, local_c)) == 0)
+    else if ((local_10_aa == TILE_MAP_MOONGATE || (local_4_ab = SJOG_03a8(local_a, local_c, D_5895_map_level)) == 0) && (local_4_ab = SJOG_045a(local_a, local_c)) == 0)
     {
         SJOG_0514(local_a, local_c);
     }
@@ -814,7 +814,7 @@ static void SJOG_0baa(int a, int b, int c, int param_4)
 // CHECKED
 static void SJOG_0c3e_JimmyInDungeon(void)
 {
-    int local_e;
+    int local_e_am;
     int local_c;
     int local_a;
     int local_8;
@@ -829,11 +829,11 @@ static void SJOG_0c3e_JimmyInDungeon(void)
 
     local_8 = D_5896_map_x;
     local_a = D_5897_map_y;
-    local_e = GetDungeonMap(local_8 & 7, local_a & 7, (uint)D_5895_map_level);
+    local_e_am = GetDungeonMap(local_8 & 7, local_a & 7, (uint)D_5895_map_level);
     local_4_ab = D_55a8_party[local_c].dex;
     local_6 = (D_5895_map_level * 2 - local_4_ab + 0x1e) >> 1;
 
-    if ((local_e & 0xf7) == 0x40)
+    if ((local_e_am & 0xf7) == 0x40)
     {
         if (D_57ac == 0)
         {
@@ -845,7 +845,7 @@ static void SJOG_0c3e_JimmyInDungeon(void)
             D_57ac--;
         }
     }
-    else if ((local_e & 0xf0) == 0x40)
+    else if ((local_e_am & 0xf0) == 0x40)
     {
         if (D_57ac == 0)
         {
@@ -856,7 +856,7 @@ static void SJOG_0c3e_JimmyInDungeon(void)
             if (local_6 < ULTIMA_2092_RandomRange(1, 0x1e))
             {
                 ULTIMA_1850_PrintString(_TEXT(0x8a9c, "Chest unlocked\n"));
-                GetDungeonMap(local_8 & 7, local_a & 7, D_5895_map_level) = (local_e & 8) + 0x40;
+                GetDungeonMap(local_8 & 7, local_a & 7, D_5895_map_level) = (local_e_am & 8) + 0x40;
             }
             else
             {
@@ -865,7 +865,7 @@ static void SJOG_0c3e_JimmyInDungeon(void)
             }
         }
     }
-    else if ((local_e & 0xf0) == 0x70)
+    else if ((local_e_am & 0xf0) == 0x70)
     {
         ULTIMA_1850_PrintString(_TEXT(0x8ab8, "Already open!\n"));
     }
@@ -1732,10 +1732,10 @@ static void SJOG_179e_GetInDungeon(void)
 // CHECKED (loop)
 void SJOG_18ce_GetCmd(void)
 {
-    int local_10_ad;
+    int local_10_aa;
+    int local_e_am;
     int local_c;
     int local_a;
-    int local_e;
     int local_8;
     int local_6;
     int local_4_ab;
@@ -1752,15 +1752,15 @@ void SJOG_18ce_GetCmd(void)
     }
 
     local_c = D_5876;
-    local_10_ad = D_5878;
+    local_10_aa = D_5878;
     local_a = local_c + D_5896_map_x;
-    local_e = local_10_ad + D_5897_map_y;
+    local_e_am = local_10_aa + D_5897_map_y;
     ULTIMA_1850_PrintString(_TEXT(0x8de6, "\n"));
 
     // 1921 (NOT MATCHING: loop)
     for (local_6 = 1; local_6 < 0x20; local_6++)
     {
-        if (D_5c5a[local_6]._2_x == local_a && D_5c5a[local_6]._3_y == local_e &&
+        if (D_5c5a[local_6]._2_x == local_a && D_5c5a[local_6]._3_y == local_e_am &&
             (D_5893_map_id > 0x7f || (D_5893_map_id < 0x80 && D_5c5a[local_6]._4_z == D_5895_map_level)))
         {
             local_8 = D_5c5a[local_6]._0_tile;
@@ -1778,13 +1778,13 @@ void SJOG_18ce_GetCmd(void)
     }
 
     // 19c0
-    local_8 = *ULTIMA_4402_GetTileAddr(local_a, local_e);
+    local_8 = *ULTIMA_4402_GetTileAddr(local_a, local_e_am);
     switch (local_8)
     {
     case TILE_MAP_B0:
     case TILE_MAP_B1:
         // 19e8
-        *ULTIMA_4402_GetTileAddr(local_a, local_e) = TILE_MAP_44;
+        *ULTIMA_4402_GetTileAddr(local_a, local_e_am) = TILE_MAP_44;
         D_24e6 = 1;
         if (D_5893_map_id < 0x80)
         {
@@ -1798,7 +1798,7 @@ void SJOG_18ce_GetCmd(void)
 
     case TILE_MAP_CROPS:
         // 1a2a
-        *ULTIMA_4402_GetTileAddr(local_a, local_e) = TILE_MAP_CROPS_PICKED;
+        *ULTIMA_4402_GetTileAddr(local_a, local_e_am) = TILE_MAP_CROPS_PICKED;
         D_24e6 |= 2;
         ULTIMA_1850_PrintString(_TEXT(0x8df4, "Crops picked!\n"));
 
@@ -1814,9 +1814,9 @@ void SJOG_18ce_GetCmd(void)
 
     case TILE_MAP_TABLE_9A:
         // 1a6a
-        if (local_10_ad == 1)
+        if (local_10_aa == 1)
         {
-            *ULTIMA_4402_GetTileAddr(local_a, local_e) = TILE_MAP_TABLE_95;
+            *ULTIMA_4402_GetTileAddr(local_a, local_e_am) = TILE_MAP_TABLE_95;
             D_24e6 |= 2;
             ULTIMA_1850_PrintString(_TEXT(0x8e04, "Mmmmm...!\n"));
 
@@ -1838,9 +1838,9 @@ void SJOG_18ce_GetCmd(void)
 
     case TILE_MAP_TABLE_9B:
         // 1a92
-        if (local_10_ad == -1)
+        if (local_10_aa == -1)
         {
-            *ULTIMA_4402_GetTileAddr(local_a, local_e) = TILE_MAP_TABLE_95;
+            *ULTIMA_4402_GetTileAddr(local_a, local_e_am) = TILE_MAP_TABLE_95;
             D_24e6 |= 2;
             ULTIMA_1850_PrintString(_TEXT(0x8e24, "Mmmmm...!\n"));
 
@@ -1865,14 +1865,14 @@ void SJOG_18ce_GetCmd(void)
             break;
         }
 
-        if (local_10_ad == 1)
+        if (local_10_aa == 1)
         {
-            *ULTIMA_4402_GetTileAddr(local_a, local_e) = TILE_MAP_TABLE_9B;
+            *ULTIMA_4402_GetTileAddr(local_a, local_e_am) = TILE_MAP_TABLE_9B;
         }
 
-        if (local_10_ad == -1)
+        if (local_10_aa == -1)
         {
-            *ULTIMA_4402_GetTileAddr(local_a, local_e) = TILE_MAP_TABLE_9A;
+            *ULTIMA_4402_GetTileAddr(local_a, local_e_am) = TILE_MAP_TABLE_9A;
         }
 
         D_24e6 |= 2;
