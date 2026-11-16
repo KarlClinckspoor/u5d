@@ -105,10 +105,10 @@ static void ULTIMA_3c9a_HoleUpCmd(void);
 
 int ULTIMA_3178_ProcessCommand(int param_1)
 {
-    int ret;
+    int result;
     int local_6;
 
-    ret = 1;
+    result = 1;
     switch (param_1)
     {
     case U5_KEY_CTRL_B:
@@ -123,7 +123,7 @@ int ULTIMA_3178_ProcessCommand(int param_1)
             ULTIMA_1850_PrintString(_TEXT(0xa11e, "n\n"));
         }
 
-        ret = 0;
+        result = 0;
         break;
     case U5_KEY_SPACE:
         /* ' ' Pass */
@@ -140,7 +140,7 @@ int ULTIMA_3178_ProcessCommand(int param_1)
     case 0x41:
         /* 'A' */
         // 3216
-        ret = D_5893_map_id == 0 ?
+        result = D_5893_map_id == 0 ?
             MAINOUT_06ec_AttackCmd() :
                 D_5893_map_id < 0x21 ?
             TOWN_09e6_AttackCmd() :
@@ -149,23 +149,23 @@ int ULTIMA_3178_ProcessCommand(int param_1)
     case 0x42:
         /* 'B' Board */
         ULTIMA_1850_PrintString(_TEXT(0xa13a, "Board "));
-        ret = CMDS_07f6_BoardCmd();
+        result = CMDS_07f6_BoardCmd();
         break;
     case 0x43:
         /* 'C' Cast */
         ULTIMA_1850_PrintString(_TEXT(0xa142, "Cast...\n"));
-        ret = CAST_0dba_CastSpellCmd();
+        result = CAST_0dba_CastSpellCmd();
         break;
     case 0x44:
         /* 'D' What? */
         ULTIMA_1850_PrintString(_TEXT(0xa14c, "D-What?\n"));
-        ret = 0;
+        result = 0;
         break;
     case 0x45:
         /* 'E' Enter */
         if (D_5893_map_id == 0)
         {
-            ret = MAINOUT_08de_EnterCmd();
+            result = MAINOUT_08de_EnterCmd();
             break;
         }
         ULTIMA_1850_PrintString(_TEXT(0xa156, "Enter what?\n"));
@@ -221,11 +221,11 @@ int ULTIMA_3178_ProcessCommand(int param_1)
         }
         else if (D_5893_map_id < 0x21)
         {
-            ret = TOWN_0b82_KlimbCmd();
+            result = TOWN_0b82_KlimbCmd();
         }
         else
         {
-            ret = DUNGEON_1e10_KlimbCmd();
+            result = DUNGEON_1e10_KlimbCmd();
         }
         break;
     case 0x4c:
@@ -264,7 +264,7 @@ int ULTIMA_3178_ProcessCommand(int param_1)
         {
             /* Cannot push in dungeons */
             ULTIMA_1850_PrintString(_TEXT(0xa1d4, "Push\nNot here!\n"));
-            ret = 0;
+            result = 0;
         }
         else
         {
@@ -276,7 +276,7 @@ int ULTIMA_3178_ProcessCommand(int param_1)
         /* 'Q' Quit */
         ULTIMA_1850_PrintString(_TEXT(0xa1ea, "Quit:"));
         CAST2_10fe_SaveGame();
-        ret = 0;
+        result = 0;
         break;
     case 0x52:
         /* 'R' Ready */
@@ -315,7 +315,7 @@ int ULTIMA_3178_ProcessCommand(int param_1)
                 ULTIMA_1850_PrintString(_TEXT(0xa246, "Talk-"));
                 if (TALK_041c_TalkCmd() != 0)
                 {
-                    ret = 2;
+                    result = 2;
                 }
             }
         }
@@ -346,7 +346,7 @@ int ULTIMA_3178_ProcessCommand(int param_1)
     case 0x57:
         /* 'W' What? */
         ULTIMA_1850_PrintString(_TEXT(0xa276, "W-What?\n"));
-        ret = 0;
+        result = 0;
         break;
     case 0x58:
         /* 'X' X-it */
@@ -356,7 +356,7 @@ int ULTIMA_3178_ProcessCommand(int param_1)
     case 0x59:
         /* 'Y' Yell */
         ULTIMA_1850_PrintString(_TEXT(0xa286, "Yell "));
-        ret = CMDS_1418_YellCmd();
+        result = CMDS_1418_YellCmd();
         break;
     case 0x5a:
         /* 'Z' Z-stats */
@@ -366,10 +366,10 @@ int ULTIMA_3178_ProcessCommand(int param_1)
     default:
         /* default What? */
         ULTIMA_1850_PrintString(_TEXT(0xa298, "What?\n"));
-        ret = 0;
+        result = 0;
         break;
     }
-    return ret;
+    return result;
 }
 
 // "explosion effect"
@@ -524,13 +524,7 @@ static int ULTIMA_3776(byte param_1)
                 local_6 = ~(D_5897_map_y - D_5c5a[local_8]._3_y) + 1;
             }
 
-            if (D_5c5a[local_8]._4_z != D_5895_map_level)
-            {
-                return local_8;
-            }
-
-            // NOT MATCHING
-            if (local_4_ab >= 6 && local_6 >= 6)
+            if (D_5c5a[local_8]._4_z != D_5895_map_level || (D_5c5a[local_8]._4_z == D_5895_map_level && local_4_ab >= 6 && local_6 >= 6))
             {
                 return local_8;
             }
@@ -549,8 +543,7 @@ static int ULTIMA_3868(int param_1, int param_2, int param_3)
 
     for (local_8 = 1; local_8 < 0x18; local_8++)
     {
-        local_6 = D_5c5a[local_8]._0_tile;
-        if (local_6 >= param_1 && local_6 <= param_2 && local_6 != TILE_ACTOR_CROWN)
+        if (D_5c5a[local_8]._0_tile >= param_1 && D_5c5a[local_8]._0_tile <= param_2 && D_5c5a[local_8]._0_tile != TILE_ACTOR_CROWN)
         {
             if (param_3 != 0)
             {
@@ -617,8 +610,7 @@ int ULTIMA_39fc_GetFirstActivePartyMember(void)
 
     for (local_4_ab = 0; local_4_ab < D_585b; local_4_ab++)
     {
-        local_6 = D_55a8_party[local_4_ab].status;
-        if (local_6 == STATUS_GOOD || local_6 == STATUS_POISONED)
+        if ((local_6 = D_55a8_party[local_4_ab].status) == STATUS_GOOD || local_6 == STATUS_POISONED)
         {
             D_5876 = local_4_ab;
             return 0;

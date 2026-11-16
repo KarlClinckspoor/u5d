@@ -235,10 +235,10 @@ int ULTIMA_6506(int param_1, int param_2, int param_3, int param_4, int param_5)
     int local_a;
     int local_8;
     int local_6;
-    CombatEntity* local_4;
+    CombatEntity* local_4_aa;
 
 #if !defined(MATCHING_BUILD)
-    local_4 = NULL;
+    local_4_aa = NULL;
 #endif
 
     local_a = 0;
@@ -259,46 +259,46 @@ int ULTIMA_6506(int param_1, int param_2, int param_3, int param_4, int param_5)
             // 6577
             if (D_ba14[local_6].flags == 0) // combat actor slot not occupied?
             {
-                local_4 = &D_ba14[local_6];
+                local_4_aa = &D_ba14[local_6];
                 local_8 = local_6;
 
                 // 6587
                 if (param_2 == 1 && D_55a8_party[param_1].status != STATUS_DEAD) // player?
                 {
                     // 65a0
-                    local_4->dex = D_55a8_party[param_1].dex;
-                    local_4->turnTimer = 36 - local_4->dex;
-                    local_4->flags = COMBAT_FLAGS_PLAYER;
+                    local_4_aa->dex = D_55a8_party[param_1].dex;
+                    local_4_aa->turnTimer = 36 - local_4_aa->dex;
+                    local_4_aa->flags = COMBAT_FLAGS_PLAYER;
                     // 65b4
                     if (D_55a8_party[param_1].status != STATUS_GOOD && D_55a8_party[param_1].status != STATUS_POISONED)
                     {
-                        local_4->flags |= COMBAT_FLAGS_ASLEEP;
+                        local_4_aa->flags |= COMBAT_FLAGS_ASLEEP;
                     }
                 }
 
                 // 65c5
                 if (param_2 == 0) // monster?
                 {
-                    local_4->hp = D_13bc_enemyStats[param_1].maxHp;
-                    local_4->dex = ULTIMA_3aae_Random(7) - 4 + D_13bc_enemyStats[param_1].dex;
-                    if (local_4->dex > 0x1e)
+                    local_4_aa->hp = D_13bc_enemyStats[param_1].maxHp;
+                    local_4_aa->dex = ULTIMA_3aae_Random(7) - 4 + D_13bc_enemyStats[param_1].dex;
+                    if (local_4_aa->dex > 0x1e)
                     {
-                        local_4->dex = D_13bc_enemyStats[param_1].dex;
+                        local_4_aa->dex = D_13bc_enemyStats[param_1].dex;
                     }
 
-                    local_4->turnTimer = 36 - local_4->dex;
-                    local_4->flags = COMBAT_FLAGS_MONSTER;
+                    local_4_aa->turnTimer = 36 - local_4_aa->dex;
+                    local_4_aa->flags = COMBAT_FLAGS_MONSTER;
                     if (param_1 == 8 || param_1 == 9)
                     {
                         // 6609
-                        local_4->flags = COMBAT_FLAGS_DEAD;
+                        local_4_aa->flags = COMBAT_FLAGS_DEAD;
                     }
                 }
 
                 // 660d
-                local_4->entityIdx = param_1;
-                local_4->x = param_3;
-                local_4->y = param_4;
+                local_4_aa->entityIdx = param_1;
+                local_4_aa->x = param_3;
+                local_4_aa->y = param_4;
                 break;
             }
         }
@@ -315,7 +315,7 @@ int ULTIMA_6506(int param_1, int param_2, int param_3, int param_4, int param_5)
                 // 6685
                 if (param_2 == 0)
                 {
-                    local_4->actorIdx = local_6;
+                    local_4_aa->actorIdx = local_6;
                     
                     D_5c5a[local_6]._1_animTile = D_5c5a[local_6]._0_tile = param_1 * 4 + TILE_ACTOR_WIZARD; // local_14
                 }
@@ -323,7 +323,7 @@ int ULTIMA_6506(int param_1, int param_2, int param_3, int param_4, int param_5)
                 // 669a
                 if (param_2 == 1)
                 {
-                    local_4->actorIdx = local_6;
+                    local_4_aa->actorIdx = local_6;
                 }
 
                 // 66a6
@@ -340,7 +340,7 @@ int ULTIMA_6506(int param_1, int param_2, int param_3, int param_4, int param_5)
                 D_5c5a[local_6]._7 = 0xff;
                 if (param_2 == 0)
                 {
-                    D_5c5a[local_6]._5 = local_4->hp;
+                    D_5c5a[local_6]._5 = local_4_aa->hp;
                 }
                 else
                 {
@@ -350,7 +350,7 @@ int ULTIMA_6506(int param_1, int param_2, int param_3, int param_4, int param_5)
                 // 66f8
                 if (param_2 != 2)
                 {
-                    local_4->actorIdx = local_6;
+                    local_4_aa->actorIdx = local_6;
                 }
 
                 break;
@@ -475,26 +475,27 @@ void ULTIMA_68ae(int param_1)
 // initialize combat entities
 void ULTIMA_6936(void)
 {
+    byte local_10_aa;
+    byte local_e_am;
     byte local_c;
     int local_a;
-    byte local_10_ad;
-    int local_6;
     byte local_8;
-    byte local_e;
-    CombatEntity* local_4;
+    int local_6;
+    CombatEntity* local_4_aa;
 
-    local_10_ad = 0;
+    local_10_aa = 0;
 
     // clear
     for (local_6 = 0; local_6 < 0x20; local_6++)
     {
-        local_4 = &D_ba14[local_6];
+        local_4_aa = &D_ba14[local_6];
 
-        D_5c5a[local_6]._3_y = D_5c5a[local_6]._4_z = D_5c5a[local_6]._5 = D_5c5a[local_6]._0_tile = D_5c5a[local_6]._1_animTile = D_5c5a[local_6]._2_x = D_5c5a[local_6]._6 = 0;
+        D_5c5a[local_6]._0_tile = D_5c5a[local_6]._1_animTile = D_5c5a[local_6]._2_x = D_5c5a[local_6]._6 = 0;
+        D_5c5a[local_6]._3_y = D_5c5a[local_6]._4_z = D_5c5a[local_6]._5 = 0;
 
-        local_4->hp = local_4->dex = local_4->flags = local_4->entityIdx = 0;
+        local_4_aa->hp = local_4_aa->dex = local_4_aa->flags = local_4_aa->entityIdx = 0;
 
-        local_4->actorIdx = local_4->turnTimer = local_4->x = local_4->y = 0;
+        local_4_aa->actorIdx = local_4_aa->turnTimer = local_4_aa->x = local_4_aa->y = 0;
     }
 
     // place player party
@@ -504,29 +505,29 @@ void ULTIMA_6936(void)
         {
             if (D_55a8_party[local_6].equips[4] == 42)
             {
-                local_10_ad = 42;
+                local_10_aa = 42;
             }
 
             if (D_55a8_party[local_6].equips[4] == 44)
             {
-                local_10_ad = 44;
+                local_10_aa = 44;
             }
 
-            if (local_10_ad != 0)
+            if (local_10_aa != 0)
             {
                 local_a = ULTIMA_2092_RandomRange(0, 0xf);
                 if (local_a == 0xb)
                 {
                     ULTIMA_1850_PrintString(_TEXT(0xa422, "A ring has vanished!\n"));
                     ULTIMA_43ae_AudioSweepTone(0x4b0, 2000, 1, 0x28);
-                    ULTIMA_6e60(local_6, local_10_ad);
+                    ULTIMA_6e60(local_6, local_10_aa);
                 }
-                local_10_ad = 0;
+                local_10_aa = 0;
             }
 
             local_8 = D_1724[local_6];
-            local_e = D_172c[local_6];
-            local_a = ULTIMA_6506(local_6, 1, local_8, local_e, D_5895_map_level);
+            local_e_am = D_172c[local_6];
+            local_a = ULTIMA_6506(local_6, 1, local_8, local_e_am, D_5895_map_level);
 
             D_5c5a[D_ba14[local_a].actorIdx]._7 = 0xff;
 
@@ -577,9 +578,9 @@ void ULTIMA_6936(void)
 // prepare combat
 void ULTIMA_6bc2(int param_1, int param_2)
 {
-    byte local_30_ab;
-    int local_2e_an;
-    byte local_2c;
+    byte local_30_a;
+    int local_2e_ak;
+    byte local_2c_am;
     int local_2a;
     int local_28[16];
     int local_8;
@@ -602,9 +603,9 @@ void ULTIMA_6bc2(int param_1, int param_2)
         ULTIMA_6936();
     }
 
-    for (local_2e_an = 0; local_2e_an < 0x10; local_2e_an++)
+    for (local_2a = 0; local_2a < 0x10; local_2a++)
     {
-        local_28[local_2e_an] = local_2e_an;
+        local_28[local_2a] = local_2a;
     }
 
     if ((param_1 & 4) != 0)
@@ -612,11 +613,11 @@ void ULTIMA_6bc2(int param_1, int param_2)
         // shuffle
         for (local_2a = 0; local_2a < 0xf; local_2a++)
         {
-            local_2e_an = ULTIMA_2092_RandomRange(0, 0xf);
+            local_2e_ak = ULTIMA_2092_RandomRange(0, 0xf);
             // swap
             local_6 = local_28[local_2a];
-            local_28[local_2a] = local_28[local_2e_an];
-            local_28[local_2e_an] = local_6;
+            local_28[local_2a] = local_28[local_2e_ak];
+            local_28[local_2e_ak] = local_6;
         }
     }
 
@@ -648,21 +649,21 @@ void ULTIMA_6bc2(int param_1, int param_2)
         }
     }
 
-    local_2c = D_1704[local_28[0]];
-    local_30_ab = D_1714[local_28[0]];
-    ULTIMA_6506(param_2, 0, local_2c, local_30_ab, D_5895_map_level);
+    local_2c_am = D_1704[local_28[0]];
+    local_30_a = D_1714[local_28[0]];
+    ULTIMA_6506(param_2, 0, local_2c_am, local_30_a, D_5895_map_level);
 
-    local_2e_an = local_6 / 4 + 1;
+    local_2e_ak = local_6 / 4 + 1;
     for (local_2a = 1; local_2a < local_6; local_2a++)
     {
         local_4_ab = param_2;
-        if (local_2a < local_2e_an && ULTIMA_3aae_Random(8) == 0)
+        if (local_2a < local_2e_ak && ULTIMA_3aae_Random(8) == 0)
         {
             local_4_ab = D_16d4[param_2];
         }
-        local_2c = D_1704[local_28[local_2a]];
-        local_30_ab = D_1714[local_28[local_2a]];
-        ULTIMA_6506(local_4_ab, 0, local_2c, local_30_ab, D_5895_map_level);
+        local_2c_am = D_1704[local_28[local_2a]];
+        local_30_a = D_1714[local_28[local_2a]];
+        ULTIMA_6506(local_4_ab, 0, local_2c_am, local_30_a, D_5895_map_level);
     }
 }
 

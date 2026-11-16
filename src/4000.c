@@ -214,20 +214,20 @@ void ULTIMA_43ae_AudioSweepTone(int param_1, int param_2, int param_3, int param
 #endif
 
 	int local_6;
-	int local_4;
+	int local_4_b;
 	int local_a;
 	int local_8;
 
 	local_a = param_3;
-	local_4 = (param_2 - param_1) * local_a;
-    local_4 /= param_4;
+	local_4_b = (param_2 - param_1) * local_a;
+    local_4_b /= param_4;
 	local_8 = param_1;
 
 	for (local_6 = 0; local_6 < param_4; local_6 += param_3)
 	{
 		ULTIMA_22e2_PcspkOn(local_8);
 		ULTIMA_20c8_SomeDelay(1, param_3);
-		local_8 += local_4;
+		local_8 += local_4_b;
 	}
 
 	ULTIMA_230e_PcspkOff();
@@ -854,10 +854,11 @@ int ULTIMA_4d76_FindIndex(char* param_2, int param_1)
 {
 	int local_4;
 
-	for (local_4 = 0; ; local_4++)
+	local_4 = 0;
+	while (param_2[local_4] != 0)
 	{
-		if (param_2[local_4] == 0 || param_2[local_4] == param_1)
-			break;
+		if ((byte)param_2[local_4] == param_1) break;
+		local_4++;
 	}
 
 	return local_4;
