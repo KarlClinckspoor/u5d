@@ -206,8 +206,25 @@ strings, from DS:6ada).
 follows it, and for 5.0 rewrites `//` comments as `/* */` in the staged copies (5.0 knows
 only the latter). MSC 5.0 modules so far: 3000, 4000, 6000, BLCKTHRN, CAST2, DNGLOOK,
 COMBAT, COMSUBS, ENDGAME, FONT, LOOKOBJ, NPC, SHOPPES, SHOPPES2, SJOG, TALK, ZSTATS.
-The `S_0x...` string arrays (`tools/strings.py`) were a stand-in for 5.0's aligned literals.
-They are to be replaced by plain literals once each module's CONST is placed.
+**A 5.0 module's own data.** u5d first had these modules' strings as generated char arrays
+(`tools/strings.py`, a stand-in for 5.0's aligned literals) and their tables in `vars.c`.
+`tools/own50.py FILE.c FIRST LAST --apply` gives a 5.0 module its own data:
+- it moves the `vars.c` tables from FIRST to LAST into the module;
+- it turns the strings back into plain literals;
+- it places each table that holds strings so that CONST comes out in the original order.
+
+Each module's `_DATA` range follows the link order. Every table between one module's
+tables and the next is used by that module alone (endgame D_3da6-D_3e60, sjog
+D_3e66-D_41cc, and so on), so the ranges were not guessed. `match.py` then reports both
+`_DATA` and CONST, and for every 5.0 overlay module both are the same as the original's,
+with one exception:
+- **ZSTATS:** two strings are swapped. ZSTATS_0c5c (not yet matched) prints "Thou art not
+  strong enough!" before "Ring vanishes!" in the original's source.
+
+Three items turned out not to be what u5d had:
+- **D_3d5a (SHOPPES):** a `char` array holding its text, not a pointer to a string.
+- **D_4a9a (TALK):** "IMPE", an array in TALK's `_DATA`.
+- **D_4b4e (CAST2):** eight words no code reads.
 
 ### Overlays of two objects
 

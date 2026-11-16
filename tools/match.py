@@ -128,17 +128,19 @@ class Module:
                 first[tname] = (d, base)
         for seg in votes:
             self.data_base[seg] = first[seg][1]
-        # for _DATA, prefer the candidate base at which the most of our initialised data
-        # agrees with DGROUP (a misplaced function's references must not decide it)
-        dseg = self.obj.seg('_DATA')
-        if dseg and dseg.length and '_DATA' in votes:
+        # for _DATA and CONST, prefer the candidate base at which the most of our initialised
+        # data agrees with DGROUP (a misplaced function's references must not decide it)
+        for sname in ('_DATA', 'CONST'):
+            dseg = self.obj.seg(sname)
+            if not dseg or not dseg.length or sname not in votes:
+                continue
             masked = {k for fx in dseg.fixups for k in range(fx.loc, fx.loc + fx.size)}
             # also: where the start of our data occurs in DGROUP, if exactly once
             head = bytes(dseg.data[:16])
             if len(head) == 16 and not any(k in masked for k in range(16)):
                 at = self.ds.find(head)
                 if at >= 0 and self.ds.find(head, at + 1) < 0:
-                    votes['_DATA'].setdefault(at, 0)
+                    votes[sname].setdefault(at, 0)
 
             def score(b):
                 # the length of the agreeing start first (a later shift must not win),
@@ -147,9 +149,9 @@ class Module:
                 eq = [k in masked or t[k] == dseg.data[k] for k in range(len(t))]
                 prefix = next((k for k, e in enumerate(eq) if not e), len(eq))
                 return (prefix, sum(eq))
-            best = max(votes['_DATA'], key=lambda b: (score(b), b == first['_DATA'][1]))
-            if score(best) > score(first['_DATA'][1]):
-                self.data_base['_DATA'] = best
+            best = max(votes[sname], key=lambda b: (score(b), b == first[sname][1]))
+            if score(best) > score(first[sname][1]):
+                self.data_base[sname] = best
 
     def orig_loc(self, loc, funcs):
         for name, a, b, o, oe in funcs:
@@ -157,13 +159,13 @@ class Module:
                 return o + loc - a
         return None
 
-    def compare_data(self):
-        """Compare the module's initialised _DATA with DGROUP at the voted base:
-        (length, differing bytes, first difference) or None."""
-        seg = self.obj.seg('_DATA')
-        if not seg or not seg.length or '_DATA' not in self.data_base:
+    def compare_data(self, sname='_DATA'):
+        """Compare the module's initialised sname (_DATA or CONST) with DGROUP at the voted
+        base: (base, length, differing bytes, first difference) or None."""
+        seg = self.obj.seg(sname)
+        if not seg or not seg.length or sname not in self.data_base:
             return None
-        base = self.data_base['_DATA']
+        base = self.data_base[sname]
         masked = set()
         for fx in seg.fixups:
             masked.update(range(fx.loc, fx.loc + fx.size))
@@ -469,10 +471,11 @@ def main():
             extra = '  _TEXT %d/%d bytes' % (mod.text.length, len(mod.orig))
         unv = sum(r['unverified'] for r in res)
         bad = sum(r['bad_fixups'] for r in res)
-        dc = mod.compare_data()
-        if dc:
-            extra += '  _DATA@DS:%04x %d bytes, %s' % (dc[0], dc[1], 'same' if not dc[2] else
-                                                       '%d differ from +%04x' % (dc[2], dc[3]))
+        for sname in ('_DATA', 'CONST'):
+            dc = mod.compare_data(sname)
+            if dc:
+                extra += '  %s@DS:%04x %d bytes, %s' % (sname, dc[0], dc[1], 'same' if not dc[2] else
+                                                        '%d differ from +%04x' % (dc[2], dc[3]))
         print('%-12s %3d functions: %s%s%s%s' % (f, len(res), ' '.join('%s %d' % (v, c) for v, c in counts.items() if c),
                                                extra, '  bad fixups %d' % bad if bad else '',
                                                '  unverified %d' % unv if unv else ''))

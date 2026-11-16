@@ -324,7 +324,7 @@ STUB char* D_3d46[2];
 STUB char* D_3d4a[4];
 STUB char* D_3d52[4];
 
-STUB char* D_3d5a; // "\n\n\"Thou hast no need of this art!\"\nsays $."
+STUB char D_3d5a[]; // "\n\n\"Thou hast no need of this art!\"\nsays $."
 
 STUB u8 D_3d86[8];
 STUB u8 D_3d8e[8];

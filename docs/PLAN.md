@@ -84,8 +84,16 @@ Next, in order:
 1. **Finish the overlay C functions** (about 105 left; `build/match/status.tsv`). Every
    module now compiles with the compiler the original used, with 5.0's own slot hash, and
    DUNGEON, MAINOUT, INTRO, OUTSUBS and CMDS are split into their 5.1 and 5.0 objects.
-   - Replace the `S_0x...` string arrays of the 5.0 modules with plain literals, and place
-     each 5.0 object's CONST in DGROUP (u5link, match.py).
+   - *(done)* The 5.0 modules have plain literals and their own tables (`tools/own50.py`).
+     `_DATA` and CONST match the original for every 5.0 overlay module except ZSTATS, where
+     two strings swap until ZSTATS_0c5c matches.
+   - Remaining hard cases, per the last worker:
+     - DUNGEON_104c/111e/127e/1786/1952 hold a table value in a register across calls with
+       no source variable (a compiler CSE temp). A `register` local gives the code, but
+       5.0 then reserves an extra stack slot.
+     - MAINOUT_17d4 stores constants to a parameter through AX.
+     - LOOKOBJ_0cf4 needs D_52c8 as a scalar global, not a struct field.
+     - COMBAT_0B94 needs `int local_6` plus a different loop/break layout.
 2. **Split the resident C into its original modules.** The runs between the assembly
    modules are 0d72, 1850-1b16, 1b38, 1dda-1eac, 1fa0-2056, 216c, and 2320-3072 / 3072-400c /
    400c-51a0 / 51a0-60ec / 60ec-6f1e (each with its own data in DGROUP), plus 7040-71aa.
