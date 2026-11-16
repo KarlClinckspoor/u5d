@@ -1339,11 +1339,12 @@ static void MAINOUT_109e(void)
                 ULTIMA_43ae_AudioSweepTone(0x294, 0x96, 0x28, 0x1e78);
                 ULTIMA_1850_PrintString(_XTEXT(0x6af6, "DROWNING!!!\n"));
 
-                while (ULTIMA_39fc_GetFirstActivePartyMember() != -1) // NOT MATCHING
+                while (ULTIMA_39fc_GetFirstActivePartyMember() != -1)
                 {
                     ULTIMA_3522(D_5896_map_x, D_5897_map_y);
                     ULTIMA_2aa8();
                 }
+                return; // needed to match: drops the jump over the else branch
             }
         }
     }

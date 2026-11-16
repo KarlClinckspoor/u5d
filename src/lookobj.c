@@ -792,7 +792,7 @@ static void LOOKOBJ_0cf4(int param_1)
 
     for (local_c = 0; local_c < 4; local_c++)
     {
-        if ((param_1 & 0xf0) == 0x60 && (D_3822[(u8)param_1 & 0xf] & local_e) == 0)
+        if ((param_1 & 0xf0) == 0x60 && (D_3822[param_1 & 0xf] & local_e) == 0)
         {
             local_a[local_c] = D_13b4_greenColor + 8;
         }

@@ -468,7 +468,7 @@ void OUTSUBS_0658(void)
     int local_e;
     int local_8;
     int local_6;
-    ActorFmt* local_4;
+    ActorFmt* local_4b;
 
     ULTIMA_1850_PrintString(_XTEXT(0x7750, "An apparition!\n"));
     ULTIMA_2192_AudioPulse(0x0a3c, 1, 10000, 0x9c4, 6);
@@ -478,7 +478,7 @@ void OUTSUBS_0658(void)
         ULTIMA_2192_AudioPulse(D_3a26[local_8], 1, 5000, 200, 0xd);
     }
 
-    local_4 = &D_5c5a[10];
+    local_4b = &D_5c5a[10];
     
     D_5c5a[10]._2_x = D_5c5a[10]._3_y = 5;
     D_5c5a[10]._0_tile = D_5c5a[10]._1_animTile = TILE_ACTOR_CIRCLE;
@@ -498,13 +498,13 @@ void OUTSUBS_0658(void)
             {
                 if (D_ba14[local_a].entityIdx == local_8)
                 {
-                    local_4 = &D_5c5a[D_ba14[local_a].actorIdx];
+                    local_4b = &D_5c5a[D_ba14[local_a].actorIdx];
                     break;
                 }
             }
 
             local_6 = ULTIMA_4d76_FindIndex(_XTEXT(0x7760, CLASS_LIST), D_55a8_party[local_8].cls);
-            local_4->_0_tile = local_4->_1_animTile = D_1ade[local_6];
+            local_4b->_0_tile = local_4b->_1_animTile = D_1ade[local_6];
 
             D_5c5a[10]._6 = 0;
 

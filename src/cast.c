@@ -2097,95 +2097,95 @@ static int CAST_1c36(s16* param_1, s16* param_2, int param_3, int param_4, int p
 // CHECKED
 static void CAST_1f60(int param_1, int param_2, int param_3)
 {
-    S_55a8* local_104;
-    CombatEntity* local_106;
-    int local_108;
-    int local_10a;
-    int local_10c;
-    s16 local_102[64];
-    s16 local_82[64];
-    int local_10e;
+    S_55a8* local_104c;
+    CombatEntity* local_106b;
+    int local_108a;
+    int local_10ai;
+    int local_10ch;
+    s16 local_102d[64];
+    s16 local_82l[64];
+    int local_10eg;
 
-    local_10c = 1;
-    local_104 = &D_55a8_party[D_ba14[param_1].entityIdx];
+    local_10ch = 1;
+    local_104c = &D_55a8_party[D_ba14[param_1].entityIdx];
 #if !defined(MATCHING_BUILD)
-    local_10e = CAST2_0306();
+    local_10eg = CAST2_0306();
 #else
-    local_10e = CAST2_0306(param_1); // NOTE: original code error?
+    local_10eg = CAST2_0306(param_1); // NOTE: original code error?
 #endif
 #if !defined(MATCHING_BUILD) // added in FMT
-    if (local_10e != 0)
+    if (local_10eg != 0)
 #endif
     {
         switch (param_2)
         {
         default:
-            local_10a = 0x5140;
+            local_10ai = 0x5140;
             break;
         case 1:
-            local_10a = 16000;
+            local_10ai = 16000;
             break;
         case 2:
-            local_10a = 0x4b00;
+            local_10ai = 0x4b00;
             break;
         }
 
         // df30
-        ULTIMA_223c_AudioWhiteNoise(800, local_10a, 700);
+        ULTIMA_223c_AudioWhiteNoise(800, local_10ai, 700);
 
-        local_10e = CAST_1c36(local_82, local_102, param_3, param_1, local_10e);
-        local_10e++;
+        local_10eg = CAST_1c36(local_82l, local_102d, param_3, param_1, local_10eg);
+        local_10eg++;
 
-        for (local_10c = 1; local_10c < local_10e; local_10c++)
+        for (local_10ch = 1; local_10ch < local_10eg; local_10ch++)
         {
-            for (local_108 = 0x1f; local_108 > -1; local_108--)
+            for (local_108a = 0x1f; local_108a > -1; local_108a--)
             {
                 // dfac?
-                local_106 = &D_ba14[local_108]; // local_114
-                if (local_106->x == local_82[local_10c] && local_106->y == local_102[local_10c] &&
-                    (local_106->turnTimer & 0x80) == 0 && (local_106->flags & COMBAT_FLAGS_DEAD) == 0 && local_106->flags != 0)
+                local_106b = &D_ba14[local_108a]; // local_114
+                if (local_106b->x == local_82l[local_10ch] && local_106b->y == local_102d[local_10ch] &&
+                    (local_106b->turnTimer & 0x80) == 0 && (local_106b->flags & COMBAT_FLAGS_DEAD) == 0 && local_106b->flags != 0)
                 {
-                    local_106->turnTimer |= 0x80;
+                    local_106b->turnTimer |= 0x80;
                     switch (param_2)
                     {
                     case 1:
                         // e012
-                        if (COMSUBS_0000(param_1, local_108, 0) == 0 && CAST_0000(local_108) == 0)
+                        if (COMSUBS_0000(param_1, local_108a, 0) == 0 && CAST_0000(local_108a) == 0)
                         {
-                            ULTIMA_3564(local_108);
-                            ULTIMA_68ae(local_108);
-                            COMSUBS_0312(local_108, param_1); // -> e034 -> e0b2
+                            ULTIMA_3564(local_108a);
+                            ULTIMA_68ae(local_108a);
+                            COMSUBS_0312(local_108a, param_1); // -> e034 -> e0b2
                         }
 
                         break;
 
                     case 2:
                         // e03c
-                        if (COMBAT_13e2(local_108, QUERY_STAT_DEX) <= ULTIMA_3abe())
+                        if (COMBAT_13e2(local_108a, QUERY_STAT_DEX) <= ULTIMA_3abe())
                         {
-                            ULTIMA_3564(local_108);
-                            COMBAT_18ba(local_108, param_1);
-                            COMSUBS_0312(local_108, param_1); // -> e034 -> e0b2
+                            ULTIMA_3564(local_108a);
+                            COMBAT_18ba(local_108a, param_1);
+                            COMSUBS_0312(local_108a, param_1); // -> e034 -> e0b2
                         }
 
                         break;
 
                     case 3:
                         // e05c
-                        ULTIMA_3564(local_108);
+                        ULTIMA_3564(local_108a);
 
-                        ULTIMA_3f14_IncreaseInt(&local_104->exp, COMBAT_1574(local_108, ULTIMA_3aae_Random(0x1e)), 9999);
-                        COMSUBS_0312(local_108, param_1); // -> e034 -> e0b2
+                        ULTIMA_3f14_IncreaseInt(&local_104c->exp, COMBAT_1574(local_108a, ULTIMA_3aae_Random(0x1e)), 9999);
+                        COMSUBS_0312(local_108a, param_1); // -> e034 -> e0b2
                         break;
 
                     case 4:
                         // e07e
-                        if (COMSUBS_0000(param_1, local_108, 0) == 0 && CAST_0000(local_108) == 0)
+                        if (COMSUBS_0000(param_1, local_108a, 0) == 0 && CAST_0000(local_108a) == 0)
                         {
-                            ULTIMA_3564(local_108);
+                            ULTIMA_3564(local_108a);
 
-                            ULTIMA_3f14_IncreaseInt(&local_104->exp, COMBAT_1574(local_108, 99), 9999); // -> e070
-                            COMSUBS_0312(local_108, param_1); // -> e034 -> e0b2
+                            ULTIMA_3f14_IncreaseInt(&local_104c->exp, COMBAT_1574(local_108a, 99), 9999); // -> e070
+                            COMSUBS_0312(local_108a, param_1); // -> e034 -> e0b2
                         }
                         break;
                     }
@@ -2198,10 +2198,10 @@ static void CAST_1f60(int param_1, int param_2, int param_3)
         }
 
         // e0c8
-        for (local_108 = 0x1f; local_108 >= 0; local_108--)
+        for (local_108a = 0x1f; local_108a >= 0; local_108a--)
         {
             // e0d1
-            D_ba14[local_108].turnTimer &= 0x7f;
+            D_ba14[local_108a].turnTimer &= 0x7f;
         }
     }
 }
