@@ -1,6 +1,12 @@
 cmake_minimum_required(VERSION 4.0)
 project(ultima5 C)
 
+# vars.c defines every variable vars.h declares (STUB), and the modules define their own
+# data as the original did: common symbols, as MSC used, let the two coexist.
+if (CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
+	add_compile_options(-fcommon)
+endif()
+
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(SDL3 REQUIRED sdl3)
 pkg_check_modules(SDL3_MIXER REQUIRED sdl3-mixer)

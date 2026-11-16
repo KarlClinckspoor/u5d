@@ -96,6 +96,7 @@ C_FLAGS += -I$(INCLUDE_PATH)
 S_FLAGS +=
 C_FLAGS += -DDOS
 C_FLAGS += -O2 -s
+C_FLAGS += -fcommon # vars.c and the modules both define the data (common symbols)
 LD_FLAGS += -lemu
 
 C_UPDATE_DEP_FLAG = -Wp,-MMD,"$(*D)/$(DEPDIR)/$(*F).d"
