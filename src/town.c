@@ -1026,7 +1026,13 @@ static void TOWN_0f02(void)
         }
         else if (local_a == TILE_MAP_POISON && D_587c_partyTile == TILE_ACTOR_AVATAR)
         {
-            // NOT MATCHING
+            // NOT MATCHING: the original compiles this loop without loop optimization: a
+            // plain for (jmp to the test, inc [bp-4], index recomputed with shl si,5), and
+            // one temporary fewer (frame 0Ch, ours 10h). #pragma loop_opt(off) here gives
+            // exactly that loop, but it also turns off the loop at 0103 (in the same if/else
+            // chain), even with loop_opt(on) right after this loop or with the outer do-while
+            // written as a goto. A label in the body, continue for each test, or the loop as
+            // a goto: no change or worse.
             // for (105d; 1067; 1064)
             for (local_6 = 0; local_6 < D_585b; local_6++)
             {
