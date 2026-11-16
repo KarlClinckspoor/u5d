@@ -40,7 +40,7 @@ class Fixup:
 
 
 class Object:
-    def __init__(self, path):
+    def __init__(self, path, data=None):
         self.path = path
         self.lnames = [None]
         self.segs = [None]
@@ -48,7 +48,7 @@ class Object:
         self.exts = [None]
         self.module = None
         self.comments = []
-        self._read(open(path, 'rb').read())
+        self._read(data if data is not None else open(path, 'rb').read())
 
     def seg(self, name):
         for s in self.segs[1:]:
@@ -132,6 +132,8 @@ class Object:
                     _, j = self._idx(r, j)
                     if si:
                         self.segs[si].publics[s] = off
+            elif base == MODEND:
+                break
             elif base == LEDATA:
                 si, j = self._idx(r, 0)
                 off = struct.unpack_from('<H', r, j)[0]
@@ -215,3 +217,27 @@ class Object:
                 continue
             seg, off = last
             seg.fixups.append(Fixup(off + dro, kind, self_rel, self._target(tm, ti), disp, frame))
+
+
+def library_modules(path):
+    """The object modules of an OMF library (.LIB): [(name, Object)]."""
+    d = open(path, 'rb').read()
+    if d[0] != 0xF0:
+        raise ValueError('%s is not an OMF library' % path)
+    page = struct.unpack_from('<H', d, 1)[0] + 3
+    out = []
+    i = page
+    while i < len(d) and d[i] == THEADR:
+        start = i
+        while True:
+            t = d[i]
+            n = struct.unpack_from('<H', d, i + 1)[0]
+            i += 3 + n
+            if t in (MODEND, MODEND + 1):
+                break
+        obj = Object('%s(%d)' % (path, start), d[start:i])
+        out.append((obj.module, obj))
+        i = (i + page - 1) // page * page
+        if i < len(d) and d[i] == 0xF1:       # end of the modules: the dictionary follows
+            break
+    return out
