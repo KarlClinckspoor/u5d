@@ -32,6 +32,7 @@ OVERLAY_BASE = {
     'SJOG': 0xbf80, 'CAST': 0xbf80, 'CMDS': 0xbf80, 'TALK': 0xbf80,
     'COMSUBS': 0xe1e0, 'ZSTATS': 0xe1e0, 'CAST2': 0xe1e0, 'FONT': 0xe1e0,
     'SHOPPES2': 0xe1e0, 'SHOPPES3': 0xe1e0,
+    'FLAMES': 0xa290,         # a 32-byte delay routine, loaded into area 2
 }
 OVERLAYS = list(OVERLAY_BASE)
 

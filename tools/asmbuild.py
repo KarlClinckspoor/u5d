@@ -27,7 +27,7 @@ def assemble_many(paths, dosbox=None):
     for p in paths:
         n = os.path.splitext(os.path.basename(p))[0].upper()
         shutil.copy(p, os.path.join(d, n + '.ASM'))
-        lines.append('D:\\MASM /Mx %s.ASM,%s.OBJ; > %s.LOG' % (n, n, n))
+        lines.append('D:\\MASM /Mx %s.ASM,%s.OBJ,%s.LST; > %s.LOG' % (n, n, n, n))
     open(os.path.join(d, 'B.BAT'), 'w', newline='').write('\r\n'.join(lines) + '\r\n')
     conf = os.path.join(d, 'c.conf')
     open(conf, 'w').write('[sdl]\noutput=surface\n[cpu]\ncycles=max\n[log]\nlogfile=\n[autoexec]\n'
@@ -41,6 +41,11 @@ def assemble_many(paths, dosbox=None):
     for p in paths:
         n = os.path.splitext(os.path.basename(p))[0].upper()
         log = open(os.path.join(d, n + '.LOG'), encoding='latin-1').read() if os.path.exists(os.path.join(d, n + '.LOG')) else ''
+        lst = os.path.join(d, n + '.LST')
+        if os.path.exists(lst):                  # each error with the line it is about
+            L = open(lst, encoding='latin-1').read().splitlines()
+            log += ''.join('%s\n    %s\n' % (L[i - 1].strip()[:100], L[i].strip())
+                           for i in range(1, len(L)) if re.search(r'error \d+:', L[i]))
         o = os.path.join(d, n + '.OBJ')
         ok = os.path.exists(o) and re.search(r'\b0 Severe', log)
         if ok:
@@ -73,7 +78,7 @@ def main():
             print('%-14s MASM failed:\n%s' % (os.path.basename(p), log))
             bad += 1
             continue
-        seg = obj.seg('_TEXT')
+        seg = next(s for s in obj.segs[1:] if s.cls == 'CODE' and s.length)
         orig = img[r[0]:r[1]]
         masked = {k for fx in seg.fixups for k in range(fx.loc, fx.loc + fx.size)}
         diffs = [k for k in range(min(len(orig), seg.length)) if k not in masked and seg.data[k] != orig[k]]

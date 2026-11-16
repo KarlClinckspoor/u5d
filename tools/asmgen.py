@@ -37,6 +37,20 @@ ASM_DIR = os.path.join(u5.SRC, 'asm')
 MASM_DIR = os.path.join(u5.BUILD, 'masm')
 
 
+# PLINK86's far segments in ULTIMA.EXE (paragraph -> name, class, alignment), and what a
+# relocated word holding each segment value is written as
+SEGMENTS = {0x72e: ('PLMGR_TEXT', 'CODE', 'PARA'), 0x778: ('PLTAB', 'CODE', 'PARA'),
+            0x81d: ('PLSTART_TEXT', 'CODE', 'PARA')}
+SEGVALUES = {0: '_TEXT', u5.DGROUP_SEG: 'DGROUP', 0x72e: 'PLMGR_TEXT', 0x778: 'PLTAB', 0x81d: 'PLSTART_TEXT'}
+
+
+def segname(val):
+    """What a relocated word holding paragraph val is written as. Paragraphs that are no
+    module's segment (PLINK86's overlay boundaries, the end of memory) are named SEG_xxxx:
+    empty segments that tools/u5link.py places at that paragraph."""
+    return SEGVALUES.get(val, 'SEG_%04X' % val)
+
+
 def exported(name):
     """The name as MSC 5.1 (/Gc) puts it in an object: upper case, at most 31 characters."""
     return name.upper()[:31]
@@ -64,8 +78,12 @@ def data_symbols():
 
 
 class Gen:
-    def __init__(self, name, start, end, entries=(), gamedata=None):
+    def __init__(self, name, start, end, entries=(), gamedata=None, seg=0):
         self.name, self.start, self.end = name, start, end
+        # code of a far segment (PLINK86's): offsets are relative to the segment's base
+        self.seg = seg
+        self.segbase = seg * 16
+        self.segname = SEGMENTS.get(seg, ('_TEXT', 'CODE', 'BYTE'))
         self.gamedata = u5.find_gamedata(gamedata)
         self.img = u5.exe_image(self.gamedata)
         self.relocs = relocations(self.gamedata)
@@ -73,14 +91,27 @@ class Gen:
         self.funcs = {a: exported(n) for a, (n, f, t) in tags.items()}
         self.funcs.update({a: exported('_' + n.split()[0]) for a, n in rootmap.crt_names().items()
                            if a not in self.funcs and re.match(r'^\w+$', n.split()[0])})
-        self.data = data_symbols()
+        self.data = data_symbols() if not seg else {}
         self.entries = sorted(set([a for a in self.funcs if start <= a < end] + list(entries)))
         self.force_db = set()        # instruction addresses to write as bytes
 
     # -- analysis
     def decode_at(self, a):
-        d = I.Decoder(16, self.img[a:self.end], ip=a)
-        return next(iter(d))
+        """The instruction at image address a; INVALID unless it is 8086 code (anything
+        newer, or with 32-bit prefixes, is data the original happens to keep there)."""
+        d = I.Decoder(16, self.img[a:self.end], ip=a - self.segbase)
+        x = next(iter(d))
+        if x.code != I.Code.INVALID and (any(f not in (I.CpuidFeature.INTEL8086, I.CpuidFeature.INTEL8086_ONLY)
+                                             for f in x.cpuid_features()) or x.op_count and any(
+                x.op_kind(k) == I.OpKind.MEMORY and x.memory_base in (I.Register.ESI, I.Register.EDI, I.Register.EBX,
+                                                                      I.Register.EBP, I.Register.EAX, I.Register.ESP)
+                for k in range(x.op_count))):
+            return I.Instruction()             # code INVALID
+        return x
+
+    def target(self, x):
+        """A near branch's target as an image address."""
+        return (self.segbase + x.near_branch16) & 0xfffff
 
     def walk(self):
         """Instruction starts reached from the entries, plus code nothing calls directly
@@ -130,7 +161,7 @@ class Gen:
                 fc = ins.flow_control
                 if ins.op0_kind == I.OpKind.NEAR_BRANCH16 and fc in (
                         I.FlowControl.CALL, I.FlowControl.UNCONDITIONAL_BRANCH, I.FlowControl.CONDITIONAL_BRANCH):
-                    t = ins.near_branch16
+                    t = self.target(ins)
                     if self.start <= t < self.end:
                         todo.append(t)
                 if fc in (I.FlowControl.RETURN, I.FlowControl.UNCONDITIONAL_BRANCH, I.FlowControl.INDIRECT_BRANCH,
@@ -149,12 +180,30 @@ class Gen:
         ins = self.walk()
         targets = set()
         externs = {}
+        # an address inside an instruction (code that jumps into the middle of another
+        # instruction) cannot carry a label: a branch there is written as bytes
+        inside = {}
+        for a, x in ins.items():
+            for k in range(a + 1, a + x.len):
+                inside[k] = a
         for a, x in ins.items():
             if x.op0_kind == I.OpKind.NEAR_BRANCH16:
-                t = x.near_branch16
-                if self.start <= t < self.end:
+                t = self.target(x)
+                if t in inside and t in ins:
+                    # both an instruction and the middle of another: the outer one becomes
+                    # bytes with the label between them
+                    self.force_db.add(inside[t])
                     targets.add(t)
+                elif t in inside:
+                    self.force_db.add(a)
+                elif self.start <= t < self.end:
+                    if a not in self.force_db:
+                        targets.add(t)
                 else:
+                    externs[self.label(t)] = 'NEAR'
+            if x.code in (I.Code.CALL_PTR1616, I.Code.JMP_PTR1616):
+                t = struct.unpack_from('<H', self.img, a + 1)[0]
+                if any(a + 3 <= r < a + 5 for r in (a + 3,) if r in self.relocs) and not self.start <= t < self.end:
                     externs[self.label(t)] = 'NEAR'
         fmt = I.Formatter(I.FormatterSyntax.MASM)
         fmt.uppercase_hex = False
@@ -183,7 +232,17 @@ class Gen:
                 n = 1
                 if a in ins:                      # forced to bytes: keep it as one line with its text
                     n = ins[a].len
-                    body.append('\tdb\t%s\t; %s' % (', '.join('0%02xh' % b for b in self.img[a:a + n]), fmt.format(ins[a])))
+                    cut = [k for k in range(1, n) if a + k in targets]
+                    if not cut:
+                        body.append('\tdb\t%s\t; %s' % (', '.join('0%02xh' % b for b in self.img[a:a + n]), fmt.format(ins[a])))
+                    else:                         # code jumps into the middle: labels between the bytes
+                        body.append('\t\t\t; %s (overlapping code)' % fmt.format(ins[a]))
+                        prev = 0
+                        for k in cut + [n]:
+                            if prev:
+                                body.append('%s:' % self.label(a + prev))
+                            body.append('\tdb\t%s' % ', '.join('0%02xh' % b for b in self.img[a + prev:a + k]))
+                            prev = k
                 else:
                     while a + n < self.end and a + n not in ins and a + n not in targets and a + n not in self.entries and n < 8:
                         n += 1
@@ -192,17 +251,26 @@ class Gen:
         hdr = ['; %s.ASM: ULTIMA.EXE CS:%04x-%04x, hand-written assembly in the original.' % (self.name, self.start, self.end),
                '; Drafted from the original bytes by tools/asmgen.py and checked by tools/asmbuild.py.',
                '', '\tTITLE\t%s' % self.name,
-               "_TEXT\tSEGMENT  BYTE PUBLIC 'CODE'", '_TEXT\tENDS',
-               "_DATA\tSEGMENT  WORD PUBLIC 'DATA'", '_DATA\tENDS',
-               "CONST\tSEGMENT  WORD PUBLIC 'CONST'", 'CONST\tENDS',
-               "_BSS\tSEGMENT  WORD PUBLIC 'BSS'", '_BSS\tENDS',
-               'DGROUP\tGROUP\tCONST, _BSS, _DATA',
-               '\tASSUME\tCS: _TEXT, DS: DGROUP, SS: DGROUP, ES: DGROUP', '']
+               "%s\tSEGMENT  %s PUBLIC '%s'" % (self.segname[0], self.segname[2], self.segname[1]),
+               '%s\tENDS' % self.segname[0]]
+        text = '\n'.join(body)
+        others = [n for v, n in sorted(SEGVALUES.items())] + sorted(set(re.findall(r'\bSEG_[0-9A-F]{4}\b', text)))
+        for n in others:                                # other segments a relocated word names
+            if n not in ('_TEXT', 'DGROUP', self.segname[0]) and re.search(r'\b%s\b' % n, text):
+                hdr += ["%s\tSEGMENT  PARA PUBLIC '%s'" % (n, 'MARK' if n.startswith('SEG_') else 'CODE'),
+                        '%s\tENDS' % n]
+        if self.segname[0] != '_TEXT' and re.search(r'\b_TEXT\b', text):
+            hdr += ["_TEXT\tSEGMENT  BYTE PUBLIC 'CODE'", '_TEXT\tENDS']
+        hdr += ["_DATA\tSEGMENT  WORD PUBLIC 'DATA'", '_DATA\tENDS',
+                "CONST\tSEGMENT  WORD PUBLIC 'CONST'", 'CONST\tENDS',
+                "_BSS\tSEGMENT  WORD PUBLIC 'BSS'", '_BSS\tENDS',
+                'DGROUP\tGROUP\tCONST, _BSS, _DATA',
+                '\tASSUME\tCS: %s, DS: DGROUP, SS: DGROUP, ES: DGROUP' % self.segname[0], '']
         for n in sorted(externs):
             hdr.append('\tEXTRN\t%s:%s' % (n, externs[n]))
         for n, size in sorted(datarefs.items()):
             hdr.append('\tEXTRN\t%s:%s' % (n, {1: 'BYTE', 2: 'WORD'}.get(size, 'BYTE')))
-        out = hdr + ['', '_TEXT\tSEGMENT'] + body + ['', '_TEXT\tENDS', '\tEND', '']
+        out = hdr + ['', '%s\tSEGMENT' % self.segname[0]] + body + ['', '%s\tENDS' % self.segname[0], '\tEND', '']
         return '\r\n'.join(out)
 
     def instr_text(self, x, fmt, externs, datarefs, a):
@@ -213,9 +281,7 @@ class Gen:
             # segment fixup and the link rebuilds the relocation entry
             r = rel[0]
             val = struct.unpack_from('<H', self.img, r)[0]
-            seg = {0: '_TEXT', u5.DGROUP_SEG: 'DGROUP'}.get(val)
-            if seg is None:
-                return None
+            seg = segname(val)
             if x.mnemonic == I.Mnemonic.MOV and x.op1_kind == I.OpKind.IMMEDIATE16 and r == a + x.len - 2:
                 return 'mov\t%s,%s' % (fmt.format_operand(x, 0), seg)
             if x.code in (I.Code.CALL_PTR1616, I.Code.JMP_PTR1616) and r == a + 3 and val == 0:
@@ -223,8 +289,11 @@ class Gen:
                 return 'db\t0%02xh\r\n\tdw\tOFFSET %s\r\n\tdw\tSEG %s' % (self.img[a], self.label(tgt), self.label(tgt))
             return None
         t = fmt.format(x)
+        if x.mnemonic == I.Mnemonic.RETF or x.code in (I.Code.CALL_PTR1616, I.Code.JMP_PTR1616):
+            # MASM 4.0 has no RETF outside a FAR PROC, nor a far jump to a literal seg:offset
+            return 'db	%s	; %s' % (', '.join('0%02xh' % c for c in self.img[a:a + x.len]), t)
         if x.op0_kind == I.OpKind.NEAR_BRANCH16:
-            tgt = x.near_branch16
+            tgt = self.target(x)
             lab = self.label(tgt)
             mn = t.split()[0]
             if x.mnemonic == I.Mnemonic.JMP and x.len == 2:
@@ -268,7 +337,7 @@ def build(name, gen, keep=False, rounds=80):
         if obj is None:
             print(log)
             sys.exit('MASM failed on %s' % path)
-        seg = obj.seg('_TEXT')
+        seg = obj.seg(gen.segname[0])
         orig = gen.img[gen.start:gen.end]
         masked = {k for fx in seg.fixups for k in range(fx.loc, fx.loc + fx.size)}
         if seg.length != len(orig):
@@ -310,7 +379,7 @@ def identical(name, gen):
     obj, log = asmbuild.assemble(path)
     if obj is None:
         return False
-    seg = obj.seg('_TEXT')
+    seg = obj.seg(gen.segname[0])
     orig = gen.img[gen.start:gen.end]
     masked = {k for fx in seg.fixups for k in range(fx.loc, fx.loc + fx.size)}
     return seg.length == len(orig) and all(k in masked or seg.data[k] == orig[k] for k in range(len(orig)))
@@ -342,8 +411,9 @@ def main():
     ap.add_argument('start', type=lambda x: int(x, 16))
     ap.add_argument('end', type=lambda x: int(x, 16))
     ap.add_argument('--entry', action='append', default=[], type=lambda x: int(x, 16))
+    ap.add_argument('--seg', default='0', type=lambda x: int(x, 16), help='a far segment (paragraph), e.g. 072e')
     a = ap.parse_args()
-    g = Gen(a.name.upper(), a.start, a.end, a.entry)
+    g = Gen(a.name.upper(), a.start, a.end, a.entry, seg=a.seg)
     ok = build(a.name.upper(), g)
     sys.exit(0 if ok else 1)
 
