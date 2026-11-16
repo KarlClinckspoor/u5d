@@ -74,7 +74,8 @@ Done, each checked by a tool:
 - **Assembly:** all of the resident image's hand-written assembly (`src/asm/A*.ASM`, nine
   modules) and PLINK86's parts (`PLMGR`, `PLSTART`, `PLTAB`) assemble to the original bytes
   with MASM 4.0 (`tools/asmbuild.py`). Every relocated word has its segment fixup.
-  Three overlays hold assembly too: all of FLAMES.OVL (`AFLAMES.ASM`), and the last two
+  Four overlays hold assembly too: all of FLAMES.OVL (`AFLAMES.ASM`), NPC.OVL's last routine
+  (`ANPC.ASM`), and the last two
   routines of FONT.OVL (`AFONT.ASM`) and of INTRO.OVL (`AINTRO.ASM`, the video driver calls
   u5d had as `DRV_69`). Their first line names the overlay range (file offsets)
   ("FONT.OVL 0e52-0e97"); asmbuild compares them with the .OVL file and u5link places them by

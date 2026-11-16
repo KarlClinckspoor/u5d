@@ -1178,8 +1178,7 @@ void NPC_0db4(int param_1)
     // 12d8
 }
 
-// ASM
-// use literal conversion from FMT
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm/ANPC.ASM
 int NPC_12e0(int param_1, char param_2)
 {
     int i;
@@ -1211,3 +1210,4 @@ int NPC_12e0(int param_1, char param_2)
 
     return ret;
 }
+#endif
