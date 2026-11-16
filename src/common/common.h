@@ -171,4 +171,12 @@ typedef int bool;
 #define _XSTATIC_TEXT(addr, text) _STATIC_TEXT(addr, text)
 #endif
 
+// A "return;" in a function that returns a value: the original returns whatever AX holds
+// there. Elsewhere the function returns the value it would have had.
+#if defined(TARGET_DOS16)
+#define RETURN_AX(value) return
+#else
+#define RETURN_AX(value) return (value)
+#endif
+
 #endif

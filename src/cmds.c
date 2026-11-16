@@ -955,13 +955,10 @@ void CMDS_0eb4_XitCmd(void)
         if (CMDS_073e() == 0)
         {
             ULTIMA_1850_PrintString(_TEXT(0x4386, "\nNo land nearby!\n"));
-        }
-        else
-        {
-            ULTIMA_1850_PrintString(_TEXT(0x4398, "\nNot here!\n"));
-            // -> ce4c
+            return;
         }
 
+        ULTIMA_1850_PrintString(_TEXT(0x4398, "\nNot here!\n"));
         return;
 
     case TILE_ACTOR_HORSE:
@@ -975,20 +972,19 @@ void CMDS_0eb4_XitCmd(void)
         if (CMDS_073e() == 0)
         {
             ULTIMA_1850_PrintString(_TEXT(0x43ac, "\nNo land nearby!\n"));
+            return;
         }
-        else if ((local_8 & 0xfe) == TILE_MAP_6A)
+
+        if ((local_8 & 0xfe) == TILE_MAP_6A)
         {
             ULTIMA_1850_PrintString(_TEXT(0x43be, "\nNot here!\n"));
-            // -> ce4c
+            return;
         }
-        else
-        {
-            ULTIMA_1850_PrintString(_TEXT(0x43ca, "skiff!\n"));
-            local_4_ab = D_587c_partyTile;
-            D_587c_partyTile = TILE_ACTOR_AVATAR;
-            break;
-        }
-        return;
+
+        ULTIMA_1850_PrintString(_TEXT(0x43ca, "skiff!\n"));
+        local_4_ab = D_587c_partyTile;
+        D_587c_partyTile = TILE_ACTOR_AVATAR;
+        break;
 
     case TILE_ACTOR_FRIGATE_24:
         // cf1c
@@ -1045,6 +1041,7 @@ static int CMDS_1030(char* param_1)
 {
     int local_c;
     int local_a;
+    int local_8;
     int local_6;
     int local_4_ab;
 
@@ -1062,7 +1059,7 @@ static int CMDS_1030(char* param_1)
         {
             // d002
             ULTIMA_1850_PrintString(_TEXT(0x440b, "\nNo effect!\n"));
-            //
+            RETURN_AX(local_6);
         }
         else
         {
@@ -1071,8 +1068,7 @@ static int CMDS_1030(char* param_1)
                 if (D_5c5a[local_c]._0_tile == TILE_ACTOR_SHADOWLORD)
                 {
                     ULTIMA_1850_PrintString(_TEXT(0x4418, "\nNo effect!\n"));
-
-                    goto END;
+                    RETURN_AX(local_6);
                 }
             }
 
@@ -1080,10 +1076,12 @@ static int CMDS_1030(char* param_1)
             local_c = ULTIMA_38e4();
             ULTIMA_3a74(TILE_ACTOR_SHADOWLORD, TILE_ACTOR_SHADOWLORD, D_5896_map_x, D_5897_map_y - 2, D_5895_map_level, 0, local_c);
 
-            for (local_4_ab = 0x1f; local_4_ab >= 0; local_4_ab--)
+            local_4_ab = 0x1f;
+            for (local_8 = 0x1f; local_8 >= 0; local_8--)
             {
-                if (D_659e[local_4_ab] == 0)
+                if (D_659e[local_8] == 0)
                 {
+                    local_4_ab = local_8;
                     break;
                 }
             }
@@ -1094,17 +1092,17 @@ static int CMDS_1030(char* param_1)
             D_5f5e[local_4_ab]._4_y = D_5897_map_y - 2;
             D_5f5e[local_4_ab]._6_z = D_5895_map_level;
 
-            for (local_a = 0; local_a < 4; local_a++)
+            for (local_8 = 0; local_8 < 4; local_8++)
             {
-                D_5d5e[local_4_ab].time[local_a] = 0;
+                D_5d5e[local_4_ab].time[local_8] = 0;
             }
 
-            for (local_a = 0; local_a < 3; local_a++)
+            for (local_8 = 0; local_8 < 3; local_8++)
             {
-                D_5d5e[local_4_ab].type[local_a] = 6;
-                D_5d5e[local_4_ab].x[local_a] = D_5896_map_x;
-                D_5d5e[local_4_ab].y[local_a] = D_5897_map_y - 2;
-                D_5d5e[local_4_ab].z[local_a] = D_5895_map_level;
+                D_5d5e[local_4_ab].type[local_8] = 6;
+                D_5d5e[local_4_ab].x[local_8] = D_5896_map_x;
+                D_5d5e[local_4_ab].y[local_8] = D_5897_map_y - 2;
+                D_5d5e[local_4_ab].z[local_8] = D_5895_map_level;
             }
 
             D_659e[local_4_ab] = 0xfc;
@@ -1127,15 +1125,15 @@ static int CMDS_1030(char* param_1)
              */
 
             local_6 = 0;
+        L_d1e4:
+            return local_6;
         }
     }
     else
     {
         ULTIMA_1850_PrintString(_TEXT(0x443c, "\nNo effect!\n"));
+        RETURN_AX(local_6);
     }
-
-END:
-    return local_6;
 }
 
 // meditate

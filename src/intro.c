@@ -1,7 +1,8 @@
-// The introduction's tables are const in the original: MSC 5.1 then keeps values read from
-// them in registers across calls (INTRO_014e). vars.h declares them without const, so its
-// declarations are renamed out of the way here.
-// TODO: declare them const in vars.h and drop this.
+// These tables are declared const here, and vars.h's declarations are renamed out of the way.
+// But common.h defines const away in the DOS build, so const changes nothing there. A real
+// const table does let MSC keep values read from it in registers across calls (tried on
+// DUNGEON_111e). It also moves the table from _DATA to CONST, where the original's tables
+// are not.
 #define D_306c D_306c_vars_h
 #define D_30c4 D_30c4_vars_h
 #define D_30da D_30da_vars_h

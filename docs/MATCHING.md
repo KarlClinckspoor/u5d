@@ -411,6 +411,19 @@ Each entry gives the evidence. Add to this list as you learn.
     instead.
   - Still open: ZSTATS_0c5c (all its messages jump to the ammunition one; an if/else
     around the rest of the function is not enough) and probably ULTIMA_4402 and 4552.
+- **Early returns or if/else decide the kept copy.** CMDS_0EB4 is the other way round
+  from NPC_0d00. Its carpet and skiff cases were if/else chains, and the copy in the last
+  else falls through and is kept. The original has `if (...) { print; return; }` for
+  each, every copy ends in a jump, and the first one is kept.
+- **`return;` in a function with a value.** CMDS_1030's "No effect!" paths jump straight to
+  the epilogue without loading AX: the original had a bare `return;`. `RETURN_AX(value)`
+  (common.h) is that `return;` in the DOS build and `return value;` elsewhere.
+- **Table values kept in registers across calls** (DUNGEON_111e and others): a truly
+  `const` table gives this code, because MSC then knows a call can't change it. But it
+  also moves the table from `_DATA` to CONST, where the original's isn't. Note that
+  common.h defines `const` away in the DOS build, so a `const` in the source means nothing
+  there. `static`, a const-qualified cast and a `register` local in an inner block don't
+  give it either (the last takes a stack slot). Still open.
 - **A label stops constant propagation.** SHOPPES2_00ac sets `local_4 = 0` and then
   indexes with it. The original reloads local_4 from the stack, where MSC would fold the 0.
   A label between the two statements gives the original's code.
