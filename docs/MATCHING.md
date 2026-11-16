@@ -209,6 +209,32 @@ COMBAT, COMSUBS, ENDGAME, FONT, LOOKOBJ, NPC, SHOPPES, SHOPPES2, SJOG, TALK, ZST
 The `S_0x...` string arrays (`tools/strings.py`) were a stand-in for 5.0's aligned literals.
 They are to be replaced by plain literals once each module's CONST is placed.
 
+### Overlays of two objects
+
+Five overlays hold functions of both kinds: some use packed `_DATA` strings (5.1), later ones
+use CONST strings (5.0). Each was linked from two objects, a 5.1 part and then a 5.0 part,
+and u5d now has them as `NAME.c` and `NAMEb.c`:
+
+| Overlay | 5.0 part from | Its `_DATA` | Evidence |
+|---|---|---|---|
+| DUNGEON | `DUNGEON_104c` | DS:2de8, 328 bytes | D_2e10's strings start CONST at 6bb0 |
+| MAINOUT | `MAINOUT_109e` | DS:2bc0, 152 bytes | first function with CONST strings |
+| INTRO | `INTRO_1e22` | DS:3656, 39 bytes | D_3666's strings are in CONST |
+| OUTSUBS | `OUTSUBS_0658` | DS:3a26, 12 bytes | the only function with CONST strings |
+| CMDS | `CMDS_18be` | none | CMDS_17ec still uses packed strings |
+
+- **Data.** The 5.0 part's `_DATA` follows the 5.1 part's, as the link order puts it. In
+  every case the tables that follow the 5.1 part's last string are the 5.0 part's.
+  `match.py` finds both blocks at those addresses with every byte the same.
+- **INTRO's box ends.** INTRO_1f26 prints `"{"` and `""`, which sit packed in
+  `_DATA` at 3676 and 367a, next to its CONST string " Ultima IV ". MSC 5.0 puts every
+  literal in CONST (tested), so these two are initialised `char` arrays, `D_3676` and `D_367a`.
+- **Uncertain boundaries.** Where no function in between uses a string and both compilers
+  give the same code, the boundary cannot be seen. MAINOUT's could be anywhere from 0e4e to
+  109e, DUNGEON's at 1020 or 104c. The files take the latest possible start and say so.
+- **Tools.** `match.py` ends a function at the next function of either object. `u5link.py`
+  places the second object where its first function's name says.
+
 ## What MSC 5.1 does
 
 Each entry gives the evidence. Add to this list as you learn.

@@ -8,18 +8,23 @@ pkg_check_modules(SDL3_MIXER REQUIRED sdl3-mixer)
 set(SOURCES
 	src/town.c
 	src/mainout.c
+	src/mainoutb.c
 	src/dungeon.c
+	src/dungeonb.c
 	src/intro.c
+	src/introb.c
 	src/npc.c
 	src/combat.c
 	src/blckthrn.c
 	src/lookobj.c
 	src/dnglook.c
 	src/outsubs.c
+	src/outsubsb.c
 	src/shoppes.c
 	src/endgame.c
 	src/sjog.c
 	src/cmds.c
+	src/cmdsb.c
 	src/cast.c
 	src/talk.c
 	src/cast2.c

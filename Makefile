@@ -7,18 +7,23 @@ OBJS :=
 OBJS += \
 	src/town.o \
 	src/mainout.o \
+	src/mainoutb.o \
 	src/dungeon.o \
+	src/dungeonb.o \
 	src/intro.o \
+	src/introb.o \
 	src/npc.o \
 	src/combat.o \
 	src/blckthrn.o \
 	src/lookobj.o \
 	src/dnglook.o \
 	src/outsubs.o \
+	src/outsubsb.o \
 	src/shoppes.o \
 	src/endgame.o \
 	src/sjog.o \
 	src/cmds.o \
+	src/cmdsb.o \
 	src/cast.o \
 	src/talk.o \
 	src/cast2.o \
@@ -37,7 +42,13 @@ OBJS += \
 	src/5000.o \
 	src/6000.o \
 	src/7000.o \
-	src/r0d72.o \n	src/r1850.o \n	src/r1b38.o \n	src/r1dda.o \n	src/r1fa0.o \n	src/r216c.o \n	src/savegame.o \
+	src/r0d72.o \
+	src/r1850.o \
+	src/r1b38.o \
+	src/r1dda.o \
+	src/r1fa0.o \
+	src/r216c.o \
+	src/savegame.o \
 	src/grap_drv.o \
 	src/audio/audio.o \
 	src/audio/aud_adl.o \

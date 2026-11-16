@@ -16,6 +16,7 @@ passes only when they are identical.
 | 2026-11-15, data moved into modules, string arrays | 343 | 33 | 82 | 197 | 38 | 693 |
 | 2026-11-16, foreign strings, table sizes (last committed C) | 408 | 33 | 13 | 200 | 37 | 691 |
 | 2026-11-16, two compilers (5.1 + 5.0); assembly versions not counted | 487 | 18 | 5 | 75 | 20 | 605 |
+| 2026-11-16, MSC 5.0 slot hash; five overlays split into 5.1 + 5.0 objects | 500 | 14 | 5 | 71 | 15 | 605 |
 
 Most `SIZE` verdicts in `0000.c` and `1000.c` are routines that were hand-written assembly in
 the original and are C in u5d (step 5).
@@ -80,7 +81,11 @@ Done, each checked by a tool:
 
 Next, in order:
 
-1. **Finish the overlay C functions** (about 150 left; `build/match/status.tsv`).
+1. **Finish the overlay C functions** (about 105 left; `build/match/status.tsv`). Every
+   module now compiles with the compiler the original used, with 5.0's own slot hash, and
+   DUNGEON, MAINOUT, INTRO, OUTSUBS and CMDS are split into their 5.1 and 5.0 objects.
+   - Replace the `S_0x...` string arrays of the 5.0 modules with plain literals, and place
+     each 5.0 object's CONST in DGROUP (u5link, match.py).
 2. **Split the resident C into its original modules.** The runs between the assembly
    modules are 0d72, 1850-1b16, 1b38, 1dda-1eac, 1fa0-2056, 216c, and 2320-3072 / 3072-400c /
    400c-51a0 / 51a0-60ec / 60ec-6f1e (each with its own data in DGROUP), plus 7040-71aa.

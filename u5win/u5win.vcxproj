@@ -257,6 +257,7 @@
     <ClCompile Include="..\src\cast.c" />
     <ClCompile Include="..\src\cast2.c" />
     <ClCompile Include="..\src\cmds.c" />
+    <ClCompile Include="..\src\cmdsb.c" />
     <ClCompile Include="..\src\combat.c" />
     <ClCompile Include="..\src\common\settings.c" />
     <ClCompile Include="..\src\common\debug.c" />
@@ -267,6 +268,7 @@
     <ClCompile Include="..\src\comsubs.c" />
     <ClCompile Include="..\src\dnglook.c" />
     <ClCompile Include="..\src\dungeon.c" />
+    <ClCompile Include="..\src\dungeonb.c" />
     <ClCompile Include="..\src\endgame.c" />
     <ClCompile Include="..\src\event\evt_dos.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -297,6 +299,7 @@
     <ClCompile Include="..\src\graphics\wd.c" />
     <ClCompile Include="..\src\grap_drv.c" />
     <ClCompile Include="..\src\intro.c" />
+    <ClCompile Include="..\src\introb.c" />
     <ClCompile Include="..\src\key\key_dos.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -308,8 +311,10 @@
     <ClCompile Include="..\src\key\key_sdl.c" />
     <ClCompile Include="..\src\lookobj.c" />
     <ClCompile Include="..\src\mainout.c" />
+    <ClCompile Include="..\src\mainoutb.c" />
     <ClCompile Include="..\src\npc.c" />
     <ClCompile Include="..\src\outsubs.c" />
+    <ClCompile Include="..\src\outsubsb.c" />
     <ClCompile Include="..\src\savegame.c" />
     <ClCompile Include="..\src\shoppes.c" />
     <ClCompile Include="..\src\shoppes2.c" />

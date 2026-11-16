@@ -92,6 +92,9 @@
     <ClCompile Include="..\src\cmds.c">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\cmdsb.c">
+      <Filter>src</Filter>
+    </ClCompile>
     <ClCompile Include="..\src\combat.c">
       <Filter>src</Filter>
     </ClCompile>
@@ -102,6 +105,9 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\dungeon.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\dungeonb.c">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\endgame.c">
@@ -119,16 +125,25 @@
     <ClCompile Include="..\src\intro.c">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\introb.c">
+      <Filter>src</Filter>
+    </ClCompile>
     <ClCompile Include="..\src\lookobj.c">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\mainout.c">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\mainoutb.c">
+      <Filter>src</Filter>
+    </ClCompile>
     <ClCompile Include="..\src\npc.c">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\outsubs.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\outsubsb.c">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\shoppes.c">
