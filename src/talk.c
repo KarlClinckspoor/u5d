@@ -185,8 +185,16 @@ static int TALK_01e2(void)
             // 0230
             local_16_an = 0;
 
-            // 0243 (NOT MATCHING: loop structure)
-            for (local_14 = 0; local_14 < D_585b; local_14++)
+            // 0243 NOT MATCHING: one temporary short. The (int) cast is what makes MSC run
+            // the loop on an end pointer (cmp si,dx) as the original does, and != gives its
+            // je for an empty party. The original then stores the count in two unused
+            // temporaries (bp-16h and bp-1Ch, frame 1Ch); ours stores it once (frame 1Ah),
+            // so everything after is 3 bytes early and the jump at 029a fits in a short jump
+            // where the original needs jbe + jmp near. Tried without effect: < or > with the
+            // operands either way, (int)(uint)/(int)(u8)/(s16)/& 0xff/+ 0 on D_585b,
+            // ++local_14, += 1, a while loop, !(== STATUS_DEAD), local_16_an = local_16_an + 10.
+            // (long) and (uint) bounds are far worse.
+            for (local_14 = 0; local_14 != (int)D_585b; local_14++)
             {
                 // 025a
                 if (D_55a8_party[local_14].status != STATUS_DEAD)
@@ -207,7 +215,7 @@ static int TALK_01e2(void)
             }
 
             // 028f
-            if (D_57aa >= local_16_an)
+            if (D_57aa >= (uint)local_16_an) // jbe: an unsigned compare
             {
                 // 029a
                 D_57aa -= local_16_an;
