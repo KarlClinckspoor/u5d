@@ -14,6 +14,8 @@
 #include <string.h>
 
 
+u16 D_540c = 0; // this module's data (DS:540c)
+
 u16 ULTIMA_1b38_PollKeyWithCursor(void)
 {
     int local_6_an;

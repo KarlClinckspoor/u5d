@@ -23,28 +23,160 @@ DGROUP	GROUP	CONST, _BSS, _DATA
 	EXTRN	D_52EF_FORCEEGA:WORD
 	EXTRN	D_52F1_FORCETANDY:WORD
 	EXTRN	D_52F3_FORCEHERC:WORD
-	EXTRN	D_5350:WORD
-	EXTRN	D_5354:WORD
-	EXTRN	D_5356:WORD
-	EXTRN	D_5358:WORD
-	EXTRN	D_535A:WORD
-	EXTRN	D_535C:WORD
-	EXTRN	D_5386_CURRENT_TEXT_WINDOW_IDX:WORD
-	EXTRN	D_538E:WORD
-	EXTRN	D_5398_CURRENTCHARSET:WORD
-	EXTRN	D_539A_CURRENTTEXTWINDOW:WORD
-	EXTRN	D_53A4_UNDERLINE:WORD
-	EXTRN	D_53A6:WORD
-	EXTRN	D_53A8_INVERSE:WORD
-	EXTRN	D_53AA_TEXT_FG_COLOR:BYTE
-	EXTRN	D_53AB_TEXT_BG_COLOR:BYTE
-	EXTRN	D_53B4:WORD
-	EXTRN	D_53B6:WORD
-	EXTRN	D_53B8:WORD
-	EXTRN	D_53BA:WORD
-	EXTRN	D_53BC:WORD
-	EXTRN	D_53BE:WORD
 	EXTRN	D_5893_MAP_ID:BYTE
+
+; this module's own data in DGROUP (DS:5322-5402)
+_DATA	SEGMENT
+	PUBLIC	D_5322
+D_5322	LABEL	WORD
+	db	054h, 061h, 06Eh, 064h, 079h, 000h	; Tandy.
+	PUBLIC	D_5328
+D_5328	LABEL	WORD
+	db	030h, 053h, 038h, 053h, 040h, 053h, 048h, 053h, 043h, 047h, 041h, 02Eh	; 0S8S@SHSCGA.
+	db	044h, 052h, 056h, 000h, 045h, 047h, 041h, 02Eh, 044h, 052h, 056h, 000h	; DRV.EGA.DRV.
+	db	054h, 031h, 04Bh, 02Eh, 044h, 052h, 056h, 000h, 048h, 045h, 052h, 02Eh	; T1K.DRV.HER.
+	db	044h, 052h, 056h, 000h	; DRV.
+	PUBLIC	D_5350
+D_5350	LABEL	WORD
+	db	000h, 000h
+	PUBLIC	D_5352
+D_5352	LABEL	WORD
+	db	000h, 000h
+	PUBLIC	D_5354
+D_5354	LABEL	WORD
+	db	000h, 000h
+	PUBLIC	D_5356
+D_5356	LABEL	WORD
+	db	000h, 000h
+	PUBLIC	D_5358
+D_5358	LABEL	WORD
+	db	000h, 000h
+	PUBLIC	D_535A
+D_535A	LABEL	WORD
+	db	000h, 000h
+	PUBLIC	D_535C
+D_535C	LABEL	WORD
+	db	000h, 000h
+	PUBLIC	D_535E_TEXTWINDOWS
+D_535E_TEXTWINDOWS	LABEL	WORD
+	db	000h, 000h, 000h, 000h, 000h, 000h, 000h, 000h, 000h, 000h, 000h, 000h
+	db	000h, 000h, 000h, 000h, 000h, 000h, 000h, 000h, 000h, 000h, 000h, 000h
+	db	000h, 000h, 000h, 000h, 000h, 000h, 000h, 000h, 000h, 000h, 000h, 000h
+	db	000h, 000h, 000h, 000h
+	PUBLIC	D_5386_CURRENT_TEXT_WINDOW_IDX
+D_5386_CURRENT_TEXT_WINDOW_IDX	LABEL	WORD
+	db	000h, 000h
+	PUBLIC	D_5388_CURRENT_CHARSET_IDX
+D_5388_CURRENT_CHARSET_IDX	LABEL	WORD
+	db	000h, 000h
+	PUBLIC	D_538A
+D_538A	LABEL	WORD
+	db	000h, 000h
+	PUBLIC	D_538C
+D_538C	LABEL	WORD
+	db	000h, 000h
+	PUBLIC	D_538E
+D_538E	LABEL	WORD
+	db	001h, 000h
+	PUBLIC	D_5390
+D_5390	LABEL	WORD
+	db	005h, 000h
+	PUBLIC	D_5392
+D_5392	LABEL	WORD
+	db	004h, 000h
+	PUBLIC	D_5394
+D_5394	LABEL	WORD
+	db	032h, 012h, 000h, 000h	; 2...
+	PUBLIC	D_5398_CURRENTCHARSET
+D_5398_CURRENTCHARSET	LABEL	WORD
+	db	000h, 000h
+	PUBLIC	D_539A_CURRENTTEXTWINDOW
+D_539A_CURRENTTEXTWINDOW	LABEL	WORD
+	db	000h, 000h
+	PUBLIC	D_539C
+D_539C	LABEL	WORD
+	db	000h, 000h, 000h, 000h, 000h, 000h, 000h, 000h
+	PUBLIC	D_53A4_UNDERLINE
+D_53A4_UNDERLINE	LABEL	WORD
+	db	000h, 000h
+	PUBLIC	D_53A6
+D_53A6	LABEL	WORD
+	db	000h, 000h
+	PUBLIC	D_53A8_INVERSE
+D_53A8_INVERSE	LABEL	WORD
+	db	000h, 000h
+	PUBLIC	D_53AA_TEXT_FG_COLOR
+D_53AA_TEXT_FG_COLOR	LABEL	BYTE
+	db	000h
+	PUBLIC	D_53AB_TEXT_BG_COLOR
+D_53AB_TEXT_BG_COLOR	LABEL	BYTE
+	db	000h
+	PUBLIC	D_53AC
+D_53AC	LABEL	WORD
+	db	0FFh, 001h, 0FFh, 003h, 0FFh, 007h, 0FFh, 00Fh
+	PUBLIC	D_53B4
+D_53B4	LABEL	WORD
+	db	000h, 000h
+	PUBLIC	D_53B6
+D_53B6	LABEL	WORD
+	db	000h, 000h
+	PUBLIC	D_53B8
+D_53B8	LABEL	WORD
+	db	000h, 000h
+	PUBLIC	D_53BA
+D_53BA	LABEL	WORD
+	db	000h, 000h
+	PUBLIC	D_53BC
+D_53BC	LABEL	WORD
+	db	000h, 000h
+	PUBLIC	D_53BE
+D_53BE	LABEL	WORD
+	db	000h, 000h
+	PUBLIC	D_53C0
+D_53C0	LABEL	WORD
+	db	000h, 000h
+	PUBLIC	D_53C2
+D_53C2	LABEL	WORD
+	db	000h, 000h
+	PUBLIC	D_53C4
+D_53C4	LABEL	WORD
+	db	000h, 000h
+	PUBLIC	D_53C6
+D_53C6	LABEL	WORD
+	db	000h, 000h
+	PUBLIC	D_53C8
+D_53C8	LABEL	WORD
+	db	000h, 000h
+	PUBLIC	D_53CA
+D_53CA	LABEL	WORD
+	db	000h, 000h
+	PUBLIC	D_53CC
+D_53CC	LABEL	WORD
+	db	000h, 000h
+	PUBLIC	D_53CE
+D_53CE	LABEL	WORD
+	db	000h, 000h
+	PUBLIC	D_53D0
+D_53D0	LABEL	WORD
+	db	000h, 000h
+	PUBLIC	D_53D2
+D_53D2	LABEL	WORD
+	db	000h, 000h
+	PUBLIC	D_53D4
+D_53D4	LABEL	BYTE
+	db	000h
+	PUBLIC	D_53D5
+D_53D5	LABEL	BYTE
+	db	000h
+	PUBLIC	D_53D6
+D_53D6	LABEL	WORD
+	db	04Fh, 075h, 074h, 020h, 06Fh, 066h, 020h, 04Dh, 065h, 06Dh, 06Fh, 072h	; Out of Memor
+	db	079h, 02Eh, 02Eh, 02Eh, 00Dh, 00Ah, 024h, 000h	; y.....$.
+	PUBLIC	D_53EA
+D_53EA	LABEL	BYTE
+	db	000h, 000h, 000h, 000h, 000h, 000h, 000h, 000h, 000h, 000h, 000h, 000h
+	db	000h, 000h, 000h, 000h, 000h, 000h, 000h, 000h, 000h, 000h, 000h, 000h
+_DATA	ENDS
 
 _TEXT	SEGMENT
 
@@ -82,7 +214,7 @@ L_0e1c:
 	jne	L_0e3c
 	push di
 	push cx
-	mov si,5322h
+	mov si,OFFSET DGROUP:D_5322
 	dec di
 	mov cx,5
 	repe cmpsb
@@ -190,16 +322,16 @@ L_0ef3:
 	mov bx,2
 L_0f01:
 	shl bx,1
-	mov dx,[bx+5328h]
+	mov dx,D_5328[bx]
 	call	ULTIMA_125D_LOADRESOURCEFILEIMP
 	jb	L_0f12
-	mov ds:[5352h],bx
+	mov D_5352,bx
 	jae	L_0f24
 L_0f12:
 	or bx,bx
 	je	L_0f21
 	mov WORD PTR D_535C,ax
-	call dword ptr ds:[5394h]
+	call dword ptr D_5394
 	xor ax,ax
 	jmp	SHORT L_0f24
 L_0f21:
@@ -314,7 +446,7 @@ L_0fc6:
 	jmp	SHORT L_0fd4
 L_0fcb:
 	mov WORD PTR D_535C,ax
-	call dword ptr ds:[5394h]
+	call dword ptr D_5394
 	xor ax,ax
 L_0fd4:
 	pop ds
@@ -366,7 +498,7 @@ L_100b:
 	jmp	SHORT L_1026
 L_101d:
 	mov WORD PTR D_535C,ax
-	call dword ptr ds:[5394h]
+	call dword ptr D_5394
 	xor ax,ax
 L_1026:
 	pop ds
@@ -565,7 +697,7 @@ ULTIMA_1158_INITTIMER:
 
 	PUBLIC	ULTIMA_1184_INITTEXTWINDOW
 ULTIMA_1184_INITTEXTWINDOW:
-	mov si,535eh
+	mov si,OFFSET DGROUP:D_535E_TEXTWINDOWS
 	mov WORD PTR D_539A_CURRENTTEXTWINDOW,si
 	xor ax,ax
 	mov cx,4
@@ -634,7 +766,7 @@ L_1214:
 	push ax
 	mov	ax,DGROUP
 	mov ds,ax
-	mov si,535ah
+	mov si,OFFSET DGROUP:D_535A
 	inc word ptr [si]
 	pop ax
 	pop si
@@ -655,7 +787,7 @@ L_1233:
 	push bx
 	mov	bx,DGROUP
 	mov ds,bx
-	mov bx,535ch
+	mov bx,OFFSET DGROUP:D_535C
 	mov word ptr [bx],1
 	xor al,al
 	pop bx
@@ -668,7 +800,7 @@ L_1247:
 L_124a:
 	mov ax,3
 	int 10h
-	mov dx,53d6h
+	mov dx,OFFSET DGROUP:D_53D6
 	mov ah,9
 	int 21h
 	mov ax,4c01h
@@ -745,7 +877,7 @@ L_12ac:
 	jb	L_1321
 	mov WORD PTR D_53B8,bx
 	mov cx,4
-	mov dx,53b4h
+	mov dx,OFFSET DGROUP:D_53B4
 	mov ah,3fh
 	int 21h
 	jb	L_1321
@@ -812,13 +944,13 @@ L_1355:
 	mov bx,WORD PTR D_53BC
 	ret
 L_135a:
-	mov word ptr ds:[53d2h],9
-	mov word ptr ds:[53c2h],0
-	mov word ptr ds:[53c4h],0
-	mov word ptr ds:[53cch],102h
-	mov word ptr ds:[53d0h],200h
+	mov word ptr D_53D2,9
+	mov word ptr D_53C2,0
+	mov word ptr D_53C4,0
+	mov word ptr D_53CC,102h
+	mov word ptr D_53D0,200h
 	mov ax,WORD PTR D_5354
-	mov ds:[53c0h],ax
+	mov D_53C0,ax
 	mov bx,WORD PTR D_53B8
 	push ds
 	mov ds,WORD PTR D_53BE
@@ -829,17 +961,17 @@ L_135a:
 	pop ds
 L_1391:
 	push bp
-	mov ax,ds:[53c4h]
-	add ax,ds:[53d2h]
-	xchg ax,ds:[53c4h]
+	mov ax,D_53C4
+	add ax,D_53D2
+	xchg ax,D_53C4
 	mov cx,8
 	xor dx,dx
 	div cx
 	cmp ax,3fdh
 	jl	L_13d8
 	push dx
-	add dx,ds:[53d2h]
-	mov ds:[53c4h],dx
+	add dx,D_53D2
+	mov D_53C4,dx
 	mov cx,400h
 	mov bp,ax
 	sub cx,ax
@@ -875,16 +1007,16 @@ L_13e7:
 L_13ed:
 	pop ds
 	mov ax,bx
-	mov bx,ds:[53d2h]
+	mov bx,D_53D2
 	sub bx,9
 	shl bx,1
-	and ax,[bx+53ach]
+	and ax,D_53AC[bx]
 	pop bp
 	cmp ax,101h
 	jne	L_1411
 	mov cx,1800h
 	xor ax,ax
-	mov es,ds:[53c0h]
+	mov es,D_53C0
 	mov di,ax
 	rep stosw
 	ret
@@ -893,21 +1025,21 @@ L_1411:
 	je	L_1419
 	jmp	NEAR PTR L_14c5
 L_1419:
-	mov word ptr ds:[53d2h],9
-	mov word ptr ds:[53d0h],200h
-	mov word ptr ds:[53cch],102h
+	mov word ptr D_53D2,9
+	mov word ptr D_53D0,200h
+	mov word ptr D_53CC,102h
 	push bp
-	mov ax,ds:[53c4h]
-	add ax,ds:[53d2h]
-	xchg ax,ds:[53c4h]
+	mov ax,D_53C4
+	add ax,D_53D2
+	xchg ax,D_53C4
 	mov cx,8
 	xor dx,dx
 	div cx
 	cmp ax,3fdh
 	jl	L_1472
 	push dx
-	add dx,ds:[53d2h]
-	mov ds:[53c4h],dx
+	add dx,D_53D2
+	mov D_53C4,dx
 	mov cx,400h
 	mov bp,ax
 	sub cx,ax
@@ -943,42 +1075,42 @@ L_1481:
 L_1487:
 	pop ds
 	mov ax,bx
-	mov bx,ds:[53d2h]
+	mov bx,D_53D2
 	sub bx,9
 	shl bx,1
-	and ax,[bx+53ach]
+	and ax,D_53AC[bx]
 	pop bp
-	mov ds:[53c6h],ax
-	mov ds:[53c8h],ax
-	mov ds:[53d5h],al
-	mov ds:[53d4h],al
+	mov D_53C6,ax
+	mov D_53C8,ax
+	mov D_53D5,al
+	mov D_53D4,al
 	push es
 	mov es,WORD PTR D_53BA
-	mov di,ds:[53c2h]
+	mov di,D_53C2
 	stosb
 	pop es
-	inc word ptr ds:[53c2h]
+	inc word ptr D_53C2
 	cmp di,10h
 	jne	L_14c2
 	inc WORD PTR D_53BA
-	mov word ptr ds:[53c2h],0
+	mov word ptr D_53C2,0
 L_14c2:
 	jmp	NEAR PTR L_1391
 L_14c5:
-	mov ds:[53c6h],ax
-	mov ds:[53cah],ax
-	mov es,ds:[53c0h]
-	cmp ax,ds:[53cch]
+	mov D_53C6,ax
+	mov D_53CA,ax
+	mov es,D_53C0
+	cmp ax,D_53CC
 	jl	L_14e3
-	mov ax,ds:[53c8h]
-	mov ds:[53c6h],ax
-	mov al,ds:[53d4h]
+	mov ax,D_53C8
+	mov D_53C6,ax
+	mov al,D_53D4
 	push ax
-	inc word ptr ds:[53ceh]
+	inc word ptr D_53CE
 L_14e3:
-	cmp word ptr ds:[53c6h],0ffh
+	cmp word ptr D_53C6,0ffh
 	jle	L_1508
-	mov bx,ds:[53c6h]
+	mov bx,D_53C6
 	push ax
 	mov ax,bx
 	shl bx,1
@@ -986,59 +1118,59 @@ L_14e3:
 	pop ax
 	mov al,es:[bx+2]
 	push ax
-	inc word ptr ds:[53ceh]
+	inc word ptr D_53CE
 	mov ax,es:[bx]
-	mov ds:[53c6h],ax
+	mov D_53C6,ax
 	jmp	SHORT L_14e3
 L_1508:
 	push ds
 	pop es
-	mov ax,ds:[53c6h]
-	mov ds:[53d4h],al
-	mov ds:[53d5h],al
+	mov ax,D_53C6
+	mov D_53D4,al
+	mov D_53D5,al
 	push ax
-	inc word ptr ds:[53ceh]
-	mov cx,ds:[53ceh]
+	inc word ptr D_53CE
+	mov cx,D_53CE
 	jcxz	L_153f
 L_151e:
 	pop ax
 	push es
 	mov es,WORD PTR D_53BA
-	mov di,ds:[53c2h]
+	mov di,D_53C2
 	stosb
 	pop es
-	inc word ptr ds:[53c2h]
+	inc word ptr D_53C2
 	cmp di,10h
 	jne	L_153d
 	inc WORD PTR D_53BA
-	mov word ptr ds:[53c2h],0
+	mov word ptr D_53C2,0
 L_153d:
 	loop	L_151e
 L_153f:
-	mov ds:[53ceh],cx
-	mov bx,ds:[53cch]
+	mov D_53CE,cx
+	mov bx,D_53CC
 	push ax
 	mov ax,bx
 	shl bx,1
 	add bx,ax
 	pop ax
 	push es
-	mov es,ds:[53c0h]
-	mov al,ds:[53d5h]
+	mov es,D_53C0
+	mov al,D_53D5
 	mov es:[bx+2],al
-	mov ax,ds:[53c8h]
+	mov ax,D_53C8
 	mov es:[bx],ax
 	pop es
-	inc word ptr ds:[53cch]
-	mov ax,ds:[53cah]
-	mov ds:[53c8h],ax
-	mov bx,ds:[53cch]
-	cmp bx,ds:[53d0h]
+	inc word ptr D_53CC
+	mov ax,D_53CA
+	mov D_53C8,ax
+	mov bx,D_53CC
+	cmp bx,D_53D0
 	jl	L_1585
-	cmp word ptr ds:[53d2h],0ch
+	cmp word ptr D_53D2,0ch
 	je	L_1585
-	inc word ptr ds:[53d2h]
-	shl word ptr ds:[53d0h],1
+	inc word ptr D_53D2
+	shl word ptr D_53D0,1
 L_1585:
 	jmp	NEAR PTR L_1391
 
@@ -1229,7 +1361,7 @@ ULTIMA_1674_TESTOPENFILE:
 	jmp	SHORT L_169f
 L_1696:
 	mov WORD PTR D_535C,ax
-	call dword ptr ds:[5394h]
+	call dword ptr D_5394
 	xor ax,ax
 L_169f:
 	pop ds
@@ -1295,7 +1427,7 @@ L_16f0:
 	call	ULTIMA_17F4_APPLYCHAREFFECTS
 	mov WORD PTR D_5350,5dh
 	call DWORD PTR D_5350
-	mov si,53eah
+	mov si,OFFSET DGROUP:D_53EA
 	mov cx,4
 	cmp word ptr ds:[52c8h],3
 	jne	L_1728
@@ -1351,11 +1483,11 @@ L_1799:
 	or byte ptr [si+7],2
 	jmp	SHORT L_1767
 L_17a5:
-	db	083h, 036h, 0a8h, 053h, 001h	; xor word ptr ds:[53a8h],1
+	db	083h, 036h, 0a8h, 053h, 001h	; xor word ptr D_53A8_INVERSE,1
 	xor byte ptr [si+7],4
 	jmp	SHORT L_1767
 L_17b0:
-	db	083h, 036h, 0a4h, 053h, 001h	; xor word ptr ds:[53a4h],1
+	db	083h, 036h, 0a4h, 053h, 001h	; xor word ptr D_53A4_UNDERLINE,1
 	xor byte ptr [si+7],1
 	jmp	SHORT L_1767
 L_17bb:
@@ -1380,7 +1512,7 @@ L_17bb:
 ULTIMA_17F4_APPLYCHAREFFECTS:
 	mov si,di
 	push di
-	mov di,53eah
+	mov di,OFFSET DGROUP:D_53EA
 	push cx
 	mov cx,4
 	cmp word ptr ds:[52c8h],3

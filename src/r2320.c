@@ -14,6 +14,8 @@
 
 #include <stdlib.h>
 #include <time.h>
+u8 D_545e = 0xff;
+
 
 void FAR ULTIMA_2320_NoDiskSwapMessage(void)
 {

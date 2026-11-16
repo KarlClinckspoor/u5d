@@ -17,6 +17,31 @@ DGROUP	GROUP	CONST, _BSS, _DATA
 	EXTRN	D_5356:WORD
 	EXTRN	D_A9CE:BYTE
 
+; this module's own data in DGROUP (DS:5450-545e)
+_DATA	SEGMENT
+	PUBLIC	D_5450
+D_5450	LABEL	WORD
+	db	000h, 000h
+	PUBLIC	D_5452
+D_5452	LABEL	WORD
+	db	000h, 000h
+	PUBLIC	D_5454
+D_5454	LABEL	WORD
+	db	000h, 000h
+	PUBLIC	D_5456
+D_5456	LABEL	WORD
+	db	000h, 000h
+	PUBLIC	D_5458
+D_5458	LABEL	WORD
+	db	000h, 000h
+	PUBLIC	D_545A
+D_545A	LABEL	WORD
+	db	000h, 000h
+	PUBLIC	D_545C
+D_545C	LABEL	WORD
+	db	064h, 076h
+_DATA	ENDS
+
 _TEXT	SEGMENT
 
 	PUBLIC	ULTIMA_2192_AUDIOPULSE
@@ -36,7 +61,7 @@ L_21a4:
 	div cl
 	cbw
 L_21a9:
-	mov ds:[5454h],ax
+	mov D_5454,ax
 	mov ax,3ch
 	out 42h,al
 	mov al,ah
@@ -52,17 +77,17 @@ L_21c4:
 	push ax
 	push cx
 	add bx,[bp+4]
-	mov ax,ds:[5454h]
+	mov ax,D_5454
 	or ax,ax
 	je	L_21eb
 	mov cx,[bp+0ah]
-	mov ds:[5450h],cx
+	mov D_5450,cx
 L_21dc:
-	mov ds:[5452h],ax
+	mov D_5452,ax
 L_21df:
-	dec word ptr ds:[5452h]
+	dec word ptr D_5452
 	jne	L_21df
-	dec word ptr ds:[5450h]
+	dec word ptr D_5450
 	jne	L_21dc
 L_21eb:
 	pop cx
@@ -86,17 +111,17 @@ L_2204:
 	out 61h,al
 L_220a:
 	add bx,[bp+4]
-	mov ax,ds:[5454h]
+	mov ax,D_5454
 	or ax,ax
 	je	L_222a
 	mov cx,[bp+0ah]
-	mov ds:[5450h],cx
+	mov D_5450,cx
 L_221b:
-	mov ds:[5452h],ax
+	mov D_5452,ax
 L_221e:
-	dec word ptr ds:[5452h]
+	dec word ptr D_5452
 	jne	L_221e
-	dec word ptr ds:[5450h]
+	dec word ptr D_5450
 	jne	L_221b
 L_222a:
 	pop cx
@@ -120,20 +145,20 @@ ULTIMA_223C_AUDIOWHITENOISE:
 	push si
 	push di
 	push ds
-	mov word ptr ds:[5456h],0
+	mov word ptr D_5456,0
 	cmp BYTE PTR D_A9CE,0
 	je	L_2255
 	in al,61h
 	or al,3
 	out 61h,al
 L_2255:
-	mov ax,ds:[545ch]
+	mov ax,D_545C
 	add ax,9248h
 	mov cl,3
 	ror ax,cl
 	xor ax,9248h
 	add ax,11h
-	mov ds:[545ch],ax
+	mov D_545C,ax
 	mov bx,64h
 	mov cx,[bp+4]
 	sub cx,bx
@@ -153,16 +178,16 @@ L_2255:
 	mov cl,4
 	shr ax,cl
 	mov cx,[bp+8]
-	add ds:[5456h],cx
-	mov ds:[5458h],cx
+	add D_5456,cx
+	mov D_5458,cx
 L_229b:
-	mov ds:[545ah],ax
+	mov D_545A,ax
 L_229e:
-	dec word ptr ds:[545ah]
+	dec word ptr D_545A
 	jne	L_229e
-	dec word ptr ds:[5458h]
+	dec word ptr D_5458
 	jne	L_229b
-	mov ax,ds:[5456h]
+	mov ax,D_5456
 	cmp ax,[bp+6]
 	jl	L_2255
 	in al,61h

@@ -15,11 +15,36 @@ DGROUP	GROUP	CONST, _BSS, _DATA
 
 	EXTRN	D_1F7E:BYTE
 	EXTRN	D_5356:WORD
-	EXTRN	D_5420:WORD
-	EXTRN	D_5422:WORD
-	EXTRN	D_5424:WORD
-	EXTRN	D_5448:WORD
-	EXTRN	D_544A:WORD
+
+; this module's own data in DGROUP (DS:5420-5450)
+_DATA	SEGMENT
+	PUBLIC	D_5420
+D_5420	LABEL	WORD
+	db	000h, 000h
+	PUBLIC	D_5422
+D_5422	LABEL	WORD
+	db	000h, 000h
+	PUBLIC	D_5424
+D_5424	LABEL	WORD
+	db	000h, 000h
+	PUBLIC	D_5426
+D_5426	LABEL	WORD
+	db	000h, 000h, 000h, 000h, 001h, 000h, 001h, 000h, 002h, 000h, 002h, 000h
+	db	002h, 000h, 003h, 000h, 003h, 000h, 003h, 000h, 003h, 000h, 003h, 000h
+	db	003h, 000h, 003h, 000h, 004h, 000h, 004h, 000h, 004h, 000h
+	PUBLIC	D_5448
+D_5448	LABEL	WORD
+	db	000h, 000h
+	PUBLIC	D_544A
+D_544A	LABEL	WORD
+	db	000h, 000h
+	PUBLIC	D_544C
+D_544C	LABEL	WORD
+	db	000h, 000h
+	PUBLIC	D_544E
+D_544E	LABEL	WORD
+	db	000h, 000h
+_DATA	ENDS
 
 _TEXT	SEGMENT
 
@@ -105,7 +130,7 @@ ULTIMA_20C8_SOMEDELAY:
 	push ds
 	mov ax,WORD PTR D_5356
 	mov bx,[bp+6]
-	mov cx,[bx+5426h]
+	mov cx,D_5426[bx]
 	jcxz	L_20dc
 	shr ax,cl
 L_20dc:
@@ -146,8 +171,8 @@ L_2110:
 	int 21h
 	mov ax,es
 	pop es
-	mov ds:[544eh],bx
-	mov ds:[544ch],ax
+	mov D_544E,bx
+	mov D_544C,ax
 	push ds
 	push cs
 	pop ds
@@ -160,8 +185,8 @@ L_2138:
 	mov ax,WORD PTR D_5448
 	cmp ax,WORD PTR D_544A
 	jb	L_2138
-	mov ax,ds:[544ch]
-	mov dx,ds:[544eh]
+	mov ax,D_544C
+	mov dx,D_544E
 	push ds
 	mov ds,ax
 	mov al,1ch

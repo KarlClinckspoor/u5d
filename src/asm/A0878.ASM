@@ -14,16 +14,73 @@ DGROUP	GROUP	CONST, _BSS, _DATA
 	ASSUME	CS: _TEXT, DS: DGROUP, SS: DGROUP, ES: DGROUP
 
 	EXTRN	ULTIMA_125D_LOADRESOURCEFILEIMP:NEAR
-	EXTRN	D_52DA_PEN_COLOR:WORD
-	EXTRN	D_52F6:WORD
-	EXTRN	D_52F8:WORD
-	EXTRN	D_52FA:WORD
-	EXTRN	D_52FC:WORD
-	EXTRN	D_52FE:WORD
-	EXTRN	D_5300:WORD
-	EXTRN	D_5304:WORD
 	EXTRN	D_5350:WORD
 	EXTRN	D_535C:WORD
+
+; this module's own data in DGROUP (DS:52ba-5306)
+_DATA	SEGMENT
+	PUBLIC	D_52BA_VDP
+D_52BA_VDP	LABEL	WORD
+	db	000h, 000h, 008h, 000h, 008h, 000h, 010h, 000h, 010h, 000h
+	PUBLIC	D_52C4
+D_52C4	LABEL	WORD
+	db	000h, 000h, 000h, 000h
+	PUBLIC	D_52C8
+D_52C8	LABEL	WORD
+	db	000h, 000h, 000h, 000h
+	PUBLIC	D_52CC
+D_52CC	LABEL	WORD
+	db	000h, 000h
+	PUBLIC	D_52CE
+D_52CE	LABEL	WORD
+	db	000h, 000h
+	PUBLIC	D_52D0
+D_52D0	LABEL	WORD
+	db	000h, 000h
+	PUBLIC	D_52D2
+D_52D2	LABEL	WORD
+	db	03Fh, 001h
+	PUBLIC	D_52D4
+D_52D4	LABEL	WORD
+	db	000h, 000h
+	PUBLIC	D_52D6
+D_52D6	LABEL	WORD
+	db	0C7h, 000h, 000h, 000h
+	PUBLIC	D_52DA_PEN_COLOR
+D_52DA_PEN_COLOR	LABEL	WORD
+	db	000h, 000h, 000h, 000h, 000h, 001h, 002h, 003h, 004h, 005h, 006h, 007h
+	db	038h, 039h, 03Ah, 03Bh, 03Ch, 03Dh, 03Eh, 03Fh, 000h	; 89:;<=>?.
+	PUBLIC	D_52EF_FORCEEGA
+D_52EF_FORCEEGA	LABEL	WORD
+	db	000h, 000h
+	PUBLIC	D_52F1_FORCETANDY
+D_52F1_FORCETANDY	LABEL	WORD
+	db	000h, 000h
+	PUBLIC	D_52F3_FORCEHERC
+D_52F3_FORCEHERC	LABEL	WORD
+	db	000h, 000h, 090h
+	PUBLIC	D_52F6
+D_52F6	LABEL	WORD
+	db	000h, 000h
+	PUBLIC	D_52F8
+D_52F8	LABEL	WORD
+	db	000h, 000h
+	PUBLIC	D_52FA
+D_52FA	LABEL	WORD
+	db	000h, 000h
+	PUBLIC	D_52FC
+D_52FC	LABEL	WORD
+	db	000h, 000h
+	PUBLIC	D_52FE
+D_52FE	LABEL	WORD
+	db	000h, 000h
+	PUBLIC	D_5300
+D_5300	LABEL	WORD
+	db	000h, 000h, 000h, 000h
+	PUBLIC	D_5304
+D_5304	LABEL	WORD
+	db	0FFh, 0FFh
+_DATA	ENDS
 
 _TEXT	SEGMENT
 
@@ -68,7 +125,7 @@ ULTIMA_0892_INITIALIZEVIDEODRIV:
 	mov WORD PTR D_5304,ax
 	pop ax
 L_08b8:
-	mov bx,52bah
+	mov bx,OFFSET DGROUP:D_52BA_VDP
 	mov WORD PTR D_5350,3
 	call DWORD PTR D_5350
 L_08c5:
@@ -80,13 +137,13 @@ L_08c5:
 
 	PUBLIC	ULTIMA_08CA_INSIDECLIPWINDOW
 ULTIMA_08CA_INSIDECLIPWINDOW:
-	cmp ax,ds:[52d0h]
+	cmp ax,D_52D0
 	jl	L_08e4
-	cmp ax,ds:[52d2h]
+	cmp ax,D_52D2
 	jg	L_08e4
-	cmp bx,ds:[52d4h]
+	cmp bx,D_52D4
 	jl	L_08e4
-	cmp bx,ds:[52d6h]
+	cmp bx,D_52D6
 	jg	L_08e4
 	clc
 	ret
@@ -229,14 +286,14 @@ L_09c2:
 	add bx,WORD PTR D_52F8
 	jmp	SHORT ULTIMA_0991
 L_09e3:
-	cmp ax,ds:[52d0h]
+	cmp ax,D_52D0
 	je	L_09ef
-	cmp ax,ds:[52d2h]
+	cmp ax,D_52D2
 	jne	L_09fb
 L_09ef:
-	cmp bx,ds:[52d4h]
+	cmp bx,D_52D4
 	je	L_0a21
-	cmp bx,ds:[52d6h]
+	cmp bx,D_52D6
 	je	L_0a21
 L_09fb:
 	mov si,WORD PTR D_52F6
@@ -263,35 +320,35 @@ L_0a21:
 ULTIMA_0A22:
 	xor si,si
 	mov di,si
-	cmp ax,ds:[52d0h]
+	cmp ax,D_52D0
 	jge	L_0a2f
 	db	083h, 0ceh, 001h	; or si,1
 L_0a2f:
-	cmp cx,ds:[52d0h]
+	cmp cx,D_52D0
 	jge	L_0a38
 	db	083h, 0cfh, 001h	; or di,1
 L_0a38:
-	cmp ax,ds:[52d2h]
+	cmp ax,D_52D2
 	jle	L_0a41
 	db	083h, 0ceh, 002h	; or si,2
 L_0a41:
-	cmp cx,ds:[52d2h]
+	cmp cx,D_52D2
 	jle	L_0a4a
 	db	083h, 0cfh, 002h	; or di,2
 L_0a4a:
-	cmp bx,ds:[52d6h]
+	cmp bx,D_52D6
 	jle	L_0a53
 	db	083h, 0ceh, 004h	; or si,4
 L_0a53:
-	cmp dx,ds:[52d6h]
+	cmp dx,D_52D6
 	jle	L_0a5c
 	db	083h, 0cfh, 004h	; or di,4
 L_0a5c:
-	cmp bx,ds:[52d4h]
+	cmp bx,D_52D4
 	jge	L_0a65
 	db	083h, 0ceh, 008h	; or si,8
 L_0a65:
-	cmp dx,ds:[52d4h]
+	cmp dx,D_52D4
 	jge	L_0a6e
 	db	083h, 0cfh, 008h	; or di,8
 L_0a6e:
@@ -309,7 +366,7 @@ ULTIMA_0A70_GRAP_2D_SETPENCOLOR:
 	cmp ax,0ffffh
 	je	L_0a8d
 	mov bx,0fh
-	cmp word ptr ds:[52c8h],0
+	cmp word ptr D_52C8,0
 	jne	L_0a8b
 	mov bx,3
 L_0a8b:
@@ -406,10 +463,10 @@ ULTIMA_0B10_GRAP_LINE:
 
 	PUBLIC	ULTIMA_0B2D_GRAP_LINE
 ULTIMA_0B2D_GRAP_LINE:
-	mov ds:[52cch],cx
-	mov ds:[52ceh],dx
+	mov D_52CC,cx
+	mov D_52CE,dx
 	pushf
-	cmp word ptr ds:[52c4h],0
+	cmp word ptr D_52C4,0
 	je	L_0b42
 	call	ULTIMA_0935_CLIPLINECOORD
 	jb	L_0b84
@@ -565,10 +622,10 @@ ULTIMA_0C3C:
 	mov bx,[bp+8]
 	mov cx,[bp+6]
 	mov dx,[bp+4]
-	mov ds:[52d0h],ax
-	mov ds:[52d4h],bx
-	mov ds:[52d2h],cx
-	mov ds:[52d6h],dx
+	mov D_52D0,ax
+	mov D_52D4,bx
+	mov D_52D2,cx
+	mov D_52D6,dx
 	pop ds
 	pop di
 	pop si
@@ -584,11 +641,11 @@ ULTIMA_0C64_GRAP_30_PSET:
 	push ds
 	mov ax,[bp+6]
 	mov bx,[bp+4]
-	mov ds:[52cch],ax
-	mov ds:[52ceh],bx
+	mov D_52CC,ax
+	mov D_52CE,bx
 	cmp WORD PTR D_52DA_PEN_COLOR,0ffffh
 	je	L_0c95
-	cmp word ptr ds:[52c4h],0
+	cmp word ptr D_52C4,0
 	je	L_0c8a
 	call	ULTIMA_08CA_INSIDECLIPWINDOW
 	jb	L_0c95
@@ -613,8 +670,8 @@ ULTIMA_0C9C_GRAP_39_HORIZLINE:
 	mov ax,[bp+8]
 	mov bx,[bp+6]
 	mov cx,[bp+4]
-	mov ds:[52cch],cx
-	cmp word ptr ds:[52c4h],0
+	mov D_52CC,cx
+	cmp word ptr D_52C4,0
 	je	L_0cbb
 	call	ULTIMA_0CCD
 	jb	L_0cc6
@@ -635,9 +692,9 @@ ULTIMA_0CCD:
 	jge	L_0cd2
 	xchg cx,ax
 L_0cd2:
-	cmp ax,ds:[52d0h]
+	cmp ax,D_52D0
 	jl	L_0cf0
-	cmp cx,ds:[52d2h]
+	cmp cx,D_52D2
 	jg	L_0cf0
 	cmp ax,0
 	jl	L_0cf0
@@ -662,12 +719,12 @@ ULTIMA_0CF2_GRAP_3C_VERTLINE:
 	mov bx,[bp+6]
 	mov dx,[bp+4]
 	mov cx,ax
-	mov ds:[52ceh],dx
+	mov D_52CE,dx
 	cmp bx,dx
 	jle	L_0d0d
 	xchg bx,dx
 L_0d0d:
-	cmp word ptr ds:[52c4h],0
+	cmp word ptr D_52C4,0
 	je	L_0d19
 	call	ULTIMA_0D2B
 	jb	L_0d24
@@ -684,9 +741,9 @@ L_0d24:
 
 	PUBLIC	ULTIMA_0D2B
 ULTIMA_0D2B:
-	cmp bx,ds:[52d4h]
+	cmp bx,D_52D4
 	jl	L_0d4a
-	cmp dx,ds:[52d6h]
+	cmp dx,D_52D6
 	jg	L_0d4a
 	cmp bx,0
 	jl	L_0d4a

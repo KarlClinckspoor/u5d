@@ -14,6 +14,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+s16 D_5402[5] = { 1, 10, 100, 1000, 10000 };
+
 // CHECKED (NOT MATCHING: register, loop optimization)
 // 0000:1850
 void ULTIMA_1850_PrintString(char* param_1)

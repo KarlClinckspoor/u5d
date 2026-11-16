@@ -31,6 +31,16 @@ DGROUP	GROUP	CONST, _BSS, _DATA
 	EXTRN	D_53AA_TEXT_FG_COLOR:BYTE
 	EXTRN	D_53AB_TEXT_BG_COLOR:BYTE
 
+; this module's own data in DGROUP (DS:540e-541e)
+_DATA	SEGMENT
+	PUBLIC	D_540E
+D_540E	LABEL	BYTE
+	db	04Bh, 04Dh, 048h, 050h, 047h, 04Fh, 049h, 051h	; KMHPGOIQ
+	PUBLIC	D_5416
+D_5416	LABEL	BYTE
+	db	001h, 002h, 003h, 004h, 0D3h, 0D4h, 0D5h, 0D6h
+_DATA	ENDS
+
 _TEXT	SEGMENT
 
 	PUBLIC	ULTIMA_1B94_SELECTTEXTWINDOW
@@ -343,14 +353,14 @@ L_1d86:
 L_1da8:
 	xor bx,bx
 L_1daa:
-	cmp al,[bx+540eh]
+	cmp al,D_540E[bx]
 	je	L_1db8
 	inc bx
 	cmp bx,8
 	jne	L_1daa
 	je	L_1d70
 L_1db8:
-	mov al,[bx+5416h]
+	mov al,D_5416[bx]
 	inc WORD PTR D_538A
 	jmp	SHORT L_1d77
 L_1dc2:
