@@ -74,8 +74,9 @@ Done, each checked by a tool:
 - **Assembly:** all of the resident image's hand-written assembly (`src/asm/A*.ASM`, nine
   modules) and PLINK86's parts (`PLMGR`, `PLSTART`, `PLTAB`) assemble to the original bytes
   with MASM 4.0 (`tools/asmbuild.py`). Every relocated word has its segment fixup.
-  Two overlays hold assembly too: all of FLAMES.OVL (`AFLAMES.ASM`) and FONT.OVL's last two
-  routines (`AFONT.ASM`, linked after font.c). Their first line names the overlay range
+  Three overlays hold assembly too: all of FLAMES.OVL (`AFLAMES.ASM`), and the last two
+  routines of FONT.OVL (`AFONT.ASM`) and of INTRO.OVL (`AINTRO.ASM`, the video driver calls
+  u5d had as `DRV_69`). Their first line names the overlay range (file offsets)
   ("FONT.OVL 0e52-0e97"); asmbuild compares them with the .OVL file and u5link places them by
   their functions' names. FLAMES.OVL links byte-identical.
 - **Runtime:** CS:017e-0878 is 17 modules of SLIBCR.LIB and LIBH.LIB (`tools/libmatch.py`).

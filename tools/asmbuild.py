@@ -4,7 +4,7 @@
     python tools/asmbuild.py [NAME.ASM ...]      assemble (default: all) and compare
 
 Each module's first line says which range of the original it is: "ULTIMA.EXE CS:xxxx-yyyy" for
-the resident image, or "NAME.OVL xxxx-yyyy" (offsets in NAME.OVL's code) for an assembly part of
+the resident image, or "NAME.OVL xxxx-yyyy" (offsets in the .OVL file, as in u5d's names) for an assembly part of
 an overlay. Its _TEXT is compared with those bytes, fixups masked.
 MASM 4.0 (MASM.EXE, from the sibling U1 project or your own copy) is expected in build/masm.
 """
@@ -82,9 +82,7 @@ def original_bytes(gamedata, place):
     ovl, a, b = place
     if ovl is None:
         return u5.exe_image(gamedata)[a:b]
-    d = u5.read_file(gamedata, ovl + '.OVL')
-    skip = u5.OVERLAY_BASE['TOWN'] - u5.OVERLAY_BASE['INTRO'] if ovl == 'INTRO' else 0
-    return d[skip + a:skip + b]
+    return u5.read_file(gamedata, ovl + '.OVL')[a:b]     # file offsets, as u5d's names
 
 
 def main():
