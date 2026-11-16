@@ -124,8 +124,12 @@ class Module:
                     votes['_DATA'].setdefault(at, 0)
 
             def score(b):
+                # the length of the agreeing start first (a later shift must not win),
+                # then the number of agreeing bytes
                 t = self.ds[b:b + dseg.length]
-                return sum(1 for k in range(len(t)) if k not in masked and t[k] == dseg.data[k])
+                eq = [k in masked or t[k] == dseg.data[k] for k in range(len(t))]
+                prefix = next((k for k, e in enumerate(eq) if not e), len(eq))
+                return (prefix, sum(eq))
             best = max(votes['_DATA'], key=lambda b: (score(b), b == first['_DATA'][1]))
             if score(best) > score(first['_DATA'][1]):
                 self.data_base['_DATA'] = best

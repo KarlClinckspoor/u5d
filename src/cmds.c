@@ -1055,7 +1055,7 @@ void CMDS_0eb4_XitCmd(void)
 }
 
 
-char* D_444a[6] =
+char* D_444a[3] =
 {
     _STATIC_TEXT(0x43ef, "FAULINEI"),
     _STATIC_TEXT(0x43f8, "ASTAROTH"),
@@ -1203,7 +1203,7 @@ static void CMDS_1202(int param_1, int param_2, int param_3)
 }
 
 
-char* D_4502[16] =
+char* D_4502[8] =
 {
     _STATIC_TEXT(0x449d, "FALLAX"),
     _STATIC_TEXT(0x44a4, "VILIS"),

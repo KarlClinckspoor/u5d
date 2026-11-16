@@ -85,7 +85,7 @@ def resize(text, var, nbytes):
     if not m:
         return text, False
     typ = m.group(2).split()[-1].strip('*')
-    size = ELEM.get(typ)
+    size = 2 if '*' in m.group(2) else ELEM.get(typ)     # near pointers are 2 bytes
     if not size:
         return text, False
     for dim in re.findall(r'\[([^\]]*)\]', m.group(5)):    # further dimensions: [16][4]
@@ -99,10 +99,10 @@ def resize(text, var, nbytes):
     text = text[:m.start(4)] + ('0x%x' % n if '0x' in m.group(4) else str(n)) + text[m.end(4):]
     # drop initialisers beyond the new size (simple flat lists only): they were the bytes
     # of the next item, which the old size ran into
-    keep = nbytes // ELEM[typ]                  # scalar initialisers that fit
+    keep = nbytes // (2 if '*' in m.group(2) else ELEM[typ])   # scalar initialisers that fit
     im = re.search(r'=\s*\{([^{}]*)\}', text)
     if im:
-        vals = [v.strip() for v in im.group(1).split(',') if v.strip()]
+        vals = [v.strip() for v in re.split(r',(?![^()]*\))', im.group(1)) if v.strip()]   # top-level commas
         if len(vals) > keep:
             text = text[:im.start(1)] + ' ' + ', '.join(vals[:keep]) + ' ' + text[im.end(1):]
     return text, True

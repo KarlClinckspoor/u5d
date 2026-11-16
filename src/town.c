@@ -15,7 +15,7 @@
 #include "town.h"
 
 
-char* D_2652[8] =
+char* D_2652[4] =
 {
     /*0x2626*/ "TOWNE.DAT",
     /*0x2630*/ "DWELLING.DAT",
@@ -1119,7 +1119,7 @@ static void TOWN_1156(void)
     }
 }
 
-char* D_27dc[6] = {
+char* D_27dc[3] = {
     _STATIC_TEXT(0x279d, "falsehood"),
     _STATIC_TEXT(0x27a7, "hatred"),
     _STATIC_TEXT(0x27ae, "cowardice")
