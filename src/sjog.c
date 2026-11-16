@@ -998,12 +998,12 @@ void SJOG_0d4a_JimmyCmd(void)
         break;
 
     default:
-        // ceac (NOT MATCHING)
-        for (local_c = 1; local_c < 0x20; local_c++)
+        // ceac (the counter is local_6, reused)
+        for (local_6 = 1; local_6 < 0x20; local_6++)
         {
-            if (D_5c5a[local_c]._2_x == local_8 && D_5c5a[local_c]._3_y == local_a &&
-                (D_5893_map_id > 0x7f || D_5c5a[local_c]._4_z == D_5895_map_level) &&
-                D_5c5a[local_c]._0_tile == TILE_ACTOR_CHEST)
+            if (D_5c5a[local_6]._2_x == local_8 && D_5c5a[local_6]._3_y == local_a &&
+                (D_5893_map_id > 0x7f || D_5c5a[local_6]._4_z == D_5895_map_level) &&
+                D_5c5a[local_6]._0_tile == TILE_ACTOR_CHEST)
             {
                 // exit from the loop
                 break;
@@ -1011,9 +1011,9 @@ void SJOG_0d4a_JimmyCmd(void)
         }
 
         // cee9
-        if (local_c < 0x20)
+        if (local_6 < 0x20)
         {
-            SJOG_0baa(local_8, local_a, D_5895_map_level, local_c);
+            SJOG_0baa(local_8, local_a, D_5895_map_level, local_6);
             break;
         }
 
