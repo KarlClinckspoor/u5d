@@ -24,7 +24,7 @@ u16 ULTIMA_2032_ToUpper(u8 x)
 // ASM
 uint ULTIMA_2056_GetTime(void)
 {
-    return time(NULL) & 0xffff;
+    return time((time_t*)0) & 0xffff; // MSC 5.1's <time.h> has no NULL
 }
 
 // ASM
