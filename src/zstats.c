@@ -336,11 +336,19 @@ void ZSTATS_05e2(int param_1, byte* param_2, char** param_3, uint param_4)
 #if defined(TARGET_DOS16)
 #pragma loop_opt(off)
 #endif
-// NOT MATCHING (checked)
+// NOT MATCHING: slots and code match up to the END case's loop. The original compiles it with
+// the test at the bottom ("cmp ax,0FFFFh; jne body", then the break), so the while test block
+// is placed after END; MSC here ends that loop with "inc ax; je exit; jmp body" and places the
+// while test after HOME instead, which shifts every jump to it. Tried: the loop as for with
+// break, while, an empty for with "local_6 = local_c, local_a++" as the increment (the body
+// then matches but the test still jumps out), "(local_c = f(), local_c != -1)" and
+// "!= 0xffff" (cmp instead of inc, same placement), goto loops, a do-while entered by goto,
+// no pragma, and "#pragma loop_opt(on)" around the END case (SI/DI register variables, which
+// the original has nowhere in the function).
 static int ZSTATS_06e8(char* param_1, int param_2, byte* param_3, char** param_4)
 {
-    int local_10_ad;
-    int local_e;
+    int local_10_aa;
+    int local_e_am;
     int local_c;
     int local_a;
     bool local_8;
@@ -380,20 +388,20 @@ static int ZSTATS_06e8(char* param_1, int param_2, byte* param_3, char** param_4
         }
 
         // 077f
-        local_10_ad = 0;
+        local_10_aa = 0;
         if (ZSTATS_056c(local_6, param_2, param_3, 0xff) != -1)
         {
-            local_10_ad = 2;
+            local_10_aa = 2;
         }
 
         // 079c
         if (local_c != -1 && ZSTATS_05a4(local_c, param_2, param_3, 0xff) != -1)
         {
-            local_10_ad++;
+            local_10_aa++;
         }
 
         // 07b8
-        switch (local_10_ad)
+        switch (local_10_aa)
         {
         case 0:
             // 07d0
@@ -417,13 +425,13 @@ static int ZSTATS_06e8(char* param_1, int param_2, byte* param_3, char** param_4
 
         // 07d3
         ULTIMA_1b94_SelectTextWindow(2);
-        local_e = ULTIMA_266c_GetChar();
-        switch (local_e)
+        local_e_am = ULTIMA_266c_GetChar();
+        switch (local_e_am)
         {
         case U5_KEY_UP:
         case U5_KEY_PGUP:
             // 081c
-            if (local_e == U5_KEY_PGUP)
+            if (local_e_am == U5_KEY_PGUP)
             {
                 local_4_ab = 7;
             }
@@ -444,7 +452,7 @@ static int ZSTATS_06e8(char* param_1, int param_2, byte* param_3, char** param_4
         case U5_KEY_DOWN:
         case U5_KEY_PGDN:
             // 086c
-            if (local_e == U5_KEY_PGDN)
+            if (local_e_am == U5_KEY_PGDN)
             {
                 local_4_ab = 7;
             }
@@ -495,7 +503,7 @@ static int ZSTATS_06e8(char* param_1, int param_2, byte* param_3, char** param_4
         }
     }
 
-    return local_e;
+    return local_e_am;
 }
 
 #if defined(TARGET_DOS16)
