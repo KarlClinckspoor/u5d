@@ -74,6 +74,10 @@ Done, each checked by a tool:
 - **Assembly:** all of the resident image's hand-written assembly (`src/asm/A*.ASM`, nine
   modules) and PLINK86's parts (`PLMGR`, `PLSTART`, `PLTAB`) assemble to the original bytes
   with MASM 4.0 (`tools/asmbuild.py`). Every relocated word has its segment fixup.
+  Two overlays hold assembly too: all of FLAMES.OVL (`AFLAMES.ASM`) and FONT.OVL's last two
+  routines (`AFONT.ASM`, linked after font.c). Their first line names the overlay range
+  ("FONT.OVL 0e52-0e97"); asmbuild compares them with the .OVL file and u5link places them by
+  their functions' names. FLAMES.OVL links byte-identical.
 - **Runtime:** CS:017e-0878 is 17 modules of SLIBCR.LIB and LIBH.LIB (`tools/libmatch.py`).
 - **Link:** `tools/u5link.py` links and compares. SHOPPES3.OVL is byte-identical.
 - **Not committed:** the overlay C files have uncommitted changes from six matching agents

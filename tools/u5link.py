@@ -265,8 +265,12 @@ def gather(lk):
     for p in sorted(glob.glob(os.path.join(u5.SRC, 'asm', '*.ASM'))):
         n = os.path.splitext(os.path.basename(p))[0].upper()
         if n in have:
-            m = Module(n, omf.Object(have[n]), 'asm')
-            m.addr = asmbuild.module_range(p)[0]
+            place = asmbuild.module_place(p)
+            if place[0]:              # part of an overlay: placed by its functions' names
+                m = Module(n, omf.Object(have[n]), 'ovl', place[0])
+            else:
+                m = Module(n, omf.Object(have[n]), 'asm')
+                m.addr = place[1]
             m.cfile = None
             lk.add(m)
     for f, (kind, ovl) in sorted(u5.MODULES.items()):

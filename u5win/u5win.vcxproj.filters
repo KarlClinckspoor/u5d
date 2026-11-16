@@ -113,9 +113,6 @@
     <ClCompile Include="..\src\endgame.c">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\flames.c">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\font.c">
       <Filter>src</Filter>
     </ClCompile>

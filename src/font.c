@@ -269,8 +269,9 @@ static void FONT_0418(int param_1)
     D_bd29 = param_1;
 }
 
-static void FONT_0e52(void);
-static void FONT_0e7b(void);
+// assembly in the original (src/asm/AFONT.ASM): save and restore the video page buffer
+void FONT_0e52(void);
+void FONT_0e7b(void);
 
 // CHECKED
 // "view"
@@ -750,8 +751,10 @@ void FONT_0b0a(void)
     D_5893_map_id = 0x40;
 }
 
-// STUB (burning up some cpu cycles -> FLAMES. FMT: nop)
-static void FONT_0e52(void) {}
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm/AFONT.ASM
+// The original saves the first 0x3000 bytes of the video page buffer (segment D_5354) into
+// overlay area 2 before the tile set is changed, and restores them after; nothing to do here.
+void FONT_0e52(void) {}
 
-// STUB (burning up some cpu cycles. FMT: nop)
-static void FONT_0e7b(void) {}
+void FONT_0e7b(void) {}
+#endif

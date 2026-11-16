@@ -3,8 +3,9 @@
 
     python tools/asmbuild.py [NAME.ASM ...]      assemble (default: all) and compare
 
-Each module's first line says which range of ULTIMA.EXE it is ("CS:xxxx-yyyy"). Its _TEXT is
-compared with those bytes, fixups masked and checked against the names u5d's symbols carry.
+Each module's first line says which range of the original it is: "ULTIMA.EXE CS:xxxx-yyyy" for
+the resident image, or "NAME.OVL xxxx-yyyy" (offsets in NAME.OVL's code) for an assembly part of
+an overlay. Its _TEXT is compared with those bytes, fixups masked.
 MASM 4.0 (MASM.EXE, from the sibling U1 project or your own copy) is expected in build/masm.
 """
 import argparse, glob, os, re, shutil, subprocess, sys, tempfile
@@ -59,9 +60,31 @@ def assemble(path, dosbox=None):
     return assemble_many([path], dosbox)[path]
 
 
+def module_place(path):
+    """(overlay name or None, start, end) from the module's first line."""
+    line = open(path, encoding='latin-1').readline()
+    m = re.search(r'CS:([0-9a-f]{4})-([0-9a-f]{4})', line)
+    if m:
+        return None, int(m.group(1), 16), int(m.group(2), 16)
+    m = re.search(r'\b([A-Z0-9]+)\.OVL ([0-9a-f]{4})-([0-9a-f]{4})', line)
+    if m:
+        return m.group(1), int(m.group(2), 16), int(m.group(3), 16)
+    return None
+
+
 def module_range(path):
-    m = re.search(r'CS:([0-9a-f]{4})-([0-9a-f]{4})', open(path, encoding='latin-1').readline())
-    return (int(m.group(1), 16), int(m.group(2), 16)) if m else None
+    """The resident range (CS offsets) of a resident module, else None."""
+    p = module_place(path)
+    return (p[1], p[2]) if p and p[0] is None else None
+
+
+def original_bytes(gamedata, place):
+    ovl, a, b = place
+    if ovl is None:
+        return u5.exe_image(gamedata)[a:b]
+    d = u5.read_file(gamedata, ovl + '.OVL')
+    skip = u5.OVERLAY_BASE['TOWN'] - u5.OVERLAY_BASE['INTRO'] if ovl == 'INTRO' else 0
+    return d[skip + a:skip + b]
 
 
 def main():
@@ -70,20 +93,21 @@ def main():
     a = ap.parse_args()
     paths = [p if os.path.exists(p) else os.path.join(u5.SRC, 'asm', p) for p in a.files] or \
         sorted(glob.glob(os.path.join(u5.SRC, 'asm', '*.ASM')))
-    img = u5.exe_image(u5.find_gamedata())
+    gd = u5.find_gamedata()
     bad = 0
     for p, (obj, log) in assemble_many(paths).items():
-        r = module_range(p)
+        r = module_place(p)
         if obj is None:
             print('%-14s MASM failed:\n%s' % (os.path.basename(p), log))
             bad += 1
             continue
         seg = next(s for s in obj.segs[1:] if s.cls == 'CODE' and s.length)
-        orig = img[r[0]:r[1]]
+        orig = original_bytes(gd, r)
         masked = {k for fx in seg.fixups for k in range(fx.loc, fx.loc + fx.size)}
         diffs = [k for k in range(min(len(orig), seg.length)) if k not in masked and seg.data[k] != orig[k]]
         same = not diffs and seg.length == len(orig)
-        print('%-14s CS:%04x-%04x %5d bytes  %s' % (os.path.basename(p), r[0], r[1], len(orig),
+        where = 'CS:%04x-%04x' % r[1:] if r[0] is None else '%s.OVL %04x-%04x' % r
+        print('%-14s %-22s %5d bytes  %s' % (os.path.basename(p), where, len(orig),
                                                     'identical' if same else '%d differ, length %d' % (len(diffs), seg.length)))
         bad += not same
     sys.exit(1 if bad else 0)

@@ -41,7 +41,9 @@ OVERLAYS = list(OVERLAY_BASE)
 #   ('root', None)  functions are compared at their CS addresses in ULTIMA.EXE
 #   ('data', None)  initialised data, compared with DATA.OVL (DGROUP)
 MODULES = {o.lower() + '.c': ('ovl', o) for o in OVERLAYS}
-MODULES['flames.c'] = ('ovl', 'FLAMES')
+# FLAMES.OVL is all assembly (src/asm/AFLAMES.ASM), as are FONT.OVL's last two routines
+# (AFONT.ASM): tools/asmbuild.py assembles them, tools/u5link.py places them in their overlay.
+del MODULES['flames.c']
 MODULES.update({'%d000.c' % i: ('root', None) for i in range(8)})
 MODULES['ultima.c'] = ('root', None)
 # the small C modules between the resident assembly modules (named by their CS address)

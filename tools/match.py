@@ -82,6 +82,14 @@ def overlay_starts(ovl, cfile):
             m = u5.NAME_RE.match(name)
             if m and m.group(1).upper() == ovl:
                 starts.add(int(m.group(2), 16))
+    # and the overlay's assembly parts (src/asm, "NAME.OVL xxxx-yyyy"), by their PUBLIC names
+    import asmbuild
+    for p in glob.glob(os.path.join(u5.SRC, 'asm', '*.ASM')):
+        place = asmbuild.module_place(p)
+        if place and place[0] == ovl:
+            starts.add(place[1])
+            for m in re.finditer(r'^\tPUBLIC\t%s_([0-9A-Fa-f]{4})' % ovl, open(p, encoding='latin-1').read(), re.M):
+                starts.add(int(m.group(1), 16))
     return starts
 
 
