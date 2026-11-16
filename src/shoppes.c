@@ -1182,7 +1182,6 @@ char* D_3d3e[4] =
 // CHECKED (di)
 static void SHOPPES_0f64(int param_1)
 {
-    int local_16_an_am;
     int local_14_am;
     int local_12_ab_am;
     int local_10_ad_am;
@@ -1256,37 +1255,25 @@ static void SHOPPES_0f64(int param_1)
                     local_4_ab = 1;
                 }
 
-                local_e_am = 0;
-                if (local_4_ab > 0)
+                for (local_e_am = 0; local_e_am < local_4_ab; local_e_am++)
                 {
-                    local_16_an_am = local_4_ab;
-                    local_e_am += local_4_ab;
+                    // b376
+                    local_14_am = ZSTATS_056c(local_10_ad_am, 0x30, D_57c0, 0xff);
 
-                    do
+                    if (local_10_ad_am == local_6)
                     {
-                        // b376
-                        local_14_am = ZSTATS_056c(local_10_ad_am, 0x30, D_57c0, 0xff);
-
-                        if (local_10_ad_am == local_6)
+                        if (local_14_am > -1)
                         {
-                            if (local_14_am > -1)
-                            {
-                                local_6 = local_14_am;
-                                // b395
-                                local_10_ad_am = local_14_am; // di = si
-                            }
-                        }
-                        else
-                        {
+                            local_6 = local_14_am;
                             // b395
                             local_10_ad_am = local_14_am;
                         }
-
-                        local_16_an_am--;
-                    } while (local_16_an_am != 0);
-
-                    // b39f
-                    //local_14_am = si;
+                    }
+                    else
+                    {
+                        // b395
+                        local_10_ad_am = local_14_am;
+                    }
                 }
 
                 // b3a2
@@ -1306,32 +1293,19 @@ static void SHOPPES_0f64(int param_1)
                     local_4_ab = 1;
                 }
 
-                local_e_am = 0;
-                if (local_4_ab > 0)
+                for (local_e_am = 0; local_e_am < local_4_ab; local_e_am++)
                 {
-                    // di = local_4_ab
-                    local_16_an_am = local_4_ab;
-                    local_e_am += local_4_ab;
-
-                    do
+                    // b3da
+                    local_14_am = ZSTATS_05a4(local_10_ad_am, 0x30, D_57c0, 0xff);
+                    if (local_14_am > -1)
                     {
-                        // b3da
-                        local_14_am = ZSTATS_05a4(local_10_ad_am, 0x30, D_57c0, 0xff);
-                        if (local_14_am > -1)
+                        local_10_ad_am = local_14_am;
+                        if (++local_c > 4)
                         {
-                            local_10_ad_am = local_14_am;
-                            if (++local_c > 4)
-                            {
-                                local_6 = ZSTATS_05a4(local_6, 0x30, D_57c0, 0xff);
-                            }
+                            local_6 = ZSTATS_05a4(local_6, 0x30, D_57c0, 0xff);
                         }
-                        // b414
-                        local_16_an_am--;
-                    } while (local_16_an_am != 0); // NOT MATCHING (di?)
-
-                    // -> b39f
+                    }
                 }
-                // else -> b3a2
 
                 local_c = SHOPPES_0c80(&local_6, &local_10_ad_am);
                 break;
