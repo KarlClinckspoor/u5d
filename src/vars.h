@@ -765,6 +765,16 @@ STUB S_6608_Map D_6708_map; // copy of 6608
 #endif
 #define D_6708 D_6708_map.raw
 
+#if defined(TARGET_DOS16)
+// The original reaches the overworld map through a name of its own for DS:6608: in
+// ULTIMA_4402 MSC merges the town and overworld paths only up to the store, which it
+// does when their final `add ax,OFFSET ...` name different symbols. No module defines
+// it yet; the linker resolves it by the address in its name (PLAN, step 4).
+STUB S_6608_Map D_6608_overworld;
+#else
+#define D_6608_overworld D_6608_map
+#endif
+
 STUB u8 D_6a08; // some audio related
 
 STUB u16 D_6a0a[5];

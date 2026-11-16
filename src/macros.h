@@ -126,7 +126,7 @@
 //#define GetTileIs
 
 // map
-#define GetMapOverworld(x, y, z) (D_6608_map.overworld[z][y][x])
+#define GetMapOverworld(x, y, z) (D_6608_overworld.overworld[z][y][x])
 #define GetMap(x, y) (D_6608_map.town[y][x])
 #define GetCopiedMap(x, y) (D_6708_map.town[y][x])
 
