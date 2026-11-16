@@ -101,9 +101,9 @@ Next, in order:
      DGROUP is identical to DATA.OVL's.
    - Remaining hard cases, per the last worker:
      - *(104c done: an early return.)* DUNGEON_111e/127e/1786/1952 hold a table value in a
-       register across calls with
-       no source variable (a compiler CSE temp). A `register` local gives the code, but
-       5.0 then reserves an extra stack slot.
+       register across calls with no source variable (a compiler CSE temp). A `register`
+       local gives the code, but 5.0 then reserves an extra stack slot; really const
+       tables give it too, but move the tables to CONST.
      - MAINOUT_17d4 stores constants to a parameter through AX.
      - *(done)* LOOKOBJ_0cf4: D_52c8 is a plain global in the DOS build (A0878.ASM's name).
      - COMBAT_0B94 needs `int local_6` plus a different loop/break layout.
