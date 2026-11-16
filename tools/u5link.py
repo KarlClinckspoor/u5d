@@ -97,7 +97,7 @@ class Linker:
                     m.data = dict(mm.data_base)
                 except Exception as e:                       # noqa: BLE001
                     self.notes.append('%s: no data placement (%s)' % (m.name, e))
-            elif m.kind in ('lib', 'asm') and m.code:
+            elif m.code and (m.kind in ('lib', 'asm') or not m.cfile):   # assembly, also in an overlay
                 m.data = self.place_data_by_code(m)
         for m in self.modules:
             if not m.code:
@@ -130,6 +130,9 @@ class Linker:
         where that segment starts. Segments no code refers to are found by their bytes."""
         import libmatch
         seg, base = m.code
+        img, at0 = self.orig_img, 0            # the original bytes the code sits in
+        if m.kind == 'ovl':
+            img, at0 = u5.read_file(self.gd, m.overlay + '.OVL'), u5.OVERLAY_BASE[m.overlay]
         votes = {}
         for fx in seg.fixups:
             kind, name = fx.target
@@ -138,7 +141,7 @@ class Linker:
             s = m.obj.seg(name)
             if not s or s.cls == 'CODE':
                 continue
-            w = struct.unpack_from('<H', self.orig_img, base + fx.loc)[0]
+            w = struct.unpack_from('<H', img, base - at0 + fx.loc)[0]
             b = (w - fx.disp - struct.unpack_from('<H', seg.data, fx.loc)[0]) & 0xffff
             votes.setdefault(name, {}).setdefault(b, 0)
             votes[name][b] += 1

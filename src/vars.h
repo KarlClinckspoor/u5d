@@ -461,9 +461,9 @@ STUB u16 D_4e6e[6];
 STUB u8 D_4e7a[6];
 STUB u8 D_4e80[6];
 
-STUB u8 D_50eb[0x5a]; // glyph width table
+STUB u8 D_50ea[0x5b]; // glyph width table, from ' '
 
-#define D_50f7 D_50eb[0xc]
+#define D_50f7 D_50ea[0xd]
 
 STUB u16 D_5146[2];
 STUB u16 D_514c[2];
@@ -484,7 +484,7 @@ STUB u8 D_5174[8];
 STUB u16 D_517c[8][8];
 STUB u8 D_51fc[8];
 STUB u8 D_5204[8];
-STUB u8 D_520c; // = 0
+STUB u16 D_520c; // AFONT.ASM's: where FONT_0e52 saves the video page
 
 // main parameters
 // int D_52a2;     // __argc

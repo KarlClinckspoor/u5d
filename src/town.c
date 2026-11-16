@@ -1557,3 +1557,12 @@ void TOWN_1726(int param_1, int param_2, int param_3, int param_4)
     local_4_c->_6_z = param_4;
     local_4_c->_0 = 1;
 }
+
+// after the last of TOWN's strings in its _DATA (DS:28c6)
+u32 D_28c6[0x20] =
+{
+    0, 0, 0, 0x28000, 2, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0x3F8, 0x1E0, 0, 0, 0
+};
