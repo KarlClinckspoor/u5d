@@ -207,6 +207,29 @@ Each entry gives the evidence. Add to this list as you learn.
     ENDGAME, FONT, LOOKOBJ, SHOPPES, SHOPPES2, SJOG, TALK, ZSTATS.
   - *Literal* modules: 2000, CAST, CMDS, DUNGEON, INTRO, MAINOUT, OUTSUBS, SHOPPES3,
     TOWN.
+- **A `return;` after a branch's last loop** changes the jump layout (`je end; jmp top`
+  instead of `jne top; jmp end`). Found on MAINOUT_109e.
+- **Struct fields and globals optimize differently.** Some u5d globals are `#define`s to
+  struct fields (`D_52c8` is `D_52ba_vdp._52c8_...`). In a loop, MSC hoists a plain global
+  into a register but not a struct field. The register it takes then decides the loop
+  form: with CX taken, the counter is dropped and the loop ends with a pointer compare
+  (`cmp si,bp; jb`), where we get `mov cx,n ... loop`. Seen on LOOKOBJ_0cf4, still
+  unmatched.
+- **Some loops the original optimizes, we do not, and the other way round.** In TOWN_0f02
+  the original optimizes the first loop (pointer in SI, counter in DI, the bound re-read
+  each pass) but not the third. We get the reverse for the first loop. Neither a separate
+  index variable nor `#pragma loop_opt` explains it yet.
+- **Same-length instructions with another encoding** (`and bx,0Fh` as `81 e3 0f 00`
+  instead of `83 e3 0f`) are not produced by bitfields, `unsigned` or other mask
+  spellings. Open.
+
+### `permute.py`
+
+`tools/permute.py FILE.c FUNCTION [--apply]` searches meaning-preserving variants of one
+function: locals renamed into other hash buckets, `register` added or removed,
+declarations swapped, comparison operands swapped. It compiles each and keeps the closest
+to the original. It helps with slot and register-choice differences. It cannot find
+structural changes (loop shapes, statement order).
 - **Pass 1 heap.** `vars.c` makes C1 stop with C1002 "out of heap space", even with C1L.EXE.
   The data has to be split into the modules it belongs to anyway (see "DGROUP" in
   `docs/PLAN.md`).
