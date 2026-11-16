@@ -1,3 +1,10 @@
+// The introduction's tables are const in the original: MSC 5.1 then keeps values read from
+// them in registers across calls (INTRO_014e). vars.h declares them without const, so its
+// declarations are renamed out of the way here.
+// TODO: declare them const in vars.h and drop this.
+#define D_306c D_306c_vars_h
+#define D_30c4 D_30c4_vars_h
+#define D_30da D_30da_vars_h
 #include "audio/audio.h"
 #include "common/common.h"
 #include "funcs.h"
@@ -5,6 +12,9 @@
 #include "savegame.h"
 #include "vars.h"
 #include "macros.h"
+#undef D_306c
+#undef D_30c4
+#undef D_30da
 
 #include <stdlib.h>
 
@@ -174,7 +184,7 @@ u8 D_3056[0x16] =
     0x89, 0xc8, 0xc8, 0x92, 0xc8, 0x00
 };
 
-u8 D_306c[0x16] =
+const u8 D_306c[0x16] =
 {
     0xb4, 0x00, 0x00, 0x00, 0x00, 0xb0, 0x20, 0xbc,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xb8, 0x00,
@@ -202,14 +212,14 @@ u8 D_30ae[0x16] =
     0x05, 0x05, 0x05, 0x05, 0x05, 0x00
 };
 
-u8 D_30c4[0x16] =
+const u8 D_30c4[0x16] =
 {
     0x00, 0x00, 0x88, 0x00, 0x98, 0x00, 0x48, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0xb0, 0x00, 0xb0,
     0x00, 0xb0, 0x00, 0xb0, 0x00, 0x00
 };
 
-u8 D_30da[0x16] =
+const u8 D_30da[0x16] =
 {
     0x00, 0x4a, 0x00, 0x26, 0x4c, 0x00, 0x26, 0x00,
     0x52, 0x52, 0x52, 0x52, 0x52, 0x00, 0x00, 0x00,
@@ -227,7 +237,6 @@ u8 D_30f0[0x15] =
 // introduction
 static void INTRO_014e_Introduction(void)
 {
-    int local_e; // unused
     byte* local_c;
     int local_a;
     int local_8;
@@ -273,7 +282,7 @@ static void INTRO_014e_Introduction(void)
             local_8 = D_30ae[local_a];
             do
             {
-                local_6 = ULTIMA_0bae_LoadImageFile(D_25ea[0x12 + local_8]);
+                local_6 = ULTIMA_0bae_LoadImageFile(D_25ea[local_8 + 0x12]);
             } while (local_6 == 0);
         }
 
@@ -299,10 +308,17 @@ static void INTRO_014e_Introduction(void)
             }
         }
 
-        ULTIMA_0d4c_GRAP_4b_PutImage(local_6, D_3098[local_a], D_30c4[local_a], D_30da[local_a], 0);
-        if (D_30f0[local_a] >= 4)
         {
-            ULTIMA_0d4c_GRAP_4b_PutImage(local_6, D_30f0[local_a] * 2 - 5, D_30c4[local_a], D_30da[local_a] + 0x37, 0);
+            register int local_y;
+            register int local_x;
+
+            local_y = D_30da[local_a];
+            local_x = D_30c4[local_a];
+            ULTIMA_0d4c_GRAP_4b_PutImage(local_6, D_3098[local_a], local_x, local_y, 0);
+            if (D_30f0[local_a] >= 4)
+            {
+                ULTIMA_0d4c_GRAP_4b_PutImage(local_6, D_30f0[local_a] * 2 - 5, local_x, local_y + 0x37, 0);
+            }
         }
 
         D_5146[0] = D_2f98[local_a].x;
@@ -313,21 +329,25 @@ static void INTRO_014e_Introduction(void)
 
         D_5150 = D_3040[local_a];
         D_5152 = D_3056[local_a];
-        D_5156 = D_306c[local_a];
-        D_5158 = D_3082[local_a];
+        {
+            register int local_z;
 
-        if (D_30f0[local_a] == 3)
-        {
-            ULTIMA_0d4c_GRAP_4b_PutImage(local_6, 3, 0x60, 0x27, 0);
-            FONT_0000(local_c, _TEXT(0x2f31, "Instantly, a shimmering blue door springs up!"));
-            D_5156 = D_306c[local_a];
-            D_5158 = 0xb4;
-            FONT_0000(local_c, _TEXT(0x2f5f, "With heart beating rapidly, you step into it."));
-        }
-        else
-        {
-            ULTIMA_256e_ReadFileFromDisk(/*0x2f8d*/ "STORY.DAT", D_b21e, 2000, D_3016[local_a]);
-            FONT_0000(local_c, D_b21e);
+            D_5156 = local_z = D_306c[local_a];
+            D_5158 = D_3082[local_a];
+
+            if (D_30f0[local_a] == 3)
+            {
+                ULTIMA_0d4c_GRAP_4b_PutImage(local_6, 3, 0x60, 0x27, 0);
+                FONT_0000(local_c, _TEXT(0x2f31, "Instantly, a shimmering blue door springs up!"));
+                D_5156 = local_z;
+                D_5158 = 0xb4;
+                FONT_0000(local_c, _TEXT(0x2f5f, "With heart beating rapidly, you step into it."));
+            }
+            else
+            {
+                ULTIMA_256e_ReadFileFromDisk(/*0x2f8d*/ "STORY.DAT", D_b21e, 2000, D_3016[local_a]);
+                FONT_0000(local_c, D_b21e);
+            }
         }
 
         if (local_a != 0)
@@ -424,7 +444,7 @@ static void INTRO_04e0_DrawMenuBorders(void)
 static void INTRO_05b0_DisplayTitle(int param_1) // (0 for fast display)
 {
     byte* local_4;
-    int local_6; // unused
+    int local_6_p; // unused
 
     D_a9bd[1] = 2;
     if (D_5893_map_id != 0x40)
@@ -605,6 +625,12 @@ static int INTRO_094e_Pause(int param_1)
 
     return local_4;
 }
+
+// The menu keys are a char array in the original: it follows the strings of the next
+// function, on an even address.
+#if defined(TARGET_DOS16)
+static char S_0x3270[8] = "JCTUAR";
+#endif
 
 // CHECKED
 void INTRO_0986_Main(void) // intro_main (initialize video) (8b46)
@@ -885,7 +911,7 @@ void INTRO_0986_Main(void) // intro_main (initialize video) (8b46)
                 case U5_KEY_ENTER:  // CR
                 case U5_KEY_SPACE: // ' '
                     // 0de2
-                    local_10 = _TEXT(0x3270, "JCTUAR")[local_c];
+                    local_10 = _XTEXT(0x3270, "JCTUAR")[local_c];
                     break;
                 case 0:
                     local_10 = 0x52;

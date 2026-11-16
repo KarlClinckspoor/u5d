@@ -18,127 +18,371 @@
 #define _TEXT(addr, text) S_##addr
 #undef _STATIC_TEXT
 #define _STATIC_TEXT(addr, text) S_##addr
-static char S_0x84e6[] = "Dir-";
-static char S_0x84ec[] = "Pass\n";
-static char S_0x84f2[] = "Ahead\n";
-static char S_0x84fa[] = "Here\n";
-static char S_0x8500[] = "Right\n";
-static char S_0x8508[] = "Left\n";
-static char S_0x850e[] = "a chest!\n";
-static char S_0x8518[] = "a sack of gold!\n";
-static char S_0x852a[] = "a potion!\n";
-static char S_0x8536[] = "a scroll!\n";
-static char S_0x8542[] = "a weapon!\n";
-static char S_0x854e[] = "a shield!\n";
-static char S_0x855a[] = "a ring of keys!\n";
-static char S_0x856c[] = "a gem!\n";
-static char S_0x8574[] = "a helm!\n";
-static char S_0x857e[] = "a ring!\n";
-static char S_0x8588[] = "some armour!\n";
-static char S_0x8596[] = "an amulet!\n";
-static char S_0x85a2[] = "some torches!\n";
-static char S_0x85b2[] = "some food!\n";
-static char S_0x85be[] = "a strange rock!\n";
-static char S_0x85d0[] = "a rotting body!\n";
-static char S_0x85e2[] = "a moldy corpse!\n";
-static char S_0x85f4[] = "Nothing of note.\n";
-static char S_0x8606[] = "Plague!\n";
-static char S_0x8610[] = "nothing!\n";
-static char S_0x861a[] = "worms!\n";
-static char S_0x8622[] = "guts!\n";
-static char S_0x862a[] = "a bloody pulp!\n";
-static char S_0x863a[] = "food!\n";
-static char S_0x8642[] = "gold!\n";
-static char S_0x864a[] = "no trap!\n";
-static char S_0x8654[] = "a simple trap!\n";
-static char S_0x8664[] = "a complex trap!\n";
-static char S_0x8676[] = "a trap!\n";
-static char S_0x8680[] = "a strange rock!\n";
+static struct
+{
+    char s84e6[6];
+    char s84ec[6];
+    char s84f2[8];
+    char s84fa[6];
+    char s8500[8];
+    char s8508[6];
+    char s850e[10];
+    char s8518[18];
+    char s852a[12];
+    char s8536[12];
+    char s8542[12];
+    char s854e[12];
+    char s855a[18];
+    char s856c[8];
+    char s8574[10];
+    char s857e[10];
+    char s8588[14];
+    char s8596[12];
+    char s85a2[16];
+    char s85b2[12];
+    char s85be[18];
+    char s85d0[18];
+    char s85e2[18];
+    char s85f4[18];
+    char s8606[10];
+    char s8610[10];
+    char s861a[8];
+    char s8622[8];
+    char s862a[16];
+    char s863a[8];
+    char s8642[8];
+    char s864a[10];
+    char s8654[16];
+    char s8664[18];
+    char s8676[10];
+    char s8680[18];
+} SS_0 = {
+    "Dir-",
+    "Pass\n",
+    "Ahead\n",
+    "Here\n",
+    "Right\n",
+    "Left\n",
+    "a chest!\n",
+    "a sack of gold!\n",
+    "a potion!\n",
+    "a scroll!\n",
+    "a weapon!\n",
+    "a shield!\n",
+    "a ring of keys!\n",
+    "a gem!\n",
+    "a helm!\n",
+    "a ring!\n",
+    "some armour!\n",
+    "an amulet!\n",
+    "some torches!\n",
+    "some food!\n",
+    "a strange rock!\n",
+    "a rotting body!\n",
+    "a moldy corpse!\n",
+    "Nothing of note.\n",
+    "Plague!\n",
+    "nothing!\n",
+    "worms!\n",
+    "guts!\n",
+    "a bloody pulp!\n",
+    "food!\n",
+    "gold!\n",
+    "no trap!\n",
+    "a simple trap!\n",
+    "a complex trap!\n",
+    "a trap!\n",
+    "a strange rock!\n"
+};
+#define S_0x84e6 SS_0.s84e6
+#define S_0x84ec SS_0.s84ec
+#define S_0x84f2 SS_0.s84f2
+#define S_0x84fa SS_0.s84fa
+#define S_0x8500 SS_0.s8500
+#define S_0x8508 SS_0.s8508
+#define S_0x850e SS_0.s850e
+#define S_0x8518 SS_0.s8518
+#define S_0x852a SS_0.s852a
+#define S_0x8536 SS_0.s8536
+#define S_0x8542 SS_0.s8542
+#define S_0x854e SS_0.s854e
+#define S_0x855a SS_0.s855a
+#define S_0x856c SS_0.s856c
+#define S_0x8574 SS_0.s8574
+#define S_0x857e SS_0.s857e
+#define S_0x8588 SS_0.s8588
+#define S_0x8596 SS_0.s8596
+#define S_0x85a2 SS_0.s85a2
+#define S_0x85b2 SS_0.s85b2
+#define S_0x85be SS_0.s85be
+#define S_0x85d0 SS_0.s85d0
+#define S_0x85e2 SS_0.s85e2
+#define S_0x85f4 SS_0.s85f4
+#define S_0x8606 SS_0.s8606
+#define S_0x8610 SS_0.s8610
+#define S_0x861a SS_0.s861a
+#define S_0x8622 SS_0.s8622
+#define S_0x862a SS_0.s862a
+#define S_0x863a SS_0.s863a
+#define S_0x8642 SS_0.s8642
+#define S_0x864a SS_0.s864a
+#define S_0x8654 SS_0.s8654
+#define S_0x8664 SS_0.s8664
+#define S_0x8676 SS_0.s8676
+#define S_0x8680 SS_0.s8680
 char S_0x8692[] = "mandrake root!";
 char S_0x86a2[] = "mandrake root!";
 char S_0x86b2[] = "nightshade!";
-static char S_0x86be[] = " sprigs of\n";
-static char S_0x86ca[] = "\n";
-static char S_0x86cc[] = "nothing of note.\n";
-static char S_0x86de[] = "\nYou find:\ndarkness.\n";
-static char S_0x86f4[] = "You find:\n";
-static char S_0x8700[] = "Nothing of note.\n";
-static char S_0x8712[] = "Nothing hidden on the ladder.\n";
-static char S_0x8732[] = "No trap\n";
-static char S_0x873c[] = "A simple trap\n";
-static char S_0x874c[] = "A complex trap\n";
-static char S_0x875c[] = "A trap\n";
-static char S_0x8764[] = "Nothing hidden on the fountain.\n";
-static char S_0x8786[] = "Nothing hidden\nin the pit.\n";
-static char S_0x87a2[] = "A pit!\n";
-static char S_0x87aa[] = "A bomb trap!\n";
-static char S_0x87b8[] = "Nothing of note.\n";
-static char S_0x87ca[] = "Treasure!\n";
-static char S_0x87d6[] = "A sleep field.\n";
-static char S_0x87e6[] = "A poison gas field.\n";
-static char S_0x87fc[] = "A wall of fire.\n";
-static char S_0x880e[] = "An electric field.\n";
-static char S_0x8822[] = "An energy field.\n";
-static char S_0x8834[] = "This tile is impossible.\n";
-static char S_0x884e[] = "Nothing hidden on the door.\n";
-static char S_0x886c[] = "Nothing hidden on the wall.\n";
-static char S_0x888a[] = "Nothing in the caved in passage.\n";
-static char S_0x88ac[] = "Nothing on the stalactite.\n";
-static char S_0x88c8[] = "Nothing hidden on the skeleton.\n";
-static char S_0x88ea[] = "It crumbles away.\n";
-static char S_0x88fe[] = "A hidden door!\n";
-static char S_0x890e[] = "Nothing hidden on the door.\n";
-static char S_0x892c[] = "\nThou dost find\n";
-static char S_0x893e[] = "\nThou dost find\n";
-static char S_0x8950[] = "\nIn the stump\nt";
-static char S_0x8960[] = "\nOn the shelf\nt";
-static char S_0x8970[] = "\nIn the bookshelf\nt";
-static char S_0x8984[] = "\nNear the well\nt";
-static char S_0x8996[] = "\nIn the desk\nt";
-static char S_0x89a6[] = "\nIn the barrel\nt";
-static char S_0x89b8[] = "\nIn the vanity\nt";
-static char S_0x89ca[] = "\nUnder the bed\nt";
-static char S_0x89dc[] = "\nIn the dresser\nt";
-static char S_0x89ee[] = "\nIn the trunk\nt";
-static char S_0x89fe[] = "\nIn the fireplace\nt";
-static char S_0x8a12[] = "\nIn the brazier\nt";
-static char S_0x8a24[] = "\nIn the wall\nt";
-static char S_0x8a34[] = "\nT";
-static char S_0x8a38[] = "hou dost find\n";
-static char S_0x8a48[] = "a hidden door!\n";
-static char S_0x8a58[] = "Key broke!\n";
-static char S_0x8a64[] = "Success!\n";
-static char S_0x8a6e[] = "Key broke!\n";
-static char S_0x8a7a[] = "\n";
-static char S_0x8a7c[] = "No keys!\n";
-static char S_0x8a86[] = "Key broke!\n";
-static char S_0x8a92[] = "No keys!\n";
-static char S_0x8a9c[] = "Chest unlocked\n";
-static char S_0x8aac[] = "Key broke!\n";
-static char S_0x8ab8[] = "Already open!\n";
-static char S_0x8ac8[] = "What?\n";
-static char S_0x8ad0[] = "No Keys!\n";
-static char S_0x8ada[] = "Key broke!\n";
-static char S_0x8ae6[] = "Unlocked!\n";
-static char S_0x8af2[] = "Key broke!\n";
-static char S_0x8afe[] = "No one is there!\n";
-static char S_0x8b10[] = "Key broke!\n";
-static char S_0x8b1c[] = "Couldn't find this npc\n\n";
-static char S_0x8b36[] = "\n\"I thank thee!\"\n";
-static char S_0x8b48[] = "Unlocked\n";
-static char S_0x8b52[] = "No lock!\n";
-static char S_0x8b5c[] = "Found:\n";
-static char S_0x8b64[] = "Can't!\n";
-static char S_0x8b6c[] = "Nothing to open!\n";
-static char S_0x8b7e[] = "Trapped!\n";
-static char S_0x8b88[] = "Chest empty!\n";
-static char S_0x8b96[] = "\nChest opened\n";
-static char S_0x8ba6[] = "Already Open!\n";
-static char S_0x8bb6[] = "What?\n";
-static char S_0x8bbe[] = "It's open!\n";
-static char S_0x8bca[] = "Too heavy!\n";
-static char S_0x8bd6[] = "Locked!\n";
-static char S_0x8be0[] = "Opened!\n";
+static struct
+{
+    char s86be[12];
+    char s86ca[2];
+    char s86cc[18];
+    char s86de[22];
+    char s86f4[12];
+    char s8700[18];
+    char s8712[32];
+    char s8732[10];
+    char s873c[16];
+    char s874c[16];
+    char s875c[8];
+    char s8764[34];
+    char s8786[28];
+    char s87a2[8];
+    char s87aa[14];
+    char s87b8[18];
+    char s87ca[12];
+    char s87d6[16];
+    char s87e6[22];
+    char s87fc[18];
+    char s880e[20];
+    char s8822[18];
+    char s8834[26];
+    char s884e[30];
+    char s886c[30];
+    char s888a[34];
+    char s88ac[28];
+    char s88c8[34];
+    char s88ea[20];
+    char s88fe[16];
+    char s890e[30];
+    char s892c[18];
+    char s893e[18];
+    char s8950[16];
+    char s8960[16];
+    char s8970[20];
+    char s8984[18];
+    char s8996[16];
+    char s89a6[18];
+    char s89b8[18];
+    char s89ca[18];
+    char s89dc[18];
+    char s89ee[16];
+    char s89fe[20];
+    char s8a12[18];
+    char s8a24[16];
+    char s8a34[4];
+    char s8a38[16];
+    char s8a48[16];
+    char s8a58[12];
+    char s8a64[10];
+    char s8a6e[12];
+    char s8a7a[2];
+    char s8a7c[10];
+    char s8a86[12];
+    char s8a92[10];
+    char s8a9c[16];
+    char s8aac[12];
+    char s8ab8[16];
+    char s8ac8[8];
+    char s8ad0[10];
+    char s8ada[12];
+    char s8ae6[12];
+    char s8af2[12];
+    char s8afe[18];
+    char s8b10[12];
+    char s8b1c[26];
+    char s8b36[18];
+    char s8b48[10];
+    char s8b52[10];
+    char s8b5c[8];
+    char s8b64[8];
+    char s8b6c[18];
+    char s8b7e[10];
+    char s8b88[14];
+    char s8b96[16];
+    char s8ba6[16];
+    char s8bb6[8];
+    char s8bbe[12];
+    char s8bca[12];
+    char s8bd6[10];
+    char s8be0[10];
+} SS_1 = {
+    " sprigs of\n",
+    "\n",
+    "nothing of note.\n",
+    "\nYou find:\ndarkness.\n",
+    "You find:\n",
+    "Nothing of note.\n",
+    "Nothing hidden on the ladder.\n",
+    "No trap\n",
+    "A simple trap\n",
+    "A complex trap\n",
+    "A trap\n",
+    "Nothing hidden on the fountain.\n",
+    "Nothing hidden\nin the pit.\n",
+    "A pit!\n",
+    "A bomb trap!\n",
+    "Nothing of note.\n",
+    "Treasure!\n",
+    "A sleep field.\n",
+    "A poison gas field.\n",
+    "A wall of fire.\n",
+    "An electric field.\n",
+    "An energy field.\n",
+    "This tile is impossible.\n",
+    "Nothing hidden on the door.\n",
+    "Nothing hidden on the wall.\n",
+    "Nothing in the caved in passage.\n",
+    "Nothing on the stalactite.\n",
+    "Nothing hidden on the skeleton.\n",
+    "It crumbles away.\n",
+    "A hidden door!\n",
+    "Nothing hidden on the door.\n",
+    "\nThou dost find\n",
+    "\nThou dost find\n",
+    "\nIn the stump\nt",
+    "\nOn the shelf\nt",
+    "\nIn the bookshelf\nt",
+    "\nNear the well\nt",
+    "\nIn the desk\nt",
+    "\nIn the barrel\nt",
+    "\nIn the vanity\nt",
+    "\nUnder the bed\nt",
+    "\nIn the dresser\nt",
+    "\nIn the trunk\nt",
+    "\nIn the fireplace\nt",
+    "\nIn the brazier\nt",
+    "\nIn the wall\nt",
+    "\nT",
+    "hou dost find\n",
+    "a hidden door!\n",
+    "Key broke!\n",
+    "Success!\n",
+    "Key broke!\n",
+    "\n",
+    "No keys!\n",
+    "Key broke!\n",
+    "No keys!\n",
+    "Chest unlocked\n",
+    "Key broke!\n",
+    "Already open!\n",
+    "What?\n",
+    "No Keys!\n",
+    "Key broke!\n",
+    "Unlocked!\n",
+    "Key broke!\n",
+    "No one is there!\n",
+    "Key broke!\n",
+    "Couldn't find this npc\n\n",
+    "\n\"I thank thee!\"\n",
+    "Unlocked\n",
+    "No lock!\n",
+    "Found:\n",
+    "Can't!\n",
+    "Nothing to open!\n",
+    "Trapped!\n",
+    "Chest empty!\n",
+    "\nChest opened\n",
+    "Already Open!\n",
+    "What?\n",
+    "It's open!\n",
+    "Too heavy!\n",
+    "Locked!\n",
+    "Opened!\n"
+};
+#define S_0x86be SS_1.s86be
+#define S_0x86ca SS_1.s86ca
+#define S_0x86cc SS_1.s86cc
+#define S_0x86de SS_1.s86de
+#define S_0x86f4 SS_1.s86f4
+#define S_0x8700 SS_1.s8700
+#define S_0x8712 SS_1.s8712
+#define S_0x8732 SS_1.s8732
+#define S_0x873c SS_1.s873c
+#define S_0x874c SS_1.s874c
+#define S_0x875c SS_1.s875c
+#define S_0x8764 SS_1.s8764
+#define S_0x8786 SS_1.s8786
+#define S_0x87a2 SS_1.s87a2
+#define S_0x87aa SS_1.s87aa
+#define S_0x87b8 SS_1.s87b8
+#define S_0x87ca SS_1.s87ca
+#define S_0x87d6 SS_1.s87d6
+#define S_0x87e6 SS_1.s87e6
+#define S_0x87fc SS_1.s87fc
+#define S_0x880e SS_1.s880e
+#define S_0x8822 SS_1.s8822
+#define S_0x8834 SS_1.s8834
+#define S_0x884e SS_1.s884e
+#define S_0x886c SS_1.s886c
+#define S_0x888a SS_1.s888a
+#define S_0x88ac SS_1.s88ac
+#define S_0x88c8 SS_1.s88c8
+#define S_0x88ea SS_1.s88ea
+#define S_0x88fe SS_1.s88fe
+#define S_0x890e SS_1.s890e
+#define S_0x892c SS_1.s892c
+#define S_0x893e SS_1.s893e
+#define S_0x8950 SS_1.s8950
+#define S_0x8960 SS_1.s8960
+#define S_0x8970 SS_1.s8970
+#define S_0x8984 SS_1.s8984
+#define S_0x8996 SS_1.s8996
+#define S_0x89a6 SS_1.s89a6
+#define S_0x89b8 SS_1.s89b8
+#define S_0x89ca SS_1.s89ca
+#define S_0x89dc SS_1.s89dc
+#define S_0x89ee SS_1.s89ee
+#define S_0x89fe SS_1.s89fe
+#define S_0x8a12 SS_1.s8a12
+#define S_0x8a24 SS_1.s8a24
+#define S_0x8a34 SS_1.s8a34
+#define S_0x8a38 SS_1.s8a38
+#define S_0x8a48 SS_1.s8a48
+#define S_0x8a58 SS_1.s8a58
+#define S_0x8a64 SS_1.s8a64
+#define S_0x8a6e SS_1.s8a6e
+#define S_0x8a7a SS_1.s8a7a
+#define S_0x8a7c SS_1.s8a7c
+#define S_0x8a86 SS_1.s8a86
+#define S_0x8a92 SS_1.s8a92
+#define S_0x8a9c SS_1.s8a9c
+#define S_0x8aac SS_1.s8aac
+#define S_0x8ab8 SS_1.s8ab8
+#define S_0x8ac8 SS_1.s8ac8
+#define S_0x8ad0 SS_1.s8ad0
+#define S_0x8ada SS_1.s8ada
+#define S_0x8ae6 SS_1.s8ae6
+#define S_0x8af2 SS_1.s8af2
+#define S_0x8afe SS_1.s8afe
+#define S_0x8b10 SS_1.s8b10
+#define S_0x8b1c SS_1.s8b1c
+#define S_0x8b36 SS_1.s8b36
+#define S_0x8b48 SS_1.s8b48
+#define S_0x8b52 SS_1.s8b52
+#define S_0x8b5c SS_1.s8b5c
+#define S_0x8b64 SS_1.s8b64
+#define S_0x8b6c SS_1.s8b6c
+#define S_0x8b7e SS_1.s8b7e
+#define S_0x8b88 SS_1.s8b88
+#define S_0x8b96 SS_1.s8b96
+#define S_0x8ba6 SS_1.s8ba6
+#define S_0x8bb6 SS_1.s8bb6
+#define S_0x8bbe SS_1.s8bbe
+#define S_0x8bca SS_1.s8bca
+#define S_0x8bd6 SS_1.s8bd6
+#define S_0x8be0 SS_1.s8be0
 char S_0x8bea[] = "blue";
 char S_0x8bf0[] = "yellow";
 char S_0x8bf8[] = "red";
@@ -155,71 +399,205 @@ char S_0x8c2e[] = "IQW";
 char S_0x8c32[] = "KXC";
 char S_0x8c36[] = "IMC";
 char S_0x8c3a[] = "AT";
-static char S_0x8c3e[] = "Open it first!\n";
-static char S_0x8c4e[] = "A moonstone!\n";
-static char S_0x8c5c[] = "A magic carpet!\n";
-static char S_0x8c6e[] = " food!\n";
-static char S_0x8c76[] = "A sandalwood box!\n";
-static char S_0x8c8a[] = " torch";
-static char S_0x8c92[] = "!\n";
-static char S_0x8c96[] = "es!\n";
-static char S_0x8c9c[] = " gem";
-static char S_0x8ca2[] = "!\n";
-static char S_0x8ca6[] = "s!\n";
-static char S_0x8caa[] = " odd key";
-static char S_0x8cb4[] = " key";
-static char S_0x8cba[] = "!\n";
-static char S_0x8cbe[] = "s!\n";
-static char S_0x8cc2[] = "The plans for the HMS Cape!\n";
-static char S_0x8ce0[] = "A scroll: ";
-static char S_0x8cec[] = "!\n";
-static char S_0x8cf0[] = " gold!\n";
-static char S_0x8cf8[] = "A ";
-static char S_0x8cfc[] = " potion!\n";
-static char S_0x8d06[] = "!\n";
-static char S_0x8d0a[] = "The Shard of\n";
-static char S_0x8d18[] = "Falsehood!\n";
-static char S_0x8d24[] = "Hatred!\n";
-static char S_0x8d2e[] = "Cowardice!\n";
-static char S_0x8d3a[] = "The Crown of Lord British!\n";
-static char S_0x8d56[] = "The Sceptre of Lord British!\n";
-static char S_0x8d74[] = "The Amulet of Lord British!\n";
-static char S_0x8d92[] = "Nothing to get!\n";
-static char S_0x8da4[] = "Get\n";
-static char S_0x8daa[] = "Must open first!\n";
-static char S_0x8dbc[] = "contents\nof chest\nYou find:\n";
-static char S_0x8dda[] = "Not here!\n";
-static char S_0x8de6[] = "\n";
-static char S_0x8de8[] = "Borrowed!\n";
-static char S_0x8df4[] = "Crops picked!\n";
-static char S_0x8e04[] = "Mmmmm...!\n";
-static char S_0x8e10[] = "Can't reach plate!\n";
-static char S_0x8e24[] = "Mmmmm...!\n";
-static char S_0x8e30[] = "Can't reach plate!\n";
-static char S_0x8e44[] = "Can't reach plate!\n";
-static char S_0x8e58[] = "Mmmmm...!\n";
-static char S_0x8e64[] = "Nothing to get!\n";
-static char S_0x8e76[] = "\nStay with ship!\n";
-static char S_0x8e88[] = "\nAll must use the same exit!\n";
-static char S_0x8ea6[] = "Leave!\n";
-static char S_0x8eae[] = "Escape!\n";
-static char S_0x8eb8[] = "North\n";
-static char S_0x8ec0[] = "South\n";
-static char S_0x8ec8[] = "East\n";
-static char S_0x8ece[] = "West\n";
-static char S_0x8ed4[] = "Blocked!\n";
-static char S_0x8ede[] = "Klimb-";
-static char S_0x8ee6[] = "U/D-";
-static char S_0x8eec[] = "Up!\n";
-static char S_0x8ef2[] = "Down!\n";
-static char S_0x8efa[] = "What?\n";
-static char S_0x8f02[] = " is absorbed!\n";
-static char S_0x8f12[] = " what?";
-static char S_0x8f1a[] = "-Not here";
-static char S_0x8f24[] = "-Funny, no response!";
-static char S_0x8f3a[] = "Set active plr:\n";
-static char S_0x8f4c[] = "Invalid!\n";
-static char S_0x8f56[] = " passes out!";
+static struct
+{
+    char s8c3e[16];
+    char s8c4e[14];
+    char s8c5c[18];
+    char s8c6e[8];
+    char s8c76[20];
+    char s8c8a[8];
+    char s8c92[4];
+    char s8c96[6];
+    char s8c9c[6];
+    char s8ca2[4];
+    char s8ca6[4];
+    char s8caa[10];
+    char s8cb4[6];
+    char s8cba[4];
+    char s8cbe[4];
+    char s8cc2[30];
+    char s8ce0[12];
+    char s8cec[4];
+    char s8cf0[8];
+    char s8cf8[4];
+    char s8cfc[10];
+    char s8d06[4];
+    char s8d0a[14];
+    char s8d18[12];
+    char s8d24[10];
+    char s8d2e[12];
+    char s8d3a[28];
+    char s8d56[30];
+    char s8d74[30];
+    char s8d92[18];
+    char s8da4[6];
+    char s8daa[18];
+    char s8dbc[30];
+    char s8dda[12];
+    char s8de6[2];
+    char s8de8[12];
+    char s8df4[16];
+    char s8e04[12];
+    char s8e10[20];
+    char s8e24[12];
+    char s8e30[20];
+    char s8e44[20];
+    char s8e58[12];
+    char s8e64[18];
+    char s8e76[18];
+    char s8e88[30];
+    char s8ea6[8];
+    char s8eae[10];
+    char s8eb8[8];
+    char s8ec0[8];
+    char s8ec8[6];
+    char s8ece[6];
+    char s8ed4[10];
+    char s8ede[8];
+    char s8ee6[6];
+    char s8eec[6];
+    char s8ef2[8];
+    char s8efa[8];
+    char s8f02[16];
+    char s8f12[8];
+    char s8f1a[10];
+    char s8f24[22];
+    char s8f3a[18];
+    char s8f4c[10];
+    char s8f56[13];
+} SS_2 = {
+    "Open it first!\n",
+    "A moonstone!\n",
+    "A magic carpet!\n",
+    " food!\n",
+    "A sandalwood box!\n",
+    " torch",
+    "!\n",
+    "es!\n",
+    " gem",
+    "!\n",
+    "s!\n",
+    " odd key",
+    " key",
+    "!\n",
+    "s!\n",
+    "The plans for the HMS Cape!\n",
+    "A scroll: ",
+    "!\n",
+    " gold!\n",
+    "A ",
+    " potion!\n",
+    "!\n",
+    "The Shard of\n",
+    "Falsehood!\n",
+    "Hatred!\n",
+    "Cowardice!\n",
+    "The Crown of Lord British!\n",
+    "The Sceptre of Lord British!\n",
+    "The Amulet of Lord British!\n",
+    "Nothing to get!\n",
+    "Get\n",
+    "Must open first!\n",
+    "contents\nof chest\nYou find:\n",
+    "Not here!\n",
+    "\n",
+    "Borrowed!\n",
+    "Crops picked!\n",
+    "Mmmmm...!\n",
+    "Can't reach plate!\n",
+    "Mmmmm...!\n",
+    "Can't reach plate!\n",
+    "Can't reach plate!\n",
+    "Mmmmm...!\n",
+    "Nothing to get!\n",
+    "\nStay with ship!\n",
+    "\nAll must use the same exit!\n",
+    "Leave!\n",
+    "Escape!\n",
+    "North\n",
+    "South\n",
+    "East\n",
+    "West\n",
+    "Blocked!\n",
+    "Klimb-",
+    "U/D-",
+    "Up!\n",
+    "Down!\n",
+    "What?\n",
+    " is absorbed!\n",
+    " what?",
+    "-Not here",
+    "-Funny, no response!",
+    "Set active plr:\n",
+    "Invalid!\n",
+    " passes out!"
+};
+#define S_0x8c3e SS_2.s8c3e
+#define S_0x8c4e SS_2.s8c4e
+#define S_0x8c5c SS_2.s8c5c
+#define S_0x8c6e SS_2.s8c6e
+#define S_0x8c76 SS_2.s8c76
+#define S_0x8c8a SS_2.s8c8a
+#define S_0x8c92 SS_2.s8c92
+#define S_0x8c96 SS_2.s8c96
+#define S_0x8c9c SS_2.s8c9c
+#define S_0x8ca2 SS_2.s8ca2
+#define S_0x8ca6 SS_2.s8ca6
+#define S_0x8caa SS_2.s8caa
+#define S_0x8cb4 SS_2.s8cb4
+#define S_0x8cba SS_2.s8cba
+#define S_0x8cbe SS_2.s8cbe
+#define S_0x8cc2 SS_2.s8cc2
+#define S_0x8ce0 SS_2.s8ce0
+#define S_0x8cec SS_2.s8cec
+#define S_0x8cf0 SS_2.s8cf0
+#define S_0x8cf8 SS_2.s8cf8
+#define S_0x8cfc SS_2.s8cfc
+#define S_0x8d06 SS_2.s8d06
+#define S_0x8d0a SS_2.s8d0a
+#define S_0x8d18 SS_2.s8d18
+#define S_0x8d24 SS_2.s8d24
+#define S_0x8d2e SS_2.s8d2e
+#define S_0x8d3a SS_2.s8d3a
+#define S_0x8d56 SS_2.s8d56
+#define S_0x8d74 SS_2.s8d74
+#define S_0x8d92 SS_2.s8d92
+#define S_0x8da4 SS_2.s8da4
+#define S_0x8daa SS_2.s8daa
+#define S_0x8dbc SS_2.s8dbc
+#define S_0x8dda SS_2.s8dda
+#define S_0x8de6 SS_2.s8de6
+#define S_0x8de8 SS_2.s8de8
+#define S_0x8df4 SS_2.s8df4
+#define S_0x8e04 SS_2.s8e04
+#define S_0x8e10 SS_2.s8e10
+#define S_0x8e24 SS_2.s8e24
+#define S_0x8e30 SS_2.s8e30
+#define S_0x8e44 SS_2.s8e44
+#define S_0x8e58 SS_2.s8e58
+#define S_0x8e64 SS_2.s8e64
+#define S_0x8e76 SS_2.s8e76
+#define S_0x8e88 SS_2.s8e88
+#define S_0x8ea6 SS_2.s8ea6
+#define S_0x8eae SS_2.s8eae
+#define S_0x8eb8 SS_2.s8eb8
+#define S_0x8ec0 SS_2.s8ec0
+#define S_0x8ec8 SS_2.s8ec8
+#define S_0x8ece SS_2.s8ece
+#define S_0x8ed4 SS_2.s8ed4
+#define S_0x8ede SS_2.s8ede
+#define S_0x8ee6 SS_2.s8ee6
+#define S_0x8eec SS_2.s8eec
+#define S_0x8ef2 SS_2.s8ef2
+#define S_0x8efa SS_2.s8efa
+#define S_0x8f02 SS_2.s8f02
+#define S_0x8f12 SS_2.s8f12
+#define S_0x8f1a SS_2.s8f1a
+#define S_0x8f24 SS_2.s8f24
+#define S_0x8f3a SS_2.s8f3a
+#define S_0x8f4c SS_2.s8f4c
+#define S_0x8f56 SS_2.s8f56
 // END DGROUP
 #endif
 
@@ -1323,7 +1701,7 @@ static void SJOG_112c_OpenChest(int param_1, int param_2, int param_3)
     int local_a;
     byte local_8;
     int local_6;
-    CombatEntity* local_4;
+    CombatEntity* local_4_ab;
 
     local_a = 0;
     for (local_6 = 1; local_6 < 0x20; local_6++)
@@ -1377,12 +1755,12 @@ static void SJOG_112c_OpenChest(int param_1, int param_2, int param_3)
         {
             for (local_6 = 0; local_6 < 32; local_6++)
             {
-                local_4 = &D_ba14[local_6];
-                if ((local_4->flags & COMBAT_FLAGS_PLAYER) != 0 && local_4->entityIdx == local_c)
+                local_4_ab = &D_ba14[local_6];
+                if ((local_4_ab->flags & COMBAT_FLAGS_PLAYER) != 0 && local_4_ab->entityIdx == local_c)
                 {
-                    local_4->flags |= COMBAT_FLAGS_DEAD;
+                    local_4_ab->flags |= COMBAT_FLAGS_DEAD;
 
-                    D_5c5a[local_4->actorIdx]._0_tile = D_5c5a[local_4->actorIdx]._1_animTile = TILE_ACTOR_SLEEP;
+                    D_5c5a[local_4_ab->actorIdx]._0_tile = D_5c5a[local_4_ab->actorIdx]._1_animTile = TILE_ACTOR_SLEEP;
                     break;
                 }
             }
@@ -2076,9 +2454,9 @@ int SJOG_1d6a_CombatKlimb(void)
 {
     int local_c;
     int local_a;
-    int local_4_ab;
     int local_8;
     ActorFmt* local_6;
+    int local_4_ab;
 
     ULTIMA_1850_PrintString(_TEXT(0x8ede, "Klimb-"));
 
@@ -2092,12 +2470,6 @@ int SJOG_1d6a_CombatKlimb(void)
             local_c = ULTIMA_266c_GetChar();
             switch (local_c)
             {
-            case U5_KEY_DOWN:
-            case 0x44:
-                // dd48
-                local_4_ab = TILE_MAP_LADDER_DOWN;
-                break;
-
             case U5_KEY_UP:
             case 0x55:
                 // -> dd4b
@@ -2106,6 +2478,12 @@ int SJOG_1d6a_CombatKlimb(void)
             default:
                 // dd44
                 local_c = 0;
+                break;
+
+            case U5_KEY_DOWN:
+            case 0x44:
+                // dd48
+                local_4_ab = TILE_MAP_LADDER_DOWN;
                 break;
             }
             // dd4b
@@ -2258,7 +2636,7 @@ void SJOG_2012(void)
 // CHECKED
 void SJOG_203e(int param_1)
 {
-    int local_6;
+    int local_6_an;
 
     ActorFmt* local_4;
 
@@ -2267,9 +2645,9 @@ void SJOG_203e(int param_1)
         ENDGAME_0648_EndgameMain();
     }
 
-    for (local_6 = 0; local_6 < 0x20; local_6++)
+    for (local_6_an = 0; local_6_an < 0x20; local_6_an++)
     {
-        D_5c5a[local_6] = D_a9fc[local_6];
+        D_5c5a[local_6_an] = D_a9fc[local_6_an];
     }
 
     if ((D_58a1 & 0x82) == 0)
@@ -2298,26 +2676,26 @@ void SJOG_203e(int param_1)
 
 int SJOG_20d8(int param_1, int param_2, int param_3)
 {
-    int local_6;
+    int local_6_o;
     CombatEntity* local_4;
 
-    local_6 = 1;
+    local_6_o = 1;
     local_4 = &D_ba14[param_3];
 
     if (param_1 > -1 && param_1 < 11 && param_2 > -1 && param_2 < 11)
     {
-        local_6 = COMBAT_0000(D_5c5a[local_4->actorIdx]._0_tile, param_1, param_2);
-        local_6 = 1 - local_6;
+        local_6_o = COMBAT_0000(D_5c5a[local_4->actorIdx]._0_tile, param_1, param_2);
+        local_6_o = 1 - local_6_o;
     }
     else
     {
         if ((local_4->flags & COMBAT_FLAGS_2) != 0)
         {
-            local_6 = 0;
+            local_6_o = 0;
         }
     }
 
-    return local_6;
+    return local_6_o;
 }
 
 // CHECKED
@@ -2327,15 +2705,16 @@ int SJOG_2148(int param_1)
     int local_a;
     int local_8;
     int local_6;
-    CombatEntity* local_4;
+    CombatEntity* local_4_ab;
 
     local_6 = 0;
-    local_4 = &D_ba14[param_1];
+    local_4_ab = &D_ba14[param_1];
 
-    local_8 = local_4->x;
-    local_a = local_4->y;
+    local_8 = local_4_ab->x;
+    local_a = local_4_ab->y;
 
-    for (local_c = 0; local_c < 4; local_c++)
+    local_c = 0;
+    do
     {
         switch (local_c)
         {
@@ -2358,7 +2737,7 @@ int SJOG_2148(int param_1)
         {
             local_6++;
         }
-    }
+    } while (++local_c < 4);
 
     return local_6 == 4;
 }
@@ -2379,11 +2758,7 @@ int SJOG_21ce(void)
             ULTIMA_2192_AudioPulse(0xc1c, 1, 30000, 1000, 2);
             ULTIMA_6e60(D_ba14[local_4].entityIdx, 0x23);
             ULTIMA_68ae(local_4);
-
-            if (local_4 == 6)
-                local_4 = -1;
-
-            return local_4;
+            break;
         }
     }
 

@@ -283,9 +283,9 @@ void COMSUBS_0312(int param_1, int param_2)
 
 static int COMSUBS_0458(int param_1, int param_2, int param_3, int param_4)
 {
-    int local_8 = param_1 - param_3;
-    int local_6 = param_2 - param_4;
-    int local_4_ab = local_8 * local_8 + local_6 * local_6;
+    int local_6 = param_1 - param_3;
+    int local_8 = param_2 - param_4;
+    int local_4_ab = local_6 * local_6 + local_8 * local_8;
     return local_4_ab;
 }
 

@@ -419,7 +419,7 @@ int CAST2_04c2(int param_1)
     int local_a;
     int local_8;
     ActorFmt* local_6;
-    int local_4;
+    int local_4_c;
 
     local_a = 0;
 
@@ -433,36 +433,40 @@ int CAST2_04c2(int param_1)
     }
 
     // 04e1
-    for (local_8 = 0; local_8 < 8; local_8++)
+    local_8 = 0;
+    while (local_8 < 8)
     {
         if (COMBAT_120e() == 0 || COMBAT_0000(TILE_ACTOR_D8, D_5876, D_5878) == 0 || *ULTIMA_4402_GetTileAddr(D_5876, D_5878) == 0xff)
         {
+            local_8++;
             continue;
         }
 
         // 0524
-        local_4 = ULTIMA_6506(0x26, 0, D_5876, D_5878, D_5895_map_level);
-        if (local_4 >= 0)
+        local_4_c = ULTIMA_6506(0x26, 0, D_5876, D_5878, D_5895_map_level);
+        if (local_4_c < 0)
         {
-            // 054c
-            ULTIMA_2192_AudioPulse(0xac8, 1, 12000, 500, 5);
-            local_6 = &D_5c5a[D_ba14[local_4].actorIdx];
-            local_6->_0_tile = local_6->_1_animTile = TILE_ACTOR_CIRCLE;
-            ULTIMA_1068(0x1d8, D_5876, D_5878);
-            local_6->_0_tile = local_6->_1_animTile = TILE_ACTOR_D8;
+            break;
+        }
 
-            if (param_1 == 0 && ULTIMA_3abe() >= COMBAT_13e2(D_589e, QUERY_STAT_INTEL))
-            {
-                // 05b2
-                ULTIMA_1850_PrintString(_TEXT(0x9532, "Oops...\n"));
-                local_a = -1;
-            }
-            else
-            {
-                // 05c0
-                D_ba14[local_4].flags |= COMBAT_FLAGS_CHARMED;
-                local_a = 1;
-            }
+        // 054c
+        ULTIMA_2192_AudioPulse(0xac8, 1, 12000, 500, 5);
+        local_6 = &D_5c5a[D_ba14[local_4_c].actorIdx];
+        local_6->_0_tile = local_6->_1_animTile = TILE_ACTOR_CIRCLE;
+        ULTIMA_1068(0x1d8, D_5876, D_5878);
+        local_6->_0_tile = local_6->_1_animTile = TILE_ACTOR_D8;
+
+        if (param_1 == 0 && ULTIMA_3abe() >= COMBAT_13e2(D_589e, QUERY_STAT_INTEL))
+        {
+            // 05b2
+            ULTIMA_1850_PrintString(_TEXT(0x9532, "Oops...\n"));
+            local_a = -1;
+        }
+        else
+        {
+            // 05c0
+            D_ba14[local_4_c].flags |= COMBAT_FLAGS_CHARMED;
+            local_a = 1;
         }
 
         // 0518
@@ -585,7 +589,7 @@ int CAST2_0768(void)
         break;
 
     case TILE_MAP_98:
-        // 07b2: not matching
+        // 07b2
         *local_4 = TILE_MAP_DOOR_BA;
         D_24e6 |= 2;
         local_6_an = 1;

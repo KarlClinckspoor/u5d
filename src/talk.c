@@ -199,7 +199,7 @@ static void TALK_00e6_TalkToMerchant(int param_1)
 
         D_b116 = param_1 - 0x81;
 
-        for (D_b114 = 0; D_23ca[D_b116][D_b114] != D_5893_map_id && D_b114 < 0x10; D_b114++)
+        for (D_b114 = 0; (&D_23ca[0][0])[D_b114 + D_b116 * 16] != D_5893_map_id && D_b114 < 0x10; D_b114++)
         {
         }
 
@@ -481,7 +481,10 @@ static void TALK_04e2_PrintWord(void)
         while (local_4 < D_4af1) // c4c9
         {
             // c4d5 -> c47c
-            ULTIMA_1c9e_SelectCharset((D_bce4[local_4] & 0x80) == 0);
+            if (D_bce4[local_4] & 0x80)
+                ULTIMA_1c9e_SelectCharset(0);
+            else
+                ULTIMA_1c9e_SelectCharset(1);
             local_6_an = D_bce4[local_4] & 0x7f;
             local_4++;
 
@@ -1116,16 +1119,22 @@ static int TALK_0c5c(void)
 // set npc met flag
 static int TALK_0d42(int param_1)
 {
-    // NOTE: invokes aNNalshl
-    (*(u32*)&D_5bda[(D_5893_map_id - 1) * 4]) |= ((u32)1 << (byte)param_1);
+    u32 local_6;
+
+    local_6 = 1;
+    local_6 <<= param_1; // aNNalshl
+    (*(u32*)&D_5bda[(D_5893_map_id - 1) * 4]) |= local_6;
 }
 
 // NOT MATCHING (u32 operation)
 // check npc met flag
 static int TALK_0d7a(int param_1)
 {
-    // NOTE: invokes aNNalshl
-    return (*(u32*)&D_5bda[(D_5893_map_id - 1) * 4] & ((u32)1 << (byte)param_1)) != 0;
+    u32 local_6;
+
+    local_6 = 1;
+    local_6 <<= param_1; // aNNalshl
+    return (*(u32*)&D_5bda[(D_5893_map_id - 1) * 4] & local_6) != 0;
 }
 
 static int TALK_0dbe(byte param_1)
@@ -1261,9 +1270,9 @@ static void TALK_0e78_AskName(void)
 
 static int TALK_0f32_ProcessChar(byte param_1)
 {
-    byte* local_4;
+    char* local_8;
     int local_6;
-    char* pbVar5;
+    byte* local_4_c;
 
     if (D_4aee != 0)
     {
@@ -1304,12 +1313,12 @@ static int TALK_0f32_ProcessChar(byte param_1)
         return TALK_080a_Join(); // -> 1114
     case 0x87:                // key_or
         // 0fbc
-        local_4 = D_bcde;
+        local_4_c = D_bcde;
         if (TALK_07be() != 0)
         {
             return 1;
         }
-        D_bcde = local_4;
+        D_bcde = local_4_c;
         return 0; // -> 0f5e
     case 0x88:    // ask name
         // 0fd2
@@ -1371,10 +1380,10 @@ static int TALK_0f32_ProcessChar(byte param_1)
         {
             TALK_0574_BuildOrPrintWord(0xa0); // 0x20
 
-            pbVar5 = D_24ea[param_1 - 1];
-            while (*pbVar5 != 0)
+            local_8 = D_24ea[param_1 - 1];
+            while (*local_8 != 0)
             {
-                TALK_0574_BuildOrPrintWord((byte)*pbVar5++ | 0x80);
+                TALK_0574_BuildOrPrintWord((byte)*local_8++ | 0x80);
             }
 
             if (*D_24ea[param_1 - 1] == 0)

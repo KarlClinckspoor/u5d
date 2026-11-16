@@ -408,48 +408,48 @@ static void ENDGAME_04fe(void)
 // actor_idx, x, y
 static int ENDGAME_0510(int param_1, int param_2, int param_3)
 {
-    ActorFmt* local_4;
     int local_6;
+    ActorFmt* local_4_c;
     int local_8;
     int local_a;
 
     local_8 = 1;
-    local_4 = &D_5c5a[param_1];
+    local_4_c = &D_5c5a[param_1];
 
-    if (local_4->_0_tile == 0)
+    if (local_4_c->_0_tile == 0)
     {
         // a7c0
         local_8 = 0;
     }
-    else if (local_4->_2_x == param_2 && local_4->_3_y == param_3) // a7c8
+    else if (local_4_c->_2_x == param_2 && local_4_c->_3_y == param_3) // a7c8
     {
         local_8 = 0;
     }
     else
     {
         // a7da
-        local_6 = abs(local_4->_2_x - param_2);
-        local_a = abs(local_4->_3_y - param_3);
+        local_6 = abs(local_4_c->_2_x - param_2);
+        local_a = abs(local_4_c->_3_y - param_3);
         if (local_6 < local_a)
         {
-            if (local_4->_3_y > param_3)
+            if (local_4_c->_3_y > param_3)
             {
-                local_4->_3_y--;
+                local_4_c->_3_y--;
             }
             else
             {
                 // a80c
-                local_4->_3_y++;
+                local_4_c->_3_y++;
             }
         }
-        else if (local_4->_2_x > param_2) // a812
+        else if (local_4_c->_2_x > param_2) // a812
         {
-            local_4->_2_x--;
+            local_4_c->_2_x--;
         }
         else
         {
             // a822
-            local_4->_2_x++;
+            local_4_c->_2_x++;
         }
 
         ENDGAME_04fe();
@@ -461,18 +461,18 @@ static int ENDGAME_0510(int param_1, int param_2, int param_3)
 
 static void ENDGAME_05a2(int param_1)
 {
-    ActorFmt* local_4;
     int local_8;
     int local_6;
+    ActorFmt* local_4_c;
     int local_a;
-    local_4 = &D_5c5a[param_1];
+    local_4_c = &D_5c5a[param_1];
 
-    if (local_4->_0_tile != 0 && ULTIMA_2092_RandomRange(0, 1) != 0)
+    if (local_4_c->_0_tile != 0 && ULTIMA_2092_RandomRange(0, 1) != 0)
     {
         for (local_a = 0; local_a < 8; local_a++)
         {
-            local_6 = local_4->_2_x;
-            local_8 = local_4->_3_y;
+            local_6 = local_4_c->_2_x;
+            local_8 = local_4_c->_3_y;
 
             switch (ULTIMA_2092_RandomRange(0, 3))
             {
@@ -492,8 +492,8 @@ static void ENDGAME_05a2(int param_1)
 
             if (GetMapViewport(local_6, local_8) == TILE_MAP_44)
             {
-                local_4->_2_x = local_6;
-                local_4->_3_y = local_8;
+                local_4_c->_2_x = local_6;
+                local_4_c->_3_y = local_8;
                 break;
             }
         }

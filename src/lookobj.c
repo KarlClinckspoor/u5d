@@ -205,8 +205,11 @@ static void LOOKOBJ_01ac(int param_1, int param_2)
 
 static void LOOKOBJ_024c(int param_1, int param_2)
 {
-    int local_6_an = param_2 * 8;
-    int local_4 = param_1 * 8;
+    int local_6_an;
+    int local_4;
+
+    local_4 = param_1 * 8;
+    local_6_an = param_2 * 8;
 
     ULTIMA_0a70_GRAP_2d_SetPenColor(D_13ae_redColor);
 
@@ -789,7 +792,7 @@ static void LOOKOBJ_0cf4(int param_1)
 
     for (local_c = 0; local_c < 4; local_c++)
     {
-        if ((param_1 & 0xf0) == 0x60 && (D_3822[param_1 & 0xf] & local_e) == 0)
+        if ((param_1 & 0xf0) == 0x60 && (D_3822[(u8)param_1 & 0xf] & local_e) == 0)
         {
             local_a[local_c] = D_13b4_greenColor + 8;
         }

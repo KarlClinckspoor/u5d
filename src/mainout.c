@@ -71,16 +71,16 @@ void MAINOUT_007a(void)
     int local_a;
 
     int local_6;
-    ActorFmt* local_4;
+    ActorFmt* local_4_ab;
 
     for (local_6 = 1; local_6 < 32; local_6++)
     {
-        local_4 = &D_5c5a[local_6];
+        local_4_ab = &D_5c5a[local_6];
 
-        local_8 = abs(D_5896_map_x - local_4->_2_x);
-        local_a = abs(D_5897_map_y - local_4->_3_y);
+        local_8 = abs(D_5896_map_x - local_4_ab->_2_x);
+        local_a = abs(D_5897_map_y - local_4_ab->_3_y);
 
-        if (local_4->_0_tile != 0 && local_4->_4_z == D_5895_map_level && local_8 < 6 && local_a < 6)
+        if (local_4_ab->_0_tile != 0 && local_4_ab->_4_z == D_5895_map_level && local_8 < 6 && local_a < 6)
         {
             ULTIMA_3ae6(1);
         }
@@ -865,7 +865,7 @@ u8 D_2c18[0x3d] =
 // u8 2c54 = 0;
 u8 D_2c55 = 0;
 
-// u8 2c56 = 0;
+static u8 D_2c56 = 0; // unused
 u8 D_2c57 = 0;
 
 
@@ -1044,7 +1044,7 @@ static void MAINOUT_0a84_MainLoop(void)
                 else if (D_5896_map_x == 0xe9 && D_5897_map_y == 0xeb && D_5895_map_level == 0 && D_5893_map_id == 0)
                 {
                     ULTIMA_1850_PrintString(_TEXT(0x2b6b, "\n\""));
-                    if (D_58cc != 0)
+                    if ((byte)D_58cc != 0)
                     {
                         ULTIMA_1850_PrintString(_TEXT(0x2b6e, "Pass, Seeker!\"\n"));
                     }
@@ -1077,9 +1077,9 @@ static void MAINOUT_0a84_MainLoop(void)
 
 void MAINOUT_0d22_Entry(void)
 {
-    u8 local_8;
+    int local_8;
     int local_6;
-    ActorFmt* local_4;
+    ActorFmt* local_4_ab;
 
 #if defined(ENABLE_BGM)
     AUDIO_StopBgm();
@@ -1090,11 +1090,11 @@ void MAINOUT_0d22_Entry(void)
     if (D_6605 >= 0x40)
     {
         local_6 = ULTIMA_38e4();
-        local_4 = &D_5c5a[local_6]; // get some actor
-        local_4->_7 = D_6605 & 0x3f;
-        local_4->_2_x = D_5953; // ship_x
-        local_4->_3_y = D_5954; // ship_y
-        local_4->_4_z = 0;
+        local_4_ab = &D_5c5a[local_6]; // get some actor
+        local_4_ab->_7 = D_6605 & 0x3f;
+        local_4_ab->_2_x = D_5953; // ship_x
+        local_4_ab->_3_y = D_5954; // ship_y
+        local_4_ab->_4_z = 0;
 
         if (D_6605 > 0x7f)
         {
@@ -1105,8 +1105,8 @@ void MAINOUT_0d22_Entry(void)
             local_8 = TILE_ACTOR_SKIFF_29;
         }
 
-        local_4->_0_tile = local_4->_1_animTile = local_8;
-        local_4->_5 = 99;
+        local_4_ab->_0_tile = local_4_ab->_1_animTile = local_8;
+        local_4_ab->_5 = 99;
         D_6605 = 0;
     }
 
@@ -1152,7 +1152,14 @@ static int MAINOUT_0d8c(void)
     return local_4;
 }
 
-// CHECKED ([bx][si])
+// The original adds the index and the pointer as integers (mov bx,cx / add bx,si),
+// not with the [bx][si] addressing mode that param_1[i] gives.
+#if defined(TARGET_DOS16)
+#define MAINOUT_0E04_AT(i) (*(byte*)((uint)(i) + (uint)param_1))
+#else
+#define MAINOUT_0E04_AT(i) (param_1[i])
+#endif
+
 static int MAINOUT_0e04(byte* param_1)
 {
     int local_6_an;
@@ -1160,9 +1167,9 @@ static int MAINOUT_0e04(byte* param_1)
 
     local_4 = ULTIMA_2092_RandomRange(0, 0xff);
 
-    for (local_6_an = 0; param_1[local_6_an] <= local_4; local_6_an++)
+    for (local_6_an = 0; MAINOUT_0E04_AT(local_6_an) <= local_4; local_6_an++)
     {
-        local_4 -= param_1[local_6_an];
+        local_4 -= MAINOUT_0E04_AT(local_6_an);
     }
     return local_6_an;
 }

@@ -217,8 +217,8 @@ static int CAST_0230_AnYlem(void)
 
 static int CAST_02d2_AnSanct(void)
 {
-    byte* local_4;
     ActorFmt* local_6;
+    byte* local_4_c;
     int local_8;
     int local_a;
     int local_c;
@@ -231,22 +231,22 @@ static int CAST_02d2_AnSanct(void)
         local_c = D_24d6[D_6603];
         local_e = D_24de[D_6603];
 
-        local_4 = &GetDungeonMap(D_5896_map_x, D_5897_map_y, D_5895_map_level);
+        local_4_c = &GetDungeonMap(D_5896_map_x, D_5897_map_y, D_5895_map_level);
 
-        if ((*local_4 & 0xf0) != 0x40)
+        if ((*local_4_c & 0xf0) != 0x40)
         {
-            local_4 =
+            local_4_c =
                 &GetDungeonMap((local_c + D_5896_map_x) & 7, (local_e + D_5897_map_y) & 7, D_5895_map_level);
         }
 
-        if ((*local_4 & 0xf0) == 0x40)
+        if ((*local_4_c & 0xf0) == 0x40)
         {
-            if ((*local_4 & 1) != 0)
+            if ((*local_4_c & 1) != 0)
             {
                 ULTIMA_1850_PrintString(_TEXT(0x45a1, "Disarmed!\n"));
             }
 
-            *local_4 = (*local_4 & 8) | 0x70;
+            *local_4_c = (*local_4_c & 8) | 0x70;
 
             ULTIMA_1850_PrintString(_TEXT(0x45ac, "Chest opened!\n"));
 
@@ -266,11 +266,11 @@ static int CAST_02d2_AnSanct(void)
 
         local_8 = 0;
 
-        local_4 = ULTIMA_4402_GetTileAddr(D_5876, D_5878);
+        local_4_c = ULTIMA_4402_GetTileAddr(D_5876, D_5878);
 
-        if (*local_4 == TILE_MAP_DOOR_B9 || *local_4 == TILE_MAP_DOOR_BB)
+        if (*local_4_c == TILE_MAP_DOOR_B9 || *local_4_c == TILE_MAP_DOOR_BB)
         {
-            --*local_4;
+            --*local_4_c;
 
             D_24e6 |= 2;
 
@@ -304,17 +304,17 @@ static int CAST_02d2_AnSanct(void)
 static void CAST_043e_AnCorpXen(void)
 {
     CombatEntity* local_4;
-    int local_6;
+    int local_6_p;
 
     CAST2_0000_CastEffect(2);
 
-    for (local_6 = 0; local_6 < 0x20; local_6++)
+    for (local_6_p = 0; local_6_p < 0x20; local_6_p++)
     {
-        local_4 = &D_ba14[local_6];
-        if (CAST_0000(local_6) == 0 && (local_4->flags & (COMBAT_FLAGS_PLAYER | COMBAT_FLAGS_MONSTER)) == COMBAT_FLAGS_MONSTER &&
+        local_4 = &D_ba14[local_6_p];
+        if (CAST_0000(local_6_p) == 0 && (local_4->flags & (COMBAT_FLAGS_PLAYER | COMBAT_FLAGS_MONSTER)) == COMBAT_FLAGS_MONSTER &&
             ((byte)D_153c_enemyFlags[local_4->entityIdx] & ENEMY_FLAG_UNDEAD) != 0)
         {
-            if (COMSUBS_0000(D_589e, local_6, 0) == 0)
+            if (COMSUBS_0000(D_589e, local_6_p, 0) == 0)
             {
                 local_4->hp = 1;
                 local_4->flags |= COMBAT_FLAGS_2;
@@ -338,7 +338,7 @@ static int CAST_04b0_KalXen(void)
     int local_a;
     int local_8;
     ActorFmt* local_6;
-    int local_4;
+    int local_4_c;
 
     CAST2_0000_CastEffect(2);
 
@@ -346,67 +346,57 @@ static int CAST_04b0_KalXen(void)
 
     if (local_c < 6)
     {
-        local_4 = 0x14;
+        local_4_c = 0x14;
     }
     else if (local_c < 0xb)
     {
-        local_4 = 0x16;
+        local_4_c = 0x16;
     }
     else if (local_c < 0xe)
     {
-        local_4 = 0x15;
+        local_4_c = 0x15;
     }
     else
     {
-        local_4 = 0x22;
+        local_4_c = 0x22;
     }
 
     // 04f9
     local_a = 0;
     local_c = 0;
 
-    local_e = local_4 * 4 + 0x40;
-    local_10_ad = local_4 * 4 + 0x140;
+    local_e = local_4_c * 4 + 0x40;
+    local_10_ad = local_4_c * 4 + 0x140;
 
     // 0522
-    do
+    while (local_c < 8)
     {
         if (COMBAT_120e() == 0 || COMBAT_0000(TILE_ACTOR_90, D_5876, D_5878) == 0)
         {
-            if (++local_c >= 8)
-            {
-                // -> 0566
-                break;
-            }
+            local_c++;
+            continue;
         }
-        else
+
+        local_8 = ULTIMA_6506(local_4_c, 0, D_5876, D_5878, D_5895_map_level);
+        if (local_8 < 0)
         {
-            local_8 = ULTIMA_6506(local_4, 0, D_5876, D_5878, D_5895_map_level);
-            if (local_8 < 0)
-            {
-                // 0566
-                break;
-            }
-            else
-            {
-                local_6 = &D_5c5a[D_ba14[local_8].actorIdx];
-
-                // 056c
-                local_6->_1_animTile = local_6->_0_tile = TILE_ACTOR_CIRCLE;
-
-                // 0588
-                ULTIMA_1068(local_10_ad, D_5876, D_5878);
-
-                local_6->_1_animTile = local_6->_0_tile = local_e;
-                D_ba14[local_8].flags |= COMBAT_FLAGS_CHARMED;
-
-                local_a = 1;
-            }
-
             break;
         }
-    } while (1);
 
+        local_6 = &D_5c5a[D_ba14[local_8].actorIdx];
+
+        // 056c
+        local_6->_1_animTile = local_6->_0_tile = TILE_ACTOR_CIRCLE;
+
+        // 0588
+        ULTIMA_1068(local_10_ad, D_5876, D_5878);
+
+        local_6->_1_animTile = local_6->_0_tile = local_e;
+        D_ba14[local_8].flags |= COMBAT_FLAGS_CHARMED;
+
+        local_a = 1;
+        break;
+    }
     // 05aa
     return local_a;
 }
@@ -429,12 +419,12 @@ static int CAST_05dc_InPor(void)
     int local_a;
     int local_8;
     int local_6;
-    ActorFmt* local_4;
+    ActorFmt* local_4_c;
 
     local_c = 0;
     if (D_5893_map_id > 0x7f)
     {
-        local_4 = &D_5c5a[D_ba14[D_589e].actorIdx];
+        local_4_c = &D_5c5a[D_ba14[D_589e].actorIdx];
         if ((D_58a1 & 2) != 0)
         {
             local_c = 0;
@@ -447,11 +437,11 @@ static int CAST_05dc_InPor(void)
                 if (COMBAT_120e() == 0)
                     continue;
 
-                if (COMBAT_0000(local_4->_0_tile, D_5876, D_5878) == 0)
+                if (COMBAT_0000(local_4_c->_0_tile, D_5876, D_5878) == 0)
                     continue;
 
-                local_4->_2_x = D_ba14[D_589e].x = D_5876;
-                local_4->_3_y = D_ba14[D_589e].y = D_5878;
+                local_4_c->_2_x = D_ba14[D_589e].x = D_5876;
+                local_4_c->_3_y = D_ba14[D_589e].y = D_5878;
 
                 local_c = 1;
                 break;
@@ -513,19 +503,19 @@ static int CAST_05dc_InPor(void)
 
 static void CAST_074c_QuasWis(void)
 {
-    int local_6;
+    int local_6_p;
     ActorFmt* local_4;
 
     CAST2_0000_CastEffect(4);
 
-    for (local_6 = 0; local_6 < 0x20; local_6++)
+    for (local_6_p = 0; local_6_p < 0x20; local_6_p++)
     {
-        if (D_ba14[local_6].flags != 0 &&
-            (D_ba14[local_6].flags & COMBAT_FLAGS_PLAYER) == 0 &&
-            (D_ba14[local_6].flags & COMBAT_FLAGS_INVISIBLE) != 0)
+        if (D_ba14[local_6_p].flags != 0 &&
+            (D_ba14[local_6_p].flags & COMBAT_FLAGS_PLAYER) == 0 &&
+            (D_ba14[local_6_p].flags & COMBAT_FLAGS_INVISIBLE) != 0)
         {
-            D_ba14[local_6].flags &= ~COMBAT_FLAGS_INVISIBLE;
-            local_4 = &D_5c5a[D_ba14[local_6].actorIdx];
+            D_ba14[local_6_p].flags &= ~COMBAT_FLAGS_INVISIBLE;
+            local_4 = &D_5c5a[D_ba14[local_6_p].actorIdx];
             local_4->_1_animTile = local_4->_0_tile;
 
             ULTIMA_5394();
@@ -815,19 +805,19 @@ static int CAST_0b28_InQuasXen(void)
 
 static void CAST_0c98_CorpInQuas(void)
 {
-    int local_6;
+    int local_6_p;
     CombatEntity* local_4;
 
     CAST2_0000_CastEffect(7);
 
-    for (local_6 = 0; local_6 < 0x20; local_6++)
+    for (local_6_p = 0; local_6_p < 0x20; local_6_p++)
     {
-        local_4 = &D_ba14[local_6];
+        local_4 = &D_ba14[local_6_p];
         if ((local_4->flags & (COMBAT_FLAGS_PLAYER | COMBAT_FLAGS_MONSTER)) == COMBAT_FLAGS_MONSTER)
         {
-            if (CAST_0000(local_6) == 0)
+            if (CAST_0000(local_6_p) == 0)
             {
-                if (COMSUBS_0000(D_589e, local_6, 0) == 0)
+                if (COMSUBS_0000(D_589e, local_6_p, 0) == 0)
                 {
                     local_4->hp = 1;
                     local_4->flags |= COMBAT_FLAGS_2;
@@ -896,6 +886,10 @@ static int CAST_0d4c_AnTym(void)
 }
 
 static void CAST_1f60(int param_1, int param_2, int param_3);
+
+#if defined(TARGET_DOS16)
+static char S_0x466a[] = "Scroll\n\n";
+#endif
 
 int CAST_0dba_CastSpellCmd(void)
 {
@@ -1228,7 +1222,7 @@ static int CAST_11de_UseScroll(int param_1)
     int local_4 = 1;
 
     D_5820[param_1]--;
-    ULTIMA_1850_PrintString(_TEXT(0x466a, "Scroll\n\n"));
+    ULTIMA_1850_PrintString(_XTEXT(0x466a, "Scroll\n\n"));
     switch (param_1)
     {
     case 0:
@@ -1320,12 +1314,16 @@ static int CAST_11de_UseScroll(int param_1)
     return local_4;
 }
 
+#if defined(TARGET_DOS16)
+static char S_0x474c[] = "\nNo noticeable effect now!\n";
+#endif
+
 // CHECKED
 // use potion
 static int CAST_135a_UsePotion(int param_1)
 {
-    int local_4;
     ActorFmt* local_6;
+    int local_4_c;
     int local_8;
     int local_a;
 
@@ -1347,12 +1345,12 @@ static int CAST_135a_UsePotion(int param_1)
     }
 
     CAST2_0000_CastEffect(param_1);
-    local_4 = ULTIMA_2092_RandomRange(0, 0xf);
-    if (local_4 == 0)
+    local_4_c = ULTIMA_2092_RandomRange(0, 0xf);
+    if (local_4_c == 0)
     {
         param_1 = 4;
     }
-    else if (local_4 == 1)
+    else if (local_4_c == 1)
     {
         param_1 = ULTIMA_2092_RandomRange(0, 7);
     }
@@ -1461,7 +1459,7 @@ static int CAST_135a_UsePotion(int param_1)
         }
         else
         {
-            ULTIMA_1850_PrintString(_TEXT(0x474c, "\nNo noticeable effect now!\n"));
+            ULTIMA_1850_PrintString(_XTEXT(0x474c, "\nNo noticeable effect now!\n"));
         }
         break;
 
@@ -1475,7 +1473,7 @@ static int CAST_135a_UsePotion(int param_1)
         }
         else
         {
-            ULTIMA_1850_PrintString(_TEXT(0x474c, "\nNo noticeable effect now!\n"));
+            ULTIMA_1850_PrintString(_XTEXT(0x474c, "\nNo noticeable effect now!\n"));
         }
         break;
 
@@ -1486,7 +1484,7 @@ static int CAST_135a_UsePotion(int param_1)
         }
         else
         {
-            ULTIMA_1850_PrintString(_TEXT(0x474c, "\nNo noticeable effect now!\n"));
+            ULTIMA_1850_PrintString(_XTEXT(0x474c, "\nNo noticeable effect now!\n"));
         }
         break;
     }
@@ -1584,44 +1582,38 @@ static void CAST_15b4_UseGemShard(int param_1)
     ULTIMA_3072_ShakeScreen();
     ULTIMA_3ae6(3);
 
-    if (ULTIMA_368e_FindActorTileAtPos(D_5896_map_x, D_5897_map_y - 1, D_5895_map_level) != TILE_ACTOR_SHADOWLORD)
+    if (ULTIMA_368e_FindActorTileAtPos(D_5896_map_x, D_5897_map_y - 1, D_5895_map_level) == TILE_ACTOR_SHADOWLORD &&
+        param_1 == D_58cb)
     {
-        return;
+        TOWN_00b0_DespawnNpc(TOWN_011e(D_5876));
+
+        for (local_4 = 0; local_4 < 7; local_4++)
+        {
+            ULTIMA_3522(D_5896_map_x, D_5897_map_y - 1);
+        }
+
+        D_58c8[param_1] = 0xff;
+        D_57b6[param_1] = 0;
+
+        *(u32*)&D_5b5a[0x70] |= D_4892[param_1];
+
+        ULTIMA_1850_PrintString(_TEXT(0x483b, "\nThe doom of the Shadowlord "));
+        switch (param_1)
+        {
+        case 0:
+            ULTIMA_1850_PrintString(_TEXT(0x4858, "Faulinei"));
+            break;
+        case 1:
+            ULTIMA_1850_PrintString(_TEXT(0x4861, "Astaroth"));
+            break;
+        case 2:
+            ULTIMA_1850_PrintString(_TEXT(0x486a, "Nosfentor"));
+            break;
+        }
+
+        ULTIMA_1850_PrintString(_TEXT(0x4874, " is wrought!\n"));
+        ULTIMA_4368_AudioVictoryTune();
     }
-
-    if (param_1 != D_58cb)
-    {
-        return;
-    }
-
-    TOWN_00b0_DespawnNpc(TOWN_011e(D_5876));
-
-    for (local_4 = 0; local_4 < 7; local_4++)
-    {
-        ULTIMA_3522(D_5896_map_x, D_5897_map_y - 1);
-    }
-
-    D_58c8[param_1] = 0xff;
-    D_57b6[param_1] = 0;
-
-    *(u32*)&D_5b5a[0x70] |= D_4892[param_1];
-
-    ULTIMA_1850_PrintString(_TEXT(0x483b, "\nThe doom of the Shadowlord "));
-    switch (param_1)
-    {
-    case 0:
-        ULTIMA_1850_PrintString(_TEXT(0x4858, "Faulinei"));
-        break;
-    case 1:
-        ULTIMA_1850_PrintString(_TEXT(0x4861, "Astaroth"));
-        break;
-    case 2:
-        ULTIMA_1850_PrintString(_TEXT(0x486a, "Nosfentor"));
-        break;
-    }
-
-    ULTIMA_1850_PrintString(_TEXT(0x4874, " is wrought!\n"));
-    ULTIMA_4368_AudioVictoryTune();
 }
 
 // remove item
@@ -1639,6 +1631,10 @@ static bool CAST_1764(int param_1)
 
     return 1;
 }
+
+#if defined(TARGET_DOS16)
+static char S_0x4a84[] = " of Lord British...\n";
+#endif
 
 void CAST_1792_UseCmd(void)
 {
@@ -1741,7 +1737,7 @@ void CAST_1792_UseCmd(void)
                 break;
 
             ULTIMA_1850_PrintString(_TEXT(0x491d, "Wearing the Amulet"));
-            ULTIMA_1850_PrintString(_TEXT(0x4a84, " of Lord British...\n"));
+            ULTIMA_1850_PrintString(_XTEXT(0x4a84, " of Lord British...\n"));
             CAST2_08f8(0xe, 0xff, 9);
             break;
 
@@ -1751,14 +1747,14 @@ void CAST_1792_UseCmd(void)
                 break;
 
             ULTIMA_1850_PrintString(_TEXT(0x4938, "Thou dost don the Crown"));
-            ULTIMA_1850_PrintString(_TEXT(0x4a84, " of Lord British...\n"));
+            ULTIMA_1850_PrintString(_XTEXT(0x4a84, " of Lord British...\n"));
             CAST2_08f8(0x1c, 0xff, 9);
             break;
 
         case 0x14:
             ULTIMA_1850_PrintString(_TEXT(0x4950, "Sceptre\n\n"));
             ULTIMA_1850_PrintString(_TEXT(0x495a, "Wielding the Sceptre"));
-            ULTIMA_1850_PrintString(_TEXT(0x4a84, " of Lord British...\n"));
+            ULTIMA_1850_PrintString(_XTEXT(0x4a84, " of Lord British...\n"));
             ULTIMA_2192_AudioPulse(0x1450, 1, 50000, 5000, 1);
 
             local_4_ab = 0;
@@ -1998,11 +1994,7 @@ static int CAST_1c36(s16* param_1, s16* param_2, int param_3, int param_4, int p
         for (local_5c = 0; local_5c < 0x15; local_5c++)
         {
             // dca7
-            if (local_8c[local_5c] != 0)
-            {
-                local_4_ab++;
-            }
-            else
+            if (local_8c[local_5c] == 0)
             {
                 // dcb3
                 local_6 = ULTIMA_3aae_Random(0xf);
@@ -2051,7 +2043,7 @@ static int CAST_1c36(s16* param_1, s16* param_2, int param_3, int param_4, int p
                             break;
                         }
 
-                        if (D_a9d0[local_5c] < 1)
+                        if ((s16)D_a9d0[local_5c] < 1)
                         {
                             if (local_5c < 10)
                             {
@@ -2090,6 +2082,10 @@ static int CAST_1c36(s16* param_1, s16* param_2, int param_3, int param_4, int p
                         break;
                     }
                 }
+            }
+            else
+            {
+                local_4_ab++;
             }
         }
     } while (local_4_ab < 0x15);

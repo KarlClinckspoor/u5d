@@ -70,7 +70,7 @@ int TOWN_011e(int param_1)
 
     for (local_4 = 0; local_4 < 0x20; local_4++)
     {
-        if (D_5f5e[local_4]._c == param_1 && D_659e[local_4] != 0 && D_5f5e[local_4]._0 != 0)
+        if ((int)D_5f5e[local_4]._c == param_1 && D_659e[local_4] != 0 && D_5f5e[local_4]._0 != 0)
         {
             local_2 = local_4;
             break;
@@ -155,9 +155,9 @@ static void TOWN_0212(void)
 static void TOWN_02ae(void)
 {
     int local_a;
-    int local_4_ab;
     int local_8;
     ActorFmt* local_6;
+    int local_4_ab;
 
     D_5958 = 0xff;
     if (D_5897_map_y != 4)
@@ -464,9 +464,10 @@ static bool TOWN_0600(int param_1)
             ULTIMA_1850_PrintString(_TEXT(0x2690, "\nDost thou wish to leave? "));
 
             // 079f NOT MATCHING
-            while ((local_4_ab = ULTIMA_266c_GetChar()) != 'Y' && local_4_ab != 'N' && local_4_ab != U5_KEY_ESC)
+            do
             {
-            }
+                local_4_ab = ULTIMA_266c_GetChar();
+            } while ((uint)local_4_ab != 'Y' && (uint)local_4_ab != 'N' && local_4_ab != U5_KEY_ESC);
 
             // 07b6
             if (local_4_ab == 'Y')
@@ -526,8 +527,8 @@ static bool TOWN_0600(int param_1)
 
 static void TOWN_085e(int param_1)
 {
-    int local_4;
     int i_ae;
+    int local_4;
 
     if (D_659e[param_1] >= 0x2f)
     {
@@ -553,7 +554,7 @@ static void TOWN_08d4(int param_1)
 {
     int local_6;
     int local_8;
-    int local_c; // unused
+    int unused_m; // unused, bucket 0: takes [bp-2]
 
     local_6 = 0;
 
@@ -756,25 +757,26 @@ int TOWN_0b82_KlimbCmd(void)
         {
             if (ULTIMA_35ec_SelectDirection() != 0)
             {
-                switch (local_6_an = *ULTIMA_4402_GetTileAddr(D_5896_map_x + D_5876, D_5897_map_y + D_5878))
+                local_6_an = *ULTIMA_4402_GetTileAddr(D_5896_map_x + D_5876, D_5897_map_y + D_5878);
+                if (local_6_an == TILE_MAP_4C || local_6_an == TILE_MAP_CA || local_6_an == TILE_MAP_CB)
                 {
-                case TILE_MAP_4C:
-                case TILE_MAP_CA:
-                case TILE_MAP_CB:
                     // 0c19
                     D_5896_map_x += D_5876;
                     D_5897_map_y += D_5878;
                     D_24e6 = 1;
                     ULTIMA_5910_UpdateFrame();
-                    // 0c3e
                     local_4 = 1;
-                    break;
-
-                default:
+                }
+                else
+                {
                     // 0c38..0ba0
                     ULTIMA_1850_PrintString(_TEXT(0x2735, "What?\n"));
-                    break;
                 }
+            }
+            else
+            {
+                // 0c3e: no direction given
+                local_4 = 1;
             }
         }
     }
@@ -796,8 +798,8 @@ static int TOWN_0c4a(int param_1, int param_2)
 // CHECKED (loop, stack)
 static void TOWN_0c78(void)
 {
-    ActorFmt* local_4;
     int local_6; // x
+    ActorFmt* local_4_c;
     int local_8; // y
     int local_a; // i
     int local_c;
@@ -805,14 +807,15 @@ static void TOWN_0c78(void)
 
     for (local_a = 0; local_a < 0x20; local_a++)
     {
-        local_4 = &D_5c5a[local_a];
+        local_4_c = &D_5c5a[local_a];
 
-        local_e = local_4->_0_tile;
-        if (((byte)local_e & 0xfe) == TILE_ACTOR_HORSE && local_4->_4_z == D_5895_map_level &&
-            ULTIMA_2092_RandomRange(0, 1) == 0)
+        local_e = local_4_c->_0_tile;
+        if (((byte)local_e & 0xfe) != TILE_ACTOR_HORSE || local_4_c->_4_z != D_5895_map_level ||
+            ULTIMA_2092_RandomRange(0, 1) != 0)
+            continue;
         {
-            local_6 = local_4->_2_x;
-            local_8 = local_4->_3_y;
+            local_6 = local_4_c->_2_x;
+            local_8 = local_4_c->_3_y;
 
             if (TOWN_0c4a(local_6, local_8 + 1) == 0 &&
                 TOWN_0c4a(local_6 + 1, local_8) == 0 &&
@@ -844,9 +847,9 @@ static void TOWN_0c78(void)
                     if ((ULTIMA_2c4c_IsWalkableTile(TILE_ACTOR_HORSE, *ULTIMA_4402_GetTileAddr(local_6, local_8)) != 0) &&
                         (ULTIMA_3702(local_6, local_8, D_5895_map_level) == 0))
                     {
-                        local_4->_0_tile = local_4->_1_animTile = local_e;
-                        local_4->_2_x = (byte)local_6;
-                        local_4->_3_y = (byte)local_8;
+                        local_4_c->_0_tile = local_4_c->_1_animTile = local_e;
+                        local_4_c->_2_x = (byte)local_6;
+                        local_4_c->_3_y = (byte)local_8;
                         D_24e6 |= 2;
                     }
                 }
@@ -1250,11 +1253,11 @@ static int TOWN_12ae(void)
 
 static void TOWN_1352(int param_1)
 {
-    ActorFmt* local_6;
+    ActorFmt* local_6_p;
     int local_4;
 
     local_4 = 0;
-    local_6 = &D_5c5a[D_5f5e[D_65bf]._c];
+    local_6_p = &D_5c5a[D_5f5e[D_65bf]._c];
 
     ULTIMA_5910_UpdateFrame();
 
@@ -1265,7 +1268,7 @@ static void TOWN_1352(int param_1)
             ULTIMA_16ba_PrintChar('\n');
             TOWN_10da(D_65bf);
         }
-        else if (local_6->_0_tile != TILE_ACTOR_GUARD)
+        else if (local_6_p->_0_tile != TILE_ACTOR_GUARD)
         {
             local_4 = 1;
         }
@@ -1505,20 +1508,20 @@ void TOWN_1726(int param_1, int param_2, int param_3, int param_4)
 {
     int local_6;
     int local_8;
-    NpcFmt* local_4;
+    NpcFmt* local_4_c;
 
     if (D_659e[param_1] == 0)
         return;
 
-    local_4 = &D_5f5e[param_1];
+    local_4_c = &D_5f5e[param_1];
 
-    if (param_4 != D_5895_map_level && local_4->_c != 0)
+    if (param_4 != D_5895_map_level && local_4_c->_c != 0)
     {
-        D_5c5a[local_4->_c]._0_tile = 0;
-        local_4->_c = 0;
+        D_5c5a[local_4_c->_c]._0_tile = 0;
+        local_4_c->_c = 0;
     }
 
-    if (param_4 == D_5895_map_level && local_4->_c == 0)
+    if (param_4 == D_5895_map_level && local_4_c->_c == 0)
     {
         local_6 = ULTIMA_38e4();
 
@@ -1538,19 +1541,19 @@ void TOWN_1726(int param_1, int param_2, int param_3, int param_4)
         ULTIMA_3a74(D_659e[param_1], D_659e[param_1], param_2, param_3, param_4, local_8, local_6);
 
         D_5c5a[local_6]._6 = 0;
-        local_4->_c = local_6;
+        local_4_c->_c = local_6;
     }
 
-    if (param_4 == D_5895_map_level && local_4->_c != 0)
+    if (param_4 == D_5895_map_level && local_4_c->_c != 0)
     {
-        local_6 = local_4->_c;
+        local_6 = local_4_c->_c;
         D_5c5a[local_6]._2_x = param_2;
         D_5c5a[local_6]._3_y = param_3;
         D_5c5a[local_6]._4_z = param_4;
     }
 
-    local_4->_2_x = param_2;
-    local_4->_4_y = param_3;
-    local_4->_6_z = param_4;
-    local_4->_0 = 1;
+    local_4_c->_2_x = param_2;
+    local_4_c->_4_y = param_3;
+    local_4_c->_6_z = param_4;
+    local_4_c->_0 = 1;
 }
