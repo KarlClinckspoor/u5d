@@ -56,6 +56,11 @@ COMPILER_BY_FILE = {f: 'msc50' for f in (
     '3000.c', '4000.c', '6000.c', 'blckthrn.c', 'cast2.c', 'combat.c', 'comsubs.c', 'dnglook.c',
     'endgame.c', 'font.c', 'lookobj.c', 'npc.c', 'shoppes.c', 'shoppes2.c', 'sjog.c', 'talk.c',
     'zstats.c')}
+# overlays built from two objects: NAME.c (MSC 5.1) and NAMEb.c (MSC 5.0)
+for _o in ('DUNGEON', 'MAINOUT', 'INTRO', 'OUTSUBS', 'CMDS'):
+    if os.path.exists(os.path.join(SRC, _o.lower() + 'b.c')):
+        MODULES[_o.lower() + 'b.c'] = ('ovl', _o)
+        COMPILER_BY_FILE[_o.lower() + 'b.c'] = 'msc50'
 
 EXE_HEADER = 0x800  # 0x80 paragraphs
 DATA_OVL_HEADER = 0x10  # DATA.OVL is a 16-byte header, then DGROUP from DS:0000

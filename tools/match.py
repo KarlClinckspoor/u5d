@@ -68,6 +68,23 @@ def root_starts():
     return sorted(starts)
 
 
+def overlay_starts(ovl, cfile):
+    """The function starts (overlay offsets) of the other objects of overlay ovl."""
+    starts = set()
+    for f, (kind, o) in u5.MODULES.items():
+        if kind != 'ovl' or o != ovl or f == cfile:
+            continue
+        p = os.path.join(OBJ, os.path.splitext(f)[0].upper() + '.OBJ')
+        if not os.path.exists(p):
+            continue
+        text = omf.Object(p).seg('_TEXT')
+        for name in (text.publics if text else ()):
+            m = u5.NAME_RE.match(name)
+            if m and m.group(1).upper() == ovl:
+                starts.add(int(m.group(2), 16))
+    return starts
+
+
 class Module:
     def __init__(self, cfile, gamedata):
         self.cfile = cfile
@@ -170,7 +187,9 @@ class Module:
                     known.append((name, off, end, int(m.group(2), 16)))
                 elif self.ovl == 'FLAMES' and len(ours) == 1:
                     known.append((name, off, end, 0))
-            known_starts = sorted(k[3] for k in known)
+            # an overlay may be built from more than one object (a 5.1 part and a 5.0
+            # part): a function ends where the next one starts, whichever object holds it
+            known_starts = sorted(set(k[3] for k in known) | overlay_starts(self.ovl, self.cfile))
             for name, off, end, o in known:
                 nxt = [s for s in known_starts if s > o]
                 oend = nxt[0] if nxt else len(self.orig)

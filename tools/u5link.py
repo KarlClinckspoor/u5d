@@ -78,7 +78,15 @@ class Linker:
         for m in self.modules:
             seg = self.code_segment(m.obj)
             if m.kind == 'ovl':
-                m.code = (seg, u5.OVERLAY_BASE[m.overlay]) if seg else None
+                # at the area base, or, for the second object of an overlay built from two,
+                # where its first function's name says it starts
+                base = u5.OVERLAY_BASE[m.overlay]
+                for pn, off in sorted(seg.publics.items(), key=lambda kv: kv[1]) if seg else ():
+                    mm = u5.NAME_RE.match(pn)
+                    if mm and mm.group(1).upper() == m.overlay:
+                        base += int(mm.group(2), 16) - off
+                        break
+                m.code = (seg, base) if seg else None
             elif m.kind in ('root', 'asm', 'lib'):
                 m.code = (seg, m.addr) if seg else None
             # data: where the module's references into its own data point in the original
