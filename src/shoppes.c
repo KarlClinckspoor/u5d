@@ -876,7 +876,7 @@ static int SHOPPES_0b30(int param_1)
                 break;
 
             // ae5c
-            ULTIMA_16ba_PrintChar(local_8 + 0x61); // + 'a' NOT MATCHING
+            ULTIMA_16ba_PrintChar((uint)local_8 + 0x61);
             ULTIMA_1850_PrintString(_TEXT(0x7c48, "..."));
 
             if (ULTIMA_216c_strlen(D_17f6[local_c]) < 0xd)
@@ -905,7 +905,7 @@ static int SHOPPES_0b30(int param_1)
             local_c = local_4_ab - 0x41; // - 'A'
             if (local_c < local_8 && local_c >= 0)
             {
-                ULTIMA_16ba_PrintChar(local_c + 0x61); // + 'a' NOT MATCHING
+                ULTIMA_16ba_PrintChar((uint)local_c + 0x61);
                 local_a = SHOPPES_09ac(param_1, D_3ae2[D_b114][local_c], local_a);
                 if (local_a == -1)
                 {

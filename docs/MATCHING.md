@@ -415,6 +415,8 @@ Each entry gives the evidence. Add to this list as you learn.
   - Fixed ULTIMA_2AE8, ULTIMA_3B9E, SHOPPES_0280, SHOPPES_146a and ENDGAME's Y/N loops.
   - The tell in a listing: `cmp ax,imm` after `mov si,ax` or `mov ax,si`, where we compare
     the register itself.
+  - Arithmetic too: `x + 0x61` with x in SI is `lea ax,[si+61h]`; `(uint)x + 0x61` is
+    `mov ax,si; add ax,61h`, or just the `add` while AX holds x (SHOPPES_0b30).
 - **Where an assignment goes.** `if ((x = f()) == K)` and `x = f(); if (x == K)` can choose
   registers differently. In SJOG_095C the first form gave the original's DX/CX for two loop
   variables; the second swapped them.
