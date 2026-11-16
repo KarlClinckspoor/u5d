@@ -581,6 +581,14 @@ static int ULTIMA_2c2e(int tile)
 }
 
 // CHECKED
+// NOT MATCHING (4 bytes short): tail merging goes the other way. The original keeps case 7's
+// "cmp; je; jmp ret0" tail (cases 8-10 jump into it) and one "mov ax,1" block, right after
+// case 6, that case 7 reaches through a jmp; so case 3's "jmp ret1" is short and not merged
+// with case 2's. MSC 5.1 here keeps case 10's tail and puts the return-1 block after it.
+// Tried: cases 7-10 as "if (t == X) return 1; return 0;" and as "if (t != X) return 0;
+// return 1;" (8 bytes shorter), case 6 as "return targetTile <= 2;" (case 6 then jumps to
+// case 10's block), case 3 as one boolean return; MSC 5.0 gives the same length (and breaks
+// 2bd4).
 int ULTIMA_2c4c_IsWalkableTile(int actorTile, int targetTile)
 {
     switch (D_54f4[actorTile >> 2])
