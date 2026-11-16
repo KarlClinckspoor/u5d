@@ -279,7 +279,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Checked Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\src\event\evt_sdl.c" />
-    <ClCompile Include="..\src\flames.c" />
     <ClCompile Include="..\src\font.c" />
     <ClCompile Include="..\src\graphics\animate.c" />
     <ClCompile Include="..\src\graphics\grap.c" />
