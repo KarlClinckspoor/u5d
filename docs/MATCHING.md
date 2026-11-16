@@ -446,6 +446,22 @@ Each entry gives the evidence. Add to this list as you learn.
 - **A label stops constant propagation.** SHOPPES2_00ac sets `local_4 = 0` and then
   indexes with it. The original reloads local_4 from the stack, where MSC would fold the 0.
   A label between the two statements gives the original's code.
+- **Where a repeated value lives.** A value the source reads twice can become a common
+  subexpression in a register, and the source's shape picks the register:
+  - ULTIMA_25D8 keeps D_a9bd[0] in SI, besides storing it in local_6, only when the test
+    says `D_a9c8[D_a9bd[0]]` again instead of `D_a9c8[local_6]`;
+  - DUNGEON_104c indexes two tables with the map id. Written `if (x <= ...) { ... }`, 5.0
+    keeps the id in SI (push si, pop si); written as an early return, `if (x > ...)
+    return;`, it stays in BX, as in the original.
+- **A cast can turn a loop into a pointer walk.** TALK_01e2's `for (i = 0; i < D_585b;
+  i++)` over the party became the original's end-pointer loop (`cmp si,dx`) only with
+  `(int)D_585b`; `!=` instead of `<` then gave its `je` for an empty party. The same cast
+  did not help the other party loops (TOWN_0f02, ENDGAME_0648, CMDS_0000, DNGLOOK_117E).
+- **Tail merging stops at a different symbol.** ULTIMA_4402 ends its overworld and town
+  paths with the same `add ax,[bp+6]; add ax,6608h`; MSC merged both instructions, the
+  original only the store after them. Naming the overworld map with a symbol of its own
+  (D_6608_overworld, the same address) gives the original's code: the merge compares
+  fixup targets by name.
 - **A loop's register locals are stored when it ends.** The original's TALK_0c5c has
   no such store, because its code after the loop is inside it (`if (local_6 == 0)
   continue;` and the rest, instead of `do ... while (local_6 == 0);`). Moving SHOPPES2_0508's

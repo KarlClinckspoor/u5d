@@ -22,6 +22,7 @@ passes only when they are identical.
 | 2026-11-16, boundary audit: FONT/TOWN data, 5f86 into 6000.c, r1850 is 5.0 | 530 | 1 | 0 | 57 | 9 | 597 |
 | 2026-11-16, vars.c into its modules: DGROUP = DATA.OVL but 44 bytes (ZSTATS) | 530 | 1 | 0 | 57 | 9 | 597 |
 | 2026-11-16, casts through AX, tail-merge structure, bare returns, D_52c8 global; DGROUP identical | 539 | 1 | 0 | 49 | 8 | 597 |
+| 2026-11-16, common subexpressions by source shape, D_6608_overworld | 542 | 1 | 0 | 47 | 7 | 597 |
 
 Most `SIZE` verdicts in `0000.c` and `1000.c` are routines that were hand-written assembly in
 the original and are C in u5d (step 5).
@@ -99,7 +100,8 @@ Next, in order:
      `_DATA` and CONST match the original for every 5.0 overlay module, and the linked
      DGROUP is identical to DATA.OVL's.
    - Remaining hard cases, per the last worker:
-     - DUNGEON_104c/111e/127e/1786/1952 hold a table value in a register across calls with
+     - *(104c done: an early return.)* DUNGEON_111e/127e/1786/1952 hold a table value in a
+       register across calls with
        no source variable (a compiler CSE temp). A `register` local gives the code, but
        5.0 then reserves an extra stack slot.
      - MAINOUT_17d4 stores constants to a parameter through AX.
@@ -126,5 +128,6 @@ Next, in order:
    - Relocation table in the original order (seven increasing runs: module order, then
      fixup order).
    - DATA.OVL header: three seg:off entries for far pointers in DGROUP, 0f68:<DS-0x40>.
-   - Accept no reference resolved only by the address in its name.
+   - Accept no reference resolved only by the address in its name (73 names: the BSS
+     communals and D_6608_overworld, the original's second name for the map at DS:6608).
 5. **The gate.** `tools/check.py` builds everything and compares the SHA-1 of all 25 files.
