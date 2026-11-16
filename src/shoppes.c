@@ -366,7 +366,7 @@ static int SHOPPES_0502(int param_1, int param_2, int param_3)
     local_6 = 0;
     for (local_8 = 0; local_8 < 8; local_8++)
     {
-        if (D_3a32[D_b114][local_8] != 0) // NOT MATCHING
+        if (D_3a32[D_b114][local_8] != 0)
         {
             if (local_6 == param_2)
                 break;
@@ -384,6 +384,7 @@ static int SHOPPES_0502(int param_1, int param_2, int param_3)
     {
         ULTIMA_1850_PrintString(_TEXT(0x792c, "\n\n\"Thou canst not carry any more!\"\n\n"));
         ULTIMA_266c_GetChar();
+        return param_3;
     }
     else
     {
@@ -428,7 +429,7 @@ static int SHOPPES_0502(int param_1, int param_2, int param_3)
         } while (local_4_ab != 'N' && local_4_ab != 'Y');
     }
 
-    // a8e7 NOT MATCHING
+    // a8e7
     return param_3;
 }
 u8 D_3a32[5][8] =
