@@ -389,6 +389,9 @@ void ZSTATS_05e2(int param_1, byte* param_2, char** param_3, uint param_4)
     ULTIMA_16ba_PrintChar('\n');
 }
 
+#if defined(TARGET_DOS16)
+#pragma loop_opt(off)
+#endif
 // NOT MATCHING (checked)
 static int ZSTATS_06e8(char* param_1, int param_2, byte* param_3, char** param_4)
 {
@@ -524,16 +527,11 @@ static int ZSTATS_06e8(char* param_1, int param_2, byte* param_3, char** param_4
         case U5_KEY_END:
             // 08ec
             local_6 = ZSTATS_056c(param_2, param_2, param_3, 0xff);
-            local_a = 0;
             // 090f
-            while (local_a < 6 && ZSTATS_056c(local_6, param_2, param_3, 0xff) != -1)
+            for (local_a = 0; local_a < 6 && (local_c = ZSTATS_056c(local_6, param_2, param_3, 0xff)) != -1; local_a++)
             {
                 local_6 = local_c;
-                local_a++;
             }
-            break; // -> 092d
-
-        case 0:
             break; // -> 092d
 
         case U5_KEY_LEFT:
@@ -556,6 +554,9 @@ static int ZSTATS_06e8(char* param_1, int param_2, byte* param_3, char** param_4
     return local_e;
 }
 
+#if defined(TARGET_DOS16)
+#pragma loop_opt(on)
+#endif
 // 099A
 void ZSTATS_099a(void)
 {
@@ -662,6 +663,7 @@ void ZSTATS_0a3a_ZstatsCmd(void)
 
         case 0x30:
             // 0af7
+            local_4_ab = 0xc;
             break;
 
         case 0x31:
@@ -768,21 +770,21 @@ static int ZSTATS_0c0a(int param_1)
 // param_2: item id
 static int ZSTATS_0c5c_EquipItem(int param_1, int param_2)
 {
-    byte* local_10_ad;
-    int local_e;
-    int local_c;
-    int local_a;
+    byte* local_10_l;
+    int local_e_g;
+    int local_c_h;
+    int local_a_i;
     int local_8;
-    ActorFmt* local_6;
-    int local_4;
+    ActorFmt* local_6_b;
+    int local_4_c;
 
 #if !defined(MATCHING_BUILD)
-    local_6 = 0;
+    local_6_b = 0;
 #endif
 
     if (D_5893_map_id > 0x7f)
     {
-        local_6 = &D_5c5a[D_ba14[D_589e].actorIdx];
+        local_6_b = &D_5c5a[D_ba14[D_589e].actorIdx];
     }
 
     // ee62
@@ -818,7 +820,7 @@ static int ZSTATS_0c5c_EquipItem(int param_1, int param_2)
         }
         local_8 = ULTIMA_4d76_FindIndex(_TEXT(0x9812, CLASS_LIST), D_55a8_party[param_1].cls);
         // ..eee8
-        local_6->_0_tile = local_6->_1_animTile = D_1ade[local_8];
+        local_6_b->_0_tile = local_6_b->_1_animTile = D_1ade[local_8];
         return 0;
     }
 
@@ -830,22 +832,22 @@ static int ZSTATS_0c5c_EquipItem(int param_1, int param_2)
     }
 
     // ef16
-    local_4 = 0;
-    local_10_ad = &D_55a8_party[param_1].equips[0];
-    local_a = 6;
+    local_4_c = 0;
+    local_10_l = &D_55a8_party[param_1].equips[0];
+    local_a_i = 6;
 
     // ef30
-    for (local_a = 0; local_a < 6; local_a++)
+    for (local_a_i = 0; local_a_i < 6; local_a_i++)
     {
-        if (*local_10_ad != 0xff)
+        if (*local_10_l != 0xff)
         {
-            local_4 += D_1aae[*local_10_ad];
+            local_4_c += D_1aae[*local_10_l];
         }
         // ef41
-        local_10_ad++;
+        local_10_l++;
     }
 
-    local_e = D_1aae[param_2] + local_4 <= D_55a8_party[param_1].str /*strength*/;
+    local_e_g = D_1aae[param_2] + local_4_c <= D_55a8_party[param_1].str /*strength*/;
 
     // ef6e
     switch (D_1a7e[param_2])
@@ -858,7 +860,7 @@ static int ZSTATS_0c5c_EquipItem(int param_1, int param_2)
             return 0;
         }
         // efbc
-        local_10_ad = &D_55a8_party[param_1].equips[0];
+        local_10_l = &D_55a8_party[param_1].equips[0];
         break;
 
     case 0x40:
@@ -869,36 +871,36 @@ static int ZSTATS_0c5c_EquipItem(int param_1, int param_2)
             return 0;
         }
         // f040..efc6
-        local_10_ad = &D_55a8_party[param_1].equips[1];
+        local_10_l = &D_55a8_party[param_1].equips[1];
         break;
 
     case 0x20:
         // f04e
-        local_c = ZSTATS_0c0a(param_1);
-        if (local_c == 0xff)
+        local_c_h = ZSTATS_0c0a(param_1);
+        if (local_c_h == 0xff)
         {
             ZSTATS_0bee(_TEXT(0x9892, "Thou must free one of thy hands first!"));
             return 0;
         }
         // f062
-        if (local_c == 2)
+        if (local_c_h == 2)
         {
-            local_c = 0;
+            local_c_h = 0;
         }
         // f06d..f077..efc6
-        local_10_ad = &D_55a8_party[param_1].equips[2] + local_c;
+        local_10_l = &D_55a8_party[param_1].equips[2] + local_c_h;
         break;
 
     case 0x30:
         // f07e
-        local_c = ZSTATS_0c0a(param_1);
-        if (local_c != 2)
+        local_c_h = ZSTATS_0c0a(param_1);
+        if (local_c_h != 2)
         {
             ZSTATS_0bee(_TEXT(0x98ba, "Both hands must be free before thou canst wield that!"));
             return 0;
         }
         // f092..f077..efc6
-        local_10_ad = &D_55a8_party[param_1].equips[2];
+        local_10_l = &D_55a8_party[param_1].equips[2];
         break;
 
     case 4:
@@ -909,7 +911,7 @@ static int ZSTATS_0c5c_EquipItem(int param_1, int param_2)
             return 0;
         }
         // f0b0..efc6
-        local_10_ad = &D_55a8_party[param_1].equips[5];
+        local_10_l = &D_55a8_party[param_1].equips[5];
         break;
 
     case 2:
@@ -920,15 +922,15 @@ static int ZSTATS_0c5c_EquipItem(int param_1, int param_2)
             return 0;
         }
         // f0d2..efc6
-        local_10_ad = &D_55a8_party[param_1].equips[4];
+        local_10_l = &D_55a8_party[param_1].equips[4];
         break;
     }
 
     // efc9
-    if (local_e != 0)
+    if (local_e_g != 0)
     {
         // efd2
-        *local_10_ad = param_2;
+        *local_10_l = param_2;
         --D_57c0[param_2];
         if ((D_57c0[param_2] == 0x2a || D_57c0[param_2] == 0x2c) && (ULTIMA_2092_RandomRange(0, 0xf) == 0))
         {
@@ -955,7 +957,7 @@ static int ZSTATS_0c5c_EquipItem(int param_1, int param_2)
 
         // f0f9
         // eee8
-        local_6->_0_tile = local_6->_1_animTile = TILE_ACTOR_1D;
+        local_6_b->_0_tile = local_6_b->_1_animTile = TILE_ACTOR_1D;
 
         // ee6e
         return 0;

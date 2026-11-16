@@ -205,7 +205,6 @@ static void SHOPPES2_00ac(void)
 
     D_587b = 0xff;
     local_4 = 0;
-
     if (D_55a8_party[local_4].gender == 0xb)
     {
         ULTIMA_1850_PrintString(_TEXT(0x9ac2, "sir"));
@@ -499,18 +498,18 @@ static int SHOPPES2_0508(void)
             D_b118 = D_4d10[local_8];
             SHOPPES_017a(0x134e);
             ULTIMA_1850_PrintString(_TEXT(0x9f5c, "\n\nFair 'nuff?\" "));
-            local_4_ab = 0;
+            local_6 = 0;
 
-            // NOT MATCHING
-            while ((byte)local_4_ab != 'N')
+            while (local_6 != 'N')
             {
-                local_4_ab = ULTIMA_266c_GetChar();
-                if ((uint)local_4_ab == 'Y')
+                local_6 = ULTIMA_266c_GetChar();
+                if (local_6 == 'Y')
                     break;
             }
 
             // e7b3
-            if ((uint)local_4_ab == 'N')
+            local_4_ab = local_6;
+            if (local_4_ab == 'N')
             {
                 ULTIMA_1850_PrintString(_TEXT(0x9f6c, "No\n\n"));
                 return 0;

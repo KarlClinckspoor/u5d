@@ -341,11 +341,10 @@ static void BLCKTHRN_03ae(int param_1)
     local_22_ab = D_55a8_party[local_28];
 
     // NOT MATCHING
-    local_24 = local_28;
-    for (; local_28 < 0xf; local_28++)
+    for (local_24 = local_28; local_24 < 0xf; local_24++)
     {
         // a73b
-        D_55a8_party[local_28] = D_55a8_party[local_28 + 1];
+        D_55a8_party[local_24] = D_55a8_party[local_24 + 1];
     }
 
     // a752
@@ -451,19 +450,19 @@ void BLCKTHRN_060e_Capture(void)
 {
     int local_10_ad;
     int local_e;
-    int local_c;
-    int local_a;
+    int local_c_h;
+    int local_a_i;
     int local_8;
 
-    int local_6;
-    ActorFmt* local_4;
+    int local_6_b;
+    ActorFmt* local_4_c;
 
-    local_a = 0;
-    for (local_8 = 0; local_8 < D_585b; local_8++)
+    local_a_i = 0;
+    for (local_8 = 0; local_8 != D_585b; local_8++)
     {
         if (D_55a8_party[local_8].status != STATUS_DEAD)
         {
-            local_a = local_a + 1;
+            local_a_i = local_a_i + 1;
         }
     }
 
@@ -471,13 +470,13 @@ void BLCKTHRN_060e_Capture(void)
     ULTIMA_5910_UpdateFrame();
     ULTIMA_1850_PrintString(_TEXT(0x6fbc, "\nThou art subdued and blindfolded!"));
 
-    for (local_c = 0; local_c < 8; local_c++)
+    for (local_c_h = 0; local_c_h < 8; local_c_h++)
     {
-        if (D_58d8[local_c] == 0)
+        if (D_58d8[local_c_h] == 0)
             break;
     }
 
-    if (local_c < 8)
+    if (local_c_h < 8)
     {
         local_10_ad = 0;
 
@@ -522,14 +521,14 @@ void BLCKTHRN_060e_Capture(void)
         }
 
         // a9ef
-        for (local_8 = 0; local_8 < local_a; local_8++)
+        for (local_8 = 0; local_8 < local_a_i; local_8++)
         {
-            local_4 = &D_5c5a[local_8];
-            local_4->_2_x = D_1f42[D_1f12[(local_a - 1) * 8 + local_8]];
-            local_4->_3_y = D_1f48[D_1f12[(local_a - 1) * 8 + local_8]];
+            local_4_c = &D_5c5a[local_8];
+            local_4_c->_2_x = D_1f42[D_1f12[(local_a_i - 1) * 8 + local_8]];
+            local_4_c->_3_y = D_1f48[D_1f12[(local_a_i - 1) * 8 + local_8]];
 
-            local_6 = ULTIMA_4d76_FindIndex(_TEXT(0x701a, CLASS_LIST), D_55a8_party[local_8].cls);
-            local_4->_0_tile = local_4->_1_animTile = D_1ade[local_6];
+            local_6_b = ULTIMA_4d76_FindIndex(_TEXT(0x701a, CLASS_LIST), D_55a8_party[local_8].cls);
+            local_4_c->_0_tile = local_4_c->_1_animTile = D_1ade[local_6_b];
         }
 
         // aa61
@@ -563,7 +562,7 @@ void BLCKTHRN_060e_Capture(void)
         BLCKTHRN_00be(D_370e);
         ULTIMA_1850_PrintString((char*)&D_b21e[0x32c]);
         ULTIMA_266c_GetChar();
-        BLCKTHRN_054a(local_c, local_a);
+        BLCKTHRN_054a(local_c_h, local_a_i);
         if (D_5c5a[8]._0_tile != 0)
         {
             BLCKTHRN_00be(D_3716);
