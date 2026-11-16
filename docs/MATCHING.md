@@ -217,6 +217,14 @@ when it is declared inside the `if` that uses it. Under 5.0 a `register` variabl
 takes a stack slot too, wherever it is declared (SJOG_0514's `si` gives a frame two bytes
 larger than the original's).
 
+Two blocks side by side (not nested) can share slots, but only in one case measured so far:
+SJOG_0514 with `int local_8` in the `for` body and `register int si` in the later `if`
+block had the frame of four locals, not five. Two plain `int`s in two sibling blocks did
+not share (FONT_02fc: `-6` and `-8`), and neither did the compiler's temporaries of two
+loops each put in its own block. MSC also reserves a temporary slot for a loop that it
+turns into a pointer walk, even when the code never uses it (FONT_02fc: frame 0Ch for four
+locals).
+
 Because the linker gathers segments by class, DGROUP holds all `_DATA` (5.1 modules' strings
 and tables, 5.0 modules' tables), then the runtime's tables, then all `CONST` (5.0 modules'
 strings, from DS:6ada).

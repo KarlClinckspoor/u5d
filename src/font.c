@@ -226,6 +226,20 @@ static void FONT_02a2(int param_1, int param_2)
 }
 
 // CHECKED
+// NOT MATCHING (SLOTS, 1 byte): the code is identical, but the original keeps local_c at
+// bp-0Ah with bp-8 never used (frame 0Ch); ours has local_c at bp-8. MSC reserves two unused
+// temporary slots here, one for each loop (both walk a pointer: loop 1 over D_5c5a in DI,
+// loop 2 down D_6608 by 20h). Tried:
+// - an unused fifth local (local_a): local_c at -0Ah, but frame 0Eh;
+// - local_c declared in the if block, the for body or the do body: still bp-8;
+// - loop 2 as do-while: one temporary fewer (frame 0Ch with local_a) but it indexes
+//   [bx+di] with shl bx,5 instead of walking the pointer; as while, with continue, with
+//   (u8)/(uint)/(int) casts or !(... == 0xfe): no change;
+// - each loop in its own block: temporaries are not shared between blocks;
+// - loop 1 with D_5c5a + local_6, a bare tile test, the assignment inside the if, or
+//   a pointer for loop: no change or worse.
+// The pattern (unused slot above an inner-block local) is DNGLOOK_0c6c's, where a
+// temporary made before the block pushed local_c down; here none is made early enough.
 int FONT_02fc(int param_1)
 {
     int local_c;

@@ -412,7 +412,19 @@ static void SJOG_0514(int param_1, int param_2)
     // 05b7
     if (local_a)
     {
-        register int si; // NOT MATCHING
+        // NOT MATCHING: every byte but the frame (sub sp,0Ah, original 8). The original keeps
+        // D_3e78[local_4_ab] in SI across the ULTIMA_3a74 call without giving it a stack
+        // slot; a register variable always takes one. Tried:
+        // - plain or register int here, or local_8/local_a/param_1/param_2 reused: memory;
+        // - D_3e78[local_4_ab] written out three times: SI within the argument list (CSE),
+        //   reloaded after the call, 12 bytes longer;
+        // - function-level register int: takes SI for the loop counter instead;
+        // - int local_8 inside the for body and this register int here: sibling blocks share
+        //   a slot, so the frame is 8 and the code identical, but inner-block locals sit
+        //   after the outer ones (SLOTS: local_a at bp-6, local_8 at bp-8). Moving local_6
+        //   into this block too gives the same frame with local_a at bp-4.
+        // Probably a compiler temporary of some other source shape.
+        register int si;
         local_6 = ULTIMA_38e4();
         si = D_3e78[local_4_ab];
         ULTIMA_3a74(si, si, D_4040[local_4_ab], D_40b2[local_4_ab], D_3fce[local_4_ab], D_3eea[local_4_ab], local_6);
