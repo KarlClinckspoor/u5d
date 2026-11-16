@@ -5,7 +5,7 @@ plus the assembly, the runtime library and the link. It compares them with the G
 passes only when they are identical.
 
 **Rule.** No percentages: `tools/match.py` says, per function, whether it matches.
-`docs/MATCHING.md` is the how-to.
+`docs/MATCHING.md` is the how-to; `docs/LESSONS-DECOMPILATION.md` records what the work taught.
 
 ## State
 

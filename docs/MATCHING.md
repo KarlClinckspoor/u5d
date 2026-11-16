@@ -130,6 +130,17 @@ after changing C.
    the GOG differences (`GOG_BUILD`; see below).
 5. What you learn about the compiler goes into **"What MSC 5.1 does"** below, with the
    smallest example that shows it.
+6. A function you leave unmatched gets a `NOT MATCHING` note just above it or at the place
+   it differs. The note says:
+   - what still differs, in terms of the listing ("the original keeps local_6 in SI without
+     storing it at e7b3");
+   - every form you tried that did not fix it, and what each did ("an if/else around the
+     rest of the function is not enough"; "register in an inner block takes a slot");
+   - the closest version, if it is not the one in the file.
+
+   The next attempt, in a new session or after the conversation has been compacted, starts
+   from the note instead of trying the same forms again. Notes older than this rule often
+   say only `NOT MATCHING`; add what you learn when you touch them.
 
 ## The layout of the binary
 
