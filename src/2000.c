@@ -389,7 +389,7 @@ void ULTIMA_256e_ReadFileFromDisk(char* fileName, void* addr, u16 size, u16 offs
 
     if (D_a9bd[0] == 3 && D_a9c8[D_a9bd[0]] == 0xff)
     {
-        // NOT MATCHING: callf
+        // NOT MATCHING: callf (original: call far ptr, ours push cs / call near)
         ULTIMA_2322_DiskSwapMessage();
     }
 
@@ -415,15 +415,15 @@ void ULTIMA_25d8_WriteFileToDisk(char* fileName, void* addr, u16 size)
     return;
 #endif
 
-    int local_6;
+    int local_6_p;
     int local_4;
 
     local_4 = 0;
 
-    local_6 = D_a9bd[0]; // NOT MATCHING: si
-    if (local_6 == 3 && D_a9cb == 0xff)
+    local_6_p = D_a9bd[0];
+    if (D_a9bd[0] == 3 && D_a9c8[local_6_p] == 0xff)
     {
-        // NOT MATCHING: callf
+        // NOT MATCHING: callf (original: call far ptr, ours push cs / call near)
         ULTIMA_2322_DiskSwapMessage();
     }
 
@@ -440,7 +440,7 @@ void ULTIMA_25d8_WriteFileToDisk(char* fileName, void* addr, u16 size)
         D_5394_fn = ULTIMA_2322_DiskSwapMessage;
     }
 
-    D_a9bd[0] = local_6;
+    D_a9bd[0] = local_6_p;
     ULTIMA_1eac_SetDefaultDrive(D_a9c8[D_a9bd[0]]);
 }
 
@@ -736,21 +736,19 @@ void ULTIMA_3ef0_IncreaseByte(byte* param_1, int param_2, int param_3);
 // CHECKED
 void ULTIMA_2ae8(void)
 {
-    int local_8;
     int local_6;
+    int local_8;
     int local_4_ab;
 
     local_4_ab = 0;
 
     for (local_6 = 0; local_6 < D_585b; local_6++)
     {
-        local_8 = D_55a8_party[local_6].status;
-        if (local_8 == STATUS_DEAD && local_6 == D_587b)
+        if ((local_8 = D_55a8_party[local_6].status) == STATUS_DEAD && local_6 == D_587b)
         {
             D_587b = 0xff;
         }
 
-        // NOT MATCHING: register (mov ax, si ...)
         if (local_8 != STATUS_DEAD && local_8 != STATUS_SLEEP)
         {
             if (local_8 == STATUS_POISONED)
@@ -1023,8 +1021,10 @@ void ULTIMA_2f62_UpdateWindDirectionRandomly(void)
     int local_4;
     if (ULTIMA_2092_RandomRange(0, 0x3f) == 0)
     {
-        while ((local_4 = ULTIMA_2092_RandomRange(0, 4)) == 0 && ULTIMA_2092_RandomRange(0, 0xff) < 0xc0)
+        local_4 = ULTIMA_2092_RandomRange(0, 4);
+        while (local_4 == 0 && ULTIMA_2092_RandomRange(0, 0xff) < 0xc0)
         {
+            local_4 = ULTIMA_2092_RandomRange(0, 4);
         }
 
         ULTIMA_2e96_SetWindDirection(local_4);

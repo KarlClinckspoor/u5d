@@ -95,6 +95,12 @@ Next, in order:
      - MAINOUT_17d4 stores constants to a parameter through AX.
      - LOOKOBJ_0cf4 needs D_52c8 as a scalar global, not a struct field.
      - COMBAT_0B94 needs `int local_6` plus a different loop/break layout.
+     - 5000.c: ULTIMA_5f86 is the right length under MSC 5.0 (19 bytes differ) but not under
+       5.1, while 5d0a and 5e4a match only under 5.1. So 5000.c may also be two objects, with
+       5f86 the start of a 5.0 part. The module has no strings or tables to prove it.
+     - 2000.c: ULTIMA_256e and 25d8 call ULTIMA_2322 with `call far 0:2322`, where MSC emits
+       `push cs; call near` for a far function defined earlier in the same module. So 2322
+       (the GOG-patched function) was probably in another object.
 2. **Split the resident C into its original modules.** The runs between the assembly
    modules are 0d72, 1850-1b16, 1b38, 1dda-1eac, 1fa0-2056, 216c, and 2320-3072 / 3072-400c /
    400c-51a0 / 51a0-60ec / 60ec-6f1e (each with its own data in DGROUP), plus 7040-71aa.
