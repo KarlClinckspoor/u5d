@@ -14,6 +14,9 @@
 
 void DNGLOOK_109e(int param_1);
 
+u8 D_2c76[6] = {0x00, 0x01, 0x02, 0x03, 0x00, 0x02};
+
+
 static void DUNGEON_0000(byte param_1)
 {
     int local_8;

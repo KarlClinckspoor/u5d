@@ -14,6 +14,15 @@
 #include "talk.h"
 #include "town.h"
 
+
+char* D_2652[8] =
+{
+    /*0x2626*/ "TOWNE.DAT",
+    /*0x2630*/ "DWELLING.DAT",
+    /*0x263d*/ "CASTLE.DAT",
+    /*0x2648*/ "KEEP.DAT"
+};
+
 // check npc killed flag
 int TOWN_0000_CheckNpcKilled(int param_1)
 {
@@ -518,7 +527,7 @@ static bool TOWN_0600(int param_1)
 static void TOWN_085e(int param_1)
 {
     int local_4;
-    int i;
+    int i_ae;
 
     if (D_659e[param_1] >= 0x2f)
     {
@@ -529,14 +538,14 @@ static void TOWN_085e(int param_1)
         local_4 = 6;
     }
 
-    for (i = 0; i < 4; i++)
+    for (i_ae = 0; i_ae < 4; i_ae++)
     {
-        D_5d5e[param_1].time[i] = 0;
+        D_5d5e[param_1].time[i_ae] = 0;
     }
 
-    for (i = 0; i < 3; i++)
+    for (i_ae = 0; i_ae < 3; i_ae++)
     {
-        D_5d5e[param_1].type[i] = local_4;
+        D_5d5e[param_1].type[i_ae] = local_4;
     }
 }
 
@@ -846,6 +855,25 @@ static void TOWN_0c78(void)
     }
 }
 
+u8 D_2742[4] = { 0x03, 0x04, 0x02, 0x01 };
+
+u16 D_2746[0xa] = {
+    0x1eab, 0x0c2c, 0x0da9, 0x0f56,
+    0x103f, 0x123c, 0x1478, 0x16fa,
+    0x1857, 0x1b53
+};
+
+u8 D_275a[0xd] = {
+    0x06, 0x07, 0x08, 0x09, 0x08, 0x07, 0x08, 0x07,
+    0x06, 0x07, 0x06, 0x05, 0x03
+};
+
+u8 D_2767 = 0;
+
+
+
+
+
 static uint TOWN_0dc4(int param_1)
 {
     uint local_4;
@@ -1090,6 +1118,13 @@ static void TOWN_1156(void)
         break;
     }
 }
+
+char* D_27dc[6] = {
+    _STATIC_TEXT(0x279d, "falsehood"),
+    _STATIC_TEXT(0x27a7, "hatred"),
+    _STATIC_TEXT(0x27ae, "cowardice")
+};
+
 
 static void TOWN_11b8(int param_1)
 {

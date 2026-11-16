@@ -141,14 +141,14 @@ STUB char* D_24ea[0x80]; // word table
 STUB char* D_25ea[30]; // ~2626) compressed file name table
 #define D_25f0 (&D_25ea[3])
 
-STUB char* D_2652[4]; // town dat names
+STUB char* D_2652[8]; // town dat names
 
 STUB u8 D_2742[4]; // town
 STUB u16 D_2746[0xa]; // town: harpsichord audio freqs
 STUB u8 D_275a[0xd]; // town:harpsichord notes
 STUB u8 D_2767; // town
 
-STUB char* D_27dc[3]; // town
+STUB char* D_27dc[6]; // town
 
 STUB u32 D_28c6[0x20]; // ~2946) town
 
@@ -233,7 +233,7 @@ STUB u8 D_3098[0x16]; // 0x15 + gap 1
 STUB u8 D_30ae[0x16]; // 0x15 + gap 1
 STUB u8 D_30c4[0x16]; // 0x15 + gap 1
 STUB u8 D_30da[0x16]; // 0x15 + gap 1
-STUB u8 D_30f0[0x15];
+STUB u8 D_30f0[0x1c];
 // 0x3105: "WD.BIT"
 
 // 3000
@@ -241,7 +241,7 @@ STUB u8 D_30f0[0x15];
 STUB u16 D_3304; // u4 save - is avatar?
 
 STUB u16 D_3656[8];
-STUB char* D_3666[8];
+STUB char* D_3666[16];
 // ^intro
 
 // npc
@@ -377,18 +377,18 @@ STUB u8 D_41bc[8];
 STUB u8 D_41c4[8];
 STUB u8 D_41cc[8];
 
-STUB char* D_444a[3];
+STUB char* D_444a[6];
 
-STUB char* D_4502[8];
+STUB char* D_4502[16];
 STUB u8 D_4512[8];
 
 STUB u8 D_4592[4];
 STUB u8 D_4596[4];
 
-STUB u8 D_4882[3]; // map x
-STUB u8 D_4886[3]; // map y
-STUB u8 D_488a[3]; // map id
-STUB u8 D_488e[3]; // map level
+STUB u8 D_4882[4]; // map x
+STUB u8 D_4886[4]; // map y
+STUB u8 D_488a[4]; // map id
+STUB u8 D_488e[4]; // map level
 STUB u8 D_4892[3];
 
 STUB char* D_4aa0[4];
@@ -453,7 +453,7 @@ STUB u16 D_4d66[4];
 STUB u16 D_4d6e[4];
 STUB u8  D_4d76[4];
 STUB u8  D_4d7a[4];
-STUB u8  D_4d7e[8]; // TODO: size
+STUB u8  D_4d7e[6]; // TODO: size
 
 STUB u8 D_4dc4[6];
 

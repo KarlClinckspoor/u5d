@@ -17,6 +17,12 @@
 
 void MAINOUT_0000(void);
 
+u8 D_4592[4] = {0x35, 0x33, 0x34, 0x36};
+
+u8 D_4596[4] = {0x82, 0x81, 0x80, 0x83};
+
+
+
 static int CAST_0000(int param_1)
 {
     int local_4 = D_ba14[param_1].entityIdx;
@@ -1508,6 +1514,17 @@ static void CAST_153c_UseMoonstone(int param_1)
         ULTIMA_1850_PrintString(_TEXT(0x477c, "cannot be buried here!\n"));
     }
 }
+
+
+u8 D_4882[4] = {0x0f, 0x0f, 0x0f};
+
+u8 D_4886[4] = {0x09, 0x03, 0x10};
+
+u8 D_488a[4] = {0x1e, 0x1f, 0x20};
+
+u8 D_488e[4] = {0x02, 0x01, 0xff};
+
+u8 D_4892[3] = {0x02, 0x04, 0x08};
 
 // CHECKED
 // use gem shard -> defeat shadowlord

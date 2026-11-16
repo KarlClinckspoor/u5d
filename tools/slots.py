@@ -85,10 +85,11 @@ def target_order(names):
     return [n for _, n in sorted(ns)]
 
 
-def plan(names):
+def plan(names, want=None):
     """names in declaration order -> (renames {old: new}, new declaration order) or None
-    when nothing needs to change."""
-    want = target_order(names)
+    when nothing needs to change. want: the target order (nearest BP first); by default
+    from the local_N names."""
+    want = want or target_order(names)
     if not want or alloc_order(names) == want:
         return None
     # keep the longest run of names whose buckets already rise along the target order
@@ -133,7 +134,49 @@ def plan(names):
     return new, order
 
 
-def rewrite(src, only=None):
+def observed_targets(cfile):
+    """Target orders read from the compiled object against the original: for every function
+    that differs only in stack slots, map each bp offset we use to the one the original uses
+    in the same instruction, and order our locals by their original offsets.
+    {FUNCTION: [names nearest BP first]}. Needs build/obj/NAME.OBJ and .COD (dosbuild.py)."""
+    import iced_x86
+    import match
+    mod = match.Module(cfile, u5.find_gamedata())
+    funcs = mod.functions()
+    cod = open(os.path.join(u5.BUILD, 'obj', mod.stem + '.COD'), encoding='latin-1').read()
+    out = {}
+    for name, a, b, o, oe in funcs:
+        if b - a != oe - o and not (b - a < oe - o and oe - o - (b - a) < 16):
+            continue
+        m = re.search(r'^%s\tPROC NEAR\n(.*?)^%s\tENDP' % (re.escape(name), re.escape(name)), cod, re.M | re.S)
+        if not m:
+            continue
+        ours_off = {n: int(v) for n, v in re.findall(r'^;\t(\w+) = (-\d+)$', m.group(1), re.M)}
+        if len(ours_off) < 2:
+            continue
+        L = match.decode(mod.text.data[a:b], 0)
+        R = match.decode(mod.orig[o:o + (b - a)], 0)
+        if [i.len for i in L] != [i.len for i in R]:
+            continue
+        mp, bad = {}, False
+        for x, y in zip(L, R):
+            for k in range(x.op_count):
+                if x.op_kind(k) == iced_x86.OpKind.MEMORY and x.memory_base == iced_x86.Register.BP \
+                        and y.memory_base == iced_x86.Register.BP:
+                    dx = x.memory_displacement - (0x10000 if x.memory_displacement >= 0x8000 else 0)
+                    dy = y.memory_displacement - (0x10000 if y.memory_displacement >= 0x8000 else 0)
+                    if dx < 0:
+                        if mp.get(dx, dy) != dy:
+                            bad = True
+                        mp[dx] = dy
+        if bad or all(k == v for k, v in mp.items()):
+            continue
+        orig = {n: mp.get(v, v) for n, v in ours_off.items() if v < 0}
+        out[name.upper()] = [n for n, _ in sorted(orig.items(), key=lambda kv: -kv[1])]
+    return out
+
+
+def rewrite(src, only=None, observed=None):
     """Apply plan() to every (or the named) function of src. Returns (new_src, report)."""
     report = []
     for name, a, b in reversed(functions(src)):
@@ -144,7 +187,14 @@ def rewrite(src, only=None):
         if len(decls) < 2:
             continue
         names = [d[1] for d in decls]
-        p = plan(names)
+        want = None
+        if observed and name.upper() in observed:
+            obs = observed[name.upper()]
+            # locals the compiler gave no slot (registers, unused) keep their place
+            want = obs + [n for n in alloc_order(names) if n not in obs]
+            if sorted(want) != sorted(names):
+                continue
+        p = plan(names, want)
         if not p:
             continue
         new, order = p
@@ -168,6 +218,9 @@ def main():
     ap.add_argument('functions', nargs='*')
     ap.add_argument('--hash', nargs='+', metavar='NAME')
     ap.add_argument('--apply', action='store_true')
+    ap.add_argument('--observed', action='store_true',
+                    help='take the target order from the compiled object against the original '
+                         '(any names; needs dosbuild.py output) instead of the local_N names')
     a = ap.parse_args()
     if a.hash:
         for n in a.hash:
@@ -178,7 +231,8 @@ def main():
     path = a.file if os.path.exists(a.file) else os.path.join(u5.SRC, a.file)
     src = open(path, encoding='utf-8', newline='').read()
     only = {f.upper() for f in a.functions} or None
-    new, report = rewrite(src, only)
+    observed = observed_targets(os.path.basename(path)) if a.observed else None
+    new, report = rewrite(src, only, observed)
     for name, ren, order in report:
         print('%-32s %s' % (name, ', '.join('%s -> %s' % kv for kv in ren.items()) or 'reorder only'))
     if a.apply and report:

@@ -353,7 +353,12 @@ def dis(mod, fname, rtsyms):
             r = R[i] if i < len(R) else None
             ls = '%04x %-12s %s' % (l.ip, ours[l.ip:l.ip + l.len].hex(), fmt.format(l)) if l else ''
             rs = '%04x %-12s %s' % (r.ip, theirs[r.ip:r.ip + r.len].hex(), fmt.format(r)) if r else ''
-            same = l and r and ours[l.ip:l.ip + l.len] == theirs[r.ip:r.ip + r.len]
+            fxb = {k for f in fx.values() for k in range(f.loc - a, f.loc - a + f.size)}
+            same = l and r and l.ip == r.ip and l.len == r.len and all(
+                ours[k] == theirs[k] or k in fxb for k in range(l.ip, l.ip + l.len))
+            if same and l.flow_control in BRANCH and l.op0_kind == iced_x86.OpKind.NEAR_BRANCH16 \
+                    and not (0 <= l.near_branch16 < b - a):
+                same = True                            # call/jump out: checked as a local branch
             print('  %-44s | %-44s %s' % (ls[:44], rs[:44], '' if same else '<'))
         for k in sorted(fx):
             ok, msg = check_fixup(mod, fx[k], o + k, mod.functions(), rtsyms)
@@ -373,6 +378,7 @@ def main():
     ap.add_argument('--dosbox')
     ap.add_argument('-v', '--verbose', action='store_true', help='list every function, with notes')
     ap.add_argument('--dis', metavar='FUNCTION', help='show one function byte by byte')
+    ap.add_argument('--data', action='store_true', help="show the module's _DATA against DGROUP where they differ")
     a = ap.parse_args()
     gamedata = u5.find_gamedata(a.gamedata)
     files = [os.path.basename(f) for f in a.files] or sorted(f for f, (k, _) in u5.MODULES.items() if k != 'data')
@@ -395,6 +401,24 @@ def main():
         if a.dis:
             dis(mod, a.dis, rtsyms)
             return
+        if a.data:
+            mod.vote_data_bases(mod.functions())
+            seg = mod.obj.seg('_DATA')
+            base = mod.data_base.get('_DATA')
+            if not seg or base is None:
+                print('%s: no _DATA or no base' % f)
+                continue
+            print('%s _DATA (%d bytes) at DS:%04x; ours | original' % (f, seg.length, base))
+            shown = 0
+            for i in range(0, seg.length, 16):
+                x, y = bytes(seg.data[i:i + 16]), mod.ds[base + i:base + i + 16]
+                if x != y:
+                    show = lambda b: ''.join(chr(c) if 32 <= c < 127 else '.' for c in b)
+                    print('  DS:%04x +%04x  %-47s %-16s | %-47s %s' % (base + i, i, x.hex(' '), show(x), y.hex(' '), show(y)))
+                    shown += 1
+                    if shown >= 12:
+                        break
+            continue
         res = compare(mod, rtsyms)
         allres += res
         counts = {v: sum(1 for r in res if r['verdict'] == v) for v in VERDICTS}

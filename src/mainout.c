@@ -327,6 +327,12 @@ static void MAINOUT_03e0(void)
     }
 }
 
+u8 D_29f6[4] = { 0x00, 0x00, 0xFF, 0x01 };
+
+u8 D_29fa[4] = { 0x01, 0xFF, 0x00, 0x00 };
+
+
+
 static int MAINOUT_0490(int param_1, int param_2)
 {
     int local_8;

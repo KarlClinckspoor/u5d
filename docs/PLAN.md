@@ -13,6 +13,7 @@ passes only when they are identical.
 |---|---|---|---|---|---|---|
 | 2026-11-15, first baseline | 185 | 198 | 70 | 199 | 41 | 693 |
 | 2026-11-15, stack-slot rule applied | 285 | 35 | 140 | 197 | 36 | 693 |
+| 2026-11-15, data moved into modules, string arrays | 343 | 33 | 82 | 197 | 38 | 693 |
 
 Most `SIZE` verdicts in `0000.c` and `1000.c` are routines that were hand-written assembly in
 the original and are C in u5d (step 5).

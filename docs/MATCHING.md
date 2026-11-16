@@ -61,6 +61,18 @@ The examples below use `.venv/Scripts/python` (Windows); use `.venv/bin/python` 
   assembly and code bytes.
 - Takes about 1–5 seconds per file.
 
+### Data tools
+
+- `tools/dgroup.py` maps DGROUP. It finds each module's strings by their `_TEXT(addr, ...)`
+  (or `/*0xaddr*/` comment) addresses, and each `vars.c` variable by the address in its
+  name, with the modules that use it.
+- `tools/movevar.py FILE.c --plan/--apply` moves a module's tables out of `vars.c` into the
+  module, at the place that gives the original order, fixing sizes that ran into the next
+  item.
+- `tools/strings.py FILE.c --apply` writes the string arrays of an *array* module (see
+  "Alignment" below).
+- `match.py FILE.c --data` shows a module's `_DATA` against DGROUP where they differ.
+
 ### `match.py`
 
 Compares every function of the object with the original:
@@ -172,6 +184,23 @@ Each entry gives the evidence. Add to this list as you learn.
   order. It renames as few as possible, as `local_N_x`, and the underscore keeps N
   readable. `tools/slots.py --hash NAME` prints a name's bucket, for choosing real names
   later. This alone took the exact functions from 185 to 285.
+- **Data order.** A module's `_DATA` is almost in source order:
+  - string literals are written as each function is compiled;
+  - a definition at file scope comes *after the literals of the function that follows it*.
+
+  So a table that follows function F's strings in the original is defined just before F.
+  Seen in `shoppes3.c`, where `tools/movevar.py` places tables this way.
+- **Alignment.** Every data object (arrays, variables, `char` arrays too) starts at an even
+  address, but string literals are packed byte by byte, under any switches
+  (`build/exp/T1.C`). In 16 modules of the original every string starts at an even address,
+  an odd-length one being followed by a pad byte. Their strings were data objects, so the
+  DOS build defines them as `static char S_0x96b4[] = "...";` in DGROUP order
+  (`tools/strings.py`, which generates a block after the `#include` lines and maps
+  `_TEXT(0x96b4, ...)` to `S_0x96b4`).
+  - *Array* modules: 3000, 4000, 6000, BLCKTHRN, CAST2, COMBAT, COMSUBS, DNGLOOK,
+    ENDGAME, FONT, LOOKOBJ, SHOPPES, SHOPPES2, SJOG, TALK, ZSTATS.
+  - *Literal* modules: 2000, CAST, CMDS, DUNGEON, INTRO, MAINOUT, OUTSUBS, SHOPPES3,
+    TOWN.
 - **Pass 1 heap.** `vars.c` makes C1 stop with C1002 "out of heap space", even with C1L.EXE.
   The data has to be split into the modules it belongs to anyway (see "DGROUP" in
   `docs/PLAN.md`).
