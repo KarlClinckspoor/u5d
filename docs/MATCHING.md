@@ -198,6 +198,14 @@ compilers; the rule fits every case.
 `tools/slots.py` picks the rule from the file's compiler; `--hash NAME` prints both buckets.
 Renaming COMBAT's, COMSUBS's and LOOKOBJ's locals by it is what let them move to 5.0.
 
+A local declared inside an inner block is placed after all of the function's own locals
+and after the slots of the compiler's temporaries made so far. So an unused slot just above
+a local, while the frame has no slot to spare, says that local was declared in a block:
+DNGLOOK_0c6c's `local_c` (slots -2, -4, -6, unused -8, `local_c` at -0a) matches only
+when it is declared inside the `if` that uses it. Under 5.0 a `register` variable always
+takes a stack slot too, wherever it is declared (SJOG_0514's `si` gives a frame two bytes
+larger than the original's).
+
 Because the linker gathers segments by class, DGROUP holds all `_DATA` (5.1 modules' strings
 and tables, 5.0 modules' tables), then the runtime's tables, then all `CONST` (5.0 modules'
 strings, from DS:6ada).

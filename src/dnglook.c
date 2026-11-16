@@ -803,12 +803,9 @@ static void DNGLOOK_0b9e(int param_1)
 void DNGLOOK_0c6c(void)
 {
     byte local_8;
-    byte local_c;
     int local_6;
 
     byte* local_4_aa;
-
-    byte* t;
 
     local_4_aa = &GetCombatMap(0, 1);
     memset(local_4_aa, D_bb14, 0xb);
@@ -828,6 +825,8 @@ void DNGLOOK_0c6c(void)
     local_8 &= 0xf0;
     if (local_8 != 0 && local_8 < 0x80)
     {
+        byte local_c;
+
         local_8 >>= 4;
         local_c = D_244a[local_8];
         if (local_c != 0)
