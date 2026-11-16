@@ -588,7 +588,10 @@ static int ULTIMA_2c2e(int tile)
 // Tried: cases 7-10 as "if (t == X) return 1; return 0;" and as "if (t != X) return 0;
 // return 1;" (8 bytes shorter), case 6 as "return targetTile <= 2;" (case 6 then jumps to
 // case 10's block), case 3 as one boolean return; MSC 5.0 gives the same length (and breaks
-// 2bd4).
+// 2bd4). Closest (302 bytes, 131 differ): "L_ret1: return 1;" in case 6, cases 2, 3 and 5 jump
+// there with goto, and cases 7-10 as "if (t != X) return 0; goto L_ret1;" (cases 8-10 then
+// join case 7's tail as in the original); but case 3's last test still merges into case 2's
+// "je; jmp L_ret1", which the original keeps apart.
 int ULTIMA_2c4c_IsWalkableTile(int actorTile, int targetTile)
 {
     switch (D_54f4[actorTile >> 2])
