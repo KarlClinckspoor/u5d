@@ -80,23 +80,31 @@ def function_start(src, func):
 
 def resize(text, var, nbytes):
     """Set the element count of var's (first) array dimension so it takes nbytes."""
-    m = re.search(r'^(\s*(?:STUB\s+)?)([A-Za-z][\w\s\*]*?)\b(%s)\s*\[([^\]]*)\]' % re.escape(var), text, re.M)
+    m = re.search(r'^(\s*(?:STUB\s+)?)([A-Za-z][\w\s\*]*?)\b(%s)\s*\[([^\]]*)\]((?:\s*\[[^\]]*\])*)' % re.escape(var),
+                  text, re.M)
     if not m:
         return text, False
     typ = m.group(2).split()[-1].strip('*')
     size = ELEM.get(typ)
-    if not size or nbytes % size:
+    if not size:
+        return text, False
+    for dim in re.findall(r'\[([^\]]*)\]', m.group(5)):    # further dimensions: [16][4]
+        try:
+            size *= int(dim, 0)
+        except ValueError:
+            return text, False
+    if nbytes % size:
         return text, False
     n = nbytes // size
-    new = m.group(0)[:m.start(4) - m.start(0)] + ('0x%x' % n if '0x' in m.group(4) else str(n)) + ']'
-    text = text[:m.start(0)] + new + text[m.end(0):]
+    text = text[:m.start(4)] + ('0x%x' % n if '0x' in m.group(4) else str(n)) + text[m.end(4):]
     # drop initialisers beyond the new size (simple flat lists only): they were the bytes
     # of the next item, which the old size ran into
+    keep = nbytes // ELEM[typ]                  # scalar initialisers that fit
     im = re.search(r'=\s*\{([^{}]*)\}', text)
     if im:
         vals = [v.strip() for v in im.group(1).split(',') if v.strip()]
-        if len(vals) > n:
-            text = text[:im.start(1)] + ' ' + ', '.join(vals[:n]) + ' ' + text[im.end(1):]
+        if len(vals) > keep:
+            text = text[:im.start(1)] + ' ' + ', '.join(vals[:keep]) + ' ' + text[im.end(1):]
     return text, True
 
 
@@ -152,11 +160,19 @@ def plan(cfile):
     s, e = run[0][0], run[-1][0] + run[-1][1]
     if any(it[2] == 'str' and it[4] != cfile and s <= it[0] < e for it in items):
         print('warning: strings of other modules inside %s\'s data %04x-%04x' % (cfile, s, e))
-    # extend the start backwards over variables only this module uses
+    # a table between the module's strings is the module's, whoever uses it (it is then a
+    # global the others reach by name); at the edges, extend over tables only it uses
+    inner_s, inner_e = s, e
     before = [it for it in items if it[0] < s]
     for it in reversed(before):
-        if it[2] == 'var' and users[it[3]] in ([cfile], []):
+        if it[2] == 'var' and users[it[3]] == [cfile]:
             s = it[0]
+        else:
+            break
+    after = [it for it in items if it[0] >= e and it[4] != cfile]
+    for it in after:
+        if it[2] == 'var' and users[it[3]] == [cfile] and it[0] == e:
+            e = it[0] + it[1]
         else:
             break
     mine = [it for it in items if s <= it[0] < (e or 0x10000)]
@@ -164,9 +180,10 @@ def plan(cfile):
     first_func = re.search(r'^(?:static\s+)?[\w\s\*]*?\b(\w+)\s*\([^;{)]*\)\s*\n\{', src, re.M).group(1)
     out = []
     for i, it in enumerate(mine):
-        if it[2] != 'var':
+        if it[2] != 'var' or it[4] != 'vars.c':
             continue
-        if users[it[3]] not in ([cfile], []):
+        inside = inner_s <= it[0] < inner_e
+        if not inside and users[it[3]] != [cfile]:
             continue
         # MSC 5.1 writes a file-scope definition after the string literals of the function
         # that follows it; so a table that comes after function F's strings is defined

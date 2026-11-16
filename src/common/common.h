@@ -160,4 +160,15 @@ typedef int bool;
 #define _STATIC_TEXT(addr, text) text
 #endif
 
+// A string that the original keeps in another module's data: in the DOS build it is that
+// module's array S_<addr> (declared extern by the file's DGROUP block, tools/strings.py);
+// elsewhere it is an ordinary string.
+#if defined(TARGET_DOS16)
+#define _XTEXT(addr, text) S_##addr
+#define _XSTATIC_TEXT(addr, text) S_##addr
+#else
+#define _XTEXT(addr, text) _TEXT(addr, text)
+#define _XSTATIC_TEXT(addr, text) _STATIC_TEXT(addr, text)
+#endif
+
 #endif

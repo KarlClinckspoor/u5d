@@ -107,6 +107,9 @@ NAME_RE = re.compile(r'^_?([A-Z][A-Z0-9]*)_([0-9A-Fa-f]{4})(?:_|$)')
 
 def name_address(name):
     """('code', cs_offset) or ('data', ds_offset) for a name that carries one, else None."""
+    s = re.match(r'^_?S_0[xX]([0-9A-Fa-f]{1,4})$', name)   # a string array, S_0x6ada
+    if s:
+        return ('data', int(s.group(1), 16))
     m = NAME_RE.match(name)
     if not m:
         return None

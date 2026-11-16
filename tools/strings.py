@@ -113,7 +113,58 @@ def all_strings():
     return out
 
 
+def is_array_module(cfile, items):
+    """True when every string of the module's data starts at an even address."""
+    run = dgroup.module_run(cfile, items)
+    own = [it for it in items if it[2] == 'str' and it[4] == cfile and run and run[0] <= it[0] < run[1]]
+    return bool(own) and not any(it[0] & 1 for it in own)
+
+
+def build_literal(src, cfile, items):
+    """A module whose own strings are literals: only the strings it uses from other modules'
+    data change, to _XTEXT/_XSTATIC_TEXT, declared extern in a DOS-only block."""
+    import slots
+    run = dgroup.module_run(cfile, items)
+    bodies = [(a, b) for _, a, b in slots.functions(src)]
+    rx = re.compile(r'\b_(X?)(STATIC_)?TEXT\(\s*(0x[0-9a-fA-F]{1,4})\s*,|/\*\s*(0x[0-9a-fA-F]{4})\s*\*/\s*(?=' + dgroup.LIT + r')')
+    out, last, foreign = [], 0, {}
+    for m in rx.finditer(src):
+        spell = m.group(3) or m.group(4)
+        a = int(spell, 16)
+        if run[0] <= a < run[1]:
+            continue
+        if m.group(4) and not dgroup.literal(dgroup.ANNOT_RE.match(src, m.start()).group(2)):
+            continue
+        foreign.setdefault(a, set()).add(spell)
+        out.append(src[last:m.start()])
+        if m.group(4):                                  # /*0x6ada*/ "..." -> _XTEXT(0x6ada, "...")
+            lm = dgroup.ANNOT_RE.match(src, m.start())
+            inside = any(x <= m.start() < y for x, y in bodies)
+            out.append('_X%sTEXT(%s, %s)' % ('' if inside else 'STATIC_', spell, lm.group(2).strip()))
+            last = lm.end()
+        else:
+            out.append('_X%sTEXT(%s,' % (m.group(2) or '', spell))
+            last = m.end()
+    out.append(src[last:])
+    src = ''.join(out)
+    if not foreign:
+        return src
+    lines = ['#if defined(TARGET_DOS16)', BEGIN]
+    for a, spells in sorted(foreign.items()):
+        first = sorted(spells)[0]
+        lines.append('extern char S_%s[];' % first)
+        for other in sorted(spells)[1:]:
+            lines.append('#define S_%s S_%s' % (other, first))
+    lines += [END, '#endif', '']
+    incs = list(re.finditer(r'^#include .*\n', src, re.M))
+    at = incs[-1].end() if incs else 0
+    return src[:at] + '\n' + '\n'.join(lines) + src[at:]
+
+
 def build(src, cfile):
+    items0, _ = dgroup.build()
+    if not is_array_module(cfile, items0):
+        return build_literal(strip_block(src), cfile, items0)
     src = annotate(strip_block(src))
     strs = collect(src)
     tabs = table_defs(src)

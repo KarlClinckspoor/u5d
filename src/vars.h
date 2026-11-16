@@ -172,7 +172,7 @@ STUB u8 D_2bf0[0x6];
 STUB u8 D_2bf6[0x2];
 
 STUB u16 D_2bf8[4][4];
-STUB u8 D_2c18[0x3c];
+STUB u8 D_2c18[0x3d];
 
 // 2c58~: Entering room...
 
@@ -189,7 +189,7 @@ STUB u8 D_2de8[8];
 STUB u8 D_2df0[8];
 STUB u8 D_2df8[12];
 STUB u8 D_2e04[12];
-STUB char* D_2e10[11];
+STUB char* D_2e10[22];
 
 STUB u8 D_2e26[4];
 STUB s16 D_2e2a[4]; // int
@@ -202,8 +202,8 @@ STUB s16 D_2e62[2][4]; // int
 STUB s16 D_2e72[4]; // int
 STUB s16 D_2e7a[2][4]; // int
 STUB u8 D_2e8a[6]; // offset confirmed
-STUB u8 D_2e90[]; // offset confirmed
-STUB u8 D_2e9a[];
+STUB u8 D_2e90[10]; // offset confirmed
+STUB u8 D_2e9a[10];
 
 STUB Pair D_2ea4[3][8];
 STUB Pair D_2ed4[3][5];
@@ -281,8 +281,8 @@ STUB u8 D_3866[8]; // ~386e)
 STUB u8 D_386e[8]; // ~3876)
 STUB u8 D_3876[0x100]; // ~3976) TODO: size?
 
-STUB u8 D_3a06[3];
-STUB u8 D_3a0a[3];
+STUB u8 D_3a06[4];
+STUB u8 D_3a0a[4];
 STUB u8 D_3a0e[3];
 
 STUB u16 D_3a26[6];
