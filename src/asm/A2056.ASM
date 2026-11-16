@@ -64,9 +64,12 @@ ULTIMA_207E_SRAND:
 	pop si
 	pop bp
 	ret 2
-L_2091:
-	add [di-75h],dl
-	in al,dx
+	db	000h
+
+	PUBLIC	ULTIMA_2092_RANDOMRANGE
+ULTIMA_2092_RANDOMRANGE:
+	push bp
+	mov bp,sp
 	push si
 	push di
 	push ds

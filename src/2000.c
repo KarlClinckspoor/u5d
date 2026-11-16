@@ -31,26 +31,17 @@ void ULTIMA_207e_srand(uint param_1)
 }
 #endif
 
-// ASM
+#if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // range: [min..max]
 int ULTIMA_2092_RandomRange(int param_1, int param_2) // inclusive_min, inclusive_max
 {
-#if !defined(TARGET_DOS16)
+    // the original (src/asm/A2056.ASM): D_5420 = ror(D_5420 + 0x9248, 3) ^ 0x9248 + 0x11,
+    // then (D_5420 & 0x7fff) % (max - min + 1) + min
     ASSERT(param_1 <= param_2);
 
     return rand() % ((param_2 - param_1) + 1) + param_1;
-#else
-    register uint ax;
-
-    ax = D_5420 + 0x9248;
-    ax = _rotr(ax, 3);
-    ax ^= 0x9248;
-    ax += 0x11;
-    D_5420 = ax;
-
-    return (ax & 0x7fff) % ((param_2 - param_1) + 1) + param_1;
-#endif
 }
+#endif
 
 #if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
