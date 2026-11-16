@@ -621,17 +621,18 @@ static char S_0x3270[8] = "JCTUAR";
 #endif
 
 // CHECKED
-void INTRO_0986_Main(void) // intro_main (initialize video) (8b46)
+// intro_main (initialize video) (8b46)
+void INTRO_0986_Main(void)
 {
-    int local_4;
-    char* local_6;
-    int local_8;
-    int local_a;
-    int local_c;
-    int local_e;
-    byte local_10;
-    byte* local_12;
     byte* local_14;
+    byte* local_12_ab;
+    byte local_10_ad;
+    int local_e;
+    int local_c;
+    int local_a;
+    int local_8;
+    char* local_6;
+    int local_4_ab;
 
     // 098e
     D_a9ce = 1;
@@ -746,8 +747,8 @@ void INTRO_0986_Main(void) // intro_main (initialize video) (8b46)
 
         do
         {
-            local_12 = ULTIMA_0fae_LoadResourceFile(D_25ea[2]); // "TITLE.BIT"
-        } while (local_12 == 0);
+            local_12_ab = ULTIMA_0fae_LoadResourceFile(D_25ea[2]); // "TITLE.BIT"
+        } while (local_12_ab == 0);
 
         do
         {
@@ -761,13 +762,13 @@ void INTRO_0986_Main(void) // intro_main (initialize video) (8b46)
 #endif
         // "origin systems inc."
         if (local_a != 0)
-            local_a = ULTIMA_0d72_AnimateOriginLogo(local_12) == 0;
+            local_a = ULTIMA_0d72_AnimateOriginLogo(local_12_ab) == 0;
 
         // 0b56
         // "presents"
         ULTIMA_0c22_GRAP_0f_SelectPage(1);
         ULTIMA_0aa6_GRAP_3f_FillRect(0, 0x8c, 0x13f, 199);
-        ULTIMA_1044_GRAP_4e_CopyBitImageIntoPage(local_12, 7, 0x6c, 0x8c);
+        ULTIMA_1044_GRAP_4e_CopyBitImageIntoPage(local_12_ab, 7, 0x6c, 0x8c);
         ULTIMA_0ace_GRAP_18_TransferArea(1, 0, 0, 0x8c, 0x13f, 199);
         if (local_a != 0)
         {
@@ -780,7 +781,7 @@ void INTRO_0986_Main(void) // intro_main (initialize video) (8b46)
             // 0bbf
             ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
             // "a"
-            ULTIMA_1044_GRAP_4e_CopyBitImageIntoPage(local_12, 0x8, 0x98, 0);
+            ULTIMA_1044_GRAP_4e_CopyBitImageIntoPage(local_12_ab, 0x8, 0x98, 0);
             ULTIMA_0f6e_GRAP_1b_TransferFullscreen(1, 0);
             local_a = INTRO_094e_Pause(0x14) == 0;
             if (local_a != 0)
@@ -801,7 +802,7 @@ void INTRO_0986_Main(void) // intro_main (initialize video) (8b46)
             ULTIMA_1044_GRAP_4e_CopyBitImageIntoPage(local_14, 0, 0x18, 0x42);
             ULTIMA_0f6e_GRAP_1b_TransferFullscreen(1, 0);
             // "production"
-            ULTIMA_1044_GRAP_4e_CopyBitImageIntoPage(local_12, 9, 0x68, 0xa0);
+            ULTIMA_1044_GRAP_4e_CopyBitImageIntoPage(local_12_ab, 9, 0x68, 0xa0);
             ULTIMA_0f6e_GRAP_1b_TransferFullscreen(1, 0);
             if (local_a != 0)
             {
@@ -811,7 +812,7 @@ void INTRO_0986_Main(void) // intro_main (initialize video) (8b46)
 
         // 0c97
         ULTIMA_0fdc_FreeBitImage(local_14);
-        ULTIMA_0fdc_FreeBitImage(local_12);
+        ULTIMA_0fdc_FreeBitImage(local_12_ab);
 
         D_5893_map_id = 0x40;
         ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
@@ -846,11 +847,14 @@ void INTRO_0986_Main(void) // intro_main (initialize video) (8b46)
         ULTIMA_1c22_SetTextWindowSize(2, 0x18, 0xb, 0x27, 0x17);
         if (local_a == 0x4a) // 'J'
         {
-            local_10 = 0x4a; // 'J'
+            local_10_ad = 0x4a; // 'J'
         }
         else
         {
-            // 0d3e
+            // 0d3e NOT MATCHING: the original keeps local_c in DI from here on (sub di,di
+            // before the two calls) and stores it only at the loop's end. MSC 5.0 compiles this
+            // source exactly so; 5.1, which built this object (its strings are packed in _DATA;
+            // 5.0 word-aligns char arrays), keeps local_c at [bp-0Ah] until the loop.
             local_c = 0;
             INTRO_043e(_TEXT(0x31c1, "Copyright 1988 Lord British"));
             INTRO_06bc_BuildMainMenu(0);
@@ -863,20 +867,20 @@ void INTRO_0986_Main(void) // intro_main (initialize video) (8b46)
                 ULTIMA_4cce();
                 ULTIMA_1bf2_SetTextPosition(0x17, 0xf);
                 D_5356 = 0x113;
-                local_4 = 0;
+                local_4_ab = 0;
                 do
                 {
                     // 0d75
-                    local_10 = ULTIMA_2032_ToUpper(ULTIMA_1b38_PollKeyWithCursor());
-                    if (local_10 == 0)
+                    local_10_ad = ULTIMA_2032_ToUpper(ULTIMA_1b38_PollKeyWithCursor());
+                    if (local_10_ad == 0)
                     {
                         INTRO_2090_AnimateWD();
                     }
                     // 0d86
-                    local_4++;
-                } while (local_4 < 200 && local_10 == 0);
+                    local_4_ab++;
+                } while (local_4_ab < 200 && local_10_ad == 0);
                 D_5356 = local_8;
-                switch (local_10)
+                switch (local_10_ad)
                 {
                 case U5_KEY_LEFT:
                 case U5_KEY_UP:
@@ -899,10 +903,10 @@ void INTRO_0986_Main(void) // intro_main (initialize video) (8b46)
                 case U5_KEY_ENTER:  // CR
                 case U5_KEY_SPACE: // ' '
                     // 0de2
-                    local_10 = _XTEXT(0x3270, "JCTUAR")[local_c];
+                    local_10_ad = _XTEXT(0x3270, "JCTUAR")[local_c];
                     break;
                 case 0:
-                    local_10 = 0x52;
+                    local_10_ad = 0x52;
                     break;
                 case 0x4a: // 'J'
                     INTRO_06bc_BuildMainMenu(0);
@@ -923,14 +927,14 @@ void INTRO_0986_Main(void) // intro_main (initialize video) (8b46)
                     INTRO_06bc_BuildMainMenu(5);
                     break;
                 default:
-                    local_10 = 0;
+                    local_10_ad = 0;
                     break;
                 }
-            } while (local_10 <= 0x20);
+            } while (local_10_ad <= 0x20);
         }
 
         // 0e47
-        switch ((int)local_10)
+        switch ((int)local_10_ad)
         {
         case 0x4a: // 'J'
 #if defined(ENABLE_BGM)
