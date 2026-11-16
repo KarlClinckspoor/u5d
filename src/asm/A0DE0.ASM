@@ -13,7 +13,7 @@ _BSS	ENDS
 DGROUP	GROUP	CONST, _BSS, _DATA
 	ASSUME	CS: _TEXT, DS: DGROUP, SS: DGROUP, ES: DGROUP
 
-	EXTRN	L_81ba:NEAR
+	EXTRN	STUB_FONT_02FC:NEAR
 	EXTRN	ULTIMA_08E6_CLIPRECTCOORD:NEAR
 	EXTRN	ULTIMA_0B2D_GRAP_LINE:NEAR
 	EXTRN	ULTIMA_1F77_CONVERTCHARCOORDTOP:NEAR
@@ -452,7 +452,7 @@ L_1070:
 	jne	L_10d0
 	mov ax,1
 	push ax
-	call	L_81ba
+	call	STUB_FONT_02FC
 	pop di
 	or ax,ax
 	je	L_1070
@@ -1083,6 +1083,8 @@ L_15c1:
 	pop bx
 	ret
 	db	090h
+
+	PUBLIC	L_15c6
 L_15c6:
 	push bx
 	mov ah,30h
@@ -1129,6 +1131,8 @@ L_160b:
 	popf
 	pop ax
 	ret
+
+	PUBLIC	L_160e
 L_160e:
 	push ds
 	push ax
@@ -1180,6 +1184,8 @@ L_1650:
 	pop bx
 	pop ds
 	ret
+
+	PUBLIC	L_1654
 L_1654:
 	mov al,2
 	mov ah,3dh

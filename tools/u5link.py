@@ -39,6 +39,7 @@ ROOT_END = 0x86f0
 # followed by EPAD. crt0's STACK lies beyond DGROUP and is not part of DATA.OVL.
 FIXED_DATA = {'PAD': 0xa520, 'EPAD': 0xa522}
 SKIP_SEGMENTS = {'STACK', '_BSS', 'c_common'}
+LINKER_DEFINED = {'_edata', '_end'}
 
 
 class Module:
@@ -101,6 +102,19 @@ class Linker:
                 if s:
                     for n, off in s.publics.items():
                         self.publics.setdefault(n, ('data', dsbase + off, m))
+        # symbols the linker defines (end of the initialised data, end of DGROUP): their
+        # values, measured where the runtime's code uses them in the original
+        for m in self.modules:
+            if m.kind != 'lib' or not m.code:
+                continue
+            seg, base = m.code
+            for fx in seg.fixups:
+                if fx.target[0] == 'ext' and fx.target[1] in LINKER_DEFINED and not fx.self_rel \
+                        and fx.kind == omf.LOC_OFFSET and fx.target[1] not in self.publics:
+                    w = struct.unpack_from('<H', self.orig_img, base + fx.loc)[0]
+                    v = (w - fx.disp - struct.unpack_from('<H', seg.data, fx.loc)[0]) & 0xffff
+                    self.publics[fx.target[1]] = ('data', v, m)
+                    self.notes.append('linker symbol %s = DS:%04x (measured)' % (fx.target[1], v))
 
     def place_data_by_code(self, m):
         """For a module whose code is the original's byte for byte (library, assembly): each
@@ -261,14 +275,22 @@ def gather(lk):
             lk.add(m)
     # the runtime library modules, where tools/libmatch.py finds them
     img = lk.orig_img
+    found = {}
     for lib in ('SLIBCR.LIB', 'LIBH.LIB'):
         for name, obj in omf.library_modules(os.path.join(u5.MSC51, 'LIB', lib)):
             for seg in libmatch.code_segments(obj):
                 at = libmatch.find(img, seg)
                 if len(at) == 1 and at[0] < 0x878:
-                    m = Module(name, obj, 'lib')
-                    m.addr, m.cfile = at[0], None
-                    lk.add(m)
+                    found.setdefault(at[0], []).append((name, obj))
+    # modules with the same code (alshl, alshr, aulshr) match the same place: the one linked
+    # is the one whose own references the other modules found satisfy
+    defined = {p for c in found.values() for n, o in c for s in o.segs[1:] for p in s.publics}
+    for addr, cands in sorted(found.items()):
+        ok = [(n, o) for n, o in cands if all(e in defined or not e.startswith('__aN') for e in o.exts[1:])]
+        name, obj = (ok or cands)[0]
+        m = Module(name, obj, 'lib')
+        m.addr, m.cfile = addr, None
+        lk.add(m)
 
 
 def compare(name, ours, orig):

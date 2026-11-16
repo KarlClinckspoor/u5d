@@ -24,7 +24,7 @@ This is the method of u1-decompiled's genasm.py, for MSC's segment conventions. 
 out is a faithful, readable starting point: names and comments can be improved by hand, as
 long as tools/asmbuild.py still reports the module identical.
 """
-import argparse, os, re, shutil, struct, subprocess, sys, tempfile
+import argparse, glob, os, re, shutil, struct, subprocess, sys, tempfile
 
 import iced_x86 as I
 
@@ -89,8 +89,34 @@ class Gen:
         self.relocs = relocations(self.gamedata)
         tags = rootmap.function_tags()
         self.funcs = {a: exported(n) for a, (n, f, t) in tags.items()}
-        self.funcs.update({a: exported('_' + n.split()[0]) for a, n in rootmap.crt_names().items()
+        # runtime routines: the library's own (case-sensitive) public names
+        self.funcs.update({a: '_' + n.split()[0] for a, n in rootmap.crt_names().items()
                            if a not in self.funcs and re.match(r'^\w+$', n.split()[0])})
+        # overlay call stubs: STUB_<function> (src/asm/PLTAB.ASM)
+        try:
+            import plinkgen
+            names = plinkgen.overlay_function_names()
+            for s, (num, tgt) in u5.overlay_stubs(self.img).items():
+                if (num, tgt) in names:
+                    self.funcs.setdefault(s, 'STUB_' + names[(num, tgt)][:26])
+        except Exception:                                    # noqa: BLE001
+            pass
+        # labels other assembly modules jump to must be PUBLIC here
+        self.wanted = set()
+        for p in glob.glob(os.path.join(ASM_DIR, '*.ASM')):
+            if os.path.basename(p).upper() == name.upper() + '.ASM':
+                continue
+            for m in re.finditer(r'^\tEXTRN\tL_([0-9a-f]{4}):NEAR', open(p, encoding='latin-1').read(), re.M):
+                a = int(m.group(1), 16)
+                if start <= a < end:
+                    self.wanted.add(a)
+        # the address ranges of all assembly modules (a branch to an address no module
+        # defines, such as PLINK's jump into an overlay area, stays as bytes)
+        self.asm_ranges = []
+        for p in glob.glob(os.path.join(ASM_DIR, '*.ASM')):
+            m = re.search(r'CS:([0-9a-f]{4})-([0-9a-f]{4})', open(p, encoding='latin-1').readline())
+            if m:
+                self.asm_ranges.append((int(m.group(1), 16), int(m.group(2), 16)))
         self.data = data_symbols() if not seg else {}
         self.entries = sorted(set([a for a in self.funcs if start <= a < end] + list(entries)))
         self.force_db = set()        # instruction addresses to write as bytes
@@ -199,12 +225,17 @@ class Gen:
                 elif self.start <= t < self.end:
                     if a not in self.force_db:
                         targets.add(t)
-                else:
+                elif t in self.funcs or any(s <= t < e for s, e in self.asm_ranges):
                     externs[self.label(t)] = 'NEAR'
+                else:
+                    self.force_db.add(a)      # a target no module defines: keep the bytes
             if x.code in (I.Code.CALL_PTR1616, I.Code.JMP_PTR1616):
                 t = struct.unpack_from('<H', self.img, a + 1)[0]
-                if any(a + 3 <= r < a + 5 for r in (a + 3,) if r in self.relocs) and not self.start <= t < self.end:
+                if (a + 3) in self.relocs and not self.start <= t < self.end:
                     externs[self.label(t)] = 'NEAR'
+        for t in self.wanted:                  # labels other modules use
+            if t in ins:
+                targets.add(t)
         fmt = I.Formatter(I.FormatterSyntax.MASM)
         fmt.uppercase_hex = False
         fmt.hex_prefix = ''
@@ -219,7 +250,7 @@ class Gen:
         while a < self.end:
             if a in self.entries or a in targets:
                 lab = self.label(a)
-                if a in self.funcs:
+                if a in self.funcs or a in self.wanted:
                     body.append('')
                     body.append('\tPUBLIC\t%s' % lab)
                 body.append('%s:' % lab)

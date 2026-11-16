@@ -13,7 +13,6 @@ _BSS	ENDS
 DGROUP	GROUP	CONST, _BSS, _DATA
 	ASSUME	CS: PLSTART_TEXT, DS: DGROUP, SS: DGROUP, ES: DGROUP
 
-	EXTRN	L_dee4:NEAR
 
 PLSTART_TEXT	SEGMENT
 L_81d0:
@@ -39,7 +38,7 @@ L_81d7:
 	db	0dfh, 035h, 01bh, 0dch, 035h, 0aeh, 0ddh, 06eh
 	db	0dch, 034h
 L_8205:
-	jmp	NEAR PTR L_dee4
+	db	0e9h, 0dch, 05ch	; jmp 5d14h
 	db	020h, 0dch, 0a8h, 02fh, 06eh, 0ddh, 034h
 L_820f:
 	neg sp

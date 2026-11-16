@@ -20,7 +20,7 @@ DGROUP	GROUP	CONST, _BSS, _DATA
 	EXTRN	L_007b:NEAR
 	EXTRN	L_0292:NEAR
 	EXTRN	L_0297:NEAR
-	EXTRN	__ASTART:NEAR
+	EXTRN	__astart:NEAR
 
 PLMGR_TEXT	SEGMENT
 	db	0f9h, 0c3h
@@ -520,8 +520,8 @@ L_767f:
 	mov ss,bx
 	sti
 	db	0eah
-	dw	OFFSET __ASTART
-	dw	SEG __ASTART
+	dw	OFFSET __astart
+	dw	SEG __astart
 	db	000h
 L_7690:
 	cld
