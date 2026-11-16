@@ -305,8 +305,11 @@ static int NPC_032c(int param_1, int param_2, int param_3, int param_4, int para
             local_c = 0;
         }
 
-        //if (local_c == local_4_ab)
-        //    break;
+        // NOT MATCHING: in the original, both the "== 1" exit and the loop
+        // condition reach one block placed right after the "== 1" test: store local_e_am,
+        // then "if (local_e_am) return 1; return local_e_am;". A break and that code after
+        // the loop puts the block after the loop instead; a goto into it costs the loop
+        // its registers.
     } while (local_c != local_4_ab);
 
     return local_e_am;
