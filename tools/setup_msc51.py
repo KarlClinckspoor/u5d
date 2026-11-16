@@ -39,6 +39,24 @@ MD5 = {
     'BIN/LINK.EXE': '07639b628b60f8f02c9d65bfd67895c8',
 }
 
+# Microsoft C 5.0 (1987), the compiler of part of the original's modules (u5.COMPILER_BY_FILE):
+# its disks are named SETUP.IMG, COMPILER.IMG, INCLIBSM.IMG, UTILITES.IMG. Installed into
+# build/msc50.
+DISKS_50 = [
+    ('SETUP.IMG', ['CL.EXE', 'CL.ERR', 'C1.EXE'], 'BIN'),
+    ('COMPILER.IMG', ['C1.ERR', 'C2.EXE', 'C3.EXE', 'C23.ERR'], 'BIN'),
+    ('INCLIBSM.IMG', ['INCLUDE/*', 'INCLUDE/SYS/*'], ''),
+    ('INCLIBSM.IMG', ['LIB/*', '*.LIB', '*.OBJ'], 'LIB'),
+    ('UTILITES.IMG', ['LINK.EXE', 'LIB.EXE', 'EXEMOD.EXE', 'EXEPACK.EXE', 'MAKE.EXE'], 'BIN'),
+]
+MD5_50 = {
+    'BIN/CL.EXE': '953c72b76bf20dfccae195bc998c4db9',
+    'BIN/C1.EXE': '66ac5b4e54e8c89bfbc11931949b4342',
+    'BIN/C2.EXE': 'c6d1493806d02d77d1ae0b752686977b',
+    'BIN/C3.EXE': 'abc7fe4a6913eab80dc038a0e488912c',
+    'BIN/LINK.EXE': '6dfe978275e796ec4ed03edddba8edaf',
+}
+
 
 class Fat12:
     """A FAT12 floppy image: list and read files (8.3 names, subdirectories)."""
@@ -122,28 +140,32 @@ def find_images(src, tmp):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument('source', help='the MSC 5.1 .7z archive or the folder of its .img files')
-    ap.add_argument('--dest', default=u5.MSC51)
+    ap.add_argument('source', help='the MSC 5.1 or 5.0 .7z archive, or the folder of its .img files')
+    ap.add_argument('--dest', help='default: build/msc51 for 5.1, build/msc50 for 5.0')
     a = ap.parse_args()
     with tempfile.TemporaryDirectory() as tmp:
         imgs = find_images(a.source, tmp)
         if not imgs:
             sys.exit('no .img files found in %s' % a.source)
+        v50 = any(n.upper() == 'COMPILER.IMG' for n in imgs)
+        disks, md5 = (DISKS_50, MD5_50) if v50 else (DISKS, MD5)
+        a.dest = a.dest or (os.path.join(u5.BUILD, 'msc50') if v50 else u5.MSC51)
+        print('Microsoft C %s' % ('5.0' if v50 else '5.1'))
         if os.path.exists(a.dest):
             shutil.rmtree(a.dest)
-        for label, patterns, sub in DISKS:
-            img = next((p for n, p in imgs.items() if n.startswith(label + ' (')), None)
+        for label, patterns, sub in disks:
+            img = next((p for n, p in imgs.items() if n.upper() == label or n.startswith(label + ' (')), None)
             if not img:
-                sys.exit('disk image "%s (...).img" is missing' % label)
+                sys.exit('disk image "%s" is missing' % label)
             for path, data in Fat12(img).walk():
                 if any(match(p, path) for p in patterns):
-                    out = os.path.join(a.dest, sub, path)
+                    out = os.path.join(a.dest, sub, os.path.basename(path) if sub == 'LIB' else path)
                     os.makedirs(os.path.dirname(out), exist_ok=True)
                     open(out, 'wb').write(data)
     for d in ('TMP',):
         os.makedirs(os.path.join(a.dest, d), exist_ok=True)
     bad = 0
-    for rel, want in MD5.items():
+    for rel, want in md5.items():
         p = os.path.join(a.dest, rel)
         got = hashlib.md5(open(p, 'rb').read()).hexdigest() if os.path.exists(p) else 'missing'
         if got != want:

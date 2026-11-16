@@ -29,17 +29,67 @@ def dos_name(path):
     return base
 
 
-def compile_files(files, dosbox=None, flags=None, show_log=False, src=None, quiet=False):
-    """Compile files (names relative to src/). Returns {file: [error lines]}."""
+def c_comments(text):
+    """Rewrite // comments as /* */ (MSC 5.0 knows only the latter); strings are left alone."""
+    out, i, n = [], 0, len(text)
+    while i < n:
+        c = text[i]
+        if c in '"\'':
+            j = i + 1
+            while j < n and text[j] != c and text[j] != '\n':
+                j += 2 if text[j] == '\\' else 1
+            out.append(text[i:j + 1])
+            i = j + 1
+        elif text.startswith('/*', i):
+            j = text.find('*/', i + 2)
+            j = n if j < 0 else j + 2
+            out.append(text[i:j])
+            i = j
+        elif text.startswith('//', i):
+            j = text.find('\n', i)
+            j = n if j < 0 else j
+            body = text[i + 2:j].rstrip('\r').replace('*/', '* /')
+            out.append('/*' + body + ' */' + ('\r' if text[i:j].endswith('\r') else ''))
+            i = j
+        else:
+            out.append(c)
+            i += 1
+    return ''.join(out)
+
+
+def compiler_dir(compiler):
+    return u5.MSC51 if compiler in (None, 'msc51') else os.path.join(u5.BUILD, compiler)
+
+
+def compile_files(files, dosbox=None, flags=None, show_log=False, src=None, quiet=False, compiler=None):
+    """Compile files (names relative to src/). Returns {file: [error lines]}.
+    compiler: 'msc51' (build/msc51) or 'msc50' (build/msc50); by default each file with the
+    compiler the original used for it (u5.COMPILER_BY_FILE, MSC 5.1 otherwise)."""
+    if compiler is None:
+        groups = {}
+        for f in files:
+            groups.setdefault(u5.COMPILER_BY_FILE.get(os.path.basename(f), 'msc51'), []).append(f)
+        res = {}
+        for comp, fs in groups.items():
+            res.update(compile_files(fs, dosbox, flags, show_log, src, quiet, comp))
+        return res
     src = src or u5.SRC
-    if not os.path.exists(os.path.join(u5.MSC51, 'BIN', 'CL.EXE')):
-        sys.exit('MSC 5.1 is not installed: run tools/setup_msc51.py first')
+    tools_dir = compiler_dir(compiler)
+    if not os.path.exists(os.path.join(tools_dir, 'BIN', 'CL.EXE')):
+        sys.exit('%s is not installed: run tools/setup_msc51.py first' % (compiler or 'MSC 5.1'))
     dosbox = u5.find_dosbox(dosbox)
     # a scratch drive per run, so that several builds (of different files) can run at once
     os.makedirs(DOS_ROOT, exist_ok=True)
     DOS = tempfile.mkdtemp(prefix='run', dir=DOS_ROOT)
     stage = os.path.join(DOS, 'S')
     shutil.copytree(src, stage, ignore=shutil.ignore_patterns('*.OBJ', '*.obj', '*.COD', '*.cod'))
+    if compiler == 'msc50':
+        for dp, _, fs in os.walk(stage):
+            for fn in fs:
+                if fn.lower().endswith(('.c', '.h')):
+                    p = os.path.join(dp, fn)
+                    t = open(p, encoding='latin-1', newline='').read()
+                    open(p, 'w', encoding='latin-1', newline='').write(c_comments(t))
     os.makedirs(os.path.join(DOS, 'TMP'))
     os.makedirs(OBJ, exist_ok=True)
     lines = ['@echo off', r'set PATH=D:\BIN', r'set INCLUDE=D:\INCLUDE', r'set LIB=D:\LIB',
@@ -53,7 +103,7 @@ def compile_files(files, dosbox=None, flags=None, show_log=False, src=None, quie
     conf = os.path.join(DOS, 'dosbox.conf')
     open(conf, 'w').write(
         '[sdl]\noutput=surface\n[dosbox]\nmemsize=16\n[cpu]\ncycles=max\n[log]\nlogfile=\n'
-        '[autoexec]\nmount c "%s"\nmount d "%s"\nc:\ncall \\BUILD.BAT\nexit\n' % (DOS, u5.MSC51))
+        '[autoexec]\nmount c "%s"\nmount d "%s"\nc:\ncall \\BUILD.BAT\nexit\n' % (DOS, tools_dir))
     env = dict(os.environ, SDL_VIDEODRIVER='dummy', SDL_AUDIODRIVER='dummy')
     subprocess.run([dosbox, '-conf', conf, '-nogui', '-exit', '-silent'], env=env,
                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=1800)

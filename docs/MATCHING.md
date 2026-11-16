@@ -20,7 +20,8 @@ tools, is the current state of every function.
   - `$U5_GAMEDATA`
   - `gamedata/` in this repository
   - `../gamedata`
-- **Microsoft C 5.1.** The fourteen 5.25" disk images, or the `.7z` archive holding them.
+- **Microsoft C 5.1 and 5.0.** The original was built with both (see "Two compilers" below).
+  You need the disk images of each, or the `.7z` archives holding them.
   Nothing from Microsoft is committed: `build/` is ignored.
 - **DOSBox-X**, to run the compiler. Give it with `--dosbox PATH` or `$U5_DOSBOX`, or put
   `dosbox-x` on `PATH`. The tools also look in the U6 project next door
@@ -33,7 +34,8 @@ tools, is the current state of every function.
 ```sh
 python -m venv .venv
 .venv/Scripts/pip install -r tools/requirements.txt          # Linux/macOS: .venv/bin/pip
-python tools/setup_msc51.py "path/to/Microsoft C 5.1 Optimizing Compiler (5.25).7z"
+python tools/setup_msc51.py "path/to/Microsoft C 5.1 Optimizing Compiler (5.25).7z"   # -> build/msc51
+python tools/setup_msc51.py "path/to/Microsoft C Compiler 5.0 (1987) (5.25-360k).7z"   # -> build/msc50
 ```
 
 `setup_msc51.py` reads the FAT12 disk images itself, so mtools is not needed. It copies the
@@ -166,6 +168,34 @@ every run: a wrong base shows up as fixups that do not verify.
   `GOG_BUILD`: the disk-swap prompt in `2000.c` (around CS:2405–24aa), and the start of the
   U4 import in `intro.c` (around INTRO 1332–1402). The DOS build must produce the GOG bytes
   there.
+
+## Two compilers
+
+The original's modules were built with **two compilers**: MSC 5.1, and MSC 5.0 for the
+modules that had not been recompiled since an upgrade (a makefile rebuilds only what
+changed). They are told apart by:
+
+| | MSC 5.1 | MSC 5.0 |
+|---|---|---|
+| string literals | in `_DATA`, packed byte by byte | in `CONST`, each on an even address |
+| `and si,7` | `83 e6 07` | `81 e6 07 00` (long immediate) |
+
+Across the whole original, small logical immediates on registers other than AX are written
+29 times in the long form and 4 times in the short one. The short ones are all in packed-
+string modules, the long ones all in the others. MSC 5.0 also prefers to end loops with a
+pointer compare.
+
+Because the linker gathers segments by class, DGROUP holds all `_DATA` (5.1 modules' strings
+and tables, 5.0 modules' tables), then the runtime's tables, then all `CONST` (5.0 modules'
+strings, from DS:6ada).
+
+`tools/u5.py` `COMPILER_BY_FILE` says which compiler builds which file. `dosbuild.py`
+follows it, and for 5.0 rewrites `//` comments as `/* */` in the staged copies (5.0 knows
+only the latter). MSC 5.0 modules so far: 3000, 4000, 6000, BLCKTHRN, CAST2, DNGLOOK,
+ENDGAME, FONT, NPC, SHOPPES, SHOPPES2, SJOG, TALK, ZSTATS. COMBAT, COMSUBS and LOOKOBJ are
+5.0 by their data but still build with 5.1 for now, because their C was tuned to 5.1.
+The `S_0x...` string arrays (`tools/strings.py`) were a stand-in for 5.0's aligned literals.
+They are to be replaced by plain literals once each module's CONST is placed.
 
 ## What MSC 5.1 does
 

@@ -15,6 +15,7 @@ passes only when they are identical.
 | 2026-11-15, stack-slot rule applied | 285 | 35 | 140 | 197 | 36 | 693 |
 | 2026-11-15, data moved into modules, string arrays | 343 | 33 | 82 | 197 | 38 | 693 |
 | 2026-11-16, foreign strings, table sizes (last committed C) | 408 | 33 | 13 | 200 | 37 | 691 |
+| 2026-11-16, two compilers (5.1 + 5.0); assembly versions not counted | 487 | 18 | 5 | 75 | 20 | 605 |
 
 Most `SIZE` verdicts in `0000.c` and `1000.c` are routines that were hand-written assembly in
 the original and are C in u5d (step 5).
