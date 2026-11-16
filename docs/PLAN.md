@@ -21,6 +21,7 @@ passes only when they are identical.
 | 2026-11-16, 2000.c split in three; overlay assembly (FLAMES, FONT, INTRO, NPC) | 529 | 1 | 0 | 57 | 9 | 596 |
 | 2026-11-16, boundary audit: FONT/TOWN data, 5f86 into 6000.c, r1850 is 5.0 | 530 | 1 | 0 | 57 | 9 | 597 |
 | 2026-11-16, vars.c into its modules: DGROUP = DATA.OVL but 44 bytes (ZSTATS) | 530 | 1 | 0 | 57 | 9 | 597 |
+| 2026-11-16, casts through AX, if/else for tail merging, D_52c8 global; DGROUP identical | 537 | 1 | 0 | 51 | 8 | 597 |
 
 Most `SIZE` verdicts in `0000.c` and `1000.c` are routines that were hand-written assembly in
 the original and are C in u5d (step 5).
@@ -95,14 +96,14 @@ Next, in order:
    module now compiles with the compiler the original used, with 5.0's own slot hash, and
    DUNGEON, MAINOUT, INTRO, OUTSUBS and CMDS are split into their 5.1 and 5.0 objects.
    - *(done)* The 5.0 modules have plain literals and their own tables (`tools/own50.py`).
-     `_DATA` and CONST match the original for every 5.0 overlay module except ZSTATS, where
-     two strings swap until ZSTATS_0c5c matches.
+     `_DATA` and CONST match the original for every 5.0 overlay module, and the linked
+     DGROUP is identical to DATA.OVL's.
    - Remaining hard cases, per the last worker:
      - DUNGEON_104c/111e/127e/1786/1952 hold a table value in a register across calls with
        no source variable (a compiler CSE temp). A `register` local gives the code, but
        5.0 then reserves an extra stack slot.
      - MAINOUT_17d4 stores constants to a parameter through AX.
-     - LOOKOBJ_0cf4 needs D_52c8 as a scalar global, not a struct field.
+     - *(done)* LOOKOBJ_0cf4: D_52c8 is a plain global in the DOS build (A0878.ASM's name).
      - COMBAT_0B94 needs `int local_6` plus a different loop/break layout.
      - 5000.c: ULTIMA_5f86 is the right length under MSC 5.0 (19 bytes differ) but not under
        5.1, while 5d0a and 5e4a match only under 5.1. So 5000.c may also be two objects, with

@@ -285,7 +285,7 @@ must still report the module identical.
 Things the original's bytes corrected: D_1a58 (class-name padding) was reversed;
 D_1724/D_172c and D_6a48 are two bytes longer than they had been; the weapon names at
 DS:174c-17f0 are word-aligned char arrays, not literals; D_24e8, D_514a and the bytes at
-DS:5548 are unused. DGROUP now differs from DATA.OVL only in ZSTATS's two swapped strings.
+DS:5548 are unused. The linked DGROUP is identical to DATA.OVL's (48,448 bytes).
 Left: the uninitialised data above DS:a524 (all zero in DATA.OVL) is communal, and the
 link still finds those 72 names only by the addresses in them. Communal records carry sizes,
 not types, yet the layout has type alignment and unnamed gaps, so the allocation rule is
@@ -301,10 +301,9 @@ still to be found.
 Each module's `_DATA` range follows the link order. Every table between one module's
 tables and the next is used by that module alone (endgame D_3da6-D_3e60, sjog
 D_3e66-D_41cc, and so on), so the ranges were not guessed. `match.py` then reports both
-`_DATA` and CONST, and for every 5.0 overlay module both are the same as the original's,
-with one exception:
-- **ZSTATS:** two strings are swapped. ZSTATS_0c5c (not yet matched) prints "Thou art not
-  strong enough!" before "Ring vanishes!" in the original's source.
+`_DATA` and CONST, and for every 5.0 overlay module both are the same as the original's.
+ZSTATS was the last one: its strings come out in source order, and ZSTATS_0c5c tests
+"Thou art not strong enough!" before the code that prints "Ring vanishes!".
 
 Three items turned out not to be what u5d had:
 - **D_3d5a (SHOPPES):** a `char` array holding its text, not a pointer to a string.

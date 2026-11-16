@@ -712,6 +712,11 @@ static int ZSTATS_0c0a(int param_1)
 // equip item
 // param_1: whom
 // param_2: item id
+// NOT MATCHING: block order and tail merging. The original keeps the ammunition message's
+// "ZSTATS_0bee(); return 0;" and every other message jumps into it. It places the
+// "not strong enough" block last, after the switch cases, and the success code right
+// after the strength test. The strength test comes first in the source: its string
+// precedes "Ring vanishes!" in CONST, which is what makes ZSTATS' CONST (and DGROUP) match.
 static int ZSTATS_0c5c_EquipItem(int param_1, int param_2)
 {
     byte* local_10_l;
@@ -871,44 +876,44 @@ static int ZSTATS_0c5c_EquipItem(int param_1, int param_2)
     }
 
     // efc9
-    if (local_e_g != 0)
+    if (local_e_g == 0)
     {
-        // efd2
-        *local_10_l = param_2;
-        --D_57c0[param_2];
-        if ((D_57c0[param_2] == 0x2a || D_57c0[param_2] == 0x2c) && (ULTIMA_2092_RandomRange(0, 0xf) == 0))
-        {
-            // efff
-            ULTIMA_1850_PrintString(_TEXT(0x995e, "\n\nRing vanishes!\n"));
-            D_55a8_party[param_1].equips[4] = 0xff;
-            ULTIMA_43ae_AudioSweepTone(0x4b0, 2000, 1, 0x28);
-            return 1;
-        }
+        // f0e0
+        ZSTATS_0bee(_TEXT(0x9942, "Thou art not strong enough!"));
+        return 0;
+    }
 
-        // f0e6
-        if (param_2 != 0x2a)
-        {
-            // ee6e
-            return 0;
-        }
+    // efd2
+    *local_10_l = param_2;
+    --D_57c0[param_2];
+    if ((D_57c0[param_2] == 0x2a || D_57c0[param_2] == 0x2c) && (ULTIMA_2092_RandomRange(0, 0xf) == 0))
+    {
+        // efff
+        ULTIMA_1850_PrintString(_TEXT(0x995e, "\n\nRing vanishes!\n"));
+        D_55a8_party[param_1].equips[4] = 0xff;
+        ULTIMA_43ae_AudioSweepTone(0x4b0, 2000, 1, 0x28);
+        return 1;
+    }
 
-        // f0ef
-        if (D_5893_map_id <= 0x7f)
-        {
-            // ee6e
-            return 0;
-        }
-
-        // f0f9
-        // eee8
-        local_6_b->_0_tile = local_6_b->_1_animTile = TILE_ACTOR_1D;
-
+    // f0e6
+    if (param_2 != 0x2a)
+    {
         // ee6e
         return 0;
     }
 
-    // f0e0
-    ZSTATS_0bee(_TEXT(0x9942, "Thou art not strong enough!"));
+    // f0ef
+    if (D_5893_map_id <= 0x7f)
+    {
+        // ee6e
+        return 0;
+    }
+
+    // f0f9
+    // eee8
+    local_6_b->_0_tile = local_6_b->_1_animTile = TILE_ACTOR_1D;
+
+    // ee6e
     return 0;
 }
 
