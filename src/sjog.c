@@ -448,8 +448,7 @@ static void SJOG_0646_SearchInDungeon(void)
     int local_6;
     int local_4_ab;
 
-    local_10_aa = ULTIMA_4988();
-    if (++local_10_aa == 0)
+    if ((local_10_aa = ULTIMA_4988()) + 1 == 0)
     {
         return;
     }

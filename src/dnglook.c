@@ -38,8 +38,7 @@ void DNGLOOK_0000_LookCmdInDungeon(void)
     byte local_6;
     int local_4_ab;
 
-    local_e_am = ULTIMA_4988();
-    if (local_e_am + 1 == 0) // inc ax, jne?
+    if ((local_e_am = ULTIMA_4988()) + 1 == 0)
     {
         return;
     }
