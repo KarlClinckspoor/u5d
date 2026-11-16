@@ -380,7 +380,7 @@ void ULTIMA_4552_AnimateActors(void)
 			continue;
 		}
 
-		if (local_4_ab <= 0x33 || local_4_ab == 0xe8 || local_4_ab == 0xb4)
+		if (local_4_ab < 0x34 || local_4_ab == 0xe8 || local_4_ab == 0xb4)
 		{
 			continue;
 		}
@@ -393,12 +393,20 @@ void ULTIMA_4552_AnimateActors(void)
 			}
 		}
 
+        // NOT MATCHING (4 bytes short): the original keeps a dead "jmp" to case 0's code
+        // (the copy at the end of case 6) right after the jump-table dispatch, where case 0,
+        // first in the switch, was; ours drops it. And case 1-4 jump to case 5's
+        // "local_a = 1; break" where ours has case 5 jump to theirs.
         local_a = 0;
         do
         {
             local_6 = local_12[local_14_am];
             switch (local_6)
             {
+            case 0:
+                local_14_am = 0;
+                break;
+
             case 1:
             case 2:
             case 3:
@@ -428,16 +436,12 @@ void ULTIMA_4552_AnimateActors(void)
                 break;
 
             case 6:
-                if (ULTIMA_2092_RandomRange(0, 0xff) >= 0xc0)
+                if (ULTIMA_2092_RandomRange(0, 0xff) < 0xc0)
                 {
-                    local_14_am++;
+                    local_14_am = 0;
                     break;
                 }
-                local_14_am = 0;
-                break;
-
-            case 0:
-                local_14_am = 0;
+                local_14_am++;
                 break;
 
             case 7:
@@ -445,7 +449,7 @@ void ULTIMA_4552_AnimateActors(void)
                 break;
 
             default:
-                local_c = local_6 + 0x80;
+                local_c = local_6 - 0x80;
                 local_14_am++;
                 local_a = 1;
                 break;
