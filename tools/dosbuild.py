@@ -7,16 +7,17 @@ With no files, compiles every file of the DOS build (tools/u5.py, MODULES). The 
 and their listings (/Fc: source, assembly and code bytes interleaved) are written to
 build/obj/NAME.OBJ and build/obj/NAME.COD.
 
-src/ is copied to a scratch drive C: (build/dos), the compiler in build/msc51 is mounted as
+src/ is copied to a scratch drive C: (a new folder under build/dos per run, so builds of
+different files can run at the same time), the compiler in build/msc51 is mounted as
 D:, and one batch file compiles everything in a single DOSBox-X session. Each file gets
 the switches of src/build.bat (u5.CFLAGS, with u5.CFLAGS_BY_FILE for exceptions).
 """
-import argparse, os, shutil, subprocess, sys
+import argparse, os, shutil, subprocess, sys, tempfile
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import u5  # noqa: E402
 
-DOS = os.path.join(u5.BUILD, 'dos')
+DOS_ROOT = os.path.join(u5.BUILD, 'dos')
 OBJ = os.path.join(u5.BUILD, 'obj')
 
 
@@ -34,8 +35,9 @@ def compile_files(files, dosbox=None, flags=None, show_log=False, src=None, quie
     if not os.path.exists(os.path.join(u5.MSC51, 'BIN', 'CL.EXE')):
         sys.exit('MSC 5.1 is not installed: run tools/setup_msc51.py first')
     dosbox = u5.find_dosbox(dosbox)
-    if os.path.exists(DOS):
-        shutil.rmtree(DOS)
+    # a scratch drive per run, so that several builds (of different files) can run at once
+    os.makedirs(DOS_ROOT, exist_ok=True)
+    DOS = tempfile.mkdtemp(prefix='run', dir=DOS_ROOT)
     stage = os.path.join(DOS, 'S')
     shutil.copytree(src, stage, ignore=shutil.ignore_patterns('*.OBJ', '*.obj', '*.COD', '*.cod'))
     os.makedirs(os.path.join(DOS, 'TMP'))
@@ -85,6 +87,8 @@ def compile_files(files, dosbox=None, flags=None, show_log=False, src=None, quie
             print('%-12s %s' % (f, 'ok' if not errs else 'FAILED: ' + errs[0]))
     if not log:
         print('DOSBox-X wrote no log: did it run? (%s)' % dosbox)
+    if not show_log:
+        shutil.rmtree(DOS, ignore_errors=True)
     return results
 
 

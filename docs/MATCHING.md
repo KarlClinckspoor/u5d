@@ -110,6 +110,12 @@ its references imply.
 The exit status is 0 only when every function given is `EXACT`. Results accumulate in
 `build/match/status.tsv`.
 
+### `nativecheck.py`
+
+`tools/nativecheck.py [FILE.c ...]` compiles the files with the host compiler as the native
+(SDL) build would. The native build must keep compiling from the same sources, so run it
+after changing C.
+
 ## Working on a function
 
 1. `match.py FILE.c --dis FUNCTION` shows both disassemblies side by side. The listing
