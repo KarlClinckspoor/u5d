@@ -851,7 +851,7 @@ void ULTIMA_3b1c_GetString(char* param_1, int param_2)
 int ULTIMA_3b9e(int param_1_maxLen)
 {
     int local_10_aa;
-    uint local_e_am;
+    int local_e_am;
     int local_c;
     int local_a;
     byte local_8[6];
@@ -867,7 +867,7 @@ int ULTIMA_3b9e(int param_1_maxLen)
     do
     {
         local_e_am = ULTIMA_266c_GetChar();
-        if (local_e_am >= '0' && local_e_am <= '9')
+        if ((uint)local_e_am >= '0' && (uint)local_e_am <= '9')
         {
             if (local_c < param_1_maxLen)
             {
@@ -878,7 +878,7 @@ int ULTIMA_3b9e(int param_1_maxLen)
         }
         else
         {
-            if (((int)local_e_am == U5_KEY_MINUS || (int)local_e_am == U5_KEY_PLUS) && local_c == 0)
+            if (((uint)local_e_am == U5_KEY_MINUS || (uint)local_e_am == U5_KEY_PLUS) && local_c == 0)
             {
                 local_8[local_c] = local_e_am;
                 local_c++;

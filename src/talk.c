@@ -1024,7 +1024,7 @@ static int TALK_0c5c(void)
     int local_8;
     byte local_4_ab;
 
-    do
+    while (1)
     {
         TALK_04da_PrintQuoteMark();
         if (TALK_093a() != 0)
@@ -1066,29 +1066,35 @@ static int TALK_0c5c(void)
                 }
             }
         }
-    } while (local_6 == 0);
 
-    if (TALK_0bd4() == 0)
-    {
-        TALK_04da_PrintQuoteMark();
-        local_6 = TALK_096e();
-    }
-    else
-    {
-        TALK_04da_PrintQuoteMark();
-        local_6 = TALK_0960();
-    }
+        if (local_6 == 0)
+            continue;
 
-    if (local_6 == 0)
-    {
+        // NOT MATCHING by 2 bytes: the original tests 096e's result with the same code as
+        // 0960's (one more tail merge than MSC 5.0 does here) and places the PrintCr block
+        // before the else branch. The code after the loop must stay inside it, or local_6 is
+        // stored when the loop ends.
+        if (TALK_0bd4() == 0)
+        {
+            TALK_04da_PrintQuoteMark();
+            if (TALK_096e() != 0)
+            {
+                return 1;
+            }
+        }
+        else
+        {
+            TALK_04da_PrintQuoteMark();
+            if (TALK_0960() != 0)
+            {
+                return 1;
+            }
+        }
+
         TALK_04da_PrintQuoteMark();
         TALK_04d2_PrintCr();
         TALK_04d2_PrintCr();
         return TALK_0b04();
-    }
-    else
-    {
-        return 1;
     }
 }
 

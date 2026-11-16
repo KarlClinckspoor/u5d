@@ -586,7 +586,7 @@ void ENDGAME_0648_EndgameMain(void)
             ULTIMA_1850_PrintString(_TEXT(0x84ba, "No\n\n"));
             break;
         }
-    } while (local_4_ab != 0x59 && local_4_ab != 0x4e); // aaf8; NOT MATCHING
+    } while ((uint)local_4_ab != 0x59 && (uint)local_4_ab != 0x4e); // aaf8
 
     // ab0c
     if (local_4_ab == 0x4e)
@@ -605,7 +605,7 @@ void ENDGAME_0648_EndgameMain(void)
                 ULTIMA_1850_PrintString(_TEXT(0x84c6, "No\n\n"));
                 break;
             }
-        } while (local_4_ab != 0x59 && local_4_ab != 0x4e); // NOT MATCHING
+        } while ((uint)local_4_ab != 0x59 && (uint)local_4_ab != 0x4e);
     }
 
     // ab49

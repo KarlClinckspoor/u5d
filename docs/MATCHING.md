@@ -389,6 +389,17 @@ Each entry gives the evidence. Add to this list as you learn.
   the original optimizes the first loop (pointer in SI, counter in DI, the bound re-read
   each pass) but not the third. We get the reverse for the first loop. Neither a separate
   index variable nor `#pragma loop_opt` explains it yet.
+- **A cast compares through AX.** When a local lives in SI or DI, `x == 'N'` compiles to
+  `cmp si,4Eh`. A cast that changes the type, `(uint)x == 'N'` with `int x`, goes through AX
+  instead: `mov ax,si; cmp ax,4Eh`, and the `mov` is left out while AX still holds the
+  value (right after `x = f();`, or between two compares). Both compilers do it.
+  - Typical case: a `GetChar()` result tested against key codes in a loop.
+  - Fixed ULTIMA_2AE8, ULTIMA_3B9E, SHOPPES_0280, SHOPPES_146a and ENDGAME's Y/N loops.
+  - The tell in a listing: `cmp ax,imm` after `mov si,ax` or `mov ax,si`, where we compare
+    the register itself.
+- **Where an assignment goes.** `if ((x = f()) == K)` and `x = f(); if (x == K)` can choose
+  registers differently. In SJOG_095C the first form gave the original's DX/CX for two loop
+  variables; the second swapped them.
 - **Same-length instructions with another encoding** (`and bx,0Fh` as `81 e3 0f 00`
   instead of `83 e3 0f`) are not produced by bitfields, `unsigned` or other mask
   spellings. Open.

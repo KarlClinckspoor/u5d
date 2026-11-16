@@ -679,8 +679,7 @@ void SJOG_095c_SearchCmd(void)
             D_5c5a[local_6]._3_y == local_c &&
             (D_5893_map_id > 0x7f || D_5c5a[local_6]._4_z == D_5895_map_level))
         {
-            local_8 = D_5c5a[local_6]._0_tile;
-            if (local_8 == TILE_ACTOR_CHEST)
+            if ((local_8 = D_5c5a[local_6]._0_tile) == TILE_ACTOR_CHEST)
                 break;
         }
     }

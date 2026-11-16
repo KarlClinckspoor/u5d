@@ -471,14 +471,15 @@ void ULTIMA_2ae8(void)
 
     for (local_6 = 0; local_6 < D_585b; local_6++)
     {
-        if ((local_8 = D_55a8_party[local_6].status) == STATUS_DEAD && local_6 == D_587b)
+        local_8 = D_55a8_party[local_6].status;
+        if ((uint)local_8 == STATUS_DEAD && local_6 == D_587b)
         {
             D_587b = 0xff;
         }
 
-        if (local_8 != STATUS_DEAD && local_8 != STATUS_SLEEP)
+        if ((uint)local_8 != STATUS_DEAD && (uint)local_8 != STATUS_SLEEP)
         {
-            if (local_8 == STATUS_POISONED)
+            if ((uint)local_8 == STATUS_POISONED)
             {
                 ULTIMA_2a52(local_6, 1);
             }
@@ -640,10 +641,11 @@ int ULTIMA_2c4c_IsWalkableTile(int actorTile, int targetTile)
 
 // CHECKED
 // select player (zstats, ...)
+// NOT MATCHING: the original keeps local_a in DI and local_6 in memory; MSC picks local_6.
 int ULTIMA_2d7a(int param_1)
 {
     bool local_6;
-    uint local_8;
+    int local_8;
     int local_a;
     s16 local_4_ab;
 
@@ -671,15 +673,15 @@ int ULTIMA_2d7a(int param_1)
         do
         {
             local_8 = ULTIMA_266c_GetChar();
-        } while (local_8 > '7');
+        } while ((uint)local_8 > '7');
 
-        if (local_8 > '0' && local_8 < '7' && local_8 - '1' < D_585b)
+        if ((uint)local_8 > '0' && (uint)local_8 < '7' && (uint)local_8 - '1' < D_585b)
         {
-            local_4_ab = local_8 - '1';
+            local_4_ab = (uint)local_8 - '1';
         }
         else
         {
-            switch ((int)local_8)
+            switch (local_8)
             {
             case U5_KEY_LEFT:
             case U5_KEY_UP:

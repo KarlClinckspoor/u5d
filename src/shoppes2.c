@@ -480,16 +480,18 @@ static int SHOPPES2_0508(void)
             ULTIMA_1850_PrintString(_TEXT(0x9f5c, "\n\nFair 'nuff?\" "));
             local_6 = 0;
 
-            while (local_6 != 'N')
+            // NOT MATCHING: the original keeps local_6 in SI without storing it at the
+            // loop's end (e7b3); MSC stores it here.
+            do
             {
-                local_6 = ULTIMA_266c_GetChar();
-                if (local_6 == 'Y')
+                if ((uint)local_6 == 'N')
                     break;
-            }
+                local_6 = ULTIMA_266c_GetChar();
+            } while ((uint)local_6 != 'Y');
 
             // e7b3
             local_4_ab = local_6;
-            if (local_4_ab == 'N')
+            if ((uint)local_4_ab == 'N')
             {
                 ULTIMA_1850_PrintString(_TEXT(0x9f6c, "No\n\n"));
                 return 0;
