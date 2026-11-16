@@ -512,8 +512,8 @@ STUB int D_5300; // y2
 // 5300
 STUB int D_5304; // previous video mode
 
-STUB u16 D_5306[7];
-STUB u16 D_5314[7];
+STUB int D_5306[7]; // origin logo frames: widths (signed: centred with sar)
+STUB int D_5314[7]; // and heights
 
 // 5322..5327: "Tandy"
 // 5328..532f: video driver string table

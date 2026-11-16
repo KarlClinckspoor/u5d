@@ -7,7 +7,6 @@
 #include <stdio.h>
 #include "macros.h"
 
-// NOT MATCHING
 int ULTIMA_0d72_AnimateOriginLogo(byte* image)
 {
     int iVar1;
