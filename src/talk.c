@@ -722,7 +722,11 @@ static int TALK_080a_Join(void)
 
     local_30_a = 0;
 
-    // 3 bytes
+    // 3 bytes. NOT MATCHING: the original copies with mov cx,1; rep movsw; movsb (twice),
+    // and has one more stack slot (frame 32h). memcpy with any constant count gives the
+    // generic shr cx,1 / adc cx,cx sequence under both compilers (sizeof, '', 1 + 2,
+    // (int)3, (unsigned)3 tried); a 3-byte struct copy gives movsw; movsb without rep,
+    // for every struct shape tried (char[3], three chars, int + char).
     memcpy(local_8, D_bcde, 3);
     local_30_a += 3;
     D_bcde += 3;

@@ -635,14 +635,15 @@ void SHOPPES_07be(int param_1)
     int local_c;
     int local_a;
     bool local_8;
+    ActorFmt* local_6;
     byte local_4_ab;
-    ActorFmt* local_18;
 
-    for (local_10_ad_am = 0; local_10_ad_am < 32; local_10_ad_am++)
+    for (local_c = 0; local_c < 32; local_c++)
     {
-        if (D_5c5a[local_10_ad_am]._0_tile == 0)
+        if (D_5c5a[local_c]._0_tile == 0)
             break;
     }
+    local_10_ad_am = local_c;
 
     for (local_c = 0; local_c < 4; local_c++)
     {
@@ -664,8 +665,7 @@ void SHOPPES_07be(int param_1)
     }
     else
     {
-        local_8 = 0;
-        local_12_ab_am = 0;
+        local_12_ab_am = local_8 = 0;
 
         D_b118 = D_3c30[D_b114];
         D_b118 += (D_b118 * -((s32)(D_55a8_party[param_1].intel * 3) - 100) / (u32)100);
@@ -708,12 +708,12 @@ void SHOPPES_07be(int param_1)
                         D_57aa -= D_b118;
                         SHOPPES_019a();
 
-                        local_18 = &D_5c5a[local_10_ad_am];
-                        local_18->_6 = local_18->_7 = local_18->_5 = 0;
-                        local_18->_0_tile = local_18->_1_animTile = TILE_ACTOR_HORSE;
-                        local_18->_2_x = local_a;
-                        local_18->_3_y = local_e_am;
-                        local_18->_4_z = D_5895_map_level;
+                        local_6 = &D_5c5a[local_10_ad_am];
+                        local_6->_6 = local_6->_7 = local_6->_5 = 0;
+                        local_6->_0_tile = local_6->_1_animTile = TILE_ACTOR_HORSE;
+                        local_6->_2_x = local_a;
+                        local_6->_3_y = local_e_am;
+                        local_6->_4_z = D_5895_map_level;
 
                         ULTIMA_5910_UpdateFrame();
                         ULTIMA_2900_UpdateVitalsDisplay();
