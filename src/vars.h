@@ -761,7 +761,7 @@ STUB u8 D_6a14[0x20];
 STUB u8 D_6a34_u8;
 STUB u16 D_6a36[9]; // banjo freq table
 
-STUB u8 D_6a48[0x35]; // iolo's banjo song note table
+STUB u8 D_6a48[0x36]; // iolo's banjo song note table
 
 STUB u8 D_6a7e;
 

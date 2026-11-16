@@ -15,7 +15,20 @@ DGROUP	GROUP	CONST, _BSS, _DATA
 
 	EXTRN	D_5350:WORD
 	EXTRN	D_539C:BYTE
-	EXTRN	D_6AA4:WORD
+
+; this module's own data, after 5000.c's in DGROUP (DS:6aa4)
+_DATA	SEGMENT
+	PUBLIC	D_6AA4
+D_6AA4	dw	0
+D_6AA6	dw	0
+	PUBLIC	D_6AA8
+D_6AA8	db	032h, 029h, 022h, 01Dh, 01Ah, 019h
+	db	029h, 020h, 019h, 014h, 011h, 010h
+	db	022h, 019h, 012h, 00Dh, 00Ah, 009h
+	db	01Dh, 014h, 00Dh, 008h, 005h, 004h
+	db	01Ah, 011h, 00Ah, 005h, 002h, 001h
+	db	019h, 010h, 009h, 004h, 001h, 000h
+_DATA	ENDS
 
 _TEXT	SEGMENT
 
@@ -37,7 +50,7 @@ ULTIMA_6F1E:
 	cmp WORD PTR D_6AA4,di
 	jg	L_6f84
 	sub di,WORD PTR D_6AA4
-	mov ds:[6aa6h],di
+	mov D_6AA6,di
 	xor bx,bx
 L_6f47:
 	mov cx,WORD PTR D_6AA4
@@ -68,7 +81,7 @@ L_6f75:
 	sub dx,cx
 	add bx,dx
 	inc bx
-	cmp bx,ds:[6aa6h]
+	cmp bx,D_6AA6
 	jle	L_6f47
 L_6f84:
 	mov bx,0ffffh
@@ -177,7 +190,7 @@ L_7026:
 	add bx,dx
 	shl dx,1
 	add bx,dx
-	mov al,[bx+6aa8h]
+	mov al,D_6AA8[bx]
 	xor ah,ah
 L_7034:
 	pop ds
