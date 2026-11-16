@@ -179,11 +179,24 @@ changed). They are told apart by:
 |---|---|---|
 | string literals | in `_DATA`, packed byte by byte | in `CONST`, each on an even address |
 | `and si,7` | `83 e6 07` | `81 e6 07 00` (long immediate) |
+| stack slot of a local | bucket = sum of the name's characters % 16 | bucket = (low byte + high byte) of the name added up as 16-bit words, % 16 |
 
 Across the whole original, small logical immediates on registers other than AX are written
 29 times in the long form and 4 times in the short one. The short ones are all in packed-
 string modules, the long ones all in the others. MSC 5.0 also prefers to end loops with a
 pointer compare.
+
+**Stack slots under 5.0.** The slot order has the same shape in both compilers (16 buckets,
+bucket 0 nearest BP, the last declared first within a bucket), but 5.0 hashes names
+differently: the name is read as little-endian 16-bit words (an odd last byte is a word of
+its own), the words are added modulo 0x10000, and the bucket is (low byte + high byte) % 16.
+Each carry out of the low byte therefore adds one to 5.1's bucket: names of up to four
+characters fall in the same bucket under both, `local_6` is bucket 0 under 5.1 and 1 under
+5.0. This was measured, not guessed: 80 names of every length from 1 to 31 placed against
+one-letter names of each bucket, and 150 two-local functions, all compiled with both
+compilers; the rule fits every case.
+`tools/slots.py` picks the rule from the file's compiler; `--hash NAME` prints both buckets.
+Renaming COMBAT's, COMSUBS's and LOOKOBJ's locals by it is what let them move to 5.0.
 
 Because the linker gathers segments by class, DGROUP holds all `_DATA` (5.1 modules' strings
 and tables, 5.0 modules' tables), then the runtime's tables, then all `CONST` (5.0 modules'
@@ -192,8 +205,7 @@ strings, from DS:6ada).
 `tools/u5.py` `COMPILER_BY_FILE` says which compiler builds which file. `dosbuild.py`
 follows it, and for 5.0 rewrites `//` comments as `/* */` in the staged copies (5.0 knows
 only the latter). MSC 5.0 modules so far: 3000, 4000, 6000, BLCKTHRN, CAST2, DNGLOOK,
-ENDGAME, FONT, NPC, SHOPPES, SHOPPES2, SJOG, TALK, ZSTATS. COMBAT, COMSUBS and LOOKOBJ are
-5.0 by their data but still build with 5.1 for now, because their C was tuned to 5.1.
+COMBAT, COMSUBS, ENDGAME, FONT, LOOKOBJ, NPC, SHOPPES, SHOPPES2, SJOG, TALK, ZSTATS.
 The `S_0x...` string arrays (`tools/strings.py`) were a stand-in for 5.0's aligned literals.
 They are to be replaced by plain literals once each module's CONST is placed.
 

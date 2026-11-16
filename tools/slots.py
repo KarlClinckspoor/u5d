@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Microsoft C 5.1's stack-slot order, and renames that give the original's.
+"""Microsoft C 5.1's and 5.0's stack-slot order, and renames that give the original's.
 
     python tools/slots.py --hash NAME ...            print each name's bucket
     python tools/slots.py FILE.c [FUNCTION ...]      report functions whose slots differ
@@ -17,6 +17,13 @@ order disagrees, --apply renames as few locals as possible: each renamed local k
 name with a suffix chosen for the bucket it needs (local_4 -> local_4_b). Declarations
 are reordered only where two locals share a bucket. Pick readable names later if you like;
 any name works as long as it hashes the same (--hash).
+
+MSC 5.0 (the compiler of the modules in u5.COMPILER_BY_FILE) has the same table and order
+but another hash: the name is added up as little-endian 16-bit words (an odd last byte is a
+word of its own), and the bucket is (low byte + high byte) of that sum, modulo 16. For
+names of up to four characters this is the same bucket as 5.1's; for longer ones each carry
+out of the low byte adds one. Measured with both compilers on 230 names and 300 pairs
+(docs/MATCHING.md). The file's compiler picks the rule.
 """
 import argparse, os, re, sys
 
@@ -28,18 +35,27 @@ SUFFIX_CHARS = 'abcdefghijklmnopqrstuvwxyz0123456789'
 # a renamed local is local_N_<suffix>: the underscore keeps N readable (tools and people)
 
 
-def bucket(name):
+RULE = 'msc51'   # set from the file's compiler (u5.COMPILER_BY_FILE) or --compiler
+
+
+def bucket(name, rule=None):
+    if (rule or RULE) == 'msc50':
+        b = name.encode('latin-1')
+        if len(b) & 1:
+            b += b'\0'
+        w = sum(b[i] | b[i + 1] << 8 for i in range(0, len(b), 2)) & 0xffff
+        return ((w & 0xff) + (w >> 8)) % BUCKETS
     return sum(map(ord, name)) % BUCKETS
 
 
 def alloc_order(names):
-    """names in declaration order -> the order MSC 5.1 gives them slots, nearest BP first."""
+    """names in declaration order -> the order the compiler gives them slots, nearest BP first."""
     idx = {n: i for i, n in enumerate(names)}
     return sorted(names, key=lambda n: (bucket(n), -idx[n]))
 
 
 TYPE = (r'(?:(?:unsigned|signed|register|static|const|far|near)\s+)*'
-        r'(?:int|char|byte|u8|s8|u16|s16|u32|s32|uint|word|bool|long|short|void|S_\w+|Pair\w*|struct\s+\w+)'
+        r'(?:int|char|byte|u8|s8|u16|s16|u32|s32|uint|word|bool|long|short|void|S_\w+|Pair\w*|struct\s+\w+|[A-Z][A-Za-z0-9]*[a-z]\w*)'  # last: typedef names (CombatEntity)
         r'[\s\*]*')
 DECL = re.compile(r'^(\s*)(' + TYPE + r')(\w+)(\s*\[[^\]]*\])?(\s*=[^;]*)?;(.*)$')
 LOCAL_N = re.compile(r'^local_([0-9a-f]+)(?:_|$)')
@@ -113,9 +129,11 @@ def plan(names, want=None):
         lo = max([bucket(new.get(m, m)) for m in want[:i] if m in keep or m in new] or [0])
         hi = min([bucket(m) for m in want[i + 1:] if m in keep] or [BUCKETS - 1])
         cand = None
+        m = re.match(r'^(local_[0-9a-f]+)_', n)
+        base = m.group(1) if m else n          # local_10_ad -> local_10_xx, not local_10_ad_xx
         for c in SUFFIX_CHARS:
             for c2 in [''] + list(SUFFIX_CHARS):
-                x = n + '_' + c + c2
+                x = base + '_' + c + c2
                 if lo <= bucket(x) <= hi and x not in taken:
                     cand = x
                     break
@@ -217,18 +235,22 @@ def main():
     ap.add_argument('file', nargs='?')
     ap.add_argument('functions', nargs='*')
     ap.add_argument('--hash', nargs='+', metavar='NAME')
+    ap.add_argument('--compiler', choices=('msc51', 'msc50'),
+                    help="the hash rule (default: the file's compiler, u5.COMPILER_BY_FILE)")
     ap.add_argument('--apply', action='store_true')
     ap.add_argument('--observed', action='store_true',
                     help='take the target order from the compiled object against the original '
                          '(any names; needs dosbuild.py output) instead of the local_N names')
     a = ap.parse_args()
+    global RULE
     if a.hash:
         for n in a.hash:
-            print('%-24s bucket %d' % (n, bucket(n)))
+            print('%-24s bucket %d (MSC 5.1), %d (MSC 5.0)' % (n, bucket(n, 'msc51'), bucket(n, 'msc50')))
         return
     if not a.file:
         ap.error('give a file or --hash')
     path = a.file if os.path.exists(a.file) else os.path.join(u5.SRC, a.file)
+    RULE = a.compiler or u5.COMPILER_BY_FILE.get(os.path.basename(path), 'msc51')
     src = open(path, encoding='utf-8', newline='').read()
     only = {f.upper() for f in a.functions} or None
     observed = observed_targets(os.path.basename(path)) if a.observed else None

@@ -87,28 +87,28 @@ void ULTIMA_56ac_DrawMap(void);
 
 static void LOOKOBJ_0000(int param_1)
 {
-    char local_84_ah[0x80];
+    char local_84_ag[0x80];
     u16 local_4;
 
     local_4 = 0;
     ULTIMA_256e_ReadFileFromDisk(_TEXT(0x71f8, "LOOK2.DAT"), &local_4, 2, param_1 << 1);
-    ULTIMA_256e_ReadFileFromDisk(_TEXT(0x7202, "LOOK2.DAT"), local_84_ah, 0x80, local_4);
-    ULTIMA_1850_PrintString(local_84_ah);
+    ULTIMA_256e_ReadFileFromDisk(_TEXT(0x7202, "LOOK2.DAT"), local_84_ag, 0x80, local_4);
+    ULTIMA_1850_PrintString(local_84_ag);
 }
 
 static void LOOKOBJ_0042(byte param_1, byte param_2, byte param_3)
 {
-    char local_14;
+    char local_14_am;
     char local_10[14];
     int local_12;
 
     ULTIMA_1850_PrintString(_TEXT(0x720c, "a well.\n\nDrop a coin?"));
 
-    while ((local_14 = ULTIMA_266c_GetChar()) != 'Y' && local_14 != 'N')
+    while ((local_14_am = ULTIMA_266c_GetChar()) != 'Y' && local_14_am != 'N')
     {
     }
 
-    if (local_14 == 'N')
+    if (local_14_am == 'N')
     {
         ULTIMA_1850_PrintString(_TEXT(0x7222, "No\n"));
     }
@@ -257,11 +257,11 @@ static void LOOKOBJ_024c(int param_1, int param_2)
 // CHECKED
 void LOOKOBJ_0366(void)
 {
-    int local_16_an;
-    int local_14;
-    int local_12_ab;
-    int local_10_ad;
-    int local_e;
+    int local_16_ak;
+    int local_14_am;
+    int local_12_a;
+    int local_10_aa;
+    int local_e_am;
     byte local_c;
     int local_a;
     int local_8;
@@ -300,26 +300,25 @@ void LOOKOBJ_0366(void)
             ULTIMA_0c64_GRAP_30_Pset(ULTIMA_2092_RandomRange(9, 0xb6), ULTIMA_2092_RandomRange(9, 0xac));
         }
 
-        for (local_12_ab = 0; local_12_ab < 8; local_12_ab++)
+        for (local_12_a = 0; local_12_a < 8; local_12_a++)
         {
-            local_10_ad = (int)D_5874 % 100;
-            local_14 = D_587d;
-            local_16_an = D_587e;
-            local_4_ab = D_3750[local_12_ab];
-            // NOT MATCHING
-            while (local_10_ad > 0x27 || (local_10_ad == 0x27 && local_14 > 4) || (local_10_ad == 0x27 && local_14 == 4 && local_16_an > 5))
+            local_10_aa = (int)D_5874 % 100;
+            local_14_am = D_587d;
+            local_16_ak = D_587e;
+            local_4_ab = D_3750[local_12_a];
+            while (local_10_aa > 0x27 || (local_10_aa == 0x27 && local_14_am > 4) || (local_10_aa == 0x27 && local_14_am == 4 && local_16_ak > 5))
             {
-                local_16_an--;
-                if (local_16_an == 0)
+                local_16_ak--;
+                if (local_16_ak == 0)
                 {
-                    local_16_an = 0x1c;
-                    local_14--;
+                    local_16_ak = 0x1c;
+                    local_14_am--;
                 }
 
-                if (local_14 == 0)
+                if (local_14_am == 0)
                 {
-                    local_14 = 0xd;
-                    local_10_ad--;
+                    local_14_am = 0xd;
+                    local_10_aa--;
                 }
 
                 do
@@ -329,18 +328,18 @@ void LOOKOBJ_0366(void)
                     {
                         local_4_ab = 0x15;
                     }
-                } while (D_3760[local_12_ab * 0x16 + local_4_ab] == 0);
+                } while (D_3760[local_12_a * 0x16 + local_4_ab] == 0);
             }
 
             local_8 = local_4_ab + 1;
-            local_e = D_3758[local_12_ab];
-            LOOKOBJ_01ac(local_8, local_e);
+            local_e_am = D_3758[local_12_a];
+            LOOKOBJ_01ac(local_8, local_e_am);
             local_8--;
             for (local_a = 0; local_a < 3; local_a++)
             {
-                if (D_58c8[local_a] == local_12_ab + 1)
+                if (D_58c8[local_a] == local_12_a + 1)
                 {
-                    LOOKOBJ_024c(local_8, local_e);
+                    LOOKOBJ_024c(local_8, local_e_am);
                 }
             }
         }
@@ -479,7 +478,7 @@ static void LOOKOBJ_0502(int param_1, int param_2, int param_3)
 
 static void LOOKOBJ_06a4(int param_1)
 {
-    char local_84_ah[128];
+    char local_84_ag[128];
     u16 local_4;
 
     local_4 = 0;
@@ -487,9 +486,9 @@ static void LOOKOBJ_06a4(int param_1)
     // NOTE: FMT does some other things here
 
     ULTIMA_256e_ReadFileFromDisk(_TEXT(0x7374, "LOOK2.DAT"), &local_4, 2, param_1 * 2 + 0x200);
-    ULTIMA_256e_ReadFileFromDisk(_TEXT(0x737e, "LOOK2.DAT"), local_84_ah, 0x80, local_4);
+    ULTIMA_256e_ReadFileFromDisk(_TEXT(0x737e, "LOOK2.DAT"), local_84_ag, 0x80, local_4);
 
-    ULTIMA_1850_PrintString(local_84_ah);
+    ULTIMA_1850_PrintString(local_84_ag);
 
     if (ULTIMA_1f12_GetCurrentTextX() != 0)
     {
@@ -783,16 +782,16 @@ static void LOOKOBJ_0c9c(void)
 // CHECKED
 static void LOOKOBJ_0cf4(int param_1)
 {
-    int local_e;
+    int local_e_am;
 
     int local_c;
     int local_a[4];
 
-    local_e = 8;
+    local_e_am = 8;
 
     for (local_c = 0; local_c < 4; local_c++)
     {
-        if ((param_1 & 0xf0) == 0x60 && (D_3822[param_1 & 0xf] & local_e) == 0)
+        if ((param_1 & 0xf0) == 0x60 && (D_3822[param_1 & 0xf] & local_e_am) == 0)
         {
             local_a[local_c] = D_13b4_greenColor + 8;
         }
@@ -805,7 +804,7 @@ static void LOOKOBJ_0cf4(int param_1)
             local_a[local_c] = D_13b2_blueColor + 8;
         }
 
-        local_e >>= 1;
+        local_e_am >>= 1;
     }
 
     ULTIMA_0a70_GRAP_2d_SetPenColor(local_a[0]);

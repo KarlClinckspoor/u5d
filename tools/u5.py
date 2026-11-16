@@ -53,9 +53,9 @@ MODULES['vars.c'] = ('data', None)
 # immediates in the long form (and si,7 as 81 e6 07 00); MSC 5.1 modules keep literals in
 # _DATA, packed. Each module is compiled with the one the original used (docs/MATCHING.md).
 COMPILER_BY_FILE = {f: 'msc50' for f in (
-    '3000.c', '4000.c', '6000.c', 'blckthrn.c', 'cast2.c', 'dnglook.c', 'endgame.c', 'font.c',
-    'npc.c', 'shoppes.c', 'shoppes2.c', 'sjog.c', 'talk.c', 'zstats.c')}
-# still built with 5.1 for now, though their data says 5.0: combat.c, comsubs.c, lookobj.c
+    '3000.c', '4000.c', '6000.c', 'blckthrn.c', 'cast2.c', 'combat.c', 'comsubs.c', 'dnglook.c',
+    'endgame.c', 'font.c', 'lookobj.c', 'npc.c', 'shoppes.c', 'shoppes2.c', 'sjog.c', 'talk.c',
+    'zstats.c')}
 
 EXE_HEADER = 0x800  # 0x80 paragraphs
 DATA_OVL_HEADER = 0x10  # DATA.OVL is a 16-byte header, then DGROUP from DS:0000
