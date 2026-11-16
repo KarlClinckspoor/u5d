@@ -9,14 +9,14 @@
 
 static int SHOPPES3_0000(void)
 {
-    int local_6;
+    int local_6_an;
     int local_4;
 
     local_4 = 0;
 
-    for (local_6 = 0; local_6 < 0x10; local_6++)
+    for (local_6_an = 0; local_6_an < 0x10; local_6_an++)
     {
-        if (D_55a8_party[local_6].mapId == D_5893_map_id)
+        if (D_55a8_party[local_6_an].mapId == D_5893_map_id)
         {
             local_4++;
         }
@@ -54,10 +54,10 @@ static int SHOPPES3_002c(int param_1)
 // inn - rest
 static int SHOPPES3_0072(int param_1, int param_2, int param_3)
 {
-    byte local_4;
-    byte local_8;
     int local_a;
+    byte local_8;
     S_55a8* local_6;
+    byte local_4_ab;
 
     ULTIMA_16ba_PrintChar('R');
     if (SHOPPES3_002c(param_2) != 0)
@@ -103,7 +103,7 @@ static int SHOPPES3_0072(int param_1, int param_2, int param_3)
                 D_5897_map_y = D_4e80[D_b114];
                 D_24e6 = 1;
 
-                local_4 = D_587b;
+                local_4_ab = D_587b;
 
                 for (local_a = 0; local_a < D_585b; local_a++)
                 {
@@ -174,7 +174,7 @@ static int SHOPPES3_0072(int param_1, int param_2, int param_3)
                     }
                 }
 
-                D_587b = local_4;
+                D_587b = local_4_ab;
                 D_5896_map_x++;
                 D_24e6 = 1;
                 ULTIMA_2900_UpdateVitalsDisplay();
@@ -197,7 +197,7 @@ static int SHOPPES3_02ae(int param_1, int param_2, int param_3)
     byte local_26;
     int local_28;
     int local_2a;
-    S_55a8 local_22;
+    S_55a8 local_22_ab;
 
     ULTIMA_16ba_PrintChar('L');
 
@@ -266,14 +266,14 @@ static int SHOPPES3_02ae(int param_1, int param_2, int param_3)
                         D_55a8_party[local_2a].mapId = D_5893_map_id;
                         D_55a8_party[local_2a]._17 = 0;
 
-                        local_22 = D_55a8_party[local_2a];
+                        local_22_ab = D_55a8_party[local_2a];
 
                         for (local_28 = local_2a; local_28 < 0xf; local_28++)
                         {
                             D_55a8_party[local_28] = D_55a8_party[local_28 + 1];
                         }
 
-                        D_55a8_party[0x10 - 1] = local_22;
+                        D_55a8_party[0x10 - 1] = local_22_ab;
 
                         D_585b--;
                         ULTIMA_2900_UpdateVitalsDisplay();
@@ -320,30 +320,30 @@ static int SHOPPES3_04b6(int param_1)
 
 static int SHOPPES3_04e6(int param_1, int param_2)
 {
-    bool local_2a;
+    int local_34_an;
     byte local_32;
-    int local_2e;
-    int local_28;
-    int local_34;
+    int local_30_ab;
+    int local_2e_an;
     uint local_2c;
-    S_55a8 local_24;
-    int local_4;
-    int local_30;
+    bool local_2a;
+    int local_28;
     S_55a8* local_26;
+    S_55a8 local_24;
+    int local_4_ab;
 
-    local_4 = SHOPPES3_0000();
+    local_4_ab = SHOPPES3_0000();
 
     if (D_585b == 6)
     {
         ULTIMA_1850_PrintString(_TEXT(0x4f57, "\n\nOne must first be left behind!\n\n"));
     }
-    else if (local_4 == 0)
+    else if (local_4_ab == 0)
     {
         SHOPPES_0026(_TEXT(0x4f7a, "\n\n\"No one here is from thy party!\"\nsays $.\n\n"));
     }
     else
     {
-        if (local_4 > 1)
+        if (local_4_ab > 1)
         {
             // e6ff
             ULTIMA_1850_PrintString(_TEXT(0x4fa7, "\n\n\"Who will\ncheck out?\" "));
@@ -354,25 +354,25 @@ static int SHOPPES3_04e6(int param_1, int param_2)
             ULTIMA_1c22_SetTextWindowSize(1, 0x18, 1, 0x27, 9);
             ULTIMA_16ba_PrintChar(0x10);
 
-            for (local_2e = 0; local_2e < 0xd; local_2e++)
+            for (local_2e_an = 0; local_2e_an < 0xd; local_2e_an++)
             {
                 ULTIMA_16ba_PrintChar(0x11);
             }
 
             ULTIMA_16ba_PrintChar(0x13);
 
-            for (local_2e = 1; local_2e < 8; local_2e++)
+            for (local_2e_an = 1; local_2e_an < 8; local_2e_an++)
             {
-                ULTIMA_1bf2_SetTextPosition(0, local_2e);
+                ULTIMA_1bf2_SetTextPosition(0, local_2e_an);
                 ULTIMA_16ba_PrintChar(0x17);
-                ULTIMA_1bf2_SetTextPosition(0xe, local_2e);
+                ULTIMA_1bf2_SetTextPosition(0xe, local_2e_an);
                 ULTIMA_16ba_PrintChar(0x17);
             }
 
             ULTIMA_16ba_PrintChar('\n');
             ULTIMA_16ba_PrintChar(0x14);
 
-            for (local_2e = 0; local_2e < 0xd; local_2e++)
+            for (local_2e_an = 0; local_2e_an < 0xd; local_2e_an++)
             {
                 ULTIMA_16ba_PrintChar(0x15);
             }
@@ -384,26 +384,26 @@ static int SHOPPES3_04e6(int param_1, int param_2)
             ULTIMA_1850_PrintString(_TEXT(0x4fca, "  REGISTER:\n\n"));
 
             // e7d6
-            for (local_34 = 1; local_34 < 0x10; local_34++)
+            for (local_34_an = 1; local_34_an < 0x10; local_34_an++)
             {
-                if (D_55a8_party[local_34].mapId == D_5893_map_id)
+                if (D_55a8_party[local_34_an].mapId == D_5893_map_id)
                 {
                     ULTIMA_1bf2_SetTextPosition(4, ULTIMA_1cee_GetCurrentTextY());
 
-                    ULTIMA_1850_PrintString(D_55a8_party[local_34].name);
+                    ULTIMA_1850_PrintString(D_55a8_party[local_34_an].name);
                     ULTIMA_16ba_PrintChar('\n');
                 }
             }
 
             ULTIMA_1b94_SelectTextWindow(2);
             local_2a = 0;
-            local_34 = SHOPPES3_04b6(0);
-            local_30 = 0x28;
+            local_34_an = SHOPPES3_04b6(0);
+            local_30_ab = 0x28;
             ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
 
             while (!local_2a)
             {
-                ULTIMA_0b86_GRAP_XorFillRect(0xc6, local_30, 0x131, local_30 + 7);
+                ULTIMA_0b86_GRAP_XorFillRect(0xc6, local_30_ab, 0x131, local_30_ab + 7);
 
                 // si = local_28
 
@@ -415,12 +415,12 @@ static int SHOPPES3_04e6(int param_1, int param_2)
                     case U5_KEY_LEFT:
                     case U5_KEY_UP:
                         // e85c
-                        local_28 = SHOPPES3_0494(local_34);
+                        local_28 = SHOPPES3_0494(local_34_an);
                         if (local_28 != 0)
                         {
-                            ULTIMA_0b86_GRAP_XorFillRect(0xc6, local_30, 0x131, local_30 + 7);
-                            local_34 = local_28;
-                            local_30 -= 8;
+                            ULTIMA_0b86_GRAP_XorFillRect(0xc6, local_30_ab, 0x131, local_30_ab + 7);
+                            local_34_an = local_28;
+                            local_30_ab -= 8;
                         }
                         // -> e87e
                         break;
@@ -428,19 +428,19 @@ static int SHOPPES3_04e6(int param_1, int param_2)
                     case U5_KEY_RIGHT:
                     case U5_KEY_DOWN:
                         // e884
-                        local_28 = SHOPPES3_04b6(local_34);
+                        local_28 = SHOPPES3_04b6(local_34_an);
                         if (local_28 != 0)
                         {
-                            ULTIMA_0b86_GRAP_XorFillRect(0xc6, local_30, 0x131, local_30 + 7);
-                            local_34 = local_28;
-                            local_30 += 8;
+                            ULTIMA_0b86_GRAP_XorFillRect(0xc6, local_30_ab, 0x131, local_30_ab + 7);
+                            local_34_an = local_28;
+                            local_30_ab += 8;
                         }
                         break;
 
                     case U5_KEY_ESC:
                         // e8a8
                         ULTIMA_1850_PrintString(_TEXT(0x4fd8, "No one\n\n"));
-                        local_34 = 0;
+                        local_34_an = 0;
 
                         local_28 = 1;
                         local_2a = 1;
@@ -469,12 +469,12 @@ static int SHOPPES3_04e6(int param_1, int param_2)
         }
         else
         {
-            local_34 = SHOPPES3_04b6(0);
+            local_34_an = SHOPPES3_04b6(0);
         }
 
-        if (local_34 != 0)
+        if (local_34_an != 0)
         {
-            local_2c = (uint)D_55a8_party[local_34]._17;
+            local_2c = (uint)D_55a8_party[local_34_an]._17;
             if (local_2c == 0)
             {
                 local_2c = 1;
@@ -500,11 +500,11 @@ static int SHOPPES3_04e6(int param_1, int param_2)
                 ULTIMA_2900_UpdateVitalsDisplay();
                 param_2 = 1;
 
-                local_24 = D_55a8_party[local_34];
+                local_24 = D_55a8_party[local_34_an];
 
-                for (local_2e = local_34; local_2e > (int)D_585b; local_2e--)
+                for (local_2e_an = local_34_an; local_2e_an > (int)D_585b; local_2e_an--)
                 {
-                    D_55a8_party[local_2e] = D_55a8_party[local_2e - 1];
+                    D_55a8_party[local_2e_an] = D_55a8_party[local_2e_an - 1];
                 }
 
                 // e9ff
@@ -551,12 +551,12 @@ void SHOPPES3_08b4(int param_1)
 {
     int local_6;
     int local_c;
-    bool local_4;
+    bool local_4_ab;
     int local_8;
     byte local_e;
     int local_a;
 
-    local_4 = local_a = 0;
+    local_4_ab = local_a = 0;
 
     local_6 = D_55a8_party[param_1].intel;
     local_c = D_55a8_party[param_1].gender;
@@ -567,7 +567,7 @@ void SHOPPES3_08b4(int param_1)
 
     SHOPPES_01b6();
 
-    while (!local_4)
+    while (!local_4_ab)
     {
         do
         {
@@ -606,14 +606,14 @@ void SHOPPES3_08b4(int param_1)
                 {
                     local_a = local_8;
                     // eb3f
-                    local_4 = 1;
+                    local_4_ab = 1;
                 }
                 // -> eb44
                 break;
 
             case U5_KEY_SPACE:
                 // eb3f
-                local_4 = 1;
+                local_4_ab = 1;
                 // -> eb44
                 break;
 
@@ -629,7 +629,7 @@ void SHOPPES3_08b4(int param_1)
                 if (local_a == -1)
                 {
                     // -> eb3f
-                    local_4 = 1;
+                    local_4_ab = 1;
                 }
                 break;
 
@@ -640,7 +640,7 @@ void SHOPPES3_08b4(int param_1)
                 if (local_a == -1)
                 {
                     // -> eb3f
-                    local_4 = 1;
+                    local_4_ab = 1;
                 }
                 break;
 
@@ -651,7 +651,7 @@ void SHOPPES3_08b4(int param_1)
             // eb44
         } while (local_e == 0);
 
-        if (!local_4)
+        if (!local_4_ab)
         {
             ULTIMA_1850_PrintString(_TEXT(0x50bd, "\"Is there\nanything more\nI can do for\nthee?\" "));
         }

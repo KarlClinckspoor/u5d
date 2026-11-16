@@ -12,15 +12,15 @@
 
 int COMSUBS_0000(int param_1, int param_2, int param_3)
 {
-    int local_6;
+    int local_6_an;
     int local_4;
 
     if (param_3 == 0x30 || param_3 == 0x31 || param_3 >= 0x33)
         return 0;
 
-    local_6 = COMBAT_13e2(param_1, QUERY_STAT_INTEL);
+    local_6_an = COMBAT_13e2(param_1, QUERY_STAT_INTEL);
     local_4 = COMBAT_13e2(param_2, QUERY_STAT_INTEL);
-    if (ULTIMA_3abe() < (local_4 + 0x1e - local_6) / 2)
+    if (ULTIMA_3abe() < (local_4 + 0x1e - local_6_an) / 2)
     {
         return 1;
     }
@@ -71,21 +71,21 @@ static void COMSUBS_00d2(int param_1)
 
 int COMSUBS_00f4(int param_1)
 {
-    int local_c;
-    int local_4;
     int local_e;
-    int local_6;
+    int local_c;
     int local_8;
+    int local_6;
+    int local_4_ab;
     ActorFmt* local_a;
 
-    local_4 = D_ba14[param_1].entityIdx;
+    local_4_ab = D_ba14[param_1].entityIdx;
     local_c = D_ba14[param_1].actorIdx;
     if (D_587a == 0x1c || D_587a == 'N' || (D_ba14[param_1].flags & COMBAT_FLAGS_PLAYER) != 0)
     {
         return 0;
     }
 
-    if (((byte)D_153c_enemyFlags[local_4] & ENEMY_FLAG_CHARM) != 0)
+    if (((byte)D_153c_enemyFlags[local_4_ab] & ENEMY_FLAG_CHARM) != 0)
     {
         local_e = ULTIMA_2092_RandomRange(0, 0x1f);
 
@@ -107,7 +107,7 @@ int COMSUBS_00f4(int param_1)
                 COMSUBS_0094_PrintName(local_e);
                 ULTIMA_1850_PrintString(_TEXT(0x99b4, " possessed!\n"));
                 ULTIMA_2192_AudioPulse(0xc1c, 1, 30000, 1000, 2);
-                if (local_4 == 0x26)
+                if (local_4_ab == 0x26)
                 {
                     COMBAT_1236(-param_1 - 1);
                 }
@@ -117,7 +117,7 @@ int COMSUBS_00f4(int param_1)
         }
     }
 
-    if ((D_153c_enemyFlags[local_4] & ENEMY_FLAG_DISAPPEAR) != 0 && ULTIMA_2092_RandomRange(0, 0xff) < 0x20)
+    if ((D_153c_enemyFlags[local_4_ab] & ENEMY_FLAG_DISAPPEAR) != 0 && ULTIMA_2092_RandomRange(0, 0xff) < 0x20)
     {
         ULTIMA_16ba_PrintChar('\n');
         COMSUBS_0094_PrintName(param_1);
@@ -137,7 +137,7 @@ int COMSUBS_00f4(int param_1)
         return 1;
     }
 
-    if ((D_153c_enemyFlags[local_4] & ENEMY_FLAG_SUMMON) != 0 && ULTIMA_2092_RandomRange(0, 0xff) < 0x20)
+    if ((D_153c_enemyFlags[local_4_ab] & ENEMY_FLAG_SUMMON) != 0 && ULTIMA_2092_RandomRange(0, 0xff) < 0x20)
     {
         if (COMBAT_120e() != 0)
         {
@@ -170,11 +170,11 @@ int COMSUBS_00f4(int param_1)
 
 void COMSUBS_0312(int param_1, int param_2)
 {
-    int local_4;
-    int local_6;
     int local_8; // unused
+    int local_6;
+    int local_4_ab;
     
-    local_4 = D_ba14[param_1].flags;
+    local_4_ab = D_ba14[param_1].flags;
     D_58a2 &= 0xfe;
     if ((D_58a2 & 0x20) != 0)
     {
@@ -185,7 +185,7 @@ void COMSUBS_0312(int param_1, int param_2)
 
     if ((D_58a2 & 0x22) == 0)
     {
-        if (local_4 == 0 || (local_4 & COMBAT_FLAGS_DEAD) != 0)
+        if (local_4_ab == 0 || (local_4_ab & COMBAT_FLAGS_DEAD) != 0)
         {
             COMSUBS_0094_PrintName(param_1);
             ULTIMA_1850_PrintString(_TEXT(0x99fc, " killed!\n"));
@@ -199,7 +199,7 @@ void COMSUBS_0312(int param_1, int param_2)
         else if ((D_58a2 & 8) == 0)
         {
             COMSUBS_0094_PrintName(param_1);
-            if ((local_4 & COMBAT_FLAGS_PLAYER) != 0)
+            if ((local_4_ab & COMBAT_FLAGS_PLAYER) != 0)
             {
                 if (param_2 != 0xff && D_ba14[param_2].entityIdx == 0x2d)
                 {
@@ -235,7 +235,7 @@ void COMSUBS_0312(int param_1, int param_2)
             }
         }
 
-        if ((local_4 & COMBAT_FLAGS_PLAYER) != 0)
+        if ((local_4_ab & COMBAT_FLAGS_PLAYER) != 0)
         {
             ULTIMA_2900_UpdateVitalsDisplay();
             ULTIMA_5910_UpdateFrame();
@@ -253,28 +253,28 @@ static int COMSUBS_0458(int param_1, int param_2, int param_3, int param_4)
 {
     int local_8 = param_1 - param_3;
     int local_6 = param_2 - param_4;
-    int local_4 = local_8 * local_8 + local_6 * local_6;
-    return local_4;
+    int local_4_ab = local_8 * local_8 + local_6 * local_6;
+    return local_4_ab;
 }
 
 int COMSUBS_048a(int param_1, int param_2, int param_3, int param_4)
 {
     int local_8;
     int local_6;
-    int local_4;
+    int local_4_ab;
 
     local_8 = 0;
-    local_4 = 1;
+    local_4_ab = 1;
 
     local_6 = 0;
 
     local_8 = COMSUBS_0458(param_1, param_2, param_3, param_4);
 
-    for (; local_8 >= local_4;)
+    for (; local_8 >= local_4_ab;)
     {
-        local_8 -= local_4;
-        local_4++;
-        local_4++;
+        local_8 -= local_4_ab;
+        local_4_ab++;
+        local_4_ab++;
         local_6++;
     }
 
@@ -288,14 +288,14 @@ int COMSUBS_04d4(int param_1, int param_2)
 
 int COMSUBS_0504(int param_1, int param_2)
 {
-    int local_a;
-    int local_e;
-    int local_10;
-    int local_12;
     int local_14;
+    int local_12_ab;
+    int local_10_ad;
+    int local_e;
     int local_c;
+    int local_a;
     int local_6;
-    int local_4;
+    int local_4_ab;
     ActorFmt* local_8;
 
     D_5898 = 1;
@@ -318,46 +318,46 @@ int COMSUBS_0504(int param_1, int param_2)
     while (!local_a && !local_e)
     {
         // e816
-        local_10 = local_12 = 0;
+        local_10_ad = local_12_ab = 0;
 
         ULTIMA_5910_UpdateFrame();
 
         switch (ULTIMA_266c_GetChar())
         {
         case U5_KEY_HOME: // 05c2
-            local_10 = -1;
-            local_12 = -1;
+            local_10_ad = -1;
+            local_12_ab = -1;
             break;
 
         case U5_KEY_PGDN: // 066c
-            local_10 = 1;
-            local_12 = 1;
+            local_10_ad = 1;
+            local_12_ab = 1;
             break;
 
         case U5_KEY_PGUP: // 0676
-            local_12 = -1;
-            local_10 = 1;
+            local_12_ab = -1;
+            local_10_ad = 1;
             break;
 
         case U5_KEY_END: // 0680
-            local_12 = 1;
-            local_10 = -1;
+            local_12_ab = 1;
+            local_10_ad = -1;
             break;
 
         case U5_KEY_UP: // 05c5
-            local_12 = -1;
+            local_12_ab = -1;
             break;
 
         case U5_KEY_DOWN: // 066f
-            local_12 = 1;
+            local_12_ab = 1;
             break;
 
         case U5_KEY_RIGHT: // 0679
-            local_10 = 1;
+            local_10_ad = 1;
             break;
 
         case U5_KEY_LEFT: // 0683
-            local_10 = -1;
+            local_10_ad = -1;
             break;
 
         case U5_KEY_SPACE: // 068a
@@ -382,20 +382,20 @@ int COMSUBS_0504(int param_1, int param_2)
 
         case U5_KEY_ESC: // 06ea
             local_e = 1;
-            //local_10 = local_12;
+            //local_10_ad = local_12_ab;
             break;
         }
 
         // 05c8
-        local_4 = local_10 + D_5899;
-        local_6 = local_12 + D_589a;
+        local_4_ab = local_10_ad + D_5899;
+        local_6 = local_12_ab + D_589a;
 
-        local_14 = COMSUBS_048a(local_4, local_6, D_ba14[param_1].x, D_ba14[param_1].y);
+        local_14 = COMSUBS_048a(local_4_ab, local_6, D_ba14[param_1].x, D_ba14[param_1].y);
         if (local_14 <= param_2 &&
-            local_4 >= 0 && local_4 < 0xb &&
+            local_4_ab >= 0 && local_4_ab < 0xb &&
             local_6 >= 0 && local_6 < 0xb)
         {
-            D_5899 = local_4;
+            D_5899 = local_4_ab;
             D_589a = local_6;
         }
     }
@@ -413,7 +413,7 @@ int COMSUBS_0504(int param_1, int param_2)
 int COMSUBS_0748(int param_1, int param_2)
 {
     int local_6;
-    int local_4; // flags
+    int local_4_ab; // flags
     int local_8;
 
     local_8 = -1;
@@ -422,13 +422,13 @@ int COMSUBS_0748(int param_1, int param_2)
     {
         if (D_ba14[local_6].x == param_1 && D_ba14[local_6].y == param_2)
         {
-            local_4 = D_ba14[local_6].flags;
+            local_4_ab = D_ba14[local_6].flags;
 
             if (D_5c5a[D_ba14[local_6].actorIdx]._1_animTile != TILE_ACTOR_F4)
             {
-                if ((local_4 & (COMBAT_FLAGS_PLAYER | COMBAT_FLAGS_MONSTER)) != 0 && (local_4 & COMBAT_FLAGS_DEAD) == 0)
+                if ((local_4_ab & (COMBAT_FLAGS_PLAYER | COMBAT_FLAGS_MONSTER)) != 0 && (local_4_ab & COMBAT_FLAGS_DEAD) == 0)
                 {
-                    if ((local_4 & COMBAT_FLAGS_4) != 0)
+                    if ((local_4_ab & COMBAT_FLAGS_4) != 0)
                     {
                         // noop
                     }
@@ -458,16 +458,16 @@ void COMSUBS_07d4(int param_1, int param_2)
 
 int COMSUBS_0822(int param_1, int param_2, int param_3, int param_4, int param_5)
 {
-    int local_a;
-    int local_4;
     int local_e;
     int local_c;
-    int local_6;
+    int local_a;
     int local_8;
+    int local_6;
+    int local_4_ab;
 
     local_6 = param_2;
     local_c = param_3;
-    local_4 = D_ba14[param_1].x;
+    local_4_ab = D_ba14[param_1].x;
     local_a = D_ba14[param_1].y;
 
     if (param_4 == 0)
@@ -475,7 +475,7 @@ int COMSUBS_0822(int param_1, int param_2, int param_3, int param_4, int param_5
         do
         {
             COMSUBS_07d4(local_6, local_c);
-            if (local_4 != D_5876)
+            if (local_4_ab != D_5876)
                 break;
 
         } while (local_a == D_5878);
@@ -494,7 +494,7 @@ int COMSUBS_0822(int param_1, int param_2, int param_3, int param_4, int param_5
     }
     else
     {
-        local_e = COMSUBS_12de(local_4, local_a, local_6, local_c, param_5);
+        local_e = COMSUBS_12de(local_4_ab, local_a, local_6, local_c, param_5);
         if (local_e != 0)
         {
             COMBAT_111a(local_6, local_c);
@@ -602,12 +602,12 @@ int COMSUBS_09fc(int param_1)
 
 static void COMSUBS_0a68(int param_1, int param_2, int param_3)
 {
-    int local_8;
-    int local_10;
-    int local_c;
-    int local_4;
-    int local_6;
+    int local_10_ad;
     int local_e;
+    int local_c;
+    int local_8;
+    int local_6;
+    int local_4_ab;
     ActorFmt* local_a;
 
     if (param_2 != 0x1a && param_2 != 0x1c && param_2 != 0x24 && param_2 != 0x13 && param_2 != 0x11 ||
@@ -615,8 +615,8 @@ static void COMSUBS_0a68(int param_1, int param_2, int param_3)
     {
         ULTIMA_1850_PrintString(_TEXT(0x9a7e, "Aim! "));
 
-        local_10 = COMSUBS_0504(param_1, D_1664[param_2]);
-        if (local_10 != 0)
+        local_10_ad = COMSUBS_0504(param_1, D_1664[param_2]);
+        if (local_10_ad != 0)
         {
             ULTIMA_43ae_AudioSweepTone(0x514, 300, 5, 100);
             if (param_2 == 0x13)
@@ -637,9 +637,9 @@ static void COMSUBS_0a68(int param_1, int param_2, int param_3)
             if (local_c > -1)
             {
                 local_a->_7 = local_c;
-                COMSUBS_097c(param_2, local_10);
-                local_4 = COMBAT_14d6(local_c, param_1, -D_588f, param_2);
-                local_c = COMSUBS_0822(param_1, D_5899, D_589a, local_4, param_3);
+                COMSUBS_097c(param_2, local_10_ad);
+                local_4_ab = COMBAT_14d6(local_c, param_1, -D_588f, param_2);
+                local_c = COMSUBS_0822(param_1, D_5899, D_589a, local_4_ab, param_3);
             }
             else
             {
@@ -688,9 +688,9 @@ void COMSUBS_0bf8(int param_1, int param_2, int param_3)
 void COMSUBS_0c52(int param_1, int param_2)
 {
     int local_a;
-    int local_4;
-    int local_6;
     int local_8;
+    int local_6;
+    int local_4_ab;
 
     if (param_2 >= 0x23)
     {
@@ -705,7 +705,7 @@ void COMSUBS_0c52(int param_1, int param_2)
             local_a = 0;
         }
 
-        local_4 = D_15cc[D_ba14[param_1].entityIdx];
+        local_4_ab = D_15cc[D_ba14[param_1].entityIdx];
     }
     else
     {
@@ -722,14 +722,14 @@ void COMSUBS_0c52(int param_1, int param_2)
         // fix OOB when param_2 == 0xff (bare hands)
         if (param_2 != 0xff)
         {
-            local_4 = D_169c[param_2];
+            local_4_ab = D_169c[param_2];
         }
         else
         {
-            local_4 = 0;
+            local_4_ab = 0;
         }
 #else
-        local_4 = D_169c[param_2];
+        local_4_ab = D_169c[param_2];
 #endif
     }
 
@@ -750,7 +750,7 @@ void COMSUBS_0c52(int param_1, int param_2)
     }
     else
     {
-        COMSUBS_0a68(param_1, param_2, local_4);
+        COMSUBS_0a68(param_1, param_2, local_4_ab);
     }
 }
 
@@ -800,13 +800,13 @@ void COMSUBS_0d96(int param_1, int param_2)
 
 static void COMSUBS_0e26(int param_1, int param_2, int param_3, int param_4, u8* param_5, u8* param_6)
 {
+    int local_10_ad;
     int local_e;
     int local_c;
+    int local_a;
     int local_8;
     int local_6;
-    int local_4;
-    int local_10;
-    int local_a;
+    int local_4_ab;
 
     local_6 = 1;
     local_8 = 1;
@@ -836,16 +836,16 @@ static void COMSUBS_0e26(int param_1, int param_2, int param_3, int param_4, u8*
         local_8 = -1;
     }
 
-    local_10 = param_3 - param_1;
-    if (local_10 < 0)
+    local_10_ad = param_3 - param_1;
+    if (local_10_ad < 0)
     {
-        local_10 = -local_10;
+        local_10_ad = -local_10_ad;
     }
 
-    local_4 = param_4 - param_2;
-    if (local_4 < 0)
+    local_4_ab = param_4 - param_2;
+    if (local_4_ab < 0)
     {
-        local_4 = -local_4;
+        local_4_ab = -local_4_ab;
     }
 
     // f08f
@@ -857,16 +857,16 @@ static void COMSUBS_0e26(int param_1, int param_2, int param_3, int param_4, u8*
     *param_6 = param_2;
     param_6++;
 
-    while (local_10 > 0 || local_4 > 0)
+    while (local_10_ad > 0 || local_4_ab > 0)
     {
-        while (local_e > 0 && local_4 > 0)
+        while (local_e > 0 && local_4_ab > 0)
         {
             local_e -= 100;
             param_2 += local_8;
 
             *param_6 = param_2;
             param_6++;
-            local_4--;
+            local_4_ab--;
 
             *param_5 = param_1;
             param_5++;
@@ -879,7 +879,7 @@ static void COMSUBS_0e26(int param_1, int param_2, int param_3, int param_4, u8*
         if (local_c == 0)
             break;
 
-        local_10--;
+        local_10_ad--;
         local_e += local_a;
 
         param_1 += local_6;
@@ -898,24 +898,24 @@ static void COMSUBS_0e26(int param_1, int param_2, int param_3, int param_4, u8*
 
 static void COMSUBS_0f4a(byte param_1, byte param_2, int param_3, int param_4, u8* param_5, u8* param_6)
 {
-    int local_1e;
-    int local_1c;
-    int local_16;
-    int local_4;
-    int local_c;
+    int local_1e_ao;
+    int local_1c_aa;
+    int local_1a_ac;
+    byte* local_18_al;
+    int local_16_an;
     int local_14;
-    int local_12;
-    int local_1a;
-    int local_6;
-    int local_8;
+    int local_12_ab;
+    byte* local_10_ad;
     s8* local_e;
+    int local_c;
     s8* local_a;
-    byte* local_10;
-    byte* local_18;
+    int local_8;
+    int local_6;
+    int local_4_ab;
 
-    local_1c = 1;
-    local_1e = 1;
-    local_4 = -1;
+    local_1c_aa = 1;
+    local_1e_ao = 1;
+    local_4_ab = -1;
 
 #if !defined(MATCHING_BUILD)
     local_e = NULL;
@@ -939,15 +939,15 @@ static void COMSUBS_0f4a(byte param_1, byte param_2, int param_3, int param_4, u
         break;
     case 2: // f196
         local_a++;
-        local_1c = -1;
+        local_1c_aa = -1;
         break;
     case 3: // f1a0
         local_e++;
-        local_1c = local_1e = -1;
+        local_1c_aa = local_1e_ao = -1;
         break;
     case 4: // f1ae
         local_a++;
-        local_1e = -1;
+        local_1e_ao = -1;
         break;
     }
 
@@ -956,16 +956,16 @@ static void COMSUBS_0f4a(byte param_1, byte param_2, int param_3, int param_4, u
     switch (param_4)
     {
     case 0: // f1b8
-        local_10 = param_5 - 4;
-        local_18 = param_6 - 4;
-        for (local_16 = 0; local_16 < 9; local_16++)
+        local_10_ad = param_5 - 4;
+        local_18_al = param_6 - 4;
+        for (local_16_an = 0; local_16_an < 9; local_16_an++)
         {
-            if (*local_10 == 0xff)
+            if (*local_10_ad == 0xff)
                 break;
 
-            ULTIMA_0b10_GRAP_Line(*local_10, *local_18, *local_10 + 1, *local_18);
-            local_10++;
-            local_18++;
+            ULTIMA_0b10_GRAP_Line(*local_10_ad, *local_18_al, *local_10_ad + 1, *local_18_al);
+            local_10_ad++;
+            local_18_al++;
         }
         break;
 
@@ -978,103 +978,103 @@ static void COMSUBS_0f4a(byte param_1, byte param_2, int param_3, int param_4, u
         break;
 
     case 2: // f27e
-        for (local_16 = 0; local_16 < 4; local_16++)
+        for (local_16_an = 0; local_16_an < 4; local_16_an++)
         {
-            local_c = *local_a * local_1c + param_1;
+            local_c = *local_a * local_1c_aa + param_1;
             local_a += 2;
-            local_14 = *local_e * local_1e + param_2;
+            local_14 = *local_e * local_1e_ao + param_2;
             local_e += 2;
-            local_12 = *local_a * local_1c + param_1;
+            local_12_ab = *local_a * local_1c_aa + param_1;
             local_a += 2;
-            local_1a = *local_e * local_1e + param_2;
+            local_1a_ac = *local_e * local_1e_ao + param_2;
             local_e += 2;
-            ULTIMA_0b10_GRAP_Line(local_c, local_14, local_12, local_1a);
+            ULTIMA_0b10_GRAP_Line(local_c, local_14, local_12_ab, local_1a_ac);
         }
         break;
 
     case 3: // f2f4
-        local_4 = D_13ae_redColor + 8;
+        local_4_ab = D_13ae_redColor + 8;
         break;
 
     case 4: // f300
-        local_4 = D_13b2_blueColor + 8;
+        local_4_ab = D_13b2_blueColor + 8;
         break;
 
     case 5: // f306
-        local_4 = D_13b4_greenColor + 8;
+        local_4_ab = D_13b4_greenColor + 8;
         break;
 
     case 6: // f30c
-        local_4 = D_13b6_magentaColor + 8;
+        local_4_ab = D_13b6_magentaColor + 8;
         break;
 
     case 7: // f312
-        for (local_16 = 0; local_16 < 7; local_16++)
+        for (local_16_an = 0; local_16_an < 7; local_16_an++)
         {
-            local_c = *local_a * local_1c + param_1;
+            local_c = *local_a * local_1c_aa + param_1;
             local_a += 2;
-            local_14 = *local_e * local_1e + param_2;
+            local_14 = *local_e * local_1e_ao + param_2;
             local_e += 2;
-            local_12 = *local_a * local_1c + param_1;
+            local_12_ab = *local_a * local_1c_aa + param_1;
             local_a += 2;
-            local_1a = *local_e * local_1e + param_2;
+            local_1a_ac = *local_e * local_1e_ao + param_2;
             local_e += 2;
-            ULTIMA_0b10_GRAP_Line(local_c, local_14, local_12, local_1a);
+            ULTIMA_0b10_GRAP_Line(local_c, local_14, local_12_ab, local_1a_ac);
         }
 
         // f384
-        ULTIMA_0c64_GRAP_30_Pset(*local_a * local_1c + param_1, *local_e * local_1e + param_2);
+        ULTIMA_0c64_GRAP_30_Pset(*local_a * local_1c_aa + param_1, *local_e * local_1e_ao + param_2);
         local_a += 2;
         local_e += 2;
-        ULTIMA_0c64_GRAP_30_Pset(*local_a * local_1c + param_1, *local_e * local_1e + param_2);
+        ULTIMA_0c64_GRAP_30_Pset(*local_a * local_1c_aa + param_1, *local_e * local_1e_ao + param_2);
         local_a += 2;
         local_e += 2;
-        ULTIMA_0c64_GRAP_30_Pset(*local_a * local_1c + param_1, *local_e * local_1e + param_2);
+        ULTIMA_0c64_GRAP_30_Pset(*local_a * local_1c_aa + param_1, *local_e * local_1e_ao + param_2);
         break;
     }
 
-    if (local_4 > -1)
+    if (local_4_ab > -1)
     {
         // f40d
-        local_1c = -1;
-        local_1e = 1;
-        for (local_16 = 0; local_16 < 0x30; local_16++)
+        local_1c_aa = -1;
+        local_1e_ao = 1;
+        for (local_16_an = 0; local_16_an < 0x30; local_16_an++)
         {
             // f42b
-            local_10 = local_18 = D_21ba;
+            local_10_ad = local_18_al = D_21ba;
 
-            local_10 += ULTIMA_2092_RandomRange(0, 0xf);
-            local_18 += ULTIMA_2092_RandomRange(0, 0xf);
+            local_10_ad += ULTIMA_2092_RandomRange(0, 0xf);
+            local_18_al += ULTIMA_2092_RandomRange(0, 0xf);
 
             local_6 = ULTIMA_2092_RandomRange(0, 1);
             local_8 = ULTIMA_2092_RandomRange(0, 1);
 
             if (local_6 != 0)
             {
-                local_1c = -local_1c;
+                local_1c_aa = -local_1c_aa;
             }
 
             if (local_8 != 0)
             {
-                local_1e = -local_1e;
+                local_1e_ao = -local_1e_ao;
             }
 
-            ULTIMA_0a70_GRAP_2d_SetPenColor(local_4);
-            ULTIMA_0c64_GRAP_30_Pset(*local_10 * local_1c + param_1, *local_18 * local_1e + param_2);
+            ULTIMA_0a70_GRAP_2d_SetPenColor(local_4_ab);
+            ULTIMA_0c64_GRAP_30_Pset(*local_10_ad * local_1c_aa + param_1, *local_18_al * local_1e_ao + param_2);
         }
     }
 }
 
 int COMSUBS_12de(int param_1, int param_2, int param_3, int param_4, int param_5)
 {
-    byte* local_12;
+    byte* local_12_ab;
+    int local_10_ad;
     byte* local_e;
     int local_c;
     int local_a;
-    int local_10;
-    int local_4;
-    int local_6;
     int local_8;
+    int local_6;
+    int local_4_ab;
 
     local_c = 0xd;
     local_a = 0;
@@ -1083,14 +1083,14 @@ int COMSUBS_12de(int param_1, int param_2, int param_3, int param_4, int param_5
     memset(D_a728, 0xff, 0x100);
     memset(D_a872, 0xff, 0x100);
 
-    local_10 = param_1 * 0x10 + 0x10;
+    local_10_ad = param_1 * 0x10 + 0x10;
     local_6 = param_2 * 0x10 + 0x10;
-    local_4 = param_3 * 0x10 + 0x10;
+    local_4_ab = param_3 * 0x10 + 0x10;
     local_8 = param_4 * 0x10 + 0x10;
-    COMSUBS_0e26(local_10, local_6, local_4, local_8, D_a728, D_a872);
+    COMSUBS_0e26(local_10_ad, local_6, local_4_ab, local_8, D_a728, D_a872);
 
     local_e = D_a728;
-    local_12 = D_a872;
+    local_12_ab = D_a872;
 
     if (D_5893_map_id != 0 && D_5893_map_id < 0x21)
     {
@@ -1107,24 +1107,24 @@ int COMSUBS_12de(int param_1, int param_2, int param_3, int param_4, int param_5
     if (param_5 == 0)
     {
         local_e += 4;
-        local_12 += 4;
+        local_12_ab += 4;
     }
 
     while (*local_e != 0xff)
     {
         local_a = (local_a & 3) + 1;
-        ULTIMA_3fb4(*local_e, *local_12);
+        ULTIMA_3fb4(*local_e, *local_12_ab);
         if (D_5876 == -1)
         {
             break;
         }
 
-        COMSUBS_0f4a(*local_e, *local_12, local_a, param_5, local_e, local_12);
+        COMSUBS_0f4a(*local_e, *local_12_ab, local_a, param_5, local_e, local_12_ab);
         ULTIMA_20c8_SomeDelay(1, 0x28);
-        ULTIMA_0ace_GRAP_18_TransferArea(1, 0, (*local_e & 0xf8) - 8, *local_12 - 8, (*local_e & 0xf8) + 0xf, *local_12 + 0xf);
+        ULTIMA_0ace_GRAP_18_TransferArea(1, 0, (*local_e & 0xf8) - 8, *local_12_ab - 8, (*local_e & 0xf8) + 0xf, *local_12_ab + 0xf);
 
         local_e += local_c;
-        local_12 += local_c;
+        local_12_ab += local_c;
 
 #if defined(MATCHING_BUILD)
         if (D_a872 < local_e)

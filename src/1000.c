@@ -462,12 +462,12 @@ static void ULTIMA_17f4_ApplyCharEffects(byte* es, int di)
 // 0000:1850
 void ULTIMA_1850_PrintString(char* param_1)
 {
-    int local_44;
-    char local_42[40];
+    int local_44_aj;
+    char local_42_al[40];
     uint local_1a;
     int local_18;
     int local_16;
-    int local_14;
+    int local_14_aa;
     TextWindow* local_12;
     int local_10;
     int local_e;
@@ -487,7 +487,7 @@ void ULTIMA_1850_PrintString(char* param_1)
         // 1872
         local_12 = &D_535e_textWindows[D_5386_current_text_window_idx];
         local_1a = local_12->flags & 2;
-        local_44 = (uint)local_12->right - (uint)local_12->left; // text_window_width = r - l;
+        local_44_aj = (uint)local_12->right - (uint)local_12->left; // text_window_width = r - l;
 
         // 189a
         do
@@ -498,15 +498,15 @@ void ULTIMA_1850_PrintString(char* param_1)
             }
 
             // 18a7 (NOT MATCHING: si register)
-            local_4 = local_6 = local_14 = 0;
+            local_4 = local_6 = local_14_aa = 0;
             local_10 =
-                local_44 - ULTIMA_1f12_GetCurrentTextX(); // remaining_length = text_window_length - column
+                local_44_aj - ULTIMA_1f12_GetCurrentTextX(); // remaining_length = text_window_length - column
 
             for (local_c = 0; param_1[local_8] != '\n' && param_1[local_8] != '\r' && param_1[local_8] != '\0' &&
                               local_c <= local_10;
                  local_8++, local_c++)
             {
-                local_42[local_c] = param_1[local_8];
+                local_42_al[local_c] = param_1[local_8];
             }
 
             // 18f4 (after loop)
@@ -555,7 +555,7 @@ void ULTIMA_1850_PrintString(char* param_1)
                         do
                         {
                             local_c--;
-                        } while (local_42[local_c] == ' ' || local_42[local_c] == '\r' || local_42[local_c] == '\n');
+                        } while (local_42_al[local_c] == ' ' || local_42_al[local_c] == '\r' || local_42_al[local_c] == '\n');
 
                         if (param_1[local_8] != '\0')
                             local_8++;
@@ -577,7 +577,7 @@ void ULTIMA_1850_PrintString(char* param_1)
                 // 19d5
                 if (local_1a != 0)
                 {
-                    if (local_c > local_44)
+                    if (local_c > local_44_aj)
                     {
                         ULTIMA_16ba_PrintChar('\n');
                     }
@@ -590,16 +590,16 @@ void ULTIMA_1850_PrintString(char* param_1)
                 if (local_6 != 0)
                 {
                     // 1a03
-                    for (; local_42[local_14] == ' '; local_14++)
+                    for (; local_42_al[local_14_aa] == ' '; local_14_aa++)
                     {
                     }
                 }
 
                 // 1a14 (NOT MATCHING: loop optimization)
-                for (; local_14 <= local_c; local_14++)
+                for (; local_14_aa <= local_c; local_14_aa++)
                 {
                     // 1a1c
-                    ULTIMA_16ba_PrintChar((byte)local_42[local_14]);
+                    ULTIMA_16ba_PrintChar((byte)local_42_al[local_14_aa]);
                 }
             }
         } while (local_a == 0);
@@ -716,21 +716,21 @@ static void ULTIMA_1b24_ClearKbdBufferImpl(void)
 
 u16 ULTIMA_1b38_PollKeyWithCursor(void)
 {
+    int local_6_an;
     int local_4;
-    int local_6;
 
     local_4 = D_538e;
     D_538e = 0;
 
     ULTIMA_16ba_PrintChar(D_5390 + D_540c++); // animate cursor
 
-    local_6 = ULTIMA_1d5e_PollKey();
+    local_6_an = ULTIMA_1d5e_PollKey();
     if ((int)D_540c >= (int)D_5392)
     {
         D_540c = 0;
     }
 
-    if (local_6 != 0)
+    if (local_6_an != 0)
     {
         ULTIMA_16ba_PrintChar(' ');
     }
@@ -745,7 +745,7 @@ u16 ULTIMA_1b38_PollKeyWithCursor(void)
     }
 
     D_538e = local_4;
-    return local_6;
+    return local_6_an;
 }
 
 // ASM
@@ -903,12 +903,12 @@ int ULTIMA_1dda_WaitForKeystroke(int param_1)
 {
     int local_8;
     int local_6;
-    int local_4;
+    int local_4_ab;
 
-    local_4 = -1;
+    local_4_ab = -1;
     if (param_1 != 0)
     {
-        local_4++;
+        local_4_ab++;
     }
 
     if (param_1 > 1)
@@ -922,9 +922,9 @@ int ULTIMA_1dda_WaitForKeystroke(int param_1)
         local_8 = ULTIMA_1b38_PollKeyWithCursor();
         if (param_1 != 0)
         {
-            local_4++;
+            local_4_ab++;
         }
-    } while (local_4 < param_1 && local_8 == 0);
+    } while (local_4_ab < param_1 && local_8 == 0);
 
     if (param_1 > 1)
     {
@@ -936,30 +936,30 @@ int ULTIMA_1dda_WaitForKeystroke(int param_1)
 
 void ULTIMA_1e38_IntroGetString(char* param_1, int param_2)
 {
-    int local_6;
+    int local_6_an;
     int local_4;
 
     local_4 = 0;
     do
     {
-        local_6 = ULTIMA_1dda_WaitForKeystroke(0);
-        if ((local_6 == U5_KEY_BACKSPACE || local_6 == U5_KEY_LEFT) && local_4 != 0)
+        local_6_an = ULTIMA_1dda_WaitForKeystroke(0);
+        if ((local_6_an == U5_KEY_BACKSPACE || local_6_an == U5_KEY_LEFT) && local_4 != 0)
         {
             ULTIMA_1fa0_Backspace(1);
             local_4--;
         }
-        else if (local_6 == U5_KEY_ESC && local_4 != 0)
+        else if (local_6_an == U5_KEY_ESC && local_4 != 0)
         {
             ULTIMA_1fa0_Backspace(local_4);
             local_4 = 0;
         }
-        else if (local_6 > 0x1f && local_6 < 0x80 && local_4 < param_2)
+        else if (local_6_an > 0x1f && local_6_an < 0x80 && local_4 < param_2)
         {
-            param_1[local_4] = local_6;
+            param_1[local_4] = local_6_an;
             local_4++;
-            ULTIMA_16ba_PrintChar(local_6);
+            ULTIMA_16ba_PrintChar(local_6_an);
         }
-    } while (local_6 != U5_KEY_ENTER);
+    } while (local_6_an != U5_KEY_ENTER);
 
     param_1[local_4] = 0;
 }

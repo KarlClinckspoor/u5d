@@ -160,39 +160,39 @@ static int MAINOUT_00da(int param_1)
 static int MAINOUT_01fe(int param_2, int param_1)
 {
     int local_8;
-    bool local_4;
     int local_6;
+    bool local_4_ab;
 
     if ((D_587c_partyTile & 0xfc) == TILE_ACTOR_FRIGATE_24)
     {
         ULTIMA_1850_PrintString(_TEXT(0x2982, "Rowing!\n"));
     }
 
-    local_4 = 1;
+    local_4_ab = 1;
     local_6 = ULTIMA_368e_FindActorTileAtPos(param_2 + (uint)D_5896_map_x, param_1 + (uint)D_5897_map_y, D_5895_map_level);
     if (local_6 != 0)
     {
-        local_4 = 0;
+        local_4_ab = 0;
         if (D_587c_partyTile >= TILE_ACTOR_30 || D_587c_partyTile < TILE_ACTOR_FRIGATE_20)
         {
             if ((local_6 >= TILE_ACTOR_FRIGATE_24 && local_6 < TILE_ACTOR_PIRATE) || local_6 == TILE_ACTOR_CARPET || (local_6 & 0xfe) == TILE_ACTOR_HORSE)
             {
-                local_4 = 1;
+                local_4_ab = 1;
             }
         }
         else
         {
             if (D_587c_partyTile >= TILE_ACTOR_SKIFF && local_6 >= TILE_ACTOR_FRIGATE_24 && local_6 < TILE_ACTOR_SKIFF)
             {
-                local_4 = 1;
+                local_4_ab = 1;
             }
         }
     }
 
     local_8 = GetMapViewport(param_2 + 5, param_1 + 5);
 
-    local_4 = local_4 && ULTIMA_2c4c_IsWalkableTile(D_587c_partyTile, local_8) != 0 ? 1 : 0;
-    if (local_4 == 0)
+    local_4_ab = local_4_ab && ULTIMA_2c4c_IsWalkableTile(D_587c_partyTile, local_8) != 0 ? 1 : 0;
+    if (local_4_ab == 0)
     {
         if (D_5955 != 0)
         {
@@ -235,22 +235,22 @@ static int MAINOUT_01fe(int param_2, int param_1)
         }
     }
 
-    return local_4;
+    return local_4_ab;
 }
 
 // Move
 void MAINOUT_0354(int param_1, int param_2)
 {
+    int local_6_an;
     int local_4;
-    int local_6;
 
     D_5896_map_x += param_1;
     D_5897_map_y += param_2;
     D_24e6 = 1;
     local_4 = D_5896_map_x - D_589b & 0x1f;
-    local_6 = D_5897_map_y - D_589c & 0x1f;
+    local_6_an = D_5897_map_y - D_589c & 0x1f;
 
-    if (local_4 < 5 || local_4 > 0x1a || local_6 < 5 || local_6 > 0x1a)
+    if (local_4 < 5 || local_4 > 0x1a || local_6_an < 5 || local_6_an > 0x1a)
     {
         OUTSUBS_02c8(param_1, param_2); // 7bd2
         D_589b = (char)param_1 * 16 + D_589b & 0xf0; // wrap x?
@@ -263,10 +263,10 @@ void MAINOUT_0354(int param_1, int param_2)
 static void MAINOUT_03e0(void)
 {
     int local_8;
-    int local_4;
     int local_6;
+    int local_4_ab;
 
-    local_4 = 0;
+    local_4_ab = 0;
 
     local_8 = *ULTIMA_4402_GetTileAddr(D_5896_map_x, D_5897_map_y);
     if (local_8 == TILE_MAP_GRASS)
@@ -298,10 +298,10 @@ static void MAINOUT_03e0(void)
     {
     case 1:
         // 0448
-        local_4 += MAINOUT_1a60();
+        local_4_ab += MAINOUT_1a60();
         MAINOUT_007a();
 
-        if (local_4 == 0)
+        if (local_4_ab == 0)
         {
             ULTIMA_1850_PrintString(_TEXT(0x29bf, "Slow progress!\n"));
         }
@@ -311,13 +311,13 @@ static void MAINOUT_03e0(void)
 
     case 2:
         // 0468
-        local_4 += MAINOUT_1a60();
+        local_4_ab += MAINOUT_1a60();
         MAINOUT_007a();
 
-        local_4 += MAINOUT_1a60();
+        local_4_ab += MAINOUT_1a60();
         MAINOUT_007a();
 
-        if (local_4 == 0)
+        if (local_4_ab == 0)
         {
             ULTIMA_1850_PrintString(_TEXT(0x29cf, "Very slow!\n"));
         }
@@ -331,7 +331,7 @@ static int MAINOUT_0490(int param_1, int param_2)
 {
     int local_8;
     int local_6;
-    int local_4;
+    int local_4_ab;
 
     if ((D_587c_partyTile & 0xfc) == TILE_ACTOR_FRIGATE_20)
     {
@@ -358,10 +358,10 @@ static int MAINOUT_0490(int param_1, int param_2)
         // 04f0
         local_8--;
 #if !defined(MATCHING_BUILD)
-        local_4 = MAINOUT_00da(0);
-        if (local_4 != 0)
+        local_4_ab = MAINOUT_00da(0);
+        if (local_4_ab != 0)
         {
-            return local_4;
+            return local_4_ab;
         }
 #else
         if (MAINOUT_00da(0))
@@ -381,10 +381,10 @@ static int MAINOUT_0490(int param_1, int param_2)
         // 054e
         local_8++;
 #if !defined(MATCHING_BUILD)
-        local_4 = MAINOUT_00da(2);
-        if (local_4 != 0)
+        local_4_ab = MAINOUT_00da(2);
+        if (local_4_ab != 0)
         {
-            return local_4;
+            return local_4_ab;
         }
 #else
         if (MAINOUT_00da(2))
@@ -402,10 +402,10 @@ static int MAINOUT_0490(int param_1, int param_2)
         // 055c
         local_6++;
 #if !defined(MATCHING_BUILD)
-        local_4 = MAINOUT_00da(1);
-        if (local_4 != 0)
+        local_4_ab = MAINOUT_00da(1);
+        if (local_4_ab != 0)
         {
-            return local_4;
+            return local_4_ab;
         }
 #else
         if (MAINOUT_00da(1))
@@ -423,10 +423,10 @@ static int MAINOUT_0490(int param_1, int param_2)
         // 0576
         local_6--;
 #if !defined(MATCHING_BUILD)
-        local_4 = MAINOUT_00da(3);
-        if (local_4 != 0)
+        local_4_ab = MAINOUT_00da(3);
+        if (local_4_ab != 0)
         {
-            return local_4;
+            return local_4_ab;
         }
 #else
         if (MAINOUT_00da(3))
@@ -442,8 +442,8 @@ static int MAINOUT_0490(int param_1, int param_2)
     }
 
     // 050e
-    local_4 = MAINOUT_01fe(local_6, local_8);
-    if (param_2 == 0 && local_4 != 0)
+    local_4_ab = MAINOUT_01fe(local_6, local_8);
+    if (param_2 == 0 && local_4_ab != 0)
     {
         if ((D_587c_partyTile & 0xfe) == TILE_ACTOR_RIDING_HORSE)
         {
@@ -453,7 +453,7 @@ static int MAINOUT_0490(int param_1, int param_2)
         MAINOUT_0354(local_6, local_8);
         MAINOUT_03e0();
     }
-    return local_4;
+    return local_4_ab;
 }
 
 // TODO
@@ -575,7 +575,7 @@ int MAINOUT_06ec_AttackCmd(void)
 {
     int local_6;
     int local_8;
-    int local_4 = 0;
+    int local_4_ab = 0;
     int local_a;
 
     ULTIMA_1850_PrintString(_TEXT(0x29fe, "Attack-"));
@@ -583,7 +583,7 @@ int MAINOUT_06ec_AttackCmd(void)
         ((D_587c_partyTile & 0xfc) == TILE_ACTOR_SKIFF || (D_587c_partyTile & 0xfe) == TILE_ACTOR_FLYING_CARPET))
     {
         ULTIMA_1850_PrintString(_TEXT(0x2a06, "On foot!\n"));
-        local_4 = 0;
+        local_4_ab = 0;
     }
     else
     {
@@ -602,14 +602,14 @@ int MAINOUT_06ec_AttackCmd(void)
             }
         }
     }
-    return local_4;
+    return local_4_ab;
 }
 
 // Load dungeon
 static int MAINOUT_0790_LoadDungeon(char* param_1)
 {
+    int local_6_an;
     int local_4;
-    int local_6;
 
     ULTIMA_1850_PrintString(param_1);
     for (local_4 = 0x20; local_4 < 0x28; local_4++)
@@ -635,9 +635,9 @@ static int MAINOUT_0790_LoadDungeon(char* param_1)
             if ((D_58c8[0] & D_58c8[1] & D_58c8[2]) < 0x80)
             {
                 ULTIMA_1850_PrintString(_TEXT(0x2a2f, "\nAttacked at entrance!\n"));
-                local_6 = ULTIMA_38e4();
-                D_5c5a[local_6]._0_tile = TILE_ACTOR_SHADOWLORD;
-                ULTIMA_6150_Combat(local_6);
+                local_6_an = ULTIMA_38e4();
+                D_5c5a[local_6_an]._0_tile = TILE_ACTOR_SHADOWLORD;
+                ULTIMA_6150_Combat(local_6_an);
 #if !defined(MATCHING_BUILD)
                 return 0; // TODO: validate return value
 #else
@@ -690,10 +690,10 @@ static int MAINOUT_0790_LoadDungeon(char* param_1)
 int MAINOUT_08de_EnterCmd(void)
 {
     int local_6;
-    int local_4;
+    int local_4_ab;
     int local_8;
 
-    local_4 = 1;
+    local_4_ab = 1;
 
     ULTIMA_1850_PrintString(_TEXT(0x2a6f, "Enter "));
 
@@ -714,7 +714,7 @@ int MAINOUT_08de_EnterCmd(void)
         break;
 
     case TILE_MAP_HUT:
-        local_4 = OUTSUBS_0388_EnterTown(_TEXT(0x2a85, "hut"));
+        local_4_ab = OUTSUBS_0388_EnterTown(_TEXT(0x2a85, "hut"));
         break;
 
     case TILE_MAP_CODEX:
@@ -723,31 +723,31 @@ int MAINOUT_08de_EnterCmd(void)
         break;
 
     case TILE_MAP_KEEP:
-        local_4 = OUTSUBS_0388_EnterTown(_TEXT(0x2aa3, "keep"));
+        local_4_ab = OUTSUBS_0388_EnterTown(_TEXT(0x2aa3, "keep"));
         break;
 
     case TILE_MAP_VILLAGE:
-        local_4 = OUTSUBS_0388_EnterTown(_TEXT(0x2aa8, "village"));
+        local_4_ab = OUTSUBS_0388_EnterTown(_TEXT(0x2aa8, "village"));
         break;
 
     case TILE_MAP_TOWNE:
-        local_4 = OUTSUBS_0388_EnterTown(_TEXT(0x2ab0, "towne"));
+        local_4_ab = OUTSUBS_0388_EnterTown(_TEXT(0x2ab0, "towne"));
         break;
 
     case TILE_MAP_CASTLE:
-        local_4 = OUTSUBS_0388_EnterTown(_TEXT(0x2ab6, "castle"));
+        local_4_ab = OUTSUBS_0388_EnterTown(_TEXT(0x2ab6, "castle"));
         break;
 
     case TILE_MAP_CAVE:
-        local_4 = MAINOUT_0790_LoadDungeon(_TEXT(0x2abd, "cave"));
+        local_4_ab = MAINOUT_0790_LoadDungeon(_TEXT(0x2abd, "cave"));
         break;
 
     case TILE_MAP_MINE:
-        local_4 = MAINOUT_0790_LoadDungeon(_TEXT(0x2ac2, "mine"));
+        local_4_ab = MAINOUT_0790_LoadDungeon(_TEXT(0x2ac2, "mine"));
         break;
 
     case TILE_MAP_DUNGEON:
-        local_4 = MAINOUT_0790_LoadDungeon(_TEXT(0x2ac7, "dungeon"));
+        local_4_ab = MAINOUT_0790_LoadDungeon(_TEXT(0x2ac7, "dungeon"));
         break;
 
     case TILE_MAP_RUINS:
@@ -755,24 +755,24 @@ int MAINOUT_08de_EnterCmd(void)
         break;
 
     case TILE_MAP_LIGHTHOUSE:
-        local_4 = OUTSUBS_0388_EnterTown(_TEXT(0x2ad5, "lighthouse"));
+        local_4_ab = OUTSUBS_0388_EnterTown(_TEXT(0x2ad5, "lighthouse"));
         break;
 
     case TILE_MAP_PALACEBT:
-        local_4 = OUTSUBS_0388_EnterTown(_TEXT(0x2ae0, "the palace of Blackthorn!"));
+        local_4_ab = OUTSUBS_0388_EnterTown(_TEXT(0x2ae0, "the palace of Blackthorn!"));
         break;
 
     case TILE_MAP_CASTLELB:
-        local_4 = OUTSUBS_0388_EnterTown(_TEXT(0x2afa, "the Castle of Lord British!"));
+        local_4_ab = OUTSUBS_0388_EnterTown(_TEXT(0x2afa, "the Castle of Lord British!"));
         break;
 
     default:
         ULTIMA_1850_PrintString(_TEXT(0x2b16, "What?\n"));
-        local_4 = 0;
+        local_4_ab = 0;
         break;
     }
 
-    return local_4;
+    return local_4_ab;
 }
 
 static int MAINOUT_0a1a(int param_1)
@@ -811,20 +811,20 @@ static void MAINOUT_0a60(void)
 
 static void MAINOUT_0a84_MainLoop(void)
 {
-    int local_4 = 0;
-    byte local_6;
-    int local_8;
-    int local_a;
-    bool local_c;
+    int local_12_ab;
+    int local_10_ad; // not used
     int local_e; // not used
-    int local_10; // not used
-    int local_12;
+    bool local_c;
+    int local_a;
+    int local_8;
+    byte local_6;
+    int local_4_ab = 0;
     do
     {
         // 0a8f
         local_c = 0;
         local_a = 1;
-        local_4 = MAINOUT_0a1a(local_4);
+        local_4_ab = MAINOUT_0a1a(local_4_ab);
         local_8 = ULTIMA_39fc_GetFirstActivePartyMember();
         if (local_8 == 1)
         {
@@ -912,7 +912,7 @@ static void MAINOUT_0a84_MainLoop(void)
                 case U5_KEY_RIGHT:
                 case U5_KEY_UP:
                 case U5_KEY_DOWN:
-                    local_a = MAINOUT_0490(local_6, local_4);
+                    local_a = MAINOUT_0490(local_6, local_4_ab);
                     break;
 
                 case 0: // 0af8
@@ -955,18 +955,18 @@ static void MAINOUT_0a84_MainLoop(void)
             {
                 // 0c39
                 ULTIMA_4f7c(2);
-                local_12 = *ULTIMA_4402_GetTileAddr(D_5896_map_x, D_5897_map_y);
-                if ((local_12 & 0xfe) == TILE_MAP_6A)
+                local_12_ab = *ULTIMA_4402_GetTileAddr(D_5896_map_x, D_5897_map_y);
+                if ((local_12_ab & 0xfe) == TILE_MAP_6A)
                 {
                     MAINOUT_1be8();
                 }
                 // 0c64
-                else if (local_12 == TILE_MAP_POISON && D_587c_partyTile == TILE_ACTOR_AVATAR)
+                else if (local_12_ab == TILE_MAP_POISON && D_587c_partyTile == TILE_ACTOR_AVATAR)
                 {
                     OUTSUBS_05fc_StepOnPoisonTile();
                     ULTIMA_3ae6(1);
                 }
-                else if (local_12 == TILE_MAP_LAVA)
+                else if (local_12_ab == TILE_MAP_LAVA)
                 {
                     OUTSUBS_05ee_StepOnBurningTile();
                 }
@@ -988,13 +988,13 @@ static void MAINOUT_0a84_MainLoop(void)
                 // 0cd0
                 MAINOUT_0a60();
                 ULTIMA_2ae8();
-                if (local_12 == 1 && ((D_587c_partyTile & 0xfc) == TILE_ACTOR_SKIFF || (D_587c_partyTile & 0xfe) == TILE_ACTOR_FLYING_CARPET))
+                if (local_12_ab == 1 && ((D_587c_partyTile & 0xfc) == TILE_ACTOR_SKIFF || (D_587c_partyTile & 0xfe) == TILE_ACTOR_FLYING_CARPET))
                 {
                     ULTIMA_1850_PrintString(_TEXT(0x2bb3, "Rough seas!\n"));
                     ULTIMA_3522(D_5896_map_x, D_5897_map_y);
                     MAINOUT_109e();
                 }
-                if ((local_12 & 0xfc) == TILE_MAP_WATERFALL)
+                if ((local_12_ab & 0xfc) == TILE_MAP_WATERFALL)
                 {
                     OUTSUBS_0458_Falls();
                 }
@@ -1048,7 +1048,7 @@ void MAINOUT_0d22_Entry(void)
 
 static int MAINOUT_0d8c(void)
 {
-    int local_6;
+    int local_6_an;
     int local_4;
 
     if (D_5895_map_level > 0x7f)
@@ -1056,14 +1056,14 @@ static int MAINOUT_0d8c(void)
         return 3;
     }
 
-    local_6 = *ULTIMA_4402_GetTileAddr(D_5896_map_x, D_5897_map_y);
-    if (local_6 >= TILE_MAP_20 && local_6 <= TILE_MAP_26)
+    local_6_an = *ULTIMA_4402_GetTileAddr(D_5896_map_x, D_5897_map_y);
+    if (local_6_an >= TILE_MAP_20 && local_6_an <= TILE_MAP_26)
     {
         local_4 = 0;
     }
     else
     {
-        if (local_6 == TILE_MAP_POISON || (local_6 >= TILE_MAP_9 && local_6 <= TILE_MAP_F))
+        if (local_6_an == TILE_MAP_POISON || (local_6_an >= TILE_MAP_9 && local_6_an <= TILE_MAP_F))
         {
             local_4 = 2;
         }
@@ -1084,16 +1084,16 @@ static int MAINOUT_0d8c(void)
 // CHECKED ([bx][si])
 static int MAINOUT_0e04(byte* param_1)
 {
+    int local_6_an;
     int local_4;
-    int local_6;
 
     local_4 = ULTIMA_2092_RandomRange(0, 0xff);
 
-    for (local_6 = 0; param_1[local_6] <= local_4; local_6++)
+    for (local_6_an = 0; param_1[local_6_an] <= local_4; local_6_an++)
     {
-        local_4 -= param_1[local_6];
+        local_4 -= param_1[local_6_an];
     }
-    return local_6;
+    return local_6_an;
 }
 
 static byte MAINOUT_0e4e(int param_1)
@@ -1167,10 +1167,10 @@ static void MAINOUT_0f4e(void)
 
 static void MAINOUT_0fc4(void)
 {
-    byte local_4;
-    int local_6;
-    int local_8;
     int local_a;
+    int local_8;
+    int local_6;
+    byte local_4_ab;
 
     for (local_6 = 0; local_6 < 0x80; local_6++)
     {
@@ -1179,10 +1179,10 @@ static void MAINOUT_0fc4(void)
         local_8 = D_5876;
         local_a = D_5878;
 
-        local_4 = MAINOUT_0e4e(*ULTIMA_4402_GetTileAddr(local_8, local_a));
-        if (local_4 != 0)
+        local_4_ab = MAINOUT_0e4e(*ULTIMA_4402_GetTileAddr(local_8, local_a));
+        if (local_4_ab != 0)
         {
-            if (local_4 != TILE_ACTOR_PIRATE || (*ULTIMA_4402_GetTileAddr(local_8, local_a) & 0xf0) != TILE_MAP_60)
+            if (local_4_ab != TILE_ACTOR_PIRATE || (*ULTIMA_4402_GetTileAddr(local_8, local_a) & 0xf0) != TILE_MAP_60)
             {
                 break;
             }
@@ -1192,8 +1192,8 @@ static void MAINOUT_0fc4(void)
     if (local_6 != 0x80)
     {
         local_6 = ULTIMA_38e4();
-        ULTIMA_3a74(local_4, local_4, local_8, local_a, D_5895_map_level, 0, local_6);
-        if (local_4 == TILE_ACTOR_PIRATE)
+        ULTIMA_3a74(local_4_ab, local_4_ab, local_8, local_a, D_5895_map_level, 0, local_6);
+        if (local_4_ab == TILE_ACTOR_PIRATE)
         {
             D_5c5a[local_6]._5 = 100;
         }
@@ -1223,7 +1223,7 @@ int MAINOUT_105c(int param_1)
 // CHECKED
 static void MAINOUT_109e(void)
 {
-    int local_6;
+    int local_6_an;
     int local_4;
 
     if ((D_587c_partyTile & 0xf8) == TILE_ACTOR_FRIGATE_20)
@@ -1237,11 +1237,11 @@ static void MAINOUT_109e(void)
         else
         {
             ULTIMA_1850_PrintString(_TEXT(0x6ada, "Ship sunk!\n"));
-            local_6 = D_5c5a[0]._7;
-            if (local_6 > 0 || D_57b0 != 0)
+            local_6_an = D_5c5a[0]._7;
+            if (local_6_an > 0 || D_57b0 != 0)
             {
                 ULTIMA_1850_PrintString(_TEXT(0x6ae6, "Abandon ship!\n"));
-                if (local_6 > 0)
+                if (local_6_an > 0)
                 {
                     D_587c_partyTile = (D_587c_partyTile & 3) + TILE_ACTOR_SKIFF;
                 }
@@ -1277,9 +1277,9 @@ static void MAINOUT_109e(void)
 
 static void MAINOUT_1168(int param_1, int param_2, int param_3)
 {
-    int local_4;
-    byte local_6;
     byte local_8;
+    byte local_6;
+    int local_4_ab;
 
     if (param_2 == 0)
     {
@@ -1302,8 +1302,8 @@ static void MAINOUT_1168(int param_1, int param_2, int param_3)
 
     local_6 = D_5c5a[param_1]._2_x - D_5896_map_x + 5;
     local_8 = D_5c5a[param_1]._3_y - D_5897_map_y + 5;
-    local_4 = COMSUBS_12de(local_6, local_8, 5, 5, 1);
-    if (local_4 != 0)
+    local_4_ab = COMSUBS_12de(local_6, local_8, 5, 5, 1);
+    if (local_4_ab != 0)
     {
         ULTIMA_5910_UpdateFrame();
         ULTIMA_3522(D_5896_map_x, D_5897_map_y);
@@ -1374,12 +1374,12 @@ static void MAINOUT_1248(int param_1)
 
 static int MAINOUT_131a(int param_1)
 {
+    byte local_e;
     int local_c;
-    int local_4;
+    byte local_a;
     int local_8;
     int local_6;
-    byte local_a;
-    byte local_e;
+    int local_4_ab;
 
     local_c = D_5c5a[param_1]._0_tile;
     local_6 = abs(D_5c5a[param_1]._2_x - D_5896_map_x);
@@ -1410,8 +1410,8 @@ static int MAINOUT_131a(int param_1)
             local_a = D_5c5a[param_1]._2_x - D_5896_map_x + 5;
             local_e = D_5c5a[param_1]._3_y - D_5897_map_y + 5;
 
-            local_4 = COMSUBS_12de(local_a, local_e, 5, 5, 3);
-            if (local_4 != 0)
+            local_4_ab = COMSUBS_12de(local_a, local_e, 5, 5, 3);
+            if (local_4_ab != 0)
             {
                 ULTIMA_3522(D_5896_map_x, D_5897_map_y);
                 MAINOUT_109e();
@@ -1453,7 +1453,7 @@ static int MAINOUT_14c8(int param_1, int param_2)
 
 static int MAINOUT_14ea(int param_1)
 {
-    int local_6;
+    int local_6_an;
     int local_4;
 
     local_4 = abs(D_5c5a[param_1]._2_x - D_5896_map_x);
@@ -1462,15 +1462,15 @@ static int MAINOUT_14ea(int param_1)
         local_4 = 0x100 - local_4;
     }
 
-    local_6 = abs(D_5c5a[param_1]._3_y - D_5897_map_y);
-    if (local_6 > 0x7f)
+    local_6_an = abs(D_5c5a[param_1]._3_y - D_5897_map_y);
+    if (local_6_an > 0x7f)
     {
-        local_6 = 0x100 - local_6;
+        local_6_an = 0x100 - local_6_an;
     }
 
-    if (local_4 < 6 && local_6 < 6)
+    if (local_4 < 6 && local_6_an < 6)
     {
-        return D_2c18[local_4 + local_6 * 0xb];
+        return D_2c18[local_4 + local_6_an * 0xb];
     }
 
     return 0;
@@ -1482,7 +1482,7 @@ static void MAINOUT_1578(int param_1, int param_2, int param_3)
     int local_c;
     int local_a;
     int local_8;
-    int local_4;
+    int local_4_ab;
 
     local_6 = D_5c5a[param_1]._0_tile;
     local_8 = D_5c5a[param_1]._2_x + param_2;
@@ -1492,22 +1492,22 @@ static void MAINOUT_1578(int param_1, int param_2, int param_3)
     {
         if (param_2 == 0 && param_3 == -1)
         {
-            local_4 = 0;
+            local_4_ab = 0;
         }
         else if (param_2 == 1 && param_3 == 0)
         {
-            local_4 = 1;
+            local_4_ab = 1;
         }
         else if (param_2 == 0 && param_3 == 1)
         {
-            local_4 = 2;
+            local_4_ab = 2;
         }
         else if (param_2 == -1 && param_3 == 0)
         {
-            local_4 = 3;
+            local_4_ab = 3;
         }
 
-        D_5c5a[param_1]._0_tile = D_5c5a[param_1]._1_animTile = local_4 + TILE_ACTOR_PIRATE;
+        D_5c5a[param_1]._0_tile = D_5c5a[param_1]._1_animTile = local_4_ab + TILE_ACTOR_PIRATE;
     }
     else if (local_6 != TILE_ACTOR_DC && local_6 != TILE_ACTOR_94 && local_6 != TILE_ACTOR_D8 && local_6 != TILE_ACTOR_F0)
     {
@@ -1553,31 +1553,31 @@ static void MAINOUT_1578(int param_1, int param_2, int param_3)
 
 static void MAINOUT_16fc(int param_1)
 {
-    int local_10;
+    int local_10_ad;
     int local_c;
     int local_e;
     int local_a;
     int local_8;
     int local_6;
-    int local_4;
+    int local_4_ab;
 
     local_6 = D_5c5a[param_1]._2_x;
     local_8 = D_5c5a[param_1]._3_y;
 
-    local_4 = 0;
+    local_4_ab = 0;
     local_a = local_6 - 1;
     local_c = local_8 + 1;
     local_e = local_6 + 1;
-    local_10 = local_8 - 1;
+    local_10_ad = local_8 - 1;
 
     // bug?
-    for (; local_4 < 3; local_4++)
+    for (; local_4_ab < 3; local_4_ab++)
     {
         switch (ULTIMA_2092_RandomRange(0, 3))
         {
         case 0:
             // 1760
-            if (MAINOUT_1482(param_1, local_6, local_10) != 0)
+            if (MAINOUT_1482(param_1, local_6, local_10_ad) != 0)
             {
                 MAINOUT_1578(param_1, 0, -1);
             }
@@ -1618,7 +1618,7 @@ static void MAINOUT_17d4(int param_1, int param_2)
     int local_e;
     int local_a;
     int local_6;
-    int local_4;
+    int local_4_ab;
 
     local_8 = D_5c5a[param_1]._2_x;
     local_c = D_5c5a[param_1]._3_y;
@@ -1637,12 +1637,12 @@ static void MAINOUT_17d4(int param_1, int param_2)
     // 1828
     if (local_a == 0)
     {
-        local_4 = 0;
+        local_4_ab = 0;
     }
     else if (local_a > 0) // 1836
     {
         param_2 = 1; 
-        local_4 = -1;
+        local_4_ab = -1;
         // -> 1864
     }
     else
@@ -1655,7 +1655,7 @@ static void MAINOUT_17d4(int param_1, int param_2)
 
         if (local_a < 0) // 1855
         {
-            local_4 = param_2 = 1;
+            local_4_ab = param_2 = 1;
         }
         else if (local_a > 0) // 1872
         {
@@ -1693,13 +1693,13 @@ static void MAINOUT_17d4(int param_1, int param_2)
     // 18ae
     if (ULTIMA_2092_RandomRange(0, 1) == 1)
     {
-        if (local_4 != 0)
+        if (local_4_ab != 0)
         {
             // 18c3
-            if (MAINOUT_1482(param_1, local_8 + local_4, local_c) != 0 && MAINOUT_14c8(local_8 + local_4, local_c) != 0)
+            if (MAINOUT_1482(param_1, local_8 + local_4_ab, local_c) != 0 && MAINOUT_14c8(local_8 + local_4_ab, local_c) != 0)
             {
                 // 18e2
-                MAINOUT_1578(param_1, local_4, 0);
+                MAINOUT_1578(param_1, local_4_ab, 0);
                 return;
             }
         }
@@ -1730,13 +1730,13 @@ static void MAINOUT_17d4(int param_1, int param_2)
             }
         }
 
-        if (local_4 != 0)
+        if (local_4_ab != 0)
         {
             // 195b
-            if (MAINOUT_1482(param_1, local_8 + local_4, local_c) != 0 && MAINOUT_14c8(local_8 + local_4, local_c) != 0)
+            if (MAINOUT_1482(param_1, local_8 + local_4_ab, local_c) != 0 && MAINOUT_14c8(local_8 + local_4_ab, local_c) != 0)
             {
                 // -> 18e2
-                MAINOUT_1578(param_1, local_4, 0);
+                MAINOUT_1578(param_1, local_4_ab, 0);
                 return;
             }
         }
@@ -1750,7 +1750,7 @@ static void MAINOUT_198c(int param_1)
 {
     int local_8;
     int local_6;
-    uint local_4;
+    uint local_4_ab;
 
     local_8 = D_5c5a[param_1]._0_tile;
     if ((local_8 & 0xfc) == TILE_ACTOR_WHIRLPOOL)
@@ -1784,8 +1784,8 @@ static void MAINOUT_198c(int param_1)
 
         local_6 = D_5c5a[param_1]._0_tile - TILE_ACTOR_PIRATE;
 
-        local_4 = D_2bf8[local_6][D_5892_wind_dir - 1];
-        if (local_4 != 4 && local_4 < ++D_5c5a[param_1]._7)
+        local_4_ab = D_2bf8[local_6][D_5892_wind_dir - 1];
+        if (local_4_ab != 4 && local_4_ab < ++D_5c5a[param_1]._7)
         {
             D_5c5a[param_1]._7 = 0;
             return;
@@ -1797,7 +1797,7 @@ static void MAINOUT_198c(int param_1)
 
 int MAINOUT_1a60(void)
 {
-    int local_6;
+    int local_6_an;
     int local_4;
 
     local_4 = 0;
@@ -1829,24 +1829,24 @@ int MAINOUT_1a60(void)
         MAINOUT_0fc4();
     }
 
-    for (local_6 = 0x1f; 0 < local_6; local_6--)
+    for (local_6_an = 0x1f; 0 < local_6_an; local_6_an--)
     {
-        if (MAINOUT_105c(D_5c5a[local_6]._0_tile) != 0)
+        if (MAINOUT_105c(D_5c5a[local_6_an]._0_tile) != 0)
         {
-            local_4 += MAINOUT_131a(local_6);
+            local_4 += MAINOUT_131a(local_6_an);
             if (local_4 == 0)
             {
-                MAINOUT_198c(local_6);
+                MAINOUT_198c(local_6_an);
             }
         }
     }
 
-    for (local_6 = 0x1f; 0 < local_6; local_6--)
+    for (local_6_an = 0x1f; 0 < local_6_an; local_6_an--)
     {
-        if (MAINOUT_105c(D_5c5a[local_6]._0_tile) != 0 &&
-            ((byte)(D_5c5a[local_6]._2_x - D_589b) > 0x1f || (byte)(D_5c5a[local_6]._3_y - D_589c) > 0x1f))
+        if (MAINOUT_105c(D_5c5a[local_6_an]._0_tile) != 0 &&
+            ((byte)(D_5c5a[local_6_an]._2_x - D_589b) > 0x1f || (byte)(D_5c5a[local_6_an]._3_y - D_589c) > 0x1f))
         {
-            ULTIMA_3a74(0, 0, 0, 0, 0, 0, local_6);
+            ULTIMA_3a74(0, 0, 0, 0, 0, 0, local_6_an);
         }
     }
 
@@ -1857,7 +1857,7 @@ static void MAINOUT_1b3e(void)
 {
     int local_8;
     int local_6;
-    byte local_4;
+    byte local_4_ab;
 
     ULTIMA_1850_PrintString(_TEXT(0x6b2c, "Caught!\n\nThe trolls demand a "));
     ULTIMA_39fc_GetFirstActivePartyMember();
@@ -1865,13 +1865,13 @@ static void MAINOUT_1b3e(void)
     ULTIMA_1a3e_PrintNumber(local_8, 2, 0x20);
     ULTIMA_1850_PrintString(_TEXT(0x6b4a, " gp toll!\n\nDost thou pay?"));
 
-    while ((local_4 = ULTIMA_266c_GetChar()) != 'Y' && local_4 != 'N')
+    while ((local_4_ab = ULTIMA_266c_GetChar()) != 'Y' && local_4_ab != 'N')
     {
     }
 
-    ULTIMA_16ba_PrintChar(local_4);
+    ULTIMA_16ba_PrintChar(local_4_ab);
     ULTIMA_16ba_PrintChar('\n');
-    if (local_4 == 'Y')
+    if (local_4_ab == 'Y')
     {
         D_57aa -= local_8;
         D_a9fa = 1;
@@ -1890,7 +1890,7 @@ static void MAINOUT_1b3e(void)
 
 static void MAINOUT_1be8(void)
 {
-    int local_6;
+    int local_6_an;
     int local_4;
 
     if (ULTIMA_2092_RandomRange(0, 7) == 0 && D_587c_partyTile == TILE_ACTOR_AVATAR)
@@ -1906,7 +1906,7 @@ static void MAINOUT_1be8(void)
                 ULTIMA_1850_PrintString(D_55a8_party[local_4].name);
                 ULTIMA_1850_PrintString(_TEXT(0x6b8c, " sneaks across"));
 
-                for (local_6 = 0; local_6 < 3; local_6++)
+                for (local_6_an = 0; local_6_an < 3; local_6_an++)
                 {
                     ULTIMA_3ae6(5);
                     ULTIMA_16ba_PrintChar('.');

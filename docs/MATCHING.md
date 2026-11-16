@@ -156,13 +156,22 @@ Each entry gives the evidence. Add to this list as you learn.
 - **Switches.** `/Ox /Or /Gs /Gc /Zp` (from u5d's `build.bat`) is right. For `shoppes3.c`, 11
   other combinations were all far worse: the best of them differed in 1,925 bytes against
   85.
-- **Stack slots of locals.** These are not MSC 4.0's rule (a hash of the names, as found in
-  u4-decompiled). In `SHOPPES3_0000`, none of the following moved the slots:
-  - swapping the declaration order;
-  - renaming the locals;
-  - adding 0–15 file-scope declarations before the function.
+- **Stack slots of locals: a name hash.** MSC 5.1 keeps a function's locals in a hash table
+  of 16 buckets.
+  - The bucket is the sum of the name's characters modulo 16.
+  - Locals get their slots bucket 0 first (nearest BP).
+  - Within a bucket, the last declared comes first.
 
-  *Under investigation*; see `docs/PLAN.md`.
+  So *renaming a local can move it on the stack*. This held for every one of the 190
+  functions with two or more stack locals in u5d's own listings (`research/slots.py`,
+  `research/slots_rules.py`). It is MSC 4.0's rule from u4-decompiled with 16 buckets
+  instead of 11. Declaration order matters only between locals of the same bucket.
+
+  u5d's `local_N` names (from Ghidra) say where each local was in the original: [bp-(N-2)].
+  `tools/slots.py FILE.c --apply` renames locals so the hash order gives the original
+  order. It renames as few as possible, as `local_N_x`, and the underscore keeps N
+  readable. `tools/slots.py --hash NAME` prints a name's bucket, for choosing real names
+  later. This alone took the exact functions from 185 to 285.
 - **Pass 1 heap.** `vars.c` makes C1 stop with C1002 "out of heap space", even with C1L.EXE.
   The data has to be split into the modules it belongs to anyway (see "DGROUP" in
   `docs/PLAN.md`).

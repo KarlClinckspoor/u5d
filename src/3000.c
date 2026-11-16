@@ -492,7 +492,7 @@ static int ULTIMA_3776(byte param_1)
 {
     int local_6;
     int local_8;
-    int local_4;
+    int local_4_ab;
 
     for (local_8 = 0x1f; local_8 >= 0; local_8--)
     {
@@ -505,11 +505,11 @@ static int ULTIMA_3776(byte param_1)
         {
             if (D_5896_map_x >= D_5c5a[local_8]._2_x)
             {
-                local_4 = D_5896_map_x - D_5c5a[local_8]._2_x;
+                local_4_ab = D_5896_map_x - D_5c5a[local_8]._2_x;
             }
             else
             {
-                local_4 = ~(D_5896_map_x - D_5c5a[local_8]._2_x) + 1;
+                local_4_ab = ~(D_5896_map_x - D_5c5a[local_8]._2_x) + 1;
             }
 
             if (D_5897_map_y >= D_5c5a[local_8]._3_y)
@@ -527,7 +527,7 @@ static int ULTIMA_3776(byte param_1)
             }
 
             // NOT MATCHING
-            if (local_4 >= 6 && local_6 >= 6)
+            if (local_4_ab >= 6 && local_6 >= 6)
             {
                 return local_8;
             }
@@ -540,9 +540,9 @@ static int ULTIMA_3776(byte param_1)
 // CHECKED
 static int ULTIMA_3868(int param_1, int param_2, int param_3)
 {
-    byte local_4;
-    byte local_6;
     int local_8;
+    byte local_6;
+    byte local_4_ab;
 
     for (local_8 = 1; local_8 < 0x18; local_8++)
     {
@@ -551,9 +551,9 @@ static int ULTIMA_3868(int param_1, int param_2, int param_3)
         {
             if (param_3 != 0)
             {
-                local_4 = D_5c5a[local_8]._2_x - D_5896_map_x + 5;
+                local_4_ab = D_5c5a[local_8]._2_x - D_5896_map_x + 5;
                 local_6 = D_5c5a[local_8]._3_y - D_5897_map_y + 5;
-                if (local_4 > 10 || local_6 > 10)
+                if (local_4_ab > 10 || local_6 > 10)
                 {
                     return local_8;
                 }
@@ -607,17 +607,17 @@ void ULTIMA_39cc_SetTile(byte new_tile_id, byte x, byte y)
 int ULTIMA_39fc_GetFirstActivePartyMember(void)
 {
     byte local_6;
-    int local_4;
+    int local_4_ab;
     int local_8;
 
     local_8 = 0;
 
-    for (local_4 = 0; local_4 < D_585b; local_4++)
+    for (local_4_ab = 0; local_4_ab < D_585b; local_4_ab++)
     {
-        local_6 = D_55a8_party[local_4].status;
+        local_6 = D_55a8_party[local_4_ab].status;
         if (local_6 == STATUS_GOOD || local_6 == STATUS_POISONED)
         {
-            D_5876 = local_4;
+            D_5876 = local_4_ab;
             return 0;
         }
         else if (local_6 == STATUS_SLEEP)
@@ -683,45 +683,45 @@ void ULTIMA_3b1c_GetString(char* param_1, int param_2)
 {
     int local_8;
     int local_6;
-    int local_4;
+    int local_4_ab;
 
-    local_4 = 0; // di
+    local_4_ab = 0; // di
     local_8 = D_538c;
     D_538c = 0;
     do
     {
         local_6 = ULTIMA_266c_GetChar();
-        if ((local_6 == U5_KEY_BACKSPACE || local_6 == U5_KEY_LEFT) && local_4 != 0)
+        if ((local_6 == U5_KEY_BACKSPACE || local_6 == U5_KEY_LEFT) && local_4_ab != 0)
         {
             // 3b43
             ULTIMA_1fa0_Backspace(1);
-            local_4--;
+            local_4_ab--;
         }
-        else if ((local_6 == U5_KEY_ESC) && (local_4 != 0))
+        else if ((local_6 == U5_KEY_ESC) && (local_4_ab != 0))
         {
-            ULTIMA_1fa0_Backspace(local_4);
-            local_4 = 0;
+            ULTIMA_1fa0_Backspace(local_4_ab);
+            local_4_ab = 0;
         }
-        else if (0x1f < local_6 && local_6 < 0x80 && local_4 < param_2)
+        else if (0x1f < local_6 && local_6 < 0x80 && local_4_ab < param_2)
         {
-            param_1[local_4++] = (char)local_6;
+            param_1[local_4_ab++] = (char)local_6;
             ULTIMA_16ba_PrintChar(local_6);
         }
     } while (local_6 != U5_KEY_ENTER);
-    param_1[local_4] = 0;
+    param_1[local_4_ab] = 0;
     D_538c = local_8;
 }
 
 int ULTIMA_3b9e(int param_1_maxLen)
 {
+    int local_10_ad;
     uint local_e;
     int local_c;
-    int local_10;
     int local_a;
     byte local_8[6];
 
     local_c = 0;
-    local_10 = 0;
+    local_10_ad = 0;
     local_a = 0;
     if (param_1_maxLen > 5)
     {
@@ -770,20 +770,20 @@ int ULTIMA_3b9e(int param_1_maxLen)
 
     while (--local_c > 0)
     {
-        local_10 += (local_8[local_c] - 0x30) * D_6a0a[local_a];
+        local_10_ad += (local_8[local_c] - 0x30) * D_6a0a[local_a];
         local_a++;
     }
 
     if (local_8[0] == U5_KEY_MINUS)
     {
-        local_10 = -local_10;
+        local_10_ad = -local_10_ad;
     }
     else if (local_8[0] >= 0x30)
     {
-        local_10 += D_6a0a[local_a] * (local_8[0] - 0x30);
+        local_10_ad += D_6a0a[local_a] * (local_8[0] - 0x30);
     }
 
-    return local_10;
+    return local_10_ad;
 }
 
 void DNGLOOK_109e(void); // NOTE: SIC
@@ -793,7 +793,7 @@ int MAINOUT_1a60(void);
 // hole up from outside
 static void ULTIMA_3c9a_HoleUpCmd(void)
 {
-    int local_10;
+    int local_10_ad;
     byte local_e;
     int local_c;
     ActorFmt* local_a;
@@ -878,7 +878,7 @@ static void ULTIMA_3c9a_HoleUpCmd(void)
                     return;
                 }
 
-                local_10 = local_4 - 0x30;
+                local_10_ad = local_4 - 0x30;
 
                 local_6 = 0;
                 for (local_c = 0; local_c != D_585b; local_c++)
@@ -925,7 +925,7 @@ static void ULTIMA_3c9a_HoleUpCmd(void)
                     D_58a1 = 6;
                     DNGLOOK_1130();
                     DNGLOOK_0d3e();
-                    ULTIMA_5f86_SpecialMapHandler(D_58a1, local_8, local_10);
+                    ULTIMA_5f86_SpecialMapHandler(D_58a1, local_8, local_10_ad);
                     ULTIMA_251e_SwitchDisks(2);
                     DNGLOOK_109e(); // NOTE: sic (bug?)
 
@@ -935,7 +935,7 @@ static void ULTIMA_3c9a_HoleUpCmd(void)
                 }
                 else
                 {
-                    ULTIMA_6360_Camping(local_8, local_10);
+                    ULTIMA_6360_Camping(local_8, local_10_ad);
                 }
             }
         }

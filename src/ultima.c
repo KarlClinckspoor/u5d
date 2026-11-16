@@ -30,8 +30,8 @@ extern int g_enableDebugOverlay;
 // 0000
 int CDECL main(int argc, char** argv/*, char** envp*/)
 {
-    u16 local_8;
-    u8 local_6; // hard drive letter (0xff for floppy)
+    u16 local_8_al;
+    u8 local_6_an; // hard drive letter (0xff for floppy)
     u8 local_4;
     u16 local_2;
 
@@ -73,14 +73,14 @@ int CDECL main(int argc, char** argv/*, char** envp*/)
     D_a9c2 = 1;
 
     if ((D_a9c8[0] = ULTIMA_16a6_GetDefaultDrive()) >= 'C')
-        local_6 = D_a9c8[0];
+        local_6_an = D_a9c8[0];
     else
-        local_6 = 0xff;
+        local_6_an = 0xff;
 
     // 0090
-    D_a9cd = local_6;
-    D_a9ca = local_6;
-    D_a9c9 = local_6;
+    D_a9cd = local_6_an;
+    D_a9ca = local_6_an;
+    D_a9c9 = local_6_an;
 
     D_a9cb = 0xff;
     D_b11c = D_b21e;
@@ -93,7 +93,7 @@ int CDECL main(int argc, char** argv/*, char** envp*/)
     g_enableDebugOverlay = 1;
 #endif
 
-    local_8 = 0;
+    local_8_al = 0;
 
     // 00b8
     // main game loop
@@ -105,7 +105,7 @@ int CDECL main(int argc, char** argv/*, char** envp*/)
         {
             MAINOUT_0d22_Entry();
             local_2 = 1;
-            local_8 = 0;
+            local_8_al = 0;
         }
         
         // 00d1
@@ -114,16 +114,16 @@ int CDECL main(int argc, char** argv/*, char** envp*/)
             // 00db
             if (D_5893_map_id < 0x21)
             {
-                TOWN_11f0_Entry(local_2 != 0 || local_8 != 0);
+                TOWN_11f0_Entry(local_2 != 0 || local_8_al != 0);
                 TOWN_141e_MainLoop();
-                local_8 = 0;
+                local_8_al = 0;
             }
             else
             {
                 // 0104
                 ULTIMA_251e_SwitchDisks(2);
                 DUNGEON_0e2e_MainLoop(local_2);
-                local_8 = 1;
+                local_8_al = 1;
             }
 
             // 0116

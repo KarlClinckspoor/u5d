@@ -150,8 +150,8 @@ static void TALK_00e6_TalkToMerchant(int param_1)
 // CHECKED
 static int TALK_01e2(void)
 {
+    int local_16_an;
     int local_14;
-    int local_16;
     char local_12[0xf];
 
     if (D_5893_map_id != 0x12)
@@ -180,7 +180,7 @@ static int TALK_01e2(void)
         else
         {
             // 0230
-            local_16 = 0;
+            local_16_an = 0;
 
             // 0243 (NOT MATCHING: loop structure)
             for (local_14 = 0; local_14 < D_585b; local_14++)
@@ -188,13 +188,13 @@ static int TALK_01e2(void)
                 // 025a
                 if (D_55a8_party[local_14].status != STATUS_DEAD)
                 {
-                    local_16 += 10;
+                    local_16_an += 10;
                 }
             }
 
             // 026c
             ULTIMA_1850_PrintString(_TEXT(0x90cc, "A guard demands\na "));
-            ULTIMA_1a3e_PrintNumber(local_16, 2, 0x20);
+            ULTIMA_1a3e_PrintNumber(local_16_an, 2, 0x20);
             ULTIMA_1850_PrintString(_TEXT(0x90e0, " gp tribute\nto Blackthorn!"));
 
             if (TALK_00ac_AskPay() != 0)
@@ -204,10 +204,10 @@ static int TALK_01e2(void)
             }
 
             // 028f
-            if (D_57aa >= local_16)
+            if (D_57aa >= local_16_an)
             {
                 // 029a
-                D_57aa -= local_16;
+                D_57aa -= local_16_an;
 
                 ULTIMA_2900_UpdateVitalsDisplay();
                 return 0;
@@ -330,11 +330,11 @@ int TALK_031e_TalkToNpc(int param_1)
 
 int TALK_041c_TalkCmd(void)
 {
+    int local_c;
     int local_a;
     int local_8;
-    int local_c;
-    int local_4;
     int local_6;
+    int local_4_ab;
 
     if (ULTIMA_35ec_SelectDirection() == 0)
     {
@@ -358,7 +358,7 @@ int TALK_041c_TalkCmd(void)
     }
     else
     {
-        local_4 = TOWN_011e(D_5876);
+        local_4_ab = TOWN_011e(D_5876);
         switch (*ULTIMA_4402_GetTileAddr(local_6, local_a))
         {
         case TILE_MAP_BED:
@@ -368,7 +368,7 @@ int TALK_041c_TalkCmd(void)
             ULTIMA_1850_PrintString(_TEXT(0x91f6, "\nNo response!\n"));
             break;
         default:
-            return TALK_031e_TalkToNpc(local_4);
+            return TALK_031e_TalkToNpc(local_4_ab);
         }
     }
 
@@ -382,7 +382,7 @@ static void TALK_04da_PrintQuoteMark(void) { TALK_0f32_ProcessChar(0x80 | 0x22);
 // CHECKED
 static void TALK_04e2_PrintWord(void)
 {
-    byte local_6;
+    byte local_6_an;
     int local_4;
 
     local_4 = 0;
@@ -394,24 +394,24 @@ static void TALK_04e2_PrintWord(void)
         {
             // c4d5 -> c47c
             ULTIMA_1c9e_SelectCharset((D_bce4[local_4] & 0x80) == 0);
-            local_6 = D_bce4[local_4] & 0x7f;
+            local_6_an = D_bce4[local_4] & 0x7f;
             local_4++;
 
-            if (ULTIMA_1f12_GetCurrentTextX() != 0 || local_6 != 0x20)
+            if (ULTIMA_1f12_GetCurrentTextX() != 0 || local_6_an != 0x20)
             {
                 // c49a
-                if (D_4af3 < 0xf || local_6 != 10)
+                if (D_4af3 < 0xf || local_6_an != 10)
                 {
                     // c4a7
-                    if (local_6 != 10)
+                    if (local_6_an != 10)
                     {
                         D_4af3 = ULTIMA_1f12_GetCurrentTextX();
                     }
 
                     // c4b3
-                    ULTIMA_16ba_PrintChar(local_6);
+                    ULTIMA_16ba_PrintChar(local_6_an);
                 }
-                else if (local_6 == 10) // c4be
+                else if (local_6_an == 10) // c4be
                 {
                     D_4af3 = 0;
                 }
@@ -617,15 +617,15 @@ static void TALK_07e4_PrintAvatarName(void)
 // CHECKED
 static int TALK_080a_Join(void)
 {
-    int local_30; // 30..2f
-    byte* local_2e;   // 2e..2d
+    int local_30_ab; // 30..2f
+    byte* local_2e_an;   // 2e..2d
     char local_2c[4]; // 2c..29
     S_55a8 local_28;  // 28..09 (size: 0x20)
     char local_8[4];  // 08..05
-    int local_4;      // 04..03
+    int local_4_ab;      // 04..03
 
-    local_2e = D_bcde;
-    local_4 = 0xf;
+    local_2e_an = D_bcde;
+    local_4_ab = 0xf;
 
     if (D_585b == 6)
     {
@@ -638,11 +638,11 @@ static int TALK_080a_Join(void)
 
     TALK_075a_SelectNthTalkString(0);
 
-    local_30 = 0;
+    local_30_ab = 0;
 
     // 3 bytes
     memcpy(local_8, D_bcde, 3);
-    local_30 += 3;
+    local_30_ab += 3;
     D_bcde += 3;
 
     local_8[3] = 0;
@@ -652,23 +652,23 @@ static int TALK_080a_Join(void)
     while (1)
     {
         // 3 bytes
-        memcpy(local_2c, D_55a8_party[local_4].name, 3);
+        memcpy(local_2c, D_55a8_party[local_4_ab].name, 3);
 
         // c805
         if (TALK_0000_CompareStringNoCase(local_8, local_2c) != 0)
         {
-            // local_30 = DI;
+            // local_30_ab = DI;
             break;
         }
 
-        if (--local_4 == 0)
+        if (--local_4_ab == 0)
         {
             // c824
             TALK_0574_BuildOrPrintWord(0x22);
             TALK_0574_BuildOrPrintWord(10);
             ULTIMA_1850_PrintString(_TEXT(0x93a8, "\nSystem Error -\nNo Match!"));
-            D_bcde = local_2e;
-            // local_30 = DI;
+            D_bcde = local_2e_an;
+            // local_30_ab = DI;
 
             // -> c8b3
             return 1;
@@ -676,10 +676,10 @@ static int TALK_080a_Join(void)
     }
 
     // c848
-    D_55a8_party[local_4].mapId = 0;
+    D_55a8_party[local_4_ab].mapId = 0;
 
-    local_28 = D_55a8_party[local_4];
-    D_55a8_party[local_4] = D_55a8_party[D_585b];
+    local_28 = D_55a8_party[local_4_ab];
+    D_55a8_party[local_4_ab] = D_55a8_party[D_585b];
     D_55a8_party[D_585b] = local_28;
 
     D_585b++;
@@ -690,7 +690,7 @@ static int TALK_080a_Join(void)
     ULTIMA_2900_UpdateVitalsDisplay();
     TALK_04e2_PrintWord();
 
-    D_bcde = local_2e;
+    D_bcde = local_2e_an;
 
     return 1;
 }
@@ -859,7 +859,7 @@ static int TALK_0b04(void)
 {
     int local_8;
     int local_6;
-    byte local_4;
+    byte local_4_ab;
 
     while (1)
     {
@@ -873,12 +873,12 @@ static int TALK_0b04(void)
         }
         TALK_04d2_PrintCr();
         TALK_04d2_PrintCr();
-        for (local_4 = 0, local_6 = -1; local_4 < 0x22; local_4++)
+        for (local_4_ab = 0, local_6 = -1; local_4_ab < 0x22; local_4_ab++)
         {
-            local_8 = ULTIMA_6f1e((byte*)D_4aa8[local_4], D_bcf8);
+            local_8 = ULTIMA_6f1e((byte*)D_4aa8[local_4_ab], D_bcf8);
             if (local_8 != -1 && (local_8 == 0 || D_bcf8[local_8 - 1] == ' '))
             {
-                local_6 = TALK_0a54(local_4);
+                local_6 = TALK_0a54(local_4_ab);
                 if (local_6 == 0)
                 {
                     break;
@@ -954,7 +954,7 @@ static int TALK_0c5c(void)
 {
     int local_6;
     int local_8;
-    byte local_4;
+    byte local_4_ab;
 
     do
     {
@@ -981,12 +981,12 @@ static int TALK_0c5c(void)
 
         TALK_04d2_PrintCr();
         TALK_04d2_PrintCr();
-        for (local_4 = 0, local_6 = -1; local_4 < 0x22; local_4++)
+        for (local_4_ab = 0, local_6 = -1; local_4_ab < 0x22; local_4_ab++)
         {
-            local_8 = ULTIMA_6f1e(D_4aa8[local_4], D_bcf8);
+            local_8 = ULTIMA_6f1e(D_4aa8[local_4_ab], D_bcf8);
             if (local_8 != -1 && (local_8 == 0 || D_bcf8[local_8 - 1] == ' '))
             {
-                local_6 = TALK_0a54(local_4);
+                local_6 = TALK_0a54(local_4_ab);
                 if (local_6 == 0)
                 {
                     break;
@@ -1458,14 +1458,14 @@ static void TALK_1180(void)
 
 static void TALK_127e_StartTalk(int param_1)
 {
-    uint local_4;
-    s16* local_6;
-    s16 local_8;
-    s16 local_a;
     s16 local_c;
+    s16 local_a;
+    s16 local_8;
+    s16* local_6;
+    uint local_4_ab;
 
-    local_4 = (D_5893_map_id - 1) >> 3;
-    ULTIMA_256e_ReadFileFromDisk(D_4aa0[local_4], D_b21e, 0x200, 0);
+    local_4_ab = (D_5893_map_id - 1) >> 3;
+    ULTIMA_256e_ReadFileFromDisk(D_4aa0[local_4_ab], D_b21e, 0x200, 0);
 
     // 12a9
     local_6 = (s16*)D_b21e;
@@ -1478,7 +1478,7 @@ static void TALK_127e_StartTalk(int param_1)
 
     // 12d6
     local_8 = *local_6;
-    ULTIMA_256e_ReadFileFromDisk(D_4aa0[local_4], D_b21e, 0x400, local_8);
+    ULTIMA_256e_ReadFileFromDisk(D_4aa0[local_4_ab], D_b21e, 0x400, local_8);
 
     if (TALK_111c() == 0)
     {

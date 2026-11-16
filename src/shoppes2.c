@@ -235,8 +235,8 @@ static int SHOPPES2_01f4(void)
 
 static int SHOPPES2_0380(int param_1)
 {
+    int local_6_an;
     int local_4;
-    int local_6;
 
     ULTIMA_16ba_PrintChar((byte)D_4c2a[D_bd16]);
     ULTIMA_16ba_PrintChar('\n');
@@ -248,14 +248,14 @@ static int SHOPPES2_0380(int param_1)
     ULTIMA_16ba_PrintChar('\"');
     SHOPPES_017a(D_4c66[ULTIMA_2092_RandomRange(0, 6)]);
     ULTIMA_1850_PrintString(_TEXT(0x9c4a, "\n\nHow many wouldst\nthou like?\" "));
-    local_4 = local_6 = ULTIMA_3b9e(2);
-    if (local_6 == 0)
+    local_4 = local_6_an = ULTIMA_3b9e(2);
+    if (local_6_an == 0)
     {
         ULTIMA_1850_PrintString(_TEXT(0x9c6a, "\n\n\"Hrumph.\""));
         return 2;
     }
 
-    for (; local_6 != 0; local_6--)
+    for (; local_6_an != 0; local_6_an--)
     {
         // e61f
         if (D_57aa >= D_b118)
@@ -268,7 +268,7 @@ static int SHOPPES2_0380(int param_1)
         }
         else
         {
-            local_4 -= local_6;
+            local_4 -= local_6_an;
             // e654
             ULTIMA_1850_PrintString(_TEXT(0x9c76, "\n\n"));
             if (local_4 == 0)
@@ -309,7 +309,7 @@ static int SHOPPES2_0380(int param_1)
 static int SHOPPES2_0508(void)
 {
     int local_6;
-    int local_4;
+    int local_4_ab;
     int local_8;
 
     ULTIMA_16ba_PrintChar((byte)D_4c30[D_bd16]);
@@ -329,15 +329,15 @@ static int SHOPPES2_0508(void)
             return 0;
         }
 
-        local_4 = 0;
+        local_4_ab = 0;
         local_8 = -1;
-        for (; local_4 < 0x1a; local_4++)
+        for (; local_4_ab < 0x1a; local_4_ab++)
         {
-            local_6 = ULTIMA_6f1e((byte*)D_4c74[local_4], D_bcf8);
+            local_6 = ULTIMA_6f1e((byte*)D_4c74[local_4_ab], D_bcf8);
             if (local_6 == 0 || (0 < local_6 && D_bcf8[local_6 - 1] == ' '))
             {
                 // e765
-                local_8 = local_4;
+                local_8 = local_4_ab;
                 break;
             }
         }
@@ -354,18 +354,18 @@ static int SHOPPES2_0508(void)
             D_b118 = D_4d10[local_8];
             SHOPPES_017a(0x134e);
             ULTIMA_1850_PrintString(_TEXT(0x9f5c, "\n\nFair 'nuff?\" "));
-            local_4 = 0;
+            local_4_ab = 0;
 
             // NOT MATCHING
-            while ((byte)local_4 != 'N')
+            while ((byte)local_4_ab != 'N')
             {
-                local_4 = ULTIMA_266c_GetChar();
-                if ((uint)local_4 == 'Y')
+                local_4_ab = ULTIMA_266c_GetChar();
+                if ((uint)local_4_ab == 'Y')
                     break;
             }
 
             // e7b3
-            if ((uint)local_4 == 'N')
+            if ((uint)local_4_ab == 'N')
             {
                 ULTIMA_1850_PrintString(_TEXT(0x9f6c, "No\n\n"));
                 return 0;
@@ -403,8 +403,8 @@ static void SHOPPES2_0664(void) { SHOPPES_0202(D_bd18); }
 
 void SHOPPES2_066c(int param_1)
 {
+    int local_6_an;
     byte local_4;
-    int local_6;
 
     D_bd16 = D_4d4c[D_b114];
     D_bd1e = D_bd18 = 0;
@@ -437,7 +437,7 @@ void SHOPPES2_066c(int param_1)
         while (1)
         {
             local_4 = ULTIMA_266c_GetChar();
-            local_6 = 0;
+            local_6_an = 0;
 
             if (local_4 == U5_KEY_SPACE || local_4 == U5_KEY_ESC || local_4 == U5_KEY_ENTER)
             {
@@ -456,8 +456,8 @@ void SHOPPES2_066c(int param_1)
             // e8ea
             if (D_4c24[D_bd16] == local_4)
             {
-                local_6 = SHOPPES2_01f4();
-                if (local_6 == 1)
+                local_6_an = SHOPPES2_01f4();
+                if (local_6_an == 1)
                 {
                     return;
                 }
@@ -466,8 +466,8 @@ void SHOPPES2_066c(int param_1)
             // e907
             if (D_4c2a[D_bd16] == local_4)
             {
-                local_6 = SHOPPES2_0380(param_1);
-                if (local_6 == 1)
+                local_6_an = SHOPPES2_0380(param_1);
+                if (local_6_an == 1)
                 {
                     return;
                 }
@@ -491,7 +491,7 @@ void SHOPPES2_066c(int param_1)
                 break;
         }
 
-        if (local_6 != 2)
+        if (local_6_an != 2)
         {
             D_bd18 = 1;
         }
@@ -588,13 +588,13 @@ static bool SHOPPES2_080e(int param_1, int param_2, int param_3)
 static void SHOPPES2_08a8(int param_1)
 {
     byte local_6;
-    int local_4;
+    int local_4_ab;
     byte* local_8;
     byte* local_a;
     
     local_a = local_8 = &D_55a8_party[param_1].intel;
 
-    local_4 = 0;
+    local_4_ab = 0;
     while (1)
     {
         SHOPPES_017a(0x18eb);
@@ -603,7 +603,7 @@ static void SHOPPES2_08a8(int param_1)
         case 0x46:
             // ead0
             ULTIMA_1850_PrintString(_TEXT(0x9fe4, "F\n\n"));
-            local_4 = 1;
+            local_4_ab = 1;
             if ((D_6605 & 0xc0) != 0)
             {
                 SHOPPES_017a(0x19f2);
@@ -650,8 +650,8 @@ static void SHOPPES2_08a8(int param_1)
                     D_6605 = 0x82;
 
                     // eba2 -> eba5 -> ec62 -> ec89
-                    local_4 = SHOPPES2_080e(1, 1, param_1);
-                    if (local_4 != 0)
+                    local_4_ab = SHOPPES2_080e(1, 1, param_1);
+                    if (local_4_ab != 0)
                     {
                         return;
                     }
@@ -681,7 +681,7 @@ static void SHOPPES2_08a8(int param_1)
             }
 
             // ec1e
-            local_4 = 1;
+            local_4_ab = 1;
 
             if (local_6 == 'Y')
             {
@@ -694,21 +694,21 @@ static void SHOPPES2_08a8(int param_1)
                 if ((D_6605 & 0xc0) == 0) // ec39
                 {
                     D_6605 = 0x40; // ec40
-                    local_4 = SHOPPES2_080e(1, 1, param_1);
+                    local_4_ab = SHOPPES2_080e(1, 1, param_1);
                 }
                 else if ((D_6605 & 0x80) != 0) // ec4a
                 {
                     // ec4a
                     SHOPPES_017a(0x193b);
                     D_6605++;
-                    local_4 = SHOPPES2_080e(0, 1, param_1);
+                    local_4_ab = SHOPPES2_080e(0, 1, param_1);
                 }
                 else
                 {
                     // ec6c
                     if ((D_6605 & 0x40) == 0)
                     {
-                        if (local_4 != 0)
+                        if (local_4_ab != 0)
                         {
                             return;
                         }
@@ -717,7 +717,7 @@ static void SHOPPES2_08a8(int param_1)
                     }
 
                     SHOPPES_017a(0x195f);
-                    local_4 = SHOPPES2_080e(0, 0, param_1);
+                    local_4_ab = SHOPPES2_080e(0, 0, param_1);
                 }
             }
             else
@@ -731,12 +731,12 @@ static void SHOPPES2_08a8(int param_1)
         case U5_KEY_ESC:
         case U5_KEY_SPACE:
             // ec86
-            local_4 = 1;
+            local_4_ab = 1;
             break;
         }
 
         // ec89
-        if (local_4 != 0)
+        if (local_4_ab != 0)
         {
             return;
         }

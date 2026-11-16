@@ -15,10 +15,10 @@
 static void ENDGAME_0000(void)
 {
     byte* local_c;
-    byte* local_4;
-    byte* local_6;
     uint local_a;
     int local_8;
+    byte* local_6;
+    byte* local_4_ab;
 
     ULTIMA_251e_SwitchDisks(2);
 
@@ -29,8 +29,8 @@ static void ENDGAME_0000(void)
 
     do
     {
-        local_4 = ULTIMA_0bae_LoadImageFile(D_25ea[0x11]); // TEXT.16
-    } while (local_4 == 0);
+        local_4_ab = ULTIMA_0bae_LoadImageFile(D_25ea[0x11]); // TEXT.16
+    } while (local_4_ab == 0);
 
     do
     {
@@ -65,14 +65,14 @@ static void ENDGAME_0000(void)
             {
             case 0:
                 // a366
-                ULTIMA_0d4c_GRAP_4b_PutImage(local_4, 0, 0xd8, 0, 0);
-                ULTIMA_0d4c_GRAP_4b_PutImage(local_4, 4, 0x98, 0x1c, 0); // a385
+                ULTIMA_0d4c_GRAP_4b_PutImage(local_4_ab, 0, 0xd8, 0, 0);
+                ULTIMA_0d4c_GRAP_4b_PutImage(local_4_ab, 4, 0x98, 0x1c, 0); // a385
                 break;
 
             case 3:
                 // a454
-                ULTIMA_0d4c_GRAP_4b_PutImage(local_4, 5, 0xe0, 0, 0);
-                ULTIMA_0d4c_GRAP_4b_PutImage(local_4, 0, 0xb0, 0, 0);
+                ULTIMA_0d4c_GRAP_4b_PutImage(local_4_ab, 5, 0xe0, 0, 0);
+                ULTIMA_0d4c_GRAP_4b_PutImage(local_4_ab, 0, 0xb0, 0, 0);
                 // -> a385
                 break;
 
@@ -110,7 +110,7 @@ static void ENDGAME_0000(void)
 
     // a43f
     ULTIMA_0be4_FreeImage(local_6);
-    ULTIMA_0be4_FreeImage(local_4);
+    ULTIMA_0be4_FreeImage(local_4_ab);
     ULTIMA_0fdc_FreeBitImage(local_c);
 
     // a476
@@ -200,7 +200,7 @@ static void ENDGAME_0326(void)
     char local_10[8];
     int local_8;
     int local_6;
-    int local_4;
+    int local_4_ab;
 
     ULTIMA_1bf2_SetTextPosition(0, 1);
     ULTIMA_16ba_PrintChar(CTRL_CHAR_TOGGLE_INVERSION);
@@ -235,11 +235,11 @@ static void ENDGAME_0326(void)
     // a697
     local_6 = D_5874 - 0x8b;
     local_8 = D_587d - 4;
-    local_4 = D_587e - 5;
-    if (local_4 < 0)
+    local_4_ab = D_587e - 5;
+    if (local_4_ab < 0)
     {
         // a6ba
-        local_4 += 0x1c;
+        local_4_ab += 0x1c;
         local_8--;
     }
 
@@ -260,7 +260,7 @@ static void ENDGAME_0326(void)
             ENDGAME_023a(_TEXT(0x843e, "s"));
         }
 
-        if (local_8 != 0 || local_4 != 0)
+        if (local_8 != 0 || local_4_ab != 0)
         {
             ENDGAME_023a(_TEXT(0x8440, ", "));
         }
@@ -275,17 +275,17 @@ static void ENDGAME_0326(void)
             ENDGAME_023a(_TEXT(0x844c, "s"));
         }
 
-        if (local_4 != 0)
+        if (local_4_ab != 0)
         {
             ENDGAME_023a(_TEXT(0x844e, ", "));
         }
     }
 
-    if (local_4 != 0)
+    if (local_4_ab != 0)
     {
-        ENDGAME_023a(u5_itoa(local_4, local_10, 10));
+        ENDGAME_023a(u5_itoa(local_4_ab, local_10, 10));
         ENDGAME_023a(_TEXT(0x8452, " day"));
-        if (local_4 > 1)
+        if (local_4_ab > 1)
         {
             ENDGAME_023a(_TEXT(0x8458, "s"));
         }
@@ -300,7 +300,7 @@ static void ENDGAME_0326(void)
 #if !defined(TARGET_DOS16)
         ULTIMA_20fa_WaitTicks(1);
 #endif
-        local_4++;
+        local_4_ab++;
     } while (1);
 }
 
@@ -416,7 +416,7 @@ void ENDGAME_0648_EndgameMain(void)
     int local_c;
     int local_a;
     int local_8;
-    int local_4;
+    int local_4_ab;
     ActorFmt* local_6;
 
     D_589e = 0xff;
@@ -499,8 +499,8 @@ void ENDGAME_0648_EndgameMain(void)
 
     do
     {
-        local_4 = ULTIMA_266c_GetChar();
-        switch (local_4)
+        local_4_ab = ULTIMA_266c_GetChar();
+        switch (local_4_ab)
         {
         case 0x59:
             ULTIMA_1850_PrintString(_TEXT(0x84b4, "Yes\n\n"));
@@ -509,17 +509,17 @@ void ENDGAME_0648_EndgameMain(void)
             ULTIMA_1850_PrintString(_TEXT(0x84ba, "No\n\n"));
             break;
         }
-    } while (local_4 != 0x59 && local_4 != 0x4e); // aaf8; NOT MATCHING
+    } while (local_4_ab != 0x59 && local_4_ab != 0x4e); // aaf8; NOT MATCHING
 
     // ab0c
-    if (local_4 == 0x4e)
+    if (local_4_ab == 0x4e)
     {
         ULTIMA_1850_PrintString((char*)&D_b21e[0x49]);
 
         do
         {
-            local_4 = ULTIMA_266c_GetChar();
-            switch (local_4)
+            local_4_ab = ULTIMA_266c_GetChar();
+            switch (local_4_ab)
             {
             case 0x59:
                 ULTIMA_1850_PrintString(_TEXT(0x84c0, "Yes\n\n"));
@@ -528,11 +528,11 @@ void ENDGAME_0648_EndgameMain(void)
                 ULTIMA_1850_PrintString(_TEXT(0x84c6, "No\n\n"));
                 break;
             }
-        } while (local_4 != 0x59 && local_4 != 0x4e); // NOT MATCHING
+        } while (local_4_ab != 0x59 && local_4_ab != 0x4e); // NOT MATCHING
     }
 
     // ab49
-    if (local_4 == 0x59 && D_57bf != 0)
+    if (local_4_ab == 0x59 && D_57bf != 0)
     {
 #if defined(ENABLE_BGM)
         AUDIO_PlayBgmForEnding();

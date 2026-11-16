@@ -209,13 +209,13 @@ void FAR ULTIMA_2322_DiskSwapMessage(void)
 // GOG patched: skip drive selection
 void FAR ULTIMA_2322_DiskSwapMessage(void)
 {
+    byte local_6_an;
     byte local_4;
-    byte local_6;
 
     D_5394_fn = ULTIMA_2320_NoDiskSwapMessage;
 
-    local_6 = D_a9c8[D_a9bd[0]];
-    if (local_6 != 0xff && D_545e != D_a9bd[0] && ULTIMA_16a6_GetDefaultDrive() != local_6)
+    local_6_an = D_a9c8[D_a9bd[0]];
+    if (local_6_an != 0xff && D_545e != D_a9bd[0] && ULTIMA_16a6_GetDefaultDrive() != local_6_an)
     {
         // 235a
         ULTIMA_1eac_SetDefaultDrive(D_a9c8[D_a9bd[0]]);
@@ -742,9 +742,9 @@ void ULTIMA_2ae8(void)
 {
     int local_8;
     int local_6;
-    int local_4;
+    int local_4_ab;
 
-    local_4 = 0;
+    local_4_ab = 0;
 
     for (local_6 = 0; local_6 < D_585b; local_6++)
     {
@@ -762,7 +762,7 @@ void ULTIMA_2ae8(void)
                 ULTIMA_2a52(local_6, 1);
             }
 
-            local_4++;
+            local_4_ab++;
         }
     }
 
@@ -775,7 +775,7 @@ void ULTIMA_2ae8(void)
         }
         else if (D_587f == 6 || D_587f == 12 || D_587f == 18)
         {
-            ULTIMA_3f54_DecreaseInt(&D_57a8, local_4);
+            ULTIMA_3f54_DecreaseInt(&D_57a8, local_4_ab);
         }
         D_5880 = D_587f;
     }
@@ -884,9 +884,9 @@ int ULTIMA_2d7a(int param_1)
     bool local_6;
     uint local_8;
     int local_a;
-    s16 local_4;
+    s16 local_4_ab;
 
-    local_4 = 0;
+    local_4_ab = 0;
     local_a = -1;
     local_6 = 0;
     if (D_5893_map_id > 0x7f && (D_ba14[D_589e].flags & COMBAT_FLAGS_PLAYER) != 0)
@@ -901,10 +901,10 @@ int ULTIMA_2d7a(int param_1)
     do
     {
         // 2dbc
-        if (local_a != local_4)
+        if (local_a != local_4_ab)
         {
-            ULTIMA_2a28(local_4);
-            local_a = local_4;
+            ULTIMA_2a28(local_4_ab);
+            local_a = local_4_ab;
         }
 
         do
@@ -914,7 +914,7 @@ int ULTIMA_2d7a(int param_1)
 
         if (local_8 > '0' && local_8 < '7' && local_8 - '1' < D_585b)
         {
-            local_4 = local_8 - '1';
+            local_4_ab = local_8 - '1';
         }
         else
         {
@@ -922,24 +922,24 @@ int ULTIMA_2d7a(int param_1)
             {
             case U5_KEY_LEFT:
             case U5_KEY_UP:
-                ULTIMA_3f54_DecreaseInt(&local_4, 1);
+                ULTIMA_3f54_DecreaseInt(&local_4_ab, 1);
                 break;
 
             case U5_KEY_RIGHT:
             case U5_KEY_DOWN:
-                ULTIMA_3f14_IncreaseInt(&local_4, 1, D_585b - 1);
+                ULTIMA_3f14_IncreaseInt(&local_4_ab, 1, D_585b - 1);
                 break;
 
             case 0x30:
                 if (param_1 == 0)
                     break;
 
-                local_4 = -2;
+                local_4_ab = -2;
                 local_6 = 1;
                 break;
 
             case U5_KEY_ESC:
-                local_4 = -1;
+                local_4_ab = -1;
                 local_6 = 1;
                 break;
 
@@ -950,20 +950,20 @@ int ULTIMA_2d7a(int param_1)
             }
         }
 
-        if (local_a != local_4)
+        if (local_a != local_4_ab)
         {
             ULTIMA_2a28(local_a);
         }
     } while (!local_6);
 
     // 2e6e
-    if (-1 < local_4)
+    if (-1 < local_4_ab)
     {
-        ULTIMA_2a28(local_4);
+        ULTIMA_2a28(local_4_ab);
     }
 
     ULTIMA_4e20();
-    return local_4;
+    return local_4_ab;
 }
 
 int ULTIMA_2e8e(void)

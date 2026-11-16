@@ -30,11 +30,11 @@ void ULTIMA_400c(void)
 // select active player
 int ULTIMA_4080(int param_1)
 {
-    int local_6;
+    int local_6_an;
 	int local_4;
     
     local_4 = 1;
-    local_6 = param_1 - 0x31;
+    local_6_an = param_1 - 0x31;
 
     ULTIMA_1850_PrintString(_TEXT(0xa396, "Set Active Plr:\n"));
     if (param_1 == 0x30)
@@ -47,11 +47,11 @@ int ULTIMA_4080(int param_1)
     }
     else
     {
-        if (D_585b > local_6 && D_55a8_party[local_6].status != STATUS_DEAD && D_55a8_party[local_6].status != STATUS_SLEEP)
+        if (D_585b > local_6_an && D_55a8_party[local_6_an].status != STATUS_DEAD && D_55a8_party[local_6_an].status != STATUS_SLEEP)
         {
-            D_587b = local_6;
+            D_587b = local_6_an;
 
-            ULTIMA_1850_PrintString(D_55a8_party[local_6].name);
+            ULTIMA_1850_PrintString(D_55a8_party[local_6_an].name);
             ULTIMA_16ba_PrintChar('\n');
 
             ULTIMA_2900_UpdateVitalsDisplay();
@@ -69,19 +69,19 @@ int ULTIMA_4080(int param_1)
 // CHECKED
 void ULTIMA_4102_AudioPlayAmbientSfx(void)
 {
+    int local_16_an;
 	int local_14;
-	int local_10;
-    int local_16;
-	int local_12;
+	int local_12_ab;
+	int local_10_ad;
 	int local_e;
 	int local_c;
 	int local_a;
 	int local_8;
 	int local_6;
-	int local_4;
+	int local_4_ab;
 
 	local_e = 0;
-	local_4 = 0x33;
+	local_4_ab = 0x33;
 
 	if (D_5893_map_id < 0x80)
 	{
@@ -93,14 +93,14 @@ void ULTIMA_4102_AudioPlayAmbientSfx(void)
 		local_8 = local_a = 5;
 	}
 
-    for (local_c = local_8 - 5, local_12 = 0; local_c < local_8 + 6; local_c++, local_12++)
+    for (local_c = local_8 - 5, local_12_ab = 0; local_c < local_8 + 6; local_c++, local_12_ab++)
 	{
-        for (local_10 = local_a - 5, local_16 = 0; local_10 < local_a + 6; local_10++, local_16++)
+        for (local_10_ad = local_a - 5, local_16_an = 0; local_10_ad < local_a + 6; local_10_ad++, local_16_an++)
 		{
-			local_6 = (local_10 - local_a) * (local_10 - local_a) + (local_c - local_8) * (local_c - local_8);
-			if (local_6 < local_4)
+			local_6 = (local_10_ad - local_a) * (local_10_ad - local_a) + (local_c - local_8) * (local_c - local_8);
+			if (local_6 < local_4_ab)
 			{
-				local_14 = *ULTIMA_4402_GetTileAddr(local_c, local_10);
+				local_14 = *ULTIMA_4402_GetTileAddr(local_c, local_10_ad);
 				if ((local_14 & 0xfe) == TILE_MAP_CLOCK)
 				{
 					local_e = 1;
@@ -113,17 +113,17 @@ void ULTIMA_4102_AudioPlayAmbientSfx(void)
 				{
 					local_e = 3;
 				}
-                else if (GetMapViewport(local_12, local_16) == 0 && (GetActorMap(local_12, local_16) & 0xfc) == TILE_ACTOR_BARD)
+                else if (GetMapViewport(local_12_ab, local_16_an) == 0 && (GetActorMap(local_12_ab, local_16_an) & 0xfc) == TILE_ACTOR_BARD)
 				{
 					// BGM/NOTE: no jingle when bgm is activated
 					local_e = 4;
 				}
 				else
 				{
-					local_6 = local_4;
+					local_6 = local_4_ab;
 				}
 
-				local_4 = local_6;
+				local_4_ab = local_6;
 			}
 		}
 	}
@@ -233,8 +233,8 @@ void ULTIMA_43ae_AudioSweepTone(int param_1, int param_2, int param_3, int param
 // CHECKED (NOT MATCHING: optimization)
 byte* ULTIMA_4402_GetTileAddr(int x, int y)
 {
+	int local_6_an;
 	byte* local_4;
-	int local_6;
 
 	if (D_5893_map_id > 0x7f) // combat?
 	{
@@ -252,21 +252,21 @@ byte* ULTIMA_4402_GetTileAddr(int x, int y)
 	{
 		x = (x - D_589b) & 0x1f;
 		y = (y - D_589c) & 0x1f;
-		local_6 = 0;
+		local_6_an = 0;
 		if (y > 0xf)
 		{
-			local_6 = 2;
+			local_6_an = 2;
 			y -= 16;
 		}
 
 		if (x > 0xf)
 		{
-			local_6++;
+			local_6_an++;
 			x -= 16;
 		}
 
 		// 4467 (NOT MATCHING: optimization)
-		local_4 = &GetMapOverworld(x, y, local_6);
+		local_4 = &GetMapOverworld(x, y, local_6_an);
 	}
 	else if (x < 0 || y < 0 || x > 0x1f || y > 0x1f) // 447e
 	{
@@ -336,19 +336,19 @@ static void ULTIMA_44b8_AnimateTiles(void)
 // animate_actors
 void ULTIMA_4552_AnimateActors(void)
 {
-	int local_e;
-	int local_6;
-	bool local_a;
-	int local_c;
-	int local_4;
 	int local_14;
-	int local_10;
+	int local_10_ad;
+	int local_e;
+	int local_c;
+	bool local_a;
+	int local_6;
+	int local_4_ab;
 	ActorFmt* local_8;
 	byte* local_12;
 
-	for (local_10 = 0; local_10 < 0x20; local_10++)
+	for (local_10_ad = 0; local_10_ad < 0x20; local_10_ad++)
 	{
-		local_8 = &D_5c5a[local_10];
+		local_8 = &D_5c5a[local_10_ad];
 		if (local_8->_0_tile == 0)
 		{
 			continue;
@@ -356,8 +356,8 @@ void ULTIMA_4552_AnimateActors(void)
 
         local_c = local_8->_6 & 0xf;
         local_14 = local_8->_6 >> 4;
-        local_4 = local_8->_0_tile & 0xfc;
-        local_e = D_1b18[((local_4 - 0x34) >> 2) + 0xb0];
+        local_4_ab = local_8->_0_tile & 0xfc;
+        local_e = D_1b18[((local_4_ab - 0x34) >> 2) + 0xb0];
 		local_12 = &D_1b18[local_e * 0x10];
 
 		if (local_c == 0xf)
@@ -377,12 +377,12 @@ void ULTIMA_4552_AnimateActors(void)
 			continue;
 		}
 
-		if (local_4 <= 0x33 || local_4 == 0xe8 || local_4 == 0xb4)
+		if (local_4_ab <= 0x33 || local_4_ab == 0xe8 || local_4_ab == 0xb4)
 		{
 			continue;
 		}
 
-		if (local_4 != 0x5c && local_4 != 0xa8)
+		if (local_4_ab != 0x5c && local_4_ab != 0xa8)
 		{
 			if (ULTIMA_2092_RandomRange(0, 0xff) < 0x80)
 			{
@@ -400,7 +400,7 @@ void ULTIMA_4552_AnimateActors(void)
             case 2:
             case 3:
             case 4:
-                local_8->_1_animTile = local_4 + local_6 - 1;
+                local_8->_1_animTile = local_4_ab + local_6 - 1;
                 local_14++;
                 local_a = 1;
                 break;
@@ -409,7 +409,7 @@ void ULTIMA_4552_AnimateActors(void)
                 if (ULTIMA_2092_RandomRange(0, 0xff) < 0x40)
                 {
                     local_8->_1_animTile = local_8->_0_tile;
-                    if (local_4 == 0x5c)
+                    if (local_4_ab == 0x5c)
                     {
                         local_14++;
                         local_a = 1;
@@ -458,17 +458,17 @@ void ULTIMA_4552_AnimateActors(void)
 
 static int ULTIMA_4702(int param_1)
 {
-	int local_4;
-	int local_6;
 	int local_8;
+	int local_6;
+	int local_4_ab;
 
-	local_4 = 0;
+	local_4_ab = 0;
 
 	if (D_5840[param_1] == D_5893_map_id && D_5848[param_1] == D_5895_map_level)
 	{
 		if (D_5893_map_id != 0)
 		{
-			local_4 = 1;
+			local_4_ab = 1;
 		}
 		else
 		{
@@ -477,20 +477,20 @@ static int ULTIMA_4702(int param_1)
 
 			if (local_6 < 0x20 && local_8 < 0x20)
 			{
-				local_4 = 1;
+				local_4_ab = 1;
 			}
 		}
 	}
 
-	return local_4;
+	return local_4_ab;
 }
 
 void ULTIMA_475a(void)
 {
 	int local_a;
-	byte* local_4;
-	int local_6;
 	int local_8;
+	int local_6;
+	byte* local_4_ab;
 
 	local_a = 0xdc;
 	if (D_587f >= 0x14 || D_587f < 5)
@@ -510,9 +510,9 @@ void ULTIMA_475a(void)
 	{
 		if (ULTIMA_4702(local_6) != 0)
 		{
-			local_4 = ULTIMA_4402_GetTileAddr(D_5830[local_6], D_5838[local_6]);
-			local_8 = *local_4 != local_a;
-			*local_4 = local_a;
+			local_4_ab = ULTIMA_4402_GetTileAddr(D_5830[local_6], D_5838[local_6]);
+			local_8 = *local_4_ab != local_a;
+			*local_4_ab = local_a;
 			D_24e6 |= 2;
 			if (local_8 != 0)
 			{
@@ -572,16 +572,16 @@ int ULTIMA_47f4(int param_1)
 
 int ULTIMA_48a8(void)
 {
-	int local_4;
-	int local_6; // unused
 	int local_8;
+	int local_6; // unused
+	int local_4_ab;
 
 	local_8 = 0;
 	if (*ULTIMA_4402_GetTileAddr(D_5896_map_x, D_5897_map_y) == TILE_MAP_MOONGATE)
 	{
 		ULTIMA_3ae6(1);
 		ULTIMA_2192_AudioPulse(0x170c, 1, 30000, 2000, 2);
-		local_4 = D_587c_partyTile;
+		local_4_ab = D_587c_partyTile;
 		D_587c_partyTile = TILE_ACTOR_CIRCLE;
 		ULTIMA_1068(0xdc, 5, 5);
 		D_587c_partyTile = 0;
@@ -607,7 +607,7 @@ int ULTIMA_48a8(void)
 			ULTIMA_47f4((D_587f < 0xc ? D_5885 : D_5886) - 0x30);
 		}
 
-		D_587c_partyTile = local_4;
+		D_587c_partyTile = local_4_ab;
 	}
 
 	return local_8;
@@ -615,10 +615,10 @@ int ULTIMA_48a8(void)
 
 int ULTIMA_4988(void)
 {
-    bool local_4;
-    int local_6;
     int local_a;
     int local_8;
+    int local_6;
+    bool local_4_ab;
 
     local_a = -1;
     if (D_5893_map_id > 0x80)
@@ -643,14 +643,14 @@ int ULTIMA_4988(void)
 
         if (local_8 > 1)
         {
-            local_4 = 0;
-            while (!local_4)
+            local_4_ab = 0;
+            while (!local_4_ab)
             {
                 ULTIMA_1850_PrintString(_TEXT(0xa3c4, "Player: "));
                 local_a = ULTIMA_2e8e();
                 if (local_a < 0)
                 {
-                    local_4 = 1;
+                    local_4_ab = 1;
                 }
                 else
                 {
@@ -662,7 +662,7 @@ int ULTIMA_4988(void)
                             ULTIMA_16ba_PrintChar('\n');
                         }
 
-                        local_4 = 1;
+                        local_4_ab = 1;
                     }
                     else
                     {
@@ -688,9 +688,9 @@ int ULTIMA_4988(void)
 // draw moon phase
 void ULTIMA_4a84(void)
 {
-	u16 local_16;
+	u16 local_16_an;
 	int local_14;
-	byte local_12[12 + 1];
+	byte local_12_aa[12 + 1];
 	int local_4;
 
 	if (D_5893_map_id < 0x21)
@@ -698,11 +698,11 @@ void ULTIMA_4a84(void)
 		// 4a96
 		for (local_14 = 0; local_14 < 12; local_14++)
 		{
-			local_12[local_14] = 0x20;
+			local_12_aa[local_14] = 0x20;
 		}
 
-		local_12[12] = 0;
-		local_16 = D_5386_current_text_window_idx;
+		local_12_aa[12] = 0;
+		local_16_an = D_5386_current_text_window_idx;
 		ULTIMA_1b94_SelectTextWindow(0);
 		ULTIMA_1c9e_SelectCharset(1);
 
@@ -710,7 +710,7 @@ void ULTIMA_4a84(void)
 		local_4 = -((int)D_587f - 17);
 		if (local_4 < 12 && local_4 >= 0)
 		{
-			local_12[local_4] = 0x2a;
+			local_12_aa[local_4] = 0x2a;
 		}
 
 		// 4adf
@@ -724,7 +724,7 @@ void ULTIMA_4a84(void)
 		// 4b04
 		if (local_4 < 12 && local_4 >= 0)
 		{
-			local_12[local_4] = D_5885;
+			local_12_aa[local_4] = D_5885;
 		}
 
 		// 4b19
@@ -738,16 +738,16 @@ void ULTIMA_4a84(void)
 		// 4b3e
 		if (local_4 < 12 && local_4 >= 0)
 		{
-			local_12[local_4] = D_5886;
+			local_12_aa[local_4] = D_5886;
 		}
 
 		// 4b53
 		ULTIMA_1bf2_SetTextPosition(6, 0);
 		if (D_5893_map_id != 0x19 && D_5895_map_level < 0x80)
 		{
-			for (local_14 = 0; local_12[local_14] != 0;)
+			for (local_14 = 0; local_12_aa[local_14] != 0;)
 			{
-				if (local_12[local_14] == 0x2a)
+				if (local_12_aa[local_14] == 0x2a)
 				{
 					// -> 4b74
 					ULTIMA_1cca_SetTextForegroundColor(D_13b8_brightYellowColor);
@@ -758,7 +758,7 @@ void ULTIMA_4a84(void)
 					ULTIMA_1cca_SetTextForegroundColor(D_13ba_lightGrayColor);
 				}
 
-				ULTIMA_16ba_PrintChar(local_12[local_14++]);
+				ULTIMA_16ba_PrintChar(local_12_aa[local_14++]);
 			}
 
 			ULTIMA_1cca_SetTextForegroundColor(D_13b0_brightWhiteColor);
@@ -773,7 +773,7 @@ void ULTIMA_4a84(void)
 		}
 
 		// 4bd5
-		ULTIMA_1b94_SelectTextWindow(local_16);
+		ULTIMA_1b94_SelectTextWindow(local_16_an);
 		ULTIMA_1c9e_SelectCharset(0);
 	}
 }
@@ -892,21 +892,21 @@ void ULTIMA_4e20(void)
 
 void ULTIMA_4e50(char* param_1)
 {
-	int local_2;
+	int local_6_an;
 	int local_4;
-	int local_6;
+	int local_2;
 
-	local_6 = -(ULTIMA_216c_strlen(param_1) / 2 - 30);
-	local_2 = ULTIMA_216c_strlen(param_1) + local_6 + 2;
+	local_6_an = -(ULTIMA_216c_strlen(param_1) / 2 - 30);
+	local_2 = ULTIMA_216c_strlen(param_1) + local_6_an + 2;
 	ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b2_blueColor);
-	ULTIMA_0aa6_GRAP_3f_FillRect(192, 0, local_6 * 8, 6);
+	ULTIMA_0aa6_GRAP_3f_FillRect(192, 0, local_6_an * 8, 6);
 	ULTIMA_0aa6_GRAP_3f_FillRect(local_2 * 8, 0, 311, 6);
 	ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
-	ULTIMA_0c9c_GRAP_39_HorizLine(192, 7, local_6 * 8);
+	ULTIMA_0c9c_GRAP_39_HorizLine(192, 7, local_6_an * 8);
 	ULTIMA_0c9c_GRAP_39_HorizLine(local_2 * 8, 7, 311);
 	local_4 = D_5386_current_text_window_idx;
 	ULTIMA_1b94_SelectTextWindow(0);
-	ULTIMA_1bf2_SetTextPosition(local_6, 0);
+	ULTIMA_1bf2_SetTextPosition(local_6_an, 0);
 	ULTIMA_4c2a();
 	ULTIMA_1850_PrintString(param_1);
 	ULTIMA_4cce();
@@ -938,7 +938,7 @@ void ULTIMA_4f7c(int param_1)
 	int local_a;
 	int local_8;
 	int local_6;
-	uint local_4;
+	uint local_4_ab;
 
 	if (param_1 != 0)
 	{
@@ -975,23 +975,23 @@ void ULTIMA_4f7c(int param_1)
 						do
 						{
 							// 5004
-							local_4 = ULTIMA_2092_RandomRange(1, 8);
-							if (D_5893_map_id == local_4)
+							local_4_ab = ULTIMA_2092_RandomRange(1, 8);
+							if (D_5893_map_id == local_4_ab)
 							{
-								local_4 = 0;
+								local_4_ab = 0;
 							}
 							// 501c
 							for (local_8 = 0; local_8 < 3; local_8++)
 							{
 								// 5020
-								if (D_58c8[local_8] == local_4)
+								if (D_58c8[local_8] == local_4_ab)
 								{
-									local_4 = 0;
+									local_4_ab = 0;
 								}
 							}
-						} while (local_4 == 0);
+						} while (local_4_ab == 0);
 
-						D_58c8[local_6] = (u8)local_4;
+						D_58c8[local_6] = (u8)local_4_ab;
 					}
 				}
 

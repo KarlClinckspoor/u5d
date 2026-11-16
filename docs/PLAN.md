@@ -12,6 +12,7 @@ passes only when they are identical.
 | Date | EXACT | SLOTS | FIXUP | SIZE | CODE | Functions |
 |---|---|---|---|---|---|---|
 | 2026-11-15, first baseline | 185 | 198 | 70 | 199 | 41 | 693 |
+| 2026-11-15, stack-slot rule applied | 285 | 35 | 140 | 197 | 36 | 693 |
 
 Most `SIZE` verdicts in `0000.c` and `1000.c` are routines that were hand-written assembly in
 the original and are C in u5d (step 5).
@@ -24,13 +25,10 @@ the original and are C in u5d (step 5).
    - `match.py` compares per function and checks every fixup;
    - the layout facts are in `tools/u5.py`.
 
-2. **Stack-slot order** (most `SLOTS`). Find MSC 5.1's rule for which local gets which
-   `[bp-n]`.
-   - *Ruled out:* name hash (MSC 4.0), declaration order, file-scope declaration count.
-   - *Next:* minimal test files compiled in one DOSBox run, varying order of first use, use
-     count, `register`, unused locals, types, nested blocks, and the switches `/Ol` and `/Oe`.
-   - *If that stalls:* read the slot allocator in C2.EXE directly.
-   - The rule goes into MATCHING.md, with a checker if it can be computed.
+2. **Stack-slot order** *(rule found)*. Locals are hashed into 16 buckets on the sum of their
+   characters; `tools/slots.py` renames them to the original order. The remaining `SLOTS`
+   functions need a closer look: locals in inner blocks, register choice, or compiler
+   temporaries.
 
 3. **DGROUP: data and strings back into their modules** (most `FIXUP`, and the `_DATA`
    differences).

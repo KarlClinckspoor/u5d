@@ -22,11 +22,11 @@ int MAINOUT_105c(int param_1);
 // hole up (impl)
 int CMDS_0000(int param_1, int param_2, int param_3)
 {
-    int local_20;
-    byte local_1c;
-    byte local_28;
     byte local_2c;
+    byte local_28_aj;
     int local_22;
+    int local_20_ab;
+    byte local_1c;
     CombatEntity* local_1a;
     int local_26;
     int local_2a;
@@ -41,7 +41,7 @@ int CMDS_0000(int param_1, int param_2, int param_3)
     local_1a = 0;
 #endif
 
-    local_20 = D_587f;
+    local_20_ab = D_587f;
     local_6 = -1;
     local_1e = -1;
     D_587a = D_588e = 0;
@@ -113,13 +113,13 @@ int CMDS_0000(int param_1, int param_2, int param_3)
     if (local_6 != -1)
     {
         local_4 = &D_5c5a[D_ba14[local_6].actorIdx];
-        local_28 = local_4->_0_tile;
+        local_28_aj = local_4->_0_tile;
         local_2c = local_4->_1_animTile;
         
         local_4->_0_tile = local_4->_1_animTile = TILE_ACTOR_5F;
         D_6a08 = 1;
         ULTIMA_3ae6(0x34);
-        local_4->_0_tile = local_28;
+        local_4->_0_tile = local_28_aj;
         local_4->_1_animTile = local_2c;
         if (D_ba14[local_6].entityIdx != param_2)
         {
@@ -155,7 +155,7 @@ int CMDS_0000(int param_1, int param_2, int param_3)
         ULTIMA_5910_UpdateFrame();
         ULTIMA_400c();
         ULTIMA_2900_UpdateVitalsDisplay();
-        if (local_20 != D_587f)
+        if (local_20_ab != D_587f)
         {
             if (ULTIMA_2092_RandomRange(0, 0x3f) == 0)
             {
@@ -200,7 +200,7 @@ int CMDS_0000(int param_1, int param_2, int param_3)
             }
         }
 
-        local_20 = D_587f;
+        local_20_ab = D_587f;
         ULTIMA_4f7c(5);
         ULTIMA_20fa_WaitTicks(1);
         if (D_5894 < 0x21)
@@ -314,11 +314,11 @@ int CMDS_0000(int param_1, int param_2, int param_3)
 
 void CMDS_0552_HoleUpCmd(void)
 {
-    int local_4;
     int local_c;
-    byte local_6;
     int local_a;
     int local_8;
+    byte local_6;
+    int local_4_ab;
 
     ULTIMA_1850_PrintString(_TEXT(0x4209, "For how many hours? "));
 
@@ -347,7 +347,7 @@ void CMDS_0552_HoleUpCmd(void)
             }
         }
 
-        local_4 = D_587b;
+        local_4_ab = D_587b;
 
         for (local_a = 0; local_a < D_585b; local_a++)
         {
@@ -399,7 +399,7 @@ void CMDS_0552_HoleUpCmd(void)
             }
         }
 
-        D_587b = local_4;
+        D_587b = local_4_ab;
         D_5896_map_x++;
         D_24e6 = 1;
         D_5c5a[0]._2_x++;
@@ -487,9 +487,9 @@ int CMDS_07f6_BoardCmd(void)
 {
     byte local_c;
     int local_a;
-    int local_4;
     int local_8;
     int local_6;
+    int local_4_ab;
 
     if (D_5893_map_id > 0x20 && D_5893_map_id < 0x29)
     {
@@ -504,8 +504,8 @@ int CMDS_07f6_BoardCmd(void)
     {
         if (D_5893_map_id != 0)
         {
-            local_4 = TOWN_011e(local_6);
-            if (local_4 != -1 && D_5f5e[local_4]._a != 0)
+            local_4_ab = TOWN_011e(local_6);
+            if (local_4_ab != -1 && D_5f5e[local_4_ab]._a != 0)
             {
                 ULTIMA_1850_PrintString(_TEXT(0x425e, "\"Nay!\"\n"));
                 return 1;
@@ -598,16 +598,16 @@ int CMDS_07f6_BoardCmd(void)
 
 static void CMDS_0962(void)
 {
-    int local_10;
+    int local_16_an;
     int local_14;
-    int local_12;
-    int local_16;
+    int local_12_ab;
+    int local_10_ad;
     int local_e;
     int local_c;
-    int local_8;
     int local_a;
+    int local_8;
     int local_6;
-    int local_4;
+    int local_4_ab;
 
     if (D_587c_partyTile < TILE_ACTOR_FRIGATE_20 || D_587c_partyTile > TILE_ACTOR_FRIGATE_20_END)
     {
@@ -620,10 +620,10 @@ static void CMDS_0962(void)
             return;
         }
 
-        local_10 = D_5876;
+        local_10_ad = D_5876;
         local_14 = D_5878;
 
-        if (local_10 == 0 && (D_587c_partyTile & 1) == 0 || local_10 != 0 && (D_587c_partyTile & 1) != 0)
+        if (local_10_ad == 0 && (D_587c_partyTile & 1) == 0 || local_10_ad != 0 && (D_587c_partyTile & 1) != 0)
         {
             // 09b2
             ULTIMA_1850_PrintString(_TEXT(0x42cd, "Fire broadsides only!\n"));
@@ -631,17 +631,17 @@ static void CMDS_0962(void)
         else
         {
             // 09b8
-            local_12 = D_5896_map_x;
-            local_16 = D_5897_map_y;
+            local_12_ab = D_5896_map_x;
+            local_16_an = D_5897_map_y;
             ULTIMA_43ae_AudioSweepTone(1000, 200, 5, 300);
 
             // 09d8
             for (local_e = 0; local_e < 3; local_e++)
             {
-                local_12 += local_10;
-                local_16 += local_14;
+                local_12_ab += local_10_ad;
+                local_16_an += local_14;
 
-                local_c = ULTIMA_368e_FindActorTileAtPos(local_12, local_16, D_5895_map_level);
+                local_c = ULTIMA_368e_FindActorTileAtPos(local_12_ab, local_16_an, D_5895_map_level);
 
                 if (MAINOUT_105c(local_c) != 0 && (local_c & 0xfc) != 0xec)
                 {
@@ -650,11 +650,11 @@ static void CMDS_0962(void)
 
                     local_8 = D_5c5a[local_6]._2_x - D_5896_map_x + 5;
                     local_a = D_5c5a[local_6]._3_y - D_5897_map_y + 5;
-                    local_4 = COMSUBS_12de(5, 5, local_8, local_a, 1);
-                    if (local_4 != 0)
+                    local_4_ab = COMSUBS_12de(5, 5, local_8, local_a, 1);
+                    if (local_4_ab != 0)
                     {
                         ULTIMA_5910_UpdateFrame();
-                        ULTIMA_3522(local_12, local_16);
+                        ULTIMA_3522(local_12_ab, local_16_an);
 
                         D_5c5a[local_6]._5 -= ULTIMA_2092_RandomRange(1, 0x14);
                         if (D_5c5a[local_6]._5 > 0x7f)
@@ -668,7 +668,7 @@ static void CMDS_0962(void)
                 }
             }
 
-            local_8 = local_10 * 3 + 5;
+            local_8 = local_10_ad * 3 + 5;
             local_a = local_14 * 3 + 5;
             COMSUBS_12de(5, 5, local_8, local_a, 1);
         }
@@ -677,21 +677,21 @@ static void CMDS_0962(void)
 
 void CMDS_0aea_FireCmd(void)
 {
-    int local_4;
-    int local_1a;
-    int local_1c;
-    int local_8;
-    int local_c;
-    uint local_20;
-    int local_1e;
-    int local_18;
-    int local_16;
+    uint local_20_ac;
+    int local_1e_ao;
+    int local_1c_aa;
+    int local_1a_ac;
+    int local_18_al;
+    int local_16_an;
     int local_14;
-    int local_12;
-    int local_10;
+    int local_12_ab;
+    int local_10_ad;
     int local_e;
+    int local_c;
     int local_a;
+    int local_8;
     int local_6;
+    int local_4_ab;
 
     if (0x20 < D_5893_map_id && D_5893_map_id < 0x29)
     {
@@ -707,25 +707,25 @@ void CMDS_0aea_FireCmd(void)
 
     ULTIMA_39cc_SetTile(D_594f, D_5950, D_5951);
 
-    if (((local_20 = GetMapViewport(5, 4)) & 0xfc) == 0xb4)
+    if (((local_20_ac = GetMapViewport(5, 4)) & 0xfc) == 0xb4)
     {
-        local_16 = 0;
-        local_1e = -1;
+        local_16_an = 0;
+        local_1e_ao = -1;
     }
-    else if (((local_20 = GetMapViewport(6, 5)) & 0xfc) == 0xb4)
+    else if (((local_20_ac = GetMapViewport(6, 5)) & 0xfc) == 0xb4)
     {
-        local_16 = 1;
-        local_1e = 0;
+        local_16_an = 1;
+        local_1e_ao = 0;
     }
-    else if (((local_20 = GetMapViewport(5, 6)) & 0xfc) == 0xb4)
+    else if (((local_20_ac = GetMapViewport(5, 6)) & 0xfc) == 0xb4)
     {
-        local_16 = 0;
-        local_1e = 1;
+        local_16_an = 0;
+        local_1e_ao = 1;
     }
-    else if (((local_20 = GetMapViewport(4, 5)) & 0xfc) == 0xb4)
+    else if (((local_20_ac = GetMapViewport(4, 5)) & 0xfc) == 0xb4)
     {
-        local_16 = -1;
-        local_1e = 0;
+        local_16_an = -1;
+        local_1e_ao = 0;
     }
     else
     {
@@ -733,29 +733,29 @@ void CMDS_0aea_FireCmd(void)
         return;
     }
 
-    local_14 = local_16 + (uint)D_5896_map_x;
-    local_1c = local_1e + (uint)D_5897_map_y;
+    local_14 = local_16_an + (uint)D_5896_map_x;
+    local_1c_aa = local_1e_ao + (uint)D_5897_map_y;
 
-    local_8 = local_e = local_16 + 5;
-    local_c = local_12 = local_1e + 5;
+    local_8 = local_e = local_16_an + 5;
+    local_c = local_12_ab = local_1e_ao + 5;
 
-    switch (local_20 & 3)
+    switch (local_20_ac & 3)
     {
     case 0:
-        local_16 = 0;
-        local_1e = -1;
+        local_16_an = 0;
+        local_1e_ao = -1;
         break;
     case 1:
-        local_16 = 1;
-        local_1e = 0;
+        local_16_an = 1;
+        local_1e_ao = 0;
         break;
     case 2:
-        local_16 = 0;
-        local_1e = 1;
+        local_16_an = 0;
+        local_1e_ao = 1;
         break;
     case 3:
-        local_16 = -1;
-        local_1e = 0;
+        local_16_an = -1;
+        local_1e_ao = 0;
         break;
     }
 
@@ -763,23 +763,23 @@ void CMDS_0aea_FireCmd(void)
     ULTIMA_43ae_AudioSweepTone(1000, 200, 5, 300);
     TOWN_0958();
 
-    local_4 = 0;
-    local_1a = 0;
-    local_18 = 5;
+    local_4_ab = 0;
+    local_1a_ac = 0;
+    local_18_al = 5;
 
     // 0c1a
-    while (!local_4 && !local_1a && --local_18 > 0)
+    while (!local_4_ab && !local_1a_ac && --local_18_al > 0)
     {
-        local_14 += local_16;
-        local_1c += local_1e;
+        local_14 += local_16_an;
+        local_1c_aa += local_1e_ao;
 
-        local_e += local_16;
-        local_12 += local_1e;
+        local_e += local_16_an;
+        local_12_ab += local_1e_ao;
 
-        local_10 = ULTIMA_3702(local_14, local_1c, D_5895_map_level);
-        if (local_10 == 0)
+        local_10_ad = ULTIMA_3702(local_14, local_1c_aa, D_5895_map_level);
+        if (local_10_ad == 0)
         {
-            switch (*ULTIMA_4402_GetTileAddr(local_14, local_1c))
+            switch (*ULTIMA_4402_GetTileAddr(local_14, local_1c_aa))
             {
             case TILE_MAP_97:
             case TILE_MAP_98:
@@ -788,34 +788,34 @@ void CMDS_0aea_FireCmd(void)
             case TILE_MAP_DOOR_B9:
             case TILE_MAP_DOOR_BA:
             case TILE_MAP_DOOR_BB:
-                local_4 = 1;
+                local_4_ab = 1;
                 break;
             }
         }
         // 0cb8
-        else if ((local_10 >= 0x1c && (local_10 & 0xf8) != 0x78 && (local_10 & 0xfc) != 0x2f) // BUG: expression is always true
-                 || local_10 == 0x10 || local_10 == 0x11)
+        else if ((local_10_ad >= 0x1c && (local_10_ad & 0xf8) != 0x78 && (local_10_ad & 0xfc) != 0x2f) // BUG: expression is always true
+                 || local_10_ad == 0x10 || local_10_ad == 0x11)
         {
-            local_1a = 1;
+            local_1a_ac = 1;
             local_a = D_5876;
         }
     }
 
-    COMSUBS_12de(local_8, local_c, local_e, local_12, 1);
-    if (local_4 || local_1a)
+    COMSUBS_12de(local_8, local_c, local_e, local_12_ab, 1);
+    if (local_4_ab || local_1a_ac)
     {
-        ULTIMA_3522(local_14, local_1c);
+        ULTIMA_3522(local_14, local_1c_aa);
     }
 
-    if (local_4)
+    if (local_4_ab)
     {
         ULTIMA_1850_PrintString(_TEXT(0x42fa, "Door destroyed!\n"));
-        *ULTIMA_4402_GetTileAddr(local_14, local_1c) = TILE_MAP_44;
+        *ULTIMA_4402_GetTileAddr(local_14, local_1c_aa) = TILE_MAP_44;
         D_24e6 = 1;
         D_594f = 0;
     }
 
-    if (local_1a && local_a != 0)
+    if (local_1a_ac && local_a != 0)
     {
         ULTIMA_3a74(0, 0, 0, 0, 0, 0, local_a);
 
@@ -838,7 +838,7 @@ void CMDS_0aea_FireCmd(void)
         TOWN_00b0_DespawnNpc(local_6);
     }
 
-    if (local_1a && local_a == 0)
+    if (local_1a_ac && local_a == 0)
     {
         ULTIMA_2aa8();
     }
@@ -868,7 +868,7 @@ void CMDS_0ddc_NewOrderCmd(void)
 {
     int local_24;
     int local_26;
-    S_55a8 local_22;
+    S_55a8 local_22_ab;
 
     ULTIMA_1850_PrintString(_TEXT(0x4318, "\n\nSwap "));
     if ((local_24 = ULTIMA_2e8e()) == -1)
@@ -905,9 +905,9 @@ void CMDS_0ddc_NewOrderCmd(void)
 
     ULTIMA_1850_PrintString(_TEXT(0x4359, "!\n"));
 
-    local_22 = D_55a8_party[local_24];
+    local_22_ab = D_55a8_party[local_24];
     D_55a8_party[local_24] = D_55a8_party[local_26];
-    D_55a8_party[local_26] = local_22;
+    D_55a8_party[local_26] = local_22_ab;
 
     D_a9fa = 1;
 }
@@ -918,7 +918,7 @@ void CMDS_0eb4_XitCmd(void)
     byte local_a;
     byte local_8;
     int local_6;
-    byte local_4;
+    byte local_4_ab;
 
 #if !defined(MATCHING_BUILD)
     local_a = 0;
@@ -947,7 +947,7 @@ void CMDS_0eb4_XitCmd(void)
         if (CMDS_073e() != 0 || ULTIMA_2c4c_IsWalkableTile(0x1c, local_8) != 0)
         {
             ULTIMA_1850_PrintString(_TEXT(0x437d, "carpet!\n"));
-            local_4 = 0x1b;
+            local_4_ab = 0x1b;
             D_587c_partyTile = TILE_ACTOR_AVATAR;
             break;
         }
@@ -966,7 +966,7 @@ void CMDS_0eb4_XitCmd(void)
 
     case TILE_ACTOR_HORSE:
         ULTIMA_1850_PrintString(_TEXT(0x43a4, "horse!\n"));
-        local_4 = D_587c_partyTile - 2;
+        local_4_ab = D_587c_partyTile - 2;
         D_587c_partyTile = TILE_ACTOR_AVATAR;
         break;
 
@@ -984,7 +984,7 @@ void CMDS_0eb4_XitCmd(void)
         else
         {
             ULTIMA_1850_PrintString(_TEXT(0x43ca, "skiff!\n"));
-            local_4 = D_587c_partyTile;
+            local_4_ab = D_587c_partyTile;
             D_587c_partyTile = TILE_ACTOR_AVATAR;
             break;
         }
@@ -995,21 +995,21 @@ void CMDS_0eb4_XitCmd(void)
         ULTIMA_1850_PrintString(_TEXT(0x43d2, "ship!\n"));
         if (CMDS_073e() != 0)
         {
-            local_4 = D_587c_partyTile;
+            local_4_ab = D_587c_partyTile;
             D_587c_partyTile = TILE_ACTOR_AVATAR;
 
             local_a = D_5c5a[0]._7;
         }
         else if (D_5c5a[0]._7 != 0)
         {
-            local_4 = D_587c_partyTile;
+            local_4_ab = D_587c_partyTile;
             D_587c_partyTile += 4;
             local_a = D_5c5a[0]._7 - 1;
         }
         else if (D_57b0 != 0)
         {
             D_57b0--;
-            local_4 = D_587c_partyTile;
+            local_4_ab = D_587c_partyTile;
             D_587c_partyTile = TILE_ACTOR_FLYING_CARPET;
 
             local_a = D_5c5a[0]._7;
@@ -1024,7 +1024,7 @@ void CMDS_0eb4_XitCmd(void)
     }
 
     local_6 = ULTIMA_38e4();
-    ULTIMA_3a74(local_4, local_4, D_5896_map_x, D_5897_map_y, D_5895_map_level, D_5c5a[0]._5, local_6);
+    ULTIMA_3a74(local_4_ab, local_4_ab, D_5896_map_x, D_5897_map_y, D_5895_map_level, D_5c5a[0]._5, local_6);
     D_5c5a[local_6]._7 = local_a; // BUG: local_a NOT INITIALIZED when (D_587c & 0xfc) != 0x24
     ULTIMA_2900_UpdateVitalsDisplay();
 
@@ -1039,7 +1039,7 @@ static int CMDS_1030(char* param_1)
     int local_c;
     int local_a;
     int local_6;
-    int local_4;
+    int local_4_ab;
 
     local_6 = 1;
 
@@ -1073,34 +1073,34 @@ static int CMDS_1030(char* param_1)
             local_c = ULTIMA_38e4();
             ULTIMA_3a74(TILE_ACTOR_SHADOWLORD, TILE_ACTOR_SHADOWLORD, D_5896_map_x, D_5897_map_y - 2, D_5895_map_level, 0, local_c);
 
-            for (local_4 = 0x1f; local_4 >= 0; local_4--)
+            for (local_4_ab = 0x1f; local_4_ab >= 0; local_4_ab--)
             {
-                if (D_659e[local_4] == 0)
+                if (D_659e[local_4_ab] == 0)
                 {
                     break;
                 }
             }
 
-            D_5f5e[local_4]._0 = 1;
-            D_5f5e[local_4]._c = local_c;
-            D_5f5e[local_4]._2_x = D_5896_map_x;
-            D_5f5e[local_4]._4_y = D_5897_map_y - 2;
-            D_5f5e[local_4]._6_z = D_5895_map_level;
+            D_5f5e[local_4_ab]._0 = 1;
+            D_5f5e[local_4_ab]._c = local_c;
+            D_5f5e[local_4_ab]._2_x = D_5896_map_x;
+            D_5f5e[local_4_ab]._4_y = D_5897_map_y - 2;
+            D_5f5e[local_4_ab]._6_z = D_5895_map_level;
 
             for (local_a = 0; local_a < 4; local_a++)
             {
-                D_5d5e[local_4].time[local_a] = 0;
+                D_5d5e[local_4_ab].time[local_a] = 0;
             }
 
             for (local_a = 0; local_a < 3; local_a++)
             {
-                D_5d5e[local_4].type[local_a] = 6;
-                D_5d5e[local_4].x[local_a] = D_5896_map_x;
-                D_5d5e[local_4].y[local_a] = D_5897_map_y - 2;
-                D_5d5e[local_4].z[local_a] = D_5895_map_level;
+                D_5d5e[local_4_ab].type[local_a] = 6;
+                D_5d5e[local_4_ab].x[local_a] = D_5896_map_x;
+                D_5d5e[local_4_ab].y[local_a] = D_5897_map_y - 2;
+                D_5d5e[local_4_ab].z[local_a] = D_5895_map_level;
             }
 
-            D_659e[local_4] = 0xfc;
+            D_659e[local_4_ab] = 0xfc;
 
             ULTIMA_1850_PrintString(_TEXT(0x4425, "\nA shadowlord appears\n"));
             ULTIMA_2192_AudioPulse(0x28a0, 1, 30000, 2000, 2);
@@ -1134,18 +1134,18 @@ END:
 // meditate
 static void CMDS_1202(int param_1, int param_2, int param_3)
 {
+    bool local_16_an;
     int local_14;
-    bool local_16;
     char local_12[16];
 
-    local_16 = 1;
+    local_16_an = 1;
 
     ULTIMA_1850_PrintString(_TEXT(0x4450, "\nUpon what virtue\ndost thou\nmeditate?\n\n:"));
     ULTIMA_3b1c_GetString(local_12, 0xf);
 
     if (ULTIMA_6f1e((byte*)D_1f4e[param_1], local_12) == -1)
     {
-        local_16 = 0;
+        local_16_an = 0;
     }
 
     for (local_14 = 0; local_14 < 3; local_14++)
@@ -1155,11 +1155,11 @@ static void CMDS_1202(int param_1, int param_2, int param_3)
 
         if (ULTIMA_6f1e((byte*)D_1f5e[param_1], local_12) == -1)
         {
-            local_16 = 0;
+            local_16_an = 0;
         }
     }
 
-    if (local_16 && D_1f6e[param_1] == param_2 && D_1f76[param_1] == param_3)
+    if (local_16_an && D_1f6e[param_1] == param_2 && D_1f76[param_1] == param_3)
     {
         D_58d8[param_1] &= 0x7f;
         ULTIMA_1850_PrintString(_TEXT(0x4482, "\n\nThe Shrine is\nrestored!\n"));
@@ -1176,15 +1176,15 @@ static void CMDS_1202(int param_1, int param_2, int param_3)
 // CHECKED
 static void CMDS_12c8(char* param_1)
 {
-    bool local_8;
-    register int local_4; // <- si
-    register int local_a; // <- di
-    byte local_c;
-    int local_6;
     char** local_e;
+    byte local_c;
+    register int local_a; // <- di
+    bool local_8;
+    int local_6;
+    register int local_4_ab; // <- si
 
     local_8 = 0;
-    local_4 = 0;
+    local_4_ab = 0;
     local_e = D_4502;
 
     do
@@ -1195,7 +1195,7 @@ static void CMDS_12c8(char* param_1)
             ULTIMA_3072_ShakeScreen();
 
             local_c = GetMapViewport(4, 5);
-            if (D_4512[local_4] == local_c || local_c == TILE_MAP_DF || local_c == TILE_MAP_RUINS)
+            if (D_4512[local_4_ab] == local_c || local_c == TILE_MAP_DF || local_c == TILE_MAP_RUINS)
             {
                 local_6 = -1;
                 local_a = 0;
@@ -1203,7 +1203,7 @@ static void CMDS_12c8(char* param_1)
             else
             {
                 local_c = GetMapViewport(5, 6);
-                if (D_4512[local_4] == local_c || local_c == TILE_MAP_DF || local_c == TILE_MAP_RUINS)
+                if (D_4512[local_4_ab] == local_c || local_c == TILE_MAP_DF || local_c == TILE_MAP_RUINS)
                 {
                     local_6 = 0;
                     local_a = 1;
@@ -1211,7 +1211,7 @@ static void CMDS_12c8(char* param_1)
                 else
                 {
                     local_c = GetMapViewport(6, 5);
-                    if (D_4512[local_4] == local_c || local_c == TILE_MAP_DF || local_c == TILE_MAP_RUINS)
+                    if (D_4512[local_4_ab] == local_c || local_c == TILE_MAP_DF || local_c == TILE_MAP_RUINS)
                     {
                         local_6 = 1;
                         local_a = 0;
@@ -1219,7 +1219,7 @@ static void CMDS_12c8(char* param_1)
                     else
                     {
                         local_c = GetMapViewport(5, 4);
-                        if (D_4512[local_4] == local_c || local_c == TILE_MAP_DF || local_c == TILE_MAP_RUINS)
+                        if (D_4512[local_4_ab] == local_c || local_c == TILE_MAP_DF || local_c == TILE_MAP_RUINS)
                         {
                             local_6 = 0;
                             local_a = -1;
@@ -1234,15 +1234,15 @@ static void CMDS_12c8(char* param_1)
 
             if (local_c == TILE_MAP_RUINS)
             {
-                CMDS_1202(local_4, local_6 + D_5896_map_x, local_a + D_5897_map_y);
+                CMDS_1202(local_4_ab, local_6 + D_5896_map_x, local_a + D_5897_map_y);
                 return;
             }
 
-            if (local_6 + D_5896_map_x == D_1e8a[local_4 + 0x20] &&
-                local_a + D_5897_map_y == D_1eb2[local_4 + 0x20])
+            if (local_6 + D_5896_map_x == D_1e8a[local_4_ab + 0x20] &&
+                local_a + D_5897_map_y == D_1eb2[local_4_ab + 0x20])
             {
-                D_58d0[local_4] ^= 0x80;
-                *ULTIMA_4402_GetTileAddr(local_6 + D_5896_map_x, local_a + D_5897_map_y) ^= D_4512[local_4] ^ TILE_MAP_DF;
+                D_58d0[local_4_ab] ^= 0x80;
+                *ULTIMA_4402_GetTileAddr(local_6 + D_5896_map_x, local_a + D_5897_map_y) ^= D_4512[local_4_ab] ^ TILE_MAP_DF;
                 D_24e6 |= 2;
             }
 
@@ -1250,8 +1250,8 @@ static void CMDS_12c8(char* param_1)
             break;
         }
         local_e++;
-        local_4++;
-    } while (local_4 < 8);
+        local_4_ab++;
+    } while (local_4_ab < 8);
 
     if (!local_8)
     {
@@ -1261,10 +1261,10 @@ static void CMDS_12c8(char* param_1)
 
 int CMDS_1418_YellCmd(void)
 {
-    int local_24;
+    int local_24_an;
     char local_22[32];
 
-    local_24 = 1;
+    local_24_an = 1;
 
     if ((D_587c_partyTile & 0xf8) == TILE_ACTOR_FRIGATE_20 && D_5893_map_id < 0x80)
     {
@@ -1273,7 +1273,7 @@ int CMDS_1418_YellCmd(void)
             ULTIMA_1850_PrintString(_TEXT(0x451a, "FURL!\n"));
             D_587c_partyTile += 4;
 #if !defined(MATCHING_BUILD)
-            return local_24; // TODO: validate return value
+            return local_24_an; // TODO: validate return value
 #else
             return; // sic
 #endif
@@ -1283,7 +1283,7 @@ int CMDS_1418_YellCmd(void)
             ULTIMA_1850_PrintString(_TEXT(0x4521, "HOIST!\n"));
             D_587c_partyTile -= 4;
 #if !defined(MATCHING_BUILD)
-            return local_24; // TODO: validate return value
+            return local_24_an; // TODO: validate return value
 #else
             return; // sic
 #endif
@@ -1297,7 +1297,7 @@ int CMDS_1418_YellCmd(void)
         {
             ULTIMA_1850_PrintString(_TEXT(0x4531, "Nothing\n"));
 #if !defined(MATCHING_BUILD)
-            return local_24; // TODO: validate return value
+            return local_24_an; // TODO: validate return value
 #else
             return; // sic
 #endif
@@ -1307,7 +1307,7 @@ int CMDS_1418_YellCmd(void)
             ULTIMA_16ba_PrintChar('\n');
             if (D_5893_map_id >= 1 && D_5893_map_id <= 0x20)
             {
-                local_24 = CMDS_1030(local_22);
+                local_24_an = CMDS_1030(local_22);
             }
             else if (D_5893_map_id == 0)
             {
@@ -1320,7 +1320,7 @@ int CMDS_1418_YellCmd(void)
         }
     }
 
-    return local_24;
+    return local_24_an;
 }
 
 static int CMDS_14ba_Pushable(byte param_1)
@@ -1399,19 +1399,19 @@ static void CMDS_15b0_Pulled(int param_1, int param_2, int param_3, int param_4,
 
 void CMDS_161a_PushCmd(void)
 {
-    int local_4;
-    int local_18;
-    int local_6;
-    int local_1c;
-    int local_a;
-    int local_12;
-    int local_10;
-    int local_16;
+    int local_1c_aa;
+    int local_1a_ac;
+    int local_18_al;
+    int local_16_an;
     int local_14;
-    int local_1a;
+    int local_12_ab;
+    int local_10_ad;
     int local_e;
     int local_c;
+    int local_a;
     int local_8;
+    int local_6;
+    int local_4_ab;
 
     ULTIMA_39cc_SetTile(D_594f, D_5950, D_5951);
     if (ULTIMA_35ec_SelectDirection() == 0)
@@ -1419,8 +1419,8 @@ void CMDS_161a_PushCmd(void)
         return;
     }
 
-    local_12 = D_5876;
-    local_18 = D_5878;
+    local_12_ab = D_5876;
+    local_18_al = D_5878;
 
     if (D_5893_map_id > 0x7f)
     {
@@ -1430,35 +1430,35 @@ void CMDS_161a_PushCmd(void)
         D_5897_map_y = D_ba14[D_589e].y;
     }
 
-    local_10 = local_12 + (uint)D_5896_map_x;
-    local_16 = local_18 + (uint)D_5897_map_y;
+    local_10_ad = local_12_ab + (uint)D_5896_map_x;
+    local_16_an = local_18_al + (uint)D_5897_map_y;
 
-    if (D_5893_map_id > 0x7f && COMBAT_111a(local_10, local_16) != 0)
+    if (D_5893_map_id > 0x7f && COMBAT_111a(local_10_ad, local_16_an) != 0)
     {
         return;
     }
 
-    local_4 = *ULTIMA_4402_GetTileAddr(local_10, local_16);
-    if (ULTIMA_368e_FindActorTileAtPos(local_10, local_16, D_5895_map_level) != 0 || CMDS_14ba_Pushable(local_4) == 0)
+    local_4_ab = *ULTIMA_4402_GetTileAddr(local_10_ad, local_16_an);
+    if (ULTIMA_368e_FindActorTileAtPos(local_10_ad, local_16_an, D_5895_map_level) != 0 || CMDS_14ba_Pushable(local_4_ab) == 0)
     {
         ULTIMA_1850_PrintString(_TEXT(0x4559, "Won't budge!\n"));
     }
     else
     {
-        local_a = (local_4 & 0xfc) == TILE_MAP_CANNON_B4 ? TILE_MAP_45 : TILE_MAP_44;
-        local_14 = local_10 + local_12;
-        local_1a = local_16 + local_18;
-        local_6 = *ULTIMA_4402_GetTileAddr(local_14, local_1a);
-        local_1c = *ULTIMA_4402_GetTileAddr(D_5896_map_x, D_5897_map_y);
-        if (ULTIMA_368e_FindActorTileAtPos(local_14, local_1a, D_5895_map_level) == 0 && local_6 == local_a)
+        local_a = (local_4_ab & 0xfc) == TILE_MAP_CANNON_B4 ? TILE_MAP_45 : TILE_MAP_44;
+        local_14 = local_10_ad + local_12_ab;
+        local_1a_ac = local_16_an + local_18_al;
+        local_6 = *ULTIMA_4402_GetTileAddr(local_14, local_1a_ac);
+        local_1c_aa = *ULTIMA_4402_GetTileAddr(D_5896_map_x, D_5897_map_y);
+        if (ULTIMA_368e_FindActorTileAtPos(local_14, local_1a_ac, D_5895_map_level) == 0 && local_6 == local_a)
         {
-            CMDS_1548_Pushed(local_4, local_6, local_10, local_16, local_14, local_1a, local_12, local_18);
+            CMDS_1548_Pushed(local_4_ab, local_6, local_10_ad, local_16_an, local_14, local_1a_ac, local_12_ab, local_18_al);
         }
         else
         {
-            if (local_1c == local_a)
+            if (local_1c_aa == local_a)
             {
-                CMDS_15b0_Pulled(local_1c, local_4, D_5896_map_x, D_5897_map_y, local_10, local_16, local_12, local_18);
+                CMDS_15b0_Pulled(local_1c_aa, local_4_ab, D_5896_map_x, D_5897_map_y, local_10_ad, local_16_an, local_12_ab, local_18_al);
             }
             else
             {
@@ -1467,19 +1467,19 @@ void CMDS_161a_PushCmd(void)
             }
         }
 
-        D_5896_map_x += local_12;
-        D_5897_map_y += local_18;
+        D_5896_map_x += local_12_ab;
+        D_5897_map_y += local_18_al;
         D_24e6 = 1;
 
         if (D_5893_map_id > 0x7f)
         {
             local_8 = D_ba14[D_589e].entityIdx;
 
-            D_ba14[D_589e].x += local_12;
-            D_ba14[D_589e].y += local_18;
+            D_ba14[D_589e].x += local_12_ab;
+            D_ba14[D_589e].y += local_18_al;
 
-            D_5c5a[local_8]._2_x += local_12;
-            D_5c5a[local_8]._3_y += local_18;
+            D_5c5a[local_8]._2_x += local_12_ab;
+            D_5c5a[local_8]._3_y += local_18_al;
 
             D_5896_map_x = local_c;
             D_5897_map_y = local_e;
@@ -1492,23 +1492,23 @@ void CMDS_161a_PushCmd(void)
 // escape
 int CMDS_17ec_Escape(void)
 {
-    bool local_4;
     int local_8;
     int local_6;
+    bool local_4_ab;
 
     ULTIMA_1850_PrintString(_TEXT(0x4574, "Escape"));
 
-    local_4 = local_6 = 0;
+    local_4_ab = local_6 = 0;
     for (local_8 = 0; local_8 < 0x20; local_8++)
     {
         if ((D_ba14[local_8].flags & (COMBAT_FLAGS_PLAYER | COMBAT_FLAGS_DEAD)) == COMBAT_FLAGS_PLAYER)
         {
-            local_4 = 1;
+            local_4_ab = 1;
             break;
         }
     }
 
-    if (local_4)
+    if (local_4_ab)
     {
         if ((D_58a1 & 0x80) != 0)
         {
@@ -1556,22 +1556,22 @@ int CMDS_17ec_Escape(void)
 // select reagents
 static int CMDS_18be(void)
 {
+    int local_18_al;
+    int local_16_an;
     int local_14;
-    int local_16;
-    int local_6;
-    int local_18;
     byte local_12[8];
     int local_a;
     int local_8;
-    int local_4;
+    int local_6;
+    int local_4_ab;
 
-    local_16 = 0;
+    local_16_an = 0;
     for (local_8 = 0; local_8 < 8; local_8++)
     {
         if (D_5850[local_8] != 0)
         {
-            local_12[local_16] = local_8;
-            local_16++;
+            local_12[local_16_an] = local_8;
+            local_16_an++;
         }
     }
 
@@ -1582,7 +1582,7 @@ static int CMDS_18be(void)
     ULTIMA_4efc();
     ULTIMA_4e50(_TEXT(0x8f64, "Reagents:"));
 
-    for (local_8 = 0; local_8 != local_16; local_8++)
+    for (local_8 = 0; local_8 != local_16_an; local_8++)
     {
         ULTIMA_16ba_PrintChar('\n');
         ULTIMA_16ba_PrintChar(' ');
@@ -1592,10 +1592,10 @@ static int CMDS_18be(void)
     }
 
     // d8f2
-    local_6 = local_18 = 0;
+    local_6 = local_18_al = 0;
 
     ULTIMA_2a28(1);
-    local_4 = 0;
+    local_4_ab = 0;
     do
     {
         ULTIMA_1b94_SelectTextWindow(2);
@@ -1616,7 +1616,7 @@ static int CMDS_18be(void)
         case U5_KEY_RIGHT:
         case U5_KEY_DOWN:
             // 19d0
-            if (local_6 < local_16 + -1)
+            if (local_6 < local_16_an + -1)
             {
                 ULTIMA_2a28(local_6 + 1);
                 local_6++;
@@ -1626,7 +1626,7 @@ static int CMDS_18be(void)
 
         case 0x4d:
             // 19e0
-            local_4 = 1;
+            local_4_ab = 1;
             ULTIMA_1850_PrintString(_TEXT(0x8f6e, "\n\n"));
             break;
 
@@ -1634,11 +1634,11 @@ static int CMDS_18be(void)
         case U5_KEY_SPACE:
             // 19ee
             local_14 = 0x80 >> local_12[local_6];
-            local_18 ^= local_14;
+            local_18_al ^= local_14;
             ULTIMA_1b94_SelectTextWindow(1);
             ULTIMA_1bf2_SetTextPosition(3, local_6 + 1);
             ULTIMA_16ba_PrintChar(CTRL_CHAR_TOGGLE_INVERSION);
-            if ((local_14 & local_18) != 0)
+            if ((local_14 & local_18_al) != 0)
             {
                 ULTIMA_16ba_PrintChar(0xf);
             }
@@ -1652,24 +1652,24 @@ static int CMDS_18be(void)
 
         case U5_KEY_ESC:
             // 1a2e
-            local_18 = -1;
-            local_4 = 1;
+            local_18_al = -1;
+            local_4_ab = 1;
 
             ULTIMA_16ba_PrintChar('\n');
             break;
         }
-    } while (local_4 == 0);
+    } while (local_4_ab == 0);
 
     ULTIMA_2a28(local_6 + 1);
     ULTIMA_1b94_SelectTextWindow(2);
-    return local_18;
+    return local_18_al;
 }
 
 // select mix amount
 static int CMDS_1a70(int param_1)
 {
     bool local_6;
-    int local_4;
+    int local_4_ab;
     int local_8;
     int local_a;
 
@@ -1677,13 +1677,13 @@ static int CMDS_1a70(int param_1)
     {
         local_6 = 1;
         ULTIMA_1850_PrintString(_TEXT(0x8f72, "How much? "));
-        local_4 = ULTIMA_3b9e(2);
-        if (local_4 != 0)
+        local_4_ab = ULTIMA_3b9e(2);
+        if (local_4_ab != 0)
         {
             local_a = 0x80;
             for (local_8 = 0; local_8 < 8; local_8++)
             {
-                if ((param_1 & local_a) != 0 && D_5850[local_8] < local_4)
+                if ((param_1 & local_a) != 0 && D_5850[local_8] < local_4_ab)
                 {
                     ULTIMA_1850_PrintString(_TEXT(0x8f7e, "Insufficient reagents!\n\n"));
                     local_6 = 0;
@@ -1694,16 +1694,16 @@ static int CMDS_1a70(int param_1)
         }
     } while (!local_6);
 
-    return local_4;
+    return local_4_ab;
 }
 
 void CMDS_1ad8_MixCmd(void)
 {
-    int local_4;
-    int local_8;
     int local_c;
     int local_a;
+    int local_8;
     int local_6;
+    int local_4_ab;
 
     local_8 = 0;
     for (local_a = 0; local_a < 8; local_a++)
@@ -1735,13 +1735,13 @@ void CMDS_1ad8_MixCmd(void)
         ULTIMA_16ba_PrintChar(0x19); // v
         ULTIMA_1850_PrintString(_TEXT(0x8fc6, " to move,\nRETURN selects.\nType M to mix:"));
 
-        local_4 = CMDS_18be();
-        if (local_4 >= 0)
+        local_4_ab = CMDS_18be();
+        if (local_4_ab >= 0)
         {
-            local_8 = CMDS_1a70(local_4);
+            local_8 = CMDS_1a70(local_4_ab);
             if (local_8 > 0)
             {
-                if (local_4 != 0)
+                if (local_4_ab != 0)
                 {
                     ULTIMA_1850_PrintString(_TEXT(0x8ff0, "Mixing...\n"));
                     if (D_5893_map_id > 0x20)
@@ -1756,14 +1756,14 @@ void CMDS_1ad8_MixCmd(void)
                     local_c = 0x80;
                     for (local_a = 0; local_a < 8; local_a++)
                     {
-                        if ((local_4 & local_c) != 0)
+                        if ((local_4_ab & local_c) != 0)
                         {
                             D_5850[local_a] -= local_8;
                         }
                         local_c >>= 1;
                     }
 
-                    if (local_6 >= 0 && D_1cc0[local_6] == local_4)
+                    if (local_6 >= 0 && D_1cc0[local_6] == local_4_ab)
                     {
                         ULTIMA_1850_PrintString(_TEXT(0x8ffc, "\nDone!\n"));
                         D_57f0[local_6] += local_8;
@@ -1796,7 +1796,7 @@ void CMDS_1c20_KlimbCmd(void)
 {
     int local_a;
     int local_6;
-    int local_4;
+    int local_4_ab;
     int local_8;
     int local_c;
     int local_e;
@@ -1835,12 +1835,12 @@ void CMDS_1c20_KlimbCmd(void)
     }
     else
     {
-        for (local_4 = 0; local_4 < D_585b; local_4++)
+        for (local_4_ab = 0; local_4_ab < D_585b; local_4_ab++)
         {
-            if (D_55a8_party[local_4].status != STATUS_DEAD && D_55a8_party[local_4].dex < ULTIMA_2092_RandomRange(1, 0x1e))
+            if (D_55a8_party[local_4_ab].status != STATUS_DEAD && D_55a8_party[local_4_ab].dex < ULTIMA_2092_RandomRange(1, 0x1e))
             {
                 ULTIMA_1850_PrintString(_TEXT(0x904a, "Fell!\n"));
-                ULTIMA_2a52(local_4, ULTIMA_2092_RandomRange(1, 5));
+                ULTIMA_2a52(local_4_ab, ULTIMA_2092_RandomRange(1, 5));
             }
         }
 

@@ -51,28 +51,28 @@ static void ZSTATS_0082(int param_1)
     int local_6;
     int local_8;
     int local_a;
-    S_55a8* local_4;
+    S_55a8* local_4_ab;
 
     ULTIMA_4daa();
 
-    local_4 = &D_55a8_party[param_1];
+    local_4_ab = &D_55a8_party[param_1];
 
-    ULTIMA_4e50(local_4->name);
+    ULTIMA_4e50(local_4_ab->name);
     ULTIMA_1c22_SetTextWindowSize(1, 0x18, 1, 0x26, 9);
     ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
     ULTIMA_1c22_SetTextWindowSize(1, 0x18, 1, 0x27, 9);
 
-    local_6 = ULTIMA_4d76_FindIndex(/*0x96c6*/ CLASS_LIST, local_4->cls);
-    local_a = ULTIMA_4d76_FindIndex(/*0x96d0*/ STATUS_LIST, local_4->status);
+    local_6 = ULTIMA_4d76_FindIndex(/*0x96c6*/ CLASS_LIST, local_4_ab->cls);
+    local_a = ULTIMA_4d76_FindIndex(/*0x96d0*/ STATUS_LIST, local_4_ab->status);
 
     for (local_8 = 0; local_8 < D_1a58[local_6]; local_8++)
     {
         ULTIMA_16ba_PrintChar(' ');
     }
 
-    ULTIMA_16ba_PrintChar(local_4->gender);
+    ULTIMA_16ba_PrintChar(local_4_ab->gender);
     ULTIMA_1850_PrintString(_TEXT(0x96d6, " Lv-"));
-    ULTIMA_1a3e_PrintNumber(local_4->level, 1, 0x20);
+    ULTIMA_1a3e_PrintNumber(local_4_ab->level, 1, 0x20);
     ULTIMA_16ba_PrintChar(' ');
     ULTIMA_1850_PrintString(D_1a44[local_6]);
     ULTIMA_1c22_SetTextWindowSize(1, 0x18, 1, 0x26, 9);
@@ -83,19 +83,19 @@ static void ZSTATS_0082(int param_1)
     ULTIMA_1bf2_SetTextPosition(0, 3);
     ULTIMA_16ba_PrintChar(CTRL_CHAR_UNCENTER_TEXT);
     ULTIMA_1850_PrintString(_TEXT(0x96dc, "Str="));
-    ULTIMA_1a3e_PrintNumber(local_4->str, 2, 0x30);
+    ULTIMA_1a3e_PrintNumber(local_4_ab->str, 2, 0x30);
     ULTIMA_1850_PrintString(_TEXT(0x96e2, "  HP:"));
-    ULTIMA_1a3e_PrintNumber(local_4->hp, 4, 0x20);
+    ULTIMA_1a3e_PrintNumber(local_4_ab->hp, 4, 0x20);
     ULTIMA_1850_PrintString(_TEXT(0x96e8, "\nInt="));
-    ULTIMA_1a3e_PrintNumber(local_4->intel, 2, 0x30);
+    ULTIMA_1a3e_PrintNumber(local_4_ab->intel, 2, 0x30);
     ULTIMA_1850_PrintString(_TEXT(0x96ee, "  HM:"));
-    ULTIMA_1a3e_PrintNumber(local_4->maxHp, 4, 0x20);
+    ULTIMA_1a3e_PrintNumber(local_4_ab->maxHp, 4, 0x20);
     ULTIMA_1850_PrintString(_TEXT(0x96f4, "\nDex="));
-    ULTIMA_1a3e_PrintNumber(local_4->dex, 2, 0x30);
+    ULTIMA_1a3e_PrintNumber(local_4_ab->dex, 2, 0x30);
     ULTIMA_1850_PrintString(_TEXT(0x96fa, "  Ex:"));
-    ULTIMA_1a3e_PrintNumber(local_4->exp, 4, 0x20);
+    ULTIMA_1a3e_PrintNumber(local_4_ab->exp, 4, 0x20);
     ULTIMA_1850_PrintString(_TEXT(0x9700, "\n\n    Magic:"));
-    ULTIMA_1a3e_PrintNumber(local_4->mag, 2, 0x20);
+    ULTIMA_1a3e_PrintNumber(local_4_ab->mag, 2, 0x20);
 }
 
 static bool ZSTATS_0278(int param_1)
@@ -115,13 +115,13 @@ static bool ZSTATS_0278(int param_1)
 
 static void ZSTATS_02a8(int param_1)
 {
+    S_55a8* local_6_an;
     int local_4;
-    S_55a8* local_6;
 
     ULTIMA_4daa();
 
-    local_6 = &D_55a8_party[param_1];
-    ULTIMA_4e50(local_6->name);
+    local_6_an = &D_55a8_party[param_1];
+    ULTIMA_4e50(local_6_an->name);
     ULTIMA_1c22_SetTextWindowSize(1, 0x18, 1, 0x26, 9);
     ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
     ULTIMA_16ba_PrintChar(CTRL_CHAR_CENTER_TEXT);
@@ -130,12 +130,12 @@ static void ZSTATS_02a8(int param_1)
     ULTIMA_16ba_PrintChar(CTRL_CHAR_UNCENTER_TEXT);
     ULTIMA_16ba_PrintChar(CTRL_CHAR_TOGGLE_UNDERLINE);
 
-    local_4 = ZSTATS_0278(local_6->equips[0]);
-    local_4 += ZSTATS_0278(local_6->equips[1]);
-    local_4 += ZSTATS_0278(local_6->equips[2]);
-    local_4 += ZSTATS_0278(local_6->equips[3]);
-    local_4 += ZSTATS_0278(local_6->equips[4]);
-    local_4 += ZSTATS_0278(local_6->equips[5]);
+    local_4 = ZSTATS_0278(local_6_an->equips[0]);
+    local_4 += ZSTATS_0278(local_6_an->equips[1]);
+    local_4 += ZSTATS_0278(local_6_an->equips[2]);
+    local_4 += ZSTATS_0278(local_6_an->equips[3]);
+    local_4 += ZSTATS_0278(local_6_an->equips[4]);
+    local_4 += ZSTATS_0278(local_6_an->equips[5]);
 
     if (local_4 == 0)
     {
@@ -265,15 +265,15 @@ int ZSTATS_05a4(int param_1, int param_2, byte* param_3, int param_4)
 // show inven count
 void ZSTATS_05e2(int param_1, byte* param_2, char** param_3, uint param_4)
 {
-    char local_6;
+    char local_6_an;
     int local_4;
 
-    local_6 = (char)param_2[param_1];
-    if (local_6 != -1)
+    local_6_an = (char)param_2[param_1];
+    if (local_6_an != -1)
     {
-        if (local_6 != 0)
+        if (local_6_an != 0)
         {
-            ULTIMA_1a3e_PrintNumber((byte)local_6, 2, 0x20);
+            ULTIMA_1a3e_PrintNumber((byte)local_6_an, 2, 0x20);
         }
         else
         {
@@ -333,13 +333,13 @@ void ZSTATS_05e2(int param_1, byte* param_2, char** param_3, uint param_4)
 // NOT MATCHING (checked)
 static int ZSTATS_06e8(char* param_1, int param_2, byte* param_3, char** param_4)
 {
-    int local_10;
+    int local_10_ad;
     int local_e;
     int local_c;
     int local_a;
     bool local_8;
     int local_6;
-    int local_4;
+    int local_4_ab;
 
     ULTIMA_4e50(param_1);
     ZSTATS_045e(8);
@@ -374,20 +374,20 @@ static int ZSTATS_06e8(char* param_1, int param_2, byte* param_3, char** param_4
         }
 
         // 077f
-        local_10 = 0;
+        local_10_ad = 0;
         if (ZSTATS_056c(local_6, param_2, param_3, 0xff) != -1)
         {
-            local_10 = 2;
+            local_10_ad = 2;
         }
 
         // 079c
         if (local_c != -1 && ZSTATS_05a4(local_c, param_2, param_3, 0xff) != -1)
         {
-            local_10++;
+            local_10_ad++;
         }
 
         // 07b8
-        switch (local_10)
+        switch (local_10_ad)
         {
         case 0:
             // 07d0
@@ -419,14 +419,14 @@ static int ZSTATS_06e8(char* param_1, int param_2, byte* param_3, char** param_4
             // 081c
             if (local_e == U5_KEY_PGUP)
             {
-                local_4 = 7;
+                local_4_ab = 7;
             }
             else
             {
-                local_4 = 1;
+                local_4_ab = 1;
             }
 
-            for (local_a = 0; local_a < local_4; local_a++)
+            for (local_a = 0; local_a < local_4_ab; local_a++)
             {
                 if (ZSTATS_056c(local_6, param_2, param_3, 0xff) != -1)
                 {
@@ -440,14 +440,14 @@ static int ZSTATS_06e8(char* param_1, int param_2, byte* param_3, char** param_4
             // 086c
             if (local_e == U5_KEY_PGDN)
             {
-                local_4 = 7;
+                local_4_ab = 7;
             }
             else
             {
-                local_4 = 1;
+                local_4_ab = 1;
             }
 
-            for (local_a = 0; local_a < local_4; local_a++)
+            for (local_a = 0; local_a < local_4_ab; local_a++)
             {
                 if (local_c != -1 && ZSTATS_05a4(local_c, param_2, param_3, 0xff) != -1)
                 {
@@ -534,7 +534,7 @@ void ZSTATS_0a3a_ZstatsCmd(void)
 {
     int local_8;
     byte local_6;
-    int local_4;
+    int local_4_ab;
 
     local_8 = ZSTATS_0000(1);
     if (local_8 == -2)
@@ -550,7 +550,7 @@ void ZSTATS_0a3a_ZstatsCmd(void)
     ULTIMA_1850_PrintString(_TEXT(0x97a2, "\nStatus: "));
     ZSTATS_099a();
     ULTIMA_4efc();
-    local_4 = local_8 << 1;
+    local_4_ab = local_8 << 1;
     local_6 = 0;
 
     // ec58
@@ -567,36 +567,36 @@ void ZSTATS_0a3a_ZstatsCmd(void)
         case U5_KEY_UP:
         case U5_KEY_LEFT:
             // 0aa6
-            if (local_4 == 0xc)
+            if (local_4_ab == 0xc)
             {
-                local_4 = D_585b * 2 - 1;
+                local_4_ab = D_585b * 2 - 1;
             }
-            else if (local_4 > 0)
+            else if (local_4_ab > 0)
             {
-                local_4--;
+                local_4_ab--;
             }
             else
             {
-                local_4 = 0x10;
+                local_4_ab = 0x10;
             }
             break;
 
         case U5_KEY_RIGHT:
         case U5_KEY_DOWN:
             // 0aea
-            if (D_585b * 2 - 1 == local_4)
+            if (D_585b * 2 - 1 == local_4_ab)
             {
-                local_4 = 0xc;
+                local_4_ab = 0xc;
             }
             else
             {
-                if (local_4 < 0x10)
+                if (local_4_ab < 0x10)
                 {
-                    local_4++;
+                    local_4_ab++;
                 }
                 else
                 {
-                    local_4 = 0;
+                    local_4_ab = 0;
                 }
             }
             break;
@@ -614,29 +614,29 @@ void ZSTATS_0a3a_ZstatsCmd(void)
             // 0b12 (NOT MATCHING)
             if (local_6 - 0x31 < D_585b)
             {
-                local_4 = local_6 * 2 - 0x62;
+                local_4_ab = local_6 * 2 - 0x62;
             }
             break;
         }
 
         // ecab
         ULTIMA_1b94_SelectTextWindow(1);
-        if (local_4 < 0xc)
+        if (local_4_ab < 0xc)
         {
-            if ((local_4 & 1) != 0)
+            if ((local_4_ab & 1) != 0)
             {
-                ZSTATS_02a8(local_4 >> 1);
+                ZSTATS_02a8(local_4_ab >> 1);
             }
             else
             {
-                ZSTATS_0082(local_4 >> 1);
+                ZSTATS_0082(local_4_ab >> 1);
             }
 
             // ed3f
             ULTIMA_1b94_SelectTextWindow(2);
             local_6 = ULTIMA_266c_GetChar();
         }
-        else if (local_4 == 0xc)
+        else if (local_4_ab == 0xc)
         {
             ZSTATS_039c();
 
@@ -647,7 +647,7 @@ void ZSTATS_0a3a_ZstatsCmd(void)
         else
         {
             // 0b70
-            switch (local_4)
+            switch (local_4_ab)
             {
             case 0xd:
                 // ed6a
@@ -709,7 +709,7 @@ static int ZSTATS_0c0a(int param_1)
 // param_2: item id
 static int ZSTATS_0c5c_EquipItem(int param_1, int param_2)
 {
-    byte* local_10;
+    byte* local_10_ad;
     int local_e;
     int local_c;
     int local_a;
@@ -772,18 +772,18 @@ static int ZSTATS_0c5c_EquipItem(int param_1, int param_2)
 
     // ef16
     local_4 = 0;
-    local_10 = &D_55a8_party[param_1].equips[0];
+    local_10_ad = &D_55a8_party[param_1].equips[0];
     local_a = 6;
 
     // ef30
     for (local_a = 0; local_a < 6; local_a++)
     {
-        if (*local_10 != 0xff)
+        if (*local_10_ad != 0xff)
         {
-            local_4 += D_1aae[*local_10];
+            local_4 += D_1aae[*local_10_ad];
         }
         // ef41
-        local_10++;
+        local_10_ad++;
     }
 
     local_e = D_1aae[param_2] + local_4 <= D_55a8_party[param_1].str /*strength*/;
@@ -799,7 +799,7 @@ static int ZSTATS_0c5c_EquipItem(int param_1, int param_2)
             return 0;
         }
         // efbc
-        local_10 = &D_55a8_party[param_1].equips[0];
+        local_10_ad = &D_55a8_party[param_1].equips[0];
         break;
 
     case 0x40:
@@ -810,7 +810,7 @@ static int ZSTATS_0c5c_EquipItem(int param_1, int param_2)
             return 0;
         }
         // f040..efc6
-        local_10 = &D_55a8_party[param_1].equips[1];
+        local_10_ad = &D_55a8_party[param_1].equips[1];
         break;
 
     case 0x20:
@@ -827,7 +827,7 @@ static int ZSTATS_0c5c_EquipItem(int param_1, int param_2)
             local_c = 0;
         }
         // f06d..f077..efc6
-        local_10 = &D_55a8_party[param_1].equips[2] + local_c;
+        local_10_ad = &D_55a8_party[param_1].equips[2] + local_c;
         break;
 
     case 0x30:
@@ -839,7 +839,7 @@ static int ZSTATS_0c5c_EquipItem(int param_1, int param_2)
             return 0;
         }
         // f092..f077..efc6
-        local_10 = &D_55a8_party[param_1].equips[2];
+        local_10_ad = &D_55a8_party[param_1].equips[2];
         break;
 
     case 4:
@@ -850,7 +850,7 @@ static int ZSTATS_0c5c_EquipItem(int param_1, int param_2)
             return 0;
         }
         // f0b0..efc6
-        local_10 = &D_55a8_party[param_1].equips[5];
+        local_10_ad = &D_55a8_party[param_1].equips[5];
         break;
 
     case 2:
@@ -861,7 +861,7 @@ static int ZSTATS_0c5c_EquipItem(int param_1, int param_2)
             return 0;
         }
         // f0d2..efc6
-        local_10 = &D_55a8_party[param_1].equips[4];
+        local_10_ad = &D_55a8_party[param_1].equips[4];
         break;
     }
 
@@ -869,7 +869,7 @@ static int ZSTATS_0c5c_EquipItem(int param_1, int param_2)
     if (local_e != 0)
     {
         // efd2
-        *local_10 = param_2;
+        *local_10_ad = param_2;
         --D_57c0[param_2];
         if ((D_57c0[param_2] == 0x2a || D_57c0[param_2] == 0x2c) && (ULTIMA_2092_RandomRange(0, 0xf) == 0))
         {
@@ -911,26 +911,26 @@ static int ZSTATS_0c5c_EquipItem(int param_1, int param_2)
 // select item: used in use, ready
 int ZSTATS_0f2e(int param_1, int param_2, int param_3)
 {
-    int local_1a;
-    int local_18;
-    int local_16;
+    int local_1a_ac;
+    int local_18_al;
+    int local_16_an;
     byte* local_14; // equipments
-    int local_12;
-    int local_10;
+    int local_12_ab;
+    int local_10_ad;
     int local_e;
     int local_c;
     int local_a;
     int local_8;
     int local_6;
-    int local_4;
+    int local_4_ab;
 
 #if !defined(MATCHING_BUILD)
-    local_1a = 0;
+    local_1a_ac = 0;
 #endif
 
     // f10e
     local_8 = 0;
-    local_10 = 1;
+    local_10_ad = 1;
 
     if (param_3 == 0x52)
     {
@@ -949,26 +949,26 @@ int ZSTATS_0f2e(int param_1, int param_2, int param_3)
         ULTIMA_1b94_SelectTextWindow(1);
         ULTIMA_1bf2_SetTextPosition(1, 1);
 
-        local_4 = 0;
-        local_12 = param_1;
+        local_4_ab = 0;
+        local_12_ab = param_1;
 
         // f159 -> f20b
-        while (local_12 != -1)
+        while (local_12_ab != -1)
         {
             // f213
-            local_4++;
+            local_4_ab++;
 
-            if (ULTIMA_1cee_GetCurrentTextY() == local_10)
+            if (ULTIMA_1cee_GetCurrentTextY() == local_10_ad)
             {
                 ULTIMA_16ba_PrintChar(CTRL_CHAR_TOGGLE_INVERSION);
-                local_1a = local_12;
+                local_1a_ac = local_12_ab;
             }
 
             // f22b
             if (param_3 == 0x52)
             {
                 // f234
-                if (ZSTATS_0518(param_2, local_12) == 0)
+                if (ZSTATS_0518(param_2, local_12_ab) == 0)
                 {
                     // f15c
                     local_c = 0x20;
@@ -976,24 +976,24 @@ int ZSTATS_0f2e(int param_1, int param_2, int param_3)
                 else
                 {
                     // f244
-                    local_c = D_1ae8[local_12];
+                    local_c = D_1ae8[local_12_ab];
                 }
 
                 // f161..f17e
                 // Equipments
-                ZSTATS_05e2(local_12, local_14, D_1962, local_c);
+                ZSTATS_05e2(local_12_ab, local_14, D_1962, local_c);
             }
             else
             {
                 // f170..f17e
                 // Scrolls
-                ZSTATS_05e2(local_12, local_14, D_1916, 0x20);
+                ZSTATS_05e2(local_12_ab, local_14, D_1916, 0x20);
             }
 
             // f181
             ULTIMA_1bf2_SetTextPosition(1, ULTIMA_1cee_GetCurrentTextY());
 
-            if (ULTIMA_1cee_GetCurrentTextY() - 1 == local_10)
+            if (ULTIMA_1cee_GetCurrentTextY() - 1 == local_10_ad)
             {
                 ULTIMA_16ba_PrintChar(CTRL_CHAR_TOGGLE_INVERSION);
             }
@@ -1005,28 +1005,28 @@ int ZSTATS_0f2e(int param_1, int param_2, int param_3)
             }
 
             // f1fc
-            local_12 = ZSTATS_05a4(local_12, local_a, local_14, param_2);
+            local_12_ab = ZSTATS_05a4(local_12_ab, local_a, local_14, param_2);
             // -> f20b
         }
 
         // f1a4
-        local_18 = 0;
+        local_18_al = 0;
         if (ZSTATS_056c(param_1, local_a, local_14, param_2) != -1)
         {
-            local_18 = 2;
+            local_18_al = 2;
         }
 
         // f1c0
-        if (local_12 != -1)
+        if (local_12_ab != -1)
         {
-            if (ZSTATS_05a4(local_12, local_a, local_14, param_2) != -1)
+            if (ZSTATS_05a4(local_12_ab, local_a, local_14, param_2) != -1)
             {
-                local_18++;
+                local_18_al++;
             }
         }
 
         // f1db
-        switch (local_18)
+        switch (local_18_al)
         {
         case 0:
             // f254
@@ -1049,22 +1049,22 @@ int ZSTATS_0f2e(int param_1, int param_2, int param_3)
         // L_1077
         // f257
         ULTIMA_1b94_SelectTextWindow(2);
-        local_16 = ULTIMA_266c_GetChar();
+        local_16_an = ULTIMA_266c_GetChar();
 
-        switch (local_16)
+        switch (local_16_an)
         {
         case U5_KEY_LEFT:
         case U5_KEY_UP:
         case U5_KEY_PGUP:
             // 10c0
-            if (local_16 == U5_KEY_PGUP)
+            if (local_16_an == U5_KEY_PGUP)
                 local_6 = 7;
             else
                 local_6 = 1;
 
             for (local_e = 0; local_e < local_6; local_e++)
             {
-                if (local_10 == 4 || local_10 == 1)
+                if (local_10_ad == 4 || local_10_ad == 1)
                 {
                     // 10fa
                     if (ZSTATS_056c(param_1, local_a, local_14, param_2) != -1)
@@ -1074,17 +1074,17 @@ int ZSTATS_0f2e(int param_1, int param_2, int param_3)
                     else
                     {
                         // 111c
-                        if (local_10 == 4)
+                        if (local_10_ad == 4)
                         {
                             // 1121
-                            local_10--;
+                            local_10_ad--;
                         }
                     }
                 }
                 else
                 {
                     // 1121
-                    local_10--;
+                    local_10_ad--;
                 }
                 // 1122
             }
@@ -1094,34 +1094,34 @@ int ZSTATS_0f2e(int param_1, int param_2, int param_3)
         case U5_KEY_DOWN:
         case U5_KEY_PGDN:
             // 1130
-            if (local_16 == U5_KEY_PGDN)
+            if (local_16_an == U5_KEY_PGDN)
                 local_6 = 7;
             else
                 local_6 = 1;
 
             for (local_e = 0; local_e < local_6; local_e++)
             {
-                if (local_10 == 4 || local_10 == 7 || local_10 >= local_4)
+                if (local_10_ad == 4 || local_10_ad == 7 || local_10_ad >= local_4_ab)
                 {
                     // 116f
-                    if (local_12 != -1 && ZSTATS_05a4(local_12, local_a, local_14, param_2) != -1)
+                    if (local_12_ab != -1 && ZSTATS_05a4(local_12_ab, local_a, local_14, param_2) != -1)
                     {
                         param_1 = ZSTATS_05a4(param_1, local_a, local_14, param_2);
-                        local_12 = ZSTATS_05a4(local_12, local_a, local_14, param_2);
+                        local_12_ab = ZSTATS_05a4(local_12_ab, local_a, local_14, param_2);
                     }
                     else
                     {
                         // 11a8
-                        if (local_10 == 4 && local_4 > 4)
+                        if (local_10_ad == 4 && local_4_ab > 4)
                         {
-                            local_10++;
+                            local_10_ad++;
                         }
                     }
                 }
                 else
                 {
                     // 11b3
-                    local_10++;
+                    local_10_ad++;
                 }
                 // 11b4
             }
@@ -1133,7 +1133,7 @@ int ZSTATS_0f2e(int param_1, int param_2, int param_3)
             // f3fc
             if (param_3 == 0x52)
             {
-                local_8 = ZSTATS_0c5c_EquipItem(param_2, local_1a);
+                local_8 = ZSTATS_0c5c_EquipItem(param_2, local_1a_ac);
             }
             else
             {
@@ -1146,7 +1146,7 @@ int ZSTATS_0f2e(int param_1, int param_2, int param_3)
             // 1238
             ULTIMA_1850_PrintString(param_3 == 0x52 ? _TEXT(0x9970, "Done\n") : _TEXT(0x9976, "None!\n"));
             local_8 = 1;
-            local_1a = -1;
+            local_1a_ac = -1;
 
             // -> f462
             break;
@@ -1154,7 +1154,7 @@ int ZSTATS_0f2e(int param_1, int param_2, int param_3)
             // 11C0
             // f3a0
             param_1 = ZSTATS_05a4(-1, local_a, local_14, param_2);
-            local_10 = 1;
+            local_10_ad = 1;
             // -> f462
             break;
         case U5_KEY_END:
@@ -1162,19 +1162,19 @@ int ZSTATS_0f2e(int param_1, int param_2, int param_3)
             // L_11dc
             param_1 = ZSTATS_056c(local_a, local_a, local_14, param_2);
 
-            for (local_10 = 1; local_10 < 7; local_10++)
+            for (local_10_ad = 1; local_10_ad < 7; local_10_ad++)
             {
                 // f3d1
                 // L_11f1
-                local_1a = ZSTATS_056c(param_1, local_a, local_14, param_2);
-                if (local_1a == -1)
+                local_1a_ac = ZSTATS_056c(param_1, local_a, local_14, param_2);
+                if (local_1a_ac == -1)
                 {
                     // L_1207
                     break;
                 }
                 // f3e7
                 // L_1210
-                param_1 = local_1a;
+                param_1 = local_1a_ac;
             }
             // -> f462
             break;
@@ -1182,20 +1182,20 @@ int ZSTATS_0f2e(int param_1, int param_2, int param_3)
         // f462
     }
 
-    return local_1a;
+    return local_1a_ac;
 }
 
 void ZSTATS_1296_ReadyCmd(void)
 {
-    int local_6;
+    int local_6_an;
     int local_4;
 
-    local_6 = ZSTATS_0000(0);
+    local_6_an = ZSTATS_0000(0);
 
-    if (local_6 < 0)
+    if (local_6_an < 0)
         return;
 
-    local_4 = ZSTATS_05a4(-1, 0x30, D_57c0, local_6);
+    local_4 = ZSTATS_05a4(-1, 0x30, D_57c0, local_6_an);
     if (local_4 == -1)
     {
         ULTIMA_1850_PrintString(_TEXT(0x997e, "Thou art empty-\nhanded!\n"));
@@ -1206,11 +1206,11 @@ void ZSTATS_1296_ReadyCmd(void)
     ULTIMA_4efc();
     ULTIMA_1b94_SelectTextWindow(1);
 
-    ULTIMA_4e50(D_55a8_party[local_6].name);
+    ULTIMA_4e50(D_55a8_party[local_6_an].name);
 
     ZSTATS_045e(0x08);
 
-    ZSTATS_0f2e(local_4, local_6, 0x52);
+    ZSTATS_0f2e(local_4, local_6_an, 0x52);
 
     ULTIMA_4daa();
     ULTIMA_4e20();

@@ -52,18 +52,18 @@ static void SJOG_002a(int param_1, int param_2, int param_3)
 // select look dir in dungeon
 int SJOG_006c(int param_1)
 {
+    byte local_6_an;
     int local_4;
-    byte local_6;
 
     ULTIMA_1850_PrintString(_TEXT(0x84e6, "Dir-"));
 
-    while ((local_6 = ULTIMA_266c_GetChar()) != U5_KEY_SPACE &&
-           local_6 != U5_KEY_UP && local_6 != U5_KEY_DOWN &&
-           local_6 != U5_KEY_RIGHT && local_6 != U5_KEY_LEFT)
+    while ((local_6_an = ULTIMA_266c_GetChar()) != U5_KEY_SPACE &&
+           local_6_an != U5_KEY_UP && local_6_an != U5_KEY_DOWN &&
+           local_6_an != U5_KEY_RIGHT && local_6_an != U5_KEY_LEFT)
     {
     }
 
-    switch (local_6)
+    switch (local_6_an)
     {
     case U5_KEY_SPACE:
         ULTIMA_1850_PrintString(_TEXT(0x84ec, "Pass\n"));
@@ -215,18 +215,18 @@ static void SJOG_01f2(int param_1, int param_2)
 
 static void SJOG_02ea(int param_1, int param_2)
 {
-    int local_4;
-    int local_6;
     int local_8;
+    int local_6;
+    int local_4_ab;
 
-    local_4 = D_5c5a[param_1]._5;
-    if ((local_4 & 0x80) == 0)
+    local_4_ab = D_5c5a[param_1]._5;
+    if ((local_4_ab & 0x80) == 0)
     {
         local_8 = (-(D_55a8_party[param_2].intel - 0x1e)) >> 1;
     }
     else
     {
-        local_8 = ((local_4 & 0x7f) - (uint)D_55a8_party[param_2].intel + 0x1e) >> 1;
+        local_8 = ((local_4_ab & 0x7f) - (uint)D_55a8_party[param_2].intel + 0x1e) >> 1;
     }
 
     if (local_8 <= ULTIMA_2092_RandomRange(1, 0x1e))
@@ -234,13 +234,13 @@ static void SJOG_02ea(int param_1, int param_2)
     else
         local_6 = 0;
 
-    if ((local_6 && (local_4 & 0x80) == 0) || (!local_6 && (local_4 & 0x80) != 0))
+    if ((local_6 && (local_4_ab & 0x80) == 0) || (!local_6 && (local_4_ab & 0x80) != 0))
     {
         ULTIMA_1850_PrintString(_TEXT(0x864a, "no trap!\n"));
     }
     else
     {
-        local_8 = local_4 & 0x7f;
+        local_8 = local_4_ab & 0x7f;
         if (local_6 && local_8 < 10)
         {
             ULTIMA_1850_PrintString(_TEXT(0x8654, "a simple trap!\n"));
@@ -260,7 +260,7 @@ static int SJOG_03a8(int param_1, int param_2, int param_3)
 {
     int local_6;
     int local_8;
-    int local_4;
+    int local_4_ab;
     int local_a;
 
     local_6 = 8;
@@ -273,20 +273,20 @@ static int SJOG_03a8(int param_1, int param_2, int param_3)
             D_5848[local_6] == param_3 && D_5840[local_6] == D_5893_map_id)
         {
             // 03e6
-            local_4 = 0;
+            local_4_ab = 0;
             local_8 = 0x20;
             while (--local_8 >= 0)
             {
                 // 03ee
                 if (ULTIMA_368e_FindActorTileAtPos(param_1, param_2, param_3) == TILE_ACTOR_MOONSTONE && D_5c5a[D_5876]._5 == local_6)
                 {
-                    local_4 = 1;
+                    local_4_ab = 1;
                 }
                 // 0415
             }
 
             // 041e
-            if (local_4 != 0)
+            if (local_4_ab != 0)
             {
                 continue;
             }
@@ -308,7 +308,7 @@ static int SJOG_045a(int param_1, int param_2)
 {
     int local_6;
     int local_8;
-    int local_4;
+    int local_4_ab;
     char** local_a;
 
     local_8 = 0;
@@ -320,21 +320,21 @@ static int SJOG_045a(int param_1, int param_2)
             D_5858[local_8] = D_587e;
 
             local_6 = D_3e6e[local_8];
-            local_4 = ULTIMA_2092_RandomRange(2, 0xf);
-            D_5850[local_6] += local_4;
+            local_4_ab = ULTIMA_2092_RandomRange(2, 0xf);
+            D_5850[local_6] += local_4_ab;
             if (D_5850[local_6] > 99)
             {
                 D_5850[local_6] = 99;
             }
 
             // 04ba
-            if (local_4 < 10)
+            if (local_4_ab < 10)
             {
-                ULTIMA_1a3e_PrintNumber(local_4, 1, 0x20);
+                ULTIMA_1a3e_PrintNumber(local_4_ab, 1, 0x20);
             }
             else
             {
-                ULTIMA_1a3e_PrintNumber(local_4, 2, 0x20);
+                ULTIMA_1a3e_PrintNumber(local_4_ab, 2, 0x20);
             }
 
             // 04d4
@@ -360,30 +360,30 @@ static void SJOG_0514(int param_1, int param_2)
 {
     bool local_a;
     int local_6;
-    int local_4;
+    int local_4_ab;
     int local_8;
 
     local_a = 0;
 
-    for (local_4 = 0; local_4 < 0x71; local_4++)
+    for (local_4_ab = 0; local_4_ab < 0x71; local_4_ab++)
     {
-        if (D_3f5c[local_4] == D_5893_map_id && D_3fce[local_4] == D_5895_map_level && D_4040[local_4] == param_1 && D_40b2[local_4] == param_2)
+        if (D_3f5c[local_4_ab] == D_5893_map_id && D_3fce[local_4_ab] == D_5895_map_level && D_4040[local_4_ab] == param_1 && D_40b2[local_4_ab] == param_2)
         {
             // 0558
-            if ((local_4 == 0xd && D_57ac == 0 && ULTIMA_368e_FindActorTileAtPos(param_1, param_2, D_5895_map_level) == 0) ||
-                (local_4 == 0xe && D_587e != D_57b2) ||
-                (local_4 == 0xf && D_57c0[0x27] == 0 && ULTIMA_368e_FindActorTileAtPos(param_1, param_2, D_5895_map_level) == 0))
+            if ((local_4_ab == 0xd && D_57ac == 0 && ULTIMA_368e_FindActorTileAtPos(param_1, param_2, D_5895_map_level) == 0) ||
+                (local_4_ab == 0xe && D_587e != D_57b2) ||
+                (local_4_ab == 0xf && D_57c0[0x27] == 0 && ULTIMA_368e_FindActorTileAtPos(param_1, param_2, D_5895_map_level) == 0))
             {
                 local_a = 1;
                 break;
             }
 
             // 05f6 (OK)
-            local_8 = 1 << (local_4 & 7);
-            if ((D_585c[(local_4 >> 3)] & local_8) == 0 && (local_4 < 0xd || local_4 > 0xf))
+            local_8 = 1 << (local_4_ab & 7);
+            if ((D_585c[(local_4_ab >> 3)] & local_8) == 0 && (local_4_ab < 0xd || local_4_ab > 0xf))
             {
                 // 061a
-                D_585c[(local_4 >> 3)] |= local_8;
+                D_585c[(local_4_ab >> 3)] |= local_8;
 
                 // -> 05a1
                 local_a = 1;
@@ -392,7 +392,7 @@ static void SJOG_0514(int param_1, int param_2)
         }
     }
 
-    if (local_4 == 0xe)
+    if (local_4_ab == 0xe)
     {
         D_57b2 = D_587e;
     }
@@ -402,8 +402,8 @@ static void SJOG_0514(int param_1, int param_2)
     {
         register int si; // NOT MATCHING
         local_6 = ULTIMA_38e4();
-        si = D_3e78[local_4];
-        ULTIMA_3a74(si, si, D_4040[local_4], D_40b2[local_4], D_3fce[local_4], D_3eea[local_4], local_6);
+        si = D_3e78[local_4_ab];
+        ULTIMA_3a74(si, si, D_4040[local_4_ab], D_40b2[local_4_ab], D_3fce[local_4_ab], D_3eea[local_4_ab], local_6);
         D_24e6 |= 2;
         SJOG_012a(si);
     }
@@ -416,16 +416,16 @@ static void SJOG_0514(int param_1, int param_2)
 // CHECKED
 static void SJOG_0646_SearchInDungeon(void)
 {
-    int local_c;
+    int local_10_ad;
     int local_e;
-    int local_10;
-    int local_6;
+    int local_c;
     int local_a;
-    int local_4;
     int local_8;
+    int local_6;
+    int local_4_ab;
 
-    local_10 = ULTIMA_4988();
-    if (++local_10 == 0)
+    local_10_ad = ULTIMA_4988();
+    if (++local_10_ad == 0)
     {
         return;
     }
@@ -445,8 +445,8 @@ static void SJOG_0646_SearchInDungeon(void)
     local_a = D_5876;
     local_c = D_5878;
     local_e = GetDungeonMap(local_a & 7, local_c & 7, (uint)D_5895_map_level);
-    local_4 = D_55a8_party[local_10].dex;
-    local_6 = (D_5895_map_level * 2 - local_4 + 0x1e) >> 1;
+    local_4_ab = D_55a8_party[local_10_ad].dex;
+    local_6 = (D_5895_map_level * 2 - local_4_ab + 0x1e) >> 1;
     ULTIMA_1850_PrintString(_TEXT(0x86f4, "You find:\n"));
 
     switch (local_e & 0xf0)
@@ -631,15 +631,15 @@ static void SJOG_0646_SearchInDungeon(void)
 // CHECKED
 void SJOG_095c_SearchCmd(void)
 {
-    int local_10;
+    int local_10_ad;
     int local_e;
     int local_a;
     int local_c;
     int local_6;
-    int local_4;
+    int local_4_ab;
     int local_8;
 
-    local_4 = 0;
+    local_4_ab = 0;
 
     if (D_5893_map_id > 0x20 && D_5893_map_id < 0x29)
     {
@@ -659,7 +659,7 @@ void SJOG_095c_SearchCmd(void)
         return;
     }
 
-    local_10 = *ULTIMA_4402_GetTileAddr(local_a, local_c);
+    local_10_ad = *ULTIMA_4402_GetTileAddr(local_a, local_c);
 
     for (local_6 = 1; local_6 < 0x20; local_6++)
     {
@@ -688,7 +688,7 @@ void SJOG_095c_SearchCmd(void)
         return;
     }
 
-    switch (local_10)
+    switch (local_10_ad)
     {
     case TILE_MAP_STUMP:
         ULTIMA_1850_PrintString(_TEXT(0x8950, "\nIn the stump\nt"));
@@ -750,7 +750,7 @@ void SJOG_095c_SearchCmd(void)
     }
 
     ULTIMA_1850_PrintString(_TEXT(0x8a38, "hou dost find\n"));
-    if (local_10 == TILE_MAP_HIDDEN_DOOR)
+    if (local_10_ad == TILE_MAP_HIDDEN_DOOR)
     {
         ULTIMA_1850_PrintString(_TEXT(0x8a48, "a hidden door!\n"));
         if (D_5895_map_level < 0x80)
@@ -763,7 +763,7 @@ void SJOG_095c_SearchCmd(void)
         }
         D_24e6 |= 2;
     }
-    else if ((local_10 == TILE_MAP_MOONGATE || (local_4 = SJOG_03a8(local_a, local_c, D_5895_map_level)) == 0) && (local_4 = SJOG_045a(local_a, local_c)) == 0)
+    else if ((local_10_ad == TILE_MAP_MOONGATE || (local_4_ab = SJOG_03a8(local_a, local_c, D_5895_map_level)) == 0) && (local_4_ab = SJOG_045a(local_a, local_c)) == 0)
     {
         SJOG_0514(local_a, local_c);
     }
@@ -771,20 +771,20 @@ void SJOG_095c_SearchCmd(void)
 
 static void SJOG_0baa(int a, int b, int c, int param_4)
 {
-    byte local_4;
-    byte local_6;
     int local_8;
+    byte local_6;
+    byte local_4_ab;
 
     if ((local_8 = ULTIMA_4988()) != -1)
     {
-        local_4 = D_5c5a[param_4]._5;
-        if (local_4 < 0x80)
+        local_4_ab = D_5c5a[param_4]._5;
+        if (local_4_ab < 0x80)
         {
             ULTIMA_1850_PrintString(_TEXT(0x8a58, "Key broke!\n"));
         }
         else
         {
-            local_6 = (((local_4 & 0x7f) - D_55a8_party[local_8].dex + 0x1e) >> 1) & 0xff;
+            local_6 = (((local_4_ab & 0x7f) - D_55a8_party[local_8].dex + 0x1e) >> 1) & 0xff;
             if (local_6 < ULTIMA_2092_RandomRange(1, 0x1e))
             {
                 ULTIMA_1850_PrintString(_TEXT(0x8a64, "Success!\n"));
@@ -802,12 +802,12 @@ static void SJOG_0baa(int a, int b, int c, int param_4)
 // CHECKED
 static void SJOG_0c3e_JimmyInDungeon(void)
 {
-    int local_8;
-    int local_a;
     int local_e;
-    int local_4;
     int local_c;
+    int local_a;
+    int local_8;
     int local_6;
+    int local_4_ab;
 
     ULTIMA_1850_PrintString(_TEXT(0x8a7a, "\n"));
     if ((local_c = ULTIMA_4988()) == -1)
@@ -818,8 +818,8 @@ static void SJOG_0c3e_JimmyInDungeon(void)
     local_8 = D_5896_map_x;
     local_a = D_5897_map_y;
     local_e = GetDungeonMap(local_8 & 7, local_a & 7, (uint)D_5895_map_level);
-    local_4 = D_55a8_party[local_c].dex;
-    local_6 = (D_5895_map_level * 2 - local_4 + 0x1e) >> 1;
+    local_4_ab = D_55a8_party[local_c].dex;
+    local_6 = (D_5895_map_level * 2 - local_4_ab + 0x1e) >> 1;
 
     if ((local_e & 0xf7) == 0x40)
     {
@@ -867,7 +867,7 @@ static void SJOG_0c3e_JimmyInDungeon(void)
 void SJOG_0d4a_JimmyCmd(void)
 {
     int local_6;
-    int local_4;
+    int local_4_ab;
     int local_c;
     int local_8;
     int local_a;
@@ -935,7 +935,7 @@ void SJOG_0d4a_JimmyCmd(void)
         }
 
         // cdc2
-        local_4 = D_5876;
+        local_4_ab = D_5876;
         if ((local_c = ULTIMA_4988()) == -1)
         {
             break;
@@ -952,30 +952,30 @@ void SJOG_0d4a_JimmyCmd(void)
         // cdf6
         if (D_5893_map_id < 0x7f)
         {
-            if ((local_4 = TOWN_011e(local_4)) == -1)
+            if ((local_4_ab = TOWN_011e(local_4_ab)) == -1)
             {
                 // -> ccf0
                 ULTIMA_1850_PrintString(_TEXT(0x8b1c, "Couldn't find this npc\n\n"));
                 break;
             }
 
-            if (D_5f5e[local_4]._a != 0)
+            if (D_5f5e[local_4_ab]._a != 0)
             {
-                D_5f5e[local_4]._a = 0;
+                D_5f5e[local_4_ab]._a = 0;
             }
 
             // ce24
-            if (TOWN_0000_CheckNpcKilled(local_4) == 0)
+            if (TOWN_0000_CheckNpcKilled(local_4_ab) == 0)
             {
-                D_5d5e[local_4].type[0] = 5;
-                D_5d5e[local_4].type[1] = 5;
-                D_5d5e[local_4].type[2] = 5;
+                D_5d5e[local_4_ab].type[0] = 5;
+                D_5d5e[local_4_ab].type[1] = 5;
+                D_5d5e[local_4_ab].type[2] = 5;
                 ULTIMA_1850_PrintString(_TEXT(0x8b36, "\n\"I thank thee!\"\n"));
                 ULTIMA_3ef0_IncreaseByte(&D_5888, 2, 99);
             }
 
             // ce5a
-            TOWN_0052_SetNpcKilled(local_4);
+            TOWN_0052_SetNpcKilled(local_4_ab);
             break;
         }
 
@@ -1059,26 +1059,26 @@ static void SJOG_0f88(int param_1, int param_2, int param_3, int param_4, int pa
 
 static void SJOG_1040(int param_1, int param_2, int param_3, int param_4, int* param_5)
 {
-    int local_6;
+    int local_6_an;
     int local_4;
 
-    local_6 = 8;
-    while (--local_6 >= 0)
+    local_6_an = 8;
+    while (--local_6_an >= 0)
     {
-        if (D_412c[local_6] <= param_1)
+        if (D_412c[local_6_an] <= param_1)
         {
-            if (D_412c[local_6] <= ULTIMA_2092_RandomRange(1, 0x1e))
+            if (D_412c[local_6_an] <= ULTIMA_2092_RandomRange(1, 0x1e))
             {
-                if (D_4134[local_6] == 1)
+                if (D_4134[local_6_an] == 1)
                 {
                     local_4 = 1;
                 }
                 else
                 {
-                    local_4 = ULTIMA_2092_RandomRange(1, D_4134[local_6]);
+                    local_4 = ULTIMA_2092_RandomRange(1, D_4134[local_6_an]);
                 }
 
-                SJOG_0f88(D_4124[local_6], local_4, param_2, param_3, param_4, param_1, param_5);
+                SJOG_0f88(D_4124[local_6_an], local_4, param_2, param_3, param_4, param_1, param_5);
             }
         }
     }
@@ -1086,19 +1086,19 @@ static void SJOG_1040(int param_1, int param_2, int param_3, int param_4, int* p
 
 static void SJOG_10b8(int param_1, int param_2, int param_3, int param_4, int* param_5)
 {
+    int local_6_an;
     int local_4;
-    int local_6;
 
     local_4 = param_1 / 2;
     while (local_4-- >= 0)
     {
-        local_6 = ULTIMA_2092_RandomRange(0, 0x2f);
+        local_6_an = ULTIMA_2092_RandomRange(0, 0x2f);
 
-        if (D_416c[local_6] <= param_1)
+        if (D_416c[local_6_an] <= param_1)
         {
-            if (D_416c[local_6] <= ULTIMA_2092_RandomRange(1, 0x1e))
+            if (D_416c[local_6_an] <= ULTIMA_2092_RandomRange(1, 0x1e))
             {
-                SJOG_0f88(D_413c[local_6], local_6, param_2, param_3, param_4, param_1, param_5);
+                SJOG_0f88(D_413c[local_6_an], local_6_an, param_2, param_3, param_4, param_1, param_5);
             }
         }
     }
@@ -1196,26 +1196,26 @@ static void SJOG_112c_OpenChest(int param_1, int param_2, int param_3)
 // open in dungeon
 static void SJOG_12d4_OpenInDungeon(void)
 {
-    int local_6;
+    int local_6_an;
     int local_4;
 
-    local_6 = GetDungeonMap2(D_5896_map_x, D_5897_map_y, D_5895_map_level);
-    if ((local_6 & 0xf0) == 0x40)
+    local_6_an = GetDungeonMap2(D_5896_map_x, D_5897_map_y, D_5895_map_level);
+    if ((local_6_an & 0xf0) == 0x40)
     {
         if ((local_4 = ULTIMA_4988()) == -1)
         {
             return;
         }
 
-        if ((local_6 & 7) != 0)
+        if ((local_6_an & 7) != 0)
         {
             ULTIMA_2fd0(local_4);
         }
 
-        GetDungeonMap2(D_5896_map_x, D_5897_map_y, D_5895_map_level) = (local_6 & 8) + 0x70;
+        GetDungeonMap2(D_5896_map_x, D_5897_map_y, D_5895_map_level) = (local_6_an & 8) + 0x70;
         ULTIMA_1850_PrintString(_TEXT(0x8b96, "\nChest opened\n"));
     }
-    else if ((local_6 & 0xf0) == 0x70)
+    else if ((local_6_an & 0xf0) == 0x70)
     {
         ULTIMA_1850_PrintString(_TEXT(0x8ba6, "Already Open!\n"));
     }
@@ -1227,9 +1227,9 @@ static void SJOG_12d4_OpenInDungeon(void)
 
 void SJOG_1374_OpenCmd(void)
 {
-    int local_4;
-    int local_6;
     int local_8;
+    int local_6;
+    int local_4_ab;
 
     if (D_5893_map_id > 0x20 && D_5893_map_id < 0x29)
     {
@@ -1245,8 +1245,8 @@ void SJOG_1374_OpenCmd(void)
 
     local_6 = D_5896_map_x + D_5876;
     local_8 = D_5897_map_y + D_5878;
-    local_4 = *ULTIMA_4402_GetTileAddr(local_6, local_8);
-    switch (local_4)
+    local_4_ab = *ULTIMA_4402_GetTileAddr(local_6, local_8);
+    switch (local_4_ab)
     {
     case TILE_MAP_TRUNK:
         // 13ea
@@ -1269,7 +1269,7 @@ void SJOG_1374_OpenCmd(void)
     case TILE_MAP_DOOR_B8:
     case TILE_MAP_DOOR_BA:
         // 1400
-        D_594f = local_4;
+        D_594f = local_4_ab;
         D_5952 = 4;
         D_5950 = (u8)local_6;
         D_5951 = (u8)local_8;
@@ -1494,7 +1494,7 @@ static void SJOG_179e_GetInDungeon(void)
     int local_a;
     int local_8;
     int local_6;
-    int local_4;
+    int local_4_ab;
 
     ULTIMA_1850_PrintString(_TEXT(0x8da4, "Get\n"));
 
@@ -1529,14 +1529,14 @@ static void SJOG_179e_GetInDungeon(void)
                 {
                     if (local_8 == 1)
                     {
-                        local_4 = ULTIMA_2092_RandomRange(1, D_5895_map_level << 3);
+                        local_4_ab = ULTIMA_2092_RandomRange(1, D_5895_map_level << 3);
                     }
                     else
                     {
-                        local_4 = ULTIMA_2092_RandomRange(1, D_41c4[local_8]);
+                        local_4_ab = ULTIMA_2092_RandomRange(1, D_41c4[local_8]);
                     }
 
-                    SJOG_1458_GetObject(D_41cc[local_8], local_4, 0x20);
+                    SJOG_1458_GetObject(D_41cc[local_8], local_4_ab, 0x20);
                 }
             }
         }
@@ -1550,13 +1550,13 @@ static void SJOG_179e_GetInDungeon(void)
 // CHECKED (loop)
 void SJOG_18ce_GetCmd(void)
 {
-    int local_10;
+    int local_10_ad;
     int local_c;
     int local_a;
     int local_e;
     int local_8;
     int local_6;
-    int local_4;
+    int local_4_ab;
 
     if (D_5893_map_id > 0x20 && D_5893_map_id < 0x29)
     {
@@ -1570,9 +1570,9 @@ void SJOG_18ce_GetCmd(void)
     }
 
     local_c = D_5876;
-    local_10 = D_5878;
+    local_10_ad = D_5878;
     local_a = local_c + D_5896_map_x;
-    local_e = local_10 + D_5897_map_y;
+    local_e = local_10_ad + D_5897_map_y;
     ULTIMA_1850_PrintString(_TEXT(0x8de6, "\n"));
 
     // 1921 (NOT MATCHING: loop)
@@ -1590,8 +1590,8 @@ void SJOG_18ce_GetCmd(void)
     // 197f (NOT MATCHING)
     if (local_6 < 0x20)
     {
-        local_4 = D_5c5a[local_6]._5;
-        SJOG_1458_GetObject(local_8, local_4, local_6);
+        local_4_ab = D_5c5a[local_6]._5;
+        SJOG_1458_GetObject(local_8, local_4_ab, local_6);
         return;
     }
 
@@ -1632,7 +1632,7 @@ void SJOG_18ce_GetCmd(void)
 
     case TILE_MAP_TABLE_9A:
         // 1a6a
-        if (local_10 == 1)
+        if (local_10_ad == 1)
         {
             *ULTIMA_4402_GetTileAddr(local_a, local_e) = TILE_MAP_TABLE_95;
             D_24e6 |= 2;
@@ -1656,7 +1656,7 @@ void SJOG_18ce_GetCmd(void)
 
     case TILE_MAP_TABLE_9B:
         // 1a92
-        if (local_10 == -1)
+        if (local_10_ad == -1)
         {
             *ULTIMA_4402_GetTileAddr(local_a, local_e) = TILE_MAP_TABLE_95;
             D_24e6 |= 2;
@@ -1683,12 +1683,12 @@ void SJOG_18ce_GetCmd(void)
             break;
         }
 
-        if (local_10 == 1)
+        if (local_10_ad == 1)
         {
             *ULTIMA_4402_GetTileAddr(local_a, local_e) = TILE_MAP_TABLE_9B;
         }
 
-        if (local_10 == -1)
+        if (local_10_ad == -1)
         {
             *ULTIMA_4402_GetTileAddr(local_a, local_e) = TILE_MAP_TABLE_9A;
         }
@@ -1713,26 +1713,26 @@ void SJOG_18ce_GetCmd(void)
 
 int SJOG_1b34(int param_1)
 {
+    int local_6_an;
     int local_4;
-    int local_6;
 
-    local_6 = 0;
+    local_6_an = 0;
 
     for (local_4 = 0; local_4 < D_585b; local_4++)
     {
         if (ULTIMA_6e60(local_4, param_1) != 0)
         {
-            local_6++;
+            local_6_an++;
         }
     }
 
-    return local_6;
+    return local_6_an;
 }
 
 void SJOG_1b6c(void)
 {
+    int local_6_an;
     int local_4;
-    int local_6;
 
     D_5876 = D_5878 = 0;
 
@@ -1740,8 +1740,8 @@ void SJOG_1b6c(void)
     {
         if (D_ba14[local_4].flags != 0 && (D_ba14[local_4].flags & COMBAT_FLAGS_DEAD) == 0)
         {
-            local_6 = ULTIMA_5646(local_4);
-            if (local_6 != 0)
+            local_6_an = ULTIMA_5646(local_4);
+            if (local_6_an != 0)
             {
                 D_5876++;
             }
@@ -1804,7 +1804,7 @@ int SJOG_1c56_CombatMovePlayer(int param_1, int param_2)
     int local_c;
     int local_a;
     int local_6;
-    int local_4;
+    int local_4_ab;
 
     local_a = local_c = 0;
     local_8 = D_ba14[param_1].actorIdx;
@@ -1829,22 +1829,22 @@ int SJOG_1c56_CombatMovePlayer(int param_1, int param_2)
         break;
     }
 
-    local_4 = D_ba14[param_1].x + local_a;
+    local_4_ab = D_ba14[param_1].x + local_a;
     local_6 = D_ba14[param_1].y + local_c;
-    if (local_4 > 0xa || local_6 > 0xa || local_4 < 0 || local_6 < 0)
+    if (local_4_ab > 0xa || local_6 > 0xa || local_4_ab < 0 || local_6 < 0)
     {
         return SJOG_1bb2_CombatExit(param_1, param_2);
     }
 
-    if (COMBAT_0000(D_5c5a[local_8]._0_tile, local_4, local_6) != 0)
+    if (COMBAT_0000(D_5c5a[local_8]._0_tile, local_4_ab, local_6) != 0)
     {
-        D_5c5a[local_8]._2_x = D_ba14[param_1].x = local_4;
+        D_5c5a[local_8]._2_x = D_ba14[param_1].x = local_4_ab;
         D_5c5a[local_8]._3_y = D_ba14[param_1].y = local_6;
 
         ULTIMA_433e_AudioFootstep();
         if ((D_58a1 & 0x82) != 0)
         {
-            COMBAT_111a(local_4, local_6);
+            COMBAT_111a(local_4_ab, local_6);
         }
 
         return 1;
@@ -1864,15 +1864,15 @@ int SJOG_1d6a_CombatKlimb(void)
 {
     int local_c;
     int local_a;
-    int local_4;
+    int local_4_ab;
     int local_8;
     ActorFmt* local_6;
 
     ULTIMA_1850_PrintString(_TEXT(0x8ede, "Klimb-"));
 
-    local_4 = *ULTIMA_4402_GetTileAddr(D_5896_map_x, D_5897_map_y);
+    local_4_ab = *ULTIMA_4402_GetTileAddr(D_5896_map_x, D_5897_map_y);
 
-    if ((D_58a1 & 2) != 0 && local_4 == TILE_MAP_LADDER_UP && D_bb16 != 0)
+    if ((D_58a1 & 2) != 0 && local_4_ab == TILE_MAP_LADDER_UP && D_bb16 != 0)
     {
         ULTIMA_1850_PrintString(_TEXT(0x8ee6, "U/D-"));
         do
@@ -1883,7 +1883,7 @@ int SJOG_1d6a_CombatKlimb(void)
             case U5_KEY_DOWN:
             case 0x44:
                 // dd48
-                local_4 = TILE_MAP_LADDER_DOWN;
+                local_4_ab = TILE_MAP_LADDER_DOWN;
                 break;
 
             case U5_KEY_UP:
@@ -1900,14 +1900,14 @@ int SJOG_1d6a_CombatKlimb(void)
         } while (local_c == 0);
     }
 
-    if (local_4 == TILE_MAP_LADDER_UP)
+    if (local_4_ab == TILE_MAP_LADDER_UP)
     {
         ULTIMA_1850_PrintString(_TEXT(0x8eec, "Up!\n"));
 
         return SJOG_1bb2_CombatExit(D_589e, 5);
     }
 
-    if ((local_4 == TILE_MAP_86 && (D_58a1 & 0x80) != 0) || local_4 == TILE_MAP_LADDER_DOWN)
+    if ((local_4_ab == TILE_MAP_86 && (D_58a1 & 0x80) != 0) || local_4_ab == TILE_MAP_LADDER_DOWN)
     {
         ULTIMA_1850_PrintString(_TEXT(0x8ef2, "Down!\n"));
 
@@ -1986,20 +1986,20 @@ int SJOG_1f7a_CombatSetActivePlayer(int param_1)
 {
     int local_8;
     int local_6;
-    int local_4;
+    int local_4_ab;
 
     local_8 = 0;
     ULTIMA_1850_PrintString(_TEXT(0x8f3a, "Set active plr:\n"));
     
     for (local_6 = 0; local_6 < 0x20; local_6++)
     {
-        local_4 = D_ba14[local_6].flags;
+        local_4_ab = D_ba14[local_6].flags;
 
-        if ((local_4 & COMBAT_FLAGS_PLAYER) != 0)
+        if ((local_4_ab & COMBAT_FLAGS_PLAYER) != 0)
         {
             if (ULTIMA_5646(local_6) == 0 && D_ba14[local_6].entityIdx == param_1)
             {
-                if ((local_4 & (COMBAT_FLAGS_DEAD | COMBAT_FLAGS_ASLEEP | COMBAT_FLAGS_4)) != 0)
+                if ((local_4_ab & (COMBAT_FLAGS_DEAD | COMBAT_FLAGS_ASLEEP | COMBAT_FLAGS_4)) != 0)
                 {
                     local_8 = 0;
                 }

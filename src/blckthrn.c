@@ -72,28 +72,28 @@ static int BLCKTHRN_002e(int param_1)
 // CHECKED
 static void BLCKTHRN_00be(byte* param_1)
 {
-    int local_4;
+    int local_18_al;
+    int local_16_an;
+    int local_14;
+    int local_12_ab;
+    int local_10_ad;
+    int local_e;
     bool local_c; // di
     bool local_a;
-    int local_e;
-    int local_18;
-    int local_14;
-    int local_10;
-    int local_6;
-    int local_12;
-    int local_16;
     int local_8;
+    int local_6;
+    int local_4_ab;
 
     local_c = 1;
     local_6 = 1; // a35c
     local_a = 0; // -> a4ce
 
-    while ((local_4 = *param_1++) != 0)
+    while ((local_4_ab = *param_1++) != 0)
     {
-        if (local_4 < 0x10)
+        if (local_4_ab < 0x10)
         {
             // a4ec
-            switch (local_4)
+            switch (local_4_ab)
             {
             case 1:
                 // a360
@@ -124,9 +124,9 @@ static void BLCKTHRN_00be(byte* param_1)
             case 6:
                 // a396
                 local_e = *param_1++;
-                local_12 = *param_1++;
-                local_16 = *param_1++;
-                GetCombatMap(local_12, local_16) = local_e;
+                local_12_ab = *param_1++;
+                local_16_an = *param_1++;
+                GetCombatMap(local_12_ab, local_16_an) = local_e;
                 //param_1 += 4;
                 break;
 
@@ -152,14 +152,14 @@ static void BLCKTHRN_00be(byte* param_1)
         }
 
         // a41c
-        local_e = BLCKTHRN_002e(local_4);
-        local_12 = D_5876;
-        local_16 = D_5878;
+        local_e = BLCKTHRN_002e(local_4_ab);
+        local_12_ab = D_5876;
+        local_16_an = D_5878;
         if (local_a)
         {
-            local_10 = BLCKTHRN_002e(*param_1++);
+            local_10_ad = BLCKTHRN_002e(*param_1++);
             local_14 = D_5876;
-            local_18 = D_5878;
+            local_18_al = D_5878;
         }
 
         // a454 ->
@@ -167,12 +167,12 @@ static void BLCKTHRN_00be(byte* param_1)
         for (; local_6 > 0; local_6--)
         {
             // a495
-            D_5c5a[local_e]._2_x += local_12;
-            D_5c5a[local_e]._3_y += local_16;
+            D_5c5a[local_e]._2_x += local_12_ab;
+            D_5c5a[local_e]._3_y += local_16_an;
             if (local_a)
             {
-                D_5c5a[local_10]._2_x += local_14;
-                D_5c5a[local_10]._3_y += local_18;
+                D_5c5a[local_10_ad]._2_x += local_14;
+                D_5c5a[local_10_ad]._3_y += local_18_al;
             }
 
             if (local_c)
@@ -218,21 +218,21 @@ static int BLCKTHRN_02ea(int param_1)
     int local_1a;
     int local_18;
     int local_16;
-    char local_14[18];
+    char local_14_aa[18];
 
     ULTIMA_1850_PrintString(_TEXT(0x6f7a, "\n\nYour response?\n:"));
-    ULTIMA_3b1c_GetString(local_14, 0xe);
+    ULTIMA_3b1c_GetString(local_14_aa, 0xe);
     ULTIMA_1850_PrintString(_TEXT(0x6f8e, "\n\n"));
     local_1c = ULTIMA_216c_strlen(D_1f5e[param_1]);
     local_16 = 0;
 
-    for (local_18 = 0; local_18 <= ULTIMA_216c_strlen(local_14) - local_1c; local_18++)
+    for (local_18 = 0; local_18 <= ULTIMA_216c_strlen(local_14_aa) - local_1c; local_18++)
     {
         local_16 = 1;
 
         for (local_1a = 0; local_1a < local_1c; local_1a++)
         {
-            if (ULTIMA_2032_ToUpper((byte)local_14[local_18 + local_1a]) != ULTIMA_2032_ToUpper((byte)D_1f5e[param_1][local_1a]))
+            if (ULTIMA_2032_ToUpper((byte)local_14_aa[local_18 + local_1a]) != ULTIMA_2032_ToUpper((byte)D_1f5e[param_1][local_1a]))
             {
                 local_16 = 0;
                 break;
@@ -254,7 +254,7 @@ static void BLCKTHRN_03ae(int param_1)
     int local_24;
     int local_26;
     int local_28;
-    S_55a8 local_22;
+    S_55a8 local_22_ab;
 
     if (param_1 != 0)
     {
@@ -294,7 +294,7 @@ static void BLCKTHRN_03ae(int param_1)
     }
 
     // a6fc
-    local_22 = D_55a8_party[local_28];
+    local_22_ab = D_55a8_party[local_28];
 
     // NOT MATCHING
     local_24 = local_28;
@@ -305,7 +305,7 @@ static void BLCKTHRN_03ae(int param_1)
     }
 
     // a752
-    D_55a8_party[0xf] = local_22;
+    D_55a8_party[0xf] = local_22_ab;
     D_55a8_party[0xf].mapId = 0x7f;
 
     D_585b--;
@@ -341,10 +341,10 @@ static void BLCKTHRN_051c(void)
 
 static void BLCKTHRN_054a(int param_1, int param_2)
 {
-    bool local_6;
+    bool local_6_an;
     int local_4;
 
-    local_6 = 0;
+    local_6_an = 0;
     ULTIMA_1850_PrintString(_TEXT(0x6fb8, "\n\n"));
 
     for (local_4 = 0; local_4 < 4; local_4++)
@@ -374,7 +374,7 @@ static void BLCKTHRN_054a(int param_1, int param_2)
             break;
         }
 
-        if (local_6)
+        if (local_6_an)
         {
             ULTIMA_4f7c(2);
             ULTIMA_2900_UpdateVitalsDisplay();
@@ -397,7 +397,7 @@ static void BLCKTHRN_054a(int param_1, int param_2)
         }
         else
         {
-            local_6 = 1;
+            local_6_an = 1;
             BLCKTHRN_051c();
         }
     }
@@ -405,13 +405,13 @@ static void BLCKTHRN_054a(int param_1, int param_2)
 
 void BLCKTHRN_060e_Capture(void)
 {
-    int local_8;
+    int local_10_ad;
     int local_e;
     int local_c;
     int local_a;
-    int local_6;
+    int local_8;
 
-    int local_10;
+    int local_6;
     ActorFmt* local_4;
 
     local_a = 0;
@@ -435,7 +435,7 @@ void BLCKTHRN_060e_Capture(void)
 
     if (local_c < 8)
     {
-        local_10 = 0;
+        local_10_ad = 0;
 
         ULTIMA_3ae6(2);
         ULTIMA_0a70_GRAP_2d_SetPenColor(0);
@@ -542,7 +542,7 @@ void BLCKTHRN_0910_Death(void)
     int local_6;
     uint local_8;
     int local_a;
-    int local_4;
+    int local_4_ab;
 
 #if defined(ENABLE_BGM)
     AUDIO_StopBgm();
@@ -639,9 +639,9 @@ void BLCKTHRN_0910_Death(void)
     ULTIMA_5910_UpdateFrame();
 
     // ad93
-    local_4 = D_5888 / 0x14;
+    local_4_ab = D_5888 / 0x14;
     ULTIMA_1850_PrintString(_TEXT(0x71be, "\n\""));
-    ULTIMA_256e_ReadFileFromDisk(/*0x71c2*/ "KARMA.DAT", D_b21e, 2000, D_1a74[local_4]);
+    ULTIMA_256e_ReadFileFromDisk(/*0x71c2*/ "KARMA.DAT", D_b21e, 2000, D_1a74[local_4_ab]);
     ULTIMA_1850_PrintString((char*)D_b21e);
     ULTIMA_16ba_PrintChar('\"');
     ULTIMA_266c_GetChar();

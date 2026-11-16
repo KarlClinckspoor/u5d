@@ -55,24 +55,24 @@ static void OUTSUBS_0098(char* param_1/*file_name*/, int param_2/*layer?*/, int 
     int local_a;
     int local_8;
     int local_6;
-    int local_4;
+    int local_4_ab;
 
     if (*param_1 == 'B') // "BRIT.DAT"
     {
-        local_4 = D_3876[(byte)(param_3 >> 8)];
-        if (local_4 == 0xff)
+        local_4_ab = D_3876[(byte)(param_3 >> 8)];
+        if (local_4_ab == 0xff)
         {
             memset(&D_6608[param_2 * 0x100], 1, 0x100);
             return; // -> 01ac
         }
 
         // 00d4
-        local_4 <<= 8;
+        local_4_ab <<= 8;
     }
     else
     {
         // 00dc
-        local_4 = param_3;
+        local_4_ab = param_3;
     }
 
     // 00e2
@@ -82,7 +82,7 @@ static void OUTSUBS_0098(char* param_1/*file_name*/, int param_2/*layer?*/, int 
     }
 
     // 00f0
-    ULTIMA_256e_ReadFileFromDisk(param_1, D_6608 + param_2 * 0x100, 0x100, local_4);
+    ULTIMA_256e_ReadFileFromDisk(param_1, D_6608 + param_2 * 0x100, 0x100, local_4_ab);
     local_6 = param_3 >> 4 & 0xf0;
     local_8 = param_3 >> 8 & 0xf0;
 
@@ -120,7 +120,7 @@ void OUTSUBS_01b4(int param_1, int param_2)
     int local_a;
     byte* local_8;
     int local_6;
-    char* local_4;
+    char* local_4_ab;
 
     local_a = D_589b * 0x10 + D_589c * 0x100;
 
@@ -137,32 +137,32 @@ void OUTSUBS_01b4(int param_1, int param_2)
     // 01e1
     if (D_5895_map_level > 0x7f)
     {
-        local_4 = /*0x3976*/ "UNDER.DAT";
+        local_4_ab = /*0x3976*/ "UNDER.DAT";
     }
     else
     {
-        local_4 = /*0x3980*/ "BRIT.DAT";
+        local_4_ab = /*0x3980*/ "BRIT.DAT";
     }
 
     // 01f5
     if (param_1 == -1 || param_2 == -1)
     {
-        OUTSUBS_0098(local_4, 0, local_a);
+        OUTSUBS_0098(local_4_ab, 0, local_a);
     }
     // 020d
     if (param_1 == 1 || param_2 == -1)
     {
-        OUTSUBS_0098(local_4, 1, local_a + local_6);
+        OUTSUBS_0098(local_4_ab, 1, local_a + local_6);
     }
     // 022a
     if (param_1 == -1 || param_2 == 1)
     {
-        OUTSUBS_0098(local_4, 2, local_a + 0x1000);
+        OUTSUBS_0098(local_4_ab, 2, local_a + 0x1000);
     }
     // 0247
     if (param_1 == 1 || param_2 == 1)
     {
-        OUTSUBS_0098(local_4, 3, (local_a + local_6) + 0x1000);
+        OUTSUBS_0098(local_4_ab, 3, (local_a + local_6) + 0x1000);
     }
 
     // 0267
@@ -191,19 +191,19 @@ void OUTSUBS_01b4(int param_1, int param_2)
 // Load chunk?
 void OUTSUBS_02c8(int param_1, int param_2)
 {
-    int local_4;
+    int local_a;
     int local_8;
 
     int local_6;
-    int local_a;
+    int local_4_ab;
 
-    local_4 = param_1 < 0 || param_2 < 0 ? 3 : 0;
+    local_4_ab = param_1 < 0 || param_2 < 0 ? 3 : 0;
     local_8 = param_1 < 0 || param_2 > 0 ? 2 : 1;
 
-    local_6 = local_4 + param_2 + param_1 * 2;
+    local_6 = local_4_ab + param_2 + param_1 * 2;
     local_a = local_8 + param_2 + param_1 * 2;
 
-    memcpy(local_4 * 0x100 + D_6608, local_8 * 0x100 + D_6608, 0x100);
+    memcpy(local_4_ab * 0x100 + D_6608, local_8 * 0x100 + D_6608, 0x100);
     memcpy(local_6 * 0x100 + D_6608, local_a * 0x100 + D_6608, 0x100);
 }
 
@@ -225,25 +225,25 @@ char* OUTSUBS_0368_GetWorldSavefile(void)
 // enter town
 int OUTSUBS_0388_EnterTown(char* param_1)
 {
-    int local_6;
+    int local_6_an;
     int local_4;
 
     local_4 = 1;
     ULTIMA_1850_PrintString(param_1);
 
-    for (local_6 = 0; local_6 < 0x20; local_6++)
+    for (local_6_an = 0; local_6_an < 0x20; local_6_an++)
     {
-        if (D_1e8a[local_6] == D_5896_map_x && (D_1eb2[local_6] == D_5897_map_y))
+        if (D_1e8a[local_6_an] == D_5896_map_x && (D_1eb2[local_6_an] == D_5897_map_y))
             break;
     }
 
-    if (local_6 < 0x20)
+    if (local_6_an < 0x20)
     {
-        if (local_6 < 0xd || local_6 > 0x11)
+        if (local_6_an < 0xd || local_6_an > 0x11)
         {
             ULTIMA_1850_PrintString(_TEXT(0x399c, "\n\n"));
             ULTIMA_16ba_PrintChar(CTRL_CHAR_CENTER_TEXT);
-            ULTIMA_1850_PrintString(D_1e3a[local_6]);
+            ULTIMA_1850_PrintString(D_1e3a[local_6_an]);
             ULTIMA_16ba_PrintChar(CTRL_CHAR_UNCENTER_TEXT);
         }
 
@@ -257,7 +257,7 @@ int OUTSUBS_0388_EnterTown(char* param_1)
         }
 
         ULTIMA_25d8_WriteFileToDisk(OUTSUBS_0368_GetWorldSavefile(), D_5c5a, 0x100);
-        D_5893_map_id = local_6 + 1;
+        D_5893_map_id = local_6_an + 1;
         D_5895_map_level = 0;
         D_5896_map_x = 0xf;
         D_5897_map_y = 0x1e;
@@ -277,7 +277,7 @@ void MAINOUT_0354(int param_1, int param_2);
 // f-a-l-l-s
 void OUTSUBS_0458_Falls(void)
 {
-    int local_6;
+    int local_6_an;
     int local_4;
 
     ULTIMA_1850_PrintString(_TEXT(0x39b5, "F-A-L-L-S!!!\n"));
@@ -286,7 +286,7 @@ void OUTSUBS_0458_Falls(void)
     MAINOUT_0354(0, 1);
     ULTIMA_43ae_AudioSweepTone(0x9c4, 800, 1, 300);
 
-    local_6 = D_587c_partyTile;
+    local_6_an = D_587c_partyTile;
     D_587c_partyTile = 0;
 
     ULTIMA_3ae6(1);
@@ -300,7 +300,7 @@ void OUTSUBS_0458_Falls(void)
     }
 
     ULTIMA_3ae6(2);
-    D_587c_partyTile = local_6;
+    D_587c_partyTile = local_6_an;
 
     if (D_5896_map_x == 0x36 && D_5897_map_y == 0x8a)
     {

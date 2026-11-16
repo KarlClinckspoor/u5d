@@ -36,7 +36,7 @@ void ULTIMA_6150_Combat(int param_1)
     int local_6;
     bool local_8;
     int local_a;
-    int local_4;
+    int local_4_ab;
 
     local_a = D_5c5a[param_1]._0_tile & 0xfc;
 
@@ -66,7 +66,7 @@ void ULTIMA_6150_Combat(int param_1)
 
     if (local_a == 0xfc) // 61f3
     {
-        local_4 = 10;
+        local_4_ab = 10;
         if (D_57b5 != 0)
         {
             ULTIMA_1850_PrintString(_TEXT(0xa406, "The Sceptre is reclaimed!\n"));
@@ -85,24 +85,24 @@ void ULTIMA_6150_Combat(int param_1)
         {
             if (local_a == TILE_ACTOR_PIRATE)
             {
-                local_4 = 0xe;
+                local_4_ab = 0xe;
             }
             else if (local_8)
             {
-                local_4 = 0xb;
+                local_4_ab = 0xb;
             }
             else
             {
-                local_4 = 0xd;
+                local_4_ab = 0xd;
             }
         }
         else if (local_a == TILE_ACTOR_PIRATE)
         {
-            local_4 = 0xc;
+            local_4_ab = 0xc;
         }
         else if (local_8)
         {
-            local_4 = 0xf;
+            local_4_ab = 0xf;
         }
         else
         {
@@ -111,59 +111,59 @@ void ULTIMA_6150_Combat(int param_1)
             case TILE_MAP_WATER_1:
             case TILE_MAP_WATER_2:
             case TILE_MAP_WATER_3:
-                local_4 = 0xf;
+                local_4_ab = 0xf;
                 break;
             case TILE_MAP_POISON:
-                local_4 = 1;
+                local_4_ab = 1;
                 break;
             case TILE_MAP_GRASS:
-                local_4 = 2;
+                local_4_ab = 2;
                 break;
             case TILE_MAP_6:
             case TILE_MAP_8:
-                local_4 = 3;
+                local_4_ab = 3;
                 break;
             case TILE_MAP_7:
             case TILE_MAP_1E:
             case TILE_MAP_1F:
-                local_4 = 4;
+                local_4_ab = 4;
                 break;
             case TILE_MAP_9:
             case TILE_MAP_A:
-                local_4 = 5;
+                local_4_ab = 5;
                 break;
             case TILE_MAP_B:
             case TILE_MAP_C:
             case TILE_MAP_D:
             case TILE_MAP_E:
             case TILE_MAP_F:
-                local_4 = 6;
+                local_4_ab = 6;
                 break;
             case TILE_MAP_1D:
             case TILE_MAP_48:
             case TILE_MAP_49:
             case TILE_MAP_6A:
             case TILE_MAP_6B:
-                local_4 = 7;
+                local_4_ab = 7;
                 break;
             case TILE_MAP_44:
-                local_4 = 8;
+                local_4_ab = 8;
                 break;
             default:
                 if (D_5893_map_id != 0)
                 {
-                    local_4 = 8;
+                    local_4_ab = 8;
                 }
                 else
                 {
-                    local_4 = 2;
+                    local_4_ab = 2;
                 }
                 break;
             }
         }
     }
 
-    ULTIMA_60ec_LoadSpecialMap(local_4);
+    ULTIMA_60ec_LoadSpecialMap(local_4_ab);
     ULTIMA_5f86_SpecialMapHandler(0, param_1, 0);
 
     SJOG_203e(param_1);
@@ -474,13 +474,13 @@ void ULTIMA_6936(void)
 {
     byte local_c;
     int local_a;
-    byte local_10;
+    byte local_10_ad;
     int local_6;
     byte local_8;
     byte local_e;
     CombatEntity* local_4;
 
-    local_10 = 0;
+    local_10_ad = 0;
 
     // clear
     for (local_6 = 0; local_6 < 0x20; local_6++)
@@ -501,24 +501,24 @@ void ULTIMA_6936(void)
         {
             if (D_55a8_party[local_6].equips[4] == 42)
             {
-                local_10 = 42;
+                local_10_ad = 42;
             }
 
             if (D_55a8_party[local_6].equips[4] == 44)
             {
-                local_10 = 44;
+                local_10_ad = 44;
             }
 
-            if (local_10 != 0)
+            if (local_10_ad != 0)
             {
                 local_a = ULTIMA_2092_RandomRange(0, 0xf);
                 if (local_a == 0xb)
                 {
                     ULTIMA_1850_PrintString(_TEXT(0xa422, "A ring has vanished!\n"));
                     ULTIMA_43ae_AudioSweepTone(0x4b0, 2000, 1, 0x28);
-                    ULTIMA_6e60(local_6, local_10);
+                    ULTIMA_6e60(local_6, local_10_ad);
                 }
-                local_10 = 0;
+                local_10_ad = 0;
             }
 
             local_8 = D_1724[local_6];
@@ -574,14 +574,14 @@ void ULTIMA_6936(void)
 // prepare combat
 void ULTIMA_6bc2(int param_1, int param_2)
 {
-    int local_2e;
+    byte local_30_ab;
+    int local_2e_an;
     byte local_2c;
-    byte local_30;
     int local_2a;
     int local_28[16];
     int local_8;
     int local_6;
-    int local_4;
+    int local_4_ab;
 
     if (param_2 >= 0x100)
     {
@@ -599,9 +599,9 @@ void ULTIMA_6bc2(int param_1, int param_2)
         ULTIMA_6936();
     }
 
-    for (local_2e = 0; local_2e < 0x10; local_2e++)
+    for (local_2e_an = 0; local_2e_an < 0x10; local_2e_an++)
     {
-        local_28[local_2e] = local_2e;
+        local_28[local_2e_an] = local_2e_an;
     }
 
     if ((param_1 & 4) != 0)
@@ -609,11 +609,11 @@ void ULTIMA_6bc2(int param_1, int param_2)
         // shuffle
         for (local_2a = 0; local_2a < 0xf; local_2a++)
         {
-            local_2e = ULTIMA_2092_RandomRange(0, 0xf);
+            local_2e_an = ULTIMA_2092_RandomRange(0, 0xf);
             // swap
             local_6 = local_28[local_2a];
-            local_28[local_2a] = local_28[local_2e];
-            local_28[local_2e] = local_6;
+            local_28[local_2a] = local_28[local_2e_an];
+            local_28[local_2e_an] = local_6;
         }
     }
 
@@ -646,20 +646,20 @@ void ULTIMA_6bc2(int param_1, int param_2)
     }
 
     local_2c = D_1704[local_28[0]];
-    local_30 = D_1714[local_28[0]];
-    ULTIMA_6506(param_2, 0, local_2c, local_30, D_5895_map_level);
+    local_30_ab = D_1714[local_28[0]];
+    ULTIMA_6506(param_2, 0, local_2c, local_30_ab, D_5895_map_level);
 
-    local_2e = local_6 / 4 + 1;
+    local_2e_an = local_6 / 4 + 1;
     for (local_2a = 1; local_2a < local_6; local_2a++)
     {
-        local_4 = param_2;
-        if (local_2a < local_2e && ULTIMA_3aae_Random(8) == 0)
+        local_4_ab = param_2;
+        if (local_2a < local_2e_an && ULTIMA_3aae_Random(8) == 0)
         {
-            local_4 = D_16d4[param_2];
+            local_4_ab = D_16d4[param_2];
         }
         local_2c = D_1704[local_28[local_2a]];
-        local_30 = D_1714[local_28[local_2a]];
-        ULTIMA_6506(local_4, 0, local_2c, local_30, D_5895_map_level);
+        local_30_ab = D_1714[local_28[local_2a]];
+        ULTIMA_6506(local_4_ab, 0, local_2c, local_30_ab, D_5895_map_level);
     }
 }
 
@@ -678,10 +678,10 @@ int ULTIMA_6d82(int param_1, int param_2)
 // calc player def
 int ULTIMA_6da8(int param_1)
 {
-    int local_6;
+    int local_6_an;
     S_55a8* local_4;
 
-    local_6 = 0;
+    local_6_an = 0;
     local_4 = &D_55a8_party[param_1];
 
     if (D_5894 == 40 && local_4->equips[1] != 0x0f)
@@ -699,47 +699,47 @@ int ULTIMA_6da8(int param_1)
         if (CMP(local_4->equips[0]))
         {
             // 6dd6
-            local_6 += D_1634[local_4->equips[0]];
+            local_6_an += D_1634[local_4->equips[0]];
         }
 
         if (CMP(local_4->equips[1]))
         {
             // 6dec
-            local_6 += D_1634[local_4->equips[1]];
+            local_6_an += D_1634[local_4->equips[1]];
         }
 
         if (CMP(local_4->equips[2]))
         {
             // 6dff
-            local_6 += D_1634[local_4->equips[2]];
+            local_6_an += D_1634[local_4->equips[2]];
         }
 
         if (CMP(local_4->equips[3]))
         {
             // 6e12
-            local_6 += D_1634[local_4->equips[3]];
+            local_6_an += D_1634[local_4->equips[3]];
         }
 
         if (CMP(local_4->equips[4]))
         {
             // 6e25
-            local_6 += D_1634[local_4->equips[4]];
+            local_6_an += D_1634[local_4->equips[4]];
         }
 
         if (CMP(local_4->equips[5]))
         {
             // 6e38
-            local_6 += D_1634[local_4->equips[5]];
+            local_6_an += D_1634[local_4->equips[5]];
         }
 
         // 6e4b
         if (D_587a == 80)
         {
-            local_6 += 3;
+            local_6_an += 3;
         }
     }
 
-    return local_6;
+    return local_6_an;
 }
 
 // unequip

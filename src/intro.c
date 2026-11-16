@@ -38,12 +38,12 @@ static void INTRO_0010(void)
 // lord british animation
 static int INTRO_0050_LordBritishAnim(int param_1, int param_2)
 {
-    int local_4;
-    int local_a_xMove;
-    int local_8;
     int local_e;
     int local_c_yMove;
+    int local_a_xMove;
+    int local_8;
     byte* local_6;
+    int local_4_ab;
 
 #if !defined(MATCHING_BUILD)
     local_6 = D_b21e;
@@ -59,7 +59,7 @@ static int INTRO_0050_LordBritishAnim(int param_1, int param_2)
 
     ULTIMA_0a70_GRAP_2d_SetPenColor(local_e);
 
-    local_4 = D_5356;
+    local_4_ab = D_5356;
     D_5356 = 0x113;
 
     for (local_8 = D_bb18; local_8 < MEM_SIZE; local_8++)
@@ -98,7 +98,7 @@ static int INTRO_0050_LordBritishAnim(int param_1, int param_2)
 
         if (ULTIMA_1d5e_PollKey() != 0)
         {
-            D_5356 = local_4;
+            D_5356 = local_4_ab;
             return 0;
         }
 
@@ -112,7 +112,7 @@ static int INTRO_0050_LordBritishAnim(int param_1, int param_2)
     }
 
     D_bb18 = local_8 + 1;
-    D_5356 = local_4;
+    D_5356 = local_4_ab;
 
     return D_bb18;
 #undef MEM_SIZE
@@ -124,10 +124,10 @@ static void INTRO_014e_Introduction(void)
 {
     int local_e; // unused
     byte* local_c;
-    byte* local_4;
     int local_a;
     int local_8;
     byte* local_6;
+    byte* local_4_ab;
 
     if (D_5893_map_id != 64)
     {
@@ -149,8 +149,8 @@ static void INTRO_014e_Introduction(void)
 
     do
     {
-        local_4 = ULTIMA_0bae_LoadImageFile(D_25ea[0x11]);
-    } while (local_4 == 0);
+        local_4_ab = ULTIMA_0bae_LoadImageFile(D_25ea[0x11]);
+    } while (local_4_ab == 0);
 
     // 01b2
     do
@@ -180,16 +180,16 @@ static void INTRO_014e_Introduction(void)
             switch (local_a)
             {
             case 0:
-                ULTIMA_0d4c_GRAP_4b_PutImage(local_4, 0, 0xe0, 0x1e, 0);
-                ULTIMA_0d4c_GRAP_4b_PutImage(local_4, 1, 0xa8, 0x3a, 0);
+                ULTIMA_0d4c_GRAP_4b_PutImage(local_4_ab, 0, 0xe0, 0x1e, 0);
+                ULTIMA_0d4c_GRAP_4b_PutImage(local_4_ab, 1, 0xa8, 0x3a, 0);
                 break;
             case 7:
-                ULTIMA_0d4c_GRAP_4b_PutImage(local_4, 0, 0xe8, 0x1a, 0);
-                ULTIMA_0d4c_GRAP_4b_PutImage(local_4, 2, 200, 0x36, 0);
+                ULTIMA_0d4c_GRAP_4b_PutImage(local_4_ab, 0, 0xe8, 0x1a, 0);
+                ULTIMA_0d4c_GRAP_4b_PutImage(local_4_ab, 2, 200, 0x36, 0);
                 break;
             case 0xe:
-                ULTIMA_0d4c_GRAP_4b_PutImage(local_4, 0, 0xb8, 0, 0);
-                ULTIMA_0d4c_GRAP_4b_PutImage(local_4, 3, 0xf8, 0, 0);
+                ULTIMA_0d4c_GRAP_4b_PutImage(local_4_ab, 0, 0xb8, 0, 0);
+                ULTIMA_0d4c_GRAP_4b_PutImage(local_4_ab, 3, 0xf8, 0, 0);
                 break;
             }
         }
@@ -243,7 +243,7 @@ static void INTRO_014e_Introduction(void)
     }
 
     ULTIMA_0be4_FreeImage(local_6);
-    ULTIMA_0be4_FreeImage(local_4);
+    ULTIMA_0be4_FreeImage(local_4_ab);
     ULTIMA_0fdc_FreeBitImage(local_c);
 
     ULTIMA_1b16_ClearKbdBuffer();
@@ -259,17 +259,17 @@ static void INTRO_014e_Introduction(void)
 
 void INTRO_043e(char* param_1)
 {
+    int local_6_an;
     int local_4;
-    int local_6;
 
     local_4 = -(ULTIMA_216c_strlen(param_1) / 2 - 0x12);
-    local_6 = local_4 + ULTIMA_216c_strlen(param_1) + 2;
+    local_6_an = local_4 + ULTIMA_216c_strlen(param_1) + 2;
     ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b2_blueColor);
     ULTIMA_0aa6_GRAP_3f_FillRect(8, 0xc1, local_4 * 8, 199);
-    ULTIMA_0aa6_GRAP_3f_FillRect(local_6 * 8, 0xc1, 0x137, 199);
+    ULTIMA_0aa6_GRAP_3f_FillRect(local_6_an * 8, 0xc1, 0x137, 199);
     ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
     ULTIMA_0b10_GRAP_Line(8, 0xc0, local_4 * 8, 0xc0);
-    ULTIMA_0b10_GRAP_Line(local_6 * 8, 0xc0, 0x137, 0xc0);
+    ULTIMA_0b10_GRAP_Line(local_6_an * 8, 0xc0, 0x137, 0xc0);
     ULTIMA_1bf2_SetTextPosition(local_4, 0x18);
     ULTIMA_4c2a();
     ULTIMA_1850_PrintString(param_1);
@@ -405,8 +405,8 @@ static void INTRO_06bc_BuildMainMenu(int param_1)
 
 static void INTRO_072e_Acknowledgements(void)
 {
+    int local_6_an;
     void* local_4;
-    int local_6;
 
     do
     {
@@ -417,22 +417,22 @@ static void INTRO_072e_Acknowledgements(void)
     ULTIMA_0d4c_GRAP_4b_PutImage(local_4, 1, 0x10, 0x3f, 0);
     ULTIMA_0c22_GRAP_0f_SelectPage(0);
 
-    for (local_6 = 199; local_6 >= 0x3f; local_6--)
+    for (local_6_an = 199; local_6_an >= 0x3f; local_6_an--)
     {
-        ULTIMA_0d4c_GRAP_4b_PutImage(local_4, 0, 0x90, local_6, 0); // (image_buffer, image_idx, x, y, ?)
-        ULTIMA_0d4c_GRAP_4b_PutImage(local_4, 2, 0xa0, local_6, 0);
+        ULTIMA_0d4c_GRAP_4b_PutImage(local_4, 0, 0x90, local_6_an, 0); // (image_buffer, image_idx, x, y, ?)
+        ULTIMA_0d4c_GRAP_4b_PutImage(local_4, 2, 0xa0, local_6_an, 0);
 
 #if defined(ENABLE_SPEED_FIX)
-        TIME_SleepMs((199 - local_6) / 16);
+        TIME_SleepMs((199 - local_6_an) / 16);
 #endif
     }
 
-    for (local_6 = 0; local_6 < 0x90; local_6 += 8)
+    for (local_6_an = 0; local_6_an < 0x90; local_6_an += 8)
     {
-        ULTIMA_0d4c_GRAP_4b_PutImage(local_4, 0, 0x88 - local_6, 0x3f, 0);
-        ULTIMA_0ace_GRAP_18_TransferArea(1, 0, 0x98 - local_6, 0x3f, 0x9f - local_6, 199);
-        ULTIMA_0d4c_GRAP_4b_PutImage(local_4, 2, local_6 + 0xa8, 0x3f, 0);
-        ULTIMA_0ace_GRAP_18_TransferArea(1, 0, local_6 + 0xa0, 0x3f, local_6 + 0xa7, 199);
+        ULTIMA_0d4c_GRAP_4b_PutImage(local_4, 0, 0x88 - local_6_an, 0x3f, 0);
+        ULTIMA_0ace_GRAP_18_TransferArea(1, 0, 0x98 - local_6_an, 0x3f, 0x9f - local_6_an, 199);
+        ULTIMA_0d4c_GRAP_4b_PutImage(local_4, 2, local_6_an + 0xa8, 0x3f, 0);
+        ULTIMA_0ace_GRAP_18_TransferArea(1, 0, local_6_an + 0xa0, 0x3f, local_6_an + 0xa7, 199);
         ULTIMA_20fa_WaitTicks(1);
     }
 
@@ -454,25 +454,25 @@ static void INTRO_072e_Acknowledgements(void)
 
     ULTIMA_0c22_GRAP_0f_SelectPage(0);
 
-    for (local_6 = 0x88; local_6 >= 0; local_6 -= 8)
+    for (local_6_an = 0x88; local_6_an >= 0; local_6_an -= 8)
     {
-        ULTIMA_0d4c_GRAP_4b_PutImage(local_4, 0, 0x90 - local_6, 0x3f, 0);
-        ULTIMA_0ace_GRAP_18_TransferArea(1, 0, 0x88 - local_6, 0x3f, 0x8f - local_6, 199);
-        ULTIMA_0d4c_GRAP_4b_PutImage(local_4, 2, local_6 + 0xa0, 0x3f, 0);
-        ULTIMA_0ace_GRAP_18_TransferArea(1, 0, local_6 + 0xb0, 0x3f, local_6 + 0xb7, 199);
+        ULTIMA_0d4c_GRAP_4b_PutImage(local_4, 0, 0x90 - local_6_an, 0x3f, 0);
+        ULTIMA_0ace_GRAP_18_TransferArea(1, 0, 0x88 - local_6_an, 0x3f, 0x8f - local_6_an, 199);
+        ULTIMA_0d4c_GRAP_4b_PutImage(local_4, 2, local_6_an + 0xa0, 0x3f, 0);
+        ULTIMA_0ace_GRAP_18_TransferArea(1, 0, local_6_an + 0xb0, 0x3f, local_6_an + 0xb7, 199);
         ULTIMA_20fa_WaitTicks(1);
     }
 
     ULTIMA_0be4_FreeImage(local_4);
 
-    for (local_6 = 0x3f; local_6 < 199; local_6++)
+    for (local_6_an = 0x3f; local_6_an < 199; local_6_an++)
     {
-        ULTIMA_0d4c_GRAP_4b_PutImage(local_4, 0, 0x90, local_6 + 1, 0);
-        ULTIMA_0d4c_GRAP_4b_PutImage(local_4, 2, 0xa0, local_6 + 1, 0);
-        ULTIMA_0ace_GRAP_18_TransferArea(1, 0, 0x90, local_6, 0xaf, local_6);
+        ULTIMA_0d4c_GRAP_4b_PutImage(local_4, 0, 0x90, local_6_an + 1, 0);
+        ULTIMA_0d4c_GRAP_4b_PutImage(local_4, 2, 0xa0, local_6_an + 1, 0);
+        ULTIMA_0ace_GRAP_18_TransferArea(1, 0, 0x90, local_6_an, 0xaf, local_6_an);
 
 #if defined(ENABLE_SPEED_FIX)
-        TIME_SleepMs((199 - local_6) / 16);
+        TIME_SleepMs((199 - local_6_an) / 16);
 #endif
     }
 
@@ -485,12 +485,12 @@ static void INTRO_072e_Acknowledgements(void)
 // pause(wait time) (8b0e)
 static int INTRO_094e_Pause(int param_1)
 {
+    int local_6_an;
     int local_4;
-    int local_6;
 
     local_4 = 0;
 
-    for (local_6 = 0; local_6 < param_1; local_6++)
+    for (local_6_an = 0; local_6_an < param_1; local_6_an++)
     {
         if ((local_4 = ULTIMA_1d5e_PollKey()) != 0)
             break;
@@ -931,37 +931,37 @@ void INTRO_0986_Main(void) // intro_main (initialize video) (8b46)
 // CHECKED
 static int INTRO_1016_ConvertU4Savegame(void)
 {
-    bool local_4;
+    int local_10_ad;
     int local_e;
+    S_bb1c* local_c;
     int local_a;
     S_bc88_U4Party* local_8;
     S_55a8* local_6;
-    S_bb1c* local_c;
-    int local_10;
+    bool local_4_ab;
 
-    local_4 = 0;
+    local_4_ab = 0;
     local_8 = &D_bc88;
     local_a = 0;
-    local_10 = 8;
+    local_10_ad = 8;
 
     D_a9bd[1] = 1;
     D_a9bd[0] = 4;
 
     D_a9cc = ULTIMA_16a6_GetDefaultDrive(); // NOT MATCHING
 
-    ULTIMA_256e_ReadFileFromDisk(/*0x3278*/ "party.sav", &D_bc88, 0x28, local_10);
+    ULTIMA_256e_ReadFileFromDisk(/*0x3278*/ "party.sav", &D_bc88, 0x28, local_10_ad);
 
     if (D_bc88.str > 0x46 || D_bc88.dex > 0x46 || D_bc88.intel > 0x46 || D_bc88.exp > 9999 || D_bc88.hp > 9999 ||
         D_bc88.maxHp > 9999 || D_bc88.cls > 7)
     {
-        local_4 = 1;
+        local_4_ab = 1;
     }
 
     for (local_e = 0; local_e < 8; local_e++)
     {
         if (local_8->name[local_e] != 0 && local_8->name[local_e] < 0x20)
         {
-            local_4 = 1;
+            local_4_ab = 1;
             break;
         }
 
@@ -972,7 +972,7 @@ static int INTRO_1016_ConvertU4Savegame(void)
         }
     }
 
-    if (local_4)
+    if (local_4_ab)
     {
         ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
         ULTIMA_16ba_PrintChar(CTRL_CHAR_CENTER_TEXT);
@@ -1048,7 +1048,7 @@ static int INTRO_1016_ConvertU4Savegame(void)
 
     local_6->level = local_8->maxHp / 100;
 
-    local_10 = 0x140;
+    local_10_ad = 0x140;
     local_c = &D_bb1c;
 
     ULTIMA_256e_ReadFileFromDisk(/*0x32f9*/ "party.sav", &D_bb1c, 0xb6, 0x140);

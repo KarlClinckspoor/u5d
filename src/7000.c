@@ -8,7 +8,7 @@
 static void ULTIMA_7040(int param_1, int param_2, int param_3, int param_4)
 {
     int local_6;
-    PairS8* local_4;
+    PairS8* local_4_ab;
     u8 local_8;
 
     local_8 = 0;
@@ -18,12 +18,12 @@ static void ULTIMA_7040(int param_1, int param_2, int param_3, int param_4)
     }
 
     param_1 = (param_1 % 0x10);
-    local_4 = &D_1f7e[param_1 * 0x10];
+    local_4_ab = &D_1f7e[param_1 * 0x10];
 
     for (local_6 = 0; local_6 < 0x10; local_6++)
     {
-        D_ad14[(local_4->y + param_4) * 0x20 + local_4->x + param_3] = local_8;
-        local_4++;
+        D_ad14[(local_4_ab->y + param_4) * 0x20 + local_4_ab->x + param_3] = local_8;
+        local_4_ab++;
     }
 }
 
