@@ -14,6 +14,7 @@ passes only when they are identical.
 | 2026-11-15, first baseline | 185 | 198 | 70 | 199 | 41 | 693 |
 | 2026-11-15, stack-slot rule applied | 285 | 35 | 140 | 197 | 36 | 693 |
 | 2026-11-15, data moved into modules, string arrays | 343 | 33 | 82 | 197 | 38 | 693 |
+| 2026-11-16, foreign strings, table sizes (last committed C) | 408 | 33 | 13 | 200 | 37 | 691 |
 
 Most `SIZE` verdicts in `0000.c` and `1000.c` are routines that were hand-written assembly in
 the original and are C in u5d (step 5).
@@ -62,3 +63,37 @@ the original and are C in u5d (step 5).
 
 8. **The gate.** `tools/check.py` (and a Makefile target) builds everything and compares the
    SHA-1 of all 25 files with the GOG release.
+
+## Where it stands (2026-11-16)
+
+Done, each checked by a tool:
+
+- **Assembly:** all of the resident image's hand-written assembly (`src/asm/A*.ASM`, nine
+  modules) and PLINK86's parts (`PLMGR`, `PLSTART`, `PLTAB`) assemble to the original bytes
+  with MASM 4.0 (`tools/asmbuild.py`). Every relocated word has its segment fixup.
+- **Runtime:** CS:017e-0878 is 17 modules of SLIBCR.LIB and LIBH.LIB (`tools/libmatch.py`).
+- **Link:** `tools/u5link.py` links and compares. SHOPPES3.OVL is byte-identical.
+- **Not committed:** the overlay C files have uncommitted changes from six matching agents
+  that were stopped part-way. Review them with `tools/match.py --compile` and
+  `tools/nativecheck.py`; keep what improves, revert what doesn't.
+
+Next, in order:
+
+1. **Finish the overlay C functions** (about 150 left; `build/match/status.tsv`).
+2. **Split the resident C into its original modules.** The runs between the assembly
+   modules are 0d72, 1850-1b16, 1b38, 1dda-1eac, 1fa0-2056, 216c, and 2320-3072 / 3072-400c /
+   400c-51a0 / 51a0-60ec / 60ec-6f1e (each with its own data in DGROUP), plus 7040-71aa.
+   - Exclude the C rewrites of assembly functions from the DOS build.
+   - Match the remaining resident C.
+3. **Resident data.**
+   - Move vars.c's tables into their modules (or into data-only modules where no owner is
+     known, saying so).
+   - Place the runtime's data segments (_DATA, CDATA, XI*/XC* tables, NMSG) in DGROUP.
+   - Use `_XTEXT` for ULTIMA_25ca's string at DS:a0e0.
+4. **Finish the linker.**
+   - EXE header: PLINK's fields as facts; the checksum 0x7e39 is not the standard MZ one.
+   - Relocation table in the original order (seven increasing runs: module order, then
+     fixup order).
+   - DATA.OVL header: three seg:off entries for far pointers in DGROUP, 0f68:<DS-0x40>.
+   - Accept no reference resolved only by the address in its name.
+5. **The gate.** `tools/check.py` builds everything and compares the SHA-1 of all 25 files.
