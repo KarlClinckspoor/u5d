@@ -56,12 +56,12 @@ int CAST2_009e_OnWho(void)
 // (enter spell name)
 int CAST2_00de_SelectSpell(void)
 {
-    int local_1c_aa;
-    int local_1a_ac;
-    int local_18_al;
-    byte local_16_an;
-    int local_14;
-    int local_12;
+    int local_1c_a;
+    int local_1a_aa;
+    int local_18_aj;
+    byte local_16_al;
+    int local_14_an;
+    int local_12_ap;
     byte local_10_ab[4];
     int local_c;
     int local_a;
@@ -74,29 +74,26 @@ int CAST2_00de_SelectSpell(void)
 
     while (local_c == 0)
     {
-        local_16_an = ULTIMA_2032_ToUpper(ULTIMA_266c_GetChar());
-        if (local_16_an == 0x4a || local_16_an == 0x4f)
+        local_16_al = ULTIMA_2032_ToUpper(ULTIMA_266c_GetChar());
+        if (local_16_al == 0x4a || local_16_al == 0x4f)
         {}
-        else if (local_16_an >= 0x41 && local_16_an <= 0x5a)
+        else if (local_16_al >= 0x41 && local_16_al <= 0x5a && local_a < 4)
         {
-            if (local_a < 4)
+            local_10_ab[local_a] = local_16_al;
+
+            if (ULTIMA_1f12_GetCurrentTextX() + ULTIMA_216c_strlen(D_1bfc[local_16_al - 'A']) > 0xd)
             {
-                local_10_ab[local_a] = local_16_an;
-
-                if (ULTIMA_1f12_GetCurrentTextX() + ULTIMA_216c_strlen(D_1bfc[local_16_an - 'A']) > 0xd)
-                {
-                    ULTIMA_16ba_PrintChar('\n');
-                }
-
-                local_8[local_a] = ULTIMA_1f12_GetCurrentTextX();
-                ULTIMA_1850_PrintString(D_1bfc[local_16_an - 'A']);
-                ULTIMA_16ba_PrintChar(' ');
-                local_a++;
+                ULTIMA_16ba_PrintChar('\n');
             }
+
+            local_8[local_a] = ULTIMA_1f12_GetCurrentTextX();
+            ULTIMA_1850_PrintString(D_1bfc[local_16_al - 'A']);
+            ULTIMA_16ba_PrintChar(' ');
+            local_a++;
         }
         else
         {
-            switch (local_16_an)
+            switch (local_16_al)
             {
             case U5_KEY_BACKSPACE:
                 // 0174
@@ -114,9 +111,9 @@ int CAST2_00de_SelectSpell(void)
                         ULTIMA_1bf2_SetTextPosition(local_8[local_a], ULTIMA_1cee_GetCurrentTextY());
                     }
 
-                    local_1c_aa = ULTIMA_216c_strlen(D_1bfc[local_10_ab[local_a] - 'A']);
+                    local_1c_a = ULTIMA_216c_strlen(D_1bfc[local_10_ab[local_a] - 'A']);
 
-                    for (local_12 = 0; local_12 < local_1c_aa; local_12++)
+                    for (local_12_ap = 0; local_12_ap < local_1c_a; local_12_ap++)
                     {
                         ULTIMA_16ba_PrintChar(' ');
                     }
@@ -148,50 +145,47 @@ int CAST2_00de_SelectSpell(void)
     do
     {
         local_c = 1;
-        for (local_12 = 0; local_12 < local_a - 1; local_12++)
+        for (local_12_ap = 0; local_12_ap < local_a - 1; local_12_ap++)
         {
-            if (local_10_ab[local_12 + 1] < local_10_ab[local_12])
+            if (local_10_ab[local_12_ap + 1] < local_10_ab[local_12_ap])
             {
-                local_16_an = local_10_ab[local_12];
-                local_10_ab[local_12] = local_10_ab[local_12 + 1];
-                local_10_ab[local_12 + 1] = local_16_an;
+                local_16_al = local_10_ab[local_12_ap];
+                local_10_ab[local_12_ap] = local_10_ab[local_12_ap + 1];
+                local_10_ab[local_12_ap + 1] = local_16_al;
                 local_c = 0;
             }
         }
     } while (local_c == 0);
 
     // e412
-    for (local_12 = 0; local_12 < 0x30; local_12++)
+    for (local_12_ap = 0; local_12_ap < 0x30; local_12_ap++)
     {
         // e42e
-        local_1a_ac = 1;
-        local_18_al = 0;
+        local_1a_aa = 1;
 
-        for (local_14 = 0; local_14 < local_a; local_14++)
+        for (local_14_an = local_18_aj = 0; local_14_an < local_a; local_14_an++, local_18_aj++)
         {
-            if (D_1c30[local_12][local_18_al] != local_10_ab[local_14])
+            if (D_1c30[local_12_ap][local_18_aj] != local_10_ab[local_14_an])
             {
-                local_1a_ac = 0;
+                local_1a_aa = 0;
                 break;
             }
 
-            while (local_14 < local_a - 1 && local_10_ab[local_14] == local_10_ab[local_14 + 1])
+            while (local_14_an < local_a - 1 && local_10_ab[local_14_an] == local_10_ab[local_14_an + 1])
             {
-                local_14++;
+                local_14_an++;
             }
-
-            local_18_al++;
         }
 
         // e460
-        if (local_1a_ac != 0 && D_1c30[local_12][local_18_al] != '\0')
+        if (local_1a_aa != 0 && D_1c30[local_12_ap][local_18_aj] != '\0')
         {
-            local_1a_ac = 0;
+            local_1a_aa = 0;
         }
 
-        if (local_1a_ac != 0)
+        if (local_1a_aa != 0)
         {
-            local_4_ab = local_12;
+            local_4_ab = local_12_ap;
             break;
         }
     }
