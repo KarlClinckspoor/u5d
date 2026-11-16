@@ -156,11 +156,13 @@ class Linker:
     # -- resolution
     def resolve(self, name, src):
         """(kind, address) for a name referenced from module src."""
+        # the stubs themselves (PLTAB) jump to the function, not to a stub
+        via_stub = src.name != 'PLTAB'
         p = self.publics.get(name)
         if p:
             kind, addr, owner = p
             # into another overlay's function: through its stub
-            if kind == 'code' and owner.kind == 'ovl' and owner.overlay != src.overlay:
+            if via_stub and kind == 'code' and owner.kind == 'ovl' and owner.overlay != src.overlay:
                 st = self.publics.get('STUB_' + name[:26])
                 if st:
                     return st[0], st[1]
@@ -170,7 +172,7 @@ class Linker:
             self.by_convention[name] = self.by_convention.get(name, 0) + 1
             if a[0] == 'code':
                 owner = u5.module_owner(name)
-                if owner in u5.OVERLAY_BASE and owner != src.overlay:
+                if via_stub and owner in u5.OVERLAY_BASE and owner != src.overlay:
                     st = self.publics.get('STUB_' + name[:26])
                     if st:
                         return st[0], st[1]
