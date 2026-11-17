@@ -467,7 +467,8 @@ static void MAINOUT_16fc(int param_1)
 // unsigned or char changes nothing (char: 2 more bytes differ). Tried: the "local_a >= 0"
 // case as a goto to a block after the function's end (MSC moves it right after the goto,
 // the test inverted), a goto at the end of the else-if block to a label on the next test
-// (that label's block moves up after the "local_a == 0" branch instead), a label alone.
+// (that label's block moves up after the "local_a == 0" branch instead), a label alone,
+// "if (local_a >= 0) { if (local_a > 0) ... } else local_4_ab = ..." (laid out in order).
 static void MAINOUT_17d4(int param_1, int param_2)
 {
     int local_e_am;
