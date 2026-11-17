@@ -23,7 +23,7 @@ extern int ULTIMA_16a6_GetDefaultDrive(void);
 
 extern void ULTIMA_16ba_PrintChar(uint a);
 extern void ULTIMA_1850_PrintString(char* a);
-extern void ULTIMA_1a3e_PrintNumber(int a, int b, int c);
+extern void ULTIMA_1a3e_PrintNumber(int a, int b, char c);
 
 // Keyboard
 

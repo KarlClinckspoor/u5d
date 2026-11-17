@@ -166,17 +166,20 @@ void ULTIMA_1850_PrintString(char* param_1)
     return;
 }
 
-// CHECKED (NOT MATCHING: optimization)
+// CHECKED
 // print_integer(val, min_len, filler)
-void ULTIMA_1a3e_PrintNumber(int param_1, int param_2, int param_3)
+// param_3 is a char: as an int, MSC 5.0 turns the fill loop into "rep stosb" and needs a
+// temporary (frame 0x34); the original's loop stores AL each time.
+void ULTIMA_1a3e_PrintNumber(int param_1, int param_2, char param_3)
 {
-    int l_2a = 1; // required_length
-    int l_2c;     // space
-    int l_2e = 0; // is_negative
-    int l_30;
-    char local_28[40];
+    int local_32_am;
+    int local_30; // is_negative
+    int local_2e; // space
+    int local_2c; // required_length
+    char local_2a_aa[40];
 
-    register s16 *si;
+    local_2c = 1;
+    local_30 = 0;
 
     if (param_2 > 39)
     {
@@ -186,63 +189,61 @@ void ULTIMA_1a3e_PrintNumber(int param_1, int param_2, int param_3)
     // 1a5b
     if (param_1 < 0) // is negative?
     {
-        l_2e++; // is_negative = true
+        local_30++; // is_negative = true
         param_1 = -param_1;
     }
 
-    // 1a6c
-    l_30 = 5;
-
-    si = &D_5402[1];
-    do
+    // 1a6c: MSC walks D_5402 with a pointer (the extra stack slot) and sets local_32 to 5
+    for (local_32_am = 1; local_32_am < 5; local_32_am++)
     {
-        // 1a7a
-        if (*si <= param_1) // cmp order?
+        if (D_5402[local_32_am] <= param_1)
         {
-            l_2a++;
+            local_2c++;
         }
-        si++;
-    } while (si < &D_5402[5]); // 1a7f
+    }
 
-    if (l_2e)
+    if (local_30)
     {
-        l_2a++;
+        local_2c++;
     }
 
     // 1a94
-    l_2c = param_2 - l_2a;
-    if (l_2c <= 0)
+    local_2e = param_2 - local_2c;
+    if (local_2e <= 0)
     {
-        l_2c = 0;
+        local_2e = 0;
     }
     else
     {
-        // 1aa8: NOT MATCHING (loop optimization)
-        for (l_30 = 0; l_30 != l_2c; l_30++)
+        // 1aa8
+        for (local_32_am = 0; local_32_am != local_2e; local_32_am++)
         {
-            local_28[l_30] = param_3;
+            local_2a_aa[local_32_am] = param_3;
         }
     }
 
     // 1ac0
-    if (l_2e)
+    if (local_30)
     {
-        local_28[l_2c++] = '-';
-        l_2a--;
+        local_2a_aa[local_2e++] = '-';
+        local_2c--;
     }
 
-    // 1ad3: NOT MATCHING
+    // 1ad3: NOT MATCHING (registers): the original keeps local_32 in SI and local_2e in DI,
+    // local_30 in memory; MSC here picks local_32 (DI) and local_30 (SI). Tried: every
+    // declaration order, local_2e++ as its own statement (before or after the subtraction),
+    // the cast and the product written other ways.
     do
     {
-        l_30 = D_5402[l_2a - 1];
-        l_2e = param_1 / l_30;
-        local_28[l_2c++] = (char)l_2e + '0';
+        local_32_am = D_5402[local_2c - 1];
+        local_30 = param_1 / local_32_am;
+        local_2a_aa[local_2e++] = (char)local_30 + '0';
 
-        param_1 -= l_30 * l_2e;
-    } while (--l_2a != 0);
+        param_1 -= local_32_am * local_30;
+    } while (--local_2c != 0);
 
     // 1afb
-    local_28[l_2c] = '\0';
+    local_2a_aa[local_2e] = '\0';
 
-    ULTIMA_1850_PrintString(local_28);
+    ULTIMA_1850_PrintString(local_2a_aa);
 }
