@@ -17,14 +17,30 @@
 s16 D_5402[5] = { 1, 10, 100, 1000, 10000 };
 
 // CHECKED
-// MSC 5.0 registers every loop (1996 local_c in CX, 1a03 local_14_am in CX, 1a14 local_e_am
-// in SI with the bound local_c in DI) only when the function has enough source lines before
-// them: every line inside the function that holds a token or a comment counts, also an empty
-// `;` or a local extern declaration (blank lines, one multi-line comment, #if 0 blocks, `{ }`
-// lines or comment lines before the function do not; nor does where they are within the
-// declarations). Without any comment lines in the body: 14 more lines register 1996 (64 bytes
-// still differ), about 120 more give 46, about 140 more match. The padding block after the
-// declarations stands for the lines the original had; it matches from about 125 of them.
+// The block of comment lines after the declarations is needed for the match. Why:
+// MSC 5.0's pass 2 (C2.EXE) does not optimize a function as a whole. It reads the statements
+// into a tree pool and, when the pool is full, optimizes and emits what it holds and goes on
+// with an empty pool (its output file grows while the function is still being read). A loop
+// gets registers only if the pool has room left when it comes. Compiled in one piece this
+// function fills about 505 of the pool's 612 units (a unit is about a tree node), and its
+// last two loops (1a03: local_14_am in CX; 1a14: local_e_am in SI, the bound in DI) are not
+// optimized: 64 bytes differ. The original has them optimized, so there the pool was emptied
+// inside the function, before 19ca.
+// Pass 1 writes a line record for every source line inside a function that is not blank
+// (a comment-only line too; a comment over several lines is one; blank lines, #if'd-out
+// lines and lines outside functions give none), and each record takes one unit. So extra
+// lines before 19ca move a cut into the function: 0-107 lines change nothing, 108-122
+// optimize 1a03 only (46 bytes), 123-563 match, 564-605 give other code, 606-713 are as
+// none again, and so on with period 612 (measured by inserting records in pass 1's output
+// and running C2 on it). Only the number of records counts: not the line numbers, the text,
+// /Zd or /Fc; lines after 19ca, in another function or before this one do nothing.
+// Less memory gives the same cut with no extra line: with 236.75 to 248.5 KB of DOS memory
+// free for C2.EXE the pool is about 280 units, and this file compiles EXACT without the
+// padding (research/c2mem.py r1850.c ULTIMA_1850_PrintString 15152 15920; above that the
+// pool has its full size, below it the code is different again). So the original function
+// either had 123 or more further lines (comments, lines compiled out), or was compiled with
+// about 240 KB left for pass 2. Which, cannot be told from the code; the build cannot limit
+// pass 2's memory, so the comment lines stand in for either.
 // 0000:1850
 void ULTIMA_1850_PrintString(char* param_1)
 {
@@ -43,7 +59,7 @@ void ULTIMA_1850_PrintString(char* param_1)
     int local_6;
     int local_4_aa;
 
-    // Padding: these comment lines count as source lines for MSC 5.0 (see above).
+    // Padding: each of these lines is one more unit in pass 2's pool (see above).
     //
     //
     //
