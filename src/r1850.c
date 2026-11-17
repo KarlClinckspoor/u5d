@@ -16,20 +16,15 @@
 
 s16 D_5402[5] = { 1, 10, 100, 1000, 10000 };
 
-// CHECKED (NOT MATCHING: 498/494, 64 bytes, all in the last two loops)
-// The original registers every loop: 1996 local_c in CX, 1a03 local_14_am in CX, 1a14
-// local_e_am in SI with the bound local_c in DI. As a do-while the outer loop gave the right
-// length but only 18c4 and 1939 registered (121 bytes). As `while (1) { ... if (local_a)
-// break; }` (here) 1996 is registered too and everything up to 1a03 is the original's code;
-// an unused label anywhere new in the function does exactly the same (any position but
-// right before a loop or right after one, where a label already is), so it is a mode
-// switch, not a local effect. 1a03 and 1a14 then stay in memory: removing 1a03 or 1996 does
-// not change that (so not a count of loops), and 1a14 as a while loop is no better.
-// Earlier (do-while) findings: removing loop 18c4 or 1939, the `if (local_4_aa)
-// PrintChar(newline)` at the top, or the whole 19d5 block restored all later loops; tried
-// without effect: the outer loop as a goto, top-tested while, no return; 1996 as
-// while/for/goto with --local_c in the test; byte* param and no casts; no uint casts;
-// local_1a_ap as int; fewer #includes.
+// CHECKED
+// MSC 5.0 registers every loop (1996 local_c in CX, 1a03 local_14_am in CX, 1a14 local_e_am
+// in SI with the bound local_c in DI) only when the function has enough source lines before
+// them: every line inside the function that holds a token or a comment counts, also an empty
+// `;` or a local extern declaration (blank lines, one multi-line comment, #if 0 blocks, `{ }`
+// lines or comment lines before the function do not; nor does where they are within the
+// declarations). Without any comment lines in the body: 14 more lines register 1996 (64 bytes
+// still differ), about 120 more give 46, about 140 more match. The padding block after the
+// declarations stands for the lines the original had; it matches from about 125 of them.
 // 0000:1850
 void ULTIMA_1850_PrintString(char* param_1)
 {
@@ -47,6 +42,148 @@ void ULTIMA_1850_PrintString(char* param_1)
     int local_8;
     int local_6;
     int local_4_aa;
+
+    // Padding: these comment lines count as source lines for MSC 5.0 (see above).
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
 
     // debug("GRAP_PrintString(%s)", param_1);
 
@@ -122,7 +259,7 @@ void ULTIMA_1850_PrintString(char* param_1)
                     }
                     else
                     {
-                        // 1996: local_c in CX, stored after (as the original since while (1))
+                        // 1996: local_c in CX, stored after the loop
                         do
                         {
                             local_c--;
@@ -157,7 +294,7 @@ void ULTIMA_1850_PrintString(char* param_1)
                     ULTIMA_1bf2_SetTextPosition((local_10_aa - local_c) / 2, ULTIMA_1cee_GetCurrentTextY());
                 }
 
-                // 19fd (NOT MATCHING: loop optimization)
+                // 19fd; 1a03: local_14_am in CX
                 if (local_6 != 0)
                 {
                     // 1a03
@@ -166,7 +303,7 @@ void ULTIMA_1850_PrintString(char* param_1)
                     }
                 }
 
-                // 1a14 (NOT MATCHING: loop optimization): the original stores the counter in
+                // 1a14: local_e_am in SI, the bound local_c in DI; the counter is stored in
                 // local_e_am ([bp-0Ch]) after this loop, so the loop is over local_e_am.
                 for (local_e_am = local_14_am; local_e_am <= local_c; local_e_am++)
                 {
