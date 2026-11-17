@@ -154,6 +154,11 @@ Without them, workers in one checkout overwrite each other's edits in `src/`, co
 against objects that somebody else compiled last (`build/obj` holds one object per module),
 and mix their commits and their lines in `build/match/status.tsv`.
 
+Each compile is a DOSBox-X run, and they share the machine: with four workers (up to seven
+DOSBox-X instances) a compile took one to three minutes instead of a few seconds. Four was
+about the useful limit; give workers disjoint modules, and expect a split that adds a file
+(`intro2.c`) to touch shared lists (`tools/u5.py`, the build files).
+
 ### A worktree per worker: `worktree.py`
 
 ```sh
@@ -437,6 +442,15 @@ and u5d now has them as `NAME.c` and `NAMEb.c`:
   109e, DUNGEON's at 1020 or 104c. The files take the latest possible start and say so.
 - **Tools.** `match.py` ends a function at the next function of either object. `u5link.py`
   places the second object where its first function's name says.
+- **More than two objects.** The 5.1 parts of INTRO and CMDS are themselves two objects each:
+  `intro.c` (to INTRO_094e) and `intro2.c` (from INTRO_0986_Main), `cmds.c` (to CMDS_1030)
+  and `cmds2.c` (from CMDS_1202), linked in that order before the `b` part. They were found
+  by the optimizer capacity (below): INTRO_0986 and CMDS_12c8 match only without the
+  functions before them. A new object's `_DATA` starts at an even address, so CMDS2 starts
+  at CMDS_1202's first string (DS:4450), right after the D_444a table, not at D_444a's
+  strings (DS:43ef). Each new file is registered in `tools/u5.py` (`MODULES`) and the build
+  lists (CMakeLists.txt, Makefile, src/build.bat, u5win), and functions now called across
+  objects lost `static`.
 
 ## What MSC 5.1 does
 
@@ -581,7 +595,25 @@ Each entry gives the evidence. Add to this list as you learn.
   - `x = 0; y = 0;` before an inner loop, where the original loads y's register before the
     outer loop (a dead load), is a chained `for (x = y = 0; ...)`, and an increment of y at
     the end of the body that the original does after x's is `for (...; x++, y++)`
-    (CAST2_00de).
+    (CAST2_00de);
+  - `x = 0; for (; n > 0; n--) { ...; x++; }` is the closed form of `for (x = 0; x < n;
+    x++)` with n unchanged; written the decompiler's way, n takes SI for the whole function
+    (BLCKTHRN_00be);
+  - two registers incremented in a loop and stored at its exit (`CX/DX`) are two locals the
+    body steps, not `i + offset` (DNGLOOK_117e);
+  - `jmp test; body; incr; test: ...; jne body` with the exit falling through is a do-while
+    entered at its test: `i = 0; goto T; do { body; i++; T:; } while (i < 6 && (c = f()) !=
+    0xffff);` (`!= -1` gives `inc ax; je` instead) (ZSTATS_06e8, still not matching);
+  - `mov al,0FFh; mov [g],al` for one store is a chained assignment, `g = g = 0xff`
+    (SHOPPES2_00ac; DOS build only);
+  - a jump to a jump (`je L; jmp ret0; L: jmp ret1`) is an inline `return 1` that tail
+    merging turned into a jmp: `if (t == X) return 1; return 0;`, where other cases `goto`
+    one shared `return 1` (ULTIMA_2c4c). There `if (a && b && c) goto L_ret1; return 0;`
+    keeps a case's own tail, where `if (!a || !b || !c) return 0;` merges it into the
+    neighbour's;
+  - a then-branch that jumps forward into an identical later copy is a `goto` to a label in
+    that copy, and that label also stops MSC keeping `x * 32` in a register across calls
+    (SHOPPES_14f8).
 - **A loop's register locals are stored when it ends.** The original's TALK_0c5c has
   no such store, because its code after the loop is inside it (`if (local_6 == 0)
   continue;` and the rest, instead of `do ... while (local_6 == 0);`). SHOPPES2_0508 was a
@@ -595,11 +627,88 @@ Each entry gives the evidence. Add to this list as you learn.
   MSC 5.0 turns the loop into `rep stosb` and needs a temporary; declared `char` (and the
   prototype with it), the loop stores AL each time as in the original, and the frame
   shrinks by the temporary. The callers' code does not change.
-- **Loop registers lost to common subexpressions.** In CMDS_12c8 the original keeps two
-  stack locals in SI and DI through the loop (loaded at its start, stored at its exits)
-  and recomputes `local_6 + D_5896_map_x` at each use. MSC here makes those sums
-  temporaries and then registers nothing; dropping either block that uses them brings the
-  registers back. SHOPPES2_08a8 is probably the same. Open.
+- **A module's earlier functions use up the optimizer's capacity.** In pass 2, every global
+  symbol the module has referenced or defined so far counts against a fixed limit. Past it,
+  a function's loops are not optimized: no pointer induction variables, no loop registers,
+  extra temporaries (and common subexpressions that crowd out the loop registers, as in
+  CMDS_12c8).
+  - What counts: 40 extra `extern int` references, or 30 small functions, placed before a
+    function remove its loop optimization. What does not: unreferenced declarations, long
+    names, statement count, DOS memory (400K and 608K free give the same code), the OS/2
+    C2.EXE bound for DOS, the header size.
+  - The test: in a `variants.py` spec, delete the functions before the target. If it then
+    matches or gets close, the original probably had an object boundary there: split the
+    file (INTRO_0986, CMDS_12c8; see "More than two objects").
+  - Grouping variables into one symbol also relieves it, but changes alias analysis (a store
+    through one array forces other variables to be re-read), so the original had separate
+    symbols and a split is the fix.
+  - Probably the same under MSC 5.0: ULTIMA_1850 registers only its first two inner loops
+    and ULTIMA_5394 does not strength-reduce its second loop; removing any one of several
+    unrelated earlier pieces brings the later loop optimizations back.
+  - Leads (closer without the earlier functions): INTRO_014e (right length, 9 bytes),
+    CAST_1c36 (774/810), CAST_1f60. TOWN_0f02 goes the other way (the original optimizes
+    less). Worth the test: SHOPPES2_08a8, ZSTATS_06e8.
+- **Code after a loop goes to its first break.** MSC places a `for` loop's register stores
+  and the code that follows the loop at the loop's first `break`; other exits jump to it.
+  To put that block at a later break, make the earlier break a `goto` to a label on the
+  later one: `for (;;) { if (x) goto L_brk; ... if (y == 1) { L_brk: break; } ... if (c !=
+  d) continue; break; }` (NPC_032c). A do-while puts it after the loop. With the dispatch
+  at the top, a switch does the same: the code after it goes to the first case's break, as
+  a fall-through chain up to its first unconditional jump (ZSTATS_0c5c).
+- **A block that nothing falls into follows the first jump to it.** A block that ends in an
+  unconditional jump and is reached only by jumps (a while loop's test, a shared tail) is
+  placed right after the first jump to it in code order, and a conditional jump to it is
+  inverted. Swapping two cases swaps where it lands; `continue` or `break` makes no
+  difference (ZSTATS_06e8). In SHOPPES_14f8 the tail after the switch stayed put while the
+  last case fell into it; ending the switch with `goto L_tail;` and `default: goto
+  L_tail;`, with case C doing `if (x == -1) goto L_tail;`, moved it into case C as in the
+  original, its strings still in source order. Open: the original sometimes places such a
+  block elsewhere (NPC_06e4's tail-merged else inside a later loop, ZSTATS_0c5c's "not
+  strong" message after the last case).
+- **`jmp near X; nop; nop; nop` is a removed dead jump**: the jump over an `else` after a
+  then-branch that ends in `return` or `break`, sized first and then turned into nops
+  (CAST_11de, DNGLOOK_06a8). In TALK_031e it showed which copy of a print tail the guard
+  path fell into: `if (!guard) goto L_join;` instead of `else if`.
+- **`*(A + i)` is not `A[i]` to the loop optimizer.** In ENDGAME_0648, `while (f(i, *(D_3e5a
+  + i), *(D_3e60 + i)) != 0);` lets MSC 5.0 hoist both table bytes into SI/DI and rotate the
+  loop (`call; or ax,ax; je; <hoist>; L: call; jne L`); the outer i stays in memory. With
+  `D_3e5a[i]` nothing is hoisted and i takes SI. Ghidra's `if (f()) { while (f()); }` was
+  this rotated while.
+- **A constant-count byte copy becomes a block move.** In TALK_080a, `for (i = 0; i < 3;
+  i++) dst[i] = src[i];` compiles to `mov cx,1; repne movsw; movsb` with the loop's closed
+  form after it (`add [i],3`) and a reserved temporary; `memcpy(dst, src, 3)` gives `shr
+  cx,1 / adc cx,cx`. With a `byte*` global as the source it took `((char*)D_bcde)[i]`.
+  Tiny-count `rep movsw` elsewhere may be the same.
+- **`x--; if (x == 0)` is not `if (--x == 0)`.** In TALK_080a's loop the separate decrement
+  let MSC strength-reduce `x * 32` into SI (`sub si,20h; dec [x]; or si,si; jne`) and keep
+  the inner counter in DI; with `--x` in the test x took DI and the product was recomputed.
+- **Empty `while` or do-while.** `while ((uint)(c = GetChar()) < 0x30 || (uint)c > 0x39);`
+  ends `jb top; cmp; jbe exit; jmp top`, an exit by jump; `do c = GetChar(); while (...);`
+  ends `jb top; cmp; ja top` and falls through. Only the jumping exit let MSC move the code
+  after the loop up before the outer loop's test. Likewise a `for` ending a then-branch gave
+  `jb skip; jmp end; skip: jmp top`, and `i = 0; do { ...; i++; } while (i < 7);` the
+  original's `jb top; jmp end` (CAST2_0966).
+- **Fewer references move a register to another variable.** In ULTIMA_1a3e, `buf[i++] =
+  (char)(q = n / d) + '0'; n -= d * q;` reads q once less than a separate `q = n / d;`, and
+  MSC 5.0 then keeps d in SI and i in DI with q in memory, as the original. In ULTIMA_2d7a,
+  three cases that each set `local_6 = 1` became gotos to one `local_6 = 1; break;`, so
+  local_a got DI and local_6 stayed in memory.
+- **A `continue` stops the closed form.** In ULTIMA_4102's inner for loop, `if (d >= best)
+  continue;` instead of an if around the rest keeps the second counter's increment in the
+  loop and the signed `jle` exit, as the original; without it MSC 5.0 adds the trip count
+  to that counter before the loop and exits with `je`.
+- **A loop index reused as scratch stops pointer walking.** ULTIMA_6506's original sets its
+  loop index to `Random(7) - 4` just before `break`: the value lands in the index's DI, and
+  because the index is assigned in the body MSC stops walking D_ba14 with a pointer.
+- **A memset destination kept in a local**: `push di; ... rep stosb; pop di` inside a loop
+  and a store of DI after it mean the destination was assigned to a local first, which the
+  loop keeps in a register (`p = &GetCombatMap(0, i); memset(p, ...)`, DNGLOOK_0d3e).
+- **Pointer plus offset is not `&p[...]`.** `ptr = p + (a + y) * 0x20 + (b + x);` gives
+  `ax = b + x; add si,ax`; `&p[(a + y) * 0x20 + b + x]` is reassociated into a chain of
+  adds (ULTIMA_5a28).
+- **A `register` variable takes a stack slot under 5.1 too**: `register byte* ptr` gets SI
+  but reserves an unused slot in its name's hash bucket (ULTIMA_5a28). `slots.py` skips a
+  function with a non-`local_N` name ("nothing to change"); rename the locals first.
 - **Same-length instructions with another encoding** (`and bx,0Fh` as `81 e3 0f 00`
   instead of `83 e3 0f`) are not produced by bitfields, `unsigned` or other mask
   spellings. Open.
