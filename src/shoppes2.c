@@ -713,6 +713,13 @@ static bool SHOPPES2_080e(int param_1, int param_2, int param_3)
 
 // CHECKED
 // frigates / skiffs
+// NOT MATCHING: registers. The original keeps local_4_ab in SI (set to 0 before the pointer
+// setup) and loads param_1 into DI just before the loop, as the loop optimizer does for a
+// variable it registers; the frame stays 8 bytes. MSC here registers nothing. Tried: while
+// (1), for (;;), do-while and while (local_4_ab == 0); "register int local_4_ab" (SI, 375
+// bytes differ); register param_1 (loaded at entry, into SI); a "register int local_p =
+// param_1" after the pointer setup used for the calls (158 differ, but it takes a stack
+// slot: frame 10).
 static void SHOPPES2_08a8(int param_1)
 {
     byte local_6;
