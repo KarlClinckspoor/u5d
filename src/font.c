@@ -77,16 +77,27 @@ u8 D_51fc[8] = {0x28, 0x30, 0x30, 0x28, 0x28, 0x30, 0x28, 0x30};
 u8 D_5204[8] = {0x05, 0x07, 0x04, 0x0a, 0x08, 0x00, 0x05, 0x06};
 
 // CHECKED
-// NOT MATCHING (SIZE 698/674, 544 bytes): the first inner loop differs from its start. The
-// original keeps local_4_ab, local_a, local_10_ad_am and param_2 in SI, DI, CX and DX
-// (stored when the loop ends), rereads param_2[i] through "mov bx,cx; add bx,dx" at every
-// test, compares the characters unsigned ("ja"/"jbe": byte, not char) and places the
-// "{"/"_"/glyph branch at the loop's top, the "<= 0x20" branch after the merged test. Ours
-// registers nothing there and keeps param_2[i] in a stack temporary (as in CMDS_12c8).
-// param_2 is byte* (544 -> 536 bytes, same shape). Also tried, no better: the inner loop as
-// a for with the two assignments in its init; "if (c > 0x20) {...} else" (548); *(param_2 + i)
-// in the test, the body or both; all of the file's data defined after FONT_0000, only its own
-// data, or none (capacity: no change, so not an object boundary).
+// NOT MATCHING (SIZE 676/674; about 50 instructions differ, most of the rest is shifted).
+// What made the loops the original's: the outer loop as "for (;;) { if (!c) break; ...}"
+// (as a while, the first inner loop gets no registers and param_2[i] is a stack temporary;
+// a label before "local_a = 0" does the same as the for); "local_c > local_4_ab" in that
+// loop's test; the second loop's first three breaks as gotos to the ' ' case's break, which
+// then falls into the code after the loop, and "local_e_am >= --i"; the third loop as
+// "if (i < n) do ... while (n != ++i)" (a for gives "cmp si,[bp-4]" at the bottom, the
+// swapped for "cmp [bp-4],ax" in the entry test); the label L_e, which stops MSC keeping
+// param_2[local_e_am] in a temporary; (int)D_5158 for the signed compares. Still different:
+// - the first inner loop's entry (sub di,di; mov cx,bx; mov si,[bp-2]; mov dx,[bp+4]; jmp
+//   test) sits after the outer test in the original, ours at the top of the outer body
+//   ("mov cx,[bp-0Ch]"). The outer loop as while(1), do..while(1), gotos, if/else break,
+//   or a goto into a do-while (outer, inner or both), or the inner loop as a for with the
+//   two assignments in its init: no change or worse;
+// - the end's "local_12 * 2" is in SI in ours, in BX with a dead store to bp-1Ch (frame
+//   1Ch, ours 1Ah) in the original, as if SI/DI were taken there (nested assignment,
+//   *(D_5146 + i), labels around it, no ternary: no change);
+// - "mov ax,[bp-14h]; add ax,si" (ours "mov ax,si; add ax,[bp-14h]") for "local_4_ab +
+//   D_50f7 + 1 < local_c": eight orders, casts and "local_c >" give the same code;
+// - two nops after loop 3's idiv branch ("jmp near; nop; nop", a jump sized long).
+// Earlier: capacity ruled out (all of the file's data after FONT_0000, or none: no change).
 // param_1: image, param_2: text
 void FONT_0000(byte* param_1, byte* param_2)
 {
@@ -107,11 +118,13 @@ void FONT_0000(byte* param_1, byte* param_2)
     local_e_am = local_6 = 0;
     local_4_ab = D_5156 - D_5146[local_12_ab_am];
 
-    while (param_2[local_e_am] != '\0')
+    for (;;)
     {
+        if (param_2[local_e_am] == '\0')
+            break;
         local_a = 0;
         local_10_ad_am = local_e_am;
-        while (param_2[local_10_ad_am] != '\0' && local_4_ab < local_c && param_2[local_10_ad_am] != '\n')
+        while (param_2[local_10_ad_am] != '\0' && local_c > local_4_ab && param_2[local_10_ad_am] != '\n')
         {
             if (param_2[local_10_ad_am] <= 0x20)
             {
@@ -133,16 +146,17 @@ void FONT_0000(byte* param_1, byte* param_2)
         while (1)
         {
             if ((param_2[local_10_ad_am] == '\0' && local_4_ab < local_c))
-                break;
+                goto L_brk;
             if (param_2[local_10_ad_am] == '\n')
-                break;
-            if (--local_10_ad_am <= local_e_am)
-                break;
+                goto L_brk;
+            if (local_e_am >= --local_10_ad_am)
+                goto L_brk;
 
             if (param_2[local_10_ad_am] == ' ')
             {
                 local_4_ab -= D_5154;
                 local_a--;
+            L_brk:
                 break;
             }
 
@@ -165,7 +179,7 @@ void FONT_0000(byte* param_1, byte* param_2)
         local_6 = local_10_ad_am;
         local_10_ad_am = local_e_am;
 
-        for (; local_10_ad_am < local_6; local_10_ad_am++)
+        if (local_10_ad_am < local_6) do
         {
             if (param_2[local_10_ad_am] <= 0x20)
             {
@@ -183,19 +197,20 @@ void FONT_0000(byte* param_1, byte* param_2)
             }
             else if (param_2[local_10_ad_am] != '_')
             {
-                if (D_5158 < 0xc0)
+                if ((int)D_5158 < 0xc0)
                 {
                     // NOTE: "or" mix
                     ULTIMA_1044_GRAP_4e_CopyBitImageIntoPage(param_1, param_2[local_10_ad_am] - 0x20, D_5156, D_5158);
                 }
                 D_5156 += D_50ea[param_2[local_10_ad_am] - 0x20] + 1;
             }
-        }
+        } while (local_6 != ++local_10_ad_am);
 
         local_e_am = local_6;
         if (param_2[local_e_am] != '\0')
         {
-            if (param_2[local_e_am] == '_' && D_5158 < 0xc0)
+        L_e:
+            if (param_2[local_e_am] == '_' && (int)D_5158 < 0xc0)
             {
                 ULTIMA_1044_GRAP_4e_CopyBitImageIntoPage(param_1, 0xd, D_5156, D_5158);
             }
