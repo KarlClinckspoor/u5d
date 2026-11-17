@@ -34,6 +34,7 @@ del *.obj
 %CL% %CFLAGS% endgame.c >> log.txt
 %CL% %CFLAGS% sjog.c >> log.txt
 %CL% %CFLAGS% cmds.c >> log.txt
+%CL% %CFLAGS% cmds2.c >> log.txt
 %CL% %CFLAGS% cast.c >> log.txt
 %CL% %CFLAGS% talk.c >> log.txt
 %CL% %CFLAGS% cast2.c >> log.txt

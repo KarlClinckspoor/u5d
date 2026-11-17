@@ -24,6 +24,7 @@ OBJS += \
 	src/endgame.o \
 	src/sjog.o \
 	src/cmds.o \
+	src/cmds2.o \
 	src/cmdsb.o \
 	src/cast.o \
 	src/talk.o \

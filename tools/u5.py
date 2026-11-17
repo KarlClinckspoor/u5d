@@ -89,6 +89,8 @@ MODULES['vars.c'] = ('data', None)
 # INTRO.OVL's MSC 5.1 code is two objects: intro.c (to INTRO_094e) and intro2.c (from
 # INTRO_0986_Main), linked in that order before introb.c (docs/MATCHING.md).
 MODULES['intro2.c'] = ('ovl', 'INTRO')
+# Likewise CMDS.OVL: cmds.c (to CMDS_1030), cmds2.c (from CMDS_1202), cmdsb.c.
+MODULES['cmds2.c'] = ('ovl', 'CMDS')
 
 # The original was built with two compilers. Modules last compiled with MSC 5.0 put their
 # string literals in a CONST segment, each on an even address, and encode small logical

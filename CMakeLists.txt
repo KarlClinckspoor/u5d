@@ -31,6 +31,7 @@ set(SOURCES
 	src/endgame.c
 	src/sjog.c
 	src/cmds.c
+	src/cmds2.c
 	src/cmdsb.c
 	src/cast.c
 	src/talk.c

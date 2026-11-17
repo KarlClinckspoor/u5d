@@ -259,6 +259,7 @@
     <ClCompile Include="..\src\cast.c" />
     <ClCompile Include="..\src\cast2.c" />
     <ClCompile Include="..\src\cmds.c" />
+    <ClCompile Include="..\src\cmds2.c" />
     <ClCompile Include="..\src\cmdsb.c" />
     <ClCompile Include="..\src\combat.c" />
     <ClCompile Include="..\src\common\settings.c" />

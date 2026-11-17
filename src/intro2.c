@@ -273,10 +273,8 @@ void INTRO_0986_Main(void)
         }
         else
         {
-            // 0d3e NOT MATCHING: the original keeps local_c in DI from here on (sub di,di
-            // before the two calls) and stores it only at the loop's end. MSC 5.0 compiles this
-            // source exactly so; 5.1, which built this object (its strings are packed in _DATA;
-            // 5.0 word-aligns char arrays), keeps local_c at [bp-0Ah] until the loop.
+            // 0d3e: local_c lives in DI from here on (sub di,di). MSC 5.1 does that only
+            // with this function compiled in an object of its own (see the top of the file).
             local_c = 0;
             INTRO_043e(_TEXT(0x31c1, "Copyright 1988 Lord British"));
             INTRO_06bc_BuildMainMenu(0);
