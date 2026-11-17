@@ -730,21 +730,24 @@ static int ZSTATS_0c0a(int param_1)
 // equip item
 // param_1: whom
 // param_2: item id
-// NOT MATCHING: block order and tail merging. The original keeps the ammunition message's
-// "ZSTATS_0bee(); return 0;" and every other message jumps into it. It places the
-// "not strong enough" block last, after the switch cases, and the success code right
-// after the strength test. The strength test comes first in the source: its string
-// precedes "Ring vanishes!" in CONST, which is what makes ZSTATS' CONST (and DGROUP) match.
-// The ring test read D_57c0[param_2] instead of param_2 ("cmp bx,2Ah" after the dec): fixed,
-// 710 -> 706 bytes (original 722). Layout: the code after the switch goes to case 0x80's
-// break (its first) up to the first jump. In the original that chain is test, store, ring
-// (the test jumps far to the weak block, placed after case 2 just before the "!= 0x2a"
-// tail); ours is test, weak. Tried: if/else around the weak block (no change), "if (e != 0)
-// goto L_ok" (724 bytes), the weak block as a label inside the switch after case 2 with
-// "if (local_e_g == 0) goto L_weak" (identical code: MSC still puts it after the test).
-// Batch 2: the rest of the function (from the ammunition test) as the else of that test, or
-// the 0518 test as "else if" after the heated-battle block: still the heated-battle copy is
-// kept (no change).
+// NOT MATCHING (35 bytes, same length): only the "not strong enough" block is misplaced;
+// the original has it after case 2, before the "== 0x2a" tail, ours after the tail.
+// Tail merging: every message jumps into the ammunition copy only when the ammunition
+// message is an "else if" branch (after the 0518 block) that falls through to the final
+// "return 0", with the rest of the function in the last else; a "return 0" inside it, or
+// inside the rest's last branch, gives the heated-battle copy back (529 bytes).
+// Layout: "if (local_e_g != 0) { store, ring } else ..." makes the code after the switch
+// test, store, ring as the original (it goes to case 0x80's break). The tail after the
+// if/else is then pulled in behind the jump over the else: with "if (x != 0x2a) return 0;"
+// its head lands before the weak block (49 bytes), written as one "if (== 0x2a && map >
+// 0x7f)" (here) or inside the then-branch all of it does (35). The weak block follows the
+// first jump to it: inline after the test with "if (local_e_g == 0) goto L_weak" (310),
+// behind the else's "goto L_weak" here. Its string must precede "Ring vanishes!" in the
+// source for CONST to match (hence the label in the switch; as the else itself, after the
+// ring code, it gives the same code but CONST differs). Also tried: the ring test as
+// "if (!...) goto L_tail" (the tail then follows the ring test and the vanish block floats
+// away), a dead "goto L_weak" after "return 1", the tail as the ring test's else, the weak
+// else without its return.
 static int ZSTATS_0c5c_EquipItem(int param_1, int param_2)
 {
     byte* local_10_l;
@@ -773,7 +776,6 @@ static int ZSTATS_0c5c_EquipItem(int param_1, int param_2)
     // ee74
     if (param_2 >= 9 && param_2 <= 0xf && D_5893_map_id > 0x7f && D_58a3 == 0)
     {
-        // NOT MATCHING
         ZSTATS_0bee(_TEXT(0x97e2, "Thou canst not change armour in heated battle!"));
         return 0;
     }
@@ -800,14 +802,13 @@ static int ZSTATS_0c5c_EquipItem(int param_1, int param_2)
         local_6_b->_0_tile = local_6_b->_1_animTile = D_1ade[local_8];
         return 0;
     }
-
-    if (((param_2 == 0x1a || param_2 == 0x24) && D_57db == 0) || (param_2 == 0x1c && D_57dd == 0))
+    else if (((param_2 == 0x1a || param_2 == 0x24) && D_57db == 0) || (param_2 == 0x1c && D_57dd == 0))
     {
-        // NOT MATCHING
+        // falls through to the final return: the copy all other messages jump into
         ZSTATS_0bee(_TEXT(0x981c, "Thou hast no ammunition for that weapon!"));
-        return 0;
     }
-
+    else
+    {
     // ef16
     local_4_c = 0;
     local_10_l = &D_55a8_party[param_1].equips[0];
@@ -901,47 +902,34 @@ static int ZSTATS_0c5c_EquipItem(int param_1, int param_2)
         // f0d2..efc6
         local_10_l = &D_55a8_party[param_1].equips[4];
         break;
-    }
 
-    // efc9
-    if (local_e_g == 0)
-    {
-        // f0e0
+    L_weak: // reached from the strength test's else below
         ZSTATS_0bee(_TEXT(0x9942, "Thou art not strong enough!"));
         return 0;
     }
 
-    // efd2
-    *local_10_l = param_2;
-    --D_57c0[param_2];
-    if ((param_2 == 0x2a || param_2 == 0x2c) && (ULTIMA_2092_RandomRange(0, 0xf) == 0))
+    if (local_e_g != 0)
     {
-        // efff
-        ULTIMA_1850_PrintString(_TEXT(0x995e, "\n\nRing vanishes!\n"));
-        D_55a8_party[param_1].equips[4] = 0xff;
-        ULTIMA_43ae_AudioSweepTone(0x4b0, 2000, 1, 0x28);
-        return 1;
+        *local_10_l = param_2;
+        --D_57c0[param_2];
+        if ((param_2 == 0x2a || param_2 == 0x2c) && (ULTIMA_2092_RandomRange(0, 0xf) == 0))
+        {
+            ULTIMA_1850_PrintString(_TEXT(0x995e, "\n\nRing vanishes!\n"));
+            D_55a8_party[param_1].equips[4] = 0xff;
+            ULTIMA_43ae_AudioSweepTone(0x4b0, 2000, 1, 0x28);
+            return 1;
+        }
+    }
+    else
+    {
+        goto L_weak;
     }
 
-    // f0e6
-    if (param_2 != 0x2a)
+    if (param_2 == 0x2a && D_5893_map_id > 0x7f)
     {
-        // ee6e
-        return 0;
+        local_6_b->_0_tile = local_6_b->_1_animTile = TILE_ACTOR_1D;
     }
-
-    // f0ef
-    if (D_5893_map_id <= 0x7f)
-    {
-        // ee6e
-        return 0;
     }
-
-    // f0f9
-    // eee8
-    local_6_b->_0_tile = local_6_b->_1_animTile = TILE_ACTOR_1D;
-
-    // ee6e
     return 0;
 }
 
