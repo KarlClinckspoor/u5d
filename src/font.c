@@ -76,8 +76,32 @@ u8 D_51fc[8] = {0x28, 0x30, 0x30, 0x28, 0x28, 0x30, 0x28, 0x30};
 
 u8 D_5204[8] = {0x05, 0x07, 0x04, 0x0a, 0x08, 0x00, 0x05, 0x06};
 
-// CLEAN ROOM: write this function from the original's disassembly
-// (tools/match.py src/font.c --dis FONT_0000).
+// CLEAN ROOM (written from the disassembly). Prints justified text: param_1 the glyph
+// image, param_2 the text. Per line: loop A measures up to the line width, loop B backs up
+// to the last space (or a "_" hyphenation point), loop C draws, spreading the slack over
+// the spaces; then the next line's margins.
+// NOT MATCHING: 56 bytes differ, length 670 against 674 (before: 513 bytes, 676/674).
+// What gives the original's code so far:
+// - the outer loop is a for with an increment expression. With "while" or "for (; c; )"
+//   the three inner loops get no registers; "for (;;) { if (!c) break; ..." gives them but
+//   leaves loop A's register loads at the top of the body. With an increment the test sits
+//   at the bottom with loop A's loads right after it, as in the original. The increment
+//   here is "0" (no code); the original's is not known ("local_e_am++" would be the natural
+//   one, but the original's test at the end of a line jumps past the increment to the
+//   loop test, which no continue or break does: hence the goto to L_next);
+// - loop B's "--i" is in its condition (the first break is then the space case, and the
+//   code after the loop follows it);
+// - loop C is "if (i < n) do ... while (n != ++i)";
+// - "if (text[start] == 0) goto L_next;" and not an if around the rest (that one keeps
+//   text[start] in AL for the "_" test).
+// Still different:
+// - the frame is 1Ah, the original's 1Ch: at 025f the original keeps local_12 * 2 in BX
+//   with a dead store at bp-1Ch (shl ax,1; mov [bp-1Ch],ax; mov bx,ax), where we get
+//   mov si,ax; shl si,1 as at the top of the function. Tried: the condition written out at
+//   each use, assigned inside the index, D_5146[local_12] read twice;
+// - 0173: the original adds D_50f7's temporary first (mov ax,[bp-14h]; add ax,si), we
+//   mov ax,si; add ax,[bp-14h]. Tried: the operands in every order, the cast on either
+//   side of the comparison.
 void FONT_0000(byte* param_1, byte* param_2)
 {
     int local_12;
