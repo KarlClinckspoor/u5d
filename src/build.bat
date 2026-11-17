@@ -57,6 +57,7 @@ del *.obj
 %CL% %CFLAGS% 3000.c >> log.txt
 %CL% %CFLAGS% 4000.c >> log.txt
 %CL% %CFLAGS% 5000.c >> log.txt
+%CL% %CFLAGS% r5a28.c >> log.txt
 %CL% %CFLAGS% 6000.c >> log.txt
 %CL% %CFLAGS% 7000.c >> log.txt
 
