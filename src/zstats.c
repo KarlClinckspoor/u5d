@@ -357,6 +357,11 @@ void ZSTATS_05e2(int param_1, byte* param_2, char** param_3, uint param_4)
 // END, so the choice is "first jump in code order". Not changed by: HOME's or END's break as
 // continue, HOME as "goto" to a label on END's break, the while as for(;!local_8;), as
 // "while (local_8 == 0)" or as an if/goto loop. The file keeps the version that is 690 long.
+// Batch 2: the optimizer-capacity test rules out an object boundary: without the pragma, 600
+// extra extern references before it give exactly the pragma-off code (234 bytes differ), and
+// fewer references give SI/DI loops. With the do-while END: HOME, UP and DOWN ending in "goto"
+// to a label on END's break, or in continue, change nothing (212); END as a plain while with
+// != 0xffff is 686 bytes (239).
 static int ZSTATS_06e8(char* param_1, int param_2, byte* param_3, char** param_4)
 {
     int local_10_aa;
@@ -744,6 +749,9 @@ static int ZSTATS_0c0a(int param_1)
 // tail); ours is test, weak. Tried: if/else around the weak block (no change), "if (e != 0)
 // goto L_ok" (724 bytes), the weak block as a label inside the switch after case 2 with
 // "if (local_e_g == 0) goto L_weak" (identical code: MSC still puts it after the test).
+// Batch 2: the rest of the function (from the ammunition test) as the else of that test, or
+// the 0518 test as "else if" after the heated-battle block: still the heated-battle copy is
+// kept (no change).
 static int ZSTATS_0c5c_EquipItem(int param_1, int param_2)
 {
     byte* local_10_l;
@@ -949,6 +957,8 @@ static int ZSTATS_0c5c_EquipItem(int param_1, int param_2)
 // changed by: local_6 > local_e_a, ++local_e_a, += 1, (int)local_6 or local_6 + 0 in either loop.
 // The listing loop is a for whose increment shares its store with the init, the 0518 test
 // reads "!= 0" first, and HOME/END come before ENTER/ESC: 698 -> 3 bytes.
+// Also no change: the DOWN case's body in braces; (uint)local_e_a, a ternary for local_6, uint
+// local_6 or a while loop are far worse.
 // select item: used in use, ready
 int ZSTATS_0f2e(int param_1, int param_2, int param_3)
 {
