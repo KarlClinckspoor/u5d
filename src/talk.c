@@ -154,7 +154,7 @@ char D_4a9a[] = "IMPE";
 static int TALK_01e2(void)
 {
     int local_16_an;
-    int local_14;
+    uint local_14;
     char local_12_aa[0xf];
 
     if (D_5893_map_id != 0x12)
@@ -185,19 +185,9 @@ static int TALK_01e2(void)
             // 0230
             local_16_an = 0;
 
-            // 0243 NOT MATCHING: one temporary short. The (int) cast is what makes MSC run
-            // the loop on an end pointer (cmp si,dx) as the original does, and != gives its
-            // je for an empty party. The original then stores the count in two unused
-            // temporaries (bp-16h and bp-1Ch, frame 1Ch); ours stores it once (frame 1Ah),
-            // so everything after is 3 bytes early and the jump at 029a fits in a short jump
-            // where the original needs jbe + jmp near. Tried without effect: < or > with the
-            // operands either way, (int)(uint)/(int)(u8)/(s16)/& 0xff/+ 0 on D_585b,
-            // ++local_14, += 1, a while loop, !(== STATUS_DEAD), local_16_an = local_16_an + 10.
-            // (long) and (uint) bounds are far worse. Also identical: (D_55a8_party + local_14)->status,
-            // (int)D_585b != local_14, local_14 = local_14 + 1, a (int) cast on the index. No cast
-            // with <: 308 bytes, 224 differ. A second counter declared in this block and stepped
-            // with local_14 (for (local_14 = 0, k = 0; ...; local_14++, k++)) gives the frame of
-            // 1Ch but takes bp-16h itself (322 bytes); the original's bp-1Ch is a temporary.
+            // 0243 With an unsigned index MSC keeps the count in one more temporary (bp-1Ch),
+            // as the original; the (int) cast makes it an end-pointer loop (cmp si,dx) and !=
+            // gives the je for an empty party.
             for (local_14 = 0; local_14 != (int)D_585b; local_14++)
             {
                 // 025a
