@@ -77,6 +77,13 @@ u8 D_51fc[8] = {0x28, 0x30, 0x30, 0x28, 0x28, 0x30, 0x28, 0x30};
 u8 D_5204[8] = {0x05, 0x07, 0x04, 0x0a, 0x08, 0x00, 0x05, 0x06};
 
 // CHECKED
+// NOT MATCHING (SIZE 698/674, 544 bytes): the first inner loop differs from its start. The
+// original keeps local_4_ab, local_a, local_10_ad_am and param_2 in SI, DI, CX and DX
+// (stored when the loop ends), rereads param_2[i] through "mov bx,cx; add bx,dx" at every
+// test, compares the characters unsigned ("ja"/"jbe": byte, not char) and places the
+// "{"/"_"/glyph branch at the loop's top, the "<= 0x20" branch after the merged test. Ours
+// registers nothing there and keeps param_2[i] in a stack temporary (as in CMDS_12c8).
+// Tried: param_2 read as (byte*) everywhere (536 bytes, same shape).
 // param_1: image, param_2: text
 void FONT_0000(byte* param_1, char* param_2)
 {
