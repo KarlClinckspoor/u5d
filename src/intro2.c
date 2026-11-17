@@ -15,13 +15,15 @@
 
 #include "time/time.h"
 
-// INTRO.OVL's MSC 5.1 code is two objects: intro.c (INTRO_0010-INTRO_094e) and this one,
-// from INTRO_0986_Main. Compiled after the first part's functions, INTRO_0986 loses
+// INTRO.OVL's MSC 5.1 code is three objects: intro0.c (INTRO_0010, INTRO_0050), intro.c
+// (INTRO_014e-INTRO_094e) and this one, from INTRO_0986_Main. Compiled after the first part's functions, INTRO_0986 loses
 // optimizations (local_c is not kept in DI); compiled as its own object it is exact.
 
-// defined in intro.c
+// defined in intro0.c
 void INTRO_0010(void);
 int INTRO_0050_LordBritishAnim(int param_1, int param_2);
+
+// defined in intro.c
 void INTRO_014e_Introduction(void);
 void INTRO_05b0_DisplayTitle(int param_1);
 void INTRO_06bc_BuildMainMenu(int param_1);

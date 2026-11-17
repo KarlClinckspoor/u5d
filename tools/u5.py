@@ -86,8 +86,10 @@ MODULES['ultima.c'] = ('root', None)
 MODULES.update({n + '.c': ('root', None) for n in ('r0d72', 'r1850', 'r1b38', 'r1dda', 'r1fa0', 'r216c',
                                                    'r2320', 'r251e')})
 MODULES['vars.c'] = ('data', None)
-# INTRO.OVL's MSC 5.1 code is two objects: intro.c (to INTRO_094e) and intro2.c (from
-# INTRO_0986_Main), linked in that order before introb.c (docs/MATCHING.md).
+# INTRO.OVL's MSC 5.1 code is three objects: intro0.c (INTRO_0010, INTRO_0050), intro.c (to
+# INTRO_094e) and intro2.c (from INTRO_0986_Main), linked in that order before introb.c
+# (docs/MATCHING.md).
+MODULES['intro0.c'] = ('ovl', 'INTRO')
 MODULES['intro2.c'] = ('ovl', 'INTRO')
 # Likewise CMDS.OVL: cmds.c (to CMDS_1030), cmds2.c (from CMDS_1202), cmdsb.c.
 MODULES['cmds2.c'] = ('ovl', 'CMDS')

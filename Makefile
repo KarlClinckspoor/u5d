@@ -10,6 +10,7 @@ OBJS += \
 	src/mainoutb.o \
 	src/dungeon.o \
 	src/dungeonb.o \
+	src/intro0.o \
 	src/intro.o \
 	src/intro2.o \
 	src/introb.o \
