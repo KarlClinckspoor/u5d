@@ -80,6 +80,111 @@ u8 D_5204[8] = {0x05, 0x07, 0x04, 0x0a, 0x08, 0x00, 0x05, 0x06};
 // (tools/match.py src/font.c --dis FONT_0000).
 void FONT_0000(byte* param_1, byte* param_2)
 {
+    int local_12;
+    int local_10_aa;
+    int local_e_am;
+    int local_c;
+    int local_a;
+    int local_8;
+    int local_6;
+    int local_4_aa;
+
+    ULTIMA_0c22_GRAP_0f_SelectPage(1);
+    local_12 = (int)D_5158 > (int)D_5150 && (int)D_5158 < (int)D_5152;
+    local_c = D_514c[local_12] - D_5146[local_12];
+    local_e_am = local_6 = 0;
+    local_4_aa = D_5156 - D_5146[local_12];
+
+    while (param_2[local_e_am] != 0)
+    {
+        local_a = 0;
+        for (local_10_aa = local_e_am; param_2[local_10_aa] != 0 && local_4_aa < local_c && param_2[local_10_aa] != '\n'; local_10_aa++)
+        {
+            if (param_2[local_10_aa] <= ' ')
+            {
+                local_4_aa += D_5154;
+                local_a++;
+            }
+            else if (param_2[local_10_aa] == '{')
+            {
+                local_4_aa += 0xf;
+            }
+            else if (param_2[local_10_aa] != '_')
+            {
+                local_4_aa += D_50ea[param_2[local_10_aa] - 0x20] + 1;
+            }
+        }
+
+        while ((param_2[local_10_aa] != 0 || local_4_aa >= local_c) && param_2[local_10_aa] != '\n')
+        {
+            local_10_aa--;
+            if (local_10_aa <= local_e_am)
+            {
+                break;
+            }
+            if (param_2[local_10_aa] == ' ')
+            {
+                local_4_aa -= D_5154;
+                local_a--;
+                break;
+            }
+            if (param_2[local_10_aa] == '_' && (uint)(D_50f7 + local_4_aa + 1) < local_c)
+            {
+                local_4_aa += D_50f7 + 1;
+                break;
+            }
+            if (param_2[local_10_aa] != '_' && param_2[local_10_aa] != '{')
+            {
+                local_4_aa -= D_50ea[param_2[local_10_aa] - 0x20] + 1;
+            }
+        }
+
+        local_8 = local_c - local_4_aa;
+        local_6 = local_10_aa;
+
+        for (local_10_aa = local_e_am; local_10_aa < local_6; local_10_aa++)
+        {
+            if (param_2[local_10_aa] <= ' ')
+            {
+                D_5156 += D_5154;
+                if (local_a != 0 && param_2[local_6] != 0 && param_2[local_6] != '\n')
+                {
+                    D_5156 += local_8 / local_a;
+                    local_8 -= local_8 / local_a;
+                    local_a--;
+                }
+            }
+            else if (param_2[local_10_aa] == '{')
+            {
+                D_5156 += 0xf;
+            }
+            else if (param_2[local_10_aa] != '_')
+            {
+                if ((int)D_5158 < 0xc0)
+                {
+                    ULTIMA_1044_GRAP_4e_CopyBitImageIntoPage(param_1, param_2[local_10_aa] - 0x20, D_5156, D_5158);
+                }
+                D_5156 += D_50ea[param_2[local_10_aa] - 0x20] + 1;
+            }
+        }
+
+        local_e_am = local_6;
+        if (param_2[local_e_am] != 0)
+        {
+            if (param_2[local_e_am] == '_' && (int)D_5158 < 0xc0)
+            {
+                ULTIMA_1044_GRAP_4e_CopyBitImageIntoPage(param_1, 0xd, D_5156, D_5158);
+            }
+            local_4_aa = 0;
+            D_5158 += 9;
+            local_12 = (int)D_5158 > (int)D_5150 && (int)D_5158 < (int)D_5152;
+            D_5156 = D_5146[local_12];
+            local_c = D_514c[local_12] - D_5156;
+            local_e_am++;
+        }
+    }
+
+    ULTIMA_0c22_GRAP_0f_SelectPage(0);
 }
 
 static void FONT_02a2(int param_1, int param_2)
@@ -216,7 +321,7 @@ void FONT_0e7b(void);
 // Case 0xb's loop is a while: as a for (same code), MSC frees its temporaries (bp-20h,
 // bp-22h) and case 0xc's pointer walk reuses them, giving a frame of 22h instead of the
 // original's 28h (0xc at bp-24h..28h, the middle one in memory). The source steps
-// local_12/local_14 with += in case 0xb (the decompiler's local_10 * 9 / * 3 gave MSC's
+// local_12/local_14 with += in case 0xb (the decompiler's local_10_aa * 9 / * 3 gave MSC's
 // closed form instead); += in a for header moves the counter's increment first.
 // "view"
 void FONT_04a4(void)
