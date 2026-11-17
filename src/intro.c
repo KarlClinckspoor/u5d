@@ -221,6 +221,17 @@ u8 D_30f0[0x15] =
 
 // CHECKED
 // introduction
+// NOT MATCHING (2 bytes short): the original optimizes the do-while that reloads local_6
+// inside the for loop (&D_25ea[local_8 + 0x12] hoisted into DI, local_6 in SI, stored
+// after the loop, one temporary: frame 0Ch); here that loop is not optimized (frame 10h).
+// It is pass 2's capacity again (see intro2.c): with INTRO_0010 and INTRO_0050 removed
+// from this file the loop comes out as in the original (752 bytes, 9 bytes differ). What
+// is left then: the frame is 12h, because the three register variables in inner blocks
+// take stack slots, and the index of D_2f98/D_2fc2 at 00f0 goes to DI instead of SI. In
+// that setting, the blocks without register (plain expressions) or the register variables
+// at function level are worse (758-768 bytes). INTRO_0010/0050 use no strings, so an
+// object of their own before this one would leave _DATA as it is (it starts at DS:2f30
+// with this function's first string).
 void INTRO_014e_Introduction(void)
 {
     byte* local_c;
