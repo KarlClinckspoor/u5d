@@ -336,32 +336,15 @@ void ZSTATS_05e2(int param_1, byte* param_2, char** param_3, uint param_4)
 #if defined(TARGET_DOS16)
 #pragma loop_opt(off)
 #endif
-// NOT MATCHING: slots and code match up to the END case's loop. The original compiles it with
-// the test at the bottom ("cmp ax,0FFFFh; jne body", then the break), so the while test block
-// is placed after END; MSC here ends that loop with "inc ax; je exit; jmp body" and places the
-// while test after HOME instead, which shifts every jump to it. Tried: the loop as for with
-// break, while, an empty for with "local_6 = local_c, local_a++" as the increment (the body
-// then matches but the test still jumps out), "(local_c = f(), local_c != -1)" and
-// "!= 0xffff" (cmp instead of inc, same placement), goto loops, a do-while entered by goto,
-// no pragma, and "#pragma loop_opt(on)" around the END case (SI/DI register variables, which
-// the original has nowhere in the function).
-// The END loop's own code comes out as the original's (CODE 692/690 bytes, 212 differing)
-// written as a do-while entered at its test:
-//     local_a = 0; goto L_end_test;
-//     do { local_6 = local_c; local_a++; L_end_test:; }
-//     while (local_a < 6 && (local_c = ZSTATS_056c(...)) != 0xffff);
-// (with "!= -1" it is "inc ax; je"). Its exit then falls into the break's jmp as in the
-// original, but MSC still moves the floating while-test block (test, window setup, jump into
-// the listing loop) behind HOME's break, the first unconditional jump to it, where the
-// original has it behind END's. Moving END before HOME in the source moves the block behind
-// END, so the choice is "first jump in code order". Not changed by: HOME's or END's break as
-// continue, HOME as "goto" to a label on END's break, the while as for(;!local_8;), as
-// "while (local_8 == 0)" or as an if/goto loop. The file keeps the version that is 690 long.
-// Batch 2: the optimizer-capacity test rules out an object boundary: without the pragma, 600
-// extra extern references before it give exactly the pragma-off code (234 bytes differ), and
-// fewer references give SI/DI loops. With the do-while END: HOME, UP and DOWN ending in "goto"
-// to a label on END's break, or in continue, change nothing (212); END as a plain while with
-// != 0xffff is 686 bytes (239).
+// CHECKED: the selection loop is written with gotos. The original places the loop test
+// (with the window setup that starts the next pass) right after the END case, which falls
+// into it, and the return after the switch's dispatch. A while loop's test block floats
+// behind the first case break that jumps to it (HOME's); with the test written inside the
+// switch after END, followed by the window setup and "goto L_list" (the for's init block then
+// floats in behind that jump), every case ends in "goto L_test" and the exit is a separate
+// label after the switch, the layout is the original's. "break" to a return after the switch
+// instead of "goto L_exit" lets the return block float up behind the test (107 bytes). The END
+// loop is a do-while entered at its test, with != 0xffff for the original's "cmp ax,0FFFFh".
 static int ZSTATS_06e8(char* param_1, int param_2, byte* param_3, char** param_4)
 {
     int local_10_aa;
@@ -386,12 +369,10 @@ static int ZSTATS_06e8(char* param_1, int param_2, byte* param_3, char** param_4
         return ULTIMA_266c_GetChar();
     }
 
-    // 092d
-    while (!local_8)
+    // 092d: enter the loop at its test, which sits after the END case
+    goto L_test;
     {
-        ULTIMA_1b94_SelectTextWindow(1);
-        ULTIMA_1bf2_SetTextPosition(1, 1);
-
+    L_list:
         // -> 0756
         for (local_c = local_6; local_c != -1;
              // 0746
@@ -464,7 +445,7 @@ static int ZSTATS_06e8(char* param_1, int param_2, byte* param_3, char** param_4
                     local_6 = ZSTATS_056c(local_6, param_2, param_3, 0xff);
                 }
             }
-            break;
+            goto L_test;
 
         case U5_KEY_DOWN:
         case U5_KEY_PGDN:
@@ -486,22 +467,31 @@ static int ZSTATS_06e8(char* param_1, int param_2, byte* param_3, char** param_4
                     local_c = ZSTATS_05a4(local_c, param_2, param_3, 0xff);
                 }
             }
-            break; // -> 092d
+            goto L_test;
 
         case U5_KEY_HOME:
             // 08d6
             local_6 = ZSTATS_05a4(-1, param_2, param_3, 0xff);
-            break; // -> 092d
+            goto L_test;
 
         case U5_KEY_END:
             // 08ec
             local_6 = ZSTATS_056c(param_2, param_2, param_3, 0xff);
             // 090f
-            for (local_a = 0; local_a < 6 && (local_c = ZSTATS_056c(local_6, param_2, param_3, 0xff)) != -1; local_a++)
+            local_a = 0;
+            goto L_end_test;
+            do
             {
                 local_6 = local_c;
-            }
-            break; // -> 092d
+                local_a++;
+            L_end_test:;
+            } while (local_a < 6 && (local_c = ZSTATS_056c(local_6, param_2, param_3, 0xff)) != 0xffff);
+        L_test:
+            if (local_8)
+                goto L_exit;
+            ULTIMA_1b94_SelectTextWindow(1);
+            ULTIMA_1bf2_SetTextPosition(1, 1);
+            goto L_list;
 
         case U5_KEY_LEFT:
         case U5_KEY_RIGHT:
@@ -516,10 +506,13 @@ static int ZSTATS_06e8(char* param_1, int param_2, byte* param_3, char** param_4
         case 0x36:
             // 0948
             local_8 = 1;
-            break;
+            goto L_test;
+        default:
+            goto L_test;
         }
     }
 
+L_exit:
     return local_e_am;
 }
 
@@ -737,21 +730,24 @@ static int ZSTATS_0c0a(int param_1)
 // equip item
 // param_1: whom
 // param_2: item id
-// NOT MATCHING: block order and tail merging. The original keeps the ammunition message's
-// "ZSTATS_0bee(); return 0;" and every other message jumps into it. It places the
-// "not strong enough" block last, after the switch cases, and the success code right
-// after the strength test. The strength test comes first in the source: its string
-// precedes "Ring vanishes!" in CONST, which is what makes ZSTATS' CONST (and DGROUP) match.
-// The ring test read D_57c0[param_2] instead of param_2 ("cmp bx,2Ah" after the dec): fixed,
-// 710 -> 706 bytes (original 722). Layout: the code after the switch goes to case 0x80's
-// break (its first) up to the first jump. In the original that chain is test, store, ring
-// (the test jumps far to the weak block, placed after case 2 just before the "!= 0x2a"
-// tail); ours is test, weak. Tried: if/else around the weak block (no change), "if (e != 0)
-// goto L_ok" (724 bytes), the weak block as a label inside the switch after case 2 with
-// "if (local_e_g == 0) goto L_weak" (identical code: MSC still puts it after the test).
-// Batch 2: the rest of the function (from the ammunition test) as the else of that test, or
-// the 0518 test as "else if" after the heated-battle block: still the heated-battle copy is
-// kept (no change).
+// NOT MATCHING (35 bytes, same length): only the "not strong enough" block is misplaced;
+// the original has it after case 2, before the "== 0x2a" tail, ours after the tail.
+// Tail merging: every message jumps into the ammunition copy only when the ammunition
+// message is an "else if" branch (after the 0518 block) that falls through to the final
+// "return 0", with the rest of the function in the last else; a "return 0" inside it, or
+// inside the rest's last branch, gives the heated-battle copy back (529 bytes).
+// Layout: "if (local_e_g != 0) { store, ring } else ..." makes the code after the switch
+// test, store, ring as the original (it goes to case 0x80's break). The tail after the
+// if/else is then pulled in behind the jump over the else: with "if (x != 0x2a) return 0;"
+// its head lands before the weak block (49 bytes), written as one "if (== 0x2a && map >
+// 0x7f)" (here) or inside the then-branch all of it does (35). The weak block follows the
+// first jump to it: inline after the test with "if (local_e_g == 0) goto L_weak" (310),
+// behind the else's "goto L_weak" here. Its string must precede "Ring vanishes!" in the
+// source for CONST to match (hence the label in the switch; as the else itself, after the
+// ring code, it gives the same code but CONST differs). Also tried: the ring test as
+// "if (!...) goto L_tail" (the tail then follows the ring test and the vanish block floats
+// away), a dead "goto L_weak" after "return 1", the tail as the ring test's else, the weak
+// else without its return.
 static int ZSTATS_0c5c_EquipItem(int param_1, int param_2)
 {
     byte* local_10_l;
@@ -780,7 +776,6 @@ static int ZSTATS_0c5c_EquipItem(int param_1, int param_2)
     // ee74
     if (param_2 >= 9 && param_2 <= 0xf && D_5893_map_id > 0x7f && D_58a3 == 0)
     {
-        // NOT MATCHING
         ZSTATS_0bee(_TEXT(0x97e2, "Thou canst not change armour in heated battle!"));
         return 0;
     }
@@ -807,14 +802,13 @@ static int ZSTATS_0c5c_EquipItem(int param_1, int param_2)
         local_6_b->_0_tile = local_6_b->_1_animTile = D_1ade[local_8];
         return 0;
     }
-
-    if (((param_2 == 0x1a || param_2 == 0x24) && D_57db == 0) || (param_2 == 0x1c && D_57dd == 0))
+    else if (((param_2 == 0x1a || param_2 == 0x24) && D_57db == 0) || (param_2 == 0x1c && D_57dd == 0))
     {
-        // NOT MATCHING
+        // falls through to the final return: the copy all other messages jump into
         ZSTATS_0bee(_TEXT(0x981c, "Thou hast no ammunition for that weapon!"));
-        return 0;
     }
-
+    else
+    {
     // ef16
     local_4_c = 0;
     local_10_l = &D_55a8_party[param_1].equips[0];
@@ -908,57 +902,41 @@ static int ZSTATS_0c5c_EquipItem(int param_1, int param_2)
         // f0d2..efc6
         local_10_l = &D_55a8_party[param_1].equips[4];
         break;
-    }
 
-    // efc9
-    if (local_e_g == 0)
-    {
-        // f0e0
+    L_weak: // reached from the strength test's else below
         ZSTATS_0bee(_TEXT(0x9942, "Thou art not strong enough!"));
         return 0;
     }
 
-    // efd2
-    *local_10_l = param_2;
-    --D_57c0[param_2];
-    if ((param_2 == 0x2a || param_2 == 0x2c) && (ULTIMA_2092_RandomRange(0, 0xf) == 0))
+    if (local_e_g != 0)
     {
-        // efff
-        ULTIMA_1850_PrintString(_TEXT(0x995e, "\n\nRing vanishes!\n"));
-        D_55a8_party[param_1].equips[4] = 0xff;
-        ULTIMA_43ae_AudioSweepTone(0x4b0, 2000, 1, 0x28);
-        return 1;
+        *local_10_l = param_2;
+        --D_57c0[param_2];
+        if ((param_2 == 0x2a || param_2 == 0x2c) && (ULTIMA_2092_RandomRange(0, 0xf) == 0))
+        {
+            ULTIMA_1850_PrintString(_TEXT(0x995e, "\n\nRing vanishes!\n"));
+            D_55a8_party[param_1].equips[4] = 0xff;
+            ULTIMA_43ae_AudioSweepTone(0x4b0, 2000, 1, 0x28);
+            return 1;
+        }
+    }
+    else
+    {
+        goto L_weak;
     }
 
-    // f0e6
-    if (param_2 != 0x2a)
+    if (param_2 == 0x2a && D_5893_map_id > 0x7f)
     {
-        // ee6e
-        return 0;
+        local_6_b->_0_tile = local_6_b->_1_animTile = TILE_ACTOR_1D;
     }
-
-    // f0ef
-    if (D_5893_map_id <= 0x7f)
-    {
-        // ee6e
-        return 0;
     }
-
-    // f0f9
-    // eee8
-    local_6_b->_0_tile = local_6_b->_1_animTile = TILE_ACTOR_1D;
-
-    // ee6e
     return 0;
 }
 
-// NOT MATCHING (checked): only the frame, sub sp,1Ch in the original. Its two page loops (UP,
-// DOWN) keep their trip counts in two temporaries (bp-1Ah, bp-1Ch); ours share bp-1Ah. Not
-// changed by: local_6 > local_e_a, ++local_e_a, += 1, (int)local_6 or local_6 + 0 in either loop.
+// CHECKED: the two page loops (UP, DOWN) keep their trip counts in two temporaries
+// (bp-1Ah, bp-1Ch) only when the DOWN loop sits in a block that declares a local.
 // The listing loop is a for whose increment shares its store with the init, the 0518 test
-// reads "!= 0" first, and HOME/END come before ENTER/ESC: 698 -> 3 bytes.
-// Also no change: the DOWN case's body in braces; (uint)local_e_a, a ternary for local_6, uint
-// local_6 or a while loop are far worse.
+// reads "!= 0" first, and HOME/END come before ENTER/ESC.
 // select item: used in use, ready
 int ZSTATS_0f2e(int param_1, int param_2, int param_3)
 {
@@ -1144,31 +1122,37 @@ int ZSTATS_0f2e(int param_1, int param_2, int param_3)
             else
                 local_6 = 1;
 
-            for (local_e_a = 0; local_e_a < local_6; local_e_a++)
+            // A block with a declaration gives this loop its own trip-count temporary
+            // (bp-1Ch); without it both page loops share bp-1Ah. The local is unused.
             {
-                if (local_10_ad == 4 || local_10_ad == 7 || local_10_ad >= local_4_ab)
+                int local_x;
+
+                for (local_e_a = 0; local_e_a < local_6; local_e_a++)
                 {
-                    // 116f
-                    if (local_12_ab != -1 && ZSTATS_05a4(local_12_ab, local_a_ae, local_14_ap, param_2) != -1)
+                    if (local_10_ad == 4 || local_10_ad == 7 || local_10_ad >= local_4_ab)
                     {
-                        param_1 = ZSTATS_05a4(param_1, local_a_ae, local_14_ap, param_2);
-                        local_12_ab = ZSTATS_05a4(local_12_ab, local_a_ae, local_14_ap, param_2);
+                        // 116f
+                        if (local_12_ab != -1 && ZSTATS_05a4(local_12_ab, local_a_ae, local_14_ap, param_2) != -1)
+                        {
+                            param_1 = ZSTATS_05a4(param_1, local_a_ae, local_14_ap, param_2);
+                            local_12_ab = ZSTATS_05a4(local_12_ab, local_a_ae, local_14_ap, param_2);
+                        }
+                        else
+                        {
+                            // 11a8
+                            if (local_10_ad == 4 && local_4_ab > 4)
+                            {
+                                local_10_ad++;
+                            }
+                        }
                     }
                     else
                     {
-                        // 11a8
-                        if (local_10_ad == 4 && local_4_ab > 4)
-                        {
-                            local_10_ad++;
-                        }
+                        // 11b3
+                        local_10_ad++;
                     }
+                    // 11b4
                 }
-                else
-                {
-                    // 11b3
-                    local_10_ad++;
-                }
-                // 11b4
             }
             break;
 
