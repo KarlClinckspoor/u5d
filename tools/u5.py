@@ -105,7 +105,7 @@ COMPILER_BY_FILE = {f: 'msc50' for f in (
 # Overlays built from two objects: NAME.c (MSC 5.1) and NAMEb.c (MSC 5.0), linked in that
 # order. The 5.0 part holds the functions that use CONST strings; its _DATA follows the 5.1
 # part's in DGROUP (docs/MATCHING.md, "Overlays of two objects").
-for _o in ('DUNGEON', 'MAINOUT', 'INTRO', 'OUTSUBS', 'CMDS'):
+for _o in ('DUNGEON', 'MAINOUT', 'INTRO', 'OUTSUBS', 'CMDS', 'CAST'):
     MODULES[_o.lower() + 'b.c'] = ('ovl', _o)
     COMPILER_BY_FILE[_o.lower() + 'b.c'] = 'msc50'
 

@@ -35,6 +35,7 @@ set(SOURCES
 	src/cmds2.c
 	src/cmdsb.c
 	src/cast.c
+	src/castb.c
 	src/talk.c
 	src/cast2.c
 	src/zstats.c

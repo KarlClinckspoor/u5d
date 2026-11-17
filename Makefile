@@ -28,6 +28,7 @@ OBJS += \
 	src/cmds2.o \
 	src/cmdsb.o \
 	src/cast.o \
+	src/castb.o \
 	src/talk.o \
 	src/cast2.o \
 	src/zstats.o \

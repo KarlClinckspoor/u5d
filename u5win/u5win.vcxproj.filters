@@ -92,6 +92,9 @@
     <ClCompile Include="..\src\cast.c">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\castb.c">
+      <Filter>src</Filter>
+    </ClCompile>
     <ClCompile Include="..\src\cast2.c">
       <Filter>src</Filter>
     </ClCompile>

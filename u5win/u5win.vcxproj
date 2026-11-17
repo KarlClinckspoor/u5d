@@ -257,6 +257,7 @@
     <ClCompile Include="..\src\backend\backend.c" />
     <ClCompile Include="..\src\blckthrn.c" />
     <ClCompile Include="..\src\cast.c" />
+    <ClCompile Include="..\src\castb.c" />
     <ClCompile Include="..\src\cast2.c" />
     <ClCompile Include="..\src\cmds.c" />
     <ClCompile Include="..\src\cmds2.c" />
