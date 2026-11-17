@@ -159,13 +159,14 @@ static void DUNGEON_111e(int param_1)
     }
 }
 
-// CHECKED (optimization)
+// CHECKED (static tables)
 static void DUNGEON_127e(int param_1, int param_2)
 {
     static s16 D_2e42[4] = {0x0010, 0x0038, 0x0050, 0x005c};
     static s16 D_2e4a[4] = {0x00a7, 0x0087, 0x006f, 0x0063};
     static s16 D_2e52[4] = {0x012c, 0x0064, 0x0032, 0x000f};
     static s16 D_2e5a[4] = {0x0007, 0x0007, 0x0005, 0x0002};
+    int local_a;
     int local_8;
     int local_6;
     int local_4_ab;
@@ -193,17 +194,13 @@ static void DUNGEON_127e(int param_1, int param_2)
         break;
     }
 
-    // 12be NOT MATCHING: the original hoists D_2e52/5a/4a/42[param_1] and 4a - 5a out of
-    // the loop (temporaries at bp-0c..-14, the count in DI, counted down) although the loop
-    // makes calls, and keeps the second RandomRange result in a local at bp-8. Making the
-    // four tables really const (#undef const) gives that loop almost byte for byte, but
-    // puts the tables in CONST, where the original's are in _DATA. MSC 5.0 rejects an
-    // extern const declaration before a plain definition (C2086), and a const-qualified
-    // cast on the reads changes nothing.
+    // 12be: the four tables are static locals, so MSC hoists their values out of the loop
+    // although it makes calls (temporaries at bp-0c..-14, the count in DI, counted down).
     for (local_8 = 0; local_8 < D_2e52[param_1]; local_8++)
     {
         local_6 = ULTIMA_2092_RandomRange(D_2e42[param_1], D_2e4a[param_1] - D_2e5a[param_1]);
-        ULTIMA_0c9c_GRAP_39_HorizLine(local_6, ULTIMA_2092_RandomRange(D_2e42[param_1], D_2e4a[param_1]), D_2e5a[param_1] + local_6);
+        local_a = ULTIMA_2092_RandomRange(D_2e42[param_1], D_2e4a[param_1]);
+        ULTIMA_0c9c_GRAP_39_HorizLine(local_6, local_a, D_2e5a[param_1] + local_6);
     }
 
     D_52c4 = local_4_ab;
