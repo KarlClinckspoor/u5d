@@ -98,6 +98,9 @@
     <ClCompile Include="..\src\cmds.c">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\cmds2.c">
+      <Filter>src</Filter>
+    </ClCompile>
     <ClCompile Include="..\src\cmdsb.c">
       <Filter>src</Filter>
     </ClCompile>
@@ -126,6 +129,9 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\intro.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\intro2.c">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\introb.c">

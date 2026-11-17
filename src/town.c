@@ -1032,7 +1032,10 @@ static void TOWN_0f02(void)
             // exactly that loop, but it also turns off the loop at 0103 (in the same if/else
             // chain), even with loop_opt(on) right after this loop or with the outer do-while
             // written as a goto. A label in the body, continue for each test, or the loop as
-            // a goto: no change or worse.
+            // a goto: no change or worse. Elsewhere, functions late in a module lose loop
+            // optimization to the earlier functions (CAST_1c36, cmds2.c); the reverse does
+            // not help here: up to 20 extra extern references in a function placed just
+            // before TOWN_0f02 change nothing.
             // for (105d; 1067; 1064)
             for (local_6 = 0; local_6 < D_585b; local_6++)
             {

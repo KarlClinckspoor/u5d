@@ -18,6 +18,7 @@ set(SOURCES
 	src/dungeon.c
 	src/dungeonb.c
 	src/intro.c
+	src/intro2.c
 	src/introb.c
 	src/npc.c
 	src/combat.c
@@ -30,6 +31,7 @@ set(SOURCES
 	src/endgame.c
 	src/sjog.c
 	src/cmds.c
+	src/cmds2.c
 	src/cmdsb.c
 	src/cast.c
 	src/talk.c

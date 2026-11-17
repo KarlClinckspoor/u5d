@@ -1925,6 +1925,21 @@ static int CAST_1bb0(int x, int y, int penColor)
 }
 
 // CHECKED
+// NOT MATCHING (182 bytes short): the original strength-reduces all four loops (frame BEh:
+// pointer temporaries for every local_8c/local_5a/local_30_ac/D_a9d0[local_5c] in the
+// inner loops, 2*local_90_ad carried through the do-while and the outer for, "local_90_ad
+// < 0x3f" replaced by a compare of a param_2 pointer with param_2+7Eh, local_8e in SI).
+// Here only the first loop is optimized (frame 9Ah): the module's earlier functions use up
+// pass 2's capacity (see intro2.c, cmds2.c). With the functions before CAST_1bb0 removed
+// (or this function alone in a file with minimal declarations) the inner loop is optimized
+// (frame B6h, 774 bytes) but not yet the outer for/do-while; removing the first or second
+// inner switch, or the "else if" block, then also gives the outer loop's pointers. Still
+// different even then: the first loop ends with a down-counter in CX ([bp-9Ah] = 15h)
+// where the original compares SI with an end pointer (lea ax,[bp-2Eh]), and SI/DI are
+// swapped. Tried without effect: all 24 orders of the first loop's statements, /On and
+// other /O letters, unsigned local_90_ad, the CAST_1bb0 test inverted (if != 0 ... else
+// local_8c = 1), D_a9d0 as s16 without the cast, a 2D viewport array, 736K or 400K of DOS
+// memory, and the OS/2 C2.EXE bound for DOS (same code: the limit is not DOS memory).
 static int CAST_1c36(s16* param_1, s16* param_2, int param_3, int param_4, int param_5)
 {
     int local_90_ad;
@@ -2095,6 +2110,16 @@ static int CAST_1c36(s16* param_1, s16* param_2, int param_3, int param_4, int p
 }
 
 // CHECKED
+// NOT MATCHING (36 bytes short): the original optimizes both loops (local_108a in SI,
+// param_1 in DI, the target arrays walked by a pointer from &local_82l[1] against an end
+// pointer at [bp-116h], frame 11Ah); here neither loop is optimized (frame 10Eh), because
+// the earlier functions of the module use up pass 2's capacity (see CAST_1c36). With the
+// functions before CAST_1bb0 removed the loops are optimized (508 bytes, frame 118h), but
+// the outer loop counts with local_10eg-1 instead of the end pointer, and the first switch
+// is laid out differently: the original has "cmp 1; je case1; cmp 2; jne default; jmp
+// case2", case 1 falling into the call and case 2 placed far away, after the second
+// switch's dispatch. In that setting: switch orders (case 2, default, case 1) and (case 1,
+// case 2, default) give 500 bytes, an if/else chain 494; none gives that layout.
 static void CAST_1f60(int param_1, int param_2, int param_3)
 {
     S_55a8* local_104c;

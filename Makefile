@@ -11,6 +11,7 @@ OBJS += \
 	src/dungeon.o \
 	src/dungeonb.o \
 	src/intro.o \
+	src/intro2.o \
 	src/introb.o \
 	src/npc.o \
 	src/combat.o \
@@ -23,6 +24,7 @@ OBJS += \
 	src/endgame.o \
 	src/sjog.o \
 	src/cmds.o \
+	src/cmds2.o \
 	src/cmdsb.o \
 	src/cast.o \
 	src/talk.o \

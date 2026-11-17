@@ -452,6 +452,11 @@ static void MAINOUT_16fc(int param_1)
 }
 
 // CHECKED
+// NOT MATCHING (6 bytes short): the original stores the constants to param_2 through AX
+// ("mov ax,1; mov [bp+4],ax", "sub ax,ax; mov [bp+4],ax") where we store immediates, and
+// places the "else if (local_a > 0) param_2 = 0;" blocks (and local_e_am's) out of line,
+// after the next test's first block, jumping back. param_2 declared volatile, unsigned or
+// char changes nothing (char: 2 more bytes differ).
 static void MAINOUT_17d4(int param_1, int param_2)
 {
     int local_e_am;
