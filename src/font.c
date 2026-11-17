@@ -530,11 +530,11 @@ void FONT_04a4(void)
                 {
                     return;
                 }
-                local_12 = local_10_aa * 9;
-                local_14_am = local_10_aa * 3;
                 ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
                 ULTIMA_0b10_GRAP_Line(local_12 + 0x80, local_14_am + 0x98, local_12 + 0x89, local_14_am + 0x9b);
                 ULTIMA_0b10_GRAP_Line(local_12 + 0x80, local_14_am + 0x99, local_12 + 0x89, local_14_am + 0x9c);
+                local_12 += 9;
+                local_14_am += 3;
             }
 
             local_e_am++;
