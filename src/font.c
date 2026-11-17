@@ -119,20 +119,15 @@ void FONT_0000(byte* param_1, byte* param_2)
             }
         }
 
-        while ((param_2[local_10_aa] != 0 || local_4_aa >= local_c) && param_2[local_10_aa] != '\n')
+        while ((param_2[local_10_aa] != 0 || local_4_aa >= local_c) && param_2[local_10_aa] != '\n' && local_e_am < --local_10_aa)
         {
-            local_10_aa--;
-            if (local_e_am >= local_10_aa)
-            {
-                break;
-            }
             if (param_2[local_10_aa] == ' ')
             {
                 local_4_aa -= D_5154;
                 local_a--;
                 break;
             }
-            if (param_2[local_10_aa] == '_' && (uint)(D_50f7 + local_4_aa + 1) < local_c)
+            if (param_2[local_10_aa] == '_' && (uint)(local_4_aa + D_50f7 + 1) < local_c)
             {
                 local_4_aa += D_50f7 + 1;
                 break;
@@ -146,7 +141,9 @@ void FONT_0000(byte* param_1, byte* param_2)
         local_8 = local_c - local_4_aa;
         local_6 = local_10_aa;
 
-        for (local_10_aa = local_e_am; local_10_aa < local_6; local_10_aa++)
+        local_10_aa = local_e_am;
+        if (local_10_aa < local_6)
+        do
         {
             if (param_2[local_10_aa] <= ' ')
             {
@@ -170,10 +167,10 @@ void FONT_0000(byte* param_1, byte* param_2)
                 }
                 D_5156 += D_50ea[param_2[local_10_aa] - 0x20] + 1;
             }
-        }
+        } while (local_6 != ++local_10_aa);
 
         local_e_am = local_6;
-        if (param_2[local_e_am] != 0)
+        if (param_2[local_6] != 0)
         {
             if (param_2[local_e_am] == '_' && (int)D_5158 < 0xc0)
             {
