@@ -534,84 +534,13 @@ static void DUNGEON_1786(int param_1, int param_2)
     }
 }
 
-// CHECKED
-// NOT MATCHING (CODE, 91 bytes, right length): the original builds each "table + param_3 * 2"
-// in SI itself (mov si,ax; ...; add si,ax: the table byte first at 1991/19be, param_3 * 2 first
-// at 1a32 [D_2f24]); ours computes it in AX with CX and then moves it to SI, and its "mov
-// cl,[2f24]" is a byte longer. Static tables made the CSE across the two calls appear. Tried:
-// the operands swapped (also differently in the two calls), << 1, 2 * p, p + p, (int)/(uint)
-// casts (the (int) cast changes the earlier tests); the sum assigned to local_6_an or local_4
-// (both dead there; stored to the stack, worse); a block-scope int (worse) or register (SI,
-// but p * 2 first and a frame of 8); deleting all the earlier functions (no change, so not
-// the optimizer's capacity).
-// Batch 3: MSC 5.0 builds a common subexpression in SI itself ("mov si,ax; ...; add si,ax")
-// when it is used as an index (FONT_04A4's GetMap(x, y) = GetCopiedMap(x, y), DNGLOOK's and
-// T9's GetDungeonMap); every value CSE in the exact code is built in AX and moved, and ours
-// is the only "add ax,cx; mov si,ax" in them. The original avoids CX as if it were taken.
-// Also tried, all the same code: the two calls as one comma expression (also with the
-// operands swapped); (int)((s16*)T + p), (int)(p + (s16*)T), (int)&((s16*)T)[p];
-// *(T + i); one u8 [2][8] table for both; p + p; (uint)p * 2 (p * 2u: 12 bytes longer). A
-// function-level register r (r = T[i] + p * 2): SI, but "mov si,[bp+4]; shl si,1" first and
-// frame 6; local_6_an declared register: SI for the whole function, 322 bytes.
-// Batch 4: not pass 2's tree pool (see ULTIMA_1850): no position of a cut changes the code
-// (research/c2lines.py, 0-638 line records after the entry), nor does less memory for pass
-// 2 down to 236.75 KB (research/c2mem.py). The original's order is that of "r = T[i]; r +=
-// p * 2" with r in SI (and "r = p * 2; r += T[6]" the third time), but a register variable
-// takes a slot under 5.0 (frame 6). A pointer-typed argument passed without a cast
-// ((s16*)T + p, (char*)T + p * 2, &((s16*)T)[p], &((char*)T)[p * 2]) and (uint)T + p * 2
-// give the same code as now.
+// CLEAN ROOM: write this function from the original's disassembly
+// (tools/match.py src/dungeonb.c --dis DUNGEON_1952).
 static void DUNGEON_1952(int param_1, int param_2, int param_3)
 {
     static u8 D_2f16[8] = {0x00, 0x1f, 0x00, 0x1f, 0x00, 0x00, 0x00, 0x00};
     static u8 D_2f1e[8] = {0x00, 0x00, 0x1f, 0x1f, 0x37, 0x27, 0x2f, 0x3f};
     static u8 D_2f26 = 0;
-    int local_6_an;
-    int local_4;
-
-    local_6_an = DUNGEON_10dc(param_1, param_2);
-    local_4 = local_6_an >> 4;
-    if (local_4 > 0 && local_4 < 8 && (local_4 != 6 || (local_6_an & 7) == 0))
-    {
-        if (D_2f16[local_4] != 0)
-        {
-            DUNGEON_134a(D_2f16[local_4] + param_3 * 2, 1, 0);
-            DUNGEON_134a(D_2f16[local_4] + param_3 * 2, 1, 1);
-        }
-
-        if (D_2f1e[local_4] != 0)
-        {
-            DUNGEON_134a(D_2f1e[local_4] + param_3 * 2, 0, 0);
-            DUNGEON_134a(D_2f1e[local_4] + param_3 * 2, 0, 1);
-        }
-
-        if (local_4 == 5)
-        {
-            DUNGEON_1786(param_3, D_2f26);
-        }
-    }
-    else if (local_4 == 8)
-    {
-        DUNGEON_127e(param_3, local_6_an & 7);
-    }
-
-    // 1a03
-    if (local_4 < 9 && (GetDungeonMap(param_1 & 7, param_2 & 7, D_5895_map_level) & 8) != 0)
-    {
-        // 1a2d
-        DUNGEON_134a(D_2f1e[6] + param_3 * 2, 1, 0);
-        DUNGEON_134a(D_2f1e[6] + param_3 * 2, 1, 1);
-    }
-
-    // 1a4f (OK)
-    if (param_3 != 0 && (param_1 & 7) == D_5c5a[1]._2_x && (param_2 & 7) == D_5c5a[1]._3_y)
-    {
-        DUNGEON_111e(param_3);
-    }
-
-    if (param_3 == 0 && ++D_2f26 > 2)
-    {
-        D_2f26 = 0;
-    }
 }
 
 void DUNGEON_1a90(int param_1)
