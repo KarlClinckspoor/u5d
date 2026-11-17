@@ -932,13 +932,13 @@ int ZSTATS_0f2e(int param_1, int param_2, int param_3)
     int local_1a_ac;
     int local_18_al;
     int local_16_an;
-    byte* local_14; // equipments
+    byte* local_14_ap; // equipments
     int local_12_ab;
     int local_10_ad;
-    int local_e;
-    int local_c;
-    int local_a;
-    int local_8;
+    int local_e_a;
+    int local_c_ac;
+    int local_a_ae;
+    int local_8_an;
     int local_6;
     int local_4_ab;
 
@@ -947,22 +947,22 @@ int ZSTATS_0f2e(int param_1, int param_2, int param_3)
 #endif
 
     // f10e
-    local_8 = 0;
+    local_8_an = 0;
     local_10_ad = 1;
 
     if (param_3 == 0x52)
     {
-        local_14 = D_57c0;
-        local_a = 0x30;
+        local_14_ap = D_57c0;
+        local_a_ae = 0x30;
     }
     else
     {
-        local_14 = D_b9ee;
-        local_a = 0x26;
+        local_14_ap = D_b9ee;
+        local_a_ae = 0x26;
     }
 
     // f142
-    while (local_8 == 0)
+    while (local_8_an == 0)
     {
         ULTIMA_1b94_SelectTextWindow(1);
         ULTIMA_1bf2_SetTextPosition(1, 1);
@@ -989,23 +989,23 @@ int ZSTATS_0f2e(int param_1, int param_2, int param_3)
                 if (ZSTATS_0518(param_2, local_12_ab) == 0)
                 {
                     // f15c
-                    local_c = 0x20;
+                    local_c_ac = 0x20;
                 }
                 else
                 {
                     // f244
-                    local_c = D_1ae8[local_12_ab];
+                    local_c_ac = D_1ae8[local_12_ab];
                 }
 
                 // f161..f17e
                 // Equipments
-                ZSTATS_05e2(local_12_ab, local_14, D_1962, local_c);
+                ZSTATS_05e2(local_12_ab, local_14_ap, D_1962, local_c_ac);
             }
             else
             {
                 // f170..f17e
                 // Scrolls
-                ZSTATS_05e2(local_12_ab, local_14, D_1916, 0x20);
+                ZSTATS_05e2(local_12_ab, local_14_ap, D_1916, 0x20);
             }
 
             // f181
@@ -1023,13 +1023,13 @@ int ZSTATS_0f2e(int param_1, int param_2, int param_3)
             }
 
             // f1fc
-            local_12_ab = ZSTATS_05a4(local_12_ab, local_a, local_14, param_2);
+            local_12_ab = ZSTATS_05a4(local_12_ab, local_a_ae, local_14_ap, param_2);
             // -> f20b
         }
 
         // f1a4
         local_18_al = 0;
-        if (ZSTATS_056c(param_1, local_a, local_14, param_2) != -1)
+        if (ZSTATS_056c(param_1, local_a_ae, local_14_ap, param_2) != -1)
         {
             local_18_al = 2;
         }
@@ -1037,7 +1037,7 @@ int ZSTATS_0f2e(int param_1, int param_2, int param_3)
         // f1c0
         if (local_12_ab != -1)
         {
-            if (ZSTATS_05a4(local_12_ab, local_a, local_14, param_2) != -1)
+            if (ZSTATS_05a4(local_12_ab, local_a_ae, local_14_ap, param_2) != -1)
             {
                 local_18_al++;
             }
@@ -1080,14 +1080,14 @@ int ZSTATS_0f2e(int param_1, int param_2, int param_3)
             else
                 local_6 = 1;
 
-            for (local_e = 0; local_e < local_6; local_e++)
+            for (local_e_a = 0; local_e_a < local_6; local_e_a++)
             {
                 if (local_10_ad == 4 || local_10_ad == 1)
                 {
                     // 10fa
-                    if (ZSTATS_056c(param_1, local_a, local_14, param_2) != -1)
+                    if (ZSTATS_056c(param_1, local_a_ae, local_14_ap, param_2) != -1)
                     {
-                        param_1 = ZSTATS_056c(param_1, local_a, local_14, param_2);
+                        param_1 = ZSTATS_056c(param_1, local_a_ae, local_14_ap, param_2);
                     }
                     else
                     {
@@ -1117,15 +1117,15 @@ int ZSTATS_0f2e(int param_1, int param_2, int param_3)
             else
                 local_6 = 1;
 
-            for (local_e = 0; local_e < local_6; local_e++)
+            for (local_e_a = 0; local_e_a < local_6; local_e_a++)
             {
                 if (local_10_ad == 4 || local_10_ad == 7 || local_10_ad >= local_4_ab)
                 {
                     // 116f
-                    if (local_12_ab != -1 && ZSTATS_05a4(local_12_ab, local_a, local_14, param_2) != -1)
+                    if (local_12_ab != -1 && ZSTATS_05a4(local_12_ab, local_a_ae, local_14_ap, param_2) != -1)
                     {
-                        param_1 = ZSTATS_05a4(param_1, local_a, local_14, param_2);
-                        local_12_ab = ZSTATS_05a4(local_12_ab, local_a, local_14, param_2);
+                        param_1 = ZSTATS_05a4(param_1, local_a_ae, local_14_ap, param_2);
+                        local_12_ab = ZSTATS_05a4(local_12_ab, local_a_ae, local_14_ap, param_2);
                     }
                     else
                     {
@@ -1151,19 +1151,19 @@ int ZSTATS_0f2e(int param_1, int param_2, int param_3)
             // f3fc
             if (param_3 == 0x52)
             {
-                local_8 = ZSTATS_0c5c_EquipItem(param_2, local_1a_ac);
+                local_8_an = ZSTATS_0c5c_EquipItem(param_2, local_1a_ac);
             }
             else
             {
                 // f410
-                local_8 = 1;
+                local_8_an = 1;
             }
             // -> f462
             break;
         case U5_KEY_ESC:
             // 1238
             ULTIMA_1850_PrintString(param_3 == 0x52 ? _TEXT(0x9970, "Done\n") : _TEXT(0x9976, "None!\n"));
-            local_8 = 1;
+            local_8_an = 1;
             local_1a_ac = -1;
 
             // -> f462
@@ -1171,20 +1171,20 @@ int ZSTATS_0f2e(int param_1, int param_2, int param_3)
         case U5_KEY_HOME:
             // 11C0
             // f3a0
-            param_1 = ZSTATS_05a4(-1, local_a, local_14, param_2);
+            param_1 = ZSTATS_05a4(-1, local_a_ae, local_14_ap, param_2);
             local_10_ad = 1;
             // -> f462
             break;
         case U5_KEY_END:
             // f3bc
             // L_11dc
-            param_1 = ZSTATS_056c(local_a, local_a, local_14, param_2);
+            param_1 = ZSTATS_056c(local_a_ae, local_a_ae, local_14_ap, param_2);
 
             for (local_10_ad = 1; local_10_ad < 7; local_10_ad++)
             {
                 // f3d1
                 // L_11f1
-                local_1a_ac = ZSTATS_056c(param_1, local_a, local_14, param_2);
+                local_1a_ac = ZSTATS_056c(param_1, local_a_ae, local_14_ap, param_2);
                 if (local_1a_ac == -1)
                 {
                     // L_1207

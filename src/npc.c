@@ -470,11 +470,11 @@ static int NPC_06a0(int param_1, int param_2, int param_3, int param_4)
 // CHECKED
 static void NPC_06e4(int param_1, int param_2)
 {
-    int local_1c_aa;
-    int local_1a_ac;
-    ActorFmt* local_18_al;
-    int local_16_an;
-    int local_14;
+    int local_1c_a;
+    int local_1a_aa;
+    ActorFmt* local_18_ai;
+    int local_16_ak;
+    int local_14_am;
     int local_12;
     int local_10[4];
     NpcFmt* local_8;
@@ -484,7 +484,7 @@ static void NPC_06e4(int param_1, int param_2)
     CHECK_PARAM_RANGE(param_1, 0, 32);
     CHECK_PARAM_RANGE(param_2, 0, 3);
 
-    local_18_al = &D_5c5a[0];
+    local_18_ai = &D_5c5a[0];
     local_8 = &D_5f5e[param_1];
     local_4_ab = D_5d5e[param_1].type[param_2];
     local_6_an_ab = NPC_06a0(D_5c5a[0]._2_x, D_5c5a[0]._3_y, local_8->_2_x, local_8->_4_y);
@@ -515,53 +515,53 @@ static void NPC_06e4(int param_1, int param_2)
     {
     move:
         // a9ea
-        for (local_16_an = 1; local_16_an < 5; local_16_an++)
+        for (local_16_ak = 1; local_16_ak < 5; local_16_ak++)
         {
             // aa09
             D_5876 = local_8->_2_x;
             D_5878 = local_8->_4_y;
-            NPC_0632(local_16_an);
+            NPC_0632(local_16_ak);
             local_12 = D_5876;
-            local_14 = D_5878;
+            local_14_am = D_5878;
             if (NPC_0b9e(D_5876, D_5878, param_1, -1) != 0)
             {
-                local_10[local_16_an - 1] = NPC_06a0(local_18_al->_2_x, local_18_al->_3_y, local_12, local_14);
+                local_10[local_16_ak - 1] = NPC_06a0(local_18_ai->_2_x, local_18_ai->_3_y, local_12, local_14_am);
             }
             else
             {
                 // aa56 (OK)
-                local_10[local_16_an - 1] = 99;
+                local_10[local_16_ak - 1] = 99;
             }
         }
 
         // aa6a (OK)
-        local_1a_ac = -1; // di
-        local_6_an_ab = NPC_06a0(local_18_al->_2_x, local_18_al->_3_y, local_8->_2_x, local_8->_4_y);
+        local_1a_aa = -1; // di
+        local_6_an_ab = NPC_06a0(local_18_ai->_2_x, local_18_ai->_3_y, local_8->_2_x, local_8->_4_y);
         // aa8c
-        for (local_16_an = 1; local_16_an < 8; local_16_an++)
+        for (local_16_ak = 1; local_16_ak < 8; local_16_ak++)
         {
             // aaa7
-            if (local_16_an < 5 && local_10[local_16_an - 1] != 99)
+            if (local_16_ak < 5 && local_10[local_16_ak - 1] != 99)
             {
                 if (local_4_ab == 3)
                 {
-                    if (local_6_an_ab < local_10[local_16_an - 1])
+                    if (local_6_an_ab < local_10[local_16_ak - 1])
                     {
-                        if (local_1a_ac == -1 || ULTIMA_2092_RandomRange(0, 1) != 0)
+                        if (local_1a_aa == -1 || ULTIMA_2092_RandomRange(0, 1) != 0)
                         {
-                            local_1a_ac = local_16_an;
+                            local_1a_aa = local_16_ak;
                         }
 
-                        if (local_16_an == 4)
+                        if (local_16_ak == 4)
                             break;
                     }
                 }
                 else
                 {
                     // ab14
-                    if (local_10[local_16_an - 1] < local_6_an_ab)
+                    if (local_10[local_16_ak - 1] < local_6_an_ab)
                     {
-                        local_1a_ac = local_16_an;
+                        local_1a_aa = local_16_ak;
                         break;
                     }
                 }
@@ -569,14 +569,14 @@ static void NPC_06e4(int param_1, int param_2)
 
 #if defined(MATCHING_BUILD)
             // aae4 (OK)
-            if (local_16_an > 4 && local_10[local_16_an - 1] != 99) // BUG? (OOB, invalid index)
+            if (local_16_ak > 4 && local_10[local_16_ak - 1] != 99) // BUG? (OOB, invalid index)
 #else
-            if (local_16_an > 4 && local_10[local_16_an - 5] != 99) // BUGFIX?
+            if (local_16_ak > 4 && local_10[local_16_ak - 5] != 99) // BUGFIX?
 #endif
             {
-                if (local_10[local_16_an - 5] == local_6_an_ab)
+                if (local_10[local_16_ak - 5] == local_6_an_ab)
                 {
-                    local_1a_ac = local_16_an;
+                    local_1a_aa = local_16_ak;
                     break;
                 }
             }
@@ -586,24 +586,24 @@ static void NPC_06e4(int param_1, int param_2)
         if ((local_4_ab == 5 || local_4_ab == 7) && ULTIMA_2092_RandomRange(0, 0x3f) < 0x10)
         {
             // ab3d
-            local_1c_aa = local_1a_ac;
-            for (local_16_an = 1; local_16_an < 5; local_16_an++)
+            local_1c_a = local_1a_aa;
+            for (local_16_ak = 1; local_16_ak < 5; local_16_ak++)
             {
                 // ab4b
-                if (local_1a_ac != local_16_an && local_10[local_16_an - 1] != 99 &&
-                    (local_1c_aa == local_1a_ac || ULTIMA_2092_RandomRange(0, 0x3f) < 0x10))
+                if (local_1a_aa != local_16_ak && local_10[local_16_ak - 1] != 99 &&
+                    (local_1c_a == local_1a_aa || ULTIMA_2092_RandomRange(0, 0x3f) < 0x10))
                 {
-                    local_1c_aa = local_16_an;
+                    local_1c_a = local_16_ak;
                 }
             }
-            local_1a_ac = local_1c_aa;
+            local_1a_aa = local_1c_a;
         }
 
-        if (local_1a_ac > -1)
+        if (local_1a_aa > -1)
         {
             D_5876 = local_8->_2_x;
             D_5878 = local_8->_4_y;
-            NPC_0632(local_1a_ac);
+            NPC_0632(local_1a_aa);
 
             D_5c5a[local_8->_c]._2_x = local_8->_2_x = D_5876;
             D_5c5a[local_8->_c]._3_y = local_8->_4_y = D_5878;
