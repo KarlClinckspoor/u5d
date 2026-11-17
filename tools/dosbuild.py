@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """Compile u5d's C files with Microsoft C 5.1 in a headless DOSBox-X.
 
-    python tools/dosbuild.py [FILE.c ...] [--dosbox PATH] [--log]
+    python tools/dosbuild.py [FILE.c ...] [--dosbox PATH] [--log] [--obj DIR]
 
 With no files, compiles every file of the DOS build (tools/u5.py, MODULES). The objects
 and their listings (/Fc: source, assembly and code bytes interleaved) are written to
-build/obj/NAME.OBJ and build/obj/NAME.COD.
+build/obj/NAME.OBJ and build/obj/NAME.COD, or to the folder given with --obj DIR or $U5_OBJ.
 
 src/ is copied to a scratch drive C: (a new folder under build/dos per run, so builds of
 different files can run at the same time), the compiler in build/msc51 is mounted as
@@ -18,7 +18,6 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import u5  # noqa: E402
 
 DOS_ROOT = os.path.join(u5.BUILD, 'dos')
-OBJ = os.path.join(u5.BUILD, 'obj')
 
 
 def dos_name(path):
@@ -91,7 +90,8 @@ def compile_files(files, dosbox=None, flags=None, show_log=False, src=None, quie
                     t = open(p, encoding='latin-1', newline='').read()
                     open(p, 'w', encoding='latin-1', newline='').write(c_comments(t))
     os.makedirs(os.path.join(DOS, 'TMP'))
-    os.makedirs(OBJ, exist_ok=True)
+    obj_dir = u5.OBJ
+    os.makedirs(obj_dir, exist_ok=True)
     lines = ['@echo off', r'set PATH=D:\BIN', r'set INCLUDE=D:\INCLUDE', r'set LIB=D:\LIB',
              r'set TMP=C:\TMP', r'cd \S', r'echo. > C:\BUILD.LOG']
     for f in files:
@@ -124,12 +124,15 @@ def compile_files(files, dosbox=None, flags=None, show_log=False, src=None, quie
         found = False
         for ext in ('.OBJ', '.COD'):
             p = next((os.path.join(stage, n) for n in os.listdir(stage) if n.upper() == stem + ext), None)
-            dst = os.path.join(OBJ, stem + ext)
-            if os.path.exists(dst):
-                os.remove(dst)
+            dst = os.path.join(obj_dir, stem + ext)
             if p:
-                shutil.copy(p, dst)
+                # copied beside the old file, then moved over it: no reader sees half a file
+                part = '%s.%d.tmp' % (dst, os.getpid())
+                shutil.copy(p, part)
+                u5.replace_file(part, dst)
                 found = found or ext == '.OBJ'
+            elif os.path.exists(dst):
+                os.remove(dst)
         if not found:
             results.setdefault(f, []).append('no object was produced')
         if not quiet:
@@ -148,7 +151,9 @@ def main():
     ap.add_argument('--dosbox')
     ap.add_argument('--flags', help='override the compiler switches for every file')
     ap.add_argument('--log', action='store_true', help='print the compiler output')
+    ap.add_argument('--obj', metavar='DIR', help='write the objects and listings here (default $U5_OBJ, else build/obj)')
     a = ap.parse_args()
+    u5.set_obj(a.obj)
     files = [os.path.basename(f) for f in a.files] or sorted(u5.MODULES)
     res = compile_files(files, a.dosbox, a.flags, a.log)
     if any(res.get(f) for f in files):

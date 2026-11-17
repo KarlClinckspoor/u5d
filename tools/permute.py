@@ -77,7 +77,7 @@ def mutate(body, rng):
 
 def score(cfile, func, objpath, gamedata):
     stem = os.path.splitext(cfile)[0].upper()
-    dst = os.path.join(u5.BUILD, 'obj', stem + '.OBJ')
+    dst = os.path.join(u5.OBJ, stem + '.OBJ')
     shutil.copy(objpath, dst)
     mod = match.Module(cfile, gamedata)
     for r in match.compare(mod, match.runtime_symbols()):
@@ -120,7 +120,7 @@ def main():
                     out.append((9, 9999, 9999))
                     continue
                 o = os.path.join(objsave, '%d.OBJ' % k)
-                shutil.copy(os.path.join(u5.BUILD, 'obj', os.path.splitext(cfile)[0].upper() + '.OBJ'), o)
+                shutil.copy(os.path.join(u5.OBJ, os.path.splitext(cfile)[0].upper() + '.OBJ'), o)
                 out.append(score(cfile, a.function, o, gd))
             return out
         best = run([best_body])[0]

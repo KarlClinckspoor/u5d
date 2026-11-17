@@ -161,7 +161,7 @@ def observed_targets(cfile):
     import match
     mod = match.Module(cfile, u5.find_gamedata())
     funcs = mod.functions()
-    cod = open(os.path.join(u5.BUILD, 'obj', mod.stem + '.COD'), encoding='latin-1').read()
+    cod = open(os.path.join(u5.OBJ, mod.stem + '.COD'), encoding='latin-1').read()
     out = {}
     for name, a, b, o, oe in funcs:
         if b - a != oe - o and not (b - a < oe - o and oe - o - (b - a) < 16):

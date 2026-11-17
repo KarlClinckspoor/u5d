@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Compare compiled functions with the original game, function by function.
 
-    python tools/match.py [FILE.c ...] [--compile] [-v] [--dis FUNCTION] [--gamedata DIR]
+    python tools/match.py [FILE.c ...] [--compile] [-v] [--dis FUNCTION] [--gamedata DIR] [--obj DIR]
 
 Reads build/obj/NAME.OBJ (run tools/dosbuild.py first, or pass --compile) and compares
 every function in its _TEXT segment with the bytes at the same function in the GOG files:
@@ -29,6 +29,10 @@ Each function gets a verdict:
   CODE     anything else
 and the results are written to build/match/status.tsv. Exit status 0 when every function
 of the files given is EXACT.
+
+--obj DIR (or $U5_OBJ) reads the objects from a private folder instead, and --compile writes
+them there. The results then go to DIR/status.tsv, never to the shared file; --no-status
+writes none.
 """
 import argparse, glob, os, re, struct, sys
 
@@ -42,8 +46,6 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import omf  # noqa: E402
 import u5  # noqa: E402
 
-OBJ = os.path.join(u5.BUILD, 'obj')
-OUT = os.path.join(u5.BUILD, 'match')
 VERDICTS = ['EXACT', 'SLOTS', 'FIXUP', 'SIZE', 'CODE']
 
 
@@ -74,7 +76,7 @@ def overlay_starts(ovl, cfile):
     for f, (kind, o) in u5.MODULES.items():
         if kind != 'ovl' or o != ovl or f == cfile:
             continue
-        p = os.path.join(OBJ, os.path.splitext(f)[0].upper() + '.OBJ')
+        p = other_obj(os.path.splitext(f)[0].upper() + '.OBJ')
         if not os.path.exists(p):
             continue
         text = omf.Object(p).seg('_TEXT')
@@ -93,12 +95,23 @@ def overlay_starts(ovl, cfile):
     return starts
 
 
+def other_obj(name):
+    """The object of another module of the same overlay. A private object folder ($U5_OBJ)
+    may hold only the module being worked on: the other one is then read from build/obj."""
+    p = os.path.join(u5.OBJ, name)
+    if not os.path.exists(p):
+        q = os.path.join(u5.DEFAULT_OBJ, name)
+        if os.path.exists(q):
+            return q
+    return p
+
+
 class Module:
     def __init__(self, cfile, gamedata):
         self.cfile = cfile
         self.kind, self.ovl = u5.MODULES[cfile]
         self.stem = os.path.splitext(cfile)[0].upper()
-        path = os.path.join(OBJ, self.stem + '.OBJ')
+        path = os.path.join(u5.OBJ, self.stem + '.OBJ')
         if not os.path.exists(path):
             raise FileNotFoundError(path)
         self.obj = omf.Object(path)
@@ -414,11 +427,38 @@ def dis(mod, fname, rtsyms):
         for k in sorted(fx):
             ok, msg = check_fixup(mod, fx[k], o + k, mod.functions(), rtsyms)
             print('  fixup %04x %-5s %s' % (k, {True: 'ok', False: 'BAD', None: '?'}[ok], msg))
-        cod = os.path.join(OBJ, mod.stem + '.COD')
+        cod = os.path.join(u5.OBJ, mod.stem + '.COD')
         if os.path.exists(cod):
             print('\nlisting: %s (search for "%s\tPROC")' % (cod, name))
         return
     sys.exit('no function %s in %s' % (fname, mod.cfile))
+
+
+def write_status(allres):
+    """Merge the results into status.tsv (u5.status_path())."""
+    tsv = u5.status_path()
+    os.makedirs(os.path.dirname(tsv), exist_ok=True)
+    old = {}
+    if os.path.exists(tsv):
+        for line in open(tsv).read().splitlines()[1:]:
+            p = line.split('\t')
+            old[(p[0], p[1])] = p
+    for r in allres:
+        old[(r['module'], r['func'])] = [r['module'], r['func'], '%04x' % r['addr'], r['verdict'],
+                                        str(r['ours']), str(r['orig']), str(r['diffs'])]
+    part = '%s.%d.tmp' % (tsv, os.getpid())
+    with open(part, 'w', newline='\n') as fh:
+        fh.write('module\tfunction\taddress\tverdict\tlength\toriginal\tdiffering_bytes\n')
+        for k in sorted(old):
+            fh.write('\t'.join(old[k]) + '\n')
+    u5.replace_file(part, tsv)
+
+
+def result_line(r):
+    """The line of one function, as -v prints it."""
+    return '%-34s %04x %-5s len %4d/%-4d diffs %3d%s' % (
+        r['func'], r['addr'], r['verdict'], r['ours'], r['orig'], r['diffs'],
+        '' if r['first'] is None else ' first @%04x' % r['first'])
 
 
 def main():
@@ -430,7 +470,11 @@ def main():
     ap.add_argument('-v', '--verbose', action='store_true', help='list every function, with notes')
     ap.add_argument('--dis', metavar='FUNCTION', help='show one function byte by byte')
     ap.add_argument('--data', action='store_true', help="show the module's _DATA against DGROUP where they differ")
+    ap.add_argument('--obj', metavar='DIR', help='read (and with --compile, write) the objects here '
+                    '(default $U5_OBJ, else build/obj); the results then go to DIR/status.tsv')
+    ap.add_argument('--no-status', action='store_true', help='do not write status.tsv')
     a = ap.parse_args()
+    u5.set_obj(a.obj)
     gamedata = u5.find_gamedata(a.gamedata)
     files = [os.path.basename(f) for f in a.files] or sorted(f for f, (k, _) in u5.MODULES.items() if k != 'data')
     for f in files:
@@ -489,25 +533,11 @@ def main():
                                                '  unverified %d' % unv if unv else ''))
         if a.verbose:
             for r in res:
-                print('    %-34s %04x %-5s len %4d/%-4d diffs %3d%s' % (
-                    r['func'], r['addr'], r['verdict'], r['ours'], r['orig'], r['diffs'],
-                    '' if r['first'] is None else ' first @%04x' % r['first']))
+                print('    ' + result_line(r))
                 for n in r['notes'][:6]:
                     print('        ' + n)
-    os.makedirs(OUT, exist_ok=True)
-    tsv = os.path.join(OUT, 'status.tsv')
-    old = {}
-    if os.path.exists(tsv):
-        for line in open(tsv).read().splitlines()[1:]:
-            p = line.split('\t')
-            old[(p[0], p[1])] = p
-    for r in allres:
-        old[(r['module'], r['func'])] = [r['module'], r['func'], '%04x' % r['addr'], r['verdict'],
-                                        str(r['ours']), str(r['orig']), str(r['diffs'])]
-    with open(tsv, 'w', newline='\n') as fh:
-        fh.write('module\tfunction\taddress\tverdict\tlength\toriginal\tdiffering_bytes\n')
-        for k in sorted(old):
-            fh.write('\t'.join(old[k]) + '\n')
+    if not a.no_status:
+        write_status(allres)
     tot = {v: sum(1 for r in allres if r['verdict'] == v) for v in VERDICTS}
     print('total %d functions: %s' % (len(allres), ' '.join('%s %d' % kv for kv in tot.items())))
     if any(r['verdict'] != 'EXACT' for r in allres):

@@ -37,7 +37,7 @@ def assemble_many(paths, dosbox=None):
                    env=dict(os.environ, SDL_VIDEODRIVER='dummy', SDL_AUDIODRIVER='dummy'),
                    capture_output=True, timeout=600)
     out = {}
-    objdir = os.path.join(u5.BUILD, 'obj')
+    objdir = u5.OBJ
     os.makedirs(objdir, exist_ok=True)
     for p in paths:
         n = os.path.splitext(os.path.basename(p))[0].upper()

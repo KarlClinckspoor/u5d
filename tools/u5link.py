@@ -31,7 +31,7 @@ import omf  # noqa: E402
 import u5  # noqa: E402
 import asmgen  # noqa: E402
 
-OBJ = os.path.join(u5.BUILD, 'obj')
+OBJ = u5.OBJ
 OUT = os.path.join(u5.BUILD, 'out')
 ROOT_END = 0x86f0
 # Runtime data segments no code refers to and whose bytes are not unique, measured: the

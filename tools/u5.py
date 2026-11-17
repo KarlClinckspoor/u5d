@@ -10,9 +10,45 @@ import struct
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
-SRC = os.path.join(ROOT, 'src')
 BUILD = os.path.join(ROOT, 'build')
 MSC51 = os.path.join(BUILD, 'msc51')
+# Where the sources are read, and where the objects (NAME.OBJ, NAME.COD) are written and read.
+# $U5_SRC and $U5_OBJ (or --obj DIR of dosbuild.py and match.py) name private folders, so
+# that several workers can compile and compare at the same time (docs/MATCHING.md, "Working
+# in parallel"). The tools read u5.SRC and u5.OBJ when they use them, not when they start.
+DEFAULT_OBJ = os.path.join(BUILD, 'obj')
+SRC = os.path.abspath(os.environ.get('U5_SRC') or os.path.join(ROOT, 'src'))
+OBJ = os.path.abspath(os.environ.get('U5_OBJ') or DEFAULT_OBJ)
+
+
+def set_obj(path):
+    """Use path as the object folder, in this process and the ones it starts."""
+    global OBJ
+    if path:
+        OBJ = os.path.abspath(path)
+        os.environ['U5_OBJ'] = OBJ
+
+
+def status_path():
+    """match.py's status file: build/match/status.tsv for the shared object folder, and
+    status.tsv inside a private object folder (a private run never writes the shared one)."""
+    if os.path.normcase(OBJ) == os.path.normcase(DEFAULT_OBJ):
+        return os.path.join(BUILD, 'match', 'status.tsv')
+    return os.path.join(OBJ, 'status.tsv')
+
+
+def replace_file(tmp, dst):
+    """Move tmp over dst in one step, so that a reader never sees half a file. On Windows
+    this fails while another process has dst open: try again for a short while."""
+    import time
+    for attempt in range(50):
+        try:
+            os.replace(tmp, dst)
+            return
+        except PermissionError:
+            if attempt == 49:
+                raise
+            time.sleep(0.1)
 
 # Compiler switches, from src/build.bat. ultima.c is built without loop optimisation.
 # vars.c is too big for the normal first pass (C1042 "out of heap space"); /B1 selects
