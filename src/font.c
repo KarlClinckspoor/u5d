@@ -90,7 +90,10 @@ u8 D_5204[8] = {0x05, 0x07, 0x04, 0x0a, 0x08, 0x00, 0x05, 0x06};
 //   test) sits after the outer test in the original, ours at the top of the outer body
 //   ("mov cx,[bp-0Ch]"). The outer loop as while(1), do..while(1), gotos, if/else break,
 //   or a goto into a do-while (outer, inner or both), or the inner loop as a for with the
-//   two assignments in its init: no change or worse;
+//   two assignments in its init: no change or worse. With the outer loop made of gotos
+//   ("goto L_T; L_top: ...; L_T: if (c) { init; goto L_top; }", or the init at L_top, or a
+//   goto into a do-while) the test block comes out as the original's ("mov ax,bx"), but
+//   the first inner loop loses its registers again;
 // - the end's "local_12 * 2" is in SI in ours, in BX with a dead store to bp-1Ch (frame
 //   1Ch, ours 1Ah) in the original, as if SI/DI were taken there (nested assignment,
 //   *(D_5146 + i), labels around it, no ternary: no change);
