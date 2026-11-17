@@ -95,6 +95,8 @@ MODULES['intro0.c'] = ('ovl', 'INTRO')
 MODULES['intro2.c'] = ('ovl', 'INTRO')
 # Likewise CMDS.OVL: cmds.c (to CMDS_1030), cmds2.c (from CMDS_1202), cmdsb.c.
 MODULES['cmds2.c'] = ('ovl', 'CMDS')
+# TOWN.OVL: town.c (to TOWN_0f02) and town2.c (from TOWN_10da).
+MODULES['town2.c'] = ('ovl', 'TOWN')
 # SHOPPES2.OVL is two MSC 5.0 objects: shoppes2.c (to SHOPPES2_066c) and shoppe2b.c (from
 # SHOPPES2_07e2, the shipwright).
 MODULES['shoppe2b.c'] = ('ovl', 'SHOPPES2')

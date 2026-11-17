@@ -346,6 +346,7 @@
     </ClCompile>
     <ClCompile Include="..\src\time\time_sdl.c" />
     <ClCompile Include="..\src\town.c" />
+    <ClCompile Include="..\src\town2.c" />
     <ClCompile Include="..\src\translate.c" />
     <ClCompile Include="..\src\ultima.c" />
     <ClCompile Include="..\src\vars.c" />

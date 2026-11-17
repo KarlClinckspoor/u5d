@@ -9,6 +9,17 @@ void TOWN_0170(void);
 void TOWN_0958(void);
 int TOWN_09e6_AttackCmd(void);
 int TOWN_0b82_KlimbCmd(void);
+// called from town2.c
+void TOWN_02ae(void);
+void TOWN_0408(int param_1);
+bool TOWN_0600(int param_1);
+void TOWN_085e(int param_1);
+void TOWN_08d4(int param_1);
+void TOWN_09bc(int param_1);
+void TOWN_0c78(void);
+uint TOWN_0dc4(int param_1);
+int TOWN_0e34(int param_1);
+void TOWN_0f02(void);
 void TOWN_10da(int param_1);
 void TOWN_11f0_Entry(int param_1);
 void TOWN_141e_MainLoop(void);

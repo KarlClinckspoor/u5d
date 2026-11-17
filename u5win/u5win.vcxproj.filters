@@ -185,6 +185,9 @@
     <ClCompile Include="..\src\town.c">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\town2.c">
+      <Filter>src</Filter>
+    </ClCompile>
     <ClCompile Include="..\src\ultima.c">
       <Filter>src</Filter>
     </ClCompile>

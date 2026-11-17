@@ -13,6 +13,7 @@ pkg_check_modules(SDL3_MIXER REQUIRED sdl3-mixer)
 
 set(SOURCES
 	src/town.c
+	src/town2.c
 	src/mainout.c
 	src/mainoutb.c
 	src/dungeon.c

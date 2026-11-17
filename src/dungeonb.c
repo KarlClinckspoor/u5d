@@ -50,7 +50,7 @@ char* D_2e10[11] =
 // form makes it a register temporary in SI.
 static void DUNGEON_104c(int param_1)
 {
-    int local_4;
+    int local_4_b;
 
     if (param_1 > D_2df0[D_5893_map_id - 0x21])
     {
@@ -58,13 +58,13 @@ static void DUNGEON_104c(int param_1)
     }
 
     // 1063 (ok)
-    local_4 = D_2de8[D_5893_map_id - 0x21] + param_1 - 1;
-    ULTIMA_1c22_SetTextWindowSize(0, D_2df8[local_4], D_2e04[local_4], 0x27, 0x18);
+    local_4_b = D_2de8[D_5893_map_id - 0x21] + param_1 - 1;
+    ULTIMA_1c22_SetTextWindowSize(0, D_2df8[local_4_b], D_2e04[local_4_b], 0x27, 0x18);
     ULTIMA_1b94_SelectTextWindow(0);
     ULTIMA_1c9e_SelectCharset(1);
     ULTIMA_1bf2_SetTextPosition(0, 0);
     ULTIMA_16ba_PrintChar(CTRL_CHAR_TOGGLE_INVERSION);
-    ULTIMA_1850_PrintString(D_2e10[local_4]);
+    ULTIMA_1850_PrintString(D_2e10[local_4_b]);
     ULTIMA_16ba_PrintChar(CTRL_CHAR_TOGGLE_INVERSION);
     ULTIMA_1c9e_SelectCharset(0);
     ULTIMA_1b94_SelectTextWindow(2);
@@ -73,15 +73,15 @@ static void DUNGEON_104c(int param_1)
 
 static int DUNGEON_10dc(int param_1, int param_2)
 {
-    int local_4;
+    int local_4_b;
 
-    local_4 = GetDungeonMap(param_1 & 7, param_2 & 7, D_5895_map_level);
-    if (local_4 < 0x90)
+    local_4_b = GetDungeonMap(param_1 & 7, param_2 & 7, D_5895_map_level);
+    if (local_4_b < 0x90)
     {
-        local_4 &= 0xf7;
+        local_4_b &= 0xf7;
     }
 
-    return local_4;
+    return local_4_b;
 }
 
 // CHECKED (static tables)
@@ -476,7 +476,7 @@ static void DUNGEON_1786(int param_1, int param_2)
     {
         0x59, 0x91, 0x50, 0x90, 0x55, 0x8f
     };
-    int local_4;
+    int local_4_b;
 
     if (D_52c8 == 0 || D_52c8 == 3)
     {
@@ -498,10 +498,10 @@ static void DUNGEON_1786(int param_1, int param_2)
         }
 
         // 17e4
-        for (local_4 = 0; local_4 < 8; local_4++)
+        for (local_4_b = 0; local_4_b < 8; local_4_b++)
         {
-            ULTIMA_0c64_GRAP_30_Pset(D_2ea4[param_2][local_4].x, D_2ea4[param_2][local_4].y);
-            ULTIMA_0c64_GRAP_30_Pset(0xbe - D_2ea4[param_2][local_4].x, D_2ea4[param_2][local_4].y);
+            ULTIMA_0c64_GRAP_30_Pset(D_2ea4[param_2][local_4_b].x, D_2ea4[param_2][local_4_b].y);
+            ULTIMA_0c64_GRAP_30_Pset(0xbe - D_2ea4[param_2][local_4_b].x, D_2ea4[param_2][local_4_b].y);
         }
 
         ULTIMA_0c64_GRAP_30_Pset(D_2f10[param_2].x, D_2f10[param_2].y);
@@ -510,19 +510,19 @@ static void DUNGEON_1786(int param_1, int param_2)
 
     case 1:
         // 185e
-        for (local_4 = 0; local_4 < 5; local_4++)
+        for (local_4_b = 0; local_4_b < 5; local_4_b++)
         {
-            ULTIMA_0c64_GRAP_30_Pset(D_2ed4[param_2][local_4].x + 0x48, D_2ed4[param_2][local_4].y + 0x60);
-            ULTIMA_0c64_GRAP_30_Pset(0x76 - D_2ed4[param_2][local_4].x, D_2ed4[param_2][local_4].y + 0x60);
+            ULTIMA_0c64_GRAP_30_Pset(D_2ed4[param_2][local_4_b].x + 0x48, D_2ed4[param_2][local_4_b].y + 0x60);
+            ULTIMA_0c64_GRAP_30_Pset(0x76 - D_2ed4[param_2][local_4_b].x, D_2ed4[param_2][local_4_b].y + 0x60);
         }
         break;
 
     case 2:
         // 18c4
-        for (local_4 = 0; local_4 < 4; local_4++)
+        for (local_4_b = 0; local_4_b < 4; local_4_b++)
         {
-            ULTIMA_0c64_GRAP_30_Pset(D_2ef2[param_2][local_4].x + 0x50, D_2ef2[param_2][local_4].y + 0x60);
-            ULTIMA_0c64_GRAP_30_Pset(0x6e - D_2ef2[param_2][local_4].x, D_2ef2[param_2][local_4].y + 0x60);
+            ULTIMA_0c64_GRAP_30_Pset(D_2ef2[param_2][local_4_b].x + 0x50, D_2ef2[param_2][local_4_b].y + 0x60);
+            ULTIMA_0c64_GRAP_30_Pset(0x6e - D_2ef2[param_2][local_4_b].x, D_2ef2[param_2][local_4_b].y + 0x60);
         }
         break;
 
@@ -534,84 +534,141 @@ static void DUNGEON_1786(int param_1, int param_2)
     }
 }
 
-// CHECKED
-// NOT MATCHING (CODE, 91 bytes, right length): the original builds each "table + param_3 * 2"
-// in SI itself (mov si,ax; ...; add si,ax: the table byte first at 1991/19be, param_3 * 2 first
-// at 1a32 [D_2f24]); ours computes it in AX with CX and then moves it to SI, and its "mov
-// cl,[2f24]" is a byte longer. Static tables made the CSE across the two calls appear. Tried:
-// the operands swapped (also differently in the two calls), << 1, 2 * p, p + p, (int)/(uint)
-// casts (the (int) cast changes the earlier tests); the sum assigned to local_6_an or local_4
-// (both dead there; stored to the stack, worse); a block-scope int (worse) or register (SI,
-// but p * 2 first and a frame of 8); deleting all the earlier functions (no change, so not
-// the optimizer's capacity).
-// Batch 3: MSC 5.0 builds a common subexpression in SI itself ("mov si,ax; ...; add si,ax")
-// when it is used as an index (FONT_04A4's GetMap(x, y) = GetCopiedMap(x, y), DNGLOOK's and
-// T9's GetDungeonMap); every value CSE in the exact code is built in AX and moved, and ours
-// is the only "add ax,cx; mov si,ax" in them. The original avoids CX as if it were taken.
-// Also tried, all the same code: the two calls as one comma expression (also with the
-// operands swapped); (int)((s16*)T + p), (int)(p + (s16*)T), (int)&((s16*)T)[p];
-// *(T + i); one u8 [2][8] table for both; p + p; (uint)p * 2 (p * 2u: 12 bytes longer). A
-// function-level register r (r = T[i] + p * 2): SI, but "mov si,[bp+4]; shl si,1" first and
-// frame 6; local_6_an declared register: SI for the whole function, 322 bytes.
-// Batch 4: not pass 2's tree pool (see ULTIMA_1850): no position of a cut changes the code
-// (research/c2lines.py, 0-638 line records after the entry), nor does less memory for pass
-// 2 down to 236.75 KB (research/c2mem.py). The original's order is that of "r = T[i]; r +=
-// p * 2" with r in SI (and "r = p * 2; r += T[6]" the third time), but a register variable
-// takes a slot under 5.0 (frame 6). A pointer-typed argument passed without a cast
-// ((s16*)T + p, (char*)T + p * 2, &((s16*)T)[p], &((char*)T)[p * 2]) and (uint)T + p * 2
-// give the same code as now.
+/// CLEAN ROOM (written from the disassembly). param_1, param_2: map x, y; param_3:
+// distance. The original builds each shape number in SI in two steps (first operand
+// through AX into SI, second operand added to SI) and has no stack slot for it (frame 4).
+// MSC 5.0 computes a common subexpression in AX/CX and moves it, and a pointer-typed one
+// directly in SI (mov si,[bp+4]; shl si,1); only a register pointer assigned and then
+// incremented gives the original's instructions. A register variable takes a stack slot,
+// so the DOS build shares it with the tile's: the tile is local to an "if (1)" body and
+// the register variable to the bare block after it (the same device as SJOG_0514). That
+// needs the wall branch written with gotos: its block ends in a jump, so MSC places it
+// right after the test, as the then-branch of the plain if/else below.
+// The source the original was compiled from is not known; this is a spelling that gives
+// its bytes.
 static void DUNGEON_1952(int param_1, int param_2, int param_3)
 {
     static u8 D_2f16[8] = {0x00, 0x1f, 0x00, 0x1f, 0x00, 0x00, 0x00, 0x00};
     static u8 D_2f1e[8] = {0x00, 0x00, 0x1f, 0x1f, 0x37, 0x27, 0x2f, 0x3f};
     static u8 D_2f26 = 0;
-    int local_6_an;
-    int local_4;
+    int local_4_b;
+#if defined(TARGET_DOS16)
 
-    local_6_an = DUNGEON_10dc(param_1, param_2);
-    local_4 = local_6_an >> 4;
-    if (local_4 > 0 && local_4 < 8 && (local_4 != 6 || (local_6_an & 7) == 0))
+    if (1)
     {
-        if (D_2f16[local_4] != 0)
+        int local_6;
+
+        local_6 = DUNGEON_10dc(param_1, param_2);
+        local_4_b = local_6 >> 4;
+        if (local_4_b > 0 && local_4_b < 8 && (local_4_b != 6 || (local_6 & 7) == 0))
         {
-            DUNGEON_134a(D_2f16[local_4] + param_3 * 2, 1, 0);
-            DUNGEON_134a(D_2f16[local_4] + param_3 * 2, 1, 1);
+            goto L_wall;
+        }
+        if (local_4_b == 8)
+        {
+            DUNGEON_127e(param_3, local_6 & 7);
+        }
+    }
+    {
+        register byte* x;
+
+L_field:
+        if (local_4_b < 9 && (GetDungeonMap(param_1 & 7, param_2 & 7, D_5895_map_level) & 8) != 0)
+        {
+            x = (byte*)(param_3 * 2);
+            x += D_2f1e[6];
+            DUNGEON_134a((int)x, 1, 0);
+            DUNGEON_134a((int)x, 1, 1);
         }
 
-        if (D_2f1e[local_4] != 0)
+        if (param_3 != 0 && (u8)(param_1 & 7) == D_5c5a[1]._2_x && (u8)(param_2 & 7) == D_5c5a[1]._3_y)
         {
-            DUNGEON_134a(D_2f1e[local_4] + param_3 * 2, 0, 0);
-            DUNGEON_134a(D_2f1e[local_4] + param_3 * 2, 0, 1);
+            DUNGEON_111e(param_3);
         }
 
-        if (local_4 == 5)
+        if (param_3 == 0)
+        {
+            D_2f26++;
+            if (D_2f26 > 2)
+            {
+                D_2f26 = 0;
+            }
+        }
+        return;
+
+L_wall:
+        if (D_2f16[local_4_b] != 0)
+        {
+            x = (byte*)D_2f16[local_4_b];
+            x += param_3 * 2;
+            DUNGEON_134a((int)x, 1, 0);
+            DUNGEON_134a((int)x, 1, 1);
+        }
+
+        if (D_2f1e[local_4_b] != 0)
+        {
+            x = (byte*)D_2f1e[local_4_b];
+            x += param_3 * 2;
+            DUNGEON_134a((int)x, 0, 0);
+            DUNGEON_134a((int)x, 0, 1);
+        }
+
+        if (local_4_b == 5)
+        {
+            DUNGEON_1786(param_3, D_2f26);
+        }
+        goto L_field;
+    }
+#else
+    int local_6;
+
+    local_6 = DUNGEON_10dc(param_1, param_2);
+    local_4_b = local_6 >> 4;
+
+    if (local_4_b > 0 && local_4_b < 8 && (local_4_b != 6 || (local_6 & 7) == 0))
+    {
+        if (D_2f16[local_4_b] != 0)
+        {
+            DUNGEON_134a(D_2f16[local_4_b] + param_3 * 2, 1, 0);
+            DUNGEON_134a(D_2f16[local_4_b] + param_3 * 2, 1, 1);
+        }
+
+        if (D_2f1e[local_4_b] != 0)
+        {
+            DUNGEON_134a(D_2f1e[local_4_b] + param_3 * 2, 0, 0);
+            DUNGEON_134a(D_2f1e[local_4_b] + param_3 * 2, 0, 1);
+        }
+
+        if (local_4_b == 5)
         {
             DUNGEON_1786(param_3, D_2f26);
         }
     }
-    else if (local_4 == 8)
+    else if (local_4_b == 8)
     {
-        DUNGEON_127e(param_3, local_6_an & 7);
+        DUNGEON_127e(param_3, local_6 & 7);
     }
 
-    // 1a03
-    if (local_4 < 9 && (GetDungeonMap(param_1 & 7, param_2 & 7, D_5895_map_level) & 8) != 0)
+    if (local_4_b < 9 && (GetDungeonMap(param_1 & 7, param_2 & 7, D_5895_map_level) & 8) != 0)
     {
-        // 1a2d
-        DUNGEON_134a(D_2f1e[6] + param_3 * 2, 1, 0);
-        DUNGEON_134a(D_2f1e[6] + param_3 * 2, 1, 1);
+        DUNGEON_134a(param_3 * 2 + D_2f1e[6], 1, 0);
+        DUNGEON_134a(param_3 * 2 + D_2f1e[6], 1, 1);
     }
 
-    // 1a4f (OK)
-    if (param_3 != 0 && (param_1 & 7) == D_5c5a[1]._2_x && (param_2 & 7) == D_5c5a[1]._3_y)
+    if (param_3 != 0 && (u8)(param_1 & 7) == D_5c5a[1]._2_x && (u8)(param_2 & 7) == D_5c5a[1]._3_y)
     {
         DUNGEON_111e(param_3);
     }
 
-    if (param_3 == 0 && ++D_2f26 > 2)
+    if (param_3 == 0)
     {
-        D_2f26 = 0;
+        D_2f26++;
+        if (D_2f26 > 2)
+        {
+            D_2f26 = 0;
+        }
     }
+#endif
 }
 
 void DUNGEON_1a90(int param_1)
@@ -688,24 +745,24 @@ void DUNGEON_1be0(void)
 static int DUNGEON_1c0c(int param_1, int param_2)
 {
     int local_6_an;
-    int local_4;
+    int local_4_b;
 
-    local_4 = 1;
+    local_4_b = 1;
     local_6_an = GetDungeonMap(D_5896_map_x, D_5897_map_y, param_1) & 0xf0;
     if (param_2 != 0 &&
         (local_6_an != 0 || local_6_an == 0xe0 || local_6_an == 0xd0 || local_6_an == 0xc0 || local_6_an == 0xb0)) // NOTE: logic bug?
     {
-        local_4 = 0;
+        local_4_b = 0;
     }
 
-    return local_4;
+    return local_4_b;
 }
 
 int DUNGEON_1c6a_Klimb(int param_1, int param_2)
 {
-    int local_4;
+    int local_4_b;
 
-    local_4 = 0;
+    local_4_b = 0;
 
     if (param_1 > 0)
     {
@@ -718,7 +775,7 @@ int DUNGEON_1c6a_Klimb(int param_1, int param_2)
 
     if (param_1 > 0 && D_5895_map_level == 7 || param_1 < 0 && D_5895_map_level == 0)
     {
-        local_4 = 1;
+        local_4_b = 1;
     }
     else
     {
@@ -744,7 +801,7 @@ int DUNGEON_1c6a_Klimb(int param_1, int param_2)
         }
     }
 
-    return local_4;
+    return local_4_b;
 }
 
 void DUNGEON_1d08_Exit(void)

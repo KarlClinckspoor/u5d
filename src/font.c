@@ -76,160 +76,137 @@ u8 D_51fc[8] = {0x28, 0x30, 0x30, 0x28, 0x28, 0x30, 0x28, 0x30};
 
 u8 D_5204[8] = {0x05, 0x07, 0x04, 0x0a, 0x08, 0x00, 0x05, 0x06};
 
-// CHECKED
-// NOT MATCHING (SIZE 676/674; about 50 instructions differ, most of the rest is shifted).
-// What made the loops the original's: the outer loop as "for (;;) { if (!c) break; ...}"
-// (as a while, the first inner loop gets no registers and param_2[i] is a stack temporary;
-// a label before "local_a = 0" does the same as the for); "local_c > local_4_ab" in that
-// loop's test; the second loop's first three breaks as gotos to the ' ' case's break, which
-// then falls into the code after the loop, and "local_e_am >= --i"; the third loop as
-// "if (i < n) do ... while (n != ++i)" (a for gives "cmp si,[bp-4]" at the bottom, the
-// swapped for "cmp [bp-4],ax" in the entry test); the label L_e, which stops MSC keeping
-// param_2[local_e_am] in a temporary; (int)D_5158 for the signed compares. Still different:
-// - the first inner loop's entry (sub di,di; mov cx,bx; mov si,[bp-2]; mov dx,[bp+4]; jmp
-//   test) sits after the outer test in the original, ours at the top of the outer body
-//   ("mov cx,[bp-0Ch]"). The outer loop as while(1), do..while(1), gotos, if/else break,
-//   or a goto into a do-while (outer, inner or both), or the inner loop as a for with the
-//   two assignments in its init: no change or worse. With the outer loop made of gotos
-//   ("goto L_T; L_top: ...; L_T: if (c) { init; goto L_top; }", or the init at L_top, or a
-//   goto into a do-while) the test block comes out as the original's ("mov ax,bx"), but
-//   the first inner loop loses its registers again;
-// - the end's "local_12 * 2" is in SI in ours, in BX with a dead store to bp-1Ch (frame
-//   1Ch, ours 1Ah) in the original, as if SI/DI were taken there (nested assignment,
-//   *(D_5146 + i), labels around it, no ternary: no change);
-// - "mov ax,[bp-14h]; add ax,si" (ours "mov ax,si; add ax,[bp-14h]") for "local_4_ab +
-//   D_50f7 + 1 < local_c": eight orders, casts and "local_c >" give the same code;
-// - two nops after loop 3's idiv branch ("jmp near; nop; nop", a jump sized long).
-// Earlier: capacity ruled out (all of the file's data after FONT_0000, or none: no change).
-// Batch 4: not pass 2's tree pool either (see ULTIMA_1850): moving its cuts through the
-// function (research/c2lines.py, 0-638 line records after the entry) changes nothing
-// except 496-561, which are worse (524-557 bytes); less memory for pass 2 changes nothing
-// down to 240.75 KB and below that breaks FONT_02FC and FONT_04A4 too (489 bytes at best).
-// param_1: image, param_2: text
+// CLEAN ROOM (written from the disassembly). Prints justified text: param_1 the glyph
+// image, param_2 the text. Per line: loop A measures up to the line width, loop B backs up
+// to the last space (or a "_" hyphenation point), loop C draws, spreading the slack over
+// the spaces; then the next line's margins.
+// NOT MATCHING: 56 bytes differ, length 670 against 674 (before: 513 bytes, 676/674).
+// What gives the original's code so far:
+// - the outer loop is a for with an increment expression. With "while" or "for (; c; )"
+//   the three inner loops get no registers; "for (;;) { if (!c) break; ..." gives them but
+//   leaves loop A's register loads at the top of the body. With an increment the test sits
+//   at the bottom with loop A's loads right after it, as in the original. The increment
+//   here is "0" (no code); the original's is not known ("local_e_am++" would be the natural
+//   one, but the original's test at the end of a line jumps past the increment to the
+//   loop test, which no continue or break does: hence the goto to L_next);
+// - loop B's "--i" is in its condition (the first break is then the space case, and the
+//   code after the loop follows it);
+// - loop C is "if (i < n) do ... while (n != ++i)";
+// - "if (text[start] == 0) goto L_next;" and not an if around the rest (that one keeps
+//   text[start] in AL for the "_" test).
+// Still different:
+// - the frame is 1Ah, the original's 1Ch: at 025f the original keeps local_12 * 2 in BX
+//   with a dead store at bp-1Ch (shl ax,1; mov [bp-1Ch],ax; mov bx,ax), where we get
+//   mov si,ax; shl si,1 as at the top of the function. Tried: the condition written out at
+//   each use, assigned inside the index, D_5146[local_12] read twice;
+// - 0173: the original adds D_50f7's temporary first (mov ax,[bp-14h]; add ax,si), we
+//   mov ax,si; add ax,[bp-14h]. Tried: the operands in every order, the cast on either
+//   side of the comparison.
 void FONT_0000(byte* param_1, byte* param_2)
 {
-    int local_12_ab_am;
-    int local_10_ad_am;
+    int local_12;
+    int local_10_aa;
     int local_e_am;
     int local_c;
     int local_a;
     int local_8;
     int local_6;
-    int local_4_ab;
+    int local_4_aa;
 
     ULTIMA_0c22_GRAP_0f_SelectPage(1);
-    local_12_ab_am = ((int)D_5158 > (int)D_5150 && (int)D_5158 < (int)D_5152) ? 1 : 0; // TODO: D_5158, D_5150, D_5152 -> int?
-
-    local_c = D_514c[local_12_ab_am] - D_5146[local_12_ab_am];
-
+    local_12 = (int)D_5158 > (int)D_5150 && (int)D_5158 < (int)D_5152;
+    local_c = D_514c[local_12] - D_5146[local_12];
     local_e_am = local_6 = 0;
-    local_4_ab = D_5156 - D_5146[local_12_ab_am];
+    local_4_aa = D_5156 - D_5146[local_12];
 
-    for (;;)
+    for (; param_2[local_e_am] != 0; 0)
     {
-        if (param_2[local_e_am] == '\0')
-            break;
         local_a = 0;
-        local_10_ad_am = local_e_am;
-        while (param_2[local_10_ad_am] != '\0' && local_c > local_4_ab && param_2[local_10_ad_am] != '\n')
+        for (local_10_aa = local_e_am; param_2[local_10_aa] != 0 && local_c > local_4_aa && param_2[local_10_aa] != '\n'; local_10_aa++)
         {
-            if (param_2[local_10_ad_am] <= 0x20)
+            if (param_2[local_10_aa] <= ' ')
             {
-                local_4_ab += D_5154;
-                local_a += 1;
+                local_4_aa += D_5154;
+                local_a++;
             }
-            else if (param_2[local_10_ad_am] == '{')
+            else if (param_2[local_10_aa] == '{')
             {
-                local_4_ab += 0xf;
+                local_4_aa += 0xf;
             }
-            else if (param_2[local_10_ad_am] != '_')
+            else if (param_2[local_10_aa] != '_')
             {
-                local_4_ab += D_50ea[param_2[local_10_ad_am] - 0x20] + 1;
+                local_4_aa += D_50ea[param_2[local_10_aa] - 0x20] + 1;
             }
-
-            local_10_ad_am++;
         }
 
-        while (1)
+        while ((param_2[local_10_aa] != 0 || local_4_aa >= local_c) && param_2[local_10_aa] != '\n' && local_e_am < --local_10_aa)
         {
-            if ((param_2[local_10_ad_am] == '\0' && local_4_ab < local_c))
-                goto L_brk;
-            if (param_2[local_10_ad_am] == '\n')
-                goto L_brk;
-            if (local_e_am >= --local_10_ad_am)
-                goto L_brk;
-
-            if (param_2[local_10_ad_am] == ' ')
+            if (param_2[local_10_aa] == ' ')
             {
-                local_4_ab -= D_5154;
+                local_4_aa -= D_5154;
                 local_a--;
-            L_brk:
                 break;
             }
-
-            if (param_2[local_10_ad_am] == '_')
+            if (param_2[local_10_aa] == '_' && (uint)(local_4_aa + D_50f7 + 1) < local_c)
             {
-                if (local_4_ab + D_50f7 + 1 < local_c)
-                {
-                    local_4_ab += D_50f7 + 1;
-                    break;
-                }
+                local_4_aa += D_50f7 + 1;
+                break;
             }
-
-            if (param_2[local_10_ad_am] != '_' && param_2[local_10_ad_am] != '{')
+            if (param_2[local_10_aa] != '_' && param_2[local_10_aa] != '{')
             {
-                local_4_ab -= D_50ea[param_2[local_10_ad_am] - 0x20] + 1;
+                local_4_aa -= D_50ea[param_2[local_10_aa] - 0x20] + 1;
             }
         }
 
-        local_8 = local_c - local_4_ab;
-        local_6 = local_10_ad_am;
-        local_10_ad_am = local_e_am;
+        local_8 = local_c - local_4_aa;
+        local_6 = local_10_aa;
 
-        if (local_10_ad_am < local_6) do
+        local_10_aa = local_e_am;
+        if (local_10_aa < local_6)
+        do
         {
-            if (param_2[local_10_ad_am] <= 0x20)
+            if (param_2[local_10_aa] <= ' ')
             {
                 D_5156 += D_5154;
-                if (local_a != 0 && param_2[local_6] != '\0' && param_2[local_6] != '\n')
+                if (local_a != 0 && param_2[local_6] != 0 && param_2[local_6] != '\n')
                 {
                     D_5156 += local_8 / local_a;
                     local_8 -= local_8 / local_a;
                     local_a--;
                 }
             }
-            else if (param_2[local_10_ad_am] == '{')
+            else if (param_2[local_10_aa] == '{')
             {
                 D_5156 += 0xf;
             }
-            else if (param_2[local_10_ad_am] != '_')
+            else if (param_2[local_10_aa] != '_')
             {
                 if ((int)D_5158 < 0xc0)
                 {
-                    // NOTE: "or" mix
-                    ULTIMA_1044_GRAP_4e_CopyBitImageIntoPage(param_1, param_2[local_10_ad_am] - 0x20, D_5156, D_5158);
+                    ULTIMA_1044_GRAP_4e_CopyBitImageIntoPage(param_1, param_2[local_10_aa] - 0x20, D_5156, D_5158);
                 }
-                D_5156 += D_50ea[param_2[local_10_ad_am] - 0x20] + 1;
+                D_5156 += D_50ea[param_2[local_10_aa] - 0x20] + 1;
             }
-        } while (local_6 != ++local_10_ad_am);
+        } while (local_6 != ++local_10_aa);
 
         local_e_am = local_6;
-        if (param_2[local_e_am] != '\0')
+        if (param_2[local_e_am] == 0)
         {
-        L_e:
+            goto L_next;
+        }
+        {
             if (param_2[local_e_am] == '_' && (int)D_5158 < 0xc0)
             {
                 ULTIMA_1044_GRAP_4e_CopyBitImageIntoPage(param_1, 0xd, D_5156, D_5158);
             }
-
-            local_4_ab = 0;
+            local_4_aa = 0;
             D_5158 += 9;
-            local_12_ab_am = ((int)D_5158 > (int)D_5150 && (int)D_5158 < (int)D_5152) ? 1 : 0;
-
-            D_5156 = D_5146[local_12_ab_am];
-            local_c = D_514c[local_12_ab_am] - D_5156;
+            local_12 = (int)D_5158 > (int)D_5150 && (int)D_5158 < (int)D_5152;
+            D_5156 = D_5146[local_12];
+            local_c = D_514c[local_12] - D_5156;
             local_e_am++;
         }
+L_next:;
     }
 
     ULTIMA_0c22_GRAP_0f_SelectPage(0);
@@ -369,7 +346,7 @@ void FONT_0e7b(void);
 // Case 0xb's loop is a while: as a for (same code), MSC frees its temporaries (bp-20h,
 // bp-22h) and case 0xc's pointer walk reuses them, giving a frame of 22h instead of the
 // original's 28h (0xc at bp-24h..28h, the middle one in memory). The source steps
-// local_12/local_14 with += in case 0xb (the decompiler's local_10 * 9 / * 3 gave MSC's
+// local_12/local_14 with += in case 0xb (the decompiler's local_10_aa * 9 / * 3 gave MSC's
 // closed form instead); += in a for header moves the counter's increment first.
 // "view"
 void FONT_04a4(void)
