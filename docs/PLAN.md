@@ -121,9 +121,13 @@ Next, in order:
        block of comment lines standing for the original's source lines), FONT_04A4,
        FONT_02FC, ZSTATS_0F2E, ZSTATS_06e8, MAINOUT_17d4.
      - Left (each with a NOT MATCHING note): ZSTATS_0c5c (35 bytes, the weak block's
-       placement), DUNGEON_1952 (91, a value CSE built in SI), TOWN_0f02 (104, needs about
-       10 KB more pass-2 memory before it, from names and types u5d does not have),
-       FONT_0000 (676/674, loops right; entry-block placement and BX/SI at the end).
+       placement), DUNGEON_1952 (91, a value CSE built in SI), TOWN_0f02 (104, exact only
+       with less memory for pass 2 at that one function), FONT_0000 (676/674, loops right;
+       entry-block placement and BX/SI at the end). Pass 2's tree pool is ruled out for all
+       but TOWN_0f02 (MATCHING.md).
+     - ULTIMA_1850's padding stands for a smaller pass-2 pool (more lines or less memory in
+       the original). To drop it, give `tools/dosbuild.py` a per-file memory limit for C2
+       (`research/c2mem.py` has the wrapper).
      - 2000.c: ULTIMA_256e and 25d8 call ULTIMA_2322 with `call far 0:2322`, where MSC emits
        `push cs; call near` for a far function defined earlier in the same module. So 2322
        (the GOG-patched function) was probably in another object.

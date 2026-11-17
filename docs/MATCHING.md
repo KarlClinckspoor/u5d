@@ -684,17 +684,44 @@ Each entry gives the evidence. Add to this list as you learn.
     function still give full loop optimization, 10 give none. The function's own size
     counts too (removing its inner loops or long arithmetic brought the registers back);
     400 unreferenced externs, a minimal header or string literals do not. Split: shoppe2b.c.
-  - Source lines inside a function count too (MSC 5.0, ULTIMA_1850): every line inside the
-    function that holds a token or a comment before the code, even an empty `;` or a local
-    `extern` declaration. Not counted: blank lines, one multi-line comment, several comments
-    on one line, `#if 0` blocks, `{ }` lines, `#define`s, lines before the function; lines
-    after the code have no effect, lines in the middle changed even the frame. And more
-    lines give MORE loop optimization: ULTIMA_1850 registered one more loop with 14 more
-    lines and matched with about 140 (from about 125), now a block of empty `//` lines
-    after its declarations standing for the original's lines. The "unused label" and
-    `while (1)` mode switches (below) were probably this. In TOWN_0f02 (5.1), up to 245
-    comment lines change nothing and 246 or more give other wrong code. Recompile after
-    editing notes inside a function.
+  - **What the capacity is: pass 2 works in a tree pool** (measured black-box; C2.EXE is
+    EXEPACKed and was not disassembled). C2 reads a function's statements into a pool and,
+    when it is full, optimizes and emits what it holds and goes on with an empty pool
+    (truncate pass 1's EX file mid-function and the first part's code is still written).
+    A loop gets registers only if the pool has room when it comes: loops at the end of a
+    function that nearly fills the pool are left unoptimized, and the same loops are
+    optimized when a pool boundary falls before them. Under MSC 5.0 the pool is 612 units
+    with plenty of memory (ULTIMA_1850 fills about 505).
+  - **Every non-blank source line inside a function is one unit** (MSC 5.0). Pass 1 writes a
+    line record for it (`4F 01 nn`, or `4F 01 80 lo hi` from line 128), also for a
+    comment-only line; blank lines, `#if`'d-out lines and lines outside functions give none,
+    and a comment over several lines is one. Only the number counts, not line numbers, text,
+    `/Zd` or `/Fc`. So lines move the boundary, periodically: in ULTIMA_1850, 0-107 extra
+    lines before 19ca change nothing, 108-122 optimize one more loop, 123-563 match, 564-605
+    give other code, then again with period 612. Lines in other functions or before the
+    function do nothing. ULTIMA_1850 keeps a block of empty `//` lines after its
+    declarations for this (see its note). The "unused label" and `while (1)` effects below
+    may be the same pool at work. **Recompile after editing comments inside a function.**
+  - **Less DOS memory for C2.EXE shrinks the pool.** Under 5.0 the code is constant from about
+    249 KB free upward; at 236.75-248.5 KB the pool is about 280 units (r1850.c matches
+    there with no padding); below about 220 KB pass 2 runs out of heap. Under 5.1 the code
+    changes from one paragraph to the next below about 254 KB (town.c). The original's code
+    can therefore depend on how much memory the build machine had at that compile, and it
+    was not the same for all modules (at 242 KB, 59 functions of the other 5.0 modules stop
+    matching). So ULTIMA_1850's original had either 123-563 more non-blank lines or about
+    240 KB for pass 2; the code cannot tell which. A memory limit through CL fails (pass 1
+    runs out of heap at about 270 KB with u5d's headers); it must be applied to C2 alone.
+  - **Tools.** `research/c2mem.py FILE.c FUNC FROM TO [STEP]` compiles with only N paragraphs
+    free for C2; `research/c2lines.py FILE.c FUNC LINE [FROM TO STEP] [--kb N]` inserts line
+    records after the function's entry in pass 1's output and runs C2/C3 on it (a full
+    period is 612 under 5.0, about 390 for town.c under 5.1). Neither touches src/ or
+    build/obj. If neither moves a stuck function toward the original, the pool is ruled
+    out (ZSTATS_0c5c, DUNGEON_1952, FONT_0000). CL passes each pass its arguments in
+    `MSC_CMD_FLAGS`; the intermediate files are `<base>EX` (trees and line records), `SY`,
+    `IN`, `ST` in TMP.
+  - TOWN_0f02 is this by memory: exact at 15782 or 15784-15793 paragraphs free for C2, but
+    TOWN_0408, 0c78 and 1694 then differ (the same state as the extra definitions). Memory
+    was short in the original at this function only. Open.
   - The other way round: TOWN_0f02 matches only with about 10 KB more pass-2 memory before
     it (330 short unreferenced `int X%d;` definitions exactly, not 325 or 335; or 120 small
     functions each setting its own extern; extern references, empty functions, defining
