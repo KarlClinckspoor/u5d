@@ -646,7 +646,9 @@ int ULTIMA_2c4c_IsWalkableTile(int actorTile, int targetTile)
 
 // CHECKED
 // select player (zstats, ...)
-// NOT MATCHING: the original keeps local_a in DI and local_6 in memory; MSC picks local_6.
+// The gotos to one "local_6 = 1;" keep local_6 to three references, so MSC puts local_a in
+// DI and leaves local_6 in memory, as the original does (written out in each case, MSC
+// picks local_6 instead).
 int ULTIMA_2d7a(int param_1)
 {
     bool local_6;
@@ -703,18 +705,17 @@ int ULTIMA_2d7a(int param_1)
                     break;
 
                 local_4_ab = -2;
+            L_done:
                 local_6 = 1;
                 break;
 
             case U5_KEY_ESC:
                 local_4_ab = -1;
-                local_6 = 1;
-                break;
+                goto L_done;
 
             case U5_KEY_ENTER:
             case U5_KEY_SPACE:
-                local_6 = 1;
-                break;
+                goto L_done;
             }
         }
 
