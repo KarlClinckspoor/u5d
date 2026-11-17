@@ -14,12 +14,12 @@ tools, is the current state of every function.
 
 ## What you need
 
-- **The game.** The GOG release of *Ultima V* (in the *Ultima 4+5+6* pack). The tools look
-  for its files, at least `ULTIMA.EXE`, `*.OVL` and `DATA.OVL`, in:
-  - `--gamedata DIR`
-  - `$U5_GAMEDATA`
-  - `gamedata/` in this repository
-  - `../gamedata`
+- **The game**, to compare with and to measure from, not to build: compiling, assembling
+  and linking open no game file (see "The link script"). The GOG release of *Ultima V* (in
+  the *Ultima 4+5+6* pack). The tools look for its files, at least `ULTIMA.EXE`, `*.OVL`
+  and `DATA.OVL`, in:
+  - `--gamedata DIR`, else `$U5_GAMEDATA` (a folder that is named is the only one looked in)
+  - else `gamedata/` in this repository, else `../gamedata`
 - **Microsoft C 5.1 and 5.0.** The original was built with both (see "Two compilers" below).
   You need the disk images of each, or the `.7z` archives holding them.
   Nothing from Microsoft is committed: `build/` is ignored.
@@ -114,13 +114,13 @@ The exit status is 0 only when every function given is `EXACT`. Results accumula
 
 ### The link: `u5link.py`
 
-`tools/u5link.py [--out DIR] [-v]` links what `build/obj` holds into the 25 files
-(`build/out`) and compares each with the original. Exit status 0: all identical and every
-name defined.
+`tools/u5link.py [--out DIR] [--script FILE] [-v]` links what `build/obj` holds into the 25
+files (`build/out`), as the link script says, and compares each with the original: with the
+game files when they are found, else with their SHA-1s (`u5.GOG_SHA1`). Exit status 0: all
+identical and every name defined. It opens no game file to link.
 
-- **Placement** is measured: an object's code goes where its functions' names say, its
-  data segments (`_DATA`, `CONST`, `_BSS`) where its references point in the original, the
-  library modules where their bytes are.
+- **Placement** is the link script's (`src/u5d.lnk`, next section): every module's code
+  address and the DGROUP offset of each of its data segments.
 - **Resolution** is by rule: a name is the public that defines it (in its first 31
   characters: MSC 5.1 and MASM cut names there, MSC 5.0 writes 32); a call into another
   overlay goes to the function's stub; communal variables are allocated (see "The
@@ -145,17 +145,77 @@ name defined.
   header padded to 512 bytes, the entry point (PLSTART's segment, 081d:0000). The minimum
   allocation is the end of the stack that follows DGROUP (`_end` + crt0's 0x800-byte
   `STACK`, paragraph 1bb8) plus the start-up segment's 0x52 paragraphs, less the image.
-  PLINK86's own, as facts: the word 1 at 0x1c, SS:SP (0x100 paragraphs past the image,
-  0x64), and the checksum 0x7e39, which is not the MZ checksum.
+  PLINK86's own, as facts (the script's `exe` line): the word 1 at 0x1c, SS:SP (0x100
+  paragraphs past the image, 0x64), and the checksum 0x7e39, which is not the MZ checksum.
+- **The checksum** was looked for and not found. The MZ checksum of the GOG file would be
+  0d37. GOG's patch of ULTIMA_2322 is eight bytes (2405-2409 `b8 5f 54 50 e8` became
+  `e8 9e f2 eb 73`, 24aa-24ac `e8 0d f2` became three nops); with them restored the MZ
+  checksum would be e957, so 7e39 is not 1.16's MZ checksum left behind by the patch either.
+  Also tried, on the GOG file and on the restored one, with the field in place and zeroed:
+  word sums (mod 65536 and with end-around carry), byte sums and word XORs over every range
+  between the header's fields, the end of the relocation table, 0x200, 0x400, the image and
+  PLINK86's segments (072e, 0778, 081d), the image with its relocated words zeroed, and
+  the EXE together with the overlays and DATA.OVL; six CRC-16s and two rotating sums over
+  the file, the image and the header; each against 7e39, its negative, its complement and
+  its bytes swapped. If PLINK86 summed the program before the overlays and DGROUP were
+  written to their own files, the sum cannot be redone: that file's header is not known.
+
+### The link script: `src/u5d.lnk`
+
+Where everything goes is a fact about the original, and the facts are in one text file,
+`src/u5d.lnk` (154 lines, each kind explained by a comment above it):
+
+```
+exe      image=86f0 fixed=1e word1c=0001 stackgap=0100 sp=0064 checksum=7e39
+dgroup   size=bd40 header=10
+define   _edata=a524
+overlay  INTRO    base=81c0 size=20d0 header=10
+library  SLIBCR.LIB dos\crt0.asm     __abrkp     code=017e _DATA=520e
+object   3000     code=3072 _DATA=55a6 CONST=a110
+object   MAINOUTB code=MAINOUT:109e _DATA=2bc0 CONST=6ada _BSS=a526
+object   VARS
+```
+
+- `exe`: the length of the resident image and PLINK86's own header fields. `dgroup`:
+  DGROUP's length and DATA.OVL's header length. `define`: `_edata` and `_end`.
+- `overlay` (23, in the order of the overlay numbers): the CS address of the file's offset
+  0, the file's length, the length of its relocation header.
+- `library LIB MODULE PUBLIC` (17): the module of the runtime library that defines PUBLIC
+  (a library has several modules of one name, the near and far forms of a helper), its code
+  address and its data segments.
+- `object NAME` (70): `build/obj/NAME.OBJ`, its code address (a CS offset, or
+  `OVERLAY:offset` in the .OVL file, as in the functions' names) and its `_DATA`, `CONST`
+  and `_BSS` offsets in DGROUP. The resident modules are in the order of their code.
+  `VARS` has neither: the communal variables are allocated by rule.
+- All numbers are hexadecimal; `#` starts a comment.
+
+`tools/linkscript.py` writes the script, and is the only place where placement is
+measured (it needs the game files and a full `build/obj`): a library module where its code
+occurs in the image, a C object's code where its first function's name says, an assembly
+module's where its first line says, every data segment where the code's references into
+it point in the original (or, with no reference, where its bytes are), `_edata` and `_end`
+from the runtime's code, the sizes from the files and PLINK86's fields from the EXE's
+header. `tools/linkscript.py --check` measures again and compares; the gate runs it when
+the game files are there. After a change that moves data or code (a new object, a module
+split), write the script again and commit it with the change.
 
 ### The gate: `check.py`
 
 `tools/check.py` (or `make check PYTHON=.venv/Scripts/python`) compiles every C file and
 assembles every module into an empty folder (`build/check/obj`), links them into
-`build/check/out`, and compares the SHA-1 of the 25 files with the GOG release's (the table in
-the tool). It passes only when all 25 are identical, every object was built and the link
-resolved every name by a definition. It takes about ten minutes; `--no-build` links the
+`build/check/out`, and compares the SHA-1 of the 25 files with the GOG release's (the table
+`u5.GOG_SHA1`). It passes only when all 25 are identical, every object was built and the link
+resolved every name by a definition. It takes about six minutes; `--no-build` links the
 objects of the last run again, `--keep` keeps them.
+
+- **Building needs no game file**: the repository, the two compilers, MASM and DOSBox-X.
+  Without the game files the comparison is with the SHA-1 table, and the last line says so.
+- **With the game files** the gate also checks that they are the GOG release's and that the
+  link script is what they give (`linkscript.py --check`).
+- *Shown:* a copy of `tools/`, `src/` and the compilers in a folder with no game files
+  beside it, `U5_GAMEDATA` naming an empty folder, built all 25 identical while Python's
+  `open` audit event recorded no game file opened; the 25 outputs were then compared byte
+  for byte with the GOG files.
 
 ### `nativecheck.py`
 
@@ -472,12 +532,21 @@ of class BSS, in this order:
   allocates them one after the other from the end of the BSS segments, a variable of two
   bytes or more on an even address, in the order of `u5.COMMUNALS`, and reports any that
   does not land on the address in its name or does not end at `_end`. All 70 land.
-- *The order is a fact.* The shared variables come first (DS:a9bc-bb18), then those only
+- *The order is a fact* (looked for a rule, none found; below). The shared variables come first (DS:a9bc-bb18), then those only
   INTRO uses, ENDGAME, TALK, CAST2, SHOPPES2, FONT: link order, so PLINK86 allocated a
   communal when it first met it. Within an object MSC writes COMDEF records in symbol-table
   order (`VARS.OBJ`: runs 64 declarations apart, interleaved), which depends on the
   original's names; that is why related variables are not adjacent (the shop's pointers at
   aafc-ab00, ac62 and b114-b11a, between the map buffers).
+- *What a rule would need.* Only `VARS.OBJ` has COMDEF records in u5d; the original's
+  objects each had their own. From DS:bb18 the order is first-seen at the level of objects,
+  in link order: INTRO0's two, INTRO2's two, ENDGAME's two, TALK's seven, CAST2's two,
+  SHOPPES2's six, SHOPPE2B's two, FONT's nine (the five no code names fall between them).
+  Inside an object it is not the order of first reference in the code (wrong in INTRO0,
+  INTRO2, ENDGAME, TALK and SHOPPES2) and not u5d's EXTDEF order (wrong in FONT, and that
+  order comes from u5d's names anyway). The 33 shared ones (a9bc-bb17) are not in the order
+  of their first users (TOWN2, ULTIMA, ULTIMA, DUNGEONB, ...): one object, linked first,
+  declared them all, in its symbol-table order. Both orders need the original's names.
 - *What the sizes showed.* D_a9bd is one byte and D_a9be another (two bytes at an odd
   address would have been aligned). Five places hold variables no code names: D_bbd2 (0xb6
   bytes, the size of D_bb1c), D_bcb0 (2), D_bd14 (1), D_bd3a and D_bd3b (1 each). They are
@@ -559,7 +628,7 @@ moves locals (CAST_1c36: 5.0's end-pointer loop compare was the tell).
   `tools/asmgen.py NAME START END --ovl OVERLAY` drafts an overlay part (offsets in the
   .OVL file; calls into the resident code and the overlay's own functions by name, labels by
   file offset). The data must not move: a function's literals leave the C object with it,
-  so they go into the assembly module's `_DATA`, placed by u5link from the code's
+  so they go into the assembly module's `_DATA`, placed by linkscript from the code's
   references. AINTRO2's strings follow intro2.c's packed strings at an odd address
   (DS:3345), so its `_DATA` is declared BYTE-aligned; A2322 holds all of the old object's
   data (D_545e and the strings, DS:545e-54b6), because with 2322 gone no code of r2320.c

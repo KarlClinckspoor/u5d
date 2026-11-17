@@ -1,0 +1,154 @@
+# u5d.lnk: the link script. tools/u5link.py links ULTIMA.EXE, the overlays and DATA.OVL
+# from this file and the objects alone; it opens no game file.
+#
+# Written by tools/linkscript.py, which measures every line from the GOG files and the
+# objects (its docstring says how); "tools/linkscript.py --check" measures again and
+# compares. Do not edit by hand: change the measurement and write the file again.
+# All numbers are hexadecimal. A '#' starts a comment.
+
+# exe: ULTIMA.EXE. image is the length of the resident image (the file after its
+# header). The other fields are PLINK86's own, read from the original's header: the
+# relocation table starts at fixed (the header's length before it), the word at 1c
+# is word1c, SS is stackgap paragraphs past the end of the image and SP is sp (the
+# start-up code's stack), and checksum is the word at 12 (not the MZ checksum; what
+# PLINK86 summed is not known). Sizes, relocation count and table, header length,
+# minimum allocation and entry point are the linker's rules.
+exe      image=86f0 fixed=1e word1c=0001 stackgap=0100 sp=0064 checksum=7e39
+
+# dgroup: DATA.OVL is a header of this length (the far pointers in DGROUP, then zeros)
+# and DGROUP, size bytes from DS:0000.
+dgroup   size=bd40 header=10
+
+# define: symbols the linker defines, the end of the initialised data and the end of
+# DGROUP, as the runtime's code holds them in the original.
+define   _edata=a524
+define   _end=bd40
+
+# overlay: a .OVL file. base is the CS address its file offset 0 is loaded at (the
+# area base, less the header), size the file's length, header the length of the
+# relocation list PLINK86 wrote before the code (INTRO.OVL only). In the order of
+# the overlay numbers (the file names in PLINK86's table, src/asm/PLTAB.ASM).
+overlay  TOWN     base=81d0 size=1870 header=00
+overlay  MAINOUT  base=81d0 size=1cb0 header=00
+overlay  DUNGEON  base=81d0 size=1f50 header=00
+overlay  INTRO    base=81c0 size=20d0 header=10
+overlay  FLAMES   base=a290 size=0020 header=00
+overlay  NPC      base=a290 size=1330 header=00
+overlay  COMBAT   base=a290 size=1cf0 header=00
+overlay  BLCKTHRN base=a290 size=0c70 header=00
+overlay  LOOKOBJ  base=a290 size=11d0 header=00
+overlay  DNGLOOK  base=a290 size=13b0 header=00
+overlay  OUTSUBS  base=a290 size=09a0 header=00
+overlay  SHOPPES  base=a290 size=1730 header=00
+overlay  ENDGAME  base=a290 size=0af0 header=00
+overlay  SJOG     base=bf80 size=2260 header=00
+overlay  CMDS     base=bf80 size=1d10 header=00
+overlay  CAST     base=bf80 size=2170 header=00
+overlay  TALK     base=bf80 size=1310 header=00
+overlay  CAST2    base=e1e0 size=11c0 header=00
+overlay  ZSTATS   base=e1e0 size=1310 header=00
+overlay  COMSUBS  base=e1e0 size=1460 header=00
+overlay  SHOPPES2 base=e1e0 size=0b20 header=00
+overlay  SHOPPES3 base=e1e0 size=09e0 header=00
+overlay  FONT     base=e1e0 size=0ea0 header=00
+
+# The resident modules, in the order of their code (the link order). Each line: where
+# the module's code starts (a CS offset) and where each of its data segments starts
+# in DGROUP (DS offsets).
+#   library LIB MODULE PUBLIC   the module of the Microsoft C 5.1 runtime library LIB
+#                        (build/msc51/LIB) that defines PUBLIC; MODULE is its name
+#   object NAME          build/obj/NAME.OBJ: compiled from src/NAME.c, or assembled
+#                        from src/asm/NAME.ASM
+object   ULTIMA   code=0000 _DATA=0042
+library  SLIBCR.LIB dos\crt0.asm     __abrkp     code=017e _DATA=520e
+library  SLIBCR.LIB dos\crt0dat.asm  ___argc     code=0230 _DATA=5266 CDATA=6acc XCB=6ada XCE=6ada XCFB=6ada XCFE=6ada XIB=6ada XIE=6ada XIFB=6ada XIFE=6ada XPB=6ada XPE=6ada XOB=a9bc XOE=a9bc
+library  LIBH.LIB   uldiv.asm        __aNuldiv   code=03a0
+library  SLIBCR.LIB memchr.asm       _memchr     code=0402
+library  SLIBCR.LIB itoa.asm         _itoa       code=0426
+library  LIBH.LIB   lmul.asm         __aNlmul    code=0442
+library  LIBH.LIB   alshl.asm        __aNNalshl  code=0476
+library  LIBH.LIB   ldiv.asm         __aNldiv    code=0496
+library  SLIBCR.LIB dos\nmsghdr.asm  __NMSG_TEXT code=0532 HDR=a44a PAD=a520 EPAD=a522
+library  SLIBCR.LIB dos\crt0msg.asm  __FF_MSGBANNER code=0586 _DATA=52b6 MSG=a452 PAD=a520 EPAD=a522
+library  SLIBCR.LIB dos\stdargv.asm  __setargv   code=05a6 _DATA=52b8
+library  SLIBCR.LIB dos\stdenvp.asm  __setenvp   code=0734
+library  SLIBCR.LIB chksum.asm       __nullcheck code=07a2 NULL=0000 MSG=a4d4 PAD=a520 EPAD=a522
+library  SLIBCR.LIB crt0fp.asm       __fptrap    code=07c4 MSG=a4f9 PAD=a520 EPAD=a522
+library  SLIBCR.LIB xtoa.asm         __cltoasub  code=07ca
+library  LIBH.LIB   lshl.asm         __aNlshl    code=082a
+library  SLIBCR.LIB dos\stdalloc.asm __myalloc   code=0836
+object   A0878    code=0878 _DATA=52ba
+object   R0D72    code=0d72 _DATA=5306
+object   A0DE0    code=0de0 _DATA=5322
+object   R1850    code=1850 _DATA=5402
+object   A1B16    code=1b16
+object   R1B38    code=1b38 _DATA=540c
+object   A1B94    code=1b94 _DATA=540e
+object   R1DDA    code=1dda
+object   A1EAC    code=1eac _DATA=541e
+object   R1FA0    code=1fa0
+object   A2056    code=2056 _DATA=5420
+object   R216C    code=216c
+object   A2192    code=2192 _DATA=5450
+object   R2320    code=2320
+object   A2322    code=2322 _DATA=545e
+object   R251E    code=251e
+object   R256E    code=256e CONST=a0e0
+object   2000     code=266c _DATA=54b6
+object   3000     code=3072 _DATA=55a6 CONST=a110
+object   4000     code=400c _DATA=6a34 CONST=a396
+object   5000     code=51a0
+object   R5A28    code=5a28 _DATA=6a86
+object   6000     code=5f86 CONST=a3f0
+object   A6F1E    code=6f1e _DATA=6aa4
+object   7000     code=7040
+object   A71AA    code=71aa
+object   PLMGR    code=72e0
+object   PLTAB    code=7780
+object   PLSTART  code=81d0
+
+# The overlays' objects: code=OVERLAY:offset, the offset in the .OVL file (as in the
+# functions' names), then the data segments as above.
+object   TOWN     code=TOWN:0000 _DATA=2626
+object   TOWN2    code=TOWN:10da _DATA=278a
+object   MAINOUT  code=MAINOUT:0000 _DATA=2946 _BSS=a524
+object   MAINOUTB code=MAINOUT:109e _DATA=2bc0 CONST=6ada _BSS=a526
+object   DUNGEON  code=DUNGEON:0000 _DATA=2c58
+object   DUNGEONB code=DUNGEON:104c _DATA=2de8 CONST=6bb0
+object   INTRO0   code=INTRO:0010
+object   INTRO    code=INTRO:014e _DATA=2f30
+object   INTRO2   code=INTRO:0986 _DATA=3182
+object   AINTRO2  code=INTRO:132a _DATA=3345
+object   INTROB   code=INTRO:1e22 _DATA=3656 CONST=6cf8
+object   AINTRO   code=INTRO:2090
+object   AFLAMES  code=FLAMES:0000
+object   NPC      code=NPC:0000 _DATA=367e CONST=6d46
+object   ANPC     code=NPC:12e0
+object   COMBAT   code=COMBAT:0000 CONST=6d74
+object   BLCKTHRN code=BLCKTHRN:0000 _DATA=369e CONST=6f6e
+object   LOOKOBJ  code=LOOKOBJ:0000 _DATA=3750 CONST=71f8
+object   DNGLOOK  code=DNGLOOK:0000 _DATA=383a CONST=752e _BSS=a528
+object   OUTSUBS  code=OUTSUBS:0000 _DATA=3866
+object   OUTSUBSB code=OUTSUBS:0658 _DATA=3a26 CONST=7750
+object   SHOPPES  code=SHOPPES:0000 _DATA=3a32 CONST=7826
+object   ENDGAME  code=ENDGAME:0000 _DATA=3da6 CONST=81fe
+object   SJOG     code=SJOG:0000 _DATA=3e66 CONST=84e6
+object   CMDS     code=CMDS:0000 _DATA=41d4
+object   CMDS2    code=CMDS:1202 _DATA=4450
+object   CMDSB    code=CMDS:18be CONST=8f64
+object   CAST     code=CAST:0000 _DATA=4592
+object   CASTB    code=CAST:1c36
+object   TALK     code=TALK:0000 _DATA=4a9a CONST=9052
+object   CAST2    code=CAST2:0000 _DATA=4af6 CONST=94f4
+object   ZSTATS   code=ZSTATS:0000 CONST=96b4
+object   COMSUBS  code=COMSUBS:0000 CONST=99a0 _BSS=a728
+object   SHOPPES2 code=SHOPPES2:0000 _DATA=4c1e CONST=9aa8
+object   SHOPPE2B code=SHOPPES2:07e2 _DATA=4d66 CONST=9fc2
+object   SHOPPES3 code=SHOPPES3:0000 _DATA=4d7e
+object   AFONT0   code=FONT:0000
+object   FONT     code=FONT:02a2 _DATA=50ea CONST=a010
+object   AFONT    code=FONT:0e52 _DATA=520c
+
+# Objects without code or data of their own: the communal variables, which the
+# linker allocates after the last _BSS (tools/u5.py, COMMUNALS).
+object   VARS

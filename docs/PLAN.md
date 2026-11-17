@@ -72,7 +72,7 @@ the original and are C in u5d (step 5).
 7. **Link** *(done)*.
    - PLINK86 is not available, and MS LINK's overlays are a different scheme. So:
    - `tools/u5link.py`, a small OMF linker, places every module at its measured address
-     (resident code, the four overlay areas, DGROUP).
+     (resident code, the four overlay areas, DGROUP), which it reads from the link script.
    - It writes the overlay stubs and an MZ header like the original's, with relocations in
      the original order.
    - It produces `ULTIMA.EXE`, the 23 raw overlays, `FLAMES.OVL` and `DATA.OVL`.
@@ -178,27 +178,39 @@ Next, in order:
      allocated by size in PLINK86's order (`u5.COMMUNALS`), the statics are in `_BSS`, and
      `D_6608_overworld` is a linker definition (`u5.LINK_DEFINES`).
 5. **The gate** *(done)*. `tools/check.py`; `make check`.
+6. **The link script** *(done)*. `src/u5d.lnk` holds every placement (each module's code
+   address and data segment offsets, the 17 library modules, the overlays' sizes, DGROUP's
+   size, `_edata`/`_end`, PLINK86's EXE header fields); `tools/linkscript.py` measures it
+   from the game files and `--check`s it. `u5link.py` links from the script and the objects
+   alone, and `check.py` builds without the game files (MATCHING.md, "The link script").
 
 ## What is left
 
-The 25 files are identical. What the build still takes from the original rather than from a
-rule or from source, each named where it lives:
+The 25 files are identical, and building them needs only the repository, the compilers,
+MASM and DOSBox-X: the game files are needed to compare (or the SHA-1 table is used) and to
+measure the link script again. What the build still takes from the original rather than
+from a rule or from source, each named where it lives:
 
-- **Placement is measured at link time.** `u5link.py` reads the original files to place each
-  object's data (where its references point) and the library modules (where their bytes
-  are). The game files are therefore needed to build. Recording these facts in a link
-  script (one line per object: code address, `_DATA`, `CONST`, `_BSS`) would make the link
-  independent of them.
-- **The order of the communal variables** (`u5.COMMUNALS`, 70 names) is a fact. The evidence
-  says PLINK86 allocated each when it first met it (shared ones first, then INTRO's,
-  ENDGAME's, TALK's, CAST2's, SHOPPES2's, FONT's, in link order); within an object that is
-  MSC's symbol-table order, which depends on the original's names. Five of them (D_bbd2,
-  D_bcb0, D_bd14, D_bd3a, D_bd3b) are referenced by no code and declared only to fill the
-  layout.
+- **Placement** is the link script's (`src/u5d.lnk`): 154 lines of facts, measured by
+  `tools/linkscript.py`. Much of it could become rule: a module's code follows the one
+  before it (with the alignment of its segment), and the data segments follow in link order
+  per class; the script would then shrink to the link order. Not tried.
+- **The order of the communal variables** (`u5.COMMUNALS`, 70 names) is a fact, and no rule
+  was found (MATCHING.md, "The uninitialised data"). At the level of objects the part from
+  DS:bb18 is first-seen in link order (INTRO0, INTRO2, ENDGAME, TALK, CAST2, SHOPPES2,
+  SHOPPE2B, FONT); inside an object the order is neither the order of first reference nor
+  u5d's EXTDEF order, and the 33 shared ones are in the symbol-table order of one object
+  that declared them all. Both depend on the original's names. Five (D_bbd2, D_bcb0,
+  D_bd14, D_bd3a, D_bd3b) are referenced by no code and declared only to fill the layout.
 - **`D_6608_overworld`** is a linker definition; which object defined the second name is
   not known.
-- **The EXE checksum** (0x7e39) is copied; what PLINK86 summed was not found (not the file,
-  the image, the header or the overlays, as words or bytes).
+- **The EXE checksum** (0x7e39) is copied (the script's `exe` line); what PLINK86 summed
+  was not found. Tried (MATCHING.md, "The link"): word and byte sums and XORs over every
+  range between the header's fields, the relocation table, the image and PLINK86's
+  segments, with the overlays and DATA.OVL, CRC-16s, rotating sums; all also on the file
+  with GOG's eight patched bytes of ULTIMA_2322 restored (its MZ checksum would be e957,
+  the GOG file's 0d37). Left: the sum of the program as PLINK86 wrote it before the
+  overlays and DGROUP went to their own files, whose header is unknown.
 - **Stand-in devices** in the source, each explained in its note: ULTIMA_1850's comment-line
   padding, TOWN_0f02's dead references (both pass 2's pool), DUNGEON_1952's register slot
   sharing, AINTRO2's BYTE-aligned `_DATA`, A2322 holding D_545e and r2320's strings.

@@ -6,53 +6,33 @@
 1. Compiles every C file of the DOS build (tools/dosbuild.py: MSC 5.1 or 5.0 per file) and
    assembles every module of src/asm (tools/asmbuild.py: MASM 4.0) into a folder of its own,
    build/check/obj, starting empty: nothing from an earlier build is used.
-2. Links them (tools/u5link.py) into build/check/out: ULTIMA.EXE, the 23 code overlays,
-   FLAMES.OVL and DATA.OVL.
-3. Compares the SHA-1 of each with the GOG release's (the table below).
+2. Links them (tools/u5link.py, as the link script src/u5d.lnk says) into build/check/out:
+   ULTIMA.EXE, the 23 code overlays, FLAMES.OVL and DATA.OVL.
+3. Compares the SHA-1 of each with the GOG release's (the table u5.u5.GOG_SHA1).
+
+Building needs the repository, the compilers, MASM and DOSBox-X; steps 1 to 3 open no game
+file. When the game files are found (--gamedata, $U5_GAMEDATA, gamedata/, ../gamedata) two
+more checks are made, and the last line says so:
+
+4. the game files are the GOG release's (their SHA-1s are the table's);
+5. the link script is what the original files give (tools/linkscript.py --check: every
+   placement measured again from the game files and the objects just built).
+
+Without them the comparison is with the SHA-1 table alone, which is the same test of the
+25 files; 4 and 5 are skipped.
 
 It passes (exit status 0) only when all 25 are identical, every object was built, and the
-link resolved no reference by the address in its name and left none unresolved.
+link resolved no reference by the address in its name and left none unresolved (and, with
+the game files, 4 and 5 hold).
 
 --no-build links and compares what build/check/obj already holds. --keep leaves
 build/check/obj in place afterwards (build/check/out always stays).
-
-What the gate does not show: the linker places modules where the original has them and
-reads those places from the original files (tools/u5link.py, "facts"), so the game files
-are needed to build, not only to compare.
 """
 import argparse, glob, hashlib, os, shutil, sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import u5  # noqa: E402
 
-# SHA-1 of the GOG release's files (Ultima 4+5+6 pack, Ultima V 1.16 as patched by GOG).
-GOG_SHA1 = {
-    'ULTIMA.EXE': '9971bbeb6d00fe8c43a98d5ad2d7b82be2d0ca8b',
-    'DATA.OVL': '9b5b640d4b6a014c1983a7f0527bbba9bfb4204e',
-    'FLAMES.OVL': '942370a93a77019ee38a6cccc2050267c4b01b03',
-    'BLCKTHRN.OVL': '002a9b427e85a3a5bf5518fd0feacf8ac38da1e0',
-    'CAST.OVL': '517573779ddb41b40f305a5e20d0d4f95fd751ea',
-    'CAST2.OVL': '03d9e239f8c347825e39780c5e0299306064700b',
-    'CMDS.OVL': 'e5ae97bcb3d6d0f531787789f6ee02872c370a17',
-    'COMBAT.OVL': '48b1a3e38bf9e95458458b2fbbe8f8c4c5b6ee2b',
-    'COMSUBS.OVL': '13c9479fc26c851fc9a4eb6ba1843109f09e0b16',
-    'DNGLOOK.OVL': '1677a1625db99021ff54d5378761219480e41b94',
-    'DUNGEON.OVL': 'c1c407a48915517dc161e28a464c8df65d0a69d8',
-    'ENDGAME.OVL': 'e801051bebfdf167ff35be6035688f44983ab57a',
-    'FONT.OVL': '90303cf773e225ef4bbd462ab34598c29b1dea94',
-    'INTRO.OVL': '4195043891ee60f82c65fe739d77f2ac3e98168c',
-    'LOOKOBJ.OVL': 'fe25e3dbabbd3057ab5dd60c18bcf402d1952f80',
-    'MAINOUT.OVL': 'd027edaee9b2317f649182a12610f6b60410d649',
-    'NPC.OVL': '3c48134a8a99093c3c21b5d7f0253428cc1b5848',
-    'OUTSUBS.OVL': '1710166896b91198630794223445f483afd04f78',
-    'SHOPPES.OVL': '8c51e5fae50fc0e7524e01d040abd6177e85cd3d',
-    'SHOPPES2.OVL': '1644c2ed9d9ad4a1e1dc8ae944eb4040e12c3c8d',
-    'SHOPPES3.OVL': '82c5fdb37a965f3976b2d7b63207b032cce56c3e',
-    'SJOG.OVL': '188d9e684199f899d33532f6913485786f337962',
-    'TALK.OVL': '17ff6bbde9d9781874ba74f9ab5feb3b9808c612',
-    'TOWN.OVL': 'fdfed52705b7aa6efc2a89a5b2628f3537292372',
-    'ZSTATS.OVL': '94a03813bcb563ccde005d1a09cb67b5e75ea684',
-}
 CHECK = os.path.join(u5.BUILD, 'check')
 
 
@@ -69,14 +49,9 @@ def main():
     a = ap.parse_args()
     if a.gamedata:
         os.environ['U5_GAMEDATA'] = os.path.abspath(a.gamedata)
-    gd = u5.find_gamedata(a.gamedata)
+    gd = u5.find_gamedata(a.gamedata, required=False)     # only to check, not to build
     obj, out = os.path.join(CHECK, 'obj'), os.path.join(CHECK, 'out')
     problems = []
-
-    # the original, which the linker measures its placements from, must be the GOG release
-    for name, want in GOG_SHA1.items():
-        if sha1(u5.read_file(gd, name)) != want:
-            problems.append('%s in %s is not the GOG release\'s file' % (name, gd))
 
     if not a.no_build:
         shutil.rmtree(obj, ignore_errors=True)
@@ -105,26 +80,39 @@ def main():
     print('linking ...', flush=True)
     lk, files = u5link.link(out)
     same = 0
-    for name in sorted(GOG_SHA1, key=lambda n: (n != 'ULTIMA.EXE', n)):
-        ours = files.get(name, (None,))[0]
+    for name in sorted(u5.GOG_SHA1, key=lambda n: (n != 'ULTIMA.EXE', n)):
+        ours = files.get(name)
         h = sha1(ours) if ours is not None else '(not built)'
-        ok = h == GOG_SHA1[name]
+        ok = h == u5.GOG_SHA1[name]
         same += ok
-        print('%-13s %s  %s' % (name, h, 'identical' if ok else 'DIFFERENT (GOG: %s)' % GOG_SHA1[name]))
-    for name in sorted(set(files) - set(GOG_SHA1)):
+        print('%-13s %s  %s' % (name, h, 'identical' if ok else 'DIFFERENT (GOG: %s)' % u5.GOG_SHA1[name]))
+    for name in sorted(set(files) - set(u5.GOG_SHA1)):
         problems.append('%s: built, but not one of the 25 files' % name)
     if lk.by_convention:
         problems.append('%d names resolved only by the address in their name: %s' % (
             len(lk.by_convention), ' '.join(sorted(lk.by_convention)[:12])))
     if lk.unresolved:
         problems.append('unresolved: %s' % ' '.join(sorted(lk.unresolved)[:12]))
-    problems += ['link: ' + n for n in lk.notes if 'measured' not in n]
+    problems += ['link: ' + n for n in lk.notes]
+    if gd:
+        for name, want in u5.GOG_SHA1.items():
+            if sha1(u5.read_file(gd, name)) != want:
+                problems.append('%s in %s is not the GOG release\'s file' % (name, gd))
+        import linkscript
+        measured, notes = linkscript.text(gd)
+        problems += ['link script: ' + n for n in notes]
+        if measured != open(u5link.SCRIPT, encoding='ascii').read():
+            problems.append('src/u5d.lnk is not what tools/linkscript.py measures from the game files')
     for p in problems:
         print('problem: ' + p)
     if not a.keep and not a.no_build:
         shutil.rmtree(obj, ignore_errors=True)
-    ok = same == len(GOG_SHA1) and not problems
-    print('%d of %d files identical to the GOG release: %s' % (same, len(GOG_SHA1), 'PASS' if ok else 'FAIL'))
+    ok = same == len(u5.GOG_SHA1) and not problems
+    print('%d of %d files identical to the GOG release: %s' % (same, len(u5.GOG_SHA1), 'PASS' if ok else 'FAIL'))
+    print('built without the game files; ' + (
+        'the game files in %s are the GOG release\'s and give the link script' % gd if gd and ok else
+        'game files found in %s' % gd if gd else
+        'no game files found: compared with the SHA-1 table only, the link script not measured again'))
     sys.exit(0 if ok else 1)
 
 
