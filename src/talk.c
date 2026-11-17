@@ -193,7 +193,11 @@ static int TALK_01e2(void)
             // where the original needs jbe + jmp near. Tried without effect: < or > with the
             // operands either way, (int)(uint)/(int)(u8)/(s16)/& 0xff/+ 0 on D_585b,
             // ++local_14, += 1, a while loop, !(== STATUS_DEAD), local_16_an = local_16_an + 10.
-            // (long) and (uint) bounds are far worse.
+            // (long) and (uint) bounds are far worse. Also identical: (D_55a8_party + local_14)->status,
+            // (int)D_585b != local_14, local_14 = local_14 + 1, a (int) cast on the index. No cast
+            // with <: 308 bytes, 224 differ. A second counter declared in this block and stepped
+            // with local_14 (for (local_14 = 0, k = 0; ...; local_14++, k++)) gives the frame of
+            // 1Ch but takes bp-16h itself (322 bytes); the original's bp-1Ch is a temporary.
             for (local_14 = 0; local_14 != (int)D_585b; local_14++)
             {
                 // 025a

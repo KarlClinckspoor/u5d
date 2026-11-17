@@ -720,7 +720,9 @@ static bool SHOPPES2_080e(int param_1, int param_2, int param_3)
 // (1), for (;;), do-while and while (local_4_ab == 0); "register int local_4_ab" (SI, 375
 // bytes differ); register param_1 (loaded at entry, into SI); a "register int local_p =
 // param_1" after the pointer setup used for the calls (158 differ, but it takes a stack
-// slot: frame 10).
+// slot: frame 10). Also no registers: local_4_ab = 0 before the pointer setup (where the
+// original sets SI); and, as diagnostics only, dropping either price computation (so not
+// the CMDS_12c8 common-subexpression case) or the continue in case F (worse).
 static void SHOPPES2_08a8(int param_1)
 {
     byte local_6;
