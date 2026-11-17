@@ -92,6 +92,9 @@
     <ClCompile Include="..\src\cast.c">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\castb.c">
+      <Filter>src</Filter>
+    </ClCompile>
     <ClCompile Include="..\src\cast2.c">
       <Filter>src</Filter>
     </ClCompile>
@@ -126,6 +129,9 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\grap_drv.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\intro0.c">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\intro.c">

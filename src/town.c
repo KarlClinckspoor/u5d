@@ -1036,6 +1036,23 @@ static void TOWN_0f02(void)
             // optimization to the earlier functions (CAST_1c36, cmds2.c); the reverse does
             // not help here: up to 20 extra extern references in a function placed just
             // before TOWN_0f02 change nothing.
+            // It is pass 2's capacity after all, but the original had MORE global symbols
+            // before this function than u5d: 265-274 unreferenced tentative definitions
+            // (int X;) just before TOWN_0f02, TOWN_0e34 or TOWN_0dc4, or 120 small functions
+            // each setting its own extern, make TOWN_0f02 exact (fewer: frame 0Ch but this
+            // loop still optimized; more: the other loops go too). 80 extern references in
+            // one function or 120 empty functions do nothing. At the top of the file they
+            // also break TOWN_0408, TOWN_0c78 and TOWN_1694; just before TOWN_0f02 only
+            // TOWN_1694 breaks. TOWN_10da-TOWN_1726 compile the same as an object of their
+            // own (tested with everything before TOWN_10da deleted), and TOWN_10da's string
+            // starts at an even address (DS:278a) right after this function's last one, so
+            // an object boundary after TOWN_0f02 would keep TOWN_1694 exact. What the
+            // original's extra symbols were is not known; tentative definitions are no fix
+            // (they become communal variables at link). Near that limit, comment lines in
+            // this function count too (blank lines do not; with or without /Fc): with 240
+            // definitions, 30 comment lines before this loop make it exact, and this note
+            // moves the window from 261-274 to about 250-259. Far from it, 200 comment
+            // lines change nothing.
             // for (105d; 1067; 1064)
             for (local_6 = 0; local_6 < D_585b; local_6++)
             {

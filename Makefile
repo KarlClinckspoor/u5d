@@ -10,6 +10,7 @@ OBJS += \
 	src/mainoutb.o \
 	src/dungeon.o \
 	src/dungeonb.o \
+	src/intro0.o \
 	src/intro.o \
 	src/intro2.o \
 	src/introb.o \
@@ -27,6 +28,7 @@ OBJS += \
 	src/cmds2.o \
 	src/cmdsb.o \
 	src/cast.o \
+	src/castb.o \
 	src/talk.o \
 	src/cast2.o \
 	src/zstats.o \

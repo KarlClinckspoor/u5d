@@ -17,6 +17,7 @@ set(SOURCES
 	src/mainoutb.c
 	src/dungeon.c
 	src/dungeonb.c
+	src/intro0.c
 	src/intro.c
 	src/intro2.c
 	src/introb.c
@@ -34,6 +35,7 @@ set(SOURCES
 	src/cmds2.c
 	src/cmdsb.c
 	src/cast.c
+	src/castb.c
 	src/talk.c
 	src/cast2.c
 	src/zstats.c

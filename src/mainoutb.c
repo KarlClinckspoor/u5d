@@ -451,12 +451,24 @@ static void MAINOUT_16fc(int param_1)
     }
 }
 
+// The original stores the constants to param_2 through AX ("mov ax,1; mov [bp+4],ax"), MSC's
+// form for a chained assignment (see SHOPPES2_00ac): param_2 = param_2 = 1 gives it.
+#if defined(TARGET_DOS16)
+#define P2_SET(v) param_2 = param_2 = (v) // two stores between sequence points: DOS build only
+#else
+#define P2_SET(v) param_2 = (v)
+#endif
+
 // CHECKED
-// NOT MATCHING (6 bytes short): the original stores the constants to param_2 through AX
-// ("mov ax,1; mov [bp+4],ax", "sub ax,ax; mov [bp+4],ax") where we store immediates, and
-// places the "else if (local_a > 0) param_2 = 0;" blocks (and local_e_am's) out of line,
-// after the next test's first block, jumping back. param_2 declared volatile, unsigned or
-// char changes nothing (char: 2 more bytes differ).
+// NOT MATCHING (2 bytes short): the original places the "else if (local_a > 0) param_2 = 0;"
+// blocks (and local_e_am's) out of line, after the next unconditional jump (the e_am == 0
+// branch's, and the first "MAINOUT_1578(); return;"), jumping back; here they follow the
+// "local_4_ab = param_2 = 1" blocks, which jump over them. param_2 declared volatile,
+// unsigned or char changes nothing (char: 2 more bytes differ). Tried: the "local_a >= 0"
+// case as a goto to a block after the function's end (MSC moves it right after the goto,
+// the test inverted), a goto at the end of the else-if block to a label on the next test
+// (that label's block moves up after the "local_a == 0" branch instead), a label alone,
+// "if (local_a >= 0) { if (local_a > 0) ... } else local_4_ab = ..." (laid out in order).
 static void MAINOUT_17d4(int param_1, int param_2)
 {
     int local_e_am;
@@ -487,7 +499,7 @@ static void MAINOUT_17d4(int param_1, int param_2)
     }
     else if (local_a > 0) // 1836
     {
-        param_2 = 1; 
+        P2_SET(1);
         local_4_ab = -1;
         // -> 1864
     }
@@ -496,7 +508,7 @@ static void MAINOUT_17d4(int param_1, int param_2)
         // ????
         if (local_a < 0) // 184a
         {
-            param_2 = 0;
+            P2_SET(0);
         }
 
         if (local_a < 0) // 1855
@@ -505,7 +517,7 @@ static void MAINOUT_17d4(int param_1, int param_2)
         }
         else if (local_a > 0) // 1872
         {
-            param_2 = 0;
+            P2_SET(0);
         }
     }
 
@@ -515,7 +527,7 @@ static void MAINOUT_17d4(int param_1, int param_2)
     }
     else if (local_e_am > 0) // 1880
     {
-        param_2 = 1;
+        P2_SET(1);
         local_6 = -1;
     }
     else
@@ -523,7 +535,7 @@ static void MAINOUT_17d4(int param_1, int param_2)
         // ????
         if (local_e_am < 0) // 1894
         {
-            param_2 = 0;
+            P2_SET(0);
         }
 
         if (local_e_am < 0) // 189f
@@ -532,7 +544,7 @@ static void MAINOUT_17d4(int param_1, int param_2)
         }
         else if (local_e_am > 0) // 18ee
         {
-            param_2 = 0;
+            P2_SET(0);
         }
     }
 
@@ -591,6 +603,7 @@ static void MAINOUT_17d4(int param_1, int param_2)
     // 197d
     MAINOUT_16fc(param_1);
 }
+#undef P2_SET
 
 static void MAINOUT_198c(int param_1)
 {

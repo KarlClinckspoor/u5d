@@ -1,8 +1,5 @@
-// These tables are declared const here, and vars.h's declarations are renamed out of the way.
-// But common.h defines const away in the DOS build, so const changes nothing there. A real
-// const table does let MSC keep values read from it in registers across calls (tried on
-// DUNGEON_111e). It also moves the table from _DATA to CONST, where the original's tables
-// are not.
+// D_306c, D_30c4 and D_30da are const tables (see INTRO_014e), and vars.h's declarations
+// are renamed out of the way.
 #define D_306c D_306c_vars_h
 #define D_30c4 D_30c4_vars_h
 #define D_30da D_30da_vars_h
@@ -33,101 +30,13 @@ void INTRO_2090_AnimateWD(void);
 
 void INTRO_20ae_ShowWD(byte* ptr);
 
-void INTRO_0010(void)
-{
-    int local_4;
+// defined in intro0.c
+void INTRO_0010(void);
+int INTRO_0050_LordBritishAnim(int param_1, int param_2);
 
-    ULTIMA_0c22_GRAP_0f_SelectPage(1);
-    ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
-
-    for (local_4 = 0; local_4 < 4; local_4++)
-    {
-        ULTIMA_0d4c_GRAP_4b_PutImage(D_bb1a, local_4 + 1, 0x10, local_4 * 0x32, 0);
-    }
-}
-
-// lord british animation
-int INTRO_0050_LordBritishAnim(int param_1, int param_2)
-{
-    int local_e;
-    int local_c_yMove;
-    int local_a_xMove;
-    int local_8;
-    byte* local_6;
-    int local_4_ab;
-
-#if !defined(MATCHING_BUILD)
-    local_6 = D_b21e;
-    ASSERT(SCRATCH_SIZE >= 2783); // BRITISH.PTH file size
-#define MEM_SIZE SCRATCH_SIZE
-#else
-    // DOS: uses savegame area
-    local_6 = &D_55a6;
-#define MEM_SIZE ((byte*)&D_6606 - (byte*)&D_55a6) /*0x1060*/
-#endif
-
-    local_e = D_13b0_brightWhiteColor;
-
-    ULTIMA_0a70_GRAP_2d_SetPenColor(local_e);
-
-    local_4_ab = D_5356;
-    D_5356 = 0x113;
-
-    for (local_8 = D_bb18; local_8 < MEM_SIZE; local_8++)
-    {
-        if (local_e != 0)
-        {
-            ULTIMA_0c64_GRAP_30_Pset(param_1, param_2);
-        }
-
-        local_e = D_13b0_brightWhiteColor;
-
-        local_c_yMove = local_6[local_8] & 7;
-        if (local_c_yMove > 2)
-        {
-            local_e = 0;
-        }
-
-        if ((local_6[local_8] & 8) != 0)
-        {
-            local_c_yMove = -local_c_yMove;
-        }
-
-        local_a_xMove = (local_6[local_8] >> 4) & 0x7;
-        if (local_a_xMove > 2)
-        {
-            local_e = 0;
-        }
-
-        if ((local_6[local_8] & 0x80) != 0)
-        {
-            local_a_xMove = -local_a_xMove;
-        }
-
-        param_1 += local_a_xMove;
-        param_2 += local_c_yMove;
-
-        if (ULTIMA_1d5e_PollKey() != 0)
-        {
-            D_5356 = local_4_ab;
-            return 0;
-        }
-
-        if ((local_8 & 0x1f) == 0)
-        {
-            ULTIMA_20fa_WaitTicks(1);
-        }
-
-        if (local_6[local_8] == 0)
-            break;
-    }
-
-    D_bb18 = local_8 + 1;
-    D_5356 = local_4_ab;
-
-    return D_bb18;
-#undef MEM_SIZE
-}
+// common.h defines const away in the DOS build; these three tables are really const there
+// too. MSC 5.1 still puts them in _DATA, in their place.
+#undef const
 
 Pair D_2f98[0x15] =
 {
@@ -221,17 +130,11 @@ u8 D_30f0[0x15] =
 
 // CHECKED
 // introduction
-// NOT MATCHING (2 bytes short): the original optimizes the do-while that reloads local_6
-// inside the for loop (&D_25ea[local_8 + 0x12] hoisted into DI, local_6 in SI, stored
-// after the loop, one temporary: frame 0Ch); here that loop is not optimized (frame 10h).
-// It is pass 2's capacity again (see intro2.c): with INTRO_0010 and INTRO_0050 removed
-// from this file the loop comes out as in the original (752 bytes, 9 bytes differ). What
-// is left then: the frame is 12h, because the three register variables in inner blocks
-// take stack slots, and the index of D_2f98/D_2fc2 at 00f0 goes to DI instead of SI. In
-// that setting, the blocks without register (plain expressions) or the register variables
-// at function level are worse (758-768 bytes). INTRO_0010/0050 use no strings, so an
-// object of their own before this one would leave _DATA as it is (it starts at DS:2f30
-// with this function's first string).
+// Exact with two things: INTRO_0010/0050 in an object of their own (intro0.c; after them
+// the do-while that reloads local_6 is not optimized: pass 2's capacity), and D_30da,
+// D_30c4 and D_306c const. The original keeps their values in SI/DI across the calls
+// without any register variable (frame 0Ch): MSC knows a call cannot change a const table.
+// Register variables for them take stack slots (frame 12h), even at function level.
 void INTRO_014e_Introduction(void)
 {
     byte* local_c;
@@ -305,17 +208,10 @@ void INTRO_014e_Introduction(void)
             }
         }
 
+        ULTIMA_0d4c_GRAP_4b_PutImage(local_6, D_3098[local_a], D_30c4[local_a], D_30da[local_a], 0);
+        if (D_30f0[local_a] >= 4)
         {
-            register int local_y;
-            register int local_x;
-
-            local_y = D_30da[local_a];
-            local_x = D_30c4[local_a];
-            ULTIMA_0d4c_GRAP_4b_PutImage(local_6, D_3098[local_a], local_x, local_y, 0);
-            if (D_30f0[local_a] >= 4)
-            {
-                ULTIMA_0d4c_GRAP_4b_PutImage(local_6, D_30f0[local_a] * 2 - 5, local_x, local_y + 0x37, 0);
-            }
+            ULTIMA_0d4c_GRAP_4b_PutImage(local_6, D_30f0[local_a] * 2 - 5, D_30c4[local_a], D_30da[local_a] + 0x37, 0);
         }
 
         D_5146[0] = D_2f98[local_a].x;
@@ -326,25 +222,21 @@ void INTRO_014e_Introduction(void)
 
         D_5150 = D_3040[local_a];
         D_5152 = D_3056[local_a];
+        D_5156 = D_306c[local_a];
+        D_5158 = D_3082[local_a];
+
+        if (D_30f0[local_a] == 3)
         {
-            register int local_z;
-
-            D_5156 = local_z = D_306c[local_a];
-            D_5158 = D_3082[local_a];
-
-            if (D_30f0[local_a] == 3)
-            {
-                ULTIMA_0d4c_GRAP_4b_PutImage(local_6, 3, 0x60, 0x27, 0);
-                FONT_0000(local_c, _TEXT(0x2f31, "Instantly, a shimmering blue door springs up!"));
-                D_5156 = local_z;
-                D_5158 = 0xb4;
-                FONT_0000(local_c, _TEXT(0x2f5f, "With heart beating rapidly, you step into it."));
-            }
-            else
-            {
-                ULTIMA_256e_ReadFileFromDisk(/*0x2f8d*/ "STORY.DAT", D_b21e, 2000, D_3016[local_a]);
-                FONT_0000(local_c, D_b21e);
-            }
+            ULTIMA_0d4c_GRAP_4b_PutImage(local_6, 3, 0x60, 0x27, 0);
+            FONT_0000(local_c, _TEXT(0x2f31, "Instantly, a shimmering blue door springs up!"));
+            D_5156 = D_306c[local_a];
+            D_5158 = 0xb4;
+            FONT_0000(local_c, _TEXT(0x2f5f, "With heart beating rapidly, you step into it."));
+        }
+        else
+        {
+            ULTIMA_256e_ReadFileFromDisk(/*0x2f8d*/ "STORY.DAT", D_b21e, 2000, D_3016[local_a]);
+            FONT_0000(local_c, D_b21e);
         }
 
         if (local_a != 0)
@@ -378,6 +270,10 @@ void INTRO_014e_Introduction(void)
     D_a9bd[1] = 0;
     ULTIMA_251e_SwitchDisks(0);
 }
+
+#if defined(TARGET_DOS16)
+#define const
+#endif
 
 void INTRO_043e(char* param_1)
 {
