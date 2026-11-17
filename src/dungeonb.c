@@ -544,6 +544,15 @@ static void DUNGEON_1786(int param_1, int param_2)
 // (both dead there; stored to the stack, worse); a block-scope int (worse) or register (SI,
 // but p * 2 first and a frame of 8); deleting all the earlier functions (no change, so not
 // the optimizer's capacity).
+// Batch 3: MSC 5.0 builds a common subexpression in SI itself ("mov si,ax; ...; add si,ax")
+// when it is used as an index (FONT_04A4's GetMap(x, y) = GetCopiedMap(x, y), DNGLOOK's and
+// T9's GetDungeonMap); every value CSE in the exact code is built in AX and moved, and ours
+// is the only "add ax,cx; mov si,ax" in them. The original avoids CX as if it were taken.
+// Also tried, all the same code: the two calls as one comma expression (also with the
+// operands swapped); (int)((s16*)T + p), (int)(p + (s16*)T), (int)&((s16*)T)[p];
+// *(T + i); one u8 [2][8] table for both; p + p; (uint)p * 2 (p * 2u: 12 bytes longer). A
+// function-level register r (r = T[i] + p * 2): SI, but "mov si,[bp+4]; shl si,1" first and
+// frame 6; local_6_an declared register: SI for the whole function, 322 bytes.
 static void DUNGEON_1952(int param_1, int param_2, int param_3)
 {
     static u8 D_2f16[8] = {0x00, 0x1f, 0x00, 0x1f, 0x00, 0x00, 0x00, 0x00};

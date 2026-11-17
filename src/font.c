@@ -77,16 +77,30 @@ u8 D_51fc[8] = {0x28, 0x30, 0x30, 0x28, 0x28, 0x30, 0x28, 0x30};
 u8 D_5204[8] = {0x05, 0x07, 0x04, 0x0a, 0x08, 0x00, 0x05, 0x06};
 
 // CHECKED
-// NOT MATCHING (SIZE 698/674, 544 bytes): the first inner loop differs from its start. The
-// original keeps local_4_ab, local_a, local_10_ad_am and param_2 in SI, DI, CX and DX
-// (stored when the loop ends), rereads param_2[i] through "mov bx,cx; add bx,dx" at every
-// test, compares the characters unsigned ("ja"/"jbe": byte, not char) and places the
-// "{"/"_"/glyph branch at the loop's top, the "<= 0x20" branch after the merged test. Ours
-// registers nothing there and keeps param_2[i] in a stack temporary (as in CMDS_12c8).
-// param_2 is byte* (544 -> 536 bytes, same shape). Also tried, no better: the inner loop as
-// a for with the two assignments in its init; "if (c > 0x20) {...} else" (548); *(param_2 + i)
-// in the test, the body or both; all of the file's data defined after FONT_0000, only its own
-// data, or none (capacity: no change, so not an object boundary).
+// NOT MATCHING (SIZE 676/674; about 50 instructions differ, most of the rest is shifted).
+// What made the loops the original's: the outer loop as "for (;;) { if (!c) break; ...}"
+// (as a while, the first inner loop gets no registers and param_2[i] is a stack temporary;
+// a label before "local_a = 0" does the same as the for); "local_c > local_4_ab" in that
+// loop's test; the second loop's first three breaks as gotos to the ' ' case's break, which
+// then falls into the code after the loop, and "local_e_am >= --i"; the third loop as
+// "if (i < n) do ... while (n != ++i)" (a for gives "cmp si,[bp-4]" at the bottom, the
+// swapped for "cmp [bp-4],ax" in the entry test); the label L_e, which stops MSC keeping
+// param_2[local_e_am] in a temporary; (int)D_5158 for the signed compares. Still different:
+// - the first inner loop's entry (sub di,di; mov cx,bx; mov si,[bp-2]; mov dx,[bp+4]; jmp
+//   test) sits after the outer test in the original, ours at the top of the outer body
+//   ("mov cx,[bp-0Ch]"). The outer loop as while(1), do..while(1), gotos, if/else break,
+//   or a goto into a do-while (outer, inner or both), or the inner loop as a for with the
+//   two assignments in its init: no change or worse. With the outer loop made of gotos
+//   ("goto L_T; L_top: ...; L_T: if (c) { init; goto L_top; }", or the init at L_top, or a
+//   goto into a do-while) the test block comes out as the original's ("mov ax,bx"), but
+//   the first inner loop loses its registers again;
+// - the end's "local_12 * 2" is in SI in ours, in BX with a dead store to bp-1Ch (frame
+//   1Ch, ours 1Ah) in the original, as if SI/DI were taken there (nested assignment,
+//   *(D_5146 + i), labels around it, no ternary: no change);
+// - "mov ax,[bp-14h]; add ax,si" (ours "mov ax,si; add ax,[bp-14h]") for "local_4_ab +
+//   D_50f7 + 1 < local_c": eight orders, casts and "local_c >" give the same code;
+// - two nops after loop 3's idiv branch ("jmp near; nop; nop", a jump sized long).
+// Earlier: capacity ruled out (all of the file's data after FONT_0000, or none: no change).
 // param_1: image, param_2: text
 void FONT_0000(byte* param_1, byte* param_2)
 {
@@ -107,11 +121,13 @@ void FONT_0000(byte* param_1, byte* param_2)
     local_e_am = local_6 = 0;
     local_4_ab = D_5156 - D_5146[local_12_ab_am];
 
-    while (param_2[local_e_am] != '\0')
+    for (;;)
     {
+        if (param_2[local_e_am] == '\0')
+            break;
         local_a = 0;
         local_10_ad_am = local_e_am;
-        while (param_2[local_10_ad_am] != '\0' && local_4_ab < local_c && param_2[local_10_ad_am] != '\n')
+        while (param_2[local_10_ad_am] != '\0' && local_c > local_4_ab && param_2[local_10_ad_am] != '\n')
         {
             if (param_2[local_10_ad_am] <= 0x20)
             {
@@ -133,16 +149,17 @@ void FONT_0000(byte* param_1, byte* param_2)
         while (1)
         {
             if ((param_2[local_10_ad_am] == '\0' && local_4_ab < local_c))
-                break;
+                goto L_brk;
             if (param_2[local_10_ad_am] == '\n')
-                break;
-            if (--local_10_ad_am <= local_e_am)
-                break;
+                goto L_brk;
+            if (local_e_am >= --local_10_ad_am)
+                goto L_brk;
 
             if (param_2[local_10_ad_am] == ' ')
             {
                 local_4_ab -= D_5154;
                 local_a--;
+            L_brk:
                 break;
             }
 
@@ -165,7 +182,7 @@ void FONT_0000(byte* param_1, byte* param_2)
         local_6 = local_10_ad_am;
         local_10_ad_am = local_e_am;
 
-        for (; local_10_ad_am < local_6; local_10_ad_am++)
+        if (local_10_ad_am < local_6) do
         {
             if (param_2[local_10_ad_am] <= 0x20)
             {
@@ -183,19 +200,20 @@ void FONT_0000(byte* param_1, byte* param_2)
             }
             else if (param_2[local_10_ad_am] != '_')
             {
-                if (D_5158 < 0xc0)
+                if ((int)D_5158 < 0xc0)
                 {
                     // NOTE: "or" mix
                     ULTIMA_1044_GRAP_4e_CopyBitImageIntoPage(param_1, param_2[local_10_ad_am] - 0x20, D_5156, D_5158);
                 }
                 D_5156 += D_50ea[param_2[local_10_ad_am] - 0x20] + 1;
             }
-        }
+        } while (local_6 != ++local_10_ad_am);
 
         local_e_am = local_6;
         if (param_2[local_e_am] != '\0')
         {
-            if (param_2[local_e_am] == '_' && D_5158 < 0xc0)
+        L_e:
+            if (param_2[local_e_am] == '_' && (int)D_5158 < 0xc0)
             {
                 ULTIMA_1044_GRAP_4e_CopyBitImageIntoPage(param_1, 0xd, D_5156, D_5158);
             }
@@ -236,30 +254,11 @@ static void FONT_02a2(int param_1, int param_2)
 }
 
 // CHECKED
-// NOT MATCHING (SLOTS, 1 byte): the code is identical, but the original keeps local_c at
-// bp-0Ah with bp-8 never used (frame 0Ch); ours has local_c at bp-8. MSC reserves two unused
-// temporary slots here, one for each loop (both walk a pointer: loop 1 over D_5c5a in DI,
-// loop 2 down D_6608 by 20h). Tried:
-// - an unused fifth local (local_a): local_c at -0Ah, but frame 0Eh;
-// - local_c declared in the if block, the for body or the do body: still bp-8;
-// - loop 2 as do-while: one temporary fewer (frame 0Ch with local_a) but it indexes
-//   [bx+di] with shl bx,5 instead of walking the pointer; as while, with continue, with
-//   (u8)/(uint)/(int) casts or !(... == 0xfe): no change;
-// - each loop in its own block: temporaries are not shared between blocks;
-// - loop 1 with D_5c5a + local_6, a bare tile test, the assignment inside the if, or
-//   a pointer for loop: no change or worse.
-// The pattern (unused slot above an inner-block local) is DNGLOOK_0c6c's, where a
-// temporary made before the block pushed local_c down; here none is made early enough.
-// Also tried (all still local_c at bp-8, or worse): local_c in the if block / the for body /
-// the do body again (the loop temporaries are made after the block's local, so they are made
-// when a loop ends, not at its start); loop 1 as do-while (the "++i < 32" form is 294 bytes;
-// "i++; } while (i < 32)" and while are identical code) and loop 2's outer loop as while, each
-// with an unused local_a (local_c at -0Ah, frame 0Eh); register on each local (worse); a
-// "register byte*" walking loop 2 in a block (takes SI, swaps SI/DI: 12 bytes) or at function
-// level (288 bytes).
+// The decompiler's local_c (x + y * 0x20, stored at bp-0Ah and never read) is MSC's common
+// subexpression temporary: the source indexes D_6608 with the whole expression twice. As a
+// local it took bp-8, a slot of its own before the loops' reserved temporaries.
 int FONT_02fc(int param_1)
 {
-    int local_c;
     int local_8;
     int local_6;
     ActorFmt* local_4_ab;
@@ -269,20 +268,17 @@ int FONT_02fc(int param_1)
         ULTIMA_4552_AnimateActors();
         INTRO_2090_AnimateWD();
 
-        // NOT MATCHING (loop)
         for (local_6 = 0; local_6 < 32; local_6++)
         {
             local_4_ab = &D_5c5a[local_6];
 
             if (local_4_ab->_0_tile != 0)
             {
-                local_c = local_4_ab->_2_x + local_4_ab->_3_y * 0x20;
-                D_6608[local_c] = 0;
-                D_6608[local_c + 0x80] = local_4_ab->_1_animTile;
+                D_6608[local_4_ab->_2_x + local_4_ab->_3_y * 0x20] = 0;
+                D_6608[local_4_ab->_2_x + local_4_ab->_3_y * 0x20 + 0x80] = local_4_ab->_1_animTile;
             }
         }
 
-        // NOT MATCHING (loop)
         for (local_6 = D_bd26; local_6 <= D_bd27; local_6++)
         {
             for (local_8 = 0; local_8 < 4; local_8++)
@@ -366,14 +362,11 @@ void FONT_0e52(void);
 void FONT_0e7b(void);
 
 // CHECKED
-// NOT MATCHING (CODE, 4 bytes): the code is the original's except the frame (22h, the
-// original 28h) and case 0xc's pointer temporary, which reuses case 0xb's freed bp-20h
-// where the original takes a new bp-26h (with bp-24h and bp-28h never used). Tried in case
-// 0xc: while, do-while (both forms, much worse), != 0x20, <= 0x1f, its own block, an unused
-// int / register / two ints declared in that block (no change), three separate stores,
-// local_c as the pointer (worse). The source steps local_12/local_14 with += in case 0xb
-// (the decompiler's local_10 * 9 / * 3 gave MSC's closed form instead); += in the for
-// header moves the counter's increment first (12 bytes).
+// Case 0xb's loop is a while: as a for (same code), MSC frees its temporaries (bp-20h,
+// bp-22h) and case 0xc's pointer walk reuses them, giving a frame of 22h instead of the
+// original's 28h (0xc at bp-24h..28h, the middle one in memory). The source steps
+// local_12/local_14 with += in case 0xb (the decompiler's local_10 * 9 / * 3 gave MSC's
+// closed form instead); += in a for header moves the counter's increment first.
 // "view"
 void FONT_04a4(void)
 {
@@ -535,7 +528,8 @@ void FONT_04a4(void)
         case 0xb:
             // ...
             local_12 = local_14_am = 0;
-            for (local_10_aa = 0; local_10_aa < 5; local_10_aa++)
+            local_10_aa = 0;
+            while (local_10_aa < 5)
             {
                 if (FONT_02fc(1) != 0)
                 {
@@ -546,6 +540,7 @@ void FONT_04a4(void)
                 ULTIMA_0b10_GRAP_Line(local_12 + 0x80, local_14_am + 0x99, local_12 + 0x89, local_14_am + 0x9c);
                 local_12 += 9;
                 local_14_am += 3;
+                local_10_aa++;
             }
 
             local_e_am++;
