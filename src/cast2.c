@@ -795,18 +795,21 @@ static void CAST2_0966_ShrineOfVirtue(void)
             // "\n\"Return again when thy Quest is done!\"\n"
             ULTIMA_1850_PrintString((char*)&D_b21e[0x44b]);
 
-            // 0ac6 (NOT MATCHING)
-            for (local_8 = 0; local_8 < 7; local_8++)
+            // 0ac6: a do-while, so the loop ends jb top; jmp end
+            local_8 = 0;
+            do
             {
                 ULTIMA_2192_AudioPulse(D_4be6[local_8], 1, D_4bf4[local_8], D_4c02[local_8], D_4c10[local_8]);
-            }
+                local_8++;
+            } while (local_8 < 7);
         }
         // 0b08
         else if (((byte)D_58cc & (1 << local_a)) == 0)
         {
             // 0b1d -> 0b5f
 
-            // NOT MATCHING: code structure
+            // the inner wait is an empty while (its exit jumps to 0b26, which MSC then
+            // places before the test at 0b5f); local_6 lives in DI
             while (!local_6) // 0b5f
             {
                 // 0b63
@@ -814,10 +817,8 @@ static void CAST2_0966_ShrineOfVirtue(void)
                 ULTIMA_1850_PrintString((char*)&D_b21e[0x474]);
 
                 // 0b6a
-                do
-                {
-                    local_4_ab = ULTIMA_266c_GetChar();
-                } while ((unsigned)local_4_ab < 0x30 || (unsigned)local_4_ab > 0x39);
+                while ((unsigned)(local_4_ab = ULTIMA_266c_GetChar()) < 0x30 || (unsigned)local_4_ab > 0x39)
+                    ;
 
                 // 0b26 (OK)
                 ULTIMA_16ba_PrintChar(local_4_ab);
