@@ -76,6 +76,10 @@ u8 D_51fc[8] = {0x28, 0x30, 0x30, 0x28, 0x28, 0x30, 0x28, 0x30};
 
 u8 D_5204[8] = {0x05, 0x07, 0x04, 0x0a, 0x08, 0x00, 0x05, 0x06};
 
+// The DOS build takes FONT_0000 from src/asm/AFONT0.ASM (assembly written from the
+// original's bytes, linked before this object): the C below does not match yet, so it is
+// compiled for the native build only.
+#if !defined(TARGET_DOS16)
 // CLEAN ROOM (written from the disassembly). Prints justified text: param_1 the glyph
 // image, param_2 the text. Per line: loop A measures up to the line width, loop B backs up
 // to the last space (or a "_" hyphenation point), loop C draws, spreading the slack over
@@ -211,6 +215,7 @@ L_next:;
 
     ULTIMA_0c22_GRAP_0f_SelectPage(0);
 }
+#endif
 
 static void FONT_02a2(int param_1, int param_2)
 {
