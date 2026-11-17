@@ -431,7 +431,19 @@ Each entry gives the evidence. Add to this list as you learn.
     listing. The original has dozens of them, so look for an if/else when ours jumps back
     instead.
   - Still open: ZSTATS_0c5c (all its messages jump to the ammunition one; an if/else
-    around the rest of the function is not enough) and probably ULTIMA_4402 and 4552.
+    around the rest of the function is not enough). ULTIMA_4402 was a symbol (below), 4552
+    was gotos (next item).
+- **Gotos where the merge goes the wrong way.** When the original shares a block that MSC,
+  given the code written out, would merge the other way round (or drop), the source had a
+  goto to a label in that block. ULTIMA_4552: `case 0: goto L_restart;` with the label on
+  case 6's `local_14 = 0; break;` leaves the original's dead `jmp` after the jump-table
+  dispatch (the table goes straight to the label), and cases 1-4 ending in `goto L_done;`
+  (the label on case 5's last `local_a = 1; break;`) jump forward as the original does.
+  ULTIMA_2c4c gets most of the way with gotos to one `return 1;` (still open).
+- **Write the tail in both branches.** TALK_0c5c's two branches end in the same test and
+  the same PrintCr block, which the original shares. Written once after the if/else, MSC
+  gives each branch its own test; written out in both branches, MSC merges the copies into
+  the original's shared block, placed before the else.
 - **Early returns or if/else decide the kept copy.** CMDS_0EB4 is the other way round
   from NPC_0d00. Its carpet and skiff cases were if/else chains, and the copy in the last
   else falls through and is kept. The original has `if (...) { print; return; }` for
@@ -475,12 +487,24 @@ Each entry gives the evidence. Add to this list as you learn.
   - a value stored to two locals when a loop ends is a loop over one of them followed by
     `other = it;` (SHOPPES_07BE);
   - `mov ax,[bp+4]; jmp` to the epilogue from inside an if is an early `return param;`
-    in that branch (SHOPPES_0502).
+    in that branch (SHOPPES_0502);
+  - `y = x;` after a loop over x, with x and y in SI and DI and no store of x, is a loop over
+    y itself: the decompiler split one variable in two registers (SHOPPES2_0508);
+  - a nested `if (letter) { if (n < 4) {...} } else switch` whose failed inner test jumps
+    to the switch is one condition, `if (letter && n < 4) {...} else switch` (CAST2_00de);
+  - `x = 0; y = 0;` before an inner loop, where the original loads y's register before the
+    outer loop (a dead load), is a chained `for (x = y = 0; ...)`, and an increment of y at
+    the end of the body that the original does after x's is `for (...; x++, y++)`
+    (CAST2_00de).
 - **A loop's register locals are stored when it ends.** The original's TALK_0c5c has
   no such store, because its code after the loop is inside it (`if (local_6 == 0)
-  continue;` and the rest, instead of `do ... while (local_6 == 0);`). Moving SHOPPES2_0508's
-  code into its inner loop the same way lost every register local, so that one is still
-  open.
+  continue;` and the rest, instead of `do ... while (local_6 == 0);`). SHOPPES2_0508 was a
+  split variable instead (above).
+- **The loop kind decides where those stores go.** COMBAT_0b94's inner loop, written
+  `D_589e = 0; do { ... break; ... } while (++D_589e < 0x20);`, stores its register locals
+  after the loop and the break jumps there. As `for (D_589e = 0; D_589e < 0x20; D_589e++)`
+  the stores sit at the break and the loop's end jumps to them, as in the original. (It
+  also needed `int local_6`: the original holds the flags byte in DI as an int.)
 - **Same-length instructions with another encoding** (`and bx,0Fh` as `81 e3 0f 00`
   instead of `83 e3 0f`) are not produced by bitfields, `unsigned` or other mask
   spellings. Open.

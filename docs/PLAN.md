@@ -24,6 +24,7 @@ passes only when they are identical.
 | 2026-11-16, casts through AX, tail-merge structure, bare returns, D_52c8 global; DGROUP identical | 539 | 1 | 0 | 49 | 8 | 597 |
 | 2026-11-16, common subexpressions by source shape, D_6608_overworld | 542 | 1 | 0 | 47 | 7 | 597 |
 | 2026-11-16, shapes the decompiler rewrote (closed-form loops, inc ax tests, early returns) | 549 | 1 | 0 | 40 | 7 | 597 |
+| 2026-11-16, gotos and duplicated tails for merge direction, joined conditions, loop kinds | 554 | 1 | 0 | 37 | 5 | 597 |
 
 Most `SIZE` verdicts in `0000.c` and `1000.c` are routines that were hand-written assembly in
 the original and are C in u5d (step 5).
@@ -107,7 +108,7 @@ Next, in order:
        tables give it too, but move the tables to CONST.
      - MAINOUT_17d4 stores constants to a parameter through AX.
      - *(done)* LOOKOBJ_0cf4: D_52c8 is a plain global in the DOS build (A0878.ASM's name).
-     - COMBAT_0B94 needs `int local_6` plus a different loop/break layout.
+     - *(done)* COMBAT_0B94: `int local_6` and the inner loop as a `for`.
      - 5000.c: ULTIMA_5f86 is the right length under MSC 5.0 (19 bytes differ) but not under
        5.1, while 5d0a and 5e4a match only under 5.1. So 5000.c may also be two objects, with
        5f86 the start of a 5.0 part. The module has no strings or tables to prove it.
