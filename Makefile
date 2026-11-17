@@ -6,6 +6,7 @@ OBJS :=
 # Common
 OBJS += \
 	src/town.o \
+	src/town2.o \
 	src/mainout.o \
 	src/mainoutb.o \
 	src/dungeon.o \
