@@ -203,10 +203,10 @@ static int NPC_032c(int param_1, int param_2, int param_3, int param_4, int para
     local_2e_an_am[0] = param_1;
     local_50_am[0] = param_2;
 
-    do
+    for (;;)
     {
         if (local_e_am != 0)
-            break;
+            goto L_brk;
 
         local_a = local_2e_an_am[local_c];
         local_8 = local_50_am[local_c];
@@ -294,17 +294,24 @@ static int NPC_032c(int param_1, int param_2, int param_3, int param_4, int para
         }
 
         if (local_e_am == 1)
+        {
+        L_brk:
             break;
+        }
 
         local_c++;
         if (local_c == 0x20)
         {
             local_c = 0;
         }
-    } while (local_c != local_4_ab);
+        if (local_c != local_4_ab)
+            continue;
+        break;
+    }
 
-    // NOT MATCHING by its block order only: the original places this exit block (store
-    // local_e_am, "return 1") right after the "== 1" test, ahead of local_c++.
+    // The exit stores land at the first break of a for loop, and the code after the loop
+    // follows them there: the original's are at the "== 1" break, so the first test
+    // jumps to it with a goto and the loop ends with continue/break (not do-while).
     if (local_e_am != 0)
         return 1;
     return local_e_am;
