@@ -1532,16 +1532,13 @@ static int SHOPPES_146a(void)
 }
 
 // CHECKED
-// NOT MATCHING: the code is the original's, but its CONST strings are not in order. The
-// original places the "Is there any other way" tail (ending in a jump back to the loop test)
-// right after case C's local_8 == -1 test. Written after the switch, MSC keeps it there,
-// where the last case falls into it (12 bytes short); written inside case C (the label
-// L_b838, reached by goto from the end of the switch) the code is exact, but its two
-// strings are emitted before case C's own (CONST order 81c8/81f2 first, FIXUP). The gotos
-// to L_b8a1 and L_b914 make the then-branches jump forward into the later copy as the
-// original does, and the label in case R keeps MSC from holding local_8 * 32 in SI
-// across the calls. Tried before: continue instead of break in the Enter case (worse);
-// the tail written at the end of every case (worse).
+// The original places the "Is there any other way" tail (ending in a jump back to the loop
+// test) right after case C's local_8 == -1 test. MSC moves it there only when nothing falls
+// into it: the switch ends in goto L_b838 (and default: goto L_b838, so the dispatch's
+// default jump goes there too), and case C jumps to it with a goto. Written inside case
+// C instead, the code is the same but its strings come first in CONST. The gotos to L_b8a1
+// and L_b914 make the then-branches jump forward into the later copy as the original does,
+// and the label L_b9c1 keeps MSC from holding local_8 * 32 in SI across the calls.
 void SHOPPES_14f8(int unused)
 {
     int local_6;
@@ -1585,16 +1582,7 @@ void SHOPPES_14f8(int unused)
             ULTIMA_1850_PrintString(_TEXT(0x8106, "Curing"));
             local_8 = SHOPPES_137c();
             if (local_8 == -1)
-            {
-L_b838:
-                if (!local_6)
-                {
-                    ULTIMA_2900_UpdateVitalsDisplay();
-                    ULTIMA_1850_PrintString(_TEXT(0x81c8, "\n\n\"Is there any other way in which I may\n"));
-                    ULTIMA_1850_PrintString(_TEXT(0x81f2, "aid thee?\" "));
-                }
-                continue;
-            }
+                goto L_b838;
             {
                 // b856
                 if (D_55a8_party[local_8].status != STATUS_POISONED)
@@ -1700,9 +1688,18 @@ L_b9c1:
             ULTIMA_1850_PrintString(_TEXT(0x81c0, "Nothing"));
             local_6 = 1;
             break;
+        default:
+            goto L_b838;
         }
-
         goto L_b838;
+
+L_b838:
+        if (!local_6)
+        {
+            ULTIMA_2900_UpdateVitalsDisplay();
+            ULTIMA_1850_PrintString(_TEXT(0x81c8, "\n\n\"Is there any other way in which I may\n"));
+            ULTIMA_1850_PrintString(_TEXT(0x81f2, "aid thee?\" "));
+        }
     }
 
     SHOPPES_0202(1);
