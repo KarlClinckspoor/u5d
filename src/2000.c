@@ -581,17 +581,11 @@ static int ULTIMA_2c2e(int tile)
 }
 
 // CHECKED
-// NOT MATCHING (4 bytes short): tail merging goes the other way. The original keeps case 7's
-// "cmp; je; jmp ret0" tail (cases 8-10 jump into it) and one "mov ax,1" block, right after
-// case 6, that case 7 reaches through a jmp; so case 3's "jmp ret1" is short and not merged
-// with case 2's. MSC 5.1 here keeps case 10's tail and puts the return-1 block after it.
-// Tried: cases 7-10 as "if (t == X) return 1; return 0;" and as "if (t != X) return 0;
-// return 1;" (8 bytes shorter), case 6 as "return targetTile <= 2;" (case 6 then jumps to
-// case 10's block), case 3 as one boolean return; MSC 5.0 gives the same length (and breaks
-// 2bd4). Closest (302 bytes, 131 differ): "L_ret1: return 1;" in case 6, cases 2, 3 and 5 jump
-// there with goto, and cases 7-10 as "if (t != X) return 0; goto L_ret1;" (cases 8-10 then
-// join case 7's tail as in the original); but case 3's last test still merges into case 2's
-// "je; jmp L_ret1", which the original keeps apart.
+// The gotos give the original's tail merging: one "return 1" block (L_ret1, in case 6)
+// that cases 2, 3 and 5 jump to; case 3 written with && (its "je ret0" tests then end in
+// their own "jmp L_ret1" instead of joining case 2's tail); cases 7-10 as "if (t == X)
+// return 1; return 0;", so that case 7's own "return 1" becomes a jmp to L_ret1 and cases
+// 8-10 join case 7's tail.
 int ULTIMA_2c4c_IsWalkableTile(int actorTile, int targetTile)
 {
     switch (D_54f4[actorTile >> 2])
@@ -602,18 +596,14 @@ int ULTIMA_2c4c_IsWalkableTile(int actorTile, int targetTile)
         return ULTIMA_2c2e(targetTile);
     case 2: // flying
         if (((byte)targetTile & 0xf0) == TILE_MAP_60 || ULTIMA_2c2e(targetTile) != 0 || ULTIMA_2bd4(actorTile, targetTile) != 0)
-        {
-            return 1;
-        }
+            goto L_ret1;
         return 0;
     default:
         return 0;
     case 3: // horse
-        if (ULTIMA_2bd4(actorTile, targetTile) == 0 || targetTile == TILE_MAP_LAVA || targetTile == 4)
-        {
-            return 0;
-        }
-        return 1;
+        if (ULTIMA_2bd4(actorTile, targetTile) != 0 && targetTile != TILE_MAP_LAVA && targetTile != 4)
+            goto L_ret1;
+        return 0;
     case 4: // ghost / shadowlord
         return ULTIMA_2c2e(targetTile) == 0;
     case 5: // skiff
@@ -626,33 +616,39 @@ int ULTIMA_2c4c_IsWalkableTile(int actorTile, int targetTile)
             return 0;
         }
         if (targetTile < TILE_MAP_60)
-        {
-            return 1;
-        }
+            goto L_ret1;
         if (!((uint)D_5534[targetTile - TILE_MAP_60] & (8 >> (actorTile & 3))))
             return 0;
-        else
-            return 1;
+        goto L_ret1;
     case 6: // frigate
         if (targetTile > 2)
-        {
             return 0;
-        }
+    L_ret1:
         return 1;
     case 7: // rotworm
-        return targetTile == TILE_MAP_POISON;
+        if (targetTile == TILE_MAP_POISON)
+            return 1;
+        return 0;
     case 8: // corpser
-        return targetTile == TILE_MAP_GRASS;
+        if (targetTile == TILE_MAP_GRASS)
+            return 1;
+        return 0;
     case 9: // whirlpool
-        return targetTile == TILE_MAP_WATER_1;
+        if (targetTile == TILE_MAP_WATER_1)
+            return 1;
+        return 0;
     case 10: // sand trap
-        return targetTile == TILE_MAP_7;
+        if (targetTile == TILE_MAP_7)
+            return 1;
+        return 0;
     }
 }
 
 // CHECKED
 // select player (zstats, ...)
-// NOT MATCHING: the original keeps local_a in DI and local_6 in memory; MSC picks local_6.
+// The gotos to one "local_6 = 1;" keep local_6 to three references, so MSC puts local_a in
+// DI and leaves local_6 in memory, as the original does (written out in each case, MSC
+// picks local_6 instead).
 int ULTIMA_2d7a(int param_1)
 {
     bool local_6;
@@ -709,18 +705,17 @@ int ULTIMA_2d7a(int param_1)
                     break;
 
                 local_4_ab = -2;
+            L_done:
                 local_6 = 1;
                 break;
 
             case U5_KEY_ESC:
                 local_4_ab = -1;
-                local_6 = 1;
-                break;
+                goto L_done;
 
             case U5_KEY_ENTER:
             case U5_KEY_SPACE:
-                local_6 = 1;
-                break;
+                goto L_done;
             }
         }
 
