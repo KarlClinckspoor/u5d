@@ -430,6 +430,13 @@ and u5d now has them as `NAME.c` and `NAMEb.c`:
 | INTRO | `INTRO_1e22` | DS:3656, 39 bytes | D_3666's strings are in CONST |
 | OUTSUBS | `OUTSUBS_0658` | DS:3a26, 12 bytes | the only function with CONST strings |
 | CMDS | `CMDS_18be` | none | CMDS_17ec still uses packed strings |
+| CAST | `CAST_1c36` | none | 1c36 and 1f60 have the right length only under 5.0 (no strings) |
+
+SHOPPES2 is two MSC 5.0 objects, `shoppes2.c` (to SHOPPES2_066c) and `shoppe2b.c` (from
+SHOPPES2_07e2, the shipwright, with the tables D_4d66-D_4d7a; not `shoppes2b`, which is
+not an 8.3 name). Late functions that use no strings may be a 5.0 part even in a 5.1
+module: try 5.0 on them before the capacity test, and rerun `slots.py`, since 5.0's hash
+moves locals (CAST_1c36: 5.0's end-pointer loop compare was the tell).
 
 - **Data.** The 5.0 part's `_DATA` follows the 5.1 part's, as the link order puts it. In
   every case the tables that follow the 5.1 part's last string are the 5.0 part's.
@@ -442,8 +449,9 @@ and u5d now has them as `NAME.c` and `NAMEb.c`:
   109e, DUNGEON's at 1020 or 104c. The files take the latest possible start and say so.
 - **Tools.** `match.py` ends a function at the next function of either object. `u5link.py`
   places the second object where its first function's name says.
-- **More than two objects.** The 5.1 parts of INTRO and CMDS are themselves two objects each:
-  `intro.c` (to INTRO_094e) and `intro2.c` (from INTRO_0986_Main), `cmds.c` (to CMDS_1030)
+- **More than two objects.** The 5.1 parts of INTRO and CMDS are themselves several objects:
+  `intro0.c` (INTRO_0010, INTRO_0050: no strings or data, so intro.c's `_DATA` still starts
+  at DS:2f30), `intro.c` (to INTRO_094e) and `intro2.c` (from INTRO_0986_Main), `cmds.c` (to CMDS_1030)
   and `cmds2.c` (from CMDS_1202), linked in that order before the `b` part. They were found
   by the optimizer capacity (below): INTRO_0986 and CMDS_12c8 match only without the
   functions before them. A new object's `_DATA` starts at an even address, so CMDS2 starts
@@ -548,12 +556,18 @@ Each entry gives the evidence. Add to this list as you learn.
 - **`return;` in a function with a value.** CMDS_1030's "No effect!" paths jump straight to
   the epilogue without loading AX: the original had a bare `return;`. `RETURN_AX(value)`
   (common.h) is that `return;` in the DOS build and `return value;` elsewhere.
-- **Table values kept in registers across calls** (DUNGEON_111e and others): a truly
-  `const` table gives this code, because MSC then knows a call can't change it. But it
-  also moves the table from `_DATA` to CONST, where the original's isn't. Note that
-  common.h defines `const` away in the DOS build, so a `const` in the source means nothing
-  there. `static`, a const-qualified cast and a `register` local in an inner block don't
-  give it either (the last takes a stack slot). Still open.
+- **Table values kept in registers across calls**: MSC keeps a value read from a table in
+  SI/DI across calls (and hoists it out of loops that call) only when it knows a call
+  can't change the table. Two source forms give that and keep the table in `_DATA`:
+  - MSC 5.0: the table is a `static` local of the one function that uses it (dungeonb.c:
+    every table there has one user and the tables sit in function order). The data keeps
+    source order, but making only some tables static while later ones stay at file scope
+    breaks the layout (5.0 seems to emit file-scope data before static locals). DUNGEON_104c's
+    tables stay global because translate.c patches D_2e10. (DUNGEON_111e, 127e, 1786.)
+  - MSC 5.1: the table is really `const`; 5.1 leaves an initialised const table in `_DATA`
+    in its place (5.0 moves it to CONST). common.h defines `const` away in the DOS build, so
+    intro.c has `#undef const` around its tables (INTRO_014e).
+  A `register` local in an inner block gives the code too, but takes a stack slot.
 - **A label stops constant propagation.** SHOPPES2_00ac sets `local_4 = 0` and then
   indexes with it. The original reloads local_4 from the stack, where MSC would fold the 0.
   A label between the two statements gives the original's code. INTRO_1016 is the same:
@@ -605,7 +619,19 @@ Each entry gives the evidence. Add to this list as you learn.
     entered at its test: `i = 0; goto T; do { body; i++; T:; } while (i < 6 && (c = f()) !=
     0xffff);` (`!= -1` gives `inc ax; je` instead) (ZSTATS_06e8, still not matching);
   - `mov al,0FFh; mov [g],al` for one store is a chained assignment, `g = g = 0xff`
-    (SHOPPES2_00ac; DOS build only);
+    (SHOPPES2_00ac; MAINOUT_17d4 stores constants to a parameter the same way, through a
+    `P2_SET` macro; DOS build only);
+  - `local_12 = i * 9; local_14 = i * 3;` in a loop may be `local_12 += 9; local_14 += 3;`
+    at the end of the body from `local_12 = local_14 = 0`: the original steps X and Y in
+    DI/SI and keeps the counter in memory, compared with 5; the `i * K` form gives MSC's
+    closed form instead. In the for header, the `+=` moves the counter's increment first
+    (FONT_04A4);
+  - the decompiler splits one stack slot into several variables across switch cases: map
+    the original's `[bp-N]` per case and merge them (FONT_04A4: three variables were bp-0Eh;
+    441 -> 365 bytes);
+  - `x = init; while (x != -1) { ...; x = f(x); }` where the init and the increment share
+    one store (`mov ax,init; jmp T; I: call f; T: mov [x],ax; cmp ax,-1`) is `for (x =
+    init; x != -1; x = f(x))` (ZSTATS_0F2E);
   - a jump to a jump (`je L; jmp ret0; L: jmp ret1`) is an inline `return 1` that tail
     merging turned into a jmp: `if (t == X) return 1; return 0;`, where other cases `goto`
     one shared `return 1` (ULTIMA_2c4c). There `if (a && b && c) goto L_ret1; return 0;`
@@ -642,12 +668,23 @@ Each entry gives the evidence. Add to this list as you learn.
   - Grouping variables into one symbol also relieves it, but changes alias analysis (a store
     through one array forces other variables to be re-read), so the original had separate
     symbols and a split is the fix.
-  - Probably the same under MSC 5.0: ULTIMA_1850 registers only its first two inner loops
-    and ULTIMA_5394 does not strength-reduce its second loop; removing any one of several
-    unrelated earlier pieces brings the later loop optimizations back.
-  - Leads (closer without the earlier functions): INTRO_014e (right length, 9 bytes),
-    CAST_1c36 (774/810), CAST_1f60. TOWN_0f02 goes the other way (the original optimizes
-    less). Worth the test: SHOPPES2_08a8, ZSTATS_06e8.
+  - Exceeding it is exactly `#pragma loop_opt(off)`: ZSTATS_06e8 with 600 extra references
+    gives byte for byte the loop_opt(off) code. If deleting the earlier functions does not
+    change a function, capacity is ruled out (ZSTATS_06e8, ULTIMA_5394, ULTIMA_5a28,
+    DUNGEON_1952, FONT_0000).
+  - Under 5.0 the cut-off is sharp (SHOPPES2_08a8): 8 referenced externs before the
+    function still give full loop optimization, 10 give none. The function's own size
+    counts too (removing its inner loops or long arithmetic brought the registers back);
+    400 unreferenced externs, a minimal header or string literals do not. Split: shoppe2b.c.
+  - Near the limit, comment lines inside a function count against it (blank lines do not);
+    far from it, 200 comment lines change nothing. Recompile after editing notes in such a
+    function (TOWN_0f02).
+  - The other way round: TOWN_0f02 matches only with about 270 more global symbols before
+    it (unreferenced tentative definitions, or 120 small functions each setting its own
+    extern; 80 extern references or 120 empty functions do nothing), so the original had
+    more there. Tentative definitions become communals at link, so they are no fix. Open.
+  - Split by it so far: intro0.c / intro2.c (INTRO_014e, INTRO_0986), cmds2.c (CMDS_12c8),
+    shoppe2b.c (SHOPPES2_08a8).
 - **Code after a loop goes to its first break.** MSC places a `for` loop's register stores
   and the code that follows the loop at the loop's first `break`; other exits jump to it.
   To put that block at a later break, make the earlier break a `goto` to a label on the
@@ -706,9 +743,58 @@ Each entry gives the evidence. Add to this list as you learn.
 - **Pointer plus offset is not `&p[...]`.** `ptr = p + (a + y) * 0x20 + (b + x);` gives
   `ax = b + x; add si,ax`; `&p[(a + y) * 0x20 + b + x]` is reassociated into a chain of
   adds (ULTIMA_5a28).
-- **A `register` variable takes a stack slot under 5.1 too**: `register byte* ptr` gets SI
-  but reserves an unused slot in its name's hash bucket (ULTIMA_5a28). `slots.py` skips a
-  function with a non-`local_N` name ("nothing to change"); rename the locals first.
+- **A `register` variable takes a stack slot under 5.1 too**, in an inner block or at
+  function level: `register byte* ptr` gets SI but reserves an unused slot in its name's
+  hash bucket (ULTIMA_5a28, 2 bytes of frame left); INTRO_014e's three register variables
+  made its frame 12h against the original's 0Ch. `slots.py` skips a function with a
+  non-`local_N` name ("nothing to change"); rename the locals first.
+- **Under 5.0, unused block-scope locals take no slot** (an `int`, a `register int` or two
+  in a case block left FONT_04A4's frame unchanged), and **a later block's register
+  variable shares an earlier sibling block's slot only if that block is the body of an
+  `if` or `for`**: a bare `{ }` or the else of `if (0)` does not share. SJOG_0514's last
+  byte was `if (1) { bool local_a; ...; if (!local_a) goto L_nothing; } { register int si;
+  ...; return; } L_nothing: ...`. (An `extern const` table also gave its code, but 5.0 then
+  writes fixups to segment index 0, a broken object.)
+- **An unsigned loop index adds a trip-count temporary**: `uint local_14` makes MSC 5.0
+  store the trip count in one more temporary (bp-1Ch), as TALK_01e2's original does.
+- **An unused label stops common subexpressions locally.** ULTIMA_5a28 kept a whole address,
+  or `param_2_y + local_214_an`, in DI across calls; a label before the store (or before the
+  later test) gave the original's `[bx+di+disp]` addressing with the row recomputed. In
+  ULTIMA_1850 a label anywhere, or an outer `while (1) { ... if (x) break; }` instead of a
+  do-while, acts on the whole function instead: one more loop gets registers (a label right
+  before or after a loop does nothing; one is already there).
+- **Branch order follows the original's layout.** NPC_0DB4's loop body sits after the loop
+  test (`jmp test ... test: jge exit; head; jmp back into the branches`); it matched only
+  with the if/else nesting in the original's order, the branch placed last being the final
+  else. Related, from the same function:
+  - `x = 0; continue;` makes MSC put a copy of the loop increment right after it; that copy
+    falls through, so tail merging keeps it and the earlier identical copy jumps to it.
+    Written as if/else, the earlier copy is kept, as in the original.
+  - A goto into a tail-merged block makes MSC reload the register the merge relied on, so a
+    jump into a merged copy that uses a live register is cross-jumping, not a source goto.
+  - `(int)p->field` on a u16 compares through AX; `*(s16*)&p->field` gives the plain
+    register compare and one common subexpression (`mov si,[bx]; cmp si,3; ... cmp si,4`).
+- **Early returns decide where a tail-merged else goes.** In NPC_06e4, with both early
+  branches ending in `return` and no `else` around the rest, the else's merged copy
+  (`D_65be = 0x61; jmp`) went inside the first later loop, after a then-branch's jump; with
+  the rest in an `else` it stayed after the then-branch. A goto into a loop body costs the
+  loop its registers, even when the target only jumps out again.
+- **MSC calls the right-hand side of a comparison first.** In `f() <= g()`, g is called
+  first; for the original's call order write the comparison the other way round (CAST_1f60).
+- **Case order numbers the per-case pointer temporaries.** In strength-reduced loops each
+  case gets its own pointer temporary, numbered in the source order of the cases, which
+  also sets the case layout (CAST_1c36). The case order in the source is the order of the
+  case bodies in the code (ZSTATS_0F2E).
+- **Pointer locals that are really hoisted temporaries.** SHOPPES2_08a8's decompiled `local_a
+  = local_8 = &D_55a8_party[param_1].intel;` before the loop is two compiler temporaries:
+  the source read `D_55a8_party[param_1].intel` at each use, and MSC 5.0 hoists only the
+  invariant address, once per use (`mov [bp-6],ax; mov [bp-8],ax`), between the statements
+  before the loop and the loop-register loads. With pointer locals it hoists the whole
+  long factor, assuming nothing changes `*p`.
+- **A `return` inside a loop with register variables stores them at its own site**
+  (`mov [bp-2],si; jmp exit`). A single store at the loop exit means the returns were
+  `goto L_end` past the loop, and `if (x) return; continue;` pieces were plain `break`s
+  (SHOPPES2_08a8).
 - **Same-length instructions with another encoding** (`and bx,0Fh` as `81 e3 0f 00`
   instead of `83 e3 0f`) are not produced by bitfields, `unsigned` or other mask
   spellings. Open.
