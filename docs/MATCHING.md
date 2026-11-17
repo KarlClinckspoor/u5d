@@ -60,7 +60,7 @@ The examples below use `.venv/Scripts/python` (Windows); use `.venv/bin/python` 
 - Compiles in one headless DOSBox-X session, with the switches of `src/build.bat` (in
   `tools/u5.py`: `/Ox /Or /Gs /Gc /Zp`, with `/Oaitr` for `ultima.c`).
 - Writes `build/obj/NAME.OBJ` and the listing `build/obj/NAME.COD`, which interleaves source,
-  assembly and code bytes.
+  assembly and code bytes. `--obj DIR` writes them elsewhere (see "Working in parallel").
 - Takes about 1–5 seconds per file.
 
 ### Data tools
@@ -124,7 +124,8 @@ after changing C.
    `build/obj/NAME.COD` shows which source line produced which instructions.
 2. Change the C. Keep the meaning, and change the form the compiler sees: expression
    shape, temporaries, declaration order, `register`, loop form, signedness.
-3. Recompile and compare (`match.py FILE.c --compile -v`).
+3. Recompile and compare (`match.py FILE.c --compile -v`). To try several forms at once
+   without editing the file, use `variants.py` (see "Working in parallel").
 4. A change for the native (SDL) build that would alter the DOS code goes under
    `#if !defined(TARGET_DOS16)`, as u5d already does. The DOS build is `MATCHING_BUILD` plus
    the GOG differences (`GOG_BUILD`; see below).
@@ -141,6 +142,88 @@ after changing C.
    The next attempt, in a new session or after the conversation has been compacted, starts
    from the note instead of trying the same forms again. Notes older than this rule often
    say only `NOT MATCHING`; add what you learn when you touch them.
+
+## Working in parallel
+
+Several workers can match at the same time, if each keeps to these two rules:
+
+- **one worktree per worker**, for everything that is edited, compiled and committed;
+- **`variants.py` for trying things out**: it never writes to `src/`.
+
+Without them, workers in one checkout overwrite each other's edits in `src/`, compare
+against objects that somebody else compiled last (`build/obj` holds one object per module),
+and mix their commits and their lines in `build/match/status.tsv`.
+
+### A worktree per worker: `worktree.py`
+
+```sh
+.venv/Scripts/python tools/worktree.py NAME             # ../u5d-NAME, on a new branch work/NAME
+.venv/Scripts/python tools/worktree.py --list
+.venv/Scripts/python tools/worktree.py NAME --remove    # the branch work/NAME is kept
+```
+
+- A worktree is a second checkout of the same repository in its own folder, on its own
+  branch. Its `src/`, `build/obj` and `build/match/status.tsv` are its own.
+- `build/` is not in git, so the tool copies the compilers and the assembler
+  (`build/msc51`, `build/msc50`, `build/masm`) into the new worktree, and the objects and
+  the status file as they are here. Then it compiles and compares `r251e.c` there, to show
+  that the worktree builds.
+- The game files and DOSBox-X are found from a worktree as from the main checkout
+  (`../gamedata`, the U6 project next door). A `gamedata/` folder inside the main checkout
+  is not: set `U5_GAMEDATA` then.
+- `.venv` is not copied. In the worktree, run the tools with the main checkout's Python:
+  `../u5d/.venv/Scripts/python tools/match.py town.c --compile -v`.
+- Commit on `work/NAME` in the worktree. To bring the work back, merge or cherry-pick the
+  branch in the main checkout. Two workers who change the same file get an ordinary git
+  conflict there, instead of losing one of the changes without notice.
+- `--remove` refuses when the worktree has changes that are not committed (`--force`
+  removes it anyway). `--delete-branch` also deletes `work/NAME`.
+
+### Trying variants: `variants.py`
+
+```sh
+.venv/Scripts/python tools/variants.py src/town.c spec.py TOWN_0c78             # try them all
+.venv/Scripts/python tools/variants.py src/town.c spec.py TOWN_0c78 --keep 2    # write variant 2 into src/
+```
+
+`spec.py` lists the variants, each a name and the texts to replace. Every old text must
+occur exactly once in the file:
+
+```python
+VARIANTS = [
+    ('as it is', []),
+    ('unsigned i', [('int i;', 'unsigned i;')]),
+    ('two changes', [('a = b + c;', 'a = c + b;'), ('if (a != 0)', 'if (a)')]),
+]
+```
+
+- Each variant is compiled and compared, and the function's line is printed as
+  `match.py -v` prints it (`--notes` adds the notes; `--only 1 3` tries some of them):
+
+  ```
+  0 as it is | TOWN_0C78                          8e48 CODE  len  210/210  diffs   4 first @0031
+  1 unsigned i | TOWN_0C78                          8e48 EXACT len  210/210  diffs   0
+  ```
+
+- The tool works in a folder of its own under `build/variants` (a copy of `src/` with the
+  variant in it, and a private object folder) and removes it at the end. `src/`,
+  `build/obj` and `status.tsv` are not touched, so any number of runs can go on at the
+  same time, on the same file too.
+- `--keep N` is the only thing that writes to `src/`. It applies variant N to the file as
+  it is at that moment, so a variant that somebody else kept meanwhile stays. Recompile
+  afterwards (`match.py FILE.c --compile`): `build/obj` still holds the old object.
+
+### A private object folder
+
+`dosbuild.py` and `match.py` take `--obj DIR` (or `$U5_OBJ`): the objects and listings are
+written to and read from DIR instead of `build/obj`, and `match.py` writes `DIR/status.tsv`
+instead of the shared status file (`--no-status`: none). `$U5_SRC` names another source
+folder in the same way. `variants.py` is built on these; you rarely need them yourself.
+The other tools that use objects (`slots.py`, `permute.py`, `asmbuild.py`, `u5link.py`) follow
+`$U5_OBJ` too.
+
+What is still shared inside one checkout: `src/` itself and git. So edit and commit only in
+your own worktree.
 
 ## The layout of the binary
 
