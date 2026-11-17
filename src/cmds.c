@@ -23,19 +23,19 @@ int MAINOUT_105c(int param_1);
 int CMDS_0000(int param_1, int param_2, int param_3)
 {
     byte local_2c;
+    int local_2a_aa;
     byte local_28_aj;
+    int local_26_al;
+    int local_24_an;
     int local_22;
     int local_20_ab;
+    int local_1e_an;
     byte local_1c;
     CombatEntity* local_1a;
-    int local_26;
-    int local_2a;
-    int local_24;
-    int local_1e;
     byte local_18;
     int local_16[8];
     int local_6;
-    ActorFmt* local_4; // not read
+    ActorFmt* local_4_ab; // not read
 
 #if !defined(MATCHING_BUILD)
     local_1a = 0;
@@ -43,7 +43,7 @@ int CMDS_0000(int param_1, int param_2, int param_3)
 
     local_20_ab = D_587f;
     local_6 = -1;
-    local_1e = -1;
+    local_1e_an = -1;
     D_587a = D_588e = 0;
     local_1c = D_587b;
     D_587b = 0xff;
@@ -61,10 +61,10 @@ int CMDS_0000(int param_1, int param_2, int param_3)
 #endif
 
     D_589e = 0xff;
-    local_2a = param_3 + (uint)D_587f;
-    if (local_2a > 0x17)
+    local_2a_aa = param_3 + (uint)D_587f;
+    if (local_2a_aa > 0x17)
     {
-        local_2a -= 0x18;
+        local_2a_aa -= 0x18;
     }
 
     if (5 < param_2 || param_2 < -1)
@@ -79,11 +79,11 @@ int CMDS_0000(int param_1, int param_2, int param_3)
 
     for (local_22 = 0; local_22 < D_585b; local_22++)
     {
-        for (local_26 = 0; local_26 < 0x20; local_26++)
+        for (local_26_al = 0; local_26_al < 0x20; local_26_al++)
         {
-            if (local_22 == D_ba14[local_26].entityIdx)
+            if (local_22 == D_ba14[local_26_al].entityIdx)
             {
-                local_1a = &D_ba14[local_26];
+                local_1a = &D_ba14[local_26_al];
                 break;
             }
         }
@@ -97,12 +97,12 @@ int CMDS_0000(int param_1, int param_2, int param_3)
         case STATUS_SLEEP:
             if (local_22 != param_2)
             {
-                ULTIMA_6880(local_26);
+                ULTIMA_6880(local_26_al);
             }
 
             if (D_55a8_party[local_22].cls == CLASS_BARD && local_22 == param_2 && D_a9ce != 0)
             {
-                local_6 = local_26;
+                local_6 = local_26_al;
             }
             break;
         }
@@ -112,15 +112,15 @@ int CMDS_0000(int param_1, int param_2, int param_3)
 
     if (local_6 != -1)
     {
-        local_4 = &D_5c5a[D_ba14[local_6].actorIdx];
-        local_28_aj = local_4->_0_tile;
-        local_2c = local_4->_1_animTile;
+        local_4_ab = &D_5c5a[D_ba14[local_6].actorIdx];
+        local_28_aj = local_4_ab->_0_tile;
+        local_2c = local_4_ab->_1_animTile;
         
-        local_4->_0_tile = local_4->_1_animTile = TILE_ACTOR_5F;
+        local_4_ab->_0_tile = local_4_ab->_1_animTile = TILE_ACTOR_5F;
         D_6a08 = 1;
         ULTIMA_3ae6(0x34);
-        local_4->_0_tile = local_28_aj;
-        local_4->_1_animTile = local_2c;
+        local_4_ab->_0_tile = local_28_aj;
+        local_4_ab->_1_animTile = local_2c;
         if (D_ba14[local_6].entityIdx != param_2)
         {
             ULTIMA_6880(local_6);
@@ -133,11 +133,11 @@ int CMDS_0000(int param_1, int param_2, int param_3)
 
     if (param_2 != -1)
     {
-        for (local_26 = 0; local_26 < 0x20; local_26++)
+        for (local_26_al = 0; local_26_al < 0x20; local_26_al++)
         {
-            if (D_ba14[local_26].entityIdx == param_2)
+            if (D_ba14[local_26_al].entityIdx == param_2)
             {
-                local_1a = &D_ba14[local_26];
+                local_1a = &D_ba14[local_26_al];
                 break;
             }
         }
@@ -145,7 +145,7 @@ int CMDS_0000(int param_1, int param_2, int param_3)
         local_18 = D_5c5a[local_1a->actorIdx]._0_tile;
     }
 
-    while (local_2a != D_587f)
+    while (local_2a_aa != D_587f)
     {
         if (D_587f >= 0x18)
         {
@@ -160,20 +160,18 @@ int CMDS_0000(int param_1, int param_2, int param_3)
             if (ULTIMA_2092_RandomRange(0, 0x3f) == 0)
             {
                 ULTIMA_207e_srand(ULTIMA_2056_GetTime());
-                local_1e = (uint)D_1734[ULTIMA_2092_RandomRange(0, 7)];
+                local_1e_an = (uint)D_1734[ULTIMA_2092_RandomRange(0, 7)];
                 ULTIMA_1850_PrintString(_TEXT(0x41e0, "Ambushed!\n\n"));
 
                 if (param_2 > -1)
                 {
                     // 0254..026e..027a..027d
-                    for (local_24 = 0; local_24 < 6; local_24++)
+                    for (local_24_an = 0; local_24_an < 6; local_24_an++)
                     {
                         // 0283
-                        local_22 = D_ba14[local_24].entityIdx;
-                        // NOT MATCHING: if (local_22 >= 0)
-                        if (local_22 < D_585b)
+                        if ((local_22 = D_ba14[local_24_an].entityIdx) >= 0 && local_22 < D_585b)
                         {
-                            ULTIMA_6800(local_24);
+                            ULTIMA_6800(local_24_an);
                             if (local_16[local_22] != 0)
                             {
                                 D_55a8_party[local_22].status = STATUS_POISONED;
@@ -193,7 +191,7 @@ int CMDS_0000(int param_1, int param_2, int param_3)
                 }
                 else
                 {
-                    ULTIMA_6bc2(param_1, local_1e);
+                    ULTIMA_6bc2(param_1, local_1e_an);
                 }
 
                 break;
@@ -241,7 +239,7 @@ int CMDS_0000(int param_1, int param_2, int param_3)
     }
 
     // c27d
-    if (local_1e > -1)
+    if (local_1e_an > -1)
     {
         // conflict
 #if defined(ENABLE_BGM)
