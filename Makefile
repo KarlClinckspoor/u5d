@@ -47,6 +47,7 @@ OBJS += \
 	src/3000.o \
 	src/4000.o \
 	src/5000.o \
+	src/r5a28.o \
 	src/6000.o \
 	src/7000.o \
 	src/r0d72.o \

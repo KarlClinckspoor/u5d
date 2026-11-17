@@ -54,6 +54,7 @@ set(SOURCES
 	src/3000.c
 	src/4000.c
 	src/5000.c
+	src/r5a28.c
 	src/6000.c
 	src/7000.c
 	src/r0d72.c

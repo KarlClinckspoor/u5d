@@ -85,6 +85,8 @@ MODULES['ultima.c'] = ('root', None)
 # the small C modules between the resident assembly modules (named by their CS address)
 MODULES.update({n + '.c': ('root', None) for n in ('r0d72', 'r1850', 'r1b38', 'r1dda', 'r1fa0', 'r216c',
                                                    'r2320', 'r251e')})
+# 5000.c (MSC 5.0, ULTIMA_51a0 to 5910) is followed by an MSC 5.1 object from 5a28 to 5f86.
+MODULES['r5a28.c'] = ('root', None)
 MODULES['vars.c'] = ('data', None)
 # INTRO.OVL's MSC 5.1 code is three objects: intro0.c (INTRO_0010, INTRO_0050), intro.c (to
 # INTRO_094e) and intro2.c (from INTRO_0986_Main), linked in that order before introb.c
@@ -104,7 +106,7 @@ MODULES['shoppe2b.c'] = ('ovl', 'SHOPPES2')
 COMPILER_BY_FILE = {f: 'msc50' for f in (
     '3000.c', '4000.c', '6000.c', 'blckthrn.c', 'cast2.c', 'combat.c', 'comsubs.c', 'dnglook.c',
     'endgame.c', 'font.c', 'lookobj.c', 'npc.c', 'r1850.c', 'r251e.c', 'shoppes.c', 'shoppes2.c', 'sjog.c',
-    'talk.c', 'zstats.c')}
+    'talk.c', 'zstats.c', '5000.c')}
 COMPILER_BY_FILE['shoppe2b.c'] = 'msc50'
 # Overlays built from two objects: NAME.c (MSC 5.1) and NAMEb.c (MSC 5.0), linked in that
 # order. The 5.0 part holds the functions that use CONST strings; its _DATA follows the 5.1
