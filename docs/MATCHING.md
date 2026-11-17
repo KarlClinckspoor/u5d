@@ -486,6 +486,9 @@ Each entry gives the evidence. Add to this list as you learn.
     form of `for (x = 0; x < n; x++)`: the counter in DI, x set once (SHOPPES_0f64);
   - a value stored to two locals when a loop ends is a loop over one of them followed by
     `other = it;` (SHOPPES_07BE);
+  - `n = 5;` followed by a loop over a pointer into a table is the closed form of
+    `for (n = 1; n < 5; n++) ... table[n] ...`: MSC walks the table with a pointer of its
+    own (which takes a stack slot) and sets n to its final value (ULTIMA_1a3e);
   - `mov ax,[bp+4]; jmp` to the epilogue from inside an if is an early `return param;`
     in that branch (SHOPPES_0502);
   - `y = x;` after a loop over x, with x and y in SI and DI and no store of x, is a loop over
@@ -505,6 +508,15 @@ Each entry gives the evidence. Add to this list as you learn.
   after the loop and the break jumps there. As `for (D_589e = 0; D_589e < 0x20; D_589e++)`
   the stores sit at the break and the loop's end jumps to them, as in the original. (It
   also needed `int local_6`: the original holds the flags byte in DI as an int.)
+- **A char parameter.** ULTIMA_1a3e fills a buffer with its third parameter. As an `int`,
+  MSC 5.0 turns the loop into `rep stosb` and needs a temporary; declared `char` (and the
+  prototype with it), the loop stores AL each time as in the original, and the frame
+  shrinks by the temporary. The callers' code does not change.
+- **Loop registers lost to common subexpressions.** In CMDS_12c8 the original keeps two
+  stack locals in SI and DI through the loop (loaded at its start, stored at its exits)
+  and recomputes `local_6 + D_5896_map_x` at each use. MSC here makes those sums
+  temporaries and then registers nothing; dropping either block that uses them brings the
+  registers back. SHOPPES2_08a8 is probably the same. Open.
 - **Same-length instructions with another encoding** (`and bx,0Fh` as `81 e3 0f 00`
   instead of `83 e3 0f`) are not produced by bitfields, `unsigned` or other mask
   spellings. Open.
