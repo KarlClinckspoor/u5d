@@ -370,8 +370,8 @@ static int SJOG_045a(int param_1, int param_2)
 // CHECKED
 // The original keeps D_3e78[local_4_ab] in SI with no stack slot of its own: si shares
 // local_a's slot (bp-8). Under MSC 5.0 a register variable takes a slot, and a block's
-// slots are given back for a sibling block only when the block is a statement's body
-// (if (1) here), not a bare { }. local_a is declared in it so that it comes after the
+// slots are given back for a sibling block only when the block is the body of an if or a
+// for (if (1) here), not a bare { }. local_a is declared in it, so it comes after the
 // function's own locals. (An "extern const" table would also keep the value across the
 // call, but 5.0 then writes fixups to segment index 0.)
 static void SJOG_0514(int param_1, int param_2)
