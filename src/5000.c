@@ -434,7 +434,6 @@ static bool ULTIMA_5dfe(byte param_1, int param_2);
 // generate visibility map (BFS)
 static void ULTIMA_5a28(int param_1, int param_2_y, int param_3_x, int param_4, int param_5, uint param_6, byte* param_7_map)
 {
-    register byte* ptr;
     int local_218_aj; // -0x216
     byte local_216_al;
     int local_214_an; // -0x212; y
@@ -455,6 +454,7 @@ static void ULTIMA_5a28(int param_1, int param_2_y, int param_3_x, int param_4, 
 
     if (param_1 > 0)
     {
+        register byte* ptr;
         // 5a57
         if (param_4 == -0x6f)
         {
@@ -533,7 +533,7 @@ static void ULTIMA_5a28(int param_1, int param_2_y, int param_3_x, int param_4, 
 #endif
 
                 // 5b48
-                ptr = &param_7_map[(param_4 + local_214_an) * 0x20 + param_5 + local_212];
+                ptr = param_7_map + (param_4 + local_214_an) * 0x20 + (param_5 + local_212);
 
                 // 5b5f
                 if (local_210_ab == 0)
@@ -601,7 +601,7 @@ static void ULTIMA_5a28(int param_1, int param_2_y, int param_3_x, int param_4, 
                             {
                                 // 5c52
                                 if (param_2_y + local_214_an < 0 || param_3_x + local_212 < 0 ||
-                                    param_3_x + local_212 >= 0x20 || param_2_y + local_214_an >= 0x20)
+                                    param_3_x + local_212 > 0x1f || param_2_y + local_214_an > 0x1f)
                                 {
                                     // 5c74
                                     *ptr = 0;
