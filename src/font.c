@@ -77,6 +77,13 @@ u8 D_51fc[8] = {0x28, 0x30, 0x30, 0x28, 0x28, 0x30, 0x28, 0x30};
 u8 D_5204[8] = {0x05, 0x07, 0x04, 0x0a, 0x08, 0x00, 0x05, 0x06};
 
 // CHECKED
+// NOT MATCHING (SIZE 698/674, 544 bytes): the first inner loop differs from its start. The
+// original keeps local_4_ab, local_a, local_10_ad_am and param_2 in SI, DI, CX and DX
+// (stored when the loop ends), rereads param_2[i] through "mov bx,cx; add bx,dx" at every
+// test, compares the characters unsigned ("ja"/"jbe": byte, not char) and places the
+// "{"/"_"/glyph branch at the loop's top, the "<= 0x20" branch after the merged test. Ours
+// registers nothing there and keeps param_2[i] in a stack temporary (as in CMDS_12c8).
+// Tried: param_2 read as (byte*) everywhere (536 bytes, same shape).
 // param_1: image, param_2: text
 void FONT_0000(byte* param_1, char* param_2)
 {
@@ -240,6 +247,13 @@ static void FONT_02a2(int param_1, int param_2)
 //   a pointer for loop: no change or worse.
 // The pattern (unused slot above an inner-block local) is DNGLOOK_0c6c's, where a
 // temporary made before the block pushed local_c down; here none is made early enough.
+// Also tried (all still local_c at bp-8, or worse): local_c in the if block / the for body /
+// the do body again (the loop temporaries are made after the block's local, so they are made
+// when a loop ends, not at its start); loop 1 as do-while (the "++i < 32" form is 294 bytes;
+// "i++; } while (i < 32)" and while are identical code) and loop 2's outer loop as while, each
+// with an unused local_a (local_c at -0Ah, frame 0Eh); register on each local (worse); a
+// "register byte*" walking loop 2 in a block (takes SI, swaps SI/DI: 12 bytes) or at function
+// level (288 bytes).
 int FONT_02fc(int param_1)
 {
     int local_c;

@@ -345,6 +345,18 @@ void ZSTATS_05e2(int param_1, byte* param_2, char** param_3, uint param_4)
 // "!= 0xffff" (cmp instead of inc, same placement), goto loops, a do-while entered by goto,
 // no pragma, and "#pragma loop_opt(on)" around the END case (SI/DI register variables, which
 // the original has nowhere in the function).
+// The END loop's own code comes out as the original's (CODE 692/690 bytes, 212 differing)
+// written as a do-while entered at its test:
+//     local_a = 0; goto L_end_test;
+//     do { local_6 = local_c; local_a++; L_end_test:; }
+//     while (local_a < 6 && (local_c = ZSTATS_056c(...)) != 0xffff);
+// (with "!= -1" it is "inc ax; je"). Its exit then falls into the break's jmp as in the
+// original, but MSC still moves the floating while-test block (test, window setup, jump into
+// the listing loop) behind HOME's break, the first unconditional jump to it, where the
+// original has it behind END's. Moving END before HOME in the source moves the block behind
+// END, so the choice is "first jump in code order". Not changed by: HOME's or END's break as
+// continue, HOME as "goto" to a label on END's break, the while as for(;!local_8;), as
+// "while (local_8 == 0)" or as an if/goto loop. The file keeps the version that is 690 long.
 static int ZSTATS_06e8(char* param_1, int param_2, byte* param_3, char** param_4)
 {
     int local_10_aa;
@@ -725,6 +737,13 @@ static int ZSTATS_0c0a(int param_1)
 // "not strong enough" block last, after the switch cases, and the success code right
 // after the strength test. The strength test comes first in the source: its string
 // precedes "Ring vanishes!" in CONST, which is what makes ZSTATS' CONST (and DGROUP) match.
+// The ring test read D_57c0[param_2] instead of param_2 ("cmp bx,2Ah" after the dec): fixed,
+// 710 -> 706 bytes (original 722). Layout: the code after the switch goes to case 0x80's
+// break (its first) up to the first jump. In the original that chain is test, store, ring
+// (the test jumps far to the weak block, placed after case 2 just before the "!= 0x2a"
+// tail); ours is test, weak. Tried: if/else around the weak block (no change), "if (e != 0)
+// goto L_ok" (724 bytes), the weak block as a label inside the switch after case 2 with
+// "if (local_e_g == 0) goto L_weak" (identical code: MSC still puts it after the test).
 static int ZSTATS_0c5c_EquipItem(int param_1, int param_2)
 {
     byte* local_10_l;
@@ -894,7 +913,7 @@ static int ZSTATS_0c5c_EquipItem(int param_1, int param_2)
     // efd2
     *local_10_l = param_2;
     --D_57c0[param_2];
-    if ((D_57c0[param_2] == 0x2a || D_57c0[param_2] == 0x2c) && (ULTIMA_2092_RandomRange(0, 0xf) == 0))
+    if ((param_2 == 0x2a || param_2 == 0x2c) && (ULTIMA_2092_RandomRange(0, 0xf) == 0))
     {
         // efff
         ULTIMA_1850_PrintString(_TEXT(0x995e, "\n\nRing vanishes!\n"));
@@ -932,13 +951,13 @@ int ZSTATS_0f2e(int param_1, int param_2, int param_3)
     int local_1a_ac;
     int local_18_al;
     int local_16_an;
-    byte* local_14; // equipments
+    byte* local_14_ap; // equipments
     int local_12_ab;
     int local_10_ad;
-    int local_e;
-    int local_c;
-    int local_a;
-    int local_8;
+    int local_e_a;
+    int local_c_ac;
+    int local_a_ae;
+    int local_8_an;
     int local_6;
     int local_4_ab;
 
@@ -947,22 +966,22 @@ int ZSTATS_0f2e(int param_1, int param_2, int param_3)
 #endif
 
     // f10e
-    local_8 = 0;
+    local_8_an = 0;
     local_10_ad = 1;
 
     if (param_3 == 0x52)
     {
-        local_14 = D_57c0;
-        local_a = 0x30;
+        local_14_ap = D_57c0;
+        local_a_ae = 0x30;
     }
     else
     {
-        local_14 = D_b9ee;
-        local_a = 0x26;
+        local_14_ap = D_b9ee;
+        local_a_ae = 0x26;
     }
 
     // f142
-    while (local_8 == 0)
+    while (local_8_an == 0)
     {
         ULTIMA_1b94_SelectTextWindow(1);
         ULTIMA_1bf2_SetTextPosition(1, 1);
@@ -989,23 +1008,23 @@ int ZSTATS_0f2e(int param_1, int param_2, int param_3)
                 if (ZSTATS_0518(param_2, local_12_ab) == 0)
                 {
                     // f15c
-                    local_c = 0x20;
+                    local_c_ac = 0x20;
                 }
                 else
                 {
                     // f244
-                    local_c = D_1ae8[local_12_ab];
+                    local_c_ac = D_1ae8[local_12_ab];
                 }
 
                 // f161..f17e
                 // Equipments
-                ZSTATS_05e2(local_12_ab, local_14, D_1962, local_c);
+                ZSTATS_05e2(local_12_ab, local_14_ap, D_1962, local_c_ac);
             }
             else
             {
                 // f170..f17e
                 // Scrolls
-                ZSTATS_05e2(local_12_ab, local_14, D_1916, 0x20);
+                ZSTATS_05e2(local_12_ab, local_14_ap, D_1916, 0x20);
             }
 
             // f181
@@ -1023,13 +1042,13 @@ int ZSTATS_0f2e(int param_1, int param_2, int param_3)
             }
 
             // f1fc
-            local_12_ab = ZSTATS_05a4(local_12_ab, local_a, local_14, param_2);
+            local_12_ab = ZSTATS_05a4(local_12_ab, local_a_ae, local_14_ap, param_2);
             // -> f20b
         }
 
         // f1a4
         local_18_al = 0;
-        if (ZSTATS_056c(param_1, local_a, local_14, param_2) != -1)
+        if (ZSTATS_056c(param_1, local_a_ae, local_14_ap, param_2) != -1)
         {
             local_18_al = 2;
         }
@@ -1037,7 +1056,7 @@ int ZSTATS_0f2e(int param_1, int param_2, int param_3)
         // f1c0
         if (local_12_ab != -1)
         {
-            if (ZSTATS_05a4(local_12_ab, local_a, local_14, param_2) != -1)
+            if (ZSTATS_05a4(local_12_ab, local_a_ae, local_14_ap, param_2) != -1)
             {
                 local_18_al++;
             }
@@ -1080,14 +1099,14 @@ int ZSTATS_0f2e(int param_1, int param_2, int param_3)
             else
                 local_6 = 1;
 
-            for (local_e = 0; local_e < local_6; local_e++)
+            for (local_e_a = 0; local_e_a < local_6; local_e_a++)
             {
                 if (local_10_ad == 4 || local_10_ad == 1)
                 {
                     // 10fa
-                    if (ZSTATS_056c(param_1, local_a, local_14, param_2) != -1)
+                    if (ZSTATS_056c(param_1, local_a_ae, local_14_ap, param_2) != -1)
                     {
-                        param_1 = ZSTATS_056c(param_1, local_a, local_14, param_2);
+                        param_1 = ZSTATS_056c(param_1, local_a_ae, local_14_ap, param_2);
                     }
                     else
                     {
@@ -1117,15 +1136,15 @@ int ZSTATS_0f2e(int param_1, int param_2, int param_3)
             else
                 local_6 = 1;
 
-            for (local_e = 0; local_e < local_6; local_e++)
+            for (local_e_a = 0; local_e_a < local_6; local_e_a++)
             {
                 if (local_10_ad == 4 || local_10_ad == 7 || local_10_ad >= local_4_ab)
                 {
                     // 116f
-                    if (local_12_ab != -1 && ZSTATS_05a4(local_12_ab, local_a, local_14, param_2) != -1)
+                    if (local_12_ab != -1 && ZSTATS_05a4(local_12_ab, local_a_ae, local_14_ap, param_2) != -1)
                     {
-                        param_1 = ZSTATS_05a4(param_1, local_a, local_14, param_2);
-                        local_12_ab = ZSTATS_05a4(local_12_ab, local_a, local_14, param_2);
+                        param_1 = ZSTATS_05a4(param_1, local_a_ae, local_14_ap, param_2);
+                        local_12_ab = ZSTATS_05a4(local_12_ab, local_a_ae, local_14_ap, param_2);
                     }
                     else
                     {
@@ -1151,19 +1170,19 @@ int ZSTATS_0f2e(int param_1, int param_2, int param_3)
             // f3fc
             if (param_3 == 0x52)
             {
-                local_8 = ZSTATS_0c5c_EquipItem(param_2, local_1a_ac);
+                local_8_an = ZSTATS_0c5c_EquipItem(param_2, local_1a_ac);
             }
             else
             {
                 // f410
-                local_8 = 1;
+                local_8_an = 1;
             }
             // -> f462
             break;
         case U5_KEY_ESC:
             // 1238
             ULTIMA_1850_PrintString(param_3 == 0x52 ? _TEXT(0x9970, "Done\n") : _TEXT(0x9976, "None!\n"));
-            local_8 = 1;
+            local_8_an = 1;
             local_1a_ac = -1;
 
             // -> f462
@@ -1171,20 +1190,20 @@ int ZSTATS_0f2e(int param_1, int param_2, int param_3)
         case U5_KEY_HOME:
             // 11C0
             // f3a0
-            param_1 = ZSTATS_05a4(-1, local_a, local_14, param_2);
+            param_1 = ZSTATS_05a4(-1, local_a_ae, local_14_ap, param_2);
             local_10_ad = 1;
             // -> f462
             break;
         case U5_KEY_END:
             // f3bc
             // L_11dc
-            param_1 = ZSTATS_056c(local_a, local_a, local_14, param_2);
+            param_1 = ZSTATS_056c(local_a_ae, local_a_ae, local_14_ap, param_2);
 
             for (local_10_ad = 1; local_10_ad < 7; local_10_ad++)
             {
                 // f3d1
                 // L_11f1
-                local_1a_ac = ZSTATS_056c(param_1, local_a, local_14, param_2);
+                local_1a_ac = ZSTATS_056c(param_1, local_a_ae, local_14_ap, param_2);
                 if (local_1a_ac == -1)
                 {
                     // L_1207
