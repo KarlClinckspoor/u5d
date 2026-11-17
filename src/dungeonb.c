@@ -534,22 +534,69 @@ static void DUNGEON_1786(int param_1, int param_2)
     }
 }
 
-// CLEAN ROOM: write this function from the original's disassembly
-// (tools/match.py src/dungeonb.c --dis DUNGEON_1952).
+/// CLEAN ROOM (written from the disassembly). param_1, param_2: map x, y; param_3:
+// distance. The original builds each shape number in SI in two steps (first operand
+// through AX into SI, second operand added to SI) and has no stack slot for it (frame 4).
+// MSC 5.0 computes a common subexpression in AX/CX and moves it, and a pointer-typed one
+// directly in SI (mov si,[bp+4]; shl si,1); only a register pointer assigned and then
+// incremented gives the original's instructions. A register variable takes a stack slot,
+// so the DOS build shares it with the tile's: the tile is local to an "if (1)" body and
+// the register variable to the bare block after it (the same device as SJOG_0514). That
+// needs the wall branch written with gotos: its block ends in a jump, so MSC places it
+// right after the test, as the then-branch of the plain if/else below.
+// The source the original was compiled from is not known; this is a spelling that gives
+// its bytes.
 static void DUNGEON_1952(int param_1, int param_2, int param_3)
 {
     static u8 D_2f16[8] = {0x00, 0x1f, 0x00, 0x1f, 0x00, 0x00, 0x00, 0x00};
     static u8 D_2f1e[8] = {0x00, 0x00, 0x1f, 0x1f, 0x37, 0x27, 0x2f, 0x3f};
     static u8 D_2f26 = 0;
-    int local_6;
     int local_4_b;
-    register byte* x;
+#if defined(TARGET_DOS16)
 
-    local_6 = DUNGEON_10dc(param_1, param_2);
-    local_4_b = local_6 >> 4;
-
-    if (local_4_b > 0 && local_4_b < 8 && (local_4_b != 6 || (local_6 & 7) == 0))
+    if (1)
     {
+        int local_6;
+
+        local_6 = DUNGEON_10dc(param_1, param_2);
+        local_4_b = local_6 >> 4;
+        if (local_4_b > 0 && local_4_b < 8 && (local_4_b != 6 || (local_6 & 7) == 0))
+        {
+            goto L_wall;
+        }
+        if (local_4_b == 8)
+        {
+            DUNGEON_127e(param_3, local_6 & 7);
+        }
+    }
+    {
+        register byte* x;
+
+L_field:
+        if (local_4_b < 9 && (GetDungeonMap(param_1 & 7, param_2 & 7, D_5895_map_level) & 8) != 0)
+        {
+            x = (byte*)(param_3 * 2);
+            x += D_2f1e[6];
+            DUNGEON_134a((int)x, 1, 0);
+            DUNGEON_134a((int)x, 1, 1);
+        }
+
+        if (param_3 != 0 && (u8)(param_1 & 7) == D_5c5a[1]._2_x && (u8)(param_2 & 7) == D_5c5a[1]._3_y)
+        {
+            DUNGEON_111e(param_3);
+        }
+
+        if (param_3 == 0)
+        {
+            D_2f26++;
+            if (D_2f26 > 2)
+            {
+                D_2f26 = 0;
+            }
+        }
+        return;
+
+L_wall:
         if (D_2f16[local_4_b] != 0)
         {
             x = (byte*)D_2f16[local_4_b];
@@ -570,6 +617,32 @@ static void DUNGEON_1952(int param_1, int param_2, int param_3)
         {
             DUNGEON_1786(param_3, D_2f26);
         }
+        goto L_field;
+    }
+#else
+    int local_6;
+
+    local_6 = DUNGEON_10dc(param_1, param_2);
+    local_4_b = local_6 >> 4;
+
+    if (local_4_b > 0 && local_4_b < 8 && (local_4_b != 6 || (local_6 & 7) == 0))
+    {
+        if (D_2f16[local_4_b] != 0)
+        {
+            DUNGEON_134a(D_2f16[local_4_b] + param_3 * 2, 1, 0);
+            DUNGEON_134a(D_2f16[local_4_b] + param_3 * 2, 1, 1);
+        }
+
+        if (D_2f1e[local_4_b] != 0)
+        {
+            DUNGEON_134a(D_2f1e[local_4_b] + param_3 * 2, 0, 0);
+            DUNGEON_134a(D_2f1e[local_4_b] + param_3 * 2, 0, 1);
+        }
+
+        if (local_4_b == 5)
+        {
+            DUNGEON_1786(param_3, D_2f26);
+        }
     }
     else if (local_4_b == 8)
     {
@@ -578,10 +651,8 @@ static void DUNGEON_1952(int param_1, int param_2, int param_3)
 
     if (local_4_b < 9 && (GetDungeonMap(param_1 & 7, param_2 & 7, D_5895_map_level) & 8) != 0)
     {
-        x = (byte*)(param_3 * 2);
-        x += D_2f1e[6];
-        DUNGEON_134a((int)x, 1, 0);
-        DUNGEON_134a((int)x, 1, 1);
+        DUNGEON_134a(param_3 * 2 + D_2f1e[6], 1, 0);
+        DUNGEON_134a(param_3 * 2 + D_2f1e[6], 1, 1);
     }
 
     if (param_3 != 0 && (u8)(param_1 & 7) == D_5c5a[1]._2_x && (u8)(param_2 & 7) == D_5c5a[1]._3_y)
@@ -597,6 +668,7 @@ static void DUNGEON_1952(int param_1, int param_2, int param_3)
             D_2f26 = 0;
         }
     }
+#endif
 }
 
 void DUNGEON_1a90(int param_1)
