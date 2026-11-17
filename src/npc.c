@@ -468,6 +468,16 @@ static int NPC_06a0(int param_1, int param_2, int param_3, int param_4)
 }
 
 // CHECKED
+// NOT MATCHING (SIZE 592/596, 449 bytes): with the locals renamed to 5.0's slot order the
+// code is the original's but for one block. After tail merging, the else of
+// "if (local_4_ab == 4 || local_4_ab == 5)" is only "D_65be = 0x61; jmp a9db" (the then
+// branch keeps the shared stores). Ours leaves it after the then branch; the original puts
+// it inside the first move loop, between the then branch of "if (NPC_0b9e(...))" (after its
+// "jmp" over the else) and the else (= 99), so the 4/5 test ends "je then; jmp near".
+// Tried: the else as "D_65be = 0x61; goto L_a9db" (label on the then branch's stores), the
+// then branch as "if (_a != 0) ... else goto move", the stores written once after the
+// if/else (448 bytes, the else then falls into them), and the else block as a label inside
+// the loop after a "continue" in the then branch (the loop loses its registers: 580 bytes).
 static void NPC_06e4(int param_1, int param_2)
 {
     int local_1c_a;

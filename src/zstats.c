@@ -345,6 +345,18 @@ void ZSTATS_05e2(int param_1, byte* param_2, char** param_3, uint param_4)
 // "!= 0xffff" (cmp instead of inc, same placement), goto loops, a do-while entered by goto,
 // no pragma, and "#pragma loop_opt(on)" around the END case (SI/DI register variables, which
 // the original has nowhere in the function).
+// The END loop's own code comes out as the original's (CODE 692/690 bytes, 212 differing)
+// written as a do-while entered at its test:
+//     local_a = 0; goto L_end_test;
+//     do { local_6 = local_c; local_a++; L_end_test:; }
+//     while (local_a < 6 && (local_c = ZSTATS_056c(...)) != 0xffff);
+// (with "!= -1" it is "inc ax; je"). Its exit then falls into the break's jmp as in the
+// original, but MSC still moves the floating while-test block (test, window setup, jump into
+// the listing loop) behind HOME's break, the first unconditional jump to it, where the
+// original has it behind END's. Moving END before HOME in the source moves the block behind
+// END, so the choice is "first jump in code order". Not changed by: HOME's or END's break as
+// continue, HOME as "goto" to a label on END's break, the while as for(;!local_8;), as
+// "while (local_8 == 0)" or as an if/goto loop. The file keeps the version that is 690 long.
 static int ZSTATS_06e8(char* param_1, int param_2, byte* param_3, char** param_4)
 {
     int local_10_aa;
