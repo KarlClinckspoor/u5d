@@ -2,10 +2,16 @@
 """Write an assembly source for a range of the original code, and make it assemble to it.
 
     python tools/asmgen.py NAME START END [--entry ADDR ...] [--keep]
+    python tools/asmgen.py NAME START END --ovl OVERLAY
 
 For the resident image (CS offsets START..END of ULTIMA.EXE), writes src/asm/NAME.ASM:
 MASM 4.0 source in Microsoft C's small-model segments, which tools/asmbuild.py assembles to
-the original bytes. The source is drafted from the bytes, then checked:
+the original bytes. With --ovl, START..END are offsets in OVERLAY.OVL (as u5d's names have
+them: FONT_0000 is offset 0 of FONT.OVL), and the module is an assembly part of that overlay
+(first line "OVERLAY.OVL START-END"; tools/u5link.py places it by its functions' names). The
+code is decoded at the overlay's CS addresses, calls into the resident code name their
+targets, and labels inside it carry file offsets. The source is drafted from the bytes, then
+checked:
 
   1. instructions are found from the entry points (the u5d functions in the range, and any
      --entry) by following jumps and calls; whatever is never reached is written as data;
@@ -66,6 +72,26 @@ def relocations(gamedata):
     return out
 
 
+def overlay_functions(ovl):
+    """{file offset: exported name} for the functions of overlay ovl: the u5d definitions in
+    its C files, and the PUBLIC labels of its assembly parts."""
+    out = {}
+    for f, (kind, o) in u5.MODULES.items():
+        if kind != 'ovl' or o != ovl:
+            continue
+        s = open(os.path.join(u5.SRC, f), encoding='utf-8', errors='replace').read()
+        for m in re.finditer(r'^(?:static\s+)?[\w\s\*]*?\b(%s_([0-9a-fA-F]{4})\w*)\s*\([^;{)]*\)\s*(?://[^\n]*)?\s*\{' % ovl,
+                             s, re.M):
+            out.setdefault(int(m.group(2), 16), exported(m.group(1)))
+    for p in glob.glob(os.path.join(ASM_DIR, '*.ASM')):
+        s = open(p, encoding='latin-1').read()
+        if not re.search(r'\b%s\.OVL [0-9a-f]{4}-[0-9a-f]{4}' % ovl, s.split('\n', 1)[0]):
+            continue
+        for m in re.finditer(r'^\tPUBLIC\t(%s_([0-9A-Fa-f]{4})\w*)' % ovl, s, re.M):
+            out.setdefault(int(m.group(2), 16), m.group(1))
+    return out
+
+
 def data_symbols():
     """{DS address: (name, size or None)} for the D_xxxx variables (vars.h) and S_ arrays."""
     out = {}
@@ -78,8 +104,14 @@ def data_symbols():
 
 
 class Gen:
-    def __init__(self, name, start, end, entries=(), gamedata=None, seg=0):
-        self.name, self.start, self.end = name, start, end
+    def __init__(self, name, start, end, entries=(), gamedata=None, seg=0, ovl=None):
+        # an overlay part: the overlay's bytes at its area base in a copy of the resident
+        # image, so that everything below works in CS addresses; ovlbase turns them back
+        # into file offsets for the names
+        self.ovl = ovl
+        self.ovlbase = u5.OVERLAY_BASE[ovl] if ovl else 0
+        self.name, self.start, self.end = name, start + self.ovlbase, end + self.ovlbase
+        start, end = self.start, self.end
         # code of a far segment (PLINK86's): offsets are relative to the segment's base
         self.seg = seg
         self.segbase = seg * 16
@@ -89,6 +121,17 @@ class Gen:
         self.relocs = relocations(self.gamedata)
         tags = rootmap.function_tags()
         self.funcs = {a: exported(n) for a, (n, f, t) in tags.items()}
+        if ovl:
+            code = u5.read_file(self.gamedata, ovl + '.OVL')
+            ovlend = self.ovlbase + len(code)
+            img = bytearray(self.img) + bytes(max(0, ovlend - len(self.img)))
+            img[self.ovlbase:ovlend] = code
+            self.img = bytes(img)
+            # an overlay's relocations are its header's (INTRO.OVL's only); what the resident
+            # image has in the overlay's area (PLINK86's start-up code) is not this code
+            self.relocs = set(u5.overlay_relocations(self.gamedata, ovl))
+            self.funcs = {a: n for a, n in self.funcs.items() if not self.ovlbase <= a < ovlend}
+            self.funcs.update({self.ovlbase + o: n for o, n in overlay_functions(ovl).items()})
         # runtime routines: the library's own (case-sensitive) public names
         self.funcs.update({a: '_' + n.split()[0] for a, n in rootmap.crt_names().items()
                            if a not in self.funcs and re.match(r'^\w+$', n.split()[0])})
@@ -103,7 +146,7 @@ class Gen:
             pass
         # labels other assembly modules jump to must be PUBLIC here
         self.wanted = set()
-        for p in glob.glob(os.path.join(ASM_DIR, '*.ASM')):
+        for p in glob.glob(os.path.join(ASM_DIR, '*.ASM')) if not ovl else ():
             if os.path.basename(p).upper() == name.upper() + '.ASM':
                 continue
             for m in re.finditer(r'^\tEXTRN\tL_([0-9a-f]{4}):NEAR', open(p, encoding='latin-1').read(), re.M):
@@ -114,9 +157,13 @@ class Gen:
         # defines, such as PLINK's jump into an overlay area, stays as bytes)
         self.asm_ranges = []
         for p in glob.glob(os.path.join(ASM_DIR, '*.ASM')):
-            m = re.search(r'CS:([0-9a-f]{4})-([0-9a-f]{4})', open(p, encoding='latin-1').readline())
+            line = open(p, encoding='latin-1').readline()
+            m = re.search(r'CS:([0-9a-f]{4})-([0-9a-f]{4})', line)
             if m:
                 self.asm_ranges.append((int(m.group(1), 16), int(m.group(2), 16)))
+            m = re.search(r'\b([A-Z0-9]+)\.OVL ([0-9a-f]{4})-([0-9a-f]{4})', line)
+            if m and ovl and m.group(1) == ovl:
+                self.asm_ranges.append((self.ovlbase + int(m.group(2), 16), self.ovlbase + int(m.group(3), 16)))
         self.data = data_symbols() if not seg else {}
         self.entries = sorted(set([a for a in self.funcs if start <= a < end] + list(entries)))
         self.force_db = set()        # instruction addresses to write as bytes
@@ -200,6 +247,8 @@ class Gen:
     def label(self, a):
         if a in self.funcs:
             return self.funcs[a]
+        if self.ovl and a >= self.ovlbase:
+            return 'L_%04x' % (a - self.ovlbase)          # an overlay's offset in its file
         return 'L_%04x' % a
 
     def emit(self):
@@ -279,7 +328,11 @@ class Gen:
                         n += 1
                     body.append('\tdb\t%s' % ', '.join('0%02xh' % b for b in self.img[a:a + n]))
                 a += n
-        hdr = ['; %s.ASM: ULTIMA.EXE CS:%04x-%04x, hand-written assembly in the original.' % (self.name, self.start, self.end),
+        if self.ovl:
+            where = '%s.OVL %04x-%04x' % (self.ovl, self.start - self.ovlbase, self.end - self.ovlbase)
+        else:
+            where = 'ULTIMA.EXE CS:%04x-%04x' % (self.start, self.end)
+        hdr = ['; %s.ASM: %s, hand-written assembly in the original.' % (self.name, where),
                '; Drafted from the original bytes by tools/asmgen.py and checked by tools/asmbuild.py.',
                '', '\tTITLE\t%s' % self.name,
                "%s\tSEGMENT  %s PUBLIC '%s'" % (self.segname[0], self.segname[2], self.segname[1]),
@@ -453,8 +506,13 @@ def main():
     ap.add_argument('end', type=lambda x: int(x, 16))
     ap.add_argument('--entry', action='append', default=[], type=lambda x: int(x, 16))
     ap.add_argument('--seg', default='0', type=lambda x: int(x, 16), help='a far segment (paragraph), e.g. 072e')
+    ap.add_argument('--ovl', type=str.upper, choices=u5.OVERLAYS, metavar='OVERLAY',
+                    help='an assembly part of OVERLAY.OVL: START, END and --entry are offsets in that file')
     a = ap.parse_args()
-    g = Gen(a.name.upper(), a.start, a.end, a.entry, seg=a.seg)
+    if a.ovl and a.seg:
+        ap.error('--ovl and --seg do not go together')
+    off = u5.OVERLAY_BASE[a.ovl] if a.ovl else 0
+    g = Gen(a.name.upper(), a.start, a.end, [e + off for e in a.entry], seg=a.seg, ovl=a.ovl)
     ok = build(a.name.upper(), g)
     sys.exit(0 if ok else 1)
 
