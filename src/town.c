@@ -961,6 +961,30 @@ static int TOWN_0e34(int param_1)
 }
 
 // CHECKED (loop)
+// NOT MATCHING: the original compiles the poison loop (105d) without loop optimization (a
+// plain for: jmp to the test, inc [bp-4], the index recomputed with shl si,5) and has one
+// temporary fewer (frame 0Ch, ours 10h); the other two loops are optimized as here.
+// #pragma loop_opt(off) also turns off the loop at 0103; a label, continue, or the loop
+// as a goto do not help.
+// It is pass 2's memory: the original had about 10 KB more of it in use by this function.
+// Unreferenced tentative definitions just before TOWN_0f02 (or TOWN_0e34, TOWN_0dc4) make
+// it exact, but what counts is bytes, not symbols: with this note above the function,
+// exactly 330 "int X%d;" (names of 2-4 characters) gives EXACT, 325 and 335 do not, 264
+// and more break TOWN_1694, about 200 give frame 0Ch only; with 24-character names 160
+// already break TOWN_1694 and 200 are past the window (an earlier run with other names
+// found 265-274). So each global symbol costs about 28 bytes plus its name; an array costs
+// more than an int, a struct no more; "static int X;" counts the same (but fills _BSS).
+// Nothing counts that pass 2 does not keep: unreferenced extern declarations (600 with
+// long names), local names or unused locals (in this function or an earlier one), /Zd,
+// /Zi. The 71 uninitialised variables of vars.h above DS:a524 defined here are far from
+// enough (frame unchanged). Comment lines inside the function are a separate limit: 245
+// before this loop change nothing, 246 or more give other wrong code (466 bytes).
+// At the top of the file the extra symbols also break TOWN_0408 and TOWN_0c78; just before
+// this function only TOWN_1694 breaks, and TOWN_10da-1726 compile the same as an object of
+// their own whose _DATA would start at the even DS:278a, so a boundary after TOWN_0f02 is
+// possible. What the original's extra memory was is not known: it depends on the names and
+// types of every global this module references, which u5d does not have; fake definitions
+// are no fix (they become communals or _BSS at link).
 static void TOWN_0f02(void)
 {
     int local_a;
@@ -1026,33 +1050,6 @@ static void TOWN_0f02(void)
         }
         else if (local_a == TILE_MAP_POISON && D_587c_partyTile == TILE_ACTOR_AVATAR)
         {
-            // NOT MATCHING: the original compiles this loop without loop optimization: a
-            // plain for (jmp to the test, inc [bp-4], index recomputed with shl si,5), and
-            // one temporary fewer (frame 0Ch, ours 10h). #pragma loop_opt(off) here gives
-            // exactly that loop, but it also turns off the loop at 0103 (in the same if/else
-            // chain), even with loop_opt(on) right after this loop or with the outer do-while
-            // written as a goto. A label in the body, continue for each test, or the loop as
-            // a goto: no change or worse. Elsewhere, functions late in a module lose loop
-            // optimization to the earlier functions (CAST_1c36, cmds2.c); the reverse does
-            // not help here: up to 20 extra extern references in a function placed just
-            // before TOWN_0f02 change nothing.
-            // It is pass 2's capacity after all, but the original had MORE global symbols
-            // before this function than u5d: 265-274 unreferenced tentative definitions
-            // (int X;) just before TOWN_0f02, TOWN_0e34 or TOWN_0dc4, or 120 small functions
-            // each setting its own extern, make TOWN_0f02 exact (fewer: frame 0Ch but this
-            // loop still optimized; more: the other loops go too). 80 extern references in
-            // one function or 120 empty functions do nothing. At the top of the file they
-            // also break TOWN_0408, TOWN_0c78 and TOWN_1694; just before TOWN_0f02 only
-            // TOWN_1694 breaks. TOWN_10da-TOWN_1726 compile the same as an object of their
-            // own (tested with everything before TOWN_10da deleted), and TOWN_10da's string
-            // starts at an even address (DS:278a) right after this function's last one, so
-            // an object boundary after TOWN_0f02 would keep TOWN_1694 exact. What the
-            // original's extra symbols were is not known; tentative definitions are no fix
-            // (they become communal variables at link). Near that limit, comment lines in
-            // this function count too (blank lines do not; with or without /Fc): with 240
-            // definitions, 30 comment lines before this loop make it exact, and this note
-            // moves the window from 261-274 to about 250-259. Far from it, 200 comment
-            // lines change nothing.
             // for (105d; 1067; 1064)
             for (local_6 = 0; local_6 < D_585b; local_6++)
             {

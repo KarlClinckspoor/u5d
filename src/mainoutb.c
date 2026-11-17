@@ -460,15 +460,14 @@ static void MAINOUT_16fc(int param_1)
 #endif
 
 // CHECKED
-// NOT MATCHING (2 bytes short): the original places the "else if (local_a > 0) param_2 = 0;"
-// blocks (and local_e_am's) out of line, after the next unconditional jump (the e_am == 0
-// branch's, and the first "MAINOUT_1578(); return;"), jumping back; here they follow the
-// "local_4_ab = param_2 = 1" blocks, which jump over them. param_2 declared volatile,
-// unsigned or char changes nothing (char: 2 more bytes differ). Tried: the "local_a >= 0"
-// case as a goto to a block after the function's end (MSC moves it right after the goto,
-// the test inverted), a goto at the end of the else-if block to a label on the next test
-// (that label's block moves up after the "local_a == 0" branch instead), a label alone,
-// "if (local_a >= 0) { if (local_a > 0) ... } else local_4_ab = ..." (laid out in order).
+// MSC places a block that nothing falls into after the first unconditional jump that follows
+// it in the source. The original has the two "if (x > 0) param_2 = 0;" blocks after the
+// local_e_am == 0 branch's jump and after the first MAINOUT_1578 call's, jumping back to the
+// next test: they were reached only by a goto from the else, and sat (here in an if (0)) in
+// the source after the code that ends with those jumps. Written in place, as an else-if, MSC
+// keeps them inline and the "x < 0" blocks jump over them. The end is an if/else chain with
+// MAINOUT_16fc in each last else, not early returns: the second MAINOUT_1578 call ends a
+// then-branch, so tail merging keeps its copy and the first one jumps forward into it.
 static void MAINOUT_17d4(int param_1, int param_2)
 {
     int local_e_am;
@@ -505,7 +504,6 @@ static void MAINOUT_17d4(int param_1, int param_2)
     }
     else
     {
-        // ????
         if (local_a < 0) // 184a
         {
             P2_SET(0);
@@ -515,15 +513,26 @@ static void MAINOUT_17d4(int param_1, int param_2)
         {
             local_4_ab = param_2 = 1;
         }
-        else if (local_a > 0) // 1872
+        else
         {
-            P2_SET(0);
+            goto L_1872;
         }
     }
 
+L_1864:
     if (local_e_am == 0) // 1864
     {
         local_6 = 0;
+
+        if (0)
+        {
+L_1872:
+            if (local_a > 0)
+            {
+                P2_SET(0);
+            }
+            goto L_1864;
+        }
     }
     else if (local_e_am > 0) // 1880
     {
@@ -532,7 +541,6 @@ static void MAINOUT_17d4(int param_1, int param_2)
     }
     else
     {
-        // ????
         if (local_e_am < 0) // 1894
         {
             P2_SET(0);
@@ -542,66 +550,64 @@ static void MAINOUT_17d4(int param_1, int param_2)
         {
             local_6 = param_2 = 1;
         }
-        else if (local_e_am > 0) // 18ee
+        else
         {
-            P2_SET(0);
+            goto L_18ee;
         }
     }
 
-    // 18ae
+    if (0)
+    {
+L_18ee:
+        if (local_e_am > 0)
+        {
+            P2_SET(0);
+        }
+        goto L_18ae;
+    }
+
+L_18ae:
     if (ULTIMA_2092_RandomRange(0, 1) == 1)
     {
-        if (local_4_ab != 0)
+        // 18bd
+        if (local_4_ab != 0 && MAINOUT_1482(param_1, local_8 + local_4_ab, local_c) != 0 &&
+            MAINOUT_14c8(local_8 + local_4_ab, local_c) != 0)
         {
-            // 18c3
-            if (MAINOUT_1482(param_1, local_8 + local_4_ab, local_c) != 0 && MAINOUT_14c8(local_8 + local_4_ab, local_c) != 0)
-            {
-                // 18e2
-                MAINOUT_1578(param_1, local_4_ab, 0);
-                return;
-            }
+            // 18e2: -> 192a
+            MAINOUT_1578(param_1, local_4_ab, 0);
         }
-
-        // 18fc
-        if (local_6 != 0)
+        else if (local_6 != 0 && MAINOUT_1482(param_1, local_8, local_c + local_6) != 0 &&
+                 MAINOUT_14c8(local_8, local_c + local_6) != 0)
         {
-            // 1902
-            if (MAINOUT_1482(param_1, local_8, local_c + local_6) != 0 && MAINOUT_14c8(local_8, local_c + local_6) != 0)
-            {
-                // 192a
-                MAINOUT_1578(param_1, 0, local_6);
-                return;
-            }
+            // 1921
+            MAINOUT_1578(param_1, 0, local_6);
+        }
+        else
+        {
+            MAINOUT_16fc(param_1);
         }
     }
     else
     {
         // 1930
-        if (local_6 != 0)
+        if (local_6 != 0 && MAINOUT_1482(param_1, local_8, local_c + local_6) != 0 &&
+            MAINOUT_14c8(local_8, local_c + local_6) != 0)
         {
-            // 1936
-            if (MAINOUT_1482(param_1, local_8, local_c + local_6) != 0 && MAINOUT_14c8(local_8, local_c + local_6) != 0)
-            {
-                // ->192a
-                MAINOUT_1578(param_1, 0, local_6);
-                return;
-            }
+            // -> 1921
+            MAINOUT_1578(param_1, 0, local_6);
         }
-
-        if (local_4_ab != 0)
+        else if (local_4_ab != 0 && MAINOUT_1482(param_1, local_8 + local_4_ab, local_c) != 0 &&
+                 MAINOUT_14c8(local_8 + local_4_ab, local_c) != 0)
         {
-            // 195b
-            if (MAINOUT_1482(param_1, local_8 + local_4_ab, local_c) != 0 && MAINOUT_14c8(local_8 + local_4_ab, local_c) != 0)
-            {
-                // -> 18e2
-                MAINOUT_1578(param_1, local_4_ab, 0);
-                return;
-            }
+            // -> 18e2
+            MAINOUT_1578(param_1, local_4_ab, 0);
+        }
+        else
+        {
+            // 197d
+            MAINOUT_16fc(param_1);
         }
     }
-
-    // 197d
-    MAINOUT_16fc(param_1);
 }
 #undef P2_SET
 
