@@ -405,7 +405,11 @@ int ULTIMA_6506(int param_1, int param_2, int param_3, int param_4, int param_5)
                 if (param_2 == 0) // monster?
                 {
                     local_4_aa->hp = D_13bc_enemyStats[param_1].maxHp;
-                    local_4_aa->dex = ULTIMA_3aae_Random(7) - 4 + D_13bc_enemyStats[param_1].dex;
+                    // local_6 reused as a scratch variable (the loop ends with the break below):
+                    // the original keeps Random(7) - 4 in DI, local_6's register, and the
+                    // assignment also stops MSC from walking D_ba14 with pointers.
+                    local_6 = ULTIMA_3aae_Random(7) - 4;
+                    local_4_aa->dex = local_6 + D_13bc_enemyStats[param_1].dex;
                     if (local_4_aa->dex > 0x1e)
                     {
                         local_4_aa->dex = D_13bc_enemyStats[param_1].dex;
