@@ -45,6 +45,7 @@ OBJS += \
 	src/2000.o \
 	src/r2320.o \
 	src/r251e.o \
+	src/r256e.o \
 	src/3000.o \
 	src/4000.o \
 	src/5000.o \
@@ -121,6 +122,15 @@ $(TARGET): $(OBJS)
 	$(CC) -o $@ $(OBJS) $(LD_FLAGS)
 
 -include $(wildcard $(addsuffix /*.d,$(DEPDIRS)))
+
+# The matching gate: build the 25 game files from source with Microsoft C 5.1/5.0 and MASM 4.0
+# in DOSBox-X, link them with tools/u5link.py and compare their SHA-1 with the GOG release
+# (docs/MATCHING.md). PYTHON is the interpreter of the tools' virtual environment.
+PYTHON ?= python
+check:
+	$(PYTHON) tools/check.py
+
+.PHONY: all check clean
 
 clean:
 	rm -f $(OBJS) $(TARGET)

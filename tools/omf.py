@@ -1,7 +1,8 @@
 """A reader for the Intel OMF object files Microsoft C 5.1 writes.
 
 Only what the matching tools need: segments and their data, public and local public
-names, external names, and fixups with their targets resolved to names or segments.
+names, external names, communal variables with their sizes, and fixups with their targets
+resolved to names or segments.
 """
 import struct
 
@@ -46,6 +47,7 @@ class Object:
         self.segs = [None]
         self.grps = [None]
         self.exts = [None]
+        self.comdefs = {}        # communal variables: name -> size in bytes
         self.module = None
         self.comments = []
         self._read(data if data is not None else open(path, 'rb').read())
@@ -113,12 +115,15 @@ class Object:
                     s, j = self._name(r, j)
                     _, j = self._idx(r, j)
                     kind = r[j]; j += 1
-                    for _ in range(2 if kind == 0x61 else 1):
+                    size = 1
+                    for _ in range(2 if kind == 0x61 else 1):   # far: count, element size
                         b = r[j]; j += 1
-                        if b == 0x81: j += 2
-                        elif b == 0x84: j += 3
-                        elif b == 0x88: j += 4
+                        if b == 0x81: b = struct.unpack_from('<H', r, j)[0]; j += 2
+                        elif b == 0x84: b = int.from_bytes(r[j:j + 3], 'little'); j += 3
+                        elif b == 0x88: b = struct.unpack_from('<I', r, j)[0]; j += 4
+                        size *= b
                     self.exts.append(s)
+                    self.comdefs[s] = size
             elif base in (PUBDEF, LPUBDEF):
                 j = 0
                 _, j = self._idx(r, j)

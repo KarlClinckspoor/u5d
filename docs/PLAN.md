@@ -30,6 +30,7 @@ passes only when they are identical.
 | 2026-11-17, batch 3: 5000.c split (5.0 + r5a28.c 5.1), for/while temporaries, goto-placed blocks | 591 | 0 | 0 | 4 | 2 | 597 |
 | 2026-11-17, clean-room rewrites from the disassembly; town.c split (town2.c); 22 overlays and DGROUP link identical | 594 | 0 | 0 | 3 | 0 | 597 |
 | 2026-11-17, FONT_0000, ULTIMA_2322, INTRO_132a as assembly (AFONT0, A2322, AINTRO2); 23 overlays, resident image and DGROUP link identical | 594 | 0 | 0 | 0 | 0 | 594 |
+| 2026-11-17, the gate: EXE header and relocation table, DATA.OVL's header, communal variables; all 25 files identical (`tools/check.py`) | 594 | 0 | 0 | 0 | 0 | 594 |
 
 Most `SIZE` verdicts in `0000.c` and `1000.c` are routines that were hand-written assembly in
 the original and are C in u5d (step 5).
@@ -68,7 +69,7 @@ the original and are C in u5d (step 5).
 6. **Runtime library.** Identify which modules of `SLIBCR.LIB` (and which build) make up
    the resident runtime, by matching them against the image.
 
-7. **Link.**
+7. **Link** *(done)*.
    - PLINK86 is not available, and MS LINK's overlays are a different scheme. So:
    - `tools/u5link.py`, a small OMF linker, places every module at its measured address
      (resident code, the four overlay areas, DGROUP).
@@ -76,8 +77,8 @@ the original and are C in u5d (step 5).
      the original order.
    - It produces `ULTIMA.EXE`, the 23 raw overlays, `FLAMES.OVL` and `DATA.OVL`.
 
-8. **The gate.** `tools/check.py` (and a Makefile target) builds everything and compares the
-   SHA-1 of all 25 files with the GOG release.
+8. **The gate** *(done)*. `tools/check.py` (and `make check`) builds everything and compares
+   the SHA-1 of all 25 files with the GOG release.
 
 ## Where it stands (2026-11-17)
 
@@ -94,10 +95,13 @@ Done, each checked by a tool:
   ("FONT.OVL 0e52-0e97"); asmbuild compares them with the .OVL file and u5link places them by
   their functions' names. FLAMES.OVL links byte-identical.
 - **Runtime:** CS:017e-0878 is 17 modules of SLIBCR.LIB and LIBH.LIB (`tools/libmatch.py`).
-- **Link:** `tools/u5link.py` links and compares. All 23 code overlays (INTRO.OVL's header
-  rebuilt from the overlay's relocations), the resident image and DGROUP are byte-identical.
-  Not yet built as facts: ULTIMA.EXE's header and relocation table order and DATA.OVL's
-  header (step 4), so ULTIMA.EXE and DATA.OVL are not yet compared as whole files.
+- **Link:** `tools/u5link.py` links and compares the 25 files as whole files: ULTIMA.EXE
+  (header, relocation table, resident image), the 23 code overlays (INTRO.OVL with its
+  header), FLAMES.OVL and DATA.OVL (header and DGROUP). All are byte-identical, and every
+  reference is resolved by a definition (none by the address in its name).
+- **The gate:** `tools/check.py` (`make check`) compiles and assembles everything into an
+  empty folder, links, and compares the SHA-1 of the 25 files with the GOG release's. It
+  passes.
 - **Objects:** INTRO has four objects (`intro0.c`, `intro.c`, `intro2.c`, `introb.c`), CMDS
   three (`cmds.c`, `cmds2.c`, `cmdsb.c`), SHOPPES2 two 5.0 objects (`shoppes2.c`,
   `shoppe2b.c`), found by the optimizer capacity; CAST is a 5.1 + 5.0 pair (`cast.c`,
@@ -143,21 +147,68 @@ Next, in order:
      - 2000.c: ULTIMA_256e and 25d8 call ULTIMA_2322 with `call far 0:2322`, where MSC emits
        `push cs; call near` for a far function defined earlier in the same module. So 2322
        (the GOG-patched function) was probably in another object; it is now A2322.ASM.
-2. **Split the resident C into its original modules.** The runs between the assembly
-   modules are 0d72, 1850-1b16, 1b38, 1dda-1eac, 1fa0-2056, 216c, and 2320-3072 / 3072-400c /
-   400c-51a0 / 51a0-60ec / 60ec-6f1e (each with its own data in DGROUP), plus 7040-71aa.
-   - Exclude the C rewrites of assembly functions from the DOS build.
-   - Match the remaining resident C.
-3. **Resident data.**
-   - Move vars.c's tables into their modules (or into data-only modules where no owner is
-     known, saying so).
-   - Place the runtime's data segments (_DATA, CDATA, XI*/XC* tables, NMSG) in DGROUP.
-   - Use `_XTEXT` for ULTIMA_25ca's string at DS:a0e0.
-4. **Finish the linker.**
-   - EXE header: PLINK's fields as facts; the checksum 0x7e39 is not the standard MZ one.
-   - Relocation table in the original order (seven increasing runs: module order, then
-     fixup order).
-   - DATA.OVL header: three seg:off entries for far pointers in DGROUP, 0f68:<DS-0x40>.
-   - Accept no reference resolved only by the address in its name (73 names: the BSS
-     communals and D_6608_overworld, the original's second name for the map at DS:6608).
-5. **The gate.** `tools/check.py` builds everything and compares the SHA-1 of all 25 files.
+2. **Split the resident C into its original modules** *(done)*. The runs between the
+   assembly modules are objects of their own: `r0d72.c`, `r1850.c`, `r1b38.c`, `r1dda.c`,
+   `r1fa0.c`, `r216c.c`, `r2320.c` + `A2322.ASM` + `r251e.c` (one object in the original,
+   CS:2320-256e), `r256e.c` (256e-266c), `2000.c` (from 266c), `3000.c`, `4000.c`, `5000.c`,
+   `r5a28.c`, `6000.c` (from 5f86), `7000.c` (7040-71aa).
+   - The C rewrites of assembly functions are native-only (`#if !defined(TARGET_DOS16)`);
+     `0000.c` and `1000.c` give the DOS build no code.
+   - The boundary at 256e (not 251e) comes from the relocation table: see MATCHING.md,
+     "The resident 2000.c range".
+3. **Resident data** *(done)*.
+   - Every initialised variable is defined by the module that owns it; `vars.c` gives the DOS
+     build only the communal (uninitialised) variables.
+   - The runtime's data segments (`_DATA`, `CDATA`, the empty `XI*`/`XC*`/`XO*` tables, the
+     message segments) are the library modules' own, placed in DGROUP.
+   - ULTIMA_25ca's string at DS:a0e0 is `r256e.c`'s own literal in CONST (no `_XTEXT`
+     needed once the module was split off).
+   - Uninitialised data: DS:a524-a9bc is the `_BSS` of four objects (their `static`
+     variables), DS:a9bc-bd40 the communal variables, which the link allocates.
+4. **Finish the linker** *(done)*.
+   - EXE header: sizes, relocation count, header length and entry point by rule; PLINK86's
+     own fields as facts (the word 1 at 0x1c, SS:SP, the checksum 0x7e39, which is not the
+     MZ checksum; minimum allocation explained but measured).
+   - Relocation table: modules in link order, each module's words in the order of its
+     fixup records (MSC: last to first; MASM: first to last). That gives the original's
+     seven increasing runs once 2320-256e is one object.
+   - DATA.OVL's header: the three far pointers in DGROUP, as 0f68:<DS-0x40> (the paragraph
+     where `_DATA` starts).
+   - No reference is resolved by the address in its name: the communal variables are
+     allocated by size in PLINK86's order (`u5.COMMUNALS`), the statics are in `_BSS`, and
+     `D_6608_overworld` is a linker definition (`u5.LINK_DEFINES`).
+5. **The gate** *(done)*. `tools/check.py`; `make check`.
+
+## What is left
+
+The 25 files are identical. What the build still takes from the original rather than from a
+rule or from source, each named where it lives:
+
+- **Placement is measured at link time.** `u5link.py` reads the original files to place each
+  object's data (where its references point) and the library modules (where their bytes
+  are). The game files are therefore needed to build. Recording these facts in a link
+  script (one line per object: code address, `_DATA`, `CONST`, `_BSS`) would make the link
+  independent of them.
+- **The order of the communal variables** (`u5.COMMUNALS`, 70 names) is a fact. The evidence
+  says PLINK86 allocated each when it first met it (shared ones first, then INTRO's,
+  ENDGAME's, TALK's, CAST2's, SHOPPES2's, FONT's, in link order); within an object that is
+  MSC's symbol-table order, which depends on the original's names. Five of them (D_bbd2,
+  D_bcb0, D_bd14, D_bd3a, D_bd3b) are referenced by no code and declared only to fill the
+  layout.
+- **`D_6608_overworld`** is a linker definition; which object defined the second name is
+  not known.
+- **The EXE checksum** (0x7e39) is copied; what PLINK86 summed was not found (not the file,
+  the image, the header or the overlays, as words or bytes).
+- **Stand-in devices** in the source, each explained in its note: ULTIMA_1850's comment-line
+  padding, TOWN_0f02's dead references (both pass 2's pool), DUNGEON_1952's register slot
+  sharing, AINTRO2's BYTE-aligned `_DATA`, A2322 holding D_545e and r2320's strings.
+  - ULTIMA_1850: `r1850.c` is an object of its own, and it matches without the padding
+    when pass 2 has 236.75-248.5 KB (MATCHING.md). A per-file memory limit for C2 in
+    `dosbuild.py` (`research/c2mem.py` has the wrapper) would replace the padding with a
+    statement about the build machine; neither can be told from the other by the code.
+  - A2322: ULTIMA_251e, now known to be part of the same object, refers to D_545e, so
+    D_545e could be defined in `r251e.c` again; A2322's `_DATA` (the strings from DS:545f)
+    would then need BYTE alignment, as AINTRO2's has. Not applied: it trades one device for
+    another.
+- **FONT_0000, ULTIMA_2322, INTRO_132a** are assembly in the DOS build (the first is
+  unmatched C, the other two GOG's patches).

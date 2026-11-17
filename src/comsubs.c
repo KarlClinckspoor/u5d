@@ -10,6 +10,12 @@
 #include "comsubs.h"
 #include "sjog.h"
 
+// this object's _BSS (DS:a728-a9bc): two lists of 0x14a bytes (COMSUBS_0e26 fills them,
+// 0x100 bytes of each are cleared first). Statics are laid out as locals are, by the hash
+// of their names; these two share a bucket, where the one declared last comes first.
+static u8 D_a872[0x14a];
+static u8 D_a728[0x14a];
+
 
 
 
@@ -1130,7 +1136,7 @@ int COMSUBS_12de(int param_1, int param_2, int param_3, int param_4, int param_5
         local_12_a += local_c;
 
 #if defined(MATCHING_BUILD)
-        if (D_a872 < local_e_am)
+        if (D_a872 < local_e_am) // the end of D_a728 (as D_a728 + sizeof(D_a728) the code is 2 bytes shorter)
         {
             break;
         }

@@ -112,6 +112,51 @@ its references imply.
 The exit status is 0 only when every function given is `EXACT`. Results accumulate in
 `build/match/status.tsv`.
 
+### The link: `u5link.py`
+
+`tools/u5link.py [--out DIR] [-v]` links what `build/obj` holds into the 25 files
+(`build/out`) and compares each with the original. Exit status 0: all identical and every
+name defined.
+
+- **Placement** is measured: an object's code goes where its functions' names say, its
+  data segments (`_DATA`, `CONST`, `_BSS`) where its references point in the original, the
+  library modules where their bytes are.
+- **Resolution** is by rule: a name is the public that defines it (in its first 31
+  characters: MSC 5.1 and MASM cut names there, MSC 5.0 writes 32); a call into another
+  overlay goes to the function's stub; communal variables are allocated (see "The
+  uninitialised data"); `u5.LINK_DEFINES` gives a second name to a defined place
+  (`D_6608_overworld`). A name defined nowhere is still resolved by the address it carries,
+  counted, and fails the link.
+- **Relocations.** Every word that holds a segment is listed, as (offset, paragraph of its
+  segment): 0000 for `_TEXT`, 072e and 0778 for PLINK86's segments, and for DGROUP 0f68, the
+  paragraph where `_DATA` starts (DS:0042, after the runtime's `NULL` segment), so a word at
+  DS:5216 is 0f68:51d6.
+  - *Order:* module by module in link order, each module's words in the order of its fixup
+    records. MSC writes a code record's fixups from the last to the first, MASM from the
+    first to the last, so the table falls through a C object and rises through an assembly
+    module: ULTIMA.EXE's 409 entries are seven rising runs.
+  - Objects that are parts of one original object (`u5.OBJECT_PARTS`: a C file and the
+    assembly standing for one of its functions) are taken together, last word first.
+  - The resident words are ULTIMA.EXE's relocation table; an overlay's are its header
+    (INTRO.OVL's two); DGROUP's are DATA.OVL's header (three far pointers: crt0's, crt0dat's
+    and D_5394_fn, which A0DE0.ASM writes as `dw OFFSET L_1232, _TEXT`). A header is the
+    entries, a zero dword, and zeros to the paragraph.
+- **ULTIMA.EXE's header.** By rule: file size, relocation count, the table at 0x1e, the
+  header padded to 512 bytes, the entry point (PLSTART's segment, 081d:0000). The minimum
+  allocation is the end of the stack that follows DGROUP (`_end` + crt0's 0x800-byte
+  `STACK`, paragraph 1bb8) plus the start-up segment's 0x52 paragraphs, less the image.
+  PLINK86's own, as facts: the word 1 at 0x1c, SS:SP (0x100 paragraphs past the image,
+  0x64), and the checksum 0x7e39, which is not the MZ checksum.
+
+### The gate: `check.py`
+
+`tools/check.py` (or `make check PYTHON=.venv/Scripts/python`) compiles every C file and
+assembles every module into an empty folder (`build/check/obj`), links them into
+`build/check/out`, and compares the SHA-1 of the 25 files with the GOG release's (the table in
+the tool). It passes only when all 25 are identical, every object was built and the link
+resolved every name by a definition. It takes about ten minutes; `--no-build` links the
+objects of the last run again, `--keep` keeps them.
+
 ### `nativecheck.py`
 
 `tools/nativecheck.py [FILE.c ...]` compiles the files with the host compiler as the native
@@ -325,16 +370,22 @@ strings, from DS:6ada).
 follows it, and for 5.0 rewrites `//` comments as `/* */` in the staged copies (5.0 knows
 only the latter). MSC 5.0 modules so far: 3000, 4000, 6000, BLCKTHRN, CAST2, DNGLOOK,
 COMBAT, COMSUBS, ENDGAME, FONT, LOOKOBJ, NPC, SHOPPES, SHOPPES2, SJOG, TALK, ZSTATS, and
-the resident `r1850.c` and `r251e.c`. (r1850 has no strings; its word-wrap loop recomputes an
+the resident `r1850.c` and `r256e.c`. (r1850 has no strings; its word-wrap loop recomputes an
 address for each test as only 5.0 does, and its locals fall in place only by 5.0's slot rule.)
 
 **The resident 2000.c range is three objects.** CONST holds one string between FONT's and
 3000.c's: DS:a0e0, ULTIMA_25ca's "Your disk may be write-protected". So the original had a
 5.0 module in the middle of what u5d had as 2000.c. ULTIMA_256e and ULTIMA_25d8 call
 ULTIMA_2322 with a far call, which MSC makes only for a far function of another object, so
-that module starts after 2322. They are now:
-- `r2320.c`, CS:2320-251e, MSC 5.1: 2320 and the GOG-patched 2322; its strings at DS:545f;
-- `r251e.c`, CS:251e-266c, MSC 5.0: 251e, 256e, 25ca, 25d8; its string at DS:a0e0;
+that module starts after 2322. ULTIMA.EXE's relocation table says where: its words for
+CS:2320-266c are 2567, 252b, 2516, 2333, then 2640, 2626, 25fd, 2592. MSC writes the fixups
+of a code record from the last to the first, so each falling run is one object: 2320, 2322
+and 251e (which sets D_545e, that object's variable), then 256e, 25ca and 25d8. They are now:
+- `r2320.c` (2320), `A2322.ASM` (the GOG-patched 2322) and `r251e.c` (251e), CS:2320-256e,
+  MSC 5.1: three files for one object of the original, because the assembly lies between
+  the C functions (`tools/u5.py`, `OBJECT_PARTS`); its strings at DS:545f. ULTIMA_251e
+  compiles the same under both compilers;
+- `r256e.c`, CS:256e-266c, MSC 5.0: 256e, 25ca, 25d8; its string at DS:a0e0;
 - `2000.c`, from CS:266c, MSC 5.1. Its `_DATA` holds the walkable-tile tables between its
   strings (D_54d4-D_5547, then 12 bytes of zeros no code reads, D_5548), and D_559e after
   the last string. They moved there from `vars.c`.
@@ -379,7 +430,8 @@ link order, like everything else:
 | 55a6-6a0a | `3000.c` | saved game and game state (all zero) |
 | 6a0a-6aa4 | `3000.c`, `4000.c`, `5000.c` | their tables |
 | 6aa4-6acc | A6F1E.ASM | |
-| 6acc-... | runtime CDATA, then CONST | |
+| 6acc-a524 | runtime CDATA, then CONST, then the runtime's messages | |
+| a524-bd40 | uninitialised: `_BSS`, then the communal variables (below) | |
 
 How ultima.c's data comes out in that order: MSC 5.1 emits a string literal as soon as it
 meets it, but holds a definition's variables back until the end of the next function. So
@@ -397,10 +449,41 @@ Things the original's bytes corrected: D_1a58 (class-name padding) was reversed;
 D_1724/D_172c and D_6a48 are two bytes longer than they had been; the weapon names at
 DS:174c-17f0 are word-aligned char arrays, not literals; D_24e8, D_514a and the bytes at
 DS:5548 are unused. The linked DGROUP is identical to DATA.OVL's (48,448 bytes).
-Left: the uninitialised data above DS:a524 (all zero in DATA.OVL) is communal, and the
-link still finds those 72 names only by the addresses in them. Communal records carry sizes,
-not types, yet the layout has type alignment and unnamed gaps, so the allocation rule is
-still to be found.
+
+**The uninitialised data** (DS:a524 to `_end`, DS:bd40; all zero in DATA.OVL) is the segments
+of class BSS, in this order:
+
+| DS | What | Defined by |
+|---|---|---|
+| a524-a9bc | `_BSS`: the objects' `static` variables, in link order | `mainout.c` (D_a524), `mainoutb.c` (D_a526, D_a527), `dnglook.c` (D_a528, D_a628), `comsubs.c` (D_a728, D_a872) |
+| a9bc | the runtime's `XOB`/`XO`/`XOE` (empty) | crt0dat |
+| a9bc-bd40 | `c_common`: the communal variables | `vars.c` (vars.h, `BSS`) |
+
+- *Statics.* MSC puts an uninitialised `static` in the object's `_BSS`; where the runtime's
+  code names `XOB` (DS:a9bc) shows where `_BSS` ends. The seven names below it are each
+  used by one overlay, in link order (MAINOUT 2, DNGLOOK 10, COMSUBS 20), so they are those
+  objects' statics. MSC lays statics out as it does locals: by the hash bucket of the name,
+  the last declared first within a bucket (D_a728 and D_a872 share bucket 5 under 5.0's
+  hash, so comsubs.c declares D_a872 first; the other pairs are in different buckets).
+  COMSUBS's two lists are 0x14a bytes each: the original's test for the end of the first
+  names the second (`D_a872 < p`).
+- *Communals.* An uninitialised variable without `static` is a COMDEF record, a name and a
+  size, in every object that declares it without `extern`; the linker gives it a place. u5link
+  allocates them one after the other from the end of the BSS segments, a variable of two
+  bytes or more on an even address, in the order of `u5.COMMUNALS`, and reports any that
+  does not land on the address in its name or does not end at `_end`. All 70 land.
+- *The order is a fact.* The shared variables come first (DS:a9bc-bb18), then those only
+  INTRO uses, ENDGAME, TALK, CAST2, SHOPPES2, FONT: link order, so PLINK86 allocated a
+  communal when it first met it. Within an object MSC writes COMDEF records in symbol-table
+  order (`VARS.OBJ`: runs 64 declarations apart, interleaved), which depends on the
+  original's names; that is why related variables are not adjacent (the shop's pointers at
+  aafc-ab00, ac62 and b114-b11a, between the map buffers).
+- *What the sizes showed.* D_a9bd is one byte and D_a9be another (two bytes at an odd
+  address would have been aligned). Five places hold variables no code names: D_bbd2 (0xb6
+  bytes, the size of D_bb1c), D_bcb0 (2), D_bd14 (1), D_bd3a and D_bd3b (1 each). They are
+  declared so that the rest lands.
+- `vars.c` defines the communal variables in the DOS build (`#define BSS`), and nothing
+  else; in the native build it defines all of vars.h as before.
 
 **A 5.0 module's own data.** u5d first had these modules' strings as generated char arrays
 (`tools/strings.py`, a stand-in for 5.0's aligned literals) and their tables in `vars.c`.
@@ -480,11 +563,13 @@ moves locals (CAST_1c36: 5.0's end-pointer loop compare was the tell).
   references. AINTRO2's strings follow intro2.c's packed strings at an odd address
   (DS:3345), so its `_DATA` is declared BYTE-aligned; A2322 holds all of the old object's
   data (D_545e and the strings, DS:545e-54b6), because with 2322 gone no code of r2320.c
-  refers to D_545e and the link could not place it. Both are stand-ins for the original's
+  refers to D_545e and the link could not place it (ULTIMA_251e, the same object's last
+  function, does: PLAN.md, "What is left"). Both are stand-ins for the original's
   single objects. Functions the assembly calls lose `static` (INTRO_1016, 1278, 12ea).
 - **INTRO.OVL's header** is PLINK86's relocation list for the overlay, the only one with
   relocated words: a dword (CS offset, segment 0) per word that holds the code segment, the
-  later word first (one overlay with two entries is all the evidence), then zeros. Its two
+  later word first (MSC's fixup order within an object; see "The link" below), then a zero
+  dword and zeros to the paragraph. Its two
   entries are the segment halves of the far pointers to ULTIMA_2320 and 2322 that
   INTRO_132a stores in D_5394_fn. `tools/u5.py` `OVERLAY_HEADER` records its size; asmgen
   reads the relocations from it, and u5link writes it from the segment fixups of the

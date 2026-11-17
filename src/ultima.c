@@ -1624,7 +1624,7 @@ int CDECL main(int argc, char** argv/*, char** envp*/)
     D_5394_fn = ULTIMA_2322_DiskSwapMessage;
 
     D_a9bd[0] = 0;
-    D_a9bd[1] = 0;
+    D_a9be = 0;
     D_a9c2 = 1;
 
     if ((D_a9c8[0] = ULTIMA_16a6_GetDefaultDrive()) >= 'C')

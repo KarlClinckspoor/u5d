@@ -15,6 +15,9 @@
 #include "mainout.h"
 #include "outsubs.h"
 
+static u8 D_a526; // this object's _BSS (DS:a526)
+static u8 D_a527;
+
 // The part of MAINOUT.OVL built with MSC 5.0 (docs/MATCHING.md, "Two compilers").
 // Where this part starts is not certain: MAINOUT_0e4e to 105c use no strings and compile
 // the same with both compilers, so the original boundary may be anywhere from 0e4e to 109e.

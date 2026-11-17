@@ -2,7 +2,13 @@
 
 #include "tiles.h"
 
+#if defined(TARGET_DOS16)
+// DOS build: this object holds no data, only the communal (uninitialised) variables
+// (vars.h, BSS); every initialised variable is defined by the module that owns it.
+#define BSS
+#else
 #define STUB
+#endif
 #include "vars.h"
 
 #include "macros.h"

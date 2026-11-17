@@ -53,6 +53,9 @@
     <ClCompile Include="..\src\r251e.c">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\r256e.c">
+      <Filter>src</Filter>
+    </ClCompile>
     <ClCompile Include="..\src\3000.c">
       <Filter>src</Filter>
     </ClCompile>
