@@ -236,30 +236,11 @@ static void FONT_02a2(int param_1, int param_2)
 }
 
 // CHECKED
-// NOT MATCHING (SLOTS, 1 byte): the code is identical, but the original keeps local_c at
-// bp-0Ah with bp-8 never used (frame 0Ch); ours has local_c at bp-8. MSC reserves two unused
-// temporary slots here, one for each loop (both walk a pointer: loop 1 over D_5c5a in DI,
-// loop 2 down D_6608 by 20h). Tried:
-// - an unused fifth local (local_a): local_c at -0Ah, but frame 0Eh;
-// - local_c declared in the if block, the for body or the do body: still bp-8;
-// - loop 2 as do-while: one temporary fewer (frame 0Ch with local_a) but it indexes
-//   [bx+di] with shl bx,5 instead of walking the pointer; as while, with continue, with
-//   (u8)/(uint)/(int) casts or !(... == 0xfe): no change;
-// - each loop in its own block: temporaries are not shared between blocks;
-// - loop 1 with D_5c5a + local_6, a bare tile test, the assignment inside the if, or
-//   a pointer for loop: no change or worse.
-// The pattern (unused slot above an inner-block local) is DNGLOOK_0c6c's, where a
-// temporary made before the block pushed local_c down; here none is made early enough.
-// Also tried (all still local_c at bp-8, or worse): local_c in the if block / the for body /
-// the do body again (the loop temporaries are made after the block's local, so they are made
-// when a loop ends, not at its start); loop 1 as do-while (the "++i < 32" form is 294 bytes;
-// "i++; } while (i < 32)" and while are identical code) and loop 2's outer loop as while, each
-// with an unused local_a (local_c at -0Ah, frame 0Eh); register on each local (worse); a
-// "register byte*" walking loop 2 in a block (takes SI, swaps SI/DI: 12 bytes) or at function
-// level (288 bytes).
+// The decompiler's local_c (x + y * 0x20, stored at bp-0Ah and never read) is MSC's common
+// subexpression temporary: the source indexes D_6608 with the whole expression twice. As a
+// local it took bp-8, a slot of its own before the loops' reserved temporaries.
 int FONT_02fc(int param_1)
 {
-    int local_c;
     int local_8;
     int local_6;
     ActorFmt* local_4_ab;
@@ -269,20 +250,17 @@ int FONT_02fc(int param_1)
         ULTIMA_4552_AnimateActors();
         INTRO_2090_AnimateWD();
 
-        // NOT MATCHING (loop)
         for (local_6 = 0; local_6 < 32; local_6++)
         {
             local_4_ab = &D_5c5a[local_6];
 
             if (local_4_ab->_0_tile != 0)
             {
-                local_c = local_4_ab->_2_x + local_4_ab->_3_y * 0x20;
-                D_6608[local_c] = 0;
-                D_6608[local_c + 0x80] = local_4_ab->_1_animTile;
+                D_6608[local_4_ab->_2_x + local_4_ab->_3_y * 0x20] = 0;
+                D_6608[local_4_ab->_2_x + local_4_ab->_3_y * 0x20 + 0x80] = local_4_ab->_1_animTile;
             }
         }
 
-        // NOT MATCHING (loop)
         for (local_6 = D_bd26; local_6 <= D_bd27; local_6++)
         {
             for (local_8 = 0; local_8 < 4; local_8++)
