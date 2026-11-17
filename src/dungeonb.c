@@ -553,6 +553,13 @@ static void DUNGEON_1786(int param_1, int param_2)
 // *(T + i); one u8 [2][8] table for both; p + p; (uint)p * 2 (p * 2u: 12 bytes longer). A
 // function-level register r (r = T[i] + p * 2): SI, but "mov si,[bp+4]; shl si,1" first and
 // frame 6; local_6_an declared register: SI for the whole function, 322 bytes.
+// Batch 4: not pass 2's tree pool (see ULTIMA_1850): no position of a cut changes the code
+// (research/c2lines.py, 0-638 line records after the entry), nor does less memory for pass
+// 2 down to 236.75 KB (research/c2mem.py). The original's order is that of "r = T[i]; r +=
+// p * 2" with r in SI (and "r = p * 2; r += T[6]" the third time), but a register variable
+// takes a slot under 5.0 (frame 6). A pointer-typed argument passed without a cast
+// ((s16*)T + p, (char*)T + p * 2, &((s16*)T)[p], &((char*)T)[p * 2]) and (uint)T + p * 2
+// give the same code as now.
 static void DUNGEON_1952(int param_1, int param_2, int param_3)
 {
     static u8 D_2f16[8] = {0x00, 0x1f, 0x00, 0x1f, 0x00, 0x00, 0x00, 0x00};

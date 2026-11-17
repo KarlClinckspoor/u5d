@@ -101,6 +101,10 @@ u8 D_5204[8] = {0x05, 0x07, 0x04, 0x0a, 0x08, 0x00, 0x05, 0x06};
 //   D_50f7 + 1 < local_c": eight orders, casts and "local_c >" give the same code;
 // - two nops after loop 3's idiv branch ("jmp near; nop; nop", a jump sized long).
 // Earlier: capacity ruled out (all of the file's data after FONT_0000, or none: no change).
+// Batch 4: not pass 2's tree pool either (see ULTIMA_1850): moving its cuts through the
+// function (research/c2lines.py, 0-638 line records after the entry) changes nothing
+// except 496-561, which are worse (524-557 bytes); less memory for pass 2 changes nothing
+// down to 240.75 KB and below that breaks FONT_02FC and FONT_04A4 too (489 bytes at best).
 // param_1: image, param_2: text
 void FONT_0000(byte* param_1, byte* param_2)
 {

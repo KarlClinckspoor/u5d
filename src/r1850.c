@@ -22,7 +22,7 @@ s16 D_5402[5] = { 1, 10, 100, 1000, 10000 };
 // into a tree pool and, when the pool is full, optimizes and emits what it holds and goes on
 // with an empty pool (its output file grows while the function is still being read). A loop
 // gets registers only if the pool has room left when it comes. Compiled in one piece this
-// function fills about 505 of the pool's 612 units (a unit is about a tree node), and its
+// function fills about 505 of the pool's 612 units (a line record is one unit), and its
 // last two loops (1a03: local_14_am in CX; 1a14: local_e_am in SI, the bound in DI) are not
 // optimized: 64 bytes differ. The original has them optimized, so there the pool was emptied
 // inside the function, before 19ca.
