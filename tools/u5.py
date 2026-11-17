@@ -91,6 +91,9 @@ MODULES['vars.c'] = ('data', None)
 MODULES['intro2.c'] = ('ovl', 'INTRO')
 # Likewise CMDS.OVL: cmds.c (to CMDS_1030), cmds2.c (from CMDS_1202), cmdsb.c.
 MODULES['cmds2.c'] = ('ovl', 'CMDS')
+# SHOPPES2.OVL is two MSC 5.0 objects: shoppes2.c (to SHOPPES2_066c) and shoppe2b.c (from
+# SHOPPES2_07e2, the shipwright).
+MODULES['shoppe2b.c'] = ('ovl', 'SHOPPES2')
 
 # The original was built with two compilers. Modules last compiled with MSC 5.0 put their
 # string literals in a CONST segment, each on an even address, and encode small logical
@@ -100,6 +103,7 @@ COMPILER_BY_FILE = {f: 'msc50' for f in (
     '3000.c', '4000.c', '6000.c', 'blckthrn.c', 'cast2.c', 'combat.c', 'comsubs.c', 'dnglook.c',
     'endgame.c', 'font.c', 'lookobj.c', 'npc.c', 'r1850.c', 'r251e.c', 'shoppes.c', 'shoppes2.c', 'sjog.c',
     'talk.c', 'zstats.c')}
+COMPILER_BY_FILE['shoppe2b.c'] = 'msc50'
 # Overlays built from two objects: NAME.c (MSC 5.1) and NAMEb.c (MSC 5.0), linked in that
 # order. The 5.0 part holds the functions that use CONST strings; its _DATA follows the 5.1
 # part's in DGROUP (docs/MATCHING.md, "Overlays of two objects").

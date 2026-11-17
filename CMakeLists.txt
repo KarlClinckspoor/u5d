@@ -39,6 +39,7 @@ set(SOURCES
 	src/zstats.c
 	src/comsubs.c
 	src/shoppes2.c
+	src/shoppe2b.c
 	src/shoppes3.c
 	src/font.c
 	src/vars.c

@@ -41,6 +41,7 @@ del *.obj
 %CL% %CFLAGS% zstats.c >> log.txt
 %CL% %CFLAGS% comsubs.c >> log.txt
 %CL% %CFLAGS% shoppes2.c >> log.txt
+%CL% %CFLAGS% shoppe2b.c >> log.txt
 %CL% %CFLAGS% shoppes3.c >> log.txt
 %CL% %CFLAGS% font.c >> log.txt
 
