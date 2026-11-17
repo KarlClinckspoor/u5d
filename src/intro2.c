@@ -33,7 +33,7 @@ int INTRO_094e_Pause(int param_1);
 // defined in introb.c, the part of INTRO.OVL built with MSC 5.0
 void INTRO_2090_AnimateWD(void);
 
-static void INTRO_132a_TransferFromU4(void);
+void INTRO_132a_TransferFromU4(void);     // DOS build: src/asm/AINTRO2.ASM
 void INTRO_1e22(int param_1);
 void INTRO_2024(void);
 void INTRO_20ae_ShowWD(byte* ptr);
@@ -476,7 +476,9 @@ void INTRO_0986_Main(void)
 u16 D_3304 = 0;
 
 // CHECKED
-static int INTRO_1016_ConvertU4Savegame(void)
+// Not static: in the DOS build INTRO_132a (src/asm/AINTRO2.ASM) calls this one,
+// INTRO_1278 and INTRO_12ea from another object.
+int INTRO_1016_ConvertU4Savegame(void)
 {
     int local_10_ad;
     int local_e;
@@ -610,7 +612,7 @@ L_1048:
     return 0;
 }
 
-static void INTRO_1278_PrintU4Class(void)
+void INTRO_1278_PrintU4Class(void)
 {
     switch (D_55a8_party[0].cls)
     {
@@ -641,7 +643,7 @@ static void INTRO_1278_PrintU4Class(void)
     }
 }
 
-static int INTRO_12ea(int param_1)
+int INTRO_12ea(int param_1)
 {
     if (param_1 < 10)
     {
@@ -658,8 +660,12 @@ static int INTRO_12ea(int param_1)
     }
 }
 
-// CHECKED
-static void INTRO_132a_TransferFromU4(void)
+// The DOS build takes INTRO_132a from src/asm/AINTRO2.ASM (assembly written from the
+// original's bytes, linked after this object), with its strings (DS:3345-3655): GOG patched
+// the function in place, so its bytes are no compiler's output. This C is compiled for the
+// native build only.
+#if !defined(TARGET_DOS16)
+void INTRO_132a_TransferFromU4(void)
 {
     int local_14;
     int local_e;
@@ -1154,3 +1160,4 @@ L_GOG_1402:
     D_5893_map_id = local_e;
     D_a9bd[1] = 0;
 }
+#endif

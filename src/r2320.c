@@ -1,6 +1,10 @@
 // Resident code, CS:2320-251e: a module of its own in the original (MSC 5.1: its strings
 // are in _DATA, DS:545f). ULTIMA_256e and ULTIMA_25d8 call ULTIMA_2322 with a far call,
 // which MSC makes only for a far function of another object.
+// The DOS build takes ULTIMA_2322 (CS:2322-251e) from src/asm/A2322.ASM: GOG patched the
+// function in place, so its bytes are no compiler's output. A2322.ASM also holds this
+// object's data (D_545e and the strings, DS:545e-54b6): with 2322 gone, no code here refers
+// to D_545e, and the link places an object's data by its references.
 
 #include "common/common.h"
 #include "vars.h"
@@ -14,7 +18,9 @@
 
 #include <stdlib.h>
 #include <time.h>
+#if !defined(TARGET_DOS16) // DOS build: src/asm/A2322.ASM
 u8 D_545e = 0xff;
+#endif
 
 
 void FAR ULTIMA_2320_NoDiskSwapMessage(void)
@@ -37,8 +43,10 @@ void FAR ULTIMA_2322_DiskSwapMessage(void)
 
     D_5394_fn = ULTIMA_2322_DiskSwapMessage;
 }
-#else
-// CHECKED
+#elif 0
+// Not compiled: the DOS build has ULTIMA_2322 from src/asm/A2322.ASM (above). This is 1.16's
+// function with GOG's patch written as gotos, kept for reference; the patched bytes are not
+// compiler output, and this came within 2 bytes (506 against 508).
 // GOG patched: skip drive selection
 void FAR ULTIMA_2322_DiskSwapMessage(void)
 {

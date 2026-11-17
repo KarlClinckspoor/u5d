@@ -71,14 +71,32 @@ OVERLAY_BASE = {
     'FLAMES': 0xa290,         # a 32-byte delay routine, loaded into area 2
 }
 OVERLAYS = list(OVERLAY_BASE)
+# INTRO.OVL's 16-byte header is PLINK86's relocation list for the overlay (the only overlay
+# with relocated words): a dword (CS offset, segment 0) for each word that holds the code
+# segment, the later word first, then zeros. Its two entries are the segment halves of the far
+# pointers to ULTIMA_2320 and ULTIMA_2322 that INTRO_132a stores in D_5394_fn.
+OVERLAY_HEADER = {'INTRO': 0x10}
+
+
+def overlay_relocations(gamedata, ovl):
+    """The CS addresses of the relocated words of overlay ovl, from its header."""
+    d = read_file(gamedata, ovl + '.OVL')
+    out = []
+    for k in range(0, OVERLAY_HEADER.get(ovl, 0) - 3, 4):
+        off, seg = struct.unpack_from('<HH', d, k)
+        if not off and not seg:
+            break
+        out.append(seg * 16 + off)
+    return out
 
 # The C files of the DOS build, and what each one is compared with.
 #   ('ovl', NAME)   the whole _TEXT segment is NAME.OVL
 #   ('root', None)  functions are compared at their CS addresses in ULTIMA.EXE
 #   ('data', None)  initialised data, compared with DATA.OVL (DGROUP)
 MODULES = {o.lower() + '.c': ('ovl', o) for o in OVERLAYS}
-# FLAMES.OVL is all assembly (src/asm/AFLAMES.ASM), as are FONT.OVL's last two routines
-# (AFONT.ASM): tools/asmbuild.py assembles them, tools/u5link.py places them in their overlay.
+# FLAMES.OVL is all assembly (src/asm/AFLAMES.ASM), as are parts of other overlays (AFONT0,
+# AFONT, AINTRO2, AINTRO, ANPC: first line "NAME.OVL xxxx-yyyy"): tools/asmbuild.py assembles
+# them, tools/u5link.py places them in their overlay by their functions' names.
 del MODULES['flames.c']
 MODULES.update({'%d000.c' % i: ('root', None) for i in range(8)})
 MODULES['ultima.c'] = ('root', None)
