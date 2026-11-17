@@ -432,6 +432,9 @@ and u5d now has them as `NAME.c` and `NAMEb.c`:
 | CMDS | `CMDS_18be` | none | CMDS_17ec still uses packed strings |
 | CAST | `CAST_1c36` | none | 1c36 and 1f60 have the right length only under 5.0 (no strings) |
 
+The resident 5000.c is two objects as well, the other way round: `5000.c` (MSC 5.0,
+ULTIMA_51a0-5910) and `r5a28.c` (MSC 5.1, 5a28-5e4a); see "Try both compilers" below.
+
 SHOPPES2 is two MSC 5.0 objects, `shoppes2.c` (to SHOPPES2_066c) and `shoppe2b.c` (from
 SHOPPES2_07e2, the shipwright, with the tables D_4d66-D_4d7a; not `shoppes2b`, which is
 not an 8.3 name). Late functions that use no strings may be a 5.0 part even in a 5.1
@@ -659,9 +662,14 @@ Each entry gives the evidence. Add to this list as you learn.
   extra temporaries (and common subexpressions that crowd out the loop registers, as in
   CMDS_12c8).
   - What counts: 40 extra `extern int` references, or 30 small functions, placed before a
-    function remove its loop optimization. What does not: unreferenced declarations, long
-    names, statement count, DOS memory (400K and 608K free give the same code), the OS/2
-    C2.EXE bound for DOS, the header size.
+    function remove its loop optimization. What does not: unreferenced declarations,
+    statement count, DOS memory (400K and 608K free give the same code), the OS/2 C2.EXE
+    bound for DOS, the header size.
+  - It is pass-2 memory in bytes, not a symbol count (TOWN_0f02): each global symbol the
+    module defines or references costs about 28 bytes plus its name's length, arrays more
+    (a struct costs as an int; `static int X;` as much). So name length does count, and a
+    count found by experiment holds only for the names used; windows near the limit are
+    narrow and non-monotonic. Locals cost nothing past their function.
   - The test: in a `variants.py` spec, delete the functions before the target. If it then
     matches or gets close, the original probably had an object boundary there: split the
     file (INTRO_0986, CMDS_12c8; see "More than two objects").
@@ -676,15 +684,80 @@ Each entry gives the evidence. Add to this list as you learn.
     function still give full loop optimization, 10 give none. The function's own size
     counts too (removing its inner loops or long arithmetic brought the registers back);
     400 unreferenced externs, a minimal header or string literals do not. Split: shoppe2b.c.
-  - Near the limit, comment lines inside a function count against it (blank lines do not);
-    far from it, 200 comment lines change nothing. Recompile after editing notes in such a
-    function (TOWN_0f02).
-  - The other way round: TOWN_0f02 matches only with about 270 more global symbols before
-    it (unreferenced tentative definitions, or 120 small functions each setting its own
-    extern; 80 extern references or 120 empty functions do nothing), so the original had
-    more there. Tentative definitions become communals at link, so they are no fix. Open.
+  - Source lines inside a function count too (MSC 5.0, ULTIMA_1850): every line inside the
+    function that holds a token or a comment before the code, even an empty `;` or a local
+    `extern` declaration. Not counted: blank lines, one multi-line comment, several comments
+    on one line, `#if 0` blocks, `{ }` lines, `#define`s, lines before the function; lines
+    after the code have no effect, lines in the middle changed even the frame. And more
+    lines give MORE loop optimization: ULTIMA_1850 registered one more loop with 14 more
+    lines and matched with about 140 (from about 125), now a block of empty `//` lines
+    after its declarations standing for the original's lines. The "unused label" and
+    `while (1)` mode switches (below) were probably this. In TOWN_0f02 (5.1), up to 245
+    comment lines change nothing and 246 or more give other wrong code. Recompile after
+    editing notes inside a function.
+  - The other way round: TOWN_0f02 matches only with about 10 KB more pass-2 memory before
+    it (330 short unreferenced `int X%d;` definitions exactly, not 325 or 335; or 120 small
+    functions each setting its own extern; extern references, empty functions, defining
+    vars.h's uninitialised variables, `/Zd` or `/Zi` do nothing), so the original had more
+    there, depending on names and types u5d does not have. A boundary after 0f02 is
+    consistent (TOWN_10da-1726 compile the same as their own object). Tentative definitions
+    become communals at link, so they are no fix. Open.
   - Split by it so far: intro0.c / intro2.c (INTRO_014e, INTRO_0986), cmds2.c (CMDS_12c8),
     shoppe2b.c (SHOPPES2_08a8).
+- **Try both compilers on every function before the capacity test.** 5000.c was 5.0 code
+  (ULTIMA_51a0-5910, still `5000.c`) followed by 5.1 code (`r5a28.c`, 5a28-5e4a, with the
+  tables at DS:6a86); compiling the whole file under the other compiler showed the boundary
+  at once. The tell was ULTIMA_5394's loop exit: for a downward loop over a struct array
+  (`for (i = 31; i >= 0; i--)`; a do-while is never strength-reduced) 5.0 compares the last
+  pointer temporary (`cmp [bp-26h],5C5Bh; jb`) and keeps the counter's `dec`, where 5.1
+  always emits `dec; jns`.
+- **A `for` frees its temporaries, a `while` keeps them (5.0).** A `for` and the equivalent
+  while, do-while or goto loop give the same code, but MSC 5.0 frees the `for` loop's
+  temporaries at its end and a later loop's reuse their slots; with the other forms the
+  later loop takes new slots and the frame grows. FONT_04A4: case 0xb's loop as a `while`
+  gave the original's frame 28h, the `for` 22h.
+- **A block with a declaration gives a loop its own trip-count temporary (5.0).** Two `for
+  (i = 0; i < n; i++)` loops with the same bound share one trip-count temporary; in a block
+  that declares a local (even unused) one gets a new slot. Braces alone do nothing
+  (ZSTATS_0F2E).
+- **A local stored once and never read is a CSE temporary** with a dead store (`mov
+  [bp-N],ax; mov bx,ax`): write the whole expression at each use. Its slot comes after the
+  loops' reserved temporaries, which a real local's does not (FONT_02FC).
+- **Under 5.1 a register variable's reserved slot can fill a gap.** A function-level
+  `register` local whose name hashes between two locals takes the slot between them, so a
+  one-slot gap holds it with no frame change. ULTIMA_5a28's gap was its queue, decompiled
+  one element too long (`int local_206[256]`, not 257).
+- **`for (;;)` with a break gives an inner loop its registers.** An outer `for (;;) { if (!c)
+  break; ... }` instead of `while (c)` gave FONT_0000's first inner loop register
+  variables (a label before that loop's init does the same; outer loop as gotos loses them).
+- **Two compares in one loop can need an if/do form**: an entry test `cmp [i],ax` (ax = n)
+  with a bottom test `cmp [n],si; je` is `if (i < n) do ... while (n != ++i)`. A `for`
+  gives `cmp si,[n]` at the bottom; the swapped `for` gives `cmp [n],ax` at the entry
+  (FONT_0000).
+- **5.0 builds a common subexpression directly in SI only for index uses** (`mov si,ax; ...;
+  add si,ax`); a value CSE is computed in AX (with CX) and moved. DUNGEON_1952's original
+  does the first for a value, as if CX were taken. Open.
+- **A block reached only by a goto is placed after the first unconditional jump that
+  follows its place in the source** (5.0, MAINOUT_17d4). To move a block out of line after
+  a later jump, put it after that code as `if (0) { L_x: ...; goto L_next; }` and reach it
+  with `else goto L_x;` (a label at the next test, `L_next:`). Written in place as an else-if
+  it stays inline with a jump over it; at the function's end it lands right after the goto.
+  A dead `goto L` after a `return` attracts nothing.
+- **A while loop's floating test block after a later case** (ZSTATS_06e8): the test block
+  floats behind the first case break that jumps to it. To put it after a later case, write
+  the test inside the switch right after that case, followed by the loop head and `goto
+  L_list`; enter with `goto L_test`, end every case and `default:` with `goto L_test`, and
+  put `L_exit: return` after the switch (a `break` to the return instead makes the return
+  float up behind the test).
+- **Which tail-merge copy wins, continued.** An if/else chain instead of early returns
+  keeps the later copy: `if (c1) f(a); else if (c2) f(b); else g();` keeps the second `f`
+  (it ends a then-branch) and the first jumps into it; with `{ f(a); return; }` the first
+  is kept (MAINOUT_17d4). The copy that falls through to the function's final `return`
+  wins: ZSTATS_0c5c keeps its later ammunition copy only as an `else if` branch with no
+  `return`, with the rest in the last `else`.
+- **Code after an if/else floats behind the jump over the else** when the else's code ends
+  in a jump: the code after it (up to its first unconditional jump) lands right after the
+  then-branch's jump, ahead of the else block (ZSTATS_0c5c, still open for that reason).
 - **Code after a loop goes to its first break.** MSC places a `for` loop's register stores
   and the code that follows the loop at the loop's first `break`; other exits jump to it.
   To put that block at a later break, make the earlier break a `goto` to a label on the

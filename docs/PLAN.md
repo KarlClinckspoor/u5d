@@ -27,6 +27,7 @@ passes only when they are identical.
 | 2026-11-16, gotos and duplicated tails for merge direction, joined conditions, loop kinds | 554 | 1 | 0 | 36 | 6 | 597 |
 | 2026-11-17, four parallel workers; INTRO and CMDS split into a third object (optimizer capacity) | 572 | 1 | 0 | 20 | 4 | 597 |
 | 2026-11-17, batch 2: static/const tables, intro0.c, castb.c (5.0), shoppe2b.c | 583 | 1 | 0 | 7 | 6 | 597 |
+| 2026-11-17, batch 3: 5000.c split (5.0 + r5a28.c 5.1), for/while temporaries, goto-placed blocks | 591 | 0 | 0 | 4 | 2 | 597 |
 
 Most `SIZE` verdicts in `0000.c` and `1000.c` are routines that were hand-written assembly in
 the original and are C in u5d (step 5).
@@ -94,11 +95,12 @@ Done, each checked by a tool:
 - **Objects:** INTRO has four objects (`intro0.c`, `intro.c`, `intro2.c`, `introb.c`), CMDS
   three (`cmds.c`, `cmds2.c`, `cmdsb.c`), SHOPPES2 two 5.0 objects (`shoppes2.c`,
   `shoppe2b.c`), found by the optimizer capacity; CAST is a 5.1 + 5.0 pair (`cast.c`,
-  `castb.c` from CAST_1c36). See MATCHING.md.
+  `castb.c` from CAST_1c36), and the resident 5000.c a 5.0 + 5.1 pair (`5000.c`,
+  `r5a28.c` from ULTIMA_5a28). See MATCHING.md.
 
 Next, in order:
 
-1. **Finish the C functions** (14 left, two of them GOG patches; `build/match/status.tsv`). Every
+1. **Finish the C functions** (6 left, two of them GOG patches; `build/match/status.tsv`). Every
    module now compiles with the compiler the original used, with 5.0's own slot hash, and
    DUNGEON, MAINOUT, INTRO, OUTSUBS and CMDS are split into their 5.1 and 5.0 objects.
    - *(done)* The 5.0 modules have plain literals and their own tables (`tools/own50.py`).
@@ -115,15 +117,13 @@ Next, in order:
      - *(done, by splitting objects)* CMDS_12c8, INTRO_0986.
      - *(done in batch 2)* INTRO_014e, CAST_1c36/1f60, SHOPPES2_08a8, TALK_01e2, SJOG_0514,
        NPC_06e4/0DB4, DUNGEON_111e/127e/1786.
-     - Left (each with a NOT MATCHING note): frames a few bytes off (ULTIMA_5a28 2 bytes,
-       FONT_04A4 4, ZSTATS_0F2E 3, FONT_02FC 1); ULTIMA_1850 (64, last two loops not
-       registered); ULTIMA_5394 (446, loop never strength-reduced); TOWN_0f02 (104, needs
-       more global symbols before it, origin unknown); MAINOUT_17d4 (227) and ZSTATS_06e8
-       (234), ZSTATS_0c5c (529): block placement; DUNGEON_1952 (91), FONT_0000 (536):
-       registers. The optimizer-capacity test is negative for all but TOWN_0f02.
-     - 5000.c: ULTIMA_5f86 is the right length under MSC 5.0 (19 bytes differ) but not under
-       5.1, while 5d0a and 5e4a match only under 5.1. So 5000.c may also be two objects, with
-       5f86 the start of a 5.0 part. The module has no strings or tables to prove it.
+     - *(done in batch 3)* ULTIMA_5394 (5000.c split), ULTIMA_5a28, ULTIMA_1850 (with a
+       block of comment lines standing for the original's source lines), FONT_04A4,
+       FONT_02FC, ZSTATS_0F2E, ZSTATS_06e8, MAINOUT_17d4.
+     - Left (each with a NOT MATCHING note): ZSTATS_0c5c (35 bytes, the weak block's
+       placement), DUNGEON_1952 (91, a value CSE built in SI), TOWN_0f02 (104, needs about
+       10 KB more pass-2 memory before it, from names and types u5d does not have),
+       FONT_0000 (676/674, loops right; entry-block placement and BX/SI at the end).
      - 2000.c: ULTIMA_256e and 25d8 call ULTIMA_2322 with `call far 0:2322`, where MSC emits
        `push cs; call near` for a far function defined earlier in the same module. So 2322
        (the GOG-patched function) was probably in another object.
