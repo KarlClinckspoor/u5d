@@ -719,15 +719,10 @@ static int TALK_080a_Join(void)
 
     TALK_075a_SelectNthTalkString(0);
 
-    local_30_a = 0;
-
-    // 3 bytes. NOT MATCHING: the original copies with mov cx,1; rep movsw; movsb (twice),
-    // and has one more stack slot (frame 32h). memcpy with any constant count gives the
-    // generic shr cx,1 / adc cx,cx sequence under both compilers (sizeof, '', 1 + 2,
-    // (int)3, (unsigned)3 tried); a 3-byte struct copy gives movsw; movsb without rep,
-    // for every struct shape tried (char[3], three chars, int + char).
-    memcpy(local_8, D_bcde, 3);
-    local_30_a += 3;
+    // byte-copy loops, which MSC 5.0 turns into mov cx,1; repne movsw; movsb (memcpy gives
+    // shr cx,1 / adc cx,cx); the (char*) cast is needed for this one to become a block move
+    for (local_30_a = 0; local_30_a < 3; local_30_a++)
+        local_8[local_30_a] = ((char*)D_bcde)[local_30_a];
     D_bcde += 3;
 
     local_8[3] = 0;
@@ -736,8 +731,8 @@ static int TALK_080a_Join(void)
     // c7e6
     while (1)
     {
-        // 3 bytes
-        memcpy(local_2c_ad, D_55a8_party[local_4_ab].name, 3);
+        for (local_30_a = 0; local_30_a < 3; local_30_a++)
+            local_2c_ad[local_30_a] = D_55a8_party[local_4_ab].name[local_30_a];
 
         // c805
         if (TALK_0000_CompareStringNoCase(local_8, local_2c_ad) != 0)
@@ -746,7 +741,8 @@ static int TALK_080a_Join(void)
             break;
         }
 
-        if (--local_4_ab == 0)
+        local_4_ab--;
+        if (local_4_ab == 0)
         {
             // c824
             TALK_0574_BuildOrPrintWord(0x22);
