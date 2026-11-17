@@ -88,7 +88,7 @@ void FAR ULTIMA_2322_DiskSwapMessage(void)
         }
         else
         {
-            if (D_a9bd[1] == 2)
+            if (D_a9be == 2)
             {
                 ULTIMA_0c22_GRAP_0f_SelectPage(0);
                 ULTIMA_1c22_SetTextWindowSize(0, 6, 0xc, 0x21, 0xd);
@@ -177,11 +177,11 @@ L_GOG_247d:
                 }
             }
 
-            if (D_a9bd[1] == 0)
+            if (D_a9be == 0)
             {
                 ULTIMA_16ba_PrintChar('\n');
             }
-            else if (D_a9bd[1] == 2)
+            else if (D_a9be == 2)
             {
                 ULTIMA_0c22_GRAP_0f_SelectPage(1);
                 ULTIMA_1c22_SetTextWindowSize(0, 0, 0, 0x27, 0x18);

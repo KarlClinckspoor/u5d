@@ -10,6 +10,9 @@
 #include "sjog.h"
 #include "audio/audio.h"
 
+static u8 D_a528[0x100]; // this object's _BSS (DS:a528)
+static u8 D_a628[0x100];
+
 u8 D_383a[6] = {0x50, 0x5b, 0x41, 0x46, 0x4b, 0x4c};
 
 u8 D_3840 = 6;

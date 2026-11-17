@@ -102,7 +102,7 @@ MODULES.update({'%d000.c' % i: ('root', None) for i in range(8)})
 MODULES['ultima.c'] = ('root', None)
 # the small C modules between the resident assembly modules (named by their CS address)
 MODULES.update({n + '.c': ('root', None) for n in ('r0d72', 'r1850', 'r1b38', 'r1dda', 'r1fa0', 'r216c',
-                                                   'r2320', 'r251e')})
+                                                   'r2320', 'r251e', 'r256e')})
 # 5000.c (MSC 5.0, ULTIMA_51a0 to 5910) is followed by an MSC 5.1 object from 5a28 to 5f86.
 MODULES['r5a28.c'] = ('root', None)
 MODULES['vars.c'] = ('data', None)
@@ -125,7 +125,7 @@ MODULES['shoppe2b.c'] = ('ovl', 'SHOPPES2')
 # _DATA, packed. Each module is compiled with the one the original used (docs/MATCHING.md).
 COMPILER_BY_FILE = {f: 'msc50' for f in (
     '3000.c', '4000.c', '6000.c', 'blckthrn.c', 'cast2.c', 'combat.c', 'comsubs.c', 'dnglook.c',
-    'endgame.c', 'font.c', 'lookobj.c', 'npc.c', 'r1850.c', 'r251e.c', 'shoppes.c', 'shoppes2.c', 'sjog.c',
+    'endgame.c', 'font.c', 'lookobj.c', 'npc.c', 'r1850.c', 'r256e.c', 'shoppes.c', 'shoppes2.c', 'sjog.c',
     'talk.c', 'zstats.c', '5000.c')}
 COMPILER_BY_FILE['shoppe2b.c'] = 'msc50'
 # Overlays built from two objects: NAME.c (MSC 5.1) and NAMEb.c (MSC 5.0), linked in that
@@ -134,6 +134,35 @@ COMPILER_BY_FILE['shoppe2b.c'] = 'msc50'
 for _o in ('DUNGEON', 'MAINOUT', 'INTRO', 'OUTSUBS', 'CMDS', 'CAST'):
     MODULES[_o.lower() + 'b.c'] = ('ovl', _o)
     COMPILER_BY_FILE[_o.lower() + 'b.c'] = 'msc50'
+
+# Objects that are the parts of one object of the original: a C file and the assembly module
+# that stands for one of its functions (docs/MATCHING.md, "Assembly instead of unmatched or
+# patched C"). MSC wrote such an object's fixups in one record, last to first, and the
+# relocation tables have its words in that order (tools/u5link.py, relocation_order).
+OBJECT_PARTS = [('R2320', 'A2322', 'R251E'), ('INTRO2', 'AINTRO2'), ('AFONT0', 'FONT')]
+
+# A second name for a place that another name defines, as a linker's DEFINE gives. The
+# original reaches the overworld map through a name of its own for DS:6608 (vars.h); which
+# object defined it is not known.
+LINK_DEFINES = {'D_6608_OVERWORLD': 'D_6608_MAP'}
+
+# The uninitialised (communal) variables, in the order PLINK86 allocated them from the end of
+# the BSS segments (DS:a9bc) to _end (DS:bd40); tools/u5link.py allocates them by their
+# sizes in this order and reports any that does not land on the address in its name.
+# vars.c defines them. The order is a fact: the shared ones first, then those of INTRO,
+# ENDGAME, TALK, CAST2, SHOPPES2 and FONT in link order, so PLINK86 allocated a communal when
+# it first met it; within an object that is MSC's symbol-table order, which depends on names
+# the original's source had and u5d does not (docs/MATCHING.md, "The resident data").
+COMMUNALS = [n.upper() for n in (
+    'D_a9bc D_a9bd D_a9be D_a9c0 D_a9c2 D_a9c4 D_a9c6 D_a9c8 D_a9ce D_a9d0 D_a9fa D_a9fb D_a9fc D_aafc D_aafe D_ab00 D_ab02 D_ac62 D_ac64 D_ad14 '
+    'D_b114 D_b116 D_b118 D_b11a D_b11c D_b11e D_b21e D_b9ee D_ba14 D_bb14 D_bb15 D_bb16 D_bb17 '
+    'D_bb18 D_bb1a D_bb1c D_bbd2 D_bc88 D_bcb0 '
+    'D_bcb2 D_bcda '
+    'D_bcdc D_bcde D_bce0 D_bce4 D_bcf4 D_bcf6 D_bcf8 '
+    'D_bd08 D_bd14 D_bd15 '
+    'D_bd16 D_bd18 D_bd1a D_bd1c D_bd1e D_bd20 D_bd22 D_bd24 '
+    'D_bd26 D_bd27 D_bd28 D_bd29 D_bd2a D_bd32 D_bd3a D_bd3b D_bd3c D_bd3d D_bd3e '
+).split()]
 
 EXE_HEADER = 0x800  # 0x80 paragraphs
 DATA_OVL_HEADER = 0x10  # DATA.OVL is a 16-byte header, then DGROUP from DS:0000

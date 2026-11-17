@@ -4,6 +4,10 @@
 #ifndef STUB
 #define STUB extern
 #endif
+// an uninitialised (communal) variable: see DS:a9bc below
+#ifndef BSS
+#define BSS STUB
+#endif
 
 // ref: u5tech
 // Savegame ref: https://wiki.ultimacodex.com/wiki/Ultima_V_internal_formats#SAVED.GAM_and_RAM
@@ -768,8 +772,8 @@ STUB S_6608_Map D_6708_map; // copy of 6608
 #if defined(TARGET_DOS16)
 // The original reaches the overworld map through a name of its own for DS:6608: in
 // ULTIMA_4402 MSC merges the town and overworld paths only up to the store, which it
-// does when their final `add ax,OFFSET ...` name different symbols. No module defines
-// it yet; the linker resolves it by the address in its name (PLAN, step 4).
+// does when their final `add ax,OFFSET ...` name different symbols. Which object defined
+// it is not known; the link defines it as D_6608_map's place (tools/u5.py, LINK_DEFINES).
 STUB S_6608_Map D_6608_overworld;
 #else
 #define D_6608_overworld D_6608_map
@@ -803,26 +807,26 @@ STUB u8 D_6aa8[0x24];
 
 // a500
 
-STUB u16 D_a524;
-STUB u8 D_a526;
-STUB u8 D_a527;
-
-STUB u8 D_a528[0x100];
-STUB u8 D_a628[0x100];
-STUB u8 D_a728[0x100];
-STUB u8 D_a872[0x100];
+// DS:a524-a9bc is the modules' _BSS, their static variables, in link order: D_a524 (mainout.c),
+// D_a526 and D_a527 (mainoutb.c), D_a528 and D_a628 (dnglook.c), D_a728 and D_a872 (comsubs.c).
 
 // a900
 
-STUB u8  D_a9bc;
-STUB u8 D_a9bd[2]; // drive idx
-STUB u8* D_a9c0; // loaded image pointer
-STUB u8 D_a9c2;
-STUB u8* D_a9c4; // loaded image pointer
-STUB u8* D_a9c6; // loaded image pointer
+// From DS:a9bc (where the runtime's empty XOB/XO/XOE segments are) to _end: communal
+// variables, declared with BSS. vars.c defines them; the link allocates them in PLINK86's
+// order, by their sizes (tools/u5.py, COMMUNALS). The few that no code refers to (D_bbd2,
+// D_bcb0, D_bd14, D_bd3a, D_bd3b) are declared so that the others land where they are.
+
+BSS u8  D_a9bc;
+BSS u8 D_a9bd[1]; // drive idx (one byte; an array, as the code reads D_a9bd[0])
+BSS u8 D_a9be; // two bytes on an odd address would have been put on an even one
+BSS u8* D_a9c0; // loaded image pointer
+BSS u8 D_a9c2;
+BSS u8* D_a9c4; // loaded image pointer
+BSS u8* D_a9c6; // loaded image pointer
 
 // disk drive table
-STUB u8 D_a9c8[6];
+BSS u8 D_a9c8[6];
 
 #define D_a9c9 D_a9c8[1]
 #define D_a9ca D_a9c8[2]
@@ -831,36 +835,36 @@ STUB u8 D_a9c8[6];
 #define D_a9cd D_a9c8[5]
 
 // used in intro
-STUB u8 D_a9ce; // use sound effect?
+BSS u8 D_a9ce; // use sound effect?
 
-STUB u16 D_a9d0[0x15];
+BSS u16 D_a9d0[0x15];
 
-STUB u8 D_a9fa; // dirty flag for vital
-STUB u8 D_a9fb; // footstep sfx duration in dungeon
+BSS u8 D_a9fa; // dirty flag for vital
+BSS u8 D_a9fb; // footstep sfx duration in dungeon
 
 // combat?
-STUB ActorFmt D_a9fc[0x20];
+BSS ActorFmt D_a9fc[0x20];
 
-STUB char* D_aafc; // current shop name
-STUB char* D_aafe; // current shop owner
+BSS char* D_aafc; // current shop name
+BSS char* D_aafe; // current shop owner
 
-STUB char* D_ab00;
-STUB u8 D_ab02[0x160]; // current visible map viewport [b * b], stride 0x20. 0: actor overlay, 0xff: hidden [ab02..ac62)
-STUB char* D_ac62;
+BSS char* D_ab00;
+BSS u8 D_ab02[0x160]; // current visible map viewport [b * b], stride 0x20. 0: actor overlay, 0xff: hidden [ab02..ac62)
+BSS char* D_ac62;
 
-STUB u8 D_ac64[0xb0]; // actor map / misc map [0x10 * b] (from 51b8)
+BSS u8 D_ac64[0xb0]; // actor map / misc map [0x10 * b] (from 51b8)
 
-STUB u8 D_ad14[32 * 32]; // combat map data / misc [ad14..b114)
+BSS u8 D_ad14[32 * 32]; // combat map data / misc [ad14..b114)
 
 // b100
 
-STUB s16 D_b114; // s16 (FMT MOVSX) max: 0x10?
-STUB s16 D_b116; // s16 (FMT MOVSX)
-STUB s16 D_b118; // s16 (FMT MOVSX)
-STUB u16 D_b11a;
+BSS s16 D_b114; // s16 (FMT MOVSX) max: 0x10?
+BSS s16 D_b116; // s16 (FMT MOVSX)
+BSS s16 D_b118; // s16 (FMT MOVSX)
+BSS u16 D_b11a;
 
-STUB u8* D_b11c;
-STUB u8 D_b11e[0x100]; // animated tile lookup table
+BSS u8* D_b11c;
+BSS u8 D_b11e[0x100]; // animated tile lookup table
 
 #if !defined(MATCHING_BUILD)
 #define SCRATCH_SIZE 3000
@@ -868,14 +872,14 @@ STUB u8 D_b11e[0x100]; // animated tile lookup table
 #define SCRATCH_SIZE 2000
 #endif
 
-STUB u8 D_b21e[SCRATCH_SIZE]; // scratch buffer ~b9ee)
+BSS u8 D_b21e[SCRATCH_SIZE]; // scratch buffer ~b9ee)
 
 #define D_b31e (D_b21e + 0x100)
 #define D_b7fa (D_b21e + 1500)
 
 // b900
 
-STUB u8  D_b9ee[0x26]; // owned item counts
+BSS u8  D_b9ee[0x26]; // owned item counts
 // [8]
 #define D_b9f6 (D_b9ee + 8)
 #define D_b9fe D_b9ee[0x10]
@@ -894,54 +898,59 @@ STUB u8  D_b9ee[0x26]; // owned item counts
 #define D_ba12 D_b9ee[0x24]
 #define D_ba13 D_b9ee[0x25]
 
-STUB CombatEntity D_ba14[32]; // combat entities
+BSS CombatEntity D_ba14[32]; // combat entities
 
-STUB u8  D_bb14; // pos?
-STUB u8  D_bb15; // pos?
-STUB u8  D_bb16;
-STUB u8  D_bb17;
-STUB u16 D_bb18; // "lord british" index
-STUB void* D_bb1a; // pointer
+BSS u8  D_bb14; // pos?
+BSS u8  D_bb15; // pos?
+BSS u8  D_bb16;
+BSS u8  D_bb17;
+BSS u16 D_bb18; // "lord british" index
+BSS void* D_bb1a; // pointer
 
-STUB S_bb1c D_bb1c;
+BSS S_bb1c D_bb1c;
+BSS u8 D_bbd2[0xb6]; // no code refers to it; as large as D_bb1c
 
-STUB S_bc88_U4Party D_bc88;
+BSS S_bc88_U4Party D_bc88;
+BSS u16 D_bcb0; // no code refers to it
 
-STUB char D_bcb2[0x27 + 1];
+BSS char D_bcb2[0x27 + 1];
 
-STUB u8 D_bd2a[8];
-STUB u8 D_bd32[8];
+BSS u8 D_bd2a[8];
+BSS u8 D_bd32[8];
 
-STUB u8 D_bcda;
+BSS u8 D_bcda;
 
-STUB u16 D_bcdc;
-STUB u8* D_bcde; // pointer
-STUB u8 D_bce0[4]; // ?
-STUB char D_bce4[0x10];
-STUB u8 D_bcf4;
-STUB u16 D_bcf6;
-STUB char D_bcf8[16];
+BSS u16 D_bcdc;
+BSS u8* D_bcde; // pointer
+BSS u8 D_bce0[4]; // ?
+BSS char D_bce4[0x10];
+BSS u8 D_bcf4;
+BSS u16 D_bcf6;
+BSS char D_bcf8[16];
 
-STUB char D_bd08[12];
+BSS char D_bd08[12];
+BSS u8 D_bd14; // no code refers to it
 
-STUB u8 D_bd15;
-STUB u8 D_bd16;
-STUB s16 D_bd18; // int?
-STUB int D_bd1a; // int
-STUB int D_bd1c; // int
-STUB int D_bd1e; // int
-STUB s16 D_bd20; // int?
-STUB s16 D_bd22;
-STUB s16 D_bd24;
+BSS u8 D_bd15;
+BSS u8 D_bd16;
+BSS s16 D_bd18; // int?
+BSS int D_bd1a; // int
+BSS int D_bd1c; // int
+BSS int D_bd1e; // int
+BSS s16 D_bd20; // int?
+BSS s16 D_bd22;
+BSS s16 D_bd24;
 
-STUB u8 D_bd26;
-STUB u8 D_bd27;
-STUB u8 D_bd28;
-STUB u8 D_bd29;
+BSS u8 D_bd26;
+BSS u8 D_bd27;
+BSS u8 D_bd28;
+BSS u8 D_bd29;
 
-STUB u8 D_bd3c;
-STUB u8 D_bd3d;
-STUB u8 D_bd3e;
+BSS u8 D_bd3a; // no code refers to it
+BSS u8 D_bd3b; // no code refers to it
+BSS u8 D_bd3c;
+BSS u8 D_bd3d;
+BSS u8 D_bd3e;
 
 // ..bd3f]
 

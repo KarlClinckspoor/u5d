@@ -56,7 +56,7 @@ static void ENDGAME_0000(void)
         // a32d
         ULTIMA_0c22_GRAP_0f_SelectPage(1);
 
-        D_a9bd[1] = 2;
+        D_a9be = 2;
         ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
 
         if (D_3e06[local_8] == 1)
@@ -130,7 +130,7 @@ static void ENDGAME_0000(void)
     ULTIMA_0be4_FreeImage(local_6);
     ULTIMA_0f6e_GRAP_1b_TransferFullscreen(1, 0);
     ULTIMA_0c22_GRAP_0f_SelectPage(0);
-    D_a9bd[1] = 0;
+    D_a9be = 0;
 }
 
 static void ENDGAME_023a(char* param_1)

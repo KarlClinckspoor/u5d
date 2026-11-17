@@ -493,7 +493,7 @@ int INTRO_1016_ConvertU4Savegame(void)
     local_a = 0;
     local_10_ad = 8;
 
-    D_a9bd[1] = 1;
+    D_a9be = 1;
     D_a9bd[0] = 4;
 
     D_a9c8[D_a9bd[0]] = ULTIMA_16a6_GetDefaultDrive();
@@ -1158,6 +1158,6 @@ L_GOG_1402:
     ULTIMA_251e_SwitchDisks(0);
 
     D_5893_map_id = local_e;
-    D_a9bd[1] = 0;
+    D_a9be = 0;
 }
 #endif

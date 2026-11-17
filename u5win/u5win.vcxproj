@@ -215,6 +215,7 @@
     <ClCompile Include="..\src\2000.c" />
     <ClCompile Include="..\src\r2320.c" />
     <ClCompile Include="..\src\r251e.c" />
+    <ClCompile Include="..\src\r256e.c" />
     <ClCompile Include="..\src\3000.c" />
     <ClCompile Include="..\src\4000.c" />
     <ClCompile Include="..\src\5000.c" />

@@ -15,6 +15,8 @@
 #include "mainout.h"
 #include "outsubs.h"
 
+static u16 D_a524; // this object's _BSS (DS:a524)
+
 // defined in mainoutb.c, the part of MAINOUT.OVL built with MSC 5.0
 extern u8 D_2bc0[];
 extern u8 D_2bcc[];

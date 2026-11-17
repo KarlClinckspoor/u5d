@@ -186,7 +186,7 @@ void INTRO_014e_Introduction(void)
             } while (local_6 == 0);
         }
 
-        D_a9bd[1] = 2;
+        D_a9be = 2;
         ULTIMA_0c22_GRAP_0f_SelectPage(1);
         ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
         if (D_30f0[local_a] == 1)
@@ -267,7 +267,7 @@ void INTRO_014e_Introduction(void)
     ULTIMA_0c22_GRAP_0f_SelectPage(1);
     ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
     ULTIMA_0c22_GRAP_0f_SelectPage(0);
-    D_a9bd[1] = 0;
+    D_a9be = 0;
     ULTIMA_251e_SwitchDisks(0);
 }
 
@@ -339,7 +339,7 @@ void INTRO_05b0_DisplayTitle(int param_1) // (0 for fast display)
     byte* local_4;
     int local_6_p; // unused
 
-    D_a9bd[1] = 2;
+    D_a9be = 2;
     if (D_5893_map_id != 0x40)
     {
         ULTIMA_102e_UnloadTileset();
@@ -389,7 +389,7 @@ void INTRO_05b0_DisplayTitle(int param_1) // (0 for fast display)
     }
     ULTIMA_0c22_GRAP_0f_SelectPage(0);
     INTRO_2090_AnimateWD();
-    D_a9bd[1] = 0;
+    D_a9be = 0;
     INTRO_04e0_DrawMenuBorders();
 }
 
