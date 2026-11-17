@@ -300,6 +300,7 @@
     <ClCompile Include="..\src\graphics\wd.c" />
     <ClCompile Include="..\src\grap_drv.c" />
     <ClCompile Include="..\src\intro.c" />
+    <ClCompile Include="..\src\intro2.c" />
     <ClCompile Include="..\src\introb.c" />
     <ClCompile Include="..\src\key\key_dos.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>

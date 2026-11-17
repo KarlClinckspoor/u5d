@@ -18,6 +18,7 @@ set(SOURCES
 	src/dungeon.c
 	src/dungeonb.c
 	src/intro.c
+	src/intro2.c
 	src/introb.c
 	src/npc.c
 	src/combat.c

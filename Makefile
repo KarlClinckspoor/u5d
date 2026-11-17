@@ -11,6 +11,7 @@ OBJS += \
 	src/dungeon.o \
 	src/dungeonb.o \
 	src/intro.o \
+	src/intro2.o \
 	src/introb.o \
 	src/npc.o \
 	src/combat.o \

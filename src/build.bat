@@ -23,6 +23,7 @@ del *.obj
 %CL% %CFLAGS% mainout.c >> log.txt
 %CL% %CFLAGS% dungeon.c >> log.txt
 %CL% %CFLAGS% intro.c >> log.txt
+%CL% %CFLAGS% intro2.c >> log.txt
 %CL% %CFLAGS% npc.c >> log.txt
 %CL% %CFLAGS% combat.c >> log.txt
 %CL% %CFLAGS% blckthrn.c >> log.txt
