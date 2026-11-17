@@ -197,8 +197,7 @@ static void BLCKTHRN_00be(byte* param_1)
         }
 
         // a454 ->
-        local_8_an = 0;
-        for (; local_6 > 0; local_6--)
+        for (local_8_an = 0; local_8_an < local_6; local_8_an++)
         {
             // a495
             D_5c5a[local_e_a]._2_x += local_12_ab;
@@ -213,7 +212,6 @@ static void BLCKTHRN_00be(byte* param_1)
             {
                 BLCKTHRN_0000(1);
             }
-            local_8_an++;
         }
 
         local_6 = 1; // a4c9

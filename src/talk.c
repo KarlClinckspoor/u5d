@@ -193,7 +193,11 @@ static int TALK_01e2(void)
             // where the original needs jbe + jmp near. Tried without effect: < or > with the
             // operands either way, (int)(uint)/(int)(u8)/(s16)/& 0xff/+ 0 on D_585b,
             // ++local_14, += 1, a while loop, !(== STATUS_DEAD), local_16_an = local_16_an + 10.
-            // (long) and (uint) bounds are far worse.
+            // (long) and (uint) bounds are far worse. Also identical: (D_55a8_party + local_14)->status,
+            // (int)D_585b != local_14, local_14 = local_14 + 1, a (int) cast on the index. No cast
+            // with <: 308 bytes, 224 differ. A second counter declared in this block and stepped
+            // with local_14 (for (local_14 = 0, k = 0; ...; local_14++, k++)) gives the frame of
+            // 1Ch but takes bp-16h itself (322 bytes); the original's bp-1Ch is a temporary.
             for (local_14 = 0; local_14 != (int)D_585b; local_14++)
             {
                 // 025a
@@ -278,19 +282,18 @@ int TALK_031e_TalkToNpc(int param_1)
     {
         local_8->type[local_6->_e] = 1;
     }
-    // c2ea NOT MATCHING: the original's guard test indexes with BX still holding local_6
-    // from the type test (mov bx,[bx+0Ch]); ours reloads it (mov bx,[bp-4]), so the code is
-    // 3 bytes longer up to the shared print, and the original's return needs jmp near where
-    // ours fits a short jmp. Tried, all identical to this: the guard as a nested if,
-    // !(... != 0 && ... != 0), !(x & 1) || !x, a goto past it instead of else, pointer
-    // arithmetic for the type array. Inverting the type test (!= 4, assignment in else)
-    // is worse.
-    else if (D_5c5a[local_6->_c]._0_tile == TILE_ACTOR_GUARD && ((local_6->_e & 1) == 0 || (local_6->_a) == 0))
+    // c2ea: the guard test jumps past its message with a goto. As an else-if, MSC keeps the
+    // guard's copy of the shared print tail and reloads local_6 for the guard test. With the
+    // goto, the guard falls into the "No response!" copy (the original's three nops after
+    // jmp near are that then-branch's dead jump over its else) and BX still holds local_6.
+    else
     {
+        if (D_5c5a[local_6->_c]._0_tile != TILE_ACTOR_GUARD || ((local_6->_e & 1) != 0 && (local_6->_a) != 0))
+            goto L_join;
         ULTIMA_1850_PrintString(_TEXT(0x9148, "The guard offers\nno response!\n"));
         return 0;
     }
-
+L_join:
     local_4_aa = local_6->_a;
     if (local_4_aa == 0)
     {
@@ -720,15 +723,10 @@ static int TALK_080a_Join(void)
 
     TALK_075a_SelectNthTalkString(0);
 
-    local_30_a = 0;
-
-    // 3 bytes. NOT MATCHING: the original copies with mov cx,1; rep movsw; movsb (twice),
-    // and has one more stack slot (frame 32h). memcpy with any constant count gives the
-    // generic shr cx,1 / adc cx,cx sequence under both compilers (sizeof, '', 1 + 2,
-    // (int)3, (unsigned)3 tried); a 3-byte struct copy gives movsw; movsb without rep,
-    // for every struct shape tried (char[3], three chars, int + char).
-    memcpy(local_8, D_bcde, 3);
-    local_30_a += 3;
+    // byte-copy loops, which MSC 5.0 turns into mov cx,1; repne movsw; movsb (memcpy gives
+    // shr cx,1 / adc cx,cx); the (char*) cast is needed for this one to become a block move
+    for (local_30_a = 0; local_30_a < 3; local_30_a++)
+        local_8[local_30_a] = ((char*)D_bcde)[local_30_a];
     D_bcde += 3;
 
     local_8[3] = 0;
@@ -737,8 +735,8 @@ static int TALK_080a_Join(void)
     // c7e6
     while (1)
     {
-        // 3 bytes
-        memcpy(local_2c_ad, D_55a8_party[local_4_ab].name, 3);
+        for (local_30_a = 0; local_30_a < 3; local_30_a++)
+            local_2c_ad[local_30_a] = D_55a8_party[local_4_ab].name[local_30_a];
 
         // c805
         if (TALK_0000_CompareStringNoCase(local_8, local_2c_ad) != 0)
@@ -747,7 +745,8 @@ static int TALK_080a_Join(void)
             break;
         }
 
-        if (--local_4_ab == 0)
+        local_4_ab--;
+        if (local_4_ab == 0)
         {
             // c824
             TALK_0574_BuildOrPrintWord(0x22);

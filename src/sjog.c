@@ -422,7 +422,11 @@ static void SJOG_0514(int param_1, int param_2)
         // - int local_8 inside the for body and this register int here: sibling blocks share
         //   a slot, so the frame is 8 and the code identical, but inner-block locals sit
         //   after the outer ones (SLOTS: local_a at bp-6, local_8 at bp-8). Moving local_6
-        //   into this block too gives the same frame with local_a at bp-4.
+        //   into this block too gives the same frame with local_a at bp-4. Renaming local_a
+        //   or local_8 into each of buckets 0-15 does not change that (SLOTS, 5 bytes): an
+        //   inner block's locals always come after the function's own.
+        // - D_3e78 seen as const (so the call cannot change it): a const redeclaration is
+        //   C2086 against vars.h's, at file or block scope.
         // Probably a compiler temporary of some other source shape.
         register int si;
         local_6 = ULTIMA_38e4();

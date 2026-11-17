@@ -489,12 +489,12 @@ static void ENDGAME_05a2(int param_1)
 // CHECKED
 void ENDGAME_0648_EndgameMain(void)
 {
-    int local_e;
+    int local_e_am;
     int local_c;
     int local_a;
     int local_8;
-    int local_4_ab;
     ActorFmt* local_6;
+    int local_4_ab;
 
     D_589e = 0xff;
     ULTIMA_2900_UpdateVitalsDisplay();
@@ -504,13 +504,13 @@ void ENDGAME_0648_EndgameMain(void)
 
     for (local_c = 0; local_c < 0xb; local_c++)
     {
-        for (local_e = 0; local_e < 0xb; local_e++)
+        for (local_e_am = 0; local_e_am < 0xb; local_e_am++)
         {
-            GetCombatMap(local_e, local_c) = D_ac64[local_c * 0x10 + local_e];
+            GetCombatMap(local_e_am, local_c) = D_ac64[local_c * 0x10 + local_e_am];
         }
     }
 
-    // a949 (NOT MATCHING)
+    // a949
     for (local_c = 0; local_c < 0x20; local_c++)
     {
         D_5c5a[local_c]._0_tile = D_5c5a[local_c]._1_animTile = 0;
@@ -528,7 +528,7 @@ void ENDGAME_0648_EndgameMain(void)
         ;
 
     // a9ad
-    // NOT MATCHING
+    // the party loop
     for (local_c = 0; local_c < D_585b; local_c++)
     {
         if (D_55a8_party[local_c].status == STATUS_DEAD)
@@ -547,7 +547,7 @@ void ENDGAME_0648_EndgameMain(void)
         // aa25
         local_8 = ULTIMA_4d76_FindIndex(_TEXT(0x84a4, CLASS_LIST), D_55a8_party[local_c].cls);
 
-        // aa37; NOT MATCHING
+        // aa37
         local_6 = &D_5c5a[local_c];
         
         local_6->_0_tile = local_6->_1_animTile = D_1ade[local_8];
@@ -558,12 +558,10 @@ void ENDGAME_0648_EndgameMain(void)
         // aa57
         ULTIMA_3ae6(1);
 
-        // aa5e; NOT MATCHING
-        if (ENDGAME_0510(local_c, D_3e5a[local_c], D_3e60[local_c]) != 0)
-        {
-            while (ENDGAME_0510(local_c, D_3e5a[local_c], D_3e60[local_c]) != 0)
-                ;
-        }
+        // aa5e: *(D_3e5a + local_c), not D_3e5a[local_c]: only then does MSC 5.0 rotate
+        // this while and hoist both bytes into SI/DI, as the original does
+        while (ENDGAME_0510(local_c, *(D_3e5a + local_c), *(D_3e60 + local_c)) != 0)
+            ;
     }
 
     // aabc
