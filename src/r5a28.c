@@ -28,17 +28,14 @@ u8 D_6a9a[10] = {
 
 static bool ULTIMA_5dfe(byte param_1, int param_2);
 
-// CHECKED (NOT MATCHING: right length, only the frame differs: 21Ah against 218h)
+// CHECKED
 // The locals are named for the original's slots (slots.py, after renaming them local_N).
 // Two unused labels (L_s before the GetMapViewport store at 5b83, L_c before the 5dfe test)
 // stop MSC keeping an address or param_2_y + local_214_an in DI across them, which gives the
 // original's [bx+di+table] addressing; the gotos to L_5c93 put that block before 5c9c.
-// Still different: `register byte* ptr` (SI) reserves a slot after the locals (-218h), so
-// the temporary at 5c52 lands at -21Ah instead of -218h; the original's SI has no slot.
-// Tried: no `register` (ptr in memory, 748 bytes), register at function level (63 bytes
-// differ) or in the while body (SI/DI swapped earlier), ptr as a register param_6 (loaded at
-// entry), a block variable for param_3_x + local_212 at 5c52 (same frame). Deleting the
-// functions before this one changes nothing (no object boundary shown by capacity).
+// The queue is 256 ints, not 257: `register byte* cell` (SI) at function level reserves the
+// unused slot at -4 between local_4_ab and the queue (cell hashes to bucket 0, declared before
+// local_4_ab). As a block variable its slot came after the locals and moved the temporary.
 // generate visibility map (BFS)
 static void ULTIMA_5a28(int param_1, int param_2_y, int param_3_x, int param_4, int param_5, uint param_6, byte* param_7_map)
 {
@@ -51,7 +48,8 @@ static void ULTIMA_5a28(int param_1, int param_2_y, int param_3_x, int param_4, 
     int local_20c; // -0x20a
     int local_20a; // -0x208
     int local_208; // -0x206
-    int local_206[257]; // -0x204
+    int local_206[256]; // -0x204
+    register byte* cell;
     int local_4_ab;
 
     local_20e_an = 0;
@@ -62,7 +60,6 @@ static void ULTIMA_5a28(int param_1, int param_2_y, int param_3_x, int param_4, 
 
     if (param_1 > 0)
     {
-        register byte* ptr;
         // 5a57
         if (param_4 == -0x6f)
         {
@@ -141,7 +138,7 @@ static void ULTIMA_5a28(int param_1, int param_2_y, int param_3_x, int param_4, 
 #endif
 
                 // 5b48
-                ptr = param_7_map + (param_4 + local_214_an) * 0x20 + (param_5 + local_212);
+                cell = param_7_map + (param_4 + local_214_an) * 0x20 + (param_5 + local_212);
 
                 // 5b5f
                 if (local_210_ab == 0)
@@ -166,7 +163,7 @@ static void ULTIMA_5a28(int param_1, int param_2_y, int param_3_x, int param_4, 
 #endif
                 {
                     // 5b90
-                    if (*ptr != 0xff)
+                    if (*cell != 0xff)
                     {
                         // 5b95
                         local_20c = 0;
@@ -195,7 +192,7 @@ static void ULTIMA_5a28(int param_1, int param_2_y, int param_3_x, int param_4, 
                                     D_ad14[(param_2_y + local_20a) * 0x20 + param_3_x + local_208] == 0 ||
                                     D_ad14[(param_2_y + local_214_an) * 0x20 + param_3_x + local_212] == 0)
                                 {
-                                    local_216_al = *ptr = 0xff;
+                                    local_216_al = *cell = 0xff;
                                 }
                                 else
                                     goto L_5c93;
@@ -205,16 +202,16 @@ static void ULTIMA_5a28(int param_1, int param_2_y, int param_3_x, int param_4, 
                                 if (param_2_y + local_214_an < 0 || param_3_x + local_212 < 0 ||
                                     param_3_x + local_212 > 0x1f || param_2_y + local_214_an > 0x1f)
                                 {
-                                    *ptr = 0;
+                                    *cell = 0;
                                 }
                                 else if (D_ad14[(param_2_y + local_214_an) * 0x20 + param_3_x + local_212] != 0)
                                 {
                                 L_5c93:
-                                    *ptr = local_216_al;
+                                    *cell = local_216_al;
                                 }
                                 else
                                 {
-                                    *ptr = 0;
+                                    *cell = 0;
                                 }
                             }
                         }
