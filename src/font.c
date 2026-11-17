@@ -95,10 +95,14 @@ void FONT_0000(byte* param_1, byte* param_2)
     local_e_am = local_6 = 0;
     local_4_aa = D_5156 - D_5146[local_12];
 
-    while (param_2[local_e_am] != 0)
+    for (;;)
     {
+        if (param_2[local_e_am] == 0)
+        {
+            break;
+        }
         local_a = 0;
-        for (local_10_aa = local_e_am; param_2[local_10_aa] != 0 && local_4_aa < local_c && param_2[local_10_aa] != '\n'; local_10_aa++)
+        for (local_10_aa = local_e_am; param_2[local_10_aa] != 0 && local_c > local_4_aa && param_2[local_10_aa] != '\n'; local_10_aa++)
         {
             if (param_2[local_10_aa] <= ' ')
             {
@@ -118,7 +122,7 @@ void FONT_0000(byte* param_1, byte* param_2)
         while ((param_2[local_10_aa] != 0 || local_4_aa >= local_c) && param_2[local_10_aa] != '\n')
         {
             local_10_aa--;
-            if (local_10_aa <= local_e_am)
+            if (local_e_am >= local_10_aa)
             {
                 break;
             }
