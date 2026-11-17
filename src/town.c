@@ -1048,7 +1048,11 @@ static void TOWN_0f02(void)
             // starts at an even address (DS:278a) right after this function's last one, so
             // an object boundary after TOWN_0f02 would keep TOWN_1694 exact. What the
             // original's extra symbols were is not known; tentative definitions are no fix
-            // (they become communal variables at link).
+            // (they become communal variables at link). Near that limit, comment lines in
+            // this function count too (blank lines do not; with or without /Fc): with 240
+            // definitions, 30 comment lines before this loop make it exact, and this note
+            // moves the window from 261-274 to about 250-259. Far from it, 200 comment
+            // lines change nothing.
             // for (105d; 1067; 1064)
             for (local_6 = 0; local_6 < D_585b; local_6++)
             {
