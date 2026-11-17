@@ -952,13 +952,10 @@ static int ZSTATS_0c5c_EquipItem(int param_1, int param_2)
     return 0;
 }
 
-// NOT MATCHING (checked): only the frame, sub sp,1Ch in the original. Its two page loops (UP,
-// DOWN) keep their trip counts in two temporaries (bp-1Ah, bp-1Ch); ours share bp-1Ah. Not
-// changed by: local_6 > local_e_a, ++local_e_a, += 1, (int)local_6 or local_6 + 0 in either loop.
+// CHECKED: the two page loops (UP, DOWN) keep their trip counts in two temporaries
+// (bp-1Ah, bp-1Ch) only when the DOWN loop sits in a block that declares a local.
 // The listing loop is a for whose increment shares its store with the init, the 0518 test
-// reads "!= 0" first, and HOME/END come before ENTER/ESC: 698 -> 3 bytes.
-// Also no change: the DOWN case's body in braces; (uint)local_e_a, a ternary for local_6, uint
-// local_6 or a while loop are far worse.
+// reads "!= 0" first, and HOME/END come before ENTER/ESC.
 // select item: used in use, ready
 int ZSTATS_0f2e(int param_1, int param_2, int param_3)
 {
@@ -1144,31 +1141,37 @@ int ZSTATS_0f2e(int param_1, int param_2, int param_3)
             else
                 local_6 = 1;
 
-            for (local_e_a = 0; local_e_a < local_6; local_e_a++)
+            // A block with a declaration gives this loop its own trip-count temporary
+            // (bp-1Ch); without it both page loops share bp-1Ah. The local is unused.
             {
-                if (local_10_ad == 4 || local_10_ad == 7 || local_10_ad >= local_4_ab)
+                int local_x;
+
+                for (local_e_a = 0; local_e_a < local_6; local_e_a++)
                 {
-                    // 116f
-                    if (local_12_ab != -1 && ZSTATS_05a4(local_12_ab, local_a_ae, local_14_ap, param_2) != -1)
+                    if (local_10_ad == 4 || local_10_ad == 7 || local_10_ad >= local_4_ab)
                     {
-                        param_1 = ZSTATS_05a4(param_1, local_a_ae, local_14_ap, param_2);
-                        local_12_ab = ZSTATS_05a4(local_12_ab, local_a_ae, local_14_ap, param_2);
+                        // 116f
+                        if (local_12_ab != -1 && ZSTATS_05a4(local_12_ab, local_a_ae, local_14_ap, param_2) != -1)
+                        {
+                            param_1 = ZSTATS_05a4(param_1, local_a_ae, local_14_ap, param_2);
+                            local_12_ab = ZSTATS_05a4(local_12_ab, local_a_ae, local_14_ap, param_2);
+                        }
+                        else
+                        {
+                            // 11a8
+                            if (local_10_ad == 4 && local_4_ab > 4)
+                            {
+                                local_10_ad++;
+                            }
+                        }
                     }
                     else
                     {
-                        // 11a8
-                        if (local_10_ad == 4 && local_4_ab > 4)
-                        {
-                            local_10_ad++;
-                        }
+                        // 11b3
+                        local_10_ad++;
                     }
+                    // 11b4
                 }
-                else
-                {
-                    // 11b3
-                    local_10_ad++;
-                }
-                // 11b4
             }
             break;
 
