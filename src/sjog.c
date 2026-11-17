@@ -368,77 +368,72 @@ static int SJOG_045a(int param_1, int param_2)
 }
 
 // CHECKED
+// The original keeps D_3e78[local_4_ab] in SI with no stack slot of its own: si shares
+// local_a's slot (bp-8). Under MSC 5.0 a register variable takes a slot, and a block's
+// slots are given back for a sibling block only when the block is the body of an if or a
+// for (if (1) here), not a bare { }. local_a is declared in it, so it comes after the
+// function's own locals. (An "extern const" table would also keep the value across the
+// call, but 5.0 then writes fixups to segment index 0.)
 static void SJOG_0514(int param_1, int param_2)
 {
-    bool local_a;
     int local_6;
     int local_4_ab;
     int local_8;
 
-    local_a = 0;
-
-    for (local_4_ab = 0; local_4_ab < 0x71; local_4_ab++)
+    if (1)
     {
-        if (D_3f5c[local_4_ab] == D_5893_map_id && D_3fce[local_4_ab] == D_5895_map_level && D_4040[local_4_ab] == param_1 && D_40b2[local_4_ab] == param_2)
+        bool local_a;
+
+        local_a = 0;
+
+        for (local_4_ab = 0; local_4_ab < 0x71; local_4_ab++)
         {
-            // 0558
-            if ((local_4_ab == 0xd && D_57ac == 0 && ULTIMA_368e_FindActorTileAtPos(param_1, param_2, D_5895_map_level) == 0) ||
-                (local_4_ab == 0xe && D_587e != D_57b2) ||
-                (local_4_ab == 0xf && D_57c0[0x27] == 0 && ULTIMA_368e_FindActorTileAtPos(param_1, param_2, D_5895_map_level) == 0))
+            if (D_3f5c[local_4_ab] == D_5893_map_id && D_3fce[local_4_ab] == D_5895_map_level && D_4040[local_4_ab] == param_1 && D_40b2[local_4_ab] == param_2)
             {
-                local_a = 1;
-                break;
-            }
+                // 0558
+                if ((local_4_ab == 0xd && D_57ac == 0 && ULTIMA_368e_FindActorTileAtPos(param_1, param_2, D_5895_map_level) == 0) ||
+                    (local_4_ab == 0xe && D_587e != D_57b2) ||
+                    (local_4_ab == 0xf && D_57c0[0x27] == 0 && ULTIMA_368e_FindActorTileAtPos(param_1, param_2, D_5895_map_level) == 0))
+                {
+                    local_a = 1;
+                    break;
+                }
 
-            // 05f6 (OK)
-            local_8 = 1 << (local_4_ab & 7);
-            if ((D_585c[(local_4_ab >> 3)] & local_8) == 0 && (local_4_ab < 0xd || local_4_ab > 0xf))
-            {
-                // 061a
-                D_585c[(local_4_ab >> 3)] |= local_8;
+                // 05f6 (OK)
+                local_8 = 1 << (local_4_ab & 7);
+                if ((D_585c[(local_4_ab >> 3)] & local_8) == 0 && (local_4_ab < 0xd || local_4_ab > 0xf))
+                {
+                    // 061a
+                    D_585c[(local_4_ab >> 3)] |= local_8;
 
-                // -> 05a1
-                local_a = 1;
-                break;
+                    // -> 05a1
+                    local_a = 1;
+                    break;
+                }
             }
         }
-    }
 
-    if (local_4_ab == 0xe)
-    {
-        D_57b2 = D_587e;
-    }
+        if (local_4_ab == 0xe)
+        {
+            D_57b2 = D_587e;
+        }
 
-    // 05b7
-    if (local_a)
+        if (!local_a)
+        {
+            goto L_nothing;
+        }
+    }
     {
-        // NOT MATCHING: every byte but the frame (sub sp,0Ah, original 8). The original keeps
-        // D_3e78[local_4_ab] in SI across the ULTIMA_3a74 call without giving it a stack
-        // slot; a register variable always takes one. Tried:
-        // - plain or register int here, or local_8/local_a/param_1/param_2 reused: memory;
-        // - D_3e78[local_4_ab] written out three times: SI within the argument list (CSE),
-        //   reloaded after the call, 12 bytes longer;
-        // - function-level register int: takes SI for the loop counter instead;
-        // - int local_8 inside the for body and this register int here: sibling blocks share
-        //   a slot, so the frame is 8 and the code identical, but inner-block locals sit
-        //   after the outer ones (SLOTS: local_a at bp-6, local_8 at bp-8). Moving local_6
-        //   into this block too gives the same frame with local_a at bp-4. Renaming local_a
-        //   or local_8 into each of buckets 0-15 does not change that (SLOTS, 5 bytes): an
-        //   inner block's locals always come after the function's own.
-        // - D_3e78 seen as const (so the call cannot change it): a const redeclaration is
-        //   C2086 against vars.h's, at file or block scope.
-        // Probably a compiler temporary of some other source shape.
         register int si;
         local_6 = ULTIMA_38e4();
         si = D_3e78[local_4_ab];
         ULTIMA_3a74(si, si, D_4040[local_4_ab], D_40b2[local_4_ab], D_3fce[local_4_ab], D_3eea[local_4_ab], local_6);
         D_24e6 |= 2;
         SJOG_012a(si);
+        return;
     }
-    else
-    {
-        ULTIMA_1850_PrintString(_TEXT(0x86cc, "nothing of note.\n"));
-    }
+L_nothing:
+    ULTIMA_1850_PrintString(_TEXT(0x86cc, "nothing of note.\n"));
 }
 
 // CHECKED

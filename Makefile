@@ -34,6 +34,7 @@ OBJS += \
 	src/zstats.o \
 	src/comsubs.o \
 	src/shoppes2.o \
+	src/shoppe2b.o \
 	src/shoppes3.o \
 	src/font.o \
 	src/vars.o \

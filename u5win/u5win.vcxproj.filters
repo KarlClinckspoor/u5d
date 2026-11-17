@@ -167,6 +167,9 @@
     <ClCompile Include="..\src\shoppes2.c">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\shoppe2b.c">
+      <Filter>src</Filter>
+    </ClCompile>
     <ClCompile Include="..\src\shoppes3.c">
       <Filter>src</Filter>
     </ClCompile>

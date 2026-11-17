@@ -323,6 +323,7 @@
     <ClCompile Include="..\src\savegame.c" />
     <ClCompile Include="..\src\shoppes.c" />
     <ClCompile Include="..\src\shoppes2.c" />
+    <ClCompile Include="..\src\shoppe2b.c" />
     <ClCompile Include="..\src\shoppes3.c" />
     <ClCompile Include="..\src\sjog.c" />
     <ClCompile Include="..\src\talk.c" />
