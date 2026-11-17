@@ -162,11 +162,19 @@ static void ULTIMA_51b8(int param_1, int param_2, int param_3, int param_4, int 
 // D_5c5a from entry 31 down with 13 pointers (one per field occurrence: [bp-12h] _0, [bp-10h]
 // _2, [bp-0Eh] _3, [bp-14h] _4, [bp-16h] _1, SI _0, [bp-1Ah] _1, DI _1, [bp-1Eh..-26h]), each
 // "sub 8" at the loop end, the exit a pointer compare (cmp [bp-26h],5C5Bh; jb), no test
-// before the first pass, frame 32h. Ours indexes D_5c5a[local_c] with shl 3 every time
-// (frame 1Ah). As a for loop (31; >= 0; --) it is still not optimized (604 bytes, 391 differ,
-// and a jmp to the test first); with the first loop nest removed (diagnostic only) MSC does
-// optimize it, so it looks like the same budget as ULTIMA_1850's (see r1850.c), not the
-// loop's own form. Also tried: `> -1`, local_c-- as its own statement, continue for _0 == 0.
+// before the first pass, frame 32h. Ours keeps local_c in SI and indexes D_5c5a[local_c]
+// with shl 3 every time (frame 1Ah). The 13 pointers are exactly our 16 occurrences less the
+// ones MSC shares in a row (3 for _0, 2 for _1), so the occurrences are the original's.
+// Not a budget after all: with everything before the loop deleted (only the loop left in the
+// function), or even the loop body cut down to the first tests and one store, MSC still does
+// not strength-reduce it (the earlier note's "optimized without the first loop nest" does not
+// reproduce). Deleting ULTIMA_51a0/51b8 and the tables before it changes nothing either, and
+// compiling under MSC 5.0 gives the same loop. Loop forms tried (also on the loop alone):
+// for (31; >= 0; --) (jmp to the test, no pointers), while (c-- > 0), do ... while (c-- !=
+// 0), `> -1`, local_c-- on its own, continue for _0 == 0, an upward for (diagnostic); an
+// unused label or block-local counters (606 bytes, no pointers); 2D-array macros for the
+// viewport and actor maps; D_5c5a-> for the first block; ((ActorFmt*)D_5c5a)[local_c],
+// (D_5c5a + local_c)-> (same code), D_5c5a[(uint)local_c] (606 bytes, no pointers).
 void ULTIMA_5394(void)
 {
     int local_c;
