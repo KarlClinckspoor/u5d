@@ -20,14 +20,16 @@ void DUNGEON_0134(int param_1);
 void DUNGEON_01d2_PrintWalkDir(void);
 void DUNGEON_1020(void);
 
+// The tables of one function are static locals in it (all but DUNGEON_104c's, which
+// translate.c patches). MSC knows that a call cannot change a static local whose address
+// is not taken, so it keeps values read from them in registers across calls and hoists
+// them out of loops (DUNGEON_111e, 127e, 1786, 1952), as a const table does; they stay
+// in _DATA, in source order.
+
 u8 D_2de8[8] = {0x00, 0x01, 0x02, 0x02, 0x03, 0x07, 0x0a, 0x0b};
-
 u8 D_2df0[8] = {0x01, 0x01, 0x00, 0x01, 0x04, 0x03, 0x01, 0x00};
-
 u8 D_2df8[12] = {0x07, 0x08, 0x08, 0x08, 0x09, 0x09, 0x09, 0x0a, 0x09, 0x09, 0x07, 0x00};
-
 u8 D_2e04[12] = {0x0a, 0x09, 0x0a, 0x0b, 0x0a, 0x0a, 0x0a, 0x0b, 0x0b, 0x0b, 0x0a, 0x00};
-
 char* D_2e10[11] =
 {
     _STATIC_TEXT(0x6bb0, "BOTTOMLESS\n   PIT    "),
@@ -42,79 +44,6 @@ char* D_2e10[11] =
     _STATIC_TEXT(0x6c32, "D\\PE_"),
     _STATIC_TEXT(0x6c38, "MO[ER LODE\n   MAZE   "),
 };
-
-u8 D_2e26[4] = {0x01, 0x03, 0x02, 0x03};
-
-s16 D_2e2a[4] = {0x0028, 0x0048, 0x0050, 0x0058};
-
-s16 D_2e32[2][4] = {0x0056, 0x0056, 0x0060, 0x0062, 0x0010, 0x0028, 0x0046, 0x0055};
-
-s16 D_2e42[4] = {0x0010, 0x0038, 0x0050, 0x005c};
-
-s16 D_2e4a[4] = {0x00a7, 0x0087, 0x006f, 0x0063};
-
-s16 D_2e52[4] = {0x012c, 0x0064, 0x0032, 0x000f};
-
-s16 D_2e5a[4] = {0x0007, 0x0007, 0x0005, 0x0002};
-
-s16 D_2e62[2][4] = {0x0010, 0x0028, 0x0048, 0x0058, 0x0098, 0x0078, 0x0068, 0x0060};
-
-s16 D_2e72[4] = {0x0038, 0x0048, 0x0050, 0x0058};
-
-s16 D_2e7a[2][4] = {0x0098, 0x0078, 0x0068, 0x0060, 0x000f, 0x0027, 0x0047, 0x0057};
-
-u8 D_2e8a[6] = {0x0c, 0x08, 0x18, 0x08, 0x0c, 0x0c};
-
-// NOTE: Original size 10 causes OOB. FMT uses 2 bytes of padding.
-u8 D_2e90[10] = {0x28, 0x2f, 0x42, 0x64, 0x92, 0x2e, 0x32, 0x3e, 0x52, 0x6d};
-
-// NOTE: Original size 10 causes OOB. FMT uses 2 bytes of padding.
-u8 D_2e9a[10] = {0x0e, 0x17, 0x32, 0x62, 0x9f, 0x28, 0x2d, 0x3c, 0x54, 0x77};
-
-Pair D_2ea4[3][8] =
-{
-    0x5a, 0x73, 0x52, 0x77, 0x5f, 0x7b, 0x57, 0x7d,
-    0x5b, 0x83, 0x50, 0x85, 0x50, 0x85, 0x50, 0x85,
-    0x57, 0x73, 0x5e, 0x77, 0x51, 0x7a, 0x5d, 0x7d,
-    0x5f, 0x81, 0x55, 0x82, 0x59, 0x87, 0x50, 0x8b,
-    0x54, 0x75, 0x5a, 0x75, 0x5a, 0x7c, 0x50, 0x7e,
-    0x55, 0x88, 0x59, 0x8a, 0x59, 0x8a, 0x59, 0x8a
-};
-
-Pair D_2ed4[3][5] =
-{
-    0x16, 0x07, 0x13, 0x0a, 0x0d, 0x0b, 0x17, 0x14,
-    0x0d, 0x1b, 0x12, 0x06, 0x11, 0x0f, 0x17, 0x0f,
-    0x0c, 0x10, 0x0f, 0x1a, 0x0f, 0x08, 0x16, 0x0b,
-    0x10, 0x13, 0x0b, 0x15, 0x12, 0x1c
-};
-
-Pair D_2ef2[3][4] =
-{
-    0x0b, 0x01, 0x0f, 0x04, 0x09, 0x06, 0x0b, 0x08,
-    0x0a, 0x02, 0x0e, 0x02, 0x0c, 0x0a, 0x0c, 0x0a,
-    0x0d, 0x01, 0x09, 0x04, 0x09, 0x09, 0x09, 0x09
-};
-
-Pair D_2f0a[3] =
-{
-    0x06, 0x00, 0x05, 0x01, 0x07, 0x02
-};
-
-Pair D_2f10[3] =
-{
-    0x59, 0x91, 0x50, 0x90, 0x55, 0x8f
-};
-
-u8 D_2f16[8] = {0x00, 0x1f, 0x00, 0x1f, 0x00, 0x00, 0x00, 0x00};
-
-u8 D_2f1e[8] = {0x00, 0x00, 0x1f, 0x1f, 0x37, 0x27, 0x2f, 0x3f};
-
-u8 D_2f26 = 0;
-
-s8 D_2f28[4] = {0xff, 0x00, 0x01, 0x00};
-
-s8 D_2f2c[4] = {0x00, 0xff, 0x00, 0x01};
 
 // CHECKED
 // An early return, not if { ... }: MSC then keeps the map id in BX, where the if
@@ -155,16 +84,18 @@ static int DUNGEON_10dc(int param_1, int param_2)
     return local_4;
 }
 
-// CHECKED (register)
+// CHECKED (static tables)
 static void DUNGEON_111e(int param_1)
 {
-    int local_e;
+    static u8 D_2e26[4] = {0x01, 0x03, 0x02, 0x03};
+    static s16 D_2e2a[4] = {0x0028, 0x0048, 0x0050, 0x0058};
+    static s16 D_2e32[2][4] = {0x0056, 0x0056, 0x0060, 0x0062, 0x0010, 0x0028, 0x0046, 0x0055};
+    int local_e_lc;
     int local_c;
     int local_a;
     int local_8;
     int local_6;
-    int local_4_ab;
-    register int uVar2;
+    int local_4_b;
 
     if (D_587a == 'T')
     {
@@ -175,23 +106,23 @@ static void DUNGEON_111e(int param_1)
     local_c = D_5c5a[1]._7 == 0xff;
     // 1148
     local_a = (D_5c5a[1]._6 & 0x90);
-    local_4_ab = (D_5c5a[1]._6 & 0x60);
+    local_4_b = (D_5c5a[1]._6 & 0x60);
     local_8 = D_5c5a[1]._6 & 0xf;
 
     if (D_587a == 'T')
     {
         
-        local_6 = local_e = 1;
+        local_6 = local_e_lc = 1;
     }
     else
     {
         local_6 = ULTIMA_2092_RandomRange(0, 100) < 0x32;
-        local_e = ULTIMA_2092_RandomRange(0, 100) < 0x32;
-        switch (local_4_ab)
+        local_e_lc = ULTIMA_2092_RandomRange(0, 100) < 0x32;
+        switch (local_4_b)
         {
         case 0x20:
             // 11c2
-            local_e = local_6 = local_8 = local_8 == 0;
+            local_e_lc = local_6 = local_8 = local_8 == 0;
             break;
         case 0x40:
             break;
@@ -203,7 +134,7 @@ static void DUNGEON_111e(int param_1)
                 local_8 = 3;
             }
             local_6 = D_2e26[local_8] >> 1;
-            local_e = D_2e26[local_8] & 1;
+            local_e_lc = D_2e26[local_8] & 1;
             break;
         }
     }
@@ -211,7 +142,7 @@ static void DUNGEON_111e(int param_1)
     // 11d3
     if (local_a != 0)
     {
-        local_e = (local_a == 0x90) ^ local_6;
+        local_e_lc = (local_a == 0x90) ^ local_6;
     }
 
     if (D_a9c6 == 0)
@@ -222,16 +153,20 @@ static void DUNGEON_111e(int param_1)
     else
     {
         // 1220
-        uVar2 = D_2e32[local_c][param_1];
-        ULTIMA_0d4c_GRAP_4b_PutImage(D_a9c6, local_6 * 3 + param_1 - 1, D_2e2a[param_1], uVar2, local_c);
-        ULTIMA_0bfc_GRAP_63(D_a9c6, local_e * 3 + param_1 - 1, 0x60, uVar2, local_c);
-        D_5c5a[1]._6 = local_4_ab + local_a + local_8;
+        ULTIMA_0d4c_GRAP_4b_PutImage(D_a9c6, local_6 * 3 + param_1 - 1, D_2e2a[param_1], D_2e32[local_c][param_1], local_c);
+        ULTIMA_0bfc_GRAP_63(D_a9c6, local_e_lc * 3 + param_1 - 1, 0x60, D_2e32[local_c][param_1], local_c);
+        D_5c5a[1]._6 = local_4_b + local_a + local_8;
     }
 }
 
-// CHECKED (optimization)
+// CHECKED (static tables)
 static void DUNGEON_127e(int param_1, int param_2)
 {
+    static s16 D_2e42[4] = {0x0010, 0x0038, 0x0050, 0x005c};
+    static s16 D_2e4a[4] = {0x00a7, 0x0087, 0x006f, 0x0063};
+    static s16 D_2e52[4] = {0x012c, 0x0064, 0x0032, 0x000f};
+    static s16 D_2e5a[4] = {0x0007, 0x0007, 0x0005, 0x0002};
+    int local_a;
     int local_8;
     int local_6;
     int local_4_ab;
@@ -259,17 +194,13 @@ static void DUNGEON_127e(int param_1, int param_2)
         break;
     }
 
-    // 12be NOT MATCHING: the original hoists D_2e52/5a/4a/42[param_1] and 4a - 5a out of
-    // the loop (temporaries at bp-0c..-14, the count in DI, counted down) although the loop
-    // makes calls, and keeps the second RandomRange result in a local at bp-8. Making the
-    // four tables really const (#undef const) gives that loop almost byte for byte, but
-    // puts the tables in CONST, where the original's are in _DATA. MSC 5.0 rejects an
-    // extern const declaration before a plain definition (C2086), and a const-qualified
-    // cast on the reads changes nothing.
+    // 12be: the four tables are static locals, so MSC hoists their values out of the loop
+    // although it makes calls (temporaries at bp-0c..-14, the count in DI, counted down).
     for (local_8 = 0; local_8 < D_2e52[param_1]; local_8++)
     {
         local_6 = ULTIMA_2092_RandomRange(D_2e42[param_1], D_2e4a[param_1] - D_2e5a[param_1]);
-        ULTIMA_0c9c_GRAP_39_HorizLine(local_6, ULTIMA_2092_RandomRange(D_2e42[param_1], D_2e4a[param_1]), D_2e5a[param_1] + local_6);
+        local_a = ULTIMA_2092_RandomRange(D_2e42[param_1], D_2e4a[param_1]);
+        ULTIMA_0c9c_GRAP_39_HorizLine(local_6, local_a, D_2e5a[param_1] + local_6);
     }
 
     D_52c4 = local_4_ab;
@@ -277,6 +208,9 @@ static void DUNGEON_127e(int param_1, int param_2)
 
 static void DUNGEON_134a(int param_1, int param_2, int param_3)
 {
+    static s16 D_2e62[2][4] = {0x0010, 0x0028, 0x0048, 0x0058, 0x0098, 0x0078, 0x0068, 0x0060};
+    static s16 D_2e72[4] = {0x0038, 0x0048, 0x0050, 0x0058};
+    static s16 D_2e7a[2][4] = {0x0098, 0x0078, 0x0068, 0x0060, 0x000f, 0x0027, 0x0047, 0x0057};
     int local_a;
     int local_8;
     int local_6;
@@ -373,6 +307,9 @@ static int DUNGEON_145c(int param_1, int param_2, int param_3, int param_4)
 // CHECKED (nop)
 static int DUNGEON_150a(int param_1, int param_2, int param_3)
 {
+    static u8 D_2e8a[6] = {0x0c, 0x08, 0x18, 0x08, 0x0c, 0x0c};
+    // NOTE: Original size 10 causes OOB. FMT uses 2 bytes of padding.
+    static u8 D_2e90[10] = {0x28, 0x2f, 0x42, 0x64, 0x92, 0x2e, 0x32, 0x3e, 0x52, 0x6d};
     int local_8;
     int local_6;
     int local_4_ab;
@@ -439,6 +376,8 @@ static int DUNGEON_150a(int param_1, int param_2, int param_3)
 // CHECKED (nop)
 static void DUNGEON_1682(int param_1, int param_2, int param_3, int param_4)
 {
+    // NOTE: Original size 10 causes OOB. FMT uses 2 bytes of padding.
+    static u8 D_2e9a[10] = {0x0e, 0x17, 0x32, 0x62, 0x9f, 0x28, 0x2d, 0x3c, 0x54, 0x77};
     int local_a;
     int local_8;
     int local_6;
@@ -507,6 +446,36 @@ static void DUNGEON_1682(int param_1, int param_2, int param_3, int param_4)
 // CHECKED
 static void DUNGEON_1786(int param_1, int param_2)
 {
+    static Pair D_2ea4[3][8] =
+    {
+        0x5a, 0x73, 0x52, 0x77, 0x5f, 0x7b, 0x57, 0x7d,
+        0x5b, 0x83, 0x50, 0x85, 0x50, 0x85, 0x50, 0x85,
+        0x57, 0x73, 0x5e, 0x77, 0x51, 0x7a, 0x5d, 0x7d,
+        0x5f, 0x81, 0x55, 0x82, 0x59, 0x87, 0x50, 0x8b,
+        0x54, 0x75, 0x5a, 0x75, 0x5a, 0x7c, 0x50, 0x7e,
+        0x55, 0x88, 0x59, 0x8a, 0x59, 0x8a, 0x59, 0x8a
+    };
+    static Pair D_2ed4[3][5] =
+    {
+        0x16, 0x07, 0x13, 0x0a, 0x0d, 0x0b, 0x17, 0x14,
+        0x0d, 0x1b, 0x12, 0x06, 0x11, 0x0f, 0x17, 0x0f,
+        0x0c, 0x10, 0x0f, 0x1a, 0x0f, 0x08, 0x16, 0x0b,
+        0x10, 0x13, 0x0b, 0x15, 0x12, 0x1c
+    };
+    static Pair D_2ef2[3][4] =
+    {
+        0x0b, 0x01, 0x0f, 0x04, 0x09, 0x06, 0x0b, 0x08,
+        0x0a, 0x02, 0x0e, 0x02, 0x0c, 0x0a, 0x0c, 0x0a,
+        0x0d, 0x01, 0x09, 0x04, 0x09, 0x09, 0x09, 0x09
+    };
+    static Pair D_2f0a[3] =
+    {
+        0x06, 0x00, 0x05, 0x01, 0x07, 0x02
+    };
+    static Pair D_2f10[3] =
+    {
+        0x59, 0x91, 0x50, 0x90, 0x55, 0x8f
+    };
     int local_4;
 
     if (D_52c8 == 0 || D_52c8 == 3)
@@ -566,8 +535,20 @@ static void DUNGEON_1786(int param_1, int param_2)
 }
 
 // CHECKED
+// NOT MATCHING (CODE, 91 bytes, right length): the original builds each "table + param_3 * 2"
+// in SI itself (mov si,ax; ...; add si,ax: the table byte first at 1991/19be, param_3 * 2 first
+// at 1a32 [D_2f24]); ours computes it in AX with CX and then moves it to SI, and its "mov
+// cl,[2f24]" is a byte longer. Static tables made the CSE across the two calls appear. Tried:
+// the operands swapped (also differently in the two calls), << 1, 2 * p, p + p, (int)/(uint)
+// casts (the (int) cast changes the earlier tests); the sum assigned to local_6_an or local_4
+// (both dead there; stored to the stack, worse); a block-scope int (worse) or register (SI,
+// but p * 2 first and a frame of 8); deleting all the earlier functions (no change, so not
+// the optimizer's capacity).
 static void DUNGEON_1952(int param_1, int param_2, int param_3)
 {
+    static u8 D_2f16[8] = {0x00, 0x1f, 0x00, 0x1f, 0x00, 0x00, 0x00, 0x00};
+    static u8 D_2f1e[8] = {0x00, 0x00, 0x1f, 0x1f, 0x37, 0x27, 0x2f, 0x3f};
+    static u8 D_2f26 = 0;
     int local_6_an;
     int local_4;
 
@@ -601,8 +582,8 @@ static void DUNGEON_1952(int param_1, int param_2, int param_3)
     if (local_4 < 9 && (GetDungeonMap(param_1 & 7, param_2 & 7, D_5895_map_level) & 8) != 0)
     {
         // 1a2d
-        DUNGEON_134a(D_2f24 + param_3 * 2, 1, 0);
-        DUNGEON_134a(D_2f24 + param_3 * 2, 1, 1);
+        DUNGEON_134a(D_2f1e[6] + param_3 * 2, 1, 0);
+        DUNGEON_134a(D_2f1e[6] + param_3 * 2, 1, 1);
     }
 
     // 1a4f (OK)
@@ -619,6 +600,8 @@ static void DUNGEON_1952(int param_1, int param_2, int param_3)
 
 void DUNGEON_1a90(int param_1)
 {
+    static s8 D_2f28[4] = {0xff, 0x00, 0x01, 0x00};
+    static s8 D_2f2c[4] = {0x00, 0xff, 0x00, 0x01};
     int local_a;
     int local_c;
     int local_4_ab;

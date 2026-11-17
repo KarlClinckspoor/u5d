@@ -83,9 +83,12 @@ u8 D_5204[8] = {0x05, 0x07, 0x04, 0x0a, 0x08, 0x00, 0x05, 0x06};
 // test, compares the characters unsigned ("ja"/"jbe": byte, not char) and places the
 // "{"/"_"/glyph branch at the loop's top, the "<= 0x20" branch after the merged test. Ours
 // registers nothing there and keeps param_2[i] in a stack temporary (as in CMDS_12c8).
-// Tried: param_2 read as (byte*) everywhere (536 bytes, same shape).
+// param_2 is byte* (544 -> 536 bytes, same shape). Also tried, no better: the inner loop as
+// a for with the two assignments in its init; "if (c > 0x20) {...} else" (548); *(param_2 + i)
+// in the test, the body or both; all of the file's data defined after FONT_0000, only its own
+// data, or none (capacity: no change, so not an object boundary).
 // param_1: image, param_2: text
-void FONT_0000(byte* param_1, char* param_2)
+void FONT_0000(byte* param_1, byte* param_2)
 {
     int local_12_ab_am;
     int local_10_ad_am;
@@ -363,24 +366,28 @@ void FONT_0e52(void);
 void FONT_0e7b(void);
 
 // CHECKED
+// NOT MATCHING (CODE, 4 bytes): the code is the original's except the frame (22h, the
+// original 28h) and case 0xc's pointer temporary, which reuses case 0xb's freed bp-20h
+// where the original takes a new bp-26h (with bp-24h and bp-28h never used). Tried in case
+// 0xc: while, do-while (both forms, much worse), != 0x20, <= 0x1f, its own block, an unused
+// int / register / two ints declared in that block (no change), three separate stores,
+// local_c as the pointer (worse). The source steps local_12/local_14 with += in case 0xb
+// (the decompiler's local_10 * 9 / * 3 gave MSC's closed form instead); += in the for
+// header moves the counter's increment first (12 bytes).
 // "view"
 void FONT_04a4(void)
 {
-    int bVar1;
-    int local_18;
-    int uVar3;
-    int iVar4;
-    int local_16;
-    int local_14;
-    int local_12_ab_am;
-    int local_10_ad_am;
+    int local_18_ai;
+    int local_16_ak;
+    int local_14_am;
+    int local_12;
+    int local_10_aa;
     int local_e_am;
     ActorFmt* local_c;
+    int local_a;
     int local_8;
     int local_6;
-    int local_4_ab;
-
-    int i;
+    int local_4_aa;
 
     D_52ba_vdp._52be_tileYOffset = 0x10;
     D_bd26 = D_bd27 = 9;
@@ -425,10 +432,10 @@ void FONT_04a4(void)
 
         case 2:
             local_c = &D_5c5a[D_b21e[++local_e_am]];
-            local_18 = D_b21e[++local_e_am];
+            local_18_ai = D_b21e[++local_e_am];
             GetMap(local_c->_2_x, local_c->_3_y) = GetCopiedMap(local_c->_2_x, local_c->_3_y);
-            local_c->_2_x += D_24d6[local_18];
-            local_c->_3_y += D_24de[local_18];
+            local_c->_2_x += D_24d6[local_18_ai];
+            local_c->_3_y += D_24de[local_18_ai];
             break;
 
         case 3:
@@ -443,9 +450,9 @@ void FONT_04a4(void)
             local_8 = D_b21e[++local_e_am];
             GetMap(local_6, local_8) = GetCopiedMap(local_6, local_8) = TILE_MAP_FE;
 
-            for (iVar4 = 1; iVar4 < 0x10; iVar4++)
+            for (local_10_aa = 1; local_10_aa < 0x10; local_10_aa++)
             {
-                ULTIMA_1112_GRAP_60(iVar4, local_6, local_8 + 7);
+                ULTIMA_1112_GRAP_60(local_10_aa, local_6, local_8 + 7);
                 if (FONT_02fc(1) != 0)
                 {
                     return;
@@ -462,16 +469,16 @@ void FONT_04a4(void)
         case 5:
             GetMap(local_6, local_8) = GetCopiedMap(local_6, local_8) = TILE_MAP_FE;
 
-            iVar4 = 0xf;
+            local_10_aa = 0xf;
             do
             {
-                ULTIMA_1112_GRAP_60(iVar4, local_6, local_8 + 7);
+                ULTIMA_1112_GRAP_60(local_10_aa, local_6, local_8 + 7);
                 if (FONT_02fc(1) != 0)
                 {
                     return;
                 }
-                iVar4--;
-            } while (iVar4 > 0);
+                local_10_aa--;
+            } while (local_10_aa > 0);
 
             GetMap(local_6, local_8) = GetCopiedMap(local_6, local_8) = TILE_MAP_GRASS;
             if (FONT_02fc(2) != 0)
@@ -486,31 +493,31 @@ void FONT_04a4(void)
 
         case 7:
             local_c = &D_5c5a[D_b21e[++local_e_am]];
-            uVar3 = local_c->_0_tile;
+            local_a = local_c->_0_tile;
 
             local_c->_0_tile = local_c->_1_animTile = TILE_ACTOR_CIRCLE;
 
-            if (ULTIMA_1068(0x100 + uVar3, local_c->_2_x, local_c->_3_y + 7) != 0)
+            if (ULTIMA_1068(0x100 + local_a, local_c->_2_x, local_c->_3_y + 7) != 0)
             {
                 return;
             }
-            local_c->_0_tile = local_c->_1_animTile = uVar3;
+            local_c->_0_tile = local_c->_1_animTile = local_a;
             break;
 
         case 8:
             local_c = &D_5c5a[D_b21e[++local_e_am]];
-            local_18 = local_c->_2_x;
-            bVar1 = local_c->_3_y;
-            uVar3 = local_c->_0_tile;
+            local_12 = local_c->_2_x;
+            local_14_am = local_c->_3_y;
+            local_a = local_c->_0_tile;
 
             local_c->_0_tile = local_c->_1_animTile = TILE_ACTOR_CIRCLE;
 
-            if (ULTIMA_1068(GetCopiedMap(local_18, bVar1), local_18, bVar1 + 7) != 0)
+            if (ULTIMA_1068(GetCopiedMap(local_12, local_14_am), local_12, local_14_am + 7) != 0)
             {
                 return;
             }
 
-            local_c->_0_tile = local_c->_1_animTile = uVar3;
+            local_c->_0_tile = local_c->_1_animTile = local_a;
             break;
 
         case 9:
@@ -518,27 +525,27 @@ void FONT_04a4(void)
             break;
 
         case 10:
-            uVar3 = D_b21e[++local_e_am];
-            local_14 = D_b21e[++local_e_am];
-            iVar4 = D_b21e[++local_e_am];
-            GetCopiedMap(local_14, iVar4) = uVar3;
-            GetMap(local_14, iVar4) = uVar3;
+            local_a = D_b21e[++local_e_am];
+            local_12 = D_b21e[++local_e_am];
+            local_14_am = D_b21e[++local_e_am];
+            GetCopiedMap(local_12, local_14_am) = local_a;
+            GetMap(local_12, local_14_am) = local_a;
             break;
 
         case 0xb:
             // ...
-            local_12_ab_am = local_14 = 0;
-            for (local_10_ad_am = 0; local_10_ad_am < 5; local_10_ad_am++)
+            local_12 = local_14_am = 0;
+            for (local_10_aa = 0; local_10_aa < 5; local_10_aa++)
             {
                 if (FONT_02fc(1) != 0)
                 {
                     return;
                 }
-                local_12_ab_am = local_10_ad_am * 9;
-                local_14 = local_10_ad_am * 3;
                 ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
-                ULTIMA_0b10_GRAP_Line(local_12_ab_am + 0x80, local_14 + 0x98, local_12_ab_am + 0x89, local_14 + 0x9b);
-                ULTIMA_0b10_GRAP_Line(local_12_ab_am + 0x80, local_14 + 0x99, local_12_ab_am + 0x89, local_14 + 0x9c);
+                ULTIMA_0b10_GRAP_Line(local_12 + 0x80, local_14_am + 0x98, local_12 + 0x89, local_14_am + 0x9b);
+                ULTIMA_0b10_GRAP_Line(local_12 + 0x80, local_14_am + 0x99, local_12 + 0x89, local_14_am + 0x9c);
+                local_12 += 9;
+                local_14_am += 3;
             }
 
             local_e_am++;
@@ -553,18 +560,18 @@ void FONT_04a4(void)
             break;
 
         case 0xc:
-            for (i = 0; i < 0x20; i++)
+            for (local_10_aa = 0; local_10_aa < 0x20; local_10_aa++)
             {
-                D_5c5a[i]._1_animTile = D_5c5a[i]._0_tile = D_5c5a[i]._6 = 0;
+                D_5c5a[local_10_aa]._1_animTile = D_5c5a[local_10_aa]._0_tile = D_5c5a[local_10_aa]._6 = 0;
             }
             break;
 
         case 0xd:
             local_c = &D_5c5a[D_b21e[++local_e_am]];
-            local_18 = D_b21e[++local_e_am];
+            local_18_ai = D_b21e[++local_e_am];
             GetMap(local_c->_2_x, local_c->_3_y) = GetCopiedMap(local_c->_2_x, local_c->_3_y);
-            local_c->_2_x += D_24d6[local_18];
-            local_c->_3_y += D_24de[local_18];
+            local_c->_2_x += D_24d6[local_18_ai];
+            local_c->_3_y += D_24de[local_18_ai];
             if (FONT_02fc(7) != 0)
             {
                 return;
@@ -572,15 +579,15 @@ void FONT_04a4(void)
             break;
 
         case 0xe:
-            local_16 = D_b21e[++local_e_am];
-            local_4_ab = local_e_am;
+            local_16_ak = D_b21e[++local_e_am];
+            local_4_aa = local_e_am;
             break;
 
         case 0xf:
-            local_16--;
-            if (local_16 != 0)
+            local_16_ak--;
+            if (local_16_ak != 0)
             {
-                local_e_am = local_4_ab;
+                local_e_am = local_4_aa;
             }
             break;
         }
