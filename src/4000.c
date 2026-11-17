@@ -119,7 +119,10 @@ void ULTIMA_4102_AudioPlayAmbientSfx(void)
         for (local_10_aa = local_a - 5, local_16_ak = 0; local_10_aa < local_a + 6; local_10_aa++, local_16_ak++)
 		{
 			local_6 = (local_10_aa - local_a) * (local_10_aa - local_a) + (local_c - local_8) * (local_c - local_8);
-			if (local_6 < local_4_ab)
+			// a continue, not an if around the rest: with it MSC keeps local_16_ak's increment
+			// and the signed loop test, instead of a closed form and a jump on equal
+			if (local_6 >= local_4_ab)
+				continue;
 			{
 				local_14_am = *ULTIMA_4402_GetTileAddr(local_c, local_10_aa);
 				if ((local_14_am & 0xfe) == TILE_MAP_CLOCK)
@@ -187,7 +190,7 @@ void ULTIMA_4102_AudioPlayAmbientSfx(void)
         }
 
         D_6a08++;
-        if (D_6a08 > 0x34)
+        if (D_6a08 >= 0x35)
         {
             D_6a08 = 0;
         }
