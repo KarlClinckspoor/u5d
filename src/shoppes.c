@@ -1532,11 +1532,16 @@ static int SHOPPES_146a(void)
 }
 
 // CHECKED
-// NOT MATCHING (12 bytes short): the original places the code after the switch (the
-// "Is there any other way" block, ending in a jump back to the loop test) right after
-// case C's local_8 == -1 test, which falls into it; ours keeps it after the last case,
-// which falls through into it. Tried: continue instead of break in the Enter case
-// (worse).
+// NOT MATCHING: the code is the original's, but its CONST strings are not in order. The
+// original places the "Is there any other way" tail (ending in a jump back to the loop test)
+// right after case C's local_8 == -1 test. Written after the switch, MSC keeps it there,
+// where the last case falls into it (12 bytes short); written inside case C (the label
+// L_b838, reached by goto from the end of the switch) the code is exact, but its two
+// strings are emitted before case C's own (CONST order 81c8/81f2 first, FIXUP). The gotos
+// to L_b8a1 and L_b914 make the then-branches jump forward into the later copy as the
+// original does, and the label in case R keeps MSC from holding local_8 * 32 in SI
+// across the calls. Tried before: continue instead of break in the Enter case (worse);
+// the tail written at the end of every case (worse).
 void SHOPPES_14f8(int unused)
 {
     int local_6;
@@ -1579,7 +1584,17 @@ void SHOPPES_14f8(int unused)
             // b826
             ULTIMA_1850_PrintString(_TEXT(0x8106, "Curing"));
             local_8 = SHOPPES_137c();
-            if (local_8 != -1)
+            if (local_8 == -1)
+            {
+L_b838:
+                if (!local_6)
+                {
+                    ULTIMA_2900_UpdateVitalsDisplay();
+                    ULTIMA_1850_PrintString(_TEXT(0x81c8, "\n\n\"Is there any other way in which I may\n"));
+                    ULTIMA_1850_PrintString(_TEXT(0x81f2, "aid thee?\" "));
+                }
+                continue;
+            }
             {
                 // b856
                 if (D_55a8_party[local_8].status != STATUS_POISONED)
@@ -1595,8 +1610,7 @@ void SHOPPES_14f8(int unused)
                     {
                         ULTIMA_1850_PrintString(_TEXT(0x8112, "Receive now the Light!\""));
                         // -> b8a1
-                        SHOPPES_13b0();
-                        D_55a8_party[local_8].status = STATUS_GOOD;
+                        goto L_b8a1;
                     }
                     else
                     {
@@ -1606,6 +1620,7 @@ void SHOPPES_14f8(int unused)
                         if (SHOPPES_146a() == 0)
                         {
                             // b8a1
+L_b8a1:
                             SHOPPES_13b0();
                             D_55a8_party[local_8].status = STATUS_GOOD;
                         }
@@ -1627,8 +1642,7 @@ void SHOPPES_14f8(int unused)
                     {
                         ULTIMA_1850_PrintString(_TEXT(0x8154, "Receive now the Light!\""));
                         // -> b914
-                        SHOPPES_13b0();
-                        D_55a8_party[local_8].hp = D_55a8_party[local_8].maxHp;
+                        goto L_b914;
                     }
                     else
                     {
@@ -1638,6 +1652,7 @@ void SHOPPES_14f8(int unused)
                         if (SHOPPES_146a() == 0)
                         {
                             // b914
+L_b914:
                             SHOPPES_13b0();
                             D_55a8_party[local_8].hp = D_55a8_party[local_8].maxHp;
                         }
@@ -1666,6 +1681,7 @@ void SHOPPES_14f8(int unused)
 
                     if (SHOPPES_146a() == 0)
                     {
+L_b9c1:
                         SHOPPES_13b0();
                         CAST2_05e0_Resurrect(local_8, 0xff);
                         D_55a8_party[local_8].hp = D_55a8_party[local_8].maxHp;
@@ -1686,13 +1702,7 @@ void SHOPPES_14f8(int unused)
             break;
         }
 
-        // b838
-        if (!local_6)
-        {
-            ULTIMA_2900_UpdateVitalsDisplay();
-            ULTIMA_1850_PrintString(_TEXT(0x81c8, "\n\n\"Is there any other way in which I may\n"));
-            ULTIMA_1850_PrintString(_TEXT(0x81f2, "aid thee?\" "));
-        }
+        goto L_b838;
     }
 
     SHOPPES_0202(1);
