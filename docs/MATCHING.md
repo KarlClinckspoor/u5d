@@ -143,6 +143,10 @@ after changing C.
    from the note instead of trying the same forms again. Notes older than this rule often
    say only `NOT MATCHING`; add what you learn when you touch them.
 
+**When a function is stuck, rewrite it from the disassembly.** The last four functions resisted three rounds of workers who refined the decompiler-derived C; a clean-room worker who
+saw only stubs, the disassembly, the tools and this file matched three of them and took the fourth from 513 to 56 bytes in one session. Stub the function (keep its signature and static
+data), leave out its notes and history, and write it as its 1988 author would have; read the old notes only to avoid repeating a dead end.
+
 ## Working in parallel
 
 Several workers can match at the same time, if each keeps to these two rules:
@@ -455,7 +459,8 @@ moves locals (CAST_1c36: 5.0's end-pointer loop compare was the tell).
 - **More than two objects.** The 5.1 parts of INTRO and CMDS are themselves several objects:
   `intro0.c` (INTRO_0010, INTRO_0050: no strings or data, so intro.c's `_DATA` still starts
   at DS:2f30), `intro.c` (to INTRO_094e) and `intro2.c` (from INTRO_0986_Main), `cmds.c` (to CMDS_1030)
-  and `cmds2.c` (from CMDS_1202), linked in that order before the `b` part. They were found
+  and `cmds2.c` (from CMDS_1202), linked in that order before the `b` part (TOWN, all 5.1,
+  is `town.c` and `town2.c`; see "Dead references" below). They were found
   by the optimizer capacity (below): INTRO_0986 and CMDS_12c8 match only without the
   functions before them. A new object's `_DATA` starts at an even address, so CMDS2 starts
   at CMDS_1202's first string (DS:4450), right after the D_444a table, not at D_444a's
@@ -720,8 +725,16 @@ Each entry gives the evidence. Add to this list as you learn.
     `MSC_CMD_FLAGS`; the intermediate files are `<base>EX` (trees and line records), `SY`,
     `IN`, `ST` in TMP.
   - TOWN_0f02 is this by memory: exact at 15782 or 15784-15793 paragraphs free for C2, but
-    TOWN_0408, 0c78 and 1694 then differ (the same state as the extra definitions). Memory
-    was short in the original at this function only. Open.
+    TOWN_0408, 0c78 and 1694 then differ (the same state as the extra definitions).
+  - **Dead references use pass-2 memory too.** `if (0) { X = 0; ... }` naming globals the
+    module does not otherwise reference generates no code, but each symbol costs pass-2
+    memory like a live reference, and unlike tentative definitions it creates nothing at
+    link. TOWN_0f02 matches with exactly 266 of them (265 and 267 give other code) at the
+    top of the function, under `#if defined(TARGET_DOS16)`. The memory stays used for the
+    rest of the object, so TOWN_0f02 must be the last function of its object: TOWN.OVL is
+    `town.c` (to TOWN_0f02) and `town2.c` (from TOWN_10da, `_DATA` at DS:278a). The window
+    depends on u5d's symbol names: renaming or adding globals that town.c references moves
+    it. It stands for whatever held that memory in the original (unknown).
   - The other way round: TOWN_0f02 matches only with about 10 KB more pass-2 memory before
     it (330 short unreferenced `int X%d;` definitions exactly, not 325 or 335; or 120 small
     functions each setting its own extern; extern references, empty functions, defining
@@ -762,8 +775,10 @@ Each entry gives the evidence. Add to this list as you learn.
   gives `cmp si,[n]` at the bottom; the swapped `for` gives `cmp [n],ax` at the entry
   (FONT_0000).
 - **5.0 builds a common subexpression directly in SI only for index uses** (`mov si,ax; ...;
-  add si,ax`); a value CSE is computed in AX (with CX) and moved. DUNGEON_1952's original
-  does the first for a value, as if CX were taken. Open.
+  add si,ax`); a value CSE is computed in AX (with CX) and moved. A sum built in SI in two
+  steps (`mov si,ax` after the first operand, the second in AX, `add si,ax`) comes only
+  from a register pointer: `x = (byte*)a; x += b;` (DUNGEON_1952). An int register variable
+  or a pointer-typed CSE is computed directly (`mov si,[bp+4]; shl si,1`).
 - **A block reached only by a goto is placed after the first unconditional jump that
   follows its place in the source** (5.0, MAINOUT_17d4). To move a block out of line after
   a later jump, put it after that code as `if (0) { L_x: ...; goto L_next; }` and reach it
@@ -784,7 +799,30 @@ Each entry gives the evidence. Add to this list as you learn.
   `return`, with the rest in the last `else`.
 - **Code after an if/else floats behind the jump over the else** when the else's code ends
   in a jump: the code after it (up to its first unconditional jump) lands right after the
-  then-branch's jump, ahead of the else block (ZSTATS_0c5c, still open for that reason).
+  then-branch's jump, ahead of the else block (ZSTATS_0c5c).
+- **A message block after the last switch case is a goto past it.** `if (ok) goto L_go;
+  msg(...); return 0; L_go: ...` after a switch places the message block after the last
+  case (behind the code that follows the switch, up to its first unconditional jump) and
+  keeps the strings in source order; `if (!ok) { msg; return 0; }` keeps it inline
+  (ZSTATS_0c5c).
+- **Slot sharing under 5.0, more precisely:** `if (1) { int t; ... }` followed by one bare
+  block `{ register T x; ... }` shares t's slot. A register variable in a later if-body does
+  not give its slot back to a block after it, so all of x's uses must sit in that one bare
+  block (labels inside it may be goto targets). A then-branch can then be written at the
+  end of the function as a block reached only by a goto and ending in one: MSC places it
+  after the first jump to it, inverted, where a plain if/else would (DUNGEON_1952, which
+  keeps the plain if/else for the native build under `#else`).
+- **An outer `for` needs an increment expression for its inner loops to get registers
+  (5.0).** `while (c)` and `for (; c; )` give none; `for (;;) { if (!c) break; ...` gives
+  them but leaves the first inner loop's loads at the top of the body; `for (; c; expr)`,
+  even with `expr` = `0`, gives registers, the test at the bottom and the loads after it
+  (FONT_0000).
+- **`if (c == 0) continue;` (or a goto to the end of the body) against `if (c != 0) {...}`:**
+  the if-block keeps c's operand in AL across its first inner test; the jump form re-reads
+  memory. With an increment, `continue` duplicates the increment and test at its site; a
+  goto to a label at the end of the body does not (FONT_0000).
+- **A loop's decrement in its while condition** (`&& start < --i`) makes the first `break` in
+  the body the place where the code after the loop lands (FONT_0000).
 - **Code after a loop goes to its first break.** MSC places a `for` loop's register stores
   and the code that follows the loop at the loop's first `break`; other exits jump to it.
   To put that block at a later break, make the earlier break a `goto` to a label on the

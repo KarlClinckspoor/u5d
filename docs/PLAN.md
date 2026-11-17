@@ -28,6 +28,7 @@ passes only when they are identical.
 | 2026-11-17, four parallel workers; INTRO and CMDS split into a third object (optimizer capacity) | 572 | 1 | 0 | 20 | 4 | 597 |
 | 2026-11-17, batch 2: static/const tables, intro0.c, castb.c (5.0), shoppe2b.c | 583 | 1 | 0 | 7 | 6 | 597 |
 | 2026-11-17, batch 3: 5000.c split (5.0 + r5a28.c 5.1), for/while temporaries, goto-placed blocks | 591 | 0 | 0 | 4 | 2 | 597 |
+| 2026-11-17, clean-room rewrites from the disassembly; town.c split (town2.c); 22 overlays and DGROUP link identical | 594 | 0 | 0 | 3 | 0 | 597 |
 
 Most `SIZE` verdicts in `0000.c` and `1000.c` are routines that were hand-written assembly in
 the original and are C in u5d (step 5).
@@ -91,7 +92,9 @@ Done, each checked by a tool:
   ("FONT.OVL 0e52-0e97"); asmbuild compares them with the .OVL file and u5link places them by
   their functions' names. FLAMES.OVL links byte-identical.
 - **Runtime:** CS:017e-0878 is 17 modules of SLIBCR.LIB and LIBH.LIB (`tools/libmatch.py`).
-- **Link:** `tools/u5link.py` links and compares. SHOPPES3.OVL is byte-identical.
+- **Link:** `tools/u5link.py` links and compares. All overlays but FONT (FONT_0000) and
+  INTRO (the GOG patch) and DGROUP are byte-identical; the resident image differs in 489
+  bytes.
 - **Objects:** INTRO has four objects (`intro0.c`, `intro.c`, `intro2.c`, `introb.c`), CMDS
   three (`cmds.c`, `cmds2.c`, `cmdsb.c`), SHOPPES2 two 5.0 objects (`shoppes2.c`,
   `shoppe2b.c`), found by the optimizer capacity; CAST is a 5.1 + 5.0 pair (`cast.c`,
@@ -100,7 +103,7 @@ Done, each checked by a tool:
 
 Next, in order:
 
-1. **Finish the C functions** (6 left, two of them GOG patches; `build/match/status.tsv`). Every
+1. **Finish the C functions** (3 left, two of them GOG patches; `build/match/status.tsv`). Every
    module now compiles with the compiler the original used, with 5.0's own slot hash, and
    DUNGEON, MAINOUT, INTRO, OUTSUBS and CMDS are split into their 5.1 and 5.0 objects.
    - *(done)* The 5.0 modules have plain literals and their own tables (`tools/own50.py`).
@@ -120,11 +123,14 @@ Next, in order:
      - *(done in batch 3)* ULTIMA_5394 (5000.c split), ULTIMA_5a28, ULTIMA_1850 (with a
        block of comment lines standing for the original's source lines), FONT_04A4,
        FONT_02FC, ZSTATS_0F2E, ZSTATS_06e8, MAINOUT_17d4.
-     - Left (each with a NOT MATCHING note): ZSTATS_0c5c (35 bytes, the weak block's
-       placement), DUNGEON_1952 (91, a value CSE built in SI), TOWN_0f02 (104, exact only
-       with less memory for pass 2 at that one function), FONT_0000 (676/674, loops right;
-       entry-block placement and BX/SI at the end). Pass 2's tree pool is ruled out for all
-       but TOWN_0f02 (MATCHING.md).
+     - *(done by a clean-room rewrite)* ZSTATS_0c5c, DUNGEON_1952 (a register pointer sharing a
+       slot, DOS build only), TOWN_0f02 (266 dead references in an `if (0)` block, DOS build
+       only, and TOWN.OVL split into town.c and town2.c).
+     - Left: FONT_0000 (56 bytes, 670/674; the outer for's increment is unknown, and the BX
+       temporary for `local_12 * 2` and one operand order differ). Its note says what is known.
+     - Devices that stand for something unknown in the original (each explained in its
+       note): ULTIMA_1850's comment-line padding and TOWN_0f02's dead references (both pass
+       2's pool), DUNGEON_1952's register slot sharing.
      - ULTIMA_1850's padding stands for a smaller pass-2 pool (more lines or less memory in
        the original). To drop it, give `tools/dosbuild.py` a per-file memory limit for C2
        (`research/c2mem.py` has the wrapper).
