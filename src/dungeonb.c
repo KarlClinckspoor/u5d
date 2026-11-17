@@ -543,6 +543,7 @@ static void DUNGEON_1952(int param_1, int param_2, int param_3)
     static u8 D_2f26 = 0;
     int local_6;
     int local_4_b;
+    register byte* x;
 
     local_6 = DUNGEON_10dc(param_1, param_2);
     local_4_b = local_6 >> 4;
@@ -551,14 +552,18 @@ static void DUNGEON_1952(int param_1, int param_2, int param_3)
     {
         if (D_2f16[local_4_b] != 0)
         {
-            DUNGEON_134a(D_2f16[local_4_b] + param_3 * 2, 1, 0);
-            DUNGEON_134a(D_2f16[local_4_b] + param_3 * 2, 1, 1);
+            x = (byte*)D_2f16[local_4_b];
+            x += param_3 * 2;
+            DUNGEON_134a((int)x, 1, 0);
+            DUNGEON_134a((int)x, 1, 1);
         }
 
         if (D_2f1e[local_4_b] != 0)
         {
-            DUNGEON_134a(D_2f1e[local_4_b] + param_3 * 2, 0, 0);
-            DUNGEON_134a(D_2f1e[local_4_b] + param_3 * 2, 0, 1);
+            x = (byte*)D_2f1e[local_4_b];
+            x += param_3 * 2;
+            DUNGEON_134a((int)x, 0, 0);
+            DUNGEON_134a((int)x, 0, 1);
         }
 
         if (local_4_b == 5)
@@ -573,8 +578,10 @@ static void DUNGEON_1952(int param_1, int param_2, int param_3)
 
     if (local_4_b < 9 && (GetDungeonMap(param_1 & 7, param_2 & 7, D_5895_map_level) & 8) != 0)
     {
-        DUNGEON_134a(param_3 * 2 + D_2f1e[6], 1, 0);
-        DUNGEON_134a(param_3 * 2 + D_2f1e[6], 1, 1);
+        x = (byte*)(param_3 * 2);
+        x += D_2f1e[6];
+        DUNGEON_134a((int)x, 1, 0);
+        DUNGEON_134a((int)x, 1, 1);
     }
 
     if (param_3 != 0 && (u8)(param_1 & 7) == D_5c5a[1]._2_x && (u8)(param_2 & 7) == D_5c5a[1]._3_y)
