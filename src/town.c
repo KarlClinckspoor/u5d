@@ -964,6 +964,81 @@ static int TOWN_0e34(int param_1)
 // (tools/match.py src/town.c --dis TOWN_0f02).
 static void TOWN_0f02(void)
 {
+    int local_a;
+    int local_8;
+    int local_6;
+    int local_4_ab;
+
+    for (local_6 = 0; local_6 < (uint)D_585b; local_6++)
+    {
+        if (D_55a8_party[local_6].status == 'S' && ULTIMA_2092_RandomRange(0, 0xf) == 0xf)
+        {
+            D_55a8_party[local_6].status = 'G';
+        }
+    }
+
+    do
+    {
+        local_4_ab = 0;
+        local_a = *ULTIMA_4402_GetTileAddr(D_5896_map_x, D_5897_map_y);
+        if (local_a == 0x8c && (D_587c_partyTile & 0xfe) != 0x14)
+        {
+            ULTIMA_1850_PrintString(_TEXT(0x2768, "A TRAPDOOR!\n"));
+            local_8 = D_587c_partyTile;
+            D_587c_partyTile = 0;
+            ULTIMA_5910_UpdateFrame();
+            ULTIMA_2aa8();
+            D_587c_partyTile = local_8;
+            if (D_5893_map_id == 0x1d)
+            {
+                ULTIMA_0a70_GRAP_2d_SetPenColor(0);
+                ULTIMA_0aa6_GRAP_3f_FillRect(8, 8, 0xb7, 0xb7);
+                for (local_6 = 1000; local_6 > 250; local_6--)
+                {
+                    ULTIMA_22e2_PcspkOn(local_6);
+                    ULTIMA_20c8_SomeDelay(1, 0x28);
+                }
+                ULTIMA_230e_PcspkOff();
+                memset(D_6608, 0x8f, 0x400);
+                D_24e6 = 1;
+                memset(D_5c5a, 0, 0x100);
+                for (local_6 = 0; local_6 < (uint)D_585b; local_6++)
+                {
+                    D_55a8_party[local_6].hp = 0;
+                    D_55a8_party[local_6].status = 'D';
+                    ULTIMA_223c_AudioWhiteNoise(0x28, 0xbb8, 0x1f4);
+                    ULTIMA_2900_UpdateVitalsDisplay();
+                }
+            }
+            else
+            {
+                D_5895_map_level--;
+                TOWN_0408(1);
+                local_4_ab = 1;
+            }
+        }
+        else if (local_a == 4 && D_587c_partyTile == 0x1c)
+        {
+            for (local_6 = 0; local_6 < (uint)D_585b; local_6++)
+            {
+                if (D_55a8_party[local_6].status != 'D' && D_55a8_party[local_6].status != 'P' &&
+                    D_55a8_party[local_6].dex < (uint)ULTIMA_2092_RandomRange(0, 0x1d))
+                {
+                    ULTIMA_1850_PrintString(_TEXT(0x2775, "Poisoned!\n"));
+                    D_55a8_party[local_6].status = 'P';
+                    ULTIMA_2900_UpdateVitalsDisplay();
+                }
+            }
+        }
+        else if (local_a == 0xbc || local_a == 0x8f)
+        {
+            ULTIMA_5910_UpdateFrame();
+            ULTIMA_1850_PrintString(_TEXT(0x2780, "Burning!\n"));
+            ULTIMA_2aa8();
+        }
+    } while (local_4_ab != 0);
+
+    ULTIMA_2ae8();
 }
 
 void TOWN_10da(int param_1)
