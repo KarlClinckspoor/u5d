@@ -336,32 +336,15 @@ void ZSTATS_05e2(int param_1, byte* param_2, char** param_3, uint param_4)
 #if defined(TARGET_DOS16)
 #pragma loop_opt(off)
 #endif
-// NOT MATCHING: slots and code match up to the END case's loop. The original compiles it with
-// the test at the bottom ("cmp ax,0FFFFh; jne body", then the break), so the while test block
-// is placed after END; MSC here ends that loop with "inc ax; je exit; jmp body" and places the
-// while test after HOME instead, which shifts every jump to it. Tried: the loop as for with
-// break, while, an empty for with "local_6 = local_c, local_a++" as the increment (the body
-// then matches but the test still jumps out), "(local_c = f(), local_c != -1)" and
-// "!= 0xffff" (cmp instead of inc, same placement), goto loops, a do-while entered by goto,
-// no pragma, and "#pragma loop_opt(on)" around the END case (SI/DI register variables, which
-// the original has nowhere in the function).
-// The END loop's own code comes out as the original's (CODE 692/690 bytes, 212 differing)
-// written as a do-while entered at its test:
-//     local_a = 0; goto L_end_test;
-//     do { local_6 = local_c; local_a++; L_end_test:; }
-//     while (local_a < 6 && (local_c = ZSTATS_056c(...)) != 0xffff);
-// (with "!= -1" it is "inc ax; je"). Its exit then falls into the break's jmp as in the
-// original, but MSC still moves the floating while-test block (test, window setup, jump into
-// the listing loop) behind HOME's break, the first unconditional jump to it, where the
-// original has it behind END's. Moving END before HOME in the source moves the block behind
-// END, so the choice is "first jump in code order". Not changed by: HOME's or END's break as
-// continue, HOME as "goto" to a label on END's break, the while as for(;!local_8;), as
-// "while (local_8 == 0)" or as an if/goto loop. The file keeps the version that is 690 long.
-// Batch 2: the optimizer-capacity test rules out an object boundary: without the pragma, 600
-// extra extern references before it give exactly the pragma-off code (234 bytes differ), and
-// fewer references give SI/DI loops. With the do-while END: HOME, UP and DOWN ending in "goto"
-// to a label on END's break, or in continue, change nothing (212); END as a plain while with
-// != 0xffff is 686 bytes (239).
+// CHECKED: the selection loop is written with gotos. The original places the loop test
+// (with the window setup that starts the next pass) right after the END case, which falls
+// into it, and the return after the switch's dispatch. A while loop's test block floats
+// behind the first case break that jumps to it (HOME's); with the test written inside the
+// switch after END, followed by the window setup and "goto L_list" (the for's init block then
+// floats in behind that jump), every case ends in "goto L_test" and the exit is a separate
+// label after the switch, the layout is the original's. "break" to a return after the switch
+// instead of "goto L_exit" lets the return block float up behind the test (107 bytes). The END
+// loop is a do-while entered at its test, with != 0xffff for the original's "cmp ax,0FFFFh".
 static int ZSTATS_06e8(char* param_1, int param_2, byte* param_3, char** param_4)
 {
     int local_10_aa;
@@ -386,12 +369,10 @@ static int ZSTATS_06e8(char* param_1, int param_2, byte* param_3, char** param_4
         return ULTIMA_266c_GetChar();
     }
 
-    // 092d
-    while (!local_8)
+    // 092d: enter the loop at its test, which sits after the END case
+    goto L_test;
     {
-        ULTIMA_1b94_SelectTextWindow(1);
-        ULTIMA_1bf2_SetTextPosition(1, 1);
-
+    L_list:
         // -> 0756
         for (local_c = local_6; local_c != -1;
              // 0746
@@ -464,7 +445,7 @@ static int ZSTATS_06e8(char* param_1, int param_2, byte* param_3, char** param_4
                     local_6 = ZSTATS_056c(local_6, param_2, param_3, 0xff);
                 }
             }
-            break;
+            goto L_test;
 
         case U5_KEY_DOWN:
         case U5_KEY_PGDN:
@@ -486,22 +467,31 @@ static int ZSTATS_06e8(char* param_1, int param_2, byte* param_3, char** param_4
                     local_c = ZSTATS_05a4(local_c, param_2, param_3, 0xff);
                 }
             }
-            break; // -> 092d
+            goto L_test;
 
         case U5_KEY_HOME:
             // 08d6
             local_6 = ZSTATS_05a4(-1, param_2, param_3, 0xff);
-            break; // -> 092d
+            goto L_test;
 
         case U5_KEY_END:
             // 08ec
             local_6 = ZSTATS_056c(param_2, param_2, param_3, 0xff);
             // 090f
-            for (local_a = 0; local_a < 6 && (local_c = ZSTATS_056c(local_6, param_2, param_3, 0xff)) != -1; local_a++)
+            local_a = 0;
+            goto L_end_test;
+            do
             {
                 local_6 = local_c;
-            }
-            break; // -> 092d
+                local_a++;
+            L_end_test:;
+            } while (local_a < 6 && (local_c = ZSTATS_056c(local_6, param_2, param_3, 0xff)) != 0xffff);
+        L_test:
+            if (local_8)
+                goto L_exit;
+            ULTIMA_1b94_SelectTextWindow(1);
+            ULTIMA_1bf2_SetTextPosition(1, 1);
+            goto L_list;
 
         case U5_KEY_LEFT:
         case U5_KEY_RIGHT:
@@ -516,10 +506,13 @@ static int ZSTATS_06e8(char* param_1, int param_2, byte* param_3, char** param_4
         case 0x36:
             // 0948
             local_8 = 1;
-            break;
+            goto L_test;
+        default:
+            goto L_test;
         }
     }
 
+L_exit:
     return local_e_am;
 }
 
