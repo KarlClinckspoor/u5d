@@ -2,6 +2,8 @@
 
 Every number here was measured from the GOG release of Ultima V (see docs/MATCHING.md,
 "The layout of the binary"). tools/layout.py --check re-derives them from the game files.
+Where each module's code and data go is in the link script (src/u5d.lnk), which
+tools/linkscript.py measures and tools/u5link.py links from.
 """
 import os
 import re
@@ -96,7 +98,7 @@ def overlay_relocations(gamedata, ovl):
 MODULES = {o.lower() + '.c': ('ovl', o) for o in OVERLAYS}
 # FLAMES.OVL is all assembly (src/asm/AFLAMES.ASM), as are parts of other overlays (AFONT0,
 # AFONT, AINTRO2, AINTRO, ANPC: first line "NAME.OVL xxxx-yyyy"): tools/asmbuild.py assembles
-# them, tools/u5link.py places them in their overlay by their functions' names.
+# them, tools/linkscript.py places them in their overlay by their functions' names.
 del MODULES['flames.c']
 MODULES.update({'%d000.c' % i: ('root', None) for i in range(8)})
 MODULES['ultima.c'] = ('root', None)
@@ -178,6 +180,36 @@ OVERLAY_NUMBER = {n: i + 1 for i, n in enumerate(
      'ZSTATS', 'COMSUBS', 'SHOPPES2', 'SHOPPES3', 'FONT', 'DATA'])}
 
 
+# SHA-1 of the GOG release's files (Ultima 4+5+6 pack, Ultima V 1.16 as patched by GOG).
+GOG_SHA1 = {
+    'ULTIMA.EXE': '9971bbeb6d00fe8c43a98d5ad2d7b82be2d0ca8b',
+    'DATA.OVL': '9b5b640d4b6a014c1983a7f0527bbba9bfb4204e',
+    'FLAMES.OVL': '942370a93a77019ee38a6cccc2050267c4b01b03',
+    'BLCKTHRN.OVL': '002a9b427e85a3a5bf5518fd0feacf8ac38da1e0',
+    'CAST.OVL': '517573779ddb41b40f305a5e20d0d4f95fd751ea',
+    'CAST2.OVL': '03d9e239f8c347825e39780c5e0299306064700b',
+    'CMDS.OVL': 'e5ae97bcb3d6d0f531787789f6ee02872c370a17',
+    'COMBAT.OVL': '48b1a3e38bf9e95458458b2fbbe8f8c4c5b6ee2b',
+    'COMSUBS.OVL': '13c9479fc26c851fc9a4eb6ba1843109f09e0b16',
+    'DNGLOOK.OVL': '1677a1625db99021ff54d5378761219480e41b94',
+    'DUNGEON.OVL': 'c1c407a48915517dc161e28a464c8df65d0a69d8',
+    'ENDGAME.OVL': 'e801051bebfdf167ff35be6035688f44983ab57a',
+    'FONT.OVL': '90303cf773e225ef4bbd462ab34598c29b1dea94',
+    'INTRO.OVL': '4195043891ee60f82c65fe739d77f2ac3e98168c',
+    'LOOKOBJ.OVL': 'fe25e3dbabbd3057ab5dd60c18bcf402d1952f80',
+    'MAINOUT.OVL': 'd027edaee9b2317f649182a12610f6b60410d649',
+    'NPC.OVL': '3c48134a8a99093c3c21b5d7f0253428cc1b5848',
+    'OUTSUBS.OVL': '1710166896b91198630794223445f483afd04f78',
+    'SHOPPES.OVL': '8c51e5fae50fc0e7524e01d040abd6177e85cd3d',
+    'SHOPPES2.OVL': '1644c2ed9d9ad4a1e1dc8ae944eb4040e12c3c8d',
+    'SHOPPES3.OVL': '82c5fdb37a965f3976b2d7b63207b032cce56c3e',
+    'SJOG.OVL': '188d9e684199f899d33532f6913485786f337962',
+    'TALK.OVL': '17ff6bbde9d9781874ba74f9ab5feb3b9808c612',
+    'TOWN.OVL': 'fdfed52705b7aa6efc2a89a5b2628f3537292372',
+    'ZSTATS.OVL': '94a03813bcb563ccde005d1a09cb67b5e75ea684',
+}
+
+
 def ds_image(gamedata):
     return read_file(gamedata, 'DATA.OVL')[DATA_OVL_HEADER:]
 
@@ -192,13 +224,21 @@ def overlay_stubs(img):
     return out
 
 
-def find_gamedata(given=None):
-    for p in (given, os.environ.get('U5_GAMEDATA'), os.path.join(ROOT, 'gamedata'),
-              os.path.join(ROOT, '..', 'gamedata')):
-        if p and os.path.exists(os.path.join(p, 'ULTIMA.EXE')):
+def find_gamedata(given=None, required=True):
+    """The folder of the GOG release's files: the one given, else $U5_GAMEDATA, else
+    gamedata/ here or beside the checkout. A folder that is named (given or $U5_GAMEDATA) is
+    the only one looked in. The files are needed to compare with and to measure from
+    (tools/match.py, tools/linkscript.py, ...), not to build: with required=False the answer
+    is None when they are not found."""
+    named = given or os.environ.get('U5_GAMEDATA')
+    for p in ([named] if named else [os.path.join(ROOT, 'gamedata'), os.path.join(ROOT, '..', 'gamedata')]):
+        if os.path.exists(os.path.join(p, 'ULTIMA.EXE')):
             return os.path.abspath(p)
-    raise SystemExit('the game files were not found: pass --gamedata DIR or set U5_GAMEDATA '
-                     '(a folder holding ULTIMA.EXE and the .OVL files of the GOG release)')
+    if not required:
+        return None
+    raise SystemExit('the game files were not found%s: pass --gamedata DIR or set U5_GAMEDATA '
+                     '(a folder holding ULTIMA.EXE and the .OVL files of the GOG release)'
+                     % (' in %s' % named if named else ''))
 
 
 def find_dosbox(given=None):
