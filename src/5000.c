@@ -439,23 +439,17 @@ void ULTIMA_5910_UpdateFrame(void)
 
 static bool ULTIMA_5dfe(byte param_1, int param_2);
 
-// CHECKED (NOT MATCHING: 374 bytes, 732/738)
+// CHECKED (NOT MATCHING: right length, only the frame differs: 21Ah against 218h)
 // The locals are named for the original's slots (slots.py, after renaming them local_N).
-// Still different:
-// - frame 21Ah against 218h: a register variable takes a stack slot here (declared at the
-//   top, ptr's bucket left an unused slot between local_208 and local_20a); declared in the
-//   if block it goes after the locals, and the temporary at 5c52 then lands at -21Ah instead
-//   of -218h. The original's SI has no slot at all; without `register` ptr lives in memory.
-// - ours computes param_2_y + local_214_an into DI before the 5ba5 GetTileAddr call and keeps
-//   it for the D_ad14 test at 5c05 (a common subexpression across the calls); the original
-//   computes the argument in AX and at 5c05 uses [bx+di+D_ad14] with the row in DI.
-// - 5b66: the original tests and clears GetMapViewport with [bx+di+D_ab02] (x in BX, the row
-//   recomputed in DI for the store); ours keeps the whole address in DI.
-// - the "*ptr = local_216_tile" block (5c93) comes before "local_216_tile = 0xff" (5c9c) in
-//   the original.
-// Tried without effect: the store or the test written x + y * 0x20; ptr with the x term
-// first; casts on D_589b/D_589c ((int): 728 bytes, 372 differ), byte first; the test
-// without "!= 0".
+// Two unused labels (L_s before the GetMapViewport store at 5b83, L_c before the 5dfe test)
+// stop MSC keeping an address or param_2_y + local_214_an in DI across them, which gives the
+// original's [bx+di+table] addressing; the gotos to L_5c93 put that block before 5c9c.
+// Still different: `register byte* ptr` (SI) reserves a slot after the locals (-218h), so
+// the temporary at 5c52 lands at -21Ah instead of -218h; the original's SI has no slot.
+// Tried: no `register` (ptr in memory, 748 bytes), register at function level (63 bytes
+// differ) or in the while body (SI/DI swapped earlier), ptr as a register param_6 (loaded at
+// entry), a block variable for param_3_x + local_212 at 5c52 (same frame). Deleting the
+// functions before this one changes nothing (no object boundary shown by capacity).
 // generate visibility map (BFS)
 static void ULTIMA_5a28(int param_1, int param_2_y, int param_3_x, int param_4, int param_5, uint param_6, byte* param_7_map)
 {
@@ -566,7 +560,7 @@ static void ULTIMA_5a28(int param_1, int param_2_y, int param_3_x, int param_4, 
                     // 5b66
                     if ((GetMapViewport(local_212, local_214_an) != 0) && (0x1f >= param_4 + local_214_an))
                     {
-                        // 5b83
+                    L_s:
                         GetMapViewport(local_212, local_214_an) = 0;
 
                         // -> 5b9b
@@ -597,10 +591,9 @@ static void ULTIMA_5a28(int param_1, int param_2_y, int param_3_x, int param_4, 
                     local_216_al = *ULTIMA_4402_GetTileAddr(param_3_x + local_212 + (uint)D_589b, param_2_y + local_214_an + (uint)D_589c);
                     if (ULTIMA_6ff0(local_212, local_214_an) >= param_1)
                     {
-                        // TODO: control flow position
-                        if (local_210_ab) // 5be1 : ??
+                        if (local_210_ab)
                         {
-                            // 5beb
+                        L_c:
                             if (ULTIMA_5dfe(local_216_al, ULTIMA_6ff0(local_212, local_214_an)) == 0)
                             {
                                 // 5c05
@@ -613,51 +606,36 @@ static void ULTIMA_5a28(int param_1, int param_2_y, int param_3_x, int param_4, 
                                     D_ad14[(param_2_y + local_20a) * 0x20 + param_3_x + local_208] == 0 ||
                                     D_ad14[(param_2_y + local_214_an) * 0x20 + param_3_x + local_212] == 0)
                                 {
-                                    // 5c47
                                     local_216_al = *ptr = 0xff;
                                 }
                                 else
-                                {
-                                    // 5c93
-                                    *ptr = local_216_al;
-                                }
+                                    goto L_5c93;
                             }
                             else
                             {
-                                // 5c52
                                 if (param_2_y + local_214_an < 0 || param_3_x + local_212 < 0 ||
                                     param_3_x + local_212 > 0x1f || param_2_y + local_214_an > 0x1f)
                                 {
-                                    // 5c74
                                     *ptr = 0;
+                                }
+                                else if (D_ad14[(param_2_y + local_214_an) * 0x20 + param_3_x + local_212] != 0)
+                                {
+                                L_5c93:
+                                    *ptr = local_216_al;
                                 }
                                 else
                                 {
-                                    // 5c7a
-                                    if (D_ad14[(param_2_y + local_214_an) * 0x20 + param_3_x + local_212] != 0)
-                                    {
-                                        // 5c93
-                                        *ptr = local_216_al;
-                                    }
-                                    else
-                                    {
-                                        // 5c74
-                                        *ptr = 0;
-                                    }
+                                    *ptr = 0;
                                 }
                             }
                         }
                         else
                         {
-                            // 5c9c
                             local_216_al = 0xff;
                         }
                     }
                     else
-                    {
-                        // 5c93
-                        *ptr = local_216_al;
-                    }
+                        goto L_5c93;
 
                     // 5ca1
                     if (ULTIMA_5dfe(local_216_al, ULTIMA_6ff0(local_212, local_214_an)) != 0)
