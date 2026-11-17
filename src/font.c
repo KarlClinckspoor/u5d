@@ -95,7 +95,7 @@ void FONT_0000(byte* param_1, byte* param_2)
     local_e_am = local_6 = 0;
     local_4_aa = D_5156 - D_5146[local_12];
 
-    for (; param_2[local_e_am] != 0; local_e_am++)
+    for (; param_2[local_e_am] != 0; 0)
     {
         local_a = 0;
         for (local_10_aa = local_e_am; param_2[local_10_aa] != 0 && local_c > local_4_aa && param_2[local_10_aa] != '\n'; local_10_aa++)
@@ -168,7 +168,7 @@ void FONT_0000(byte* param_1, byte* param_2)
         local_e_am = local_6;
         if (param_2[local_e_am] == 0)
         {
-            break;
+            goto L_next;
         }
         {
             if (param_2[local_e_am] == '_' && (int)D_5158 < 0xc0)
@@ -180,7 +180,9 @@ void FONT_0000(byte* param_1, byte* param_2)
             local_12 = (int)D_5158 > (int)D_5150 && (int)D_5158 < (int)D_5152;
             D_5156 = D_5146[local_12];
             local_c = D_514c[local_12] - D_5156;
+            local_e_am++;
         }
+L_next:;
     }
 
     ULTIMA_0c22_GRAP_0f_SelectPage(0);
