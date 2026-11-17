@@ -748,6 +748,9 @@ static int ZSTATS_0c0a(int param_1)
 // "if (!...) goto L_tail" (the tail then follows the ring test and the vanish block floats
 // away), a dead "goto L_weak" after "return 1", the tail as the ring test's else, the weak
 // else without its return.
+// Not pass 2's tree pool (see ULTIMA_1850): no position of a cut changes this function
+// (research/c2lines.py, 0-638 line records after its entry) and less memory for pass 2
+// only makes it worse below 238.75 KB (research/c2mem.py).
 static int ZSTATS_0c5c_EquipItem(int param_1, int param_2)
 {
     byte* local_10_l;

@@ -985,6 +985,17 @@ static int TOWN_0e34(int param_1)
 // possible. What the original's extra memory was is not known: it depends on the names and
 // types of every global this module references, which u5d does not have; fake definitions
 // are no fix (they become communals or _BSS at link).
+// Batch 4: it is the DOS memory pass 2 has, whatever uses it (see ULTIMA_1850 for how pass
+// 2 works in a tree pool). With research/c2mem.py, town.c as it is compiles this function
+// EXACT when C2.EXE finds 15782 or 15784-15793 paragraphs (246.6 KB) free, but TOWN_0408,
+// TOWN_0c78 and TOWN_1694 then differ; with 15781 or 15783 they are exact and this is not
+// (from 253.75 KB up nothing changes any more; under 5.1 the code changes from one
+// paragraph to the next below that). That is the state extra definitions at the top of
+// the file give. So in the original the memory was short at this function only: something
+// held about 10 KB from after TOWN_0c78 until this loop and not at TOWN_1694. Line records
+// are not it: inserted after this function's entry (research/c2lines.py), 0-320 change
+// nothing, 321-327 give 365 bytes, 328-379 152, 380-382 375, from 383 as none again
+// (period 390: the pool is cut and the rest is compiled as usual); none is exact.
 static void TOWN_0f02(void)
 {
     int local_a;
