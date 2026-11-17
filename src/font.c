@@ -366,14 +366,11 @@ void FONT_0e52(void);
 void FONT_0e7b(void);
 
 // CHECKED
-// NOT MATCHING (CODE, 4 bytes): the code is the original's except the frame (22h, the
-// original 28h) and case 0xc's pointer temporary, which reuses case 0xb's freed bp-20h
-// where the original takes a new bp-26h (with bp-24h and bp-28h never used). Tried in case
-// 0xc: while, do-while (both forms, much worse), != 0x20, <= 0x1f, its own block, an unused
-// int / register / two ints declared in that block (no change), three separate stores,
-// local_c as the pointer (worse). The source steps local_12/local_14 with += in case 0xb
-// (the decompiler's local_10 * 9 / * 3 gave MSC's closed form instead); += in the for
-// header moves the counter's increment first (12 bytes).
+// Case 0xb's loop is a while: as a for (same code), MSC frees its temporaries (bp-20h,
+// bp-22h) and case 0xc's pointer walk reuses them, giving a frame of 22h instead of the
+// original's 28h (0xc at bp-24h..28h, the middle one in memory). The source steps
+// local_12/local_14 with += in case 0xb (the decompiler's local_10 * 9 / * 3 gave MSC's
+// closed form instead); += in a for header moves the counter's increment first.
 // "view"
 void FONT_04a4(void)
 {
@@ -535,7 +532,8 @@ void FONT_04a4(void)
         case 0xb:
             // ...
             local_12 = local_14_am = 0;
-            for (local_10_aa = 0; local_10_aa < 5; local_10_aa++)
+            local_10_aa = 0;
+            while (local_10_aa < 5)
             {
                 if (FONT_02fc(1) != 0)
                 {
@@ -546,6 +544,7 @@ void FONT_04a4(void)
                 ULTIMA_0b10_GRAP_Line(local_12 + 0x80, local_14_am + 0x99, local_12 + 0x89, local_14_am + 0x9c);
                 local_12 += 9;
                 local_14_am += 3;
+                local_10_aa++;
             }
 
             local_e_am++;
