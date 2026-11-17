@@ -1193,6 +1193,13 @@ char* D_4502[8] =
 u8 D_4512[8] = {0x18, 0x16, 0x16, 0x18, 0x18, 0x17, 0x17, 0x16};
 
 // CHECKED
+// NOT MATCHING: in the original, local_4_ab and local_a are stack locals that the loop
+// optimizer keeps in SI and DI (DI loaded from [bp-8] at the loop's start, both stored at
+// every exit), and "local_6 + D_5896_map_x" and "local_a + D_5897_map_y" are recomputed at
+// every use (frame 12). Without "register", MSC here makes two common-subexpression
+// temporaries instead (frame 16) and registers nothing; removing either the ruins call or
+// the gate test gives it the registers back. Tried: for loops, swapped operands, casts,
+// the table on the left, break or goto for the return, the D_58d0 store through a pointer.
 static void CMDS_12c8(char* param_1)
 {
     char** local_e;
