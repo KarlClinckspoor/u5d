@@ -468,16 +468,10 @@ static int NPC_06a0(int param_1, int param_2, int param_3, int param_4)
 }
 
 // CHECKED
-// NOT MATCHING (SIZE 592/596, 449 bytes): with the locals renamed to 5.0's slot order the
-// code is the original's but for one block. After tail merging, the else of
-// "if (local_4_ab == 4 || local_4_ab == 5)" is only "D_65be = 0x61; jmp a9db" (the then
-// branch keeps the shared stores). Ours leaves it after the then branch; the original puts
-// it inside the first move loop, between the then branch of "if (NPC_0b9e(...))" (after its
-// "jmp" over the else) and the else (= 99), so the 4/5 test ends "je then; jmp near".
-// Tried: the else as "D_65be = 0x61; goto L_a9db" (label on the then branch's stores), the
-// then branch as "if (_a != 0) ... else goto move", the stores written once after the
-// if/else (448 bytes, the else then falls into them), and the else block as a label inside
-// the loop after a "continue" in the then branch (the loop loses its registers: 580 bytes).
+// Both early branches end in "return" and the move code follows the if (no else): the
+// 0x61 branch's tail-merged copy ("D_65be = 0x61; jmp") then lands inside the first move
+// loop, after the then branch's jump, as in the original (as an if/else with the move code
+// in the else, it stays after the 4/5 branch).
 static void NPC_06e4(int param_1, int param_2)
 {
     int local_1c_a;
@@ -502,89 +496,68 @@ static void NPC_06e4(int param_1, int param_2)
     {
         if (local_4_ab == 4 || local_4_ab == 5)
         {
-            // a9cd
-            if (local_8->_a == 0)
+            if (local_8->_a != 0)
             {
-                goto move;
+                D_65be = 0x74;
+                D_65bf = param_1;
+                local_4_ab = 1;
+                return;
             }
-            // a9d6
-            D_65be = 0x74;
-            // a9db
-            D_65bf = param_1;
-            local_4_ab = 1;
         }
         else
         {
-            // aa4e: -> a9db
             D_65be = 0x61;
             D_65bf = param_1;
             local_4_ab = 1;
+            return;
         }
     }
-    else
+    // a9ea
+    for (local_16_ak = 1; local_16_ak < 5; local_16_ak++)
     {
-    move:
-        // a9ea
-        for (local_16_ak = 1; local_16_ak < 5; local_16_ak++)
+        // aa09
+        D_5876 = local_8->_2_x;
+        D_5878 = local_8->_4_y;
+        NPC_0632(local_16_ak);
+        local_12 = D_5876;
+        local_14_am = D_5878;
+        if (NPC_0b9e(D_5876, D_5878, param_1, -1) != 0)
         {
-            // aa09
-            D_5876 = local_8->_2_x;
-            D_5878 = local_8->_4_y;
-            NPC_0632(local_16_ak);
-            local_12 = D_5876;
-            local_14_am = D_5878;
-            if (NPC_0b9e(D_5876, D_5878, param_1, -1) != 0)
+            local_10[local_16_ak - 1] = NPC_06a0(local_18_ai->_2_x, local_18_ai->_3_y, local_12, local_14_am);
+        }
+        else
+        {
+            // aa56 (OK)
+            local_10[local_16_ak - 1] = 99;
+        }
+    }
+
+    // aa6a (OK)
+    local_1a_aa = -1; // di
+    local_6_an_ab = NPC_06a0(local_18_ai->_2_x, local_18_ai->_3_y, local_8->_2_x, local_8->_4_y);
+    // aa8c
+    for (local_16_ak = 1; local_16_ak < 8; local_16_ak++)
+    {
+        // aaa7
+        if (local_16_ak < 5 && local_10[local_16_ak - 1] != 99)
+        {
+            if (local_4_ab == 3)
             {
-                local_10[local_16_ak - 1] = NPC_06a0(local_18_ai->_2_x, local_18_ai->_3_y, local_12, local_14_am);
+                if (local_6_an_ab < local_10[local_16_ak - 1])
+                {
+                    if (local_1a_aa == -1 || ULTIMA_2092_RandomRange(0, 1) != 0)
+                    {
+                        local_1a_aa = local_16_ak;
+                    }
+
+                    if (local_16_ak == 4)
+                        break;
+                }
             }
             else
             {
-                // aa56 (OK)
-                local_10[local_16_ak - 1] = 99;
-            }
-        }
-
-        // aa6a (OK)
-        local_1a_aa = -1; // di
-        local_6_an_ab = NPC_06a0(local_18_ai->_2_x, local_18_ai->_3_y, local_8->_2_x, local_8->_4_y);
-        // aa8c
-        for (local_16_ak = 1; local_16_ak < 8; local_16_ak++)
-        {
-            // aaa7
-            if (local_16_ak < 5 && local_10[local_16_ak - 1] != 99)
-            {
-                if (local_4_ab == 3)
-                {
-                    if (local_6_an_ab < local_10[local_16_ak - 1])
-                    {
-                        if (local_1a_aa == -1 || ULTIMA_2092_RandomRange(0, 1) != 0)
-                        {
-                            local_1a_aa = local_16_ak;
-                        }
-
-                        if (local_16_ak == 4)
-                            break;
-                    }
-                }
-                else
-                {
-                    // ab14
-                    if (local_10[local_16_ak - 1] < local_6_an_ab)
-                    {
-                        local_1a_aa = local_16_ak;
-                        break;
-                    }
-                }
-            }
-
-#if defined(MATCHING_BUILD)
-            // aae4 (OK)
-            if (local_16_ak > 4 && local_10[local_16_ak - 1] != 99) // BUG? (OOB, invalid index)
-#else
-            if (local_16_ak > 4 && local_10[local_16_ak - 5] != 99) // BUGFIX?
-#endif
-            {
-                if (local_10[local_16_ak - 5] == local_6_an_ab)
+                // ab14
+                if (local_10[local_16_ak - 1] < local_6_an_ab)
                 {
                     local_1a_aa = local_16_ak;
                     break;
@@ -592,33 +565,47 @@ static void NPC_06e4(int param_1, int param_2)
             }
         }
 
-        // ab22 (OK below)
-        if ((local_4_ab == 5 || local_4_ab == 7) && ULTIMA_2092_RandomRange(0, 0x3f) < 0x10)
+#if defined(MATCHING_BUILD)
+        // aae4 (OK)
+        if (local_16_ak > 4 && local_10[local_16_ak - 1] != 99) // BUG? (OOB, invalid index)
+#else
+        if (local_16_ak > 4 && local_10[local_16_ak - 5] != 99) // BUGFIX?
+#endif
         {
-            // ab3d
-            local_1c_a = local_1a_aa;
-            for (local_16_ak = 1; local_16_ak < 5; local_16_ak++)
+            if (local_10[local_16_ak - 5] == local_6_an_ab)
             {
-                // ab4b
-                if (local_1a_aa != local_16_ak && local_10[local_16_ak - 1] != 99 &&
-                    (local_1c_a == local_1a_aa || ULTIMA_2092_RandomRange(0, 0x3f) < 0x10))
-                {
-                    local_1c_a = local_16_ak;
-                }
+                local_1a_aa = local_16_ak;
+                break;
             }
-            local_1a_aa = local_1c_a;
         }
+    }
 
-        if (local_1a_aa > -1)
+    // ab22 (OK below)
+    if ((local_4_ab == 5 || local_4_ab == 7) && ULTIMA_2092_RandomRange(0, 0x3f) < 0x10)
+    {
+        // ab3d
+        local_1c_a = local_1a_aa;
+        for (local_16_ak = 1; local_16_ak < 5; local_16_ak++)
         {
-            D_5876 = local_8->_2_x;
-            D_5878 = local_8->_4_y;
-            NPC_0632(local_1a_aa);
-
-            D_5c5a[local_8->_c]._2_x = local_8->_2_x = D_5876;
-            D_5c5a[local_8->_c]._3_y = local_8->_4_y = D_5878;
-            D_24e6 |= 2;
+            // ab4b
+            if (local_16_ak != local_1a_aa && local_10[local_16_ak - 1] != 99 &&
+                (local_1c_a == local_1a_aa || ULTIMA_2092_RandomRange(0, 0x3f) < 0x10))
+            {
+                local_1c_a = local_16_ak;
+            }
         }
+        local_1a_aa = local_1c_a;
+    }
+
+    if (local_1a_aa > -1)
+    {
+        D_5876 = local_8->_2_x;
+        D_5878 = local_8->_4_y;
+        NPC_0632(local_1a_aa);
+
+        D_5c5a[local_8->_c]._2_x = local_8->_2_x = D_5876;
+        D_5c5a[local_8->_c]._3_y = local_8->_4_y = D_5878;
+        D_24e6 |= 2;
     }
 }
 
@@ -907,8 +894,14 @@ static void NPC_0d00(int param_1, int param_2)
     }
 }
 
-// NOT MATCHING (checked)
+// CHECKED
 // move npc
+// The loop body tests "_0 > 1 || NPC_0938" first, with the 4/5 and 6/7 cases ahead of the
+// <= 3 case and the "_0 <= 1" case last (the original's layout follows this order). The
+// original compares _0 signed: *(s16*)& gives the CSE in SI for > 3, == 4, == 5, where an
+// (int) cast compares through AX. The NPC_032c success path (119e) is an if/else, not "D_65c2 = 0; continue;":
+// a continue there pulls the loop increment after it and the 10d6 store's tail merge goes
+// the wrong way.
 void NPC_0db4(int param_1)
 {
     int local_14_am;
@@ -925,85 +918,67 @@ void NPC_0db4(int param_1)
     D_65be = 0;
     D_65bf = 0;
 
-    // 0dd9
-    for (local_4_ab = 1; /*1267*/ local_4_ab < 0x20; /*1264*/ local_4_ab++)
+    for (local_4_ab = 1; local_4_ab < 0x20; local_4_ab++)
     {
         // 126d
         if (D_659e[local_4_ab] == 0)
             continue;
 
-        // 1277
         local_e_am = NPC_12e0(local_4_ab, param_1);
-        // 1281
         local_8 = &D_5f5e[local_4_ab];
 
         // 128e
-        if (local_8->_0 <= 1 && NPC_0938(local_4_ab, param_1) == 0)
+        if ((int)local_8->_0 > 1 || NPC_0938(local_4_ab, param_1) != 0)
         {
-            // 124e
-            if (local_8->_6_z == D_5895_map_level)
+            // 12a2
+            if (*(s16*)&local_8->_0 > 3)
             {
-                // 1261
-                NPC_0d00(local_4_ab, local_e_am);
-            }
-        }
-        // 12a2
-        else if (local_8->_0 > 3)
-        {
-            if (local_8->_0 == 4 || local_8->_0 == 5)
-            {
-                // 12bc
-                if (local_14_am != 1)
+                if (*(s16*)&local_8->_0 == 4 || *(s16*)&local_8->_0 == 5)
                 {
-                    local_14_am = 1;
-                    if (local_8->_0 == 4)
+                    // 12bc
+                    if (local_14_am != 1)
                     {
-                        // 12cf
-                        local_6 = 3;
-                        // -> 0dd9
-                    }
-                    else
-                    {
-                        // 0dd4
-                        local_6 = 4;
-                    }
-
-                    // 0dd9 (ok)
-                    local_10_ad_am =
-                        NPC_01a0(D_5d5e[local_4_ab].x[local_e_am], D_5d5e[local_4_ab].y[local_e_am], local_6 == 3, local_4_ab);
-                    if (local_10_ad_am != 0)
-                    {
-                        local_a = D_5876;
-                        local_c = D_5878;
-                        local_10_ad_am = NPC_032c(local_a, local_c, D_5d5e[local_4_ab].x[local_e_am],
-                                            D_5d5e[local_4_ab].y[local_e_am], local_6, local_4_ab);
-                    }
-
-                    // 0e32 (ok)
-                    if (local_10_ad_am != 0)
-                    {
-                        // 0e3b (ok)
-                        NPC_04ac(local_4_ab, local_6, D_5d5e[local_4_ab].x[local_e_am], D_5d5e[local_4_ab].y[local_e_am]);
-
-                        // 0e5a (ok)
-                        local_12_ab_am = GetMap(local_a, local_c);
-                        if (/*0e6b*/ (local_6 == 3 && local_12_ab_am == TILE_MAP_LADDER_UP) ||
-                            /*0e75*/ (local_6 == 4 && local_12_ab_am == TILE_MAP_LADDER_DOWN) ||
-                            /*0e81*/ (local_12_ab_am & 0xfc) == TILE_MAP_STAIR)
+                        local_14_am = 1;
+                        if (local_8->_0 == 4)
                         {
-                            // 0e8a (ok)
-                            TOWN_1726(local_4_ab, local_a, local_c, D_5895_map_level);
+                            local_6 = 3;
+                        }
+                        else
+                        {
+                            // 0dd4
+                            local_6 = 4;
                         }
 
-                        // 0e9c (ok)
-                        local_8->_0 = 2;
+                        // 0dd9
+                        local_10_ad_am =
+                            NPC_01a0(D_5d5e[local_4_ab].x[local_e_am], D_5d5e[local_4_ab].y[local_e_am], local_6 == 3, local_4_ab);
+                        if (local_10_ad_am != 0)
+                        {
+                            local_a = D_5876;
+                            local_c = D_5878;
+                            local_10_ad_am = NPC_032c(local_a, local_c, D_5d5e[local_4_ab].x[local_e_am],
+                                                D_5d5e[local_4_ab].y[local_e_am], local_6, local_4_ab);
+                        }
+
+                        // 0e32
+                        if (local_10_ad_am != 0)
+                        {
+                            NPC_04ac(local_4_ab, local_6, D_5d5e[local_4_ab].x[local_e_am], D_5d5e[local_4_ab].y[local_e_am]);
+
+                            local_12_ab_am = GetMap(local_a, local_c);
+                            if ((local_6 == 3 && local_12_ab_am == TILE_MAP_LADDER_UP) ||
+                                (local_6 == 4 && local_12_ab_am == TILE_MAP_LADDER_DOWN) ||
+                                (local_12_ab_am & 0xfc) == TILE_MAP_STAIR)
+                            {
+                                TOWN_1726(local_4_ab, local_a, local_c, D_5895_map_level);
+                            }
+
+                            local_8->_0 = 2;
+                        }
                     }
                 }
-            }
-            else if (local_8->_0 == 6 || local_8->_0 == 7)
-            {
-                // 0eb2
-                if (NPC_0a4a(local_4_ab, local_e_am) != 0)
+                // 0ea6
+                else if ((local_8->_0 != 6 && local_8->_0 != 7) || NPC_0a4a(local_4_ab, local_e_am) != 0)
                 {
                     // 0ebf
                     TOWN_1726(local_4_ab, D_5d5e[local_4_ab].x[local_e_am], D_5d5e[local_4_ab].y[local_e_am],
@@ -1038,161 +1013,155 @@ void NPC_0db4(int param_1)
                         // 0f71
                         if (local_10_ad_am != 0)
                         {
-                            // 0f7a
                             NPC_04ac(local_4_ab, local_6, local_a, local_c);
                             local_8->_0 = 3;
                         }
                     }
                 }
             }
-        }
-        else
-        {
-            // 0f94
-            if (D_655e[local_4_ab] > -1 && D_615e[local_4_ab].data[D_655e[local_4_ab]] != 0)
+            else
             {
-                // 0fb8
-                D_5876 = local_8->_2_x;
-                D_5878 = local_8->_4_y;
-                NPC_0632(D_615e[local_4_ab].data[D_655e[local_4_ab] + 1]);
-                local_a = D_5876;
-                local_c = D_5878;
-                local_10_ad_am = NPC_0b9e(D_5876, local_c, local_4_ab, local_e_am);
-                if (local_10_ad_am != 0)
+                // 0f94
+                if (D_655e[local_4_ab] > -1 && D_615e[local_4_ab].data[D_655e[local_4_ab]] != 0)
                 {
-                    // 0ff9
-                    D_5c5a[local_8->_c]._2_x = (u8)local_a;
-                    local_8->_2_x = local_a & 0xff;
-                    D_5c5a[local_8->_c]._3_y = (u8)local_c;
-                    local_8->_4_y = local_c & 0xff;
-                    D_24e6 |= 2;
-
-                    D_615e[local_4_ab].data[D_655e[local_4_ab]]--;
-                    D_65c2[local_4_ab] = 0;
-                    if (D_615e[local_4_ab].data[D_655e[local_4_ab]] == 0)
+                    // 0fb8
+                    D_5876 = local_8->_2_x;
+                    D_5878 = local_8->_4_y;
+                    NPC_0632(D_615e[local_4_ab].data[D_655e[local_4_ab] + 1]);
+                    local_a = D_5876;
+                    local_c = D_5878;
+                    local_10_ad_am = NPC_0b9e(D_5876, local_c, local_4_ab, local_e_am);
+                    if (local_10_ad_am != 0)
                     {
-                        // 104a
-                        D_655e[local_4_ab]++;
-                        D_615e[local_4_ab].data[D_655e[local_4_ab]++] = 0;
-                        if (D_655e[local_4_ab] >= 0x20 || D_615e[local_4_ab].data[D_655e[local_4_ab]] < 1)
-                        {
-                            D_655e[local_4_ab] = -1;
-                        }
+                        // 0ff9
+                        local_8->_2_x = D_5c5a[local_8->_c]._2_x = local_a;
+                        local_8->_4_y = D_5c5a[local_8->_c]._3_y = local_c;
+                        D_24e6 |= 2;
 
-                        if (local_10_ad_am == 2)
+                        D_615e[local_4_ab].data[D_655e[local_4_ab]]--;
+                        D_65c2[local_4_ab] = 0;
+                        if (D_615e[local_4_ab].data[D_655e[local_4_ab]] == 0)
                         {
-                            // 1083
-                            local_8->_e = local_e_am;
-                            local_8->_0 = 1;
+                            // 104a
+                            D_655e[local_4_ab]++;
+                            D_615e[local_4_ab].data[D_655e[local_4_ab]++] = 0;
+                            if (D_655e[local_4_ab] >= 0x20 || D_615e[local_4_ab].data[D_655e[local_4_ab]] < 1)
+                            {
+                                D_655e[local_4_ab] = -1;
+                            }
+
+                            if (local_10_ad_am == 2)
+                            {
+                                // 1083
+                                local_8->_e = local_e_am;
+                                local_8->_0 = 1;
+                                D_655e[local_4_ab] = -1;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        D_65c2[local_4_ab]++;
+                        NPC_0c50(&D_5f5e[local_4_ab], 0, local_e_am, local_4_ab, &D_5d5e[local_4_ab]);
+                        if (D_65c2[local_4_ab] > 3)
+                        {
+                            // 10d0
                             D_655e[local_4_ab] = -1;
+                            // 10d6
+                            D_65c2[local_4_ab] = 0;
                         }
                     }
                 }
                 else
                 {
-                    D_65c2[local_4_ab]++;
-                    NPC_0c50(&D_5f5e[local_4_ab], 0, local_e_am, local_4_ab, &D_5d5e[local_4_ab]);
-                    if (D_65c2[local_4_ab] > 3)
+                    // 10e0
+                    if (D_655e[local_4_ab] == -1 && local_8->_0 == 3)
                     {
-                        // 10d0
-                        D_655e[local_4_ab] = -1;
-                        // 10d6
-                        D_65c2[local_4_ab] = 0;
-                    }
-                }
-            }
-            else
-            {
-                // 10e0
-                if (D_655e[local_4_ab] == -1 && local_8->_0 == 3)
-                {
-                    local_e_am = NPC_12e0(local_4_ab, param_1);
-                    if (D_5895_map_level < D_5d5e[local_4_ab].z[local_e_am])
-                    {
-                        local_8->_0 = 6;
-                        return; // 12d8
-                    }
-                    local_8->_0 = 7;
-                    return; // 12d8
-                }
-
-                // 1124
-                if (local_14_am < 1)
-                {
-                    // 112d
-                    if (local_8->_0 != 1)
-                    {
-                        // 1138
-                        if (D_65c2[local_4_ab] < 200 && (D_65c2[local_4_ab] == 0 || ULTIMA_2092_RandomRange(0, 2) == 1))
+                        if ((s8)D_5895_map_level < (s8)D_5d5e[local_4_ab].z[NPC_12e0(local_4_ab, param_1)])
                         {
-                            // 1160
-                            if (D_655e[local_4_ab] == -1)
+                            local_8->_0 = 6;
+                            return;
+                        }
+                        local_8->_0 = 7;
+                        return;
+                    }
+
+                    // 1124
+                    if (local_14_am < 1)
+                    {
+                        // 112d
+                        if (local_8->_0 != 1)
+                        {
+                            // 1138
+                            if (D_65c2[local_4_ab] < 200 && (D_65c2[local_4_ab] == 0 || ULTIMA_2092_RandomRange(0, 2) == 1))
                             {
-                                local_14_am = local_14_am + 1;
-                                if (NPC_032c(local_8->_2_x, local_8->_4_y, D_5d5e[local_4_ab].x[local_e_am],
-                                             D_5d5e[local_4_ab].y[local_e_am], 0, local_4_ab) != 0)
+                                // 1160
+                                if (D_655e[local_4_ab] == -1)
                                 {
-                                    NPC_04ac(local_4_ab, 0, D_5d5e[local_4_ab].x[local_e_am],
-                                             D_5d5e[local_4_ab].y[local_e_am]);
-
-                                    D_65c2[local_4_ab] = 0;
-                                    continue;
+                                    local_14_am = local_14_am + 1;
+                                    if ((local_10_ad_am = NPC_032c(local_8->_2_x, local_8->_4_y, D_5d5e[local_4_ab].x[local_e_am],
+                                                                   D_5d5e[local_4_ab].y[local_e_am], 0, local_4_ab)) != 0)
+                                    {
+                                        local_10_ad_am = NPC_04ac(local_4_ab, 0, D_5d5e[local_4_ab].x[local_e_am],
+                                                                  D_5d5e[local_4_ab].y[local_e_am]);
+                                        D_65c2[local_4_ab] = 0;
+                                    }
+                                    else
+                                    {
+                                        // 11ba
+                                        D_65c2[local_4_ab] = 200;
+                                        NPC_0c50(&D_5f5e[local_4_ab], 0, local_e_am, local_4_ab, &D_5d5e[local_4_ab]);
+                                    }
                                 }
-                                // 11ba
-                                D_65c2[local_4_ab] = 200;
+                                else
+                                {
+                                    // 11c5
+                                    NPC_0c50(&D_5f5e[local_4_ab], 0, local_e_am, local_4_ab, &D_5d5e[local_4_ab]);
+                                }
                             }
+                            else
+                            {
+                                // 11e8
+                                if (D_65c2[local_4_ab] >= 200)
+                                {
+                                    D_65c2[local_4_ab]++;
+                                }
 
-                            // 11c5
-                            NPC_0c50(local_8, 0, local_e_am, local_4_ab, &D_5d5e[local_4_ab]);
+                                // 11f9
+                                if (D_65c2[local_4_ab] > 204)
+                                {
+                                    D_65c2[local_4_ab] = 0;
+                                }
+                            }
+                        }
+                    }
+                    // 120e
+                    else if (local_8->_6_z == (uint)D_5895_map_level)
+                    {
+                        if (local_e_am == 1 || local_e_am == 2)
+                        {
+                            local_10_ad_am = 0;
+                        }
+                        else if (local_e_am == 0)
+                        {
+                            local_10_ad_am = 2;
                         }
                         else
                         {
-                            // 11e8
-                            if (D_65c2[local_4_ab] >= 200)
-                            {
-                                D_65c2[local_4_ab]++;
-                            }
-
-                            // 11f9
-                            if (D_65c2[local_4_ab] > 204)
-                            {
-                                D_65c2[local_4_ab] = 0;
-                            }
+                            local_10_ad_am = local_e_am - 1;
                         }
+                        // 1243
+                        NPC_0d00(local_4_ab, local_8->_e);
                     }
                 }
-                // 120e
-                else if (local_8->_6_z == (uint)D_5895_map_level)
-                {
-                    // 1243 -> 1261
-                    NPC_0d00(local_4_ab, local_8->_e);
-                }
-                else if (local_e_am == 1 || local_e_am == 2)
-                {
-                    // 1227
-                    local_10_ad_am = 0;
-                    // -> 1243
-                    NPC_0d00(local_4_ab, local_8->_e);
-                }
-                else if (local_e_am == 0)
-                {
-                    local_10_ad_am = 2;
-                    // -> 1243
-                    NPC_0d00(local_4_ab, local_8->_e);
-                }
-                else
-                {
-                    // 123c
-                    local_10_ad_am = local_e_am - 1;
-                    // 1243
-                    NPC_0d00(local_4_ab, local_8->_e);
-                }
-                // 1264
             }
         }
+        // 124e
+        else if (local_8->_6_z == D_5895_map_level)
+        {
+            NPC_0d00(local_4_ab, local_e_am);
+        }
     }
-
-    // 12d8
 }
 
 #if !defined(TARGET_DOS16) // assembly in the original: src/asm/ANPC.ASM

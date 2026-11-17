@@ -16,17 +16,20 @@
 
 s16 D_5402[5] = { 1, 10, 100, 1000, 10000 };
 
-// CHECKED (NOT MATCHING: loop optimization, 121 bytes, same length)
-// The original registers the last three loops (1996 local_c in CX; 1a03 local_14_am in CX;
-// 1a14 local_e_am in SI with local_c in DI); MSC 5.0 here registers only the first two
-// loops (18c4, 1939) and leaves the rest in memory. It is a budget of some kind, not the
-// loops' own form: removing any one of these restores all the later loops' registers:
-// loop 18c4 or loop 1939, the `if (local_4_aa) PrintChar(newline)` at the top of the outer
-// loop, or the whole 19d5 centering block (but not parts of it, nor the 18f4 or 1968
-// blocks). The outer loop as `while (1) { ... if (local_a) break; }` registers 1996 too
-// (but 4 bytes longer). Tried without effect: the outer loop as a goto, top-tested while,
-// no return; 1996 as while/for/goto with --local_c in the test; byte* param and no casts;
-// no uint casts; local_1a_ap as int; fewer #includes.
+// CHECKED (NOT MATCHING: 498/494, 64 bytes, all in the last two loops)
+// The original registers every loop: 1996 local_c in CX, 1a03 local_14_am in CX, 1a14
+// local_e_am in SI with the bound local_c in DI. As a do-while the outer loop gave the right
+// length but only 18c4 and 1939 registered (121 bytes). As `while (1) { ... if (local_a)
+// break; }` (here) 1996 is registered too and everything up to 1a03 is the original's code;
+// an unused label anywhere new in the function does exactly the same (any position but
+// right before a loop or right after one, where a label already is), so it is a mode
+// switch, not a local effect. 1a03 and 1a14 then stay in memory: removing 1a03 or 1996 does
+// not change that (so not a count of loops), and 1a14 as a while loop is no better.
+// Earlier (do-while) findings: removing loop 18c4 or 1939, the `if (local_4_aa)
+// PrintChar(newline)` at the top, or the whole 19d5 block restored all later loops; tried
+// without effect: the outer loop as a goto, top-tested while, no return; 1996 as
+// while/for/goto with --local_c in the test; byte* param and no casts; no uint casts;
+// local_1a_ap as int; fewer #includes.
 // 0000:1850
 void ULTIMA_1850_PrintString(char* param_1)
 {
@@ -58,7 +61,7 @@ void ULTIMA_1850_PrintString(char* param_1)
         local_44_aj = (uint)local_12->right - (uint)local_12->left; // text_window_width = r - l;
 
         // 189a
-        do
+        while (1)
         {
             if (local_4_aa != 0)
             {
@@ -119,8 +122,7 @@ void ULTIMA_1850_PrintString(char* param_1)
                     }
                     else
                     {
-                        // 1996 NOT MATCHING: the original keeps local_c in CX through this loop
-                        // (and stores it after); ours decrements [bp-0Ah] in place (see above).
+                        // 1996: local_c in CX, stored after (as the original since while (1))
                         do
                         {
                             local_c--;
@@ -172,7 +174,9 @@ void ULTIMA_1850_PrintString(char* param_1)
                     ULTIMA_16ba_PrintChar((byte)local_42_al[local_e_am]);
                 }
             }
-        } while (local_a == 0);
+            if (local_a != 0)
+                break;
+        }
     }
     return;
 }
