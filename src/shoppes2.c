@@ -722,7 +722,8 @@ static bool SHOPPES2_080e(int param_1, int param_2, int param_3)
 // param_1" after the pointer setup used for the calls (158 differ, but it takes a stack
 // slot: frame 10). Also no registers: local_4_ab = 0 before the pointer setup (where the
 // original sets SI); and, as diagnostics only, dropping either price computation (so not
-// the CMDS_12c8 common-subexpression case) or the continue in case F (worse).
+// the CMDS_12c8 common-subexpression case), the continue in case F, the recursive call,
+// all returns as gotos to the end, or int local_6: still nothing in SI/DI.
 static void SHOPPES2_08a8(int param_1)
 {
     byte local_6;
