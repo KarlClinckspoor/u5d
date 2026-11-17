@@ -725,6 +725,13 @@ static int ZSTATS_0c0a(int param_1)
 // "not strong enough" block last, after the switch cases, and the success code right
 // after the strength test. The strength test comes first in the source: its string
 // precedes "Ring vanishes!" in CONST, which is what makes ZSTATS' CONST (and DGROUP) match.
+// The ring test read D_57c0[param_2] instead of param_2 ("cmp bx,2Ah" after the dec): fixed,
+// 710 -> 706 bytes (original 722). Layout: the code after the switch goes to case 0x80's
+// break (its first) up to the first jump. In the original that chain is test, store, ring
+// (the test jumps far to the weak block, placed after case 2 just before the "!= 0x2a"
+// tail); ours is test, weak. Tried: if/else around the weak block (no change), "if (e != 0)
+// goto L_ok" (724 bytes), the weak block as a label inside the switch after case 2 with
+// "if (local_e_g == 0) goto L_weak" (identical code: MSC still puts it after the test).
 static int ZSTATS_0c5c_EquipItem(int param_1, int param_2)
 {
     byte* local_10_l;
@@ -894,7 +901,7 @@ static int ZSTATS_0c5c_EquipItem(int param_1, int param_2)
     // efd2
     *local_10_l = param_2;
     --D_57c0[param_2];
-    if ((D_57c0[param_2] == 0x2a || D_57c0[param_2] == 0x2c) && (ULTIMA_2092_RandomRange(0, 0xf) == 0))
+    if ((param_2 == 0x2a || param_2 == 0x2c) && (ULTIMA_2092_RandomRange(0, 0xf) == 0))
     {
         // efff
         ULTIMA_1850_PrintString(_TEXT(0x995e, "\n\nRing vanishes!\n"));
