@@ -83,7 +83,10 @@ u8 D_5204[8] = {0x05, 0x07, 0x04, 0x0a, 0x08, 0x00, 0x05, 0x06};
 // test, compares the characters unsigned ("ja"/"jbe": byte, not char) and places the
 // "{"/"_"/glyph branch at the loop's top, the "<= 0x20" branch after the merged test. Ours
 // registers nothing there and keeps param_2[i] in a stack temporary (as in CMDS_12c8).
-// Tried: param_2 read as (byte*) everywhere (536 bytes, same shape).
+// param_2 is byte* (544 -> 536 bytes, same shape). Also tried, no better: the inner loop as
+// a for with the two assignments in its init; "if (c > 0x20) {...} else" (548); *(param_2 + i)
+// in the test, the body or both; all of the file's data defined after FONT_0000, only its own
+// data, or none (capacity: no change, so not an object boundary).
 // param_1: image, param_2: text
 void FONT_0000(byte* param_1, byte* param_2)
 {
@@ -363,6 +366,14 @@ void FONT_0e52(void);
 void FONT_0e7b(void);
 
 // CHECKED
+// NOT MATCHING (CODE, 4 bytes): the code is the original's except the frame (22h, the
+// original 28h) and case 0xc's pointer temporary, which reuses case 0xb's freed bp-20h
+// where the original takes a new bp-26h (with bp-24h and bp-28h never used). Tried in case
+// 0xc: while, do-while (both forms, much worse), != 0x20, <= 0x1f, its own block, an unused
+// int / register / two ints declared in that block (no change), three separate stores,
+// local_c as the pointer (worse). The source steps local_12/local_14 with += in case 0xb
+// (the decompiler's local_10 * 9 / * 3 gave MSC's closed form instead); += in the for
+// header moves the counter's increment first (12 bytes).
 // "view"
 void FONT_04a4(void)
 {

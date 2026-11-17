@@ -535,6 +535,15 @@ static void DUNGEON_1786(int param_1, int param_2)
 }
 
 // CHECKED
+// NOT MATCHING (CODE, 91 bytes, right length): the original builds each "table + param_3 * 2"
+// in SI itself (mov si,ax; ...; add si,ax: the table byte first at 1991/19be, param_3 * 2 first
+// at 1a32 [D_2f24]); ours computes it in AX with CX and then moves it to SI, and its "mov
+// cl,[2f24]" is a byte longer. Static tables made the CSE across the two calls appear. Tried:
+// the operands swapped (also differently in the two calls), << 1, 2 * p, p + p, (int)/(uint)
+// casts (the (int) cast changes the earlier tests); the sum assigned to local_6_an or local_4
+// (both dead there; stored to the stack, worse); a block-scope int (worse) or register (SI,
+// but p * 2 first and a frame of 8); deleting all the earlier functions (no change, so not
+// the optimizer's capacity).
 static void DUNGEON_1952(int param_1, int param_2, int param_3)
 {
     static u8 D_2f16[8] = {0x00, 0x1f, 0x00, 0x1f, 0x00, 0x00, 0x00, 0x00};
