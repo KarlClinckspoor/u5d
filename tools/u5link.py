@@ -16,7 +16,8 @@ resolved is the linker's rule). What it does:
                      overlay (or the resident code) into a function of another overlay goes
                      to that function's stub (STUB_<name>, src/asm/PLTAB.ASM), as PLINK86
                      did; segment references become the paragraphs of their segments, and
-                     those in the resident image become relocation entries;
+                     those in the resident image become relocation entries, those in
+                     an overlay the entries of its header (INTRO.OVL's, the only one);
   output             build/out/ULTIMA.EXE, build/out/<NAME>.OVL, build/out/DATA.OVL, then a
                      per-file comparison with the GOG files.
 
@@ -60,6 +61,7 @@ class Linker:
         self.by_convention = {}   # name -> count of references resolved by their name only
         self.unresolved = {}
         self.relocs = []          # image addresses of relocated words
+        self.ovl_relocs = {}      # overlay -> CS addresses of its relocated words
         self.notes = []
 
     # -- collecting
@@ -199,6 +201,16 @@ class Linker:
         self.notes.append('%s: unknown segment %r' % (m.name, target))
         return 0
 
+    def relocate(self, m, loc, bufbase, data_seg):
+        """Note a word at loc that holds a segment: an entry of the EXE's relocation table,
+        or of the overlay's header."""
+        if data_seg:
+            return
+        if bufbase == 0 and loc < ROOT_END:
+            self.relocs.append(loc)
+        elif m.kind == 'ovl':
+            self.ovl_relocs.setdefault(m.overlay, []).append(loc)
+
     def apply(self, m, seg, base, buf, bufbase, data_seg=False):
         """Copy seg's bytes into buf (whose index 0 is address bufbase) at base, applying
         its fixups. data_seg: the segment is in DGROUP (addresses are DS offsets)."""
@@ -209,15 +221,17 @@ class Linker:
             if fx.kind == omf.LOC_BASE:
                 v = self.frame(fx.target, m)
                 struct.pack_into('<H', data, fx.loc, v)
-                if not data_seg and bufbase == 0 and loc < ROOT_END:
-                    self.relocs.append(loc)
+                self.relocate(m, loc, bufbase, data_seg)
                 continue
             if kind == 'ext':
                 r = self.resolve(name, m)
                 if r is None:
                     continue
                 taddr = r[1]
+                # the segment of a far pointer to it (a function's is the code segment, 0)
+                segv = u5.DGROUP_SEG if r[0] == 'data' else 0
             elif kind in ('seg', 'grp'):
+                segv = None
                 if name == '_TEXT' or (m.code and name == m.code[0].name):
                     taddr = m.code[1] if m.code else 0
                 elif name in m.data:
@@ -229,12 +243,21 @@ class Linker:
                     continue
             else:
                 continue
-            if fx.kind == omf.LOC_OFFSET:
+            # 5: an offset the loader may resolve, which MSC writes for the address of a far
+            # function (D_5394_fn = ULTIMA_2322_DiskSwapMessage); it is placed as an offset
+            if fx.kind in (omf.LOC_OFFSET, 5):
                 if fx.self_rel:
                     v = taddr + fx.disp - (loc + 2)
                 else:
                     v = taddr + fx.disp + struct.unpack_from('<H', data, fx.loc)[0]
                 struct.pack_into('<H', data, fx.loc, v & 0xffff)
+            elif fx.kind == omf.LOC_POINTER and not fx.self_rel:
+                # offset and segment (a far call to a far function of another object)
+                v = taddr + fx.disp + struct.unpack_from('<H', data, fx.loc)[0]
+                if segv is None:
+                    segv = self.frame(fx.target, m)
+                struct.pack_into('<HH', data, fx.loc, v & 0xffff, segv)
+                self.relocate(m, loc + 2, bufbase, data_seg)
             elif fx.kind == omf.LOC_LOBYTE and fx.self_rel:
                 data[fx.loc] = (taddr + fx.disp - (loc + 1)) & 0xff
         off = base - bufbase
@@ -259,6 +282,16 @@ class Linker:
                 s = m.obj.seg(sname)
                 if s and s.length and sname not in SKIP_SEGMENTS:
                     self.apply(m, s, dsbase, dgroup, 0, data_seg=True)
+        # an overlay's relocation list is its header (tools/u5.py OVERLAY_HEADER): a dword
+        # (CS offset, segment 0) per relocated word, the later word first, then zeros
+        for ovl, locs in sorted(self.ovl_relocs.items()):
+            size = u5.OVERLAY_HEADER.get(ovl, 0)
+            locs = sorted(set(locs), reverse=True)
+            if 4 * len(locs) > size - 4:
+                self.notes.append('%s: %d relocated words, no room in a %d-byte header' % (ovl, len(locs), size))
+                continue
+            hdr = b''.join(struct.pack('<HH', a, 0) for a in locs)
+            overlays[ovl][:size] = hdr + bytes(size - len(hdr))
         return root, overlays, dgroup
 
 
