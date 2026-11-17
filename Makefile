@@ -123,5 +123,14 @@ $(TARGET): $(OBJS)
 
 -include $(wildcard $(addsuffix /*.d,$(DEPDIRS)))
 
+# The matching gate: build the 25 game files from source with Microsoft C 5.1/5.0 and MASM 4.0
+# in DOSBox-X, link them with tools/u5link.py and compare their SHA-1 with the GOG release
+# (docs/MATCHING.md). PYTHON is the interpreter of the tools' virtual environment.
+PYTHON ?= python
+check:
+	$(PYTHON) tools/check.py
+
+.PHONY: all check clean
+
 clean:
 	rm -f $(OBJS) $(TARGET)
