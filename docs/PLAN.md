@@ -29,6 +29,7 @@ passes only when they are identical.
 | 2026-11-17, batch 2: static/const tables, intro0.c, castb.c (5.0), shoppe2b.c | 583 | 1 | 0 | 7 | 6 | 597 |
 | 2026-11-17, batch 3: 5000.c split (5.0 + r5a28.c 5.1), for/while temporaries, goto-placed blocks | 591 | 0 | 0 | 4 | 2 | 597 |
 | 2026-11-17, clean-room rewrites from the disassembly; town.c split (town2.c); 22 overlays and DGROUP link identical | 594 | 0 | 0 | 3 | 0 | 597 |
+| 2026-11-17, FONT_0000, ULTIMA_2322, INTRO_132a as assembly (AFONT0, A2322, AINTRO2); 23 overlays, resident image and DGROUP link identical | 594 | 0 | 0 | 0 | 0 | 594 |
 
 Most `SIZE` verdicts in `0000.c` and `1000.c` are routines that were hand-written assembly in
 the original and are C in u5d (step 5).
@@ -86,15 +87,17 @@ Done, each checked by a tool:
   modules) and PLINK86's parts (`PLMGR`, `PLSTART`, `PLTAB`) assemble to the original bytes
   with MASM 4.0 (`tools/asmbuild.py`). Every relocated word has its segment fixup.
   Four overlays hold assembly too: all of FLAMES.OVL (`AFLAMES.ASM`), NPC.OVL's last routine
-  (`ANPC.ASM`), and the last two
-  routines of FONT.OVL (`AFONT.ASM`) and of INTRO.OVL (`AINTRO.ASM`, the video driver calls
-  u5d had as `DRV_69`). Their first line names the overlay range (file offsets)
+  (`ANPC.ASM`), FONT.OVL's first function and last two routines (`AFONT0.ASM`, `AFONT.ASM`),
+  and INTRO.OVL's GOG-patched U4 transfer and last two routines (`AINTRO2.ASM`, `AINTRO.ASM`,
+  the video driver calls u5d had as `DRV_69`). The resident image adds `A2322.ASM` (the
+  GOG-patched ULTIMA_2322). Their first line names the overlay range (file offsets)
   ("FONT.OVL 0e52-0e97"); asmbuild compares them with the .OVL file and u5link places them by
   their functions' names. FLAMES.OVL links byte-identical.
 - **Runtime:** CS:017e-0878 is 17 modules of SLIBCR.LIB and LIBH.LIB (`tools/libmatch.py`).
-- **Link:** `tools/u5link.py` links and compares. All overlays but FONT (FONT_0000) and
-  INTRO (the GOG patch) and DGROUP are byte-identical; the resident image differs in 489
-  bytes.
+- **Link:** `tools/u5link.py` links and compares. All 23 code overlays (INTRO.OVL's header
+  rebuilt from the overlay's relocations), the resident image and DGROUP are byte-identical.
+  Not yet built as facts: ULTIMA.EXE's header and relocation table order and DATA.OVL's
+  header (step 4), so ULTIMA.EXE and DATA.OVL are not yet compared as whole files.
 - **Objects:** INTRO has four objects (`intro0.c`, `intro.c`, `intro2.c`, `introb.c`), CMDS
   three (`cmds.c`, `cmds2.c`, `cmdsb.c`), SHOPPES2 two 5.0 objects (`shoppes2.c`,
   `shoppe2b.c`), found by the optimizer capacity; CAST is a 5.1 + 5.0 pair (`cast.c`,
@@ -103,7 +106,9 @@ Done, each checked by a tool:
 
 Next, in order:
 
-1. **Finish the C functions** (3 left, two of them GOG patches; `build/match/status.tsv`). Every
+1. **Finish the C functions** (done: every C function of the DOS build is exact; FONT_0000,
+   ULTIMA_2322 and INTRO_132a are assembly in the DOS build, their C native-only;
+   `build/match/status.tsv`). Every
    module now compiles with the compiler the original used, with 5.0's own slot hash, and
    DUNGEON, MAINOUT, INTRO, OUTSUBS and CMDS are split into their 5.1 and 5.0 objects.
    - *(done)* The 5.0 modules have plain literals and their own tables (`tools/own50.py`).
@@ -126,8 +131,9 @@ Next, in order:
      - *(done by a clean-room rewrite)* ZSTATS_0c5c, DUNGEON_1952 (a register pointer sharing a
        slot, DOS build only), TOWN_0f02 (266 dead references in an `if (0)` block, DOS build
        only, and TOWN.OVL split into town.c and town2.c).
-     - Left: FONT_0000 (56 bytes, 670/674; the outer for's increment is unknown, and the BX
-       temporary for `local_12 * 2` and one operand order differ). Its note says what is known.
+     - FONT_0000: built from AFONT0.ASM until the C matches (56 bytes, 670/674; the outer
+       for's increment is unknown, and the BX temporary for `local_12 * 2` and one operand
+       order differ). Its note says what is known.
      - Devices that stand for something unknown in the original (each explained in its
        note): ULTIMA_1850's comment-line padding and TOWN_0f02's dead references (both pass
        2's pool), DUNGEON_1952's register slot sharing.
@@ -136,7 +142,7 @@ Next, in order:
        (`research/c2mem.py` has the wrapper).
      - 2000.c: ULTIMA_256e and 25d8 call ULTIMA_2322 with `call far 0:2322`, where MSC emits
        `push cs; call near` for a far function defined earlier in the same module. So 2322
-       (the GOG-patched function) was probably in another object.
+       (the GOG-patched function) was probably in another object; it is now A2322.ASM.
 2. **Split the resident C into its original modules.** The runs between the assembly
    modules are 0d72, 1850-1b16, 1b38, 1dda-1eac, 1fa0-2056, 216c, and 2320-3072 / 3072-400c /
    400c-51a0 / 51a0-60ec / 60ec-6f1e (each with its own data in DGROUP), plus 7040-71aa.

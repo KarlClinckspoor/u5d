@@ -253,7 +253,7 @@ every run: a wrong base shows up as fixups that do not verify.
 
   | Area | Base | Overlays |
   |---|---|---|
-  | 1 | 0x81d0 | INTRO (base 0x81c0: its file starts with a 16-byte header), TOWN, MAINOUT, DUNGEON |
+  | 1 | 0x81d0 | INTRO (base 0x81c0: its file starts with a 16-byte header, the overlay's relocation list), TOWN, MAINOUT, DUNGEON |
   | 2 | 0xa290 | COMBAT, SHOPPES, NPC, LOOKOBJ, DNGLOOK, BLCKTHRN, ENDGAME, OUTSUBS |
   | 3 | 0xbf80 | SJOG, CAST, CMDS, TALK |
   | 4 | 0xe1e0 | COMSUBS, ZSTATS, CAST2, FONT, SHOPPES2, SHOPPES3 |
@@ -467,6 +467,30 @@ moves locals (CAST_1c36: 5.0's end-pointer loop compare was the tell).
   strings (DS:43ef). Each new file is registered in `tools/u5.py` (`MODULES`) and the build
   lists (CMakeLists.txt, Makefile, src/build.bat, u5win), and functions now called across
   objects lost `static`.
+- **Assembly instead of unmatched or patched C.** Three functions are built from assembly
+  written from the original bytes, as the original's own assembly is, while their C stays
+  for the native build only (`#if !defined(TARGET_DOS16)`, with a note pointing to the
+  module): FONT_0000 (`AFONT0.ASM`, FONT.OVL 0000-02a2, MSC 5.0 output the C comes within 56
+  bytes of), ULTIMA_2322 (`A2322.ASM`, CS:2322-251e) and INTRO_132a (`AINTRO2.ASM`, INTRO.OVL
+  132a-1e22), the two functions GOG patched in place, whose bytes are no compiler's output.
+  `tools/asmgen.py NAME START END --ovl OVERLAY` drafts an overlay part (offsets in the
+  .OVL file; calls into the resident code and the overlay's own functions by name, labels by
+  file offset). The data must not move: a function's literals leave the C object with it,
+  so they go into the assembly module's `_DATA`, placed by u5link from the code's
+  references. AINTRO2's strings follow intro2.c's packed strings at an odd address
+  (DS:3345), so its `_DATA` is declared BYTE-aligned; A2322 holds all of the old object's
+  data (D_545e and the strings, DS:545e-54b6), because with 2322 gone no code of r2320.c
+  refers to D_545e and the link could not place it. Both are stand-ins for the original's
+  single objects. Functions the assembly calls lose `static` (INTRO_1016, 1278, 12ea).
+- **INTRO.OVL's header** is PLINK86's relocation list for the overlay, the only one with
+  relocated words: a dword (CS offset, segment 0) per word that holds the code segment, the
+  later word first (one overlay with two entries is all the evidence), then zeros. Its two
+  entries are the segment halves of the far pointers to ULTIMA_2320 and 2322 that
+  INTRO_132a stores in D_5394_fn. `tools/u5.py` `OVERLAY_HEADER` records its size; asmgen
+  reads the relocations from it, and u5link writes it from the segment fixups of the
+  overlay's objects. u5link also places MSC's far-pointer fixups (kind 3, `call far` to a far
+  function of another object) and loader-resolved offsets (kind 5, the address of a far
+  function), and its resident relocations are the EXE's 409.
 
 ## What MSC 5.1 does
 
