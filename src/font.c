@@ -240,6 +240,13 @@ static void FONT_02a2(int param_1, int param_2)
 //   a pointer for loop: no change or worse.
 // The pattern (unused slot above an inner-block local) is DNGLOOK_0c6c's, where a
 // temporary made before the block pushed local_c down; here none is made early enough.
+// Also tried (all still local_c at bp-8, or worse): local_c in the if block / the for body /
+// the do body again (the loop temporaries are made after the block's local, so they are made
+// when a loop ends, not at its start); loop 1 as do-while (the "++i < 32" form is 294 bytes;
+// "i++; } while (i < 32)" and while are identical code) and loop 2's outer loop as while, each
+// with an unused local_a (local_c at -0Ah, frame 0Eh); register on each local (worse); a
+// "register byte*" walking loop 2 in a block (takes SI, swaps SI/DI: 12 bytes) or at function
+// level (288 bytes).
 int FONT_02fc(int param_1)
 {
     int local_c;
