@@ -278,19 +278,18 @@ int TALK_031e_TalkToNpc(int param_1)
     {
         local_8->type[local_6->_e] = 1;
     }
-    // c2ea NOT MATCHING: the original's guard test indexes with BX still holding local_6
-    // from the type test (mov bx,[bx+0Ch]); ours reloads it (mov bx,[bp-4]), so the code is
-    // 3 bytes longer up to the shared print, and the original's return needs jmp near where
-    // ours fits a short jmp. Tried, all identical to this: the guard as a nested if,
-    // !(... != 0 && ... != 0), !(x & 1) || !x, a goto past it instead of else, pointer
-    // arithmetic for the type array. Inverting the type test (!= 4, assignment in else)
-    // is worse.
-    else if (D_5c5a[local_6->_c]._0_tile == TILE_ACTOR_GUARD && ((local_6->_e & 1) == 0 || (local_6->_a) == 0))
+    // c2ea: the guard test jumps past its message with a goto. As an else-if, MSC keeps the
+    // guard's copy of the shared print tail and reloads local_6 for the guard test. With the
+    // goto, the guard falls into the "No response!" copy (the original's three nops after
+    // jmp near are that then-branch's dead jump over its else) and BX still holds local_6.
+    else
     {
+        if (D_5c5a[local_6->_c]._0_tile != TILE_ACTOR_GUARD || ((local_6->_e & 1) != 0 && (local_6->_a) != 0))
+            goto L_join;
         ULTIMA_1850_PrintString(_TEXT(0x9148, "The guard offers\nno response!\n"));
         return 0;
     }
-
+L_join:
     local_4_aa = local_6->_a;
     if (local_4_aa == 0)
     {
