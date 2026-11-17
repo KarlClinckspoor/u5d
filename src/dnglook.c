@@ -866,7 +866,8 @@ void DNGLOOK_0d3e(void)
 
     for (local_30_a = 0; local_30_a < 0xb; local_30_a++)
     {
-        memset(&GetCombatMap(0, local_30_a), D_bb15, 0xb);
+        local_34_ak = &GetCombatMap(0, local_30_a);
+        memset(local_34_ak, D_bb15, 0xb);
     }
 
     if ((D_58a1 & 4) != 0)
@@ -973,7 +974,7 @@ void DNGLOOK_0d3e(void)
         local_2e_ak[local_30_a] = local_30_a;
     }
 
-    // b18d NOT MATCHING
+    // b18d
     for (local_30_a = 0; local_30_a < 0x10; local_30_a++)
     {
         local_32_am = ULTIMA_2092_RandomRange(0, 0xf);
@@ -1001,7 +1002,7 @@ void DNGLOOK_0d3e(void)
         local_4_ab = D_13bc_enemyStats[local_32_am].maxEncounterCount;
     }
 
-    // b223 NOT MATCHING
+    // b223
     for (local_30_a = 0; local_30_a < local_4_ab; local_30_a++)
     {
         GetCombatMapMonsterTile(local_2e_ak[local_30_a]) = local_32_am * 4 + 64;
@@ -1152,7 +1153,7 @@ void DNGLOOK_117e(int param_1, int param_2)
     int local_16_ak;
     int local_14_am;
     int local_12_a;
-    uint local_10_aa;
+    int local_10_aa;
     int local_e_am;
     int local_c;
     byte local_a;
@@ -1185,11 +1186,12 @@ void DNGLOOK_117e(int param_1, int param_2)
         // b451
         ULTIMA_6936();
 
-        // NOT MATCHING
         for (local_10_aa = 0; local_10_aa < D_585b; local_10_aa++)
         {
-            D_ba14[local_10_aa].x = D_5c5a[local_10_aa]._2_x = GetCombatMapSpecial(local_4_ab, local_10_aa + local_c);
-            D_ba14[local_10_aa].y = D_5c5a[local_10_aa]._3_y = GetCombatMapSpecial(local_4_ab, local_10_aa + local_e_am);
+            D_ba14[local_10_aa].x = D_5c5a[local_10_aa]._2_x = GetCombatMapSpecial(local_4_ab, local_c);
+            D_ba14[local_10_aa].y = D_5c5a[local_10_aa]._3_y = GetCombatMapSpecial(local_4_ab, local_e_am);
+            local_c++;
+            local_e_am++;
         }
     }
 
@@ -1209,7 +1211,7 @@ void DNGLOOK_117e(int param_1, int param_2)
             local_a = GetCombatMapSpecial(COMBAT_MAP_SPECIAL_MONSTER_TILES, local_4_ab);
             if (local_a != 0)
             { 
-                // b542 (NOT MATCHING: nop)
+                // b542
                 if (local_a < 0x40 || (local_a & 0xfc) == 0xb4 || (local_a & 0xfc) == 0xe8)
                 {
                     local_14_am = 2;
