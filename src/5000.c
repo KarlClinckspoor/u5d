@@ -435,23 +435,23 @@ static bool ULTIMA_5dfe(byte param_1, int param_2);
 static void ULTIMA_5a28(int param_1, int param_2_y, int param_3_x, int param_4, int param_5, uint param_6, byte* param_7_map)
 {
     register byte* ptr;
-    int local_218_dir; // -0x216
-    byte local_216_tile;
-    int local_214_y; // -0x212; y
-    int local_212_x; // -0x210; x
-    int local_210; // -0x20e
-    int local_20e_queueReadPos; // -0x20c
+    int local_218_aj; // -0x216
+    byte local_216_al;
+    int local_214_an; // -0x212; y
+    int local_212; // -0x210; x
+    int local_210_ab; // -0x20e
+    int local_20e_an; // -0x20c
     int local_20c; // -0x20a
-    int local_20a_parentY; // -0x208
-    int local_208_parentX; // -0x206
-    int local_206_queue[257]; // -0x204
-    int local_4_queueWritePos;
+    int local_20a; // -0x208
+    int local_208; // -0x206
+    int local_206[257]; // -0x204
+    int local_4_ab;
 
-    local_20e_queueReadPos = 0;
-    local_4_queueWritePos = 0;
-    local_218_dir = 7;
+    local_20e_an = 0;
+    local_4_ab = 0;
+    local_218_aj = 7;
     local_20c = 1;
-    local_210 = 0;
+    local_210_ab = 0;
 
     if (param_1 > 0)
     {
@@ -459,48 +459,48 @@ static void ULTIMA_5a28(int param_1, int param_2_y, int param_3_x, int param_4, 
         if (param_4 == -0x6f)
         {
             param_4 = 0;
-            local_210++;
+            local_210_ab++;
         }
 
         // 5a66 (si vs di)
         param_1++;
-        local_206_queue[local_4_queueWritePos] = 5;
-        local_206_queue[++local_4_queueWritePos] = 5;
-        ++local_4_queueWritePos;
+        local_206[local_4_ab] = 5;
+        local_206[++local_4_ab] = 5;
+        ++local_4_ab;
         param_7_map[param_4 * 0x20 + param_5 + 0xa5] =
             *ULTIMA_4402_GetTileAddr(param_3_x + (uint)D_589b + 5, param_2_y + (uint)D_589c + 5);
 
-        while (local_20e_queueReadPos != local_4_queueWritePos)
+        while (local_20e_an != local_4_ab)
         {
             // 5abc
-            local_20a_parentY = local_214_y = local_206_queue[local_20e_queueReadPos];
-            local_208_parentX = local_212_x = local_206_queue[++local_20e_queueReadPos];
-            ++local_20e_queueReadPos;
+            local_20a = local_214_an = local_206[local_20e_an];
+            local_208 = local_212 = local_206[++local_20e_an];
+            ++local_20e_an;
 
-            while (local_218_dir > -1) // 5ce5
+            while (local_218_aj > -1) // 5ce5
             {
                 // 5aec
-                switch (local_218_dir)
+                switch (local_218_aj)
                 {
                 case 0:
                 case 1:
                 case 7:
-                    local_212_x--;
+                    local_212--;
                     break;
                 case 4:
                 case 5:
-                    local_212_x++;
+                    local_212++;
                     break;
                 case 2:
                 case 3:
-                    local_214_y--;
+                    local_214_an--;
                     break;
                 case 6:
-                    local_214_y++;
+                    local_214_an++;
                     break;
                 }
 
-                if (local_212_x < 0 || 10 < local_212_x || local_214_y < 0 || 10 < local_214_y)
+                if (local_212 < 0 || 10 < local_212 || local_214_an < 0 || 10 < local_214_an)
                 {
                     // 5b42
                     local_20c = 0;
@@ -510,18 +510,18 @@ static void ULTIMA_5a28(int param_1, int param_2_y, int param_3_x, int param_4, 
                 // TODO: temporary!
                 if (param_7_map == D_ad14)
                 {
-                    if (param_4 + local_214_y < 0 || param_5 + local_212_x < 0 || param_4 + local_214_y >= 0x20 || param_5 + local_212_x >= 0x20)
+                    if (param_4 + local_214_an < 0 || param_5 + local_212 < 0 || param_4 + local_214_an >= 0x20 || param_5 + local_212 >= 0x20)
                     {
-                        local_218_dir--;
+                        local_218_aj--;
                         local_20c = 1;
                         continue;
                     }
                 }
                 else if (param_7_map == D_ab02)
                 {
-                    if (param_4 + local_214_y < 0 || param_5 + local_212_x < 0 || param_4 + local_214_y >= 0xb || param_5 + local_212_x >= 0x20)
+                    if (param_4 + local_214_an < 0 || param_5 + local_212 < 0 || param_4 + local_214_an >= 0xb || param_5 + local_212 >= 0x20)
                     {
-                        local_218_dir--;
+                        local_218_aj--;
                         local_20c = 1;
                         continue;
                     }
@@ -533,16 +533,16 @@ static void ULTIMA_5a28(int param_1, int param_2_y, int param_3_x, int param_4, 
 #endif
 
                 // 5b48
-                ptr = &param_7_map[(param_4 + local_214_y) * 0x20 + param_5 + local_212_x];
+                ptr = &param_7_map[(param_4 + local_214_an) * 0x20 + param_5 + local_212];
 
                 // 5b5f
-                if (local_210 == 0)
+                if (local_210_ab == 0)
                 {
                     // 5b66
-                    if ((GetMapViewport(local_212_x, local_214_y) != 0) && (0x1f >= param_4 + local_214_y))
+                    if ((GetMapViewport(local_212, local_214_an) != 0) && (0x1f >= param_4 + local_214_an))
                     {
                         // 5b83
-                        GetMapViewport(local_212_x, local_214_y) = 0;
+                        GetMapViewport(local_212, local_214_an) = 0;
 
                         // -> 5b9b
                     }
@@ -569,39 +569,39 @@ static void ULTIMA_5a28(int param_1, int param_2_y, int param_3_x, int param_4, 
                 if (local_20c != 0)
                 {
                     // 5ba5
-                    local_216_tile = *ULTIMA_4402_GetTileAddr(param_3_x + local_212_x + (uint)D_589b, param_2_y + local_214_y + (uint)D_589c);
-                    if (ULTIMA_6ff0(local_212_x, local_214_y) >= param_1)
+                    local_216_al = *ULTIMA_4402_GetTileAddr(param_3_x + local_212 + (uint)D_589b, param_2_y + local_214_an + (uint)D_589c);
+                    if (ULTIMA_6ff0(local_212, local_214_an) >= param_1)
                     {
                         // TODO: control flow position
-                        if (local_210) // 5be1 : ??
+                        if (local_210_ab) // 5be1 : ??
                         {
                             // 5beb
-                            if (ULTIMA_5dfe(local_216_tile, ULTIMA_6ff0(local_212_x, local_214_y)) == 0)
+                            if (ULTIMA_5dfe(local_216_al, ULTIMA_6ff0(local_212, local_214_an)) == 0)
                             {
                                 // 5c05
                                 if (
 #if !defined(MATCHING_BUILD)
-                                    param_2_y + local_20a_parentY >= 0x20 || param_3_x + local_208_parentX >= 0x20 ||
-                                    param_2_y + local_214_y < 0 || param_3_x + local_208_parentX < 0 ||
+                                    param_2_y + local_20a >= 0x20 || param_3_x + local_208 >= 0x20 ||
+                                    param_2_y + local_214_an < 0 || param_3_x + local_208 < 0 ||
 #endif
-                                    param_7_map[local_20a_parentY * 0x20 + local_208_parentX] == 0 ||
-                                    D_ad14[(param_2_y + local_20a_parentY) * 0x20 + param_3_x + local_208_parentX] == 0 ||
-                                    D_ad14[(param_2_y + local_214_y) * 0x20 + param_3_x + local_212_x] == 0)
+                                    param_7_map[local_20a * 0x20 + local_208] == 0 ||
+                                    D_ad14[(param_2_y + local_20a) * 0x20 + param_3_x + local_208] == 0 ||
+                                    D_ad14[(param_2_y + local_214_an) * 0x20 + param_3_x + local_212] == 0)
                                 {
                                     // 5c47
-                                    local_216_tile = *ptr = 0xff;
+                                    local_216_al = *ptr = 0xff;
                                 }
                                 else
                                 {
                                     // 5c93
-                                    *ptr = local_216_tile;
+                                    *ptr = local_216_al;
                                 }
                             }
                             else
                             {
                                 // 5c52
-                                if (param_2_y + local_214_y < 0 || param_3_x + local_212_x < 0 ||
-                                    param_3_x + local_212_x >= 0x20 || param_2_y + local_214_y >= 0x20)
+                                if (param_2_y + local_214_an < 0 || param_3_x + local_212 < 0 ||
+                                    param_3_x + local_212 >= 0x20 || param_2_y + local_214_an >= 0x20)
                                 {
                                     // 5c74
                                     *ptr = 0;
@@ -609,10 +609,10 @@ static void ULTIMA_5a28(int param_1, int param_2_y, int param_3_x, int param_4, 
                                 else
                                 {
                                     // 5c7a
-                                    if (D_ad14[(param_2_y + local_214_y) * 0x20 + param_3_x + local_212_x] != 0)
+                                    if (D_ad14[(param_2_y + local_214_an) * 0x20 + param_3_x + local_212] != 0)
                                     {
                                         // 5c93
-                                        *ptr = local_216_tile;
+                                        *ptr = local_216_al;
                                     }
                                     else
                                     {
@@ -625,32 +625,32 @@ static void ULTIMA_5a28(int param_1, int param_2_y, int param_3_x, int param_4, 
                         else
                         {
                             // 5c9c
-                            local_216_tile = 0xff;
+                            local_216_al = 0xff;
                         }
                     }
                     else
                     {
                         // 5c93
-                        *ptr = local_216_tile;
+                        *ptr = local_216_al;
                     }
 
                     // 5ca1
-                    if (ULTIMA_5dfe(local_216_tile, ULTIMA_6ff0(local_212_x, local_214_y)) != 0)
+                    if (ULTIMA_5dfe(local_216_al, ULTIMA_6ff0(local_212, local_214_an)) != 0)
                     {
-                        local_206_queue[local_4_queueWritePos] = local_214_y;
-                        local_4_queueWritePos++;
-                        local_206_queue[local_4_queueWritePos] = local_212_x;
-                        local_4_queueWritePos++;
+                        local_206[local_4_ab] = local_214_an;
+                        local_4_ab++;
+                        local_206[local_4_ab] = local_212;
+                        local_4_ab++;
                     }
                 }
 
                 // 5cdb
-                local_218_dir--;
+                local_218_aj--;
                 local_20c = 1;
             }
 
             // 5cef
-            local_218_dir = 7;
+            local_218_aj = 7;
         }
     }
 
