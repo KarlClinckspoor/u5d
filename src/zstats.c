@@ -730,6 +730,140 @@ static int ZSTATS_0c0a(int param_1)
 // (tools/match.py src/zstats.c --dis ZSTATS_0c5c).
 static int ZSTATS_0c5c_EquipItem(int param_1, int param_2)
 {
+    byte* local_10_aa;
+    int local_e_am;
+    int local_c;
+    int local_a;
+    int local_8;
+    ActorFmt* local_6;
+    uint local_4_aa;
+
+    if (D_5893_map_id > 0x7f)
+    {
+        local_6 = &D_5c5a[D_ba14[D_589e].actorIdx];
+    }
+
+    if (param_2 == 0x1b || param_2 == 0x1d)
+    {
+        return 0;
+    }
+    if (param_2 >= 9 && param_2 <= 0xf && D_5893_map_id > 0x7f && D_58a3 == 0)
+    {
+        ZSTATS_0bee(_TEXT(0x97e2, "Thou canst not change armour in heated battle!"));
+    }
+    else if (ZSTATS_0518(param_1, param_2) != 0)
+    {
+        ULTIMA_6e60(param_1, param_2);
+        if (D_57c0[param_2] < 99)
+        {
+            D_57c0[param_2]++;
+        }
+
+        if (D_5893_map_id > 0x7f && param_2 == 0x2a)
+        {
+            local_8 = ULTIMA_4d76_FindIndex(_TEXT(0x9812, "AMBFDTPRS"), D_55a8_party[param_1].cls);
+            local_6->_0_tile = local_6->_1_animTile = D_1ade[local_8];
+        }
+    }
+    else if (((param_2 == 0x1a || param_2 == 0x24) && D_57db == 0) || (param_2 == 0x1c && D_57dd == 0))
+    {
+        ZSTATS_0bee(_TEXT(0x981c, "Thou hast no ammunition for that weapon!"));
+    }
+    else
+    {
+    local_4_aa = 0;
+    local_10_aa = D_55a8_party[param_1].equips;
+    for (local_a = 0; local_a < 6; local_a++)
+    {
+        if (*local_10_aa != 0xff)
+        {
+            local_4_aa += D_1aae[*local_10_aa];
+        }
+        local_10_aa++;
+    }
+
+    local_e_am = D_1aae[param_2] + local_4_aa <= D_55a8_party[param_1].str;
+
+    switch (D_1a7e[param_2])
+    {
+    case 0x80:
+        if (D_55a8_party[param_1].equips[0] != 0xff)
+        {
+            ZSTATS_0bee(_TEXT(0x9846, "Remove first thy present helm!"));
+            return 0;
+        }
+        local_10_aa = &D_55a8_party[param_1].equips[0];
+        break;
+    case 0x40:
+        if (D_55a8_party[param_1].equips[1] != 0xff)
+        {
+            ZSTATS_0bee(_TEXT(0x9866, "Thou must first remove thine other armour!"));
+            return 0;
+        }
+        local_10_aa = &D_55a8_party[param_1].equips[1];
+        break;
+    case 0x20:
+        local_c = ZSTATS_0c0a(param_1);
+        if (local_c == 0xff)
+        {
+            ZSTATS_0bee(_TEXT(0x9892, "Thou must free one of thy hands first!"));
+            return 0;
+        }
+        if (local_c == 2)
+        {
+            local_c = 0;
+        }
+        local_10_aa = &D_55a8_party[param_1].equips[local_c + 2];
+        break;
+    case 0x30:
+        local_c = ZSTATS_0c0a(param_1);
+        if (local_c != 2)
+        {
+            ZSTATS_0bee(_TEXT(0x98ba, "Both hands must be free before thou canst wield that!"));
+            return 0;
+        }
+        local_10_aa = &D_55a8_party[param_1].equips[2];
+        break;
+    case 4:
+        if (D_55a8_party[param_1].equips[5] != 0xff)
+        {
+            ZSTATS_0bee(_TEXT(0x98f0, "Thou must remove thine other amulet!"));
+            return 0;
+        }
+        local_10_aa = &D_55a8_party[param_1].equips[5];
+        break;
+    case 2:
+        if (D_55a8_party[param_1].equips[4] != 0xff)
+        {
+            ZSTATS_0bee(_TEXT(0x9916, "Only one magic ring may be worn at a time!"));
+            return 0;
+        }
+        local_10_aa = &D_55a8_party[param_1].equips[4];
+        break;
+    }
+
+    if (local_e_am != 0)
+    {
+    *local_10_aa = param_2;
+    D_57c0[param_2]--;
+    if ((param_2 == 0x2a || param_2 == 0x2c) && ULTIMA_2092_RandomRange(0, 0xf) == 0)
+    {
+        ULTIMA_1850_PrintString(_TEXT(0x995e, "\n\nRing vanishes!\n"));
+        D_55a8_party[param_1].equips[4] = 0xff;
+        ULTIMA_43ae_AudioSweepTone(0x4b0, 0x7d0, 1, 0x28);
+        return 1;
+    }
+
+    if (param_2 == 0x2a && D_5893_map_id > 0x7f)
+    {
+        local_6->_0_tile = local_6->_1_animTile = 0x1d;
+    }
+    }
+    else
+    {
+        ZSTATS_0bee(_TEXT(0x9942, "Thou art not strong enough!"));
+    }
+    }
     return 0;
 }
 
