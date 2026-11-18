@@ -631,7 +631,8 @@ with all of it applied at once; two did not, and both are pass 2's memory.
 - **CMDS_0000** (the first function of cmds.c, MSC 5.1) is at a limit with no room at all:
   it loses its loop optimization (frame 42h instead of 3Ch) when any one of the 20 globals
   it names gets a longer name, by as little as 6 characters, and also with a longer name
-  for `D_595a`, which cmds.c only declares. So declarations count too, at least here: the
+  for `D_595a` (which CMDS_0000 references twice through the `GetDungeonMap` macro: a
+  declaration alone never counts, "What pass 2 counts, measured" below): the
   183 other new names in the headers are accepted one at a time, this one is not, and
   padding the names by up to 540 characters more finds no second window. The way out is
   the **short link names**: cmds.c defines the 21 readable names as their short forms
@@ -1510,6 +1511,65 @@ structural changes (loop shapes, statement order).
   their first 31 characters become one symbol.
 - **No `NULL`.** MSC 5.1's `<time.h>` and `<stdlib.h>` don't define it.
 - **Packing.** `#pragma pack(push, 1)` is not understood (C4109); `/Zp` packs instead.
+
+## What pass 2 counts, measured
+
+From small test modules where everything is known (`research/RULES.md` and its scripts in
+`research/rules/`; `rk.py` keeps pass 1's files and reruns C2/C3 in half a second, `edge.py`
+moves a probe function's window edge). MSC 5.0 and 5.1 give the same costs, and they add up.
+
+- **Cost nothing:** declared-only externs and prototypes, struct tags, typedefs, `#define`
+  (used or not), comment lines outside bodies, dead lines inside `if (0)` (pass 1 drops
+  their line records) and lines under `#if 0`.
+- **Cost bytes of pass 2's memory** (one pool unit is 30 bytes: below about 256 KB free under
+  5.1, 400 paragraphs less move the edge by 214 units):
+  - a global symbol, about **22 + L** bytes (L the name's length), once it is referenced (live
+    or dead, in this or an earlier function) or defined (even unreferenced); a called
+    function about 26 + L, an array about 27 + L; referencing a defined static adds nothing;
+  - a string literal, about 27 bytes whatever its length, even when it repeats;
+  - an earlier function, its own name only (its body costs nothing once it has ended);
+  - the current function's locals and parameters, about **25 + L** each;
+  - inside the current function, each non-blank line one unit, a statement about five.
+- **Formula:** a function's pool = P(compiler, free memory) - sum(22 + L) over the globals
+  seen so far - 27 per literal so far - sum(25 + L) over its locals, in 30-byte units.
+  References that appear only in later functions cost nothing for the earlier ones.
+- **Two kinds of limit.** ULTIMA_1850 (5.0) sits at the pool's cut: lines, symbols and memory
+  are interchangeable there and the window is wide (123-563 lines, or 140-520 extra 8-letter
+  names). TOWN_0f02 and CMDS_0000 (5.1) do not move with line records at all (0-798 tried):
+  their loop optimization runs out of memory, and only symbol bytes move them, in narrow
+  windows.
+- **No single cause for the three pool devices.** With each device removed and K extra names
+  at the top of the module: r1850.c matches for K = 140-520; cmds.c for K = 70, 80 and 120
+  (statics) or 64-84 dead references in CMDS_0000, and CMDS_0962 breaks from 160; town.c only
+  at K = 261, while TOWN_0C78 already breaks from K = 35. So the original's town.c had about
+  7.5 KB more pass-2 memory in use between TOWN_0c78 and TOWN_0f02 than u5d's (about 260 more
+  names or literals there); no uniform header surplus or memory size explains all three.
+- **A candidate for CMDS_0000:** 74 dead references to undefined 8-letter externs on one line
+  at the top of CMDS_0000, with all readable names, no short link names: every cmds.c
+  function EXACT, window 64-84 references (about 300 characters of names either way). Not
+  yet gated (the stand-in step).
+
+**The order of communal variables** (both compilers): C1 gives each symbol-table entry the
+next serial number from 9 at the top of the file (every declared name of any kind, a named
+prototype parameter, a function definition 2 plus its parameters and locals, a literal, a
+typedef, a tag plus its members, an enum plus its constants; `#define` none). A communal goes
+into slot serial mod 64; COMDEF records are written slot 0 to 63, within a slot by the sum of
+`c & 0xDF` over the name mod 256, the later declared first on ties. u5d's VARS.OBJ is
+predicted exactly. PLINK86plus 2.24 then allocates communals in record order, object by
+object in link order, skipping names already allocated, 2-byte and larger ones on even
+addresses: u5link's rule. `u5.COMMUNALS` could be made to follow from the sources (record
+order in u5link, the module-only communals declared in their modules, the shared ones
+declared consecutively from slot 0-31 in the header the first object sees), but the order
+would still be fitted, not derived.
+
+**Shapes.** Every `register` local takes a stack slot (5.0 and 5.1, any type); the two-step SI
+build of DUNGEON_1952 and SJOG_0514 comes only from two statements into a register variable,
+and a slot goes back to a later sibling block only after an `if` then-branch, `for`, `while`
+or `switch`/`case` body (not a bare block, `else` or `do`). So the original shared that slot
+too: the `if (1)` there is one legal spelling, not a stand-in. FONT_0000: in isolation the
+original's add order comes from a user variable (`int w = D_50f7; w + used + 1`), but on the
+real function that adds a slot (664/674); the region*2 CSE goes to SI only in the whole
+function, because of some per-function count not identified (not the pool, not the names).
 
 ## What the 1988 functions taught
 

@@ -255,8 +255,11 @@ from a rule or from source, each named where it lives:
   targets"). Its ULTIMA_2322 and INTRO_132a are compiler output; only the wrapper's entry
   (PLSTART) and A1EAC's drive-letter byte are conditional assembly.
 - **Stand-in devices** in the source, each explained in its note: ULTIMA_1850's comment-line
-  padding, TOWN_0f02's dead references (both pass 2's pool), DUNGEON_1952's register slot
-  sharing, AINTRO2's BYTE-aligned `_DATA`, A2322 holding D_545e and r2320's strings.
+  padding, TOWN_0f02's dead references (both pass 2's pool), CMDS_0000's short link names,
+  AINTRO2's BYTE-aligned `_DATA`, A2322 holding D_545e and r2320's strings (the last two in
+  the gog target only). DUNGEON_1952's and SJOG_0514's register slot sharing is no longer
+  one: the original must have shared that slot too (MATCHING.md, "What pass 2 counts,
+  measured", which also has the measured costs and a candidate for CMDS_0000).
   - ULTIMA_1850: `r1850.c` is an object of its own, and it matches without the padding
     when pass 2 has 236.75-248.5 KB (MATCHING.md). A per-file memory limit for C2 in
     `dosbuild.py` (`research/c2mem.py` has the wrapper) would replace the padding with a
