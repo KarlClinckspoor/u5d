@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Q2 on u5d: predict VARS.OBJ's COMDEF order from vars.h with the rule of research/RULES.md,
-and say what u5.COMMUNALS (the original's allocation order) would need.
+and say what the communal order (the original's allocation order, the link command file's
+`communals` lines) would need.
 
     python research/rules/q2_vars.py
 
@@ -16,6 +17,9 @@ import rk  # noqa: E402
 import u5  # noqa: E402
 import omf  # noqa: E402
 import dosbuild  # noqa: E402
+import u5link  # noqa: E402
+
+COMMUNALS = [u5link.exported(n) for n in u5link.Script().communals]
 
 
 def key(n):
@@ -36,11 +40,11 @@ def main():
     decl = re.findall(r'^BSS\s+[^;]*?\b(D_[0-9a-f]{4}\w*)', open(os.path.join(u5.SRC, 'vars.h')).read(), re.M)
     hits = [s for s in range(64) if order(decl, s) == cd]
     print('VARS.OBJ: %d COMDEF records; predicted exactly with slot(first BSS) = %s' % (len(cd), hits or 'NONE'))
-    print('u5.COMMUNALS equals VARS.OBJ order: %s' % (list(u5.COMMUNALS) == cd))
-    # how far is VARS.OBJ's order from u5.COMMUNALS (which is address order)?
-    want = list(u5.COMMUNALS)
+    print('the command file communals equal VARS.OBJ order: %s' % (list(COMMUNALS) == cd))
+    # how far is VARS.OBJ's order from the command file's order (which is address order)?
+    want = list(COMMUNALS)
     pos = {n: i for i, n in enumerate(want)}
-    print('VARS.OBJ order as positions in u5.COMMUNALS:')
+    print('VARS.OBJ order as positions in the command file order:')
     print(' ', ' '.join(str(pos.get(n, '?')) for n in cd))
     # the shared ones of the original (a9bc-bb17) in one object: same slot rule; they come out in
     # address order if their serials, taken mod 64, rise (after the slot offset) with no wrap

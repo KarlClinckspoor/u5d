@@ -417,6 +417,10 @@ L_75c5:
 	pop ds
 	pop bp
 	db	0cbh	; retf
+; $OVLYV (OVLYV's public): the entry the overlay call stubs call (PLMGR_TEXT:02ec); tools/u5link.py
+; writes the stubs with it.
+	PUBLIC	$OVLYV
+$OVLYV:
 L_75cc:
 	pushf
 	push ax

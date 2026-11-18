@@ -57,6 +57,19 @@ def segname(val):
     return SEGVALUES.get(val, 'SEG_%04X' % val)
 
 
+def overlay_function_names():
+    """{(overlay number, CS address): exported name} for every C function of every overlay
+    (overlays of one area share addresses, so the overlay number tells them apart)."""
+    out = {}
+    for f, (kind, ovl) in u5.MODULES.items():
+        if kind != 'ovl' or ovl not in u5.OVERLAY_BASE:
+            continue
+        s = open(os.path.join(u5.SRC, f), encoding='utf-8', errors='replace').read()
+        for m in re.finditer(r'^(?:static\s+)?[\w\s\*]*?\b(%s_([0-9a-fA-F]{4})\w*)\s*\([^;{)]*\)\s*(?://[^\n]*)?\s*\{' % ovl, s, re.M):
+            out[(u5.OVERLAY_NUMBER[ovl], u5.OVERLAY_BASE[ovl] + int(m.group(2), 16))] = exported(m.group(1))
+    return out
+
+
 def exported(name):
     """The name as MSC 5.1 (/Gc) puts it in an object: upper case, at most 31 characters."""
     return name.upper()[:31]
@@ -135,10 +148,9 @@ class Gen:
         # runtime routines: the library's own (case-sensitive) public names
         self.funcs.update({a: '_' + n.split()[0] for a, n in rootmap.crt_names().items()
                            if a not in self.funcs and re.match(r'^\w+$', n.split()[0])})
-        # overlay call stubs: STUB_<function> (src/asm/PLTAB.ASM)
+        # overlay call stubs: STUB_<function> (tools/u5link.py makes them)
         try:
-            import plinkgen
-            names = plinkgen.overlay_function_names()
+            names = overlay_function_names()
             for s, (num, tgt) in u5.overlay_stubs(self.img).items():
                 if (num, tgt) in names:
                     self.funcs.setdefault(s, 'STUB_' + names[(num, tgt)][:26])

@@ -23,8 +23,9 @@ carries it to an exact rebuild.
 - The code has readable names throughout; the measured rules behind them (a local's name
   decides its stack slot, name lengths use the optimizer's memory) are in `docs/MATCHING.md`.
 - The original was linked with Phoenix PLINK86plus 2.24. u5d links with its own small OMF
-  linker (`tools/u5link.py`) from a link script (`src/u5d.lnk`), and computes the EXE
-  checksum by PLINK's rule.
+  linker (`tools/u5link.py`), which places everything by PLINK's rules from a command file
+  in PLINK's spirit (`src/u5d.lnk`: the processing order, the overlay areas and sections,
+  and the few facts no rule settles), and computes the EXE checksum by PLINK's rule.
 
 `docs/MATCHING.md` explains the tools, the method and what was learned about the binary;
 `docs/PLAN.md` has the state and what is left.

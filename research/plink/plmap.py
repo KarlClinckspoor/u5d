@@ -38,26 +38,26 @@ def parse_map(path):
 
 
 def expected(target):
-    """{(kind, name): {seg: value}} from the link script; code as 'xxxx' or 'OVL:xxxx'."""
+    """{name: {seg: value}} as tools/u5link.py places them from the link command file (code as
+    'xxxx', or 'OVL:xxxx', the offset in the .OVL file); needs the target's objects."""
+    sys.path.insert(0, os.path.join(ROOT, 'tools'))
+    import u5, u5link
+    u5.set_target(target)
+    lk = u5link.Linker(u5link.Script(target=target), lambda n: pl.objpath(n, target))
+    lk.gather()
+    lk.link()
     out = {}
-    for line in open(os.path.join(ROOT, 'src', 'u5d.lnk')).read().splitlines():
-        f = line.split('#')[0].split()
-        if not f or f[0] not in ('object', 'library'):
+    for m in lk.modules:
+        if m.name in pl.SKIP or m.name == u5link.TABLE:
             continue
-        t = [x[7:] for x in f if x.startswith('target=')]
-        if t and t[0] != target:
-            continue
-        if f[0] == 'object':
-            key = f[1].upper()
-            kv = f[2:]
-        else:
-            key = os.path.basename(f[2].replace('\\', '/')).upper()
-            kv = f[4:]
+        key = os.path.basename(m.name.replace('\\', '/')).upper() if m.kind == 'lib' else m.name.upper()
         d = {}
-        for x in kv:
-            if '=' in x and not x.startswith('target='):
-                k, v = x.split('=', 1)
-                d[k] = v.upper()
+        if m.code:
+            s = lk.sections.get(m.overlay)
+            d['code'] = '%s:%04X' % (m.overlay, m.code[1] - s['base'] + s.get('header', 0)) if s else '%04X' % m.code[1]
+        for seg, at in m.data.items():
+            if m.obj.seg(seg).length and seg != 'STACK':
+                d[seg] = '%04X' % at
         out[key] = d
     return out
 
