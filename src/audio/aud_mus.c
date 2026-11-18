@@ -15,7 +15,7 @@ void AUDIO_PlayBgmPerMap(void)
     case 0x28:
     case 0x20:
         AUDIO_PlayBgm(BGM_ID_3);
-        if (D_5895_map_level == 0xff)
+        if (D_5895_mapLevel == 0xff)
         {
             AUDIO_QueueBgm(BGM_ID_11);
         }
@@ -26,10 +26,10 @@ void AUDIO_PlayBgmPerMap(void)
         return;
     }
 
-    if (D_5893_map_id == 0)
+    if (D_5893_mapId == 0)
     {
         // overworld / underworld
-        if (D_5895_map_level == 255)
+        if (D_5895_mapLevel == 255)
         {
             AUDIO_PlayBgm(BGM_ID_11);
         }
@@ -40,7 +40,7 @@ void AUDIO_PlayBgmPerMap(void)
         return;
     }
 
-    if (D_5893_map_id > 0x20)
+    if (D_5893_mapId > 0x20)
     {
         AUDIO_PlayBgm(BGM_ID_10);
         return;
@@ -48,7 +48,7 @@ void AUDIO_PlayBgmPerMap(void)
 
     int bgmId = 0;
 
-    switch (D_5893_map_id)
+    switch (D_5893_mapId)
     {
         // town
     case 1:

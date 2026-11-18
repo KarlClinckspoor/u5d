@@ -22,7 +22,7 @@
 void TOWN_10da(int param_1)
 {
     ULTIMA_1850_PrintString(_TEXT(0x278a, "\"Begone,\nvermin!\"\n"));
-    ULTIMA_2aa8();
+    ULTIMA_2aa8_DamageParty();
     TOWN_08d4(param_1);
 }
 
@@ -35,13 +35,13 @@ static int TOWN_10f2(int param_1)
     local_4_ab = 0;
     for (local_6 = 0; local_6 < 4; local_6++)
     {
-        if (D_5d5e[param_1].time[local_6] != 0)
+        if (D_5d5e_npcSchedules[param_1].time[local_6] != 0)
         {
             local_4_ab = 1;
         }
     }
 
-    local_8 = D_659e[local_6];
+    local_8 = D_659e_npcTypes[local_6];
     if (local_8 < TILE_ACTOR_WIZARD || local_8 >= TILE_ACTOR_74)
     {
         local_4_ab = 0;
@@ -67,7 +67,7 @@ static void TOWN_1156(void)
             if (TOWN_10f2(local_4) != 0)
             {
                 TOWN_085e(local_4);
-                D_5f5e[local_4]._a = 0xfe;
+                D_5f5e_npcs[local_4]._a = 0xfe;
             }
         }
         break;
@@ -78,7 +78,7 @@ static void TOWN_1156(void)
             if (TOWN_10f2(local_4) != 0)
             {
                 TOWN_08d4(local_4);
-                D_5f5e[local_4]._a = 0xfd;
+                D_5f5e_npcs[local_4]._a = 0xfd;
             }
         }
         break;
@@ -108,15 +108,15 @@ void TOWN_11f0_Entry(int param_1)
     AUDIO_StopBgm();
 #endif
 
-    D_a9bc = D_24e6 = 1;
+    D_a9bc = D_24e6_viewDirty = 1;
     if (param_1 != 0)
     {
         for (local_4 = 1; local_4 < 0x20; local_4++)
         {
-            D_5c5a[local_4]._0_tile = 0;
+            D_5c5a_actors[local_4].tile = 0;
         }
-        D_5957 = 0;
-        D_58a4 = 1;
+        D_5957_drunkTurns = 0;
+        D_58a4_viewOn = 1;
         NPC_0000_LoadNpcFile();
         NPC_00d6(D_587f_hour);
     }
@@ -130,7 +130,7 @@ void TOWN_11f0_Entry(int param_1)
             TOWN_00b0_DespawnNpc(local_4);
     }
 
-    if ((D_5893_map_id == 29) && (D_57b5 != 0))
+    if ((D_5893_mapId == 29) && (D_57b5_sceptre != 0))
         TOWN_00b0_DespawnNpc(9);
 
     ULTIMA_2900_UpdateVitalsDisplay();
@@ -138,11 +138,11 @@ void TOWN_11f0_Entry(int param_1)
     if (ULTIMA_39fc_GetFirstActivePartyMember() >= 0)
     {
         ULTIMA_5910_UpdateFrame();
-        if (D_5893_map_id == 29)
+        if (D_5893_mapId == 29)
         {
             for (local_4 = 2; local_4 >= 0; local_4--)
             {
-                if (D_58c8[local_4] < 0x80)
+                if (D_58c8_shadowlordTowns[local_4] < 0x80)
                 {
                     TOWN_11b8(local_4);
                 }
@@ -166,7 +166,7 @@ static int TOWN_12ae(void)
     char local_4;
 
     local_6_an = 0;
-    if (D_5893_map_id == 0x12)
+    if (D_5893_mapId == 0x12)
     {
         if (ULTIMA_39fc_GetFirstActivePartyMember() >= 0)
         {
@@ -189,17 +189,17 @@ static int TOWN_12ae(void)
             ULTIMA_1850_PrintString(_TEXT(0x281b, "Yes\n\nThe guard strikes thee unconscious!\n"));
             ULTIMA_0a70_GRAP_2d_SetPenColor(0);
             ULTIMA_1850_PrintString(_TEXT(0x2845, "\nThou dost awaken to...\n"));
-            D_5893_map_id = 4;
-            D_5896_map_x = 0x19;
-            D_5897_map_y = 4;
-            D_24e6 = 1;
+            D_5893_mapId = 4;
+            D_5896_mapX = 0x19;
+            D_5897_mapY = 4;
+            D_24e6_viewDirty = 1;
 
             while (D_587f_hour != 8)
             {
-                ULTIMA_4f7c(0x14);
+                ULTIMA_4f7c_AdvanceTime(0x14);
             }
 
-            D_5895_map_level = D_57ac = 0;
+            D_5895_mapLevel = D_57ac_keys = 0;
 
             TOWN_11f0_Entry(1);
         }
@@ -220,18 +220,18 @@ static void TOWN_1352(int param_1)
     int local_4;
 
     local_4 = 0;
-    local_6_p = &D_5c5a[D_5f5e[D_65bf]._c];
+    local_6_p = &D_5c5a_actors[D_5f5e_npcs[D_65bf].actorIdx];
 
     ULTIMA_5910_UpdateFrame();
 
     if (D_65be == 0x61)
     {
-        if (D_5f5e[D_65bf]._a == 0xfe)
+        if (D_5f5e_npcs[D_65bf]._a == 0xfe)
         {
             ULTIMA_16ba_PrintChar('\n');
             TOWN_10da(D_65bf);
         }
-        else if (local_6_p->_0_tile != TILE_ACTOR_GUARD)
+        else if (local_6_p->tile != TILE_ACTOR_GUARD)
         {
             local_4 = 1;
         }
@@ -242,7 +242,7 @@ static void TOWN_1352(int param_1)
     }
     else if (param_1 == 0)
     {
-        if (D_5f5e[D_65bf]._a != 0 && TALK_031e_TalkToNpc(D_65bf) != 0)
+        if (D_5f5e_npcs[D_65bf]._a != 0 && TALK_031e_TalkToNpc(D_65bf) != 0)
         {
             local_4 = TOWN_12ae();
         }
@@ -254,7 +254,7 @@ static void TOWN_1352(int param_1)
 
     if (local_4 != 0)
     {
-        if (D_5c5a[D_5f5e[D_65bf]._c]._0_tile >= TILE_ACTOR_WIZARD)
+        if (D_5c5a_actors[D_5f5e_npcs[D_65bf].actorIdx].tile >= TILE_ACTOR_WIZARD)
         {
             ULTIMA_1850_PrintString(_TEXT(0x2881, "\nAttacked!\n"));
             TOWN_09bc(D_65bf);
@@ -289,7 +289,7 @@ void TOWN_141e_MainLoop(void)
         if (local_a == 1)
         {
             ULTIMA_16ba_PrintChar('\n');
-            ULTIMA_4c2a();
+            ULTIMA_4c2a_PrintLeftCap();
             ULTIMA_1850_PrintString(_TEXT(0x288d, "Zzzzzz...\n"));
         }
         else if (local_a == -1)
@@ -305,12 +305,12 @@ void TOWN_141e_MainLoop(void)
             }
             else
             {
-                if (ULTIMA_48a8() != 0) // FMT: LOOKOBJ_UNK();
+                if (ULTIMA_48a8_EnterMoongate() != 0) // FMT: LOOKOBJ_UNK();
                 {
                     CAST2_0e76_Shrine(); // thunk f89a
                 }
             }
-            if (D_5893_map_id == 0)
+            if (D_5893_mapId == 0)
             {
                 return;
             }
@@ -357,7 +357,7 @@ void TOWN_141e_MainLoop(void)
 
                     case U5_KEY_CTRL_S: // 1508 (96d8)
                         ULTIMA_1850_PrintString(_TEXT(0x28ae, "Sound "));
-                        if (D_a9ce != 0)
+                        if (D_a9ce_soundOn != 0)
                         {
                             ULTIMA_1850_PrintString(_TEXT(0x28b5, "Off\n"));
                         }
@@ -366,7 +366,7 @@ void TOWN_141e_MainLoop(void)
                             ULTIMA_1850_PrintString(_TEXT(0x28ba, "On\n"));
                         }
 
-                        D_a9ce = !D_a9ce;
+                        D_a9ce_soundOn = !D_a9ce_soundOn;
                         // 154b
                         local_c = 0;
                         break;
@@ -397,31 +397,31 @@ void TOWN_141e_MainLoop(void)
             } while (local_c == 3);
         }
         // 15a6
-        if (D_5893_map_id == 0)
+        if (D_5893_mapId == 0)
         {
             local_e = 1;
         }
         else if (local_c != 0 && ULTIMA_39fc_GetFirstActivePartyMember() != -1)
         {
             local_12_ab = D_587f_hour;
-            ULTIMA_4f7c(1);
+            ULTIMA_4f7c_AdvanceTime(1);
             if ((D_587f_hour != local_12_ab) && (D_587f_hour == 20 || D_587f_hour == 5))
             {
                 TOWN_0170();
             }
             // 15ec
             TOWN_0f02();
-            if ((D_594f != 0) && (D_5952--, D_5952 == 0))
+            if ((D_594f_openDoorTile != 0) && (D_5952_openDoorTurns--, D_5952_openDoorTurns == 0))
             {
-                ULTIMA_39cc_SetTile(D_594f, D_5950, D_5951);
+                ULTIMA_39cc_SetTile(D_594f_openDoorTile, D_5950_openDoorX, D_5951_openDoorY);
             }
             // 160d
-            D_5c5a[0]._2_x = D_5896_map_x;
-            D_5c5a[0]._3_y = D_5897_map_y;
-            D_5c5a[0]._4_z = D_5895_map_level;
+            D_5c5a_actors[0].x = D_5896_mapX;
+            D_5c5a_actors[0].y = D_5897_mapY;
+            D_5c5a_actors[0].z = D_5895_mapLevel;
             if ((D_587c_partyTile < TILE_ACTOR_RIDING_HORSE || D_587c_partyTile >= TILE_ACTOR_CIRCLE || local_8 == 0x20 ||
                 (local_6 = !local_6, !local_6)) &&
-                D_587a != 'T' && (D_587a != 'Q' || (local_10_ad = !local_10_ad, !local_10_ad)))
+                D_587a_statusIcon != 'T' && (D_587a_statusIcon != 'Q' || (local_10_ad = !local_10_ad, !local_10_ad)))
             {
                 // 165f
                 TOWN_0c78();
@@ -450,19 +450,19 @@ void TOWN_1694(void)
 
     for (local_4 = 1; local_4 < 0x20; local_4++)
     {
-        ULTIMA_3a74(0, 0, 0, 0, 0, 0, local_4);
-        D_5f5e[local_4]._c = 0;
+        ULTIMA_3a74_SetActor(0, 0, 0, 0, 0, 0, local_4);
+        D_5f5e_npcs[local_4].actorIdx = 0;
     }
 
     for (local_4 = 1; local_4 < 0x20; local_4++)
     {
-        if (D_659e[local_4] != 0)
+        if (D_659e_npcTypes[local_4] != 0)
         {
             local_6_an = NPC_12e0(local_4, D_587f_hour);
-            TOWN_1726(local_4, D_5d5e[local_4].x[local_6_an], D_5d5e[local_4].y[local_6_an], D_5d5e[local_4].z[local_6_an]);
-            D_5f5e[local_4]._0 = 1;
-            D_5f5e[local_4]._e = local_6_an;
-            D_655e[local_4] = -1;
+            TOWN_1726(local_4, D_5d5e_npcSchedules[local_4].x[local_6_an], D_5d5e_npcSchedules[local_4].y[local_6_an], D_5d5e_npcSchedules[local_4].z[local_6_an]);
+            D_5f5e_npcs[local_4].mode = 1;
+            D_5f5e_npcs[local_4].scheduleIdx = local_6_an;
+            D_655e_moveListPos[local_4] = -1;
         }
     }
 }
@@ -473,26 +473,26 @@ void TOWN_1726(int param_1, int param_2, int param_3, int param_4)
     int local_8;
     NpcFmt* local_4_c;
 
-    if (D_659e[param_1] == 0)
+    if (D_659e_npcTypes[param_1] == 0)
         return;
 
-    local_4_c = &D_5f5e[param_1];
+    local_4_c = &D_5f5e_npcs[param_1];
 
-    if (param_4 != D_5895_map_level && local_4_c->_c != 0)
+    if (param_4 != D_5895_mapLevel && local_4_c->actorIdx != 0)
     {
-        D_5c5a[local_4_c->_c]._0_tile = 0;
-        local_4_c->_c = 0;
+        D_5c5a_actors[local_4_c->actorIdx].tile = 0;
+        local_4_c->actorIdx = 0;
     }
 
-    if (param_4 == D_5895_map_level && local_4_c->_c == 0)
+    if (param_4 == D_5895_mapLevel && local_4_c->actorIdx == 0)
     {
-        local_6 = ULTIMA_38e4();
+        local_6 = ULTIMA_38e4_FindActorSlot();
 
-        if (D_659e[param_1] == 1)
+        if (D_659e_npcTypes[param_1] == 1)
         {
             local_8 = 0x1e;
         }
-        else if ((D_28c6[D_5893_map_id - 1] & ((u32)1 << param_1)) != 0)
+        else if ((D_28c6[D_5893_mapId - 1] & ((u32)1 << param_1)) != 0)
         {
             local_8 = 0xff;
         }
@@ -501,24 +501,24 @@ void TOWN_1726(int param_1, int param_2, int param_3, int param_4)
             local_8 = 0;
         }
 
-        ULTIMA_3a74(D_659e[param_1], D_659e[param_1], param_2, param_3, param_4, local_8, local_6);
+        ULTIMA_3a74_SetActor(D_659e_npcTypes[param_1], D_659e_npcTypes[param_1], param_2, param_3, param_4, local_8, local_6);
 
-        D_5c5a[local_6]._6 = 0;
-        local_4_c->_c = local_6;
+        D_5c5a_actors[local_6].animState = 0;
+        local_4_c->actorIdx = local_6;
     }
 
-    if (param_4 == D_5895_map_level && local_4_c->_c != 0)
+    if (param_4 == D_5895_mapLevel && local_4_c->actorIdx != 0)
     {
-        local_6 = local_4_c->_c;
-        D_5c5a[local_6]._2_x = param_2;
-        D_5c5a[local_6]._3_y = param_3;
-        D_5c5a[local_6]._4_z = param_4;
+        local_6 = local_4_c->actorIdx;
+        D_5c5a_actors[local_6].x = param_2;
+        D_5c5a_actors[local_6].y = param_3;
+        D_5c5a_actors[local_6].z = param_4;
     }
 
-    local_4_c->_2_x = param_2;
-    local_4_c->_4_y = param_3;
-    local_4_c->_6_z = param_4;
-    local_4_c->_0 = 1;
+    local_4_c->x = param_2;
+    local_4_c->y = param_3;
+    local_4_c->z = param_4;
+    local_4_c->mode = 1;
 }
 
 // after the last of TOWN's strings in its _DATA (DS:28c6)

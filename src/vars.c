@@ -40,7 +40,7 @@ VideoDriverParams D_52ba_vdp =
 
 int D_5304 = -1;
 
-u16 D_5358 = 0xffff;
+u16 D_5358_memorySize = 0xffff;
 
 u16 D_538e = 1;
 

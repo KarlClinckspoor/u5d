@@ -11,6 +11,8 @@
 
 // ref: u5tech
 // Savegame ref: https://wiki.ultimacodex.com/wiki/Ultima_V_internal_formats#SAVED.GAM_and_RAM
+// (the +0x... offsets in SAVED.GAM and what the bytes mean are the Codex's where the code agrees or does not say;
+// "the Codex" marks a meaning taken from it alone)
 
 #include "structs.h"
 
@@ -36,46 +38,46 @@ STUB u8 D_15cc[0x30]; // enemy related
 
 STUB u8 D_15fc[0x38]; // ~1634) some equip table
 
-STUB u8 D_1634[0x30]; // ~1664) equip defense table
+STUB u8 D_1634_equipDefense[0x30]; // ~1664) equip defense table
 STUB u8 D_1664[0x38]; // ~169c) some equip table
 STUB u8 D_169c[0x38]; // ~16d4) some equip table
 
-STUB u8 D_16d4[0x30]; // ~1704)
-STUB u8 D_1704[0x10]; // ~1704)
-STUB u8 D_1714[0x10]; // ~1714)
-STUB u8 D_1724[8]; // six used
+STUB u8 D_16d4_enemyCompanion[0x30]; // the other kind of enemy that may come with one (ULTIMA_6bc2)
+STUB u8 D_1704_combatEnemyX[0x10]; // where the enemies start on the combat map
+STUB u8 D_1714_combatEnemyY[0x10]; // ~1714)
+STUB u8 D_1724_combatPartyX[8]; // where the party starts
 // gap 2
-STUB u8 D_172c[8]; // six used
+STUB u8 D_172c_combatPartyY[8]; // six used
 // gap 2
 STUB u8 D_1734[8];
 
 STUB u8 D_173c[8];
 STUB u8 D_1744[8];
 
-STUB char* D_17f6[0x30]; // Equipment names
+STUB char* D_17f6_equipNames[0x30]; // Equipment names
 
-STUB char* D_1856[0x30]; // Job names
+STUB char* D_1856_enemyNames[0x30]; // Job names
 
-STUB char* D_18b6[0x30]; // Foe names
+STUB char* D_18b6_enemyNamesPlural[0x30]; // Foe names
 
 // 1900
 STUB char* D_1916[0x26]; // Items
-STUB char* D_1962[56]; // Armaments
-STUB char* D_19d2[8]; // reagent names
-STUB char* D_19e2[48 + 1]; // spell names
+STUB char* D_1962_equipShortNames[56]; // Armaments
+STUB char* D_19d2_reagentNames[8]; // reagent names
+STUB char* D_19e2_spellNames[48 + 1]; // spell names
 
 // 1a00
 
-STUB char* D_1a44[10]; // Class/Jobs (Avatar, Mage, Bard, ...)
+STUB char* D_1a44_classNames[10]; // Class/Jobs (Avatar, Mage, Bard, ...)
 STUB s16 D_1a58[9];
-STUB char* D_1a6a[5]; // Health (Good Health, Poisoned, ...)
+STUB char* D_1a6a_statusNames[5]; // Health (Good Health, Poisoned, ...)
 STUB u16 D_1a74[5]; // karma string offset
 STUB u8 D_1a7e[0x30]; // equipment type?
 STUB u8 D_1aae[0x30];
 STUB u8 D_1ade[9];
 // gap 1
 STUB u8 D_1ae8[0x30];
-STUB u8 D_1b18[0xb0 + 0x33];
+STUB u8 D_1b18_animSequences[0xb0 + 0x33];
 // gap 1
 STUB char* D_1bfc[26];
 
@@ -89,27 +91,27 @@ STUB u16 D_1cf0[0x15];
 STUB u8 D_1d1a[0x100];
 
 STUB u8 D_1e1a[0x20]; // map offset table ~1e3a)
-STUB char* D_1e3a[0x28]; // map name table ~1e8a)
-STUB u8 D_1e8a[0x28]; // ~1eb1) town position x
-STUB u8 D_1eb2[0x28]; // ~1ed9) town position y
-STUB u8 D_1eda[28 * 2]; // ~1f12) moon phase table?
+STUB char* D_1e3a_mapNames[0x28]; // map name table ~1e8a)
+STUB u8 D_1e8a_placeX[0x28]; // where each map's place is in the world
+STUB u8 D_1eb2_placeY[0x28]; // ~1ed9) town position y
+STUB u8 D_1eda_moonPhases[28 * 2]; // for each day of the month: Trammel's, Felucca's
 
 STUB u8 D_1f12[0x30]; // TODO: size, offset
 
 STUB u8 D_1f42[6];
 STUB u8 D_1f48[6];
 
-STUB char* D_1f4e[8];
-STUB char* D_1f5e[8]; // mantra
+STUB char* D_1f4e_virtueNames[8];
+STUB char* D_1f5e_mantras[8]; // mantra
 STUB u8 D_1f6e[8];
 STUB u8 D_1f76[8];
 STUB PairS8 D_1f7e[0x100]; // ~217e) (x,y) * 0x100 (TODO: Pair)
 
-STUB s16 D_217e;
-STUB s16 D_2180;
-STUB s16 D_2182;
-STUB s16 D_2184;
-STUB u8 D_2186; // s8?
+STUB s16 D_217e_beaconX; // the lighthouse lamp (tile 0x2a in a town, 0x1b outside); -1 none
+STUB s16 D_2180_beaconY;
+STUB s16 D_2182_beacon2X;
+STUB s16 D_2184_beacon2Y;
+STUB u8 D_2186_beaconStep; // s8?
 
 STUB s8 D_2188[0x32]; // ~21ba) comsubs: some line table
 
@@ -135,15 +137,15 @@ STUB u8 D_24a6[0x10];
 STUB u8 D_24b6[0x10];
 STUB u8 D_24c6[0x10];
 
-STUB s16 D_24d6[4]; // direction offset
-STUB s16 D_24de[4]; // direction offset
+STUB s16 D_24d6_facingDx[4]; // by facing: north, east, south, west
+STUB s16 D_24de_facingDy[4]; // direction offset
 
-STUB u8 D_24e6; // need to update map viewport?
+STUB u8 D_24e6_viewDirty; // the map view must be built again (bit 1: the light map too)
 STUB u8 D_24e7; // footstep sfx related flag in dungeon
 
 STUB char* D_24ea_wordTable[0x80]; // the words that bytes of the .TLK scripts (below 0x81) and of SHOPPE.DAT (from 0x80) stand for
-STUB char* D_25ea[30]; // ~2626) compressed file name table
-#define D_25f0 (&D_25ea[3])
+STUB char* D_25ea_fileNames[30]; // ~2626) compressed file name table
+#define D_25f0 (&D_25ea_fileNames[3])
 
 STUB char* D_2652[4]; // town dat names
 
@@ -361,7 +363,7 @@ STUB u8 D_3e6e[4];
 STUB char* D_3e72[3];
 
 STUB u8 D_3e78[0x72]; // TODO: size
-STUB u8 D_3eea[0x72]; // hidden item - _5 TODO: size
+STUB u8 D_3eea[0x72]; // hidden item - value TODO: size
 STUB u8 D_3f5c[0x72]; // hidden item - map id TODO: size
 STUB u8 D_3fce[0x72]; // hidden item - map z TODO: size
 STUB u8 D_4040[0x72]; // hidden item - map x TODO: size
@@ -499,14 +501,14 @@ STUB VideoDriverParams D_52ba_vdp;
 #if defined(TARGET_DOS16)
 // A0878.ASM's own names for two fields: the C modules read them as plain globals, which MSC
 // optimizes differently from a struct field (LOOKOBJ_0cf4)
-STUB int D_52c4;
-STUB int D_52c8;
+STUB int D_52c4_clipEnabled;
+STUB int D_52c8_videoDriver;
 #else
-#define D_52c4 D_52ba_vdp._52c4
-#define D_52c8 D_52ba_vdp._52c8_videoDriverSelection
+#define D_52c4_clipEnabled D_52ba_vdp.clipEnabled
+#define D_52c8_videoDriver D_52ba_vdp.videoDriver
 #endif
 
-STUB int D_52da_pen_color;
+STUB int D_52da_penColor;
 
 STUB int D_52ef_forceEga; // force ega
 STUB int D_52f1_forceTandy; // force tandy
@@ -533,24 +535,24 @@ STUB int D_5314[7]; // and heights
 // 5338..533f: "EGA.DRV"
 // 5340..5347: "T1K.DRV"
 // 5348..534f: "HER.DRV"
-STUB void* FAR D_5350; // video driver pointer
-STUB u16 D_5354; // segment of video page buffer (ega: 0xa800, t1k: allocated memory)
-STUB u16 D_5356; // timer calibration
-STUB u16 D_5358; // memory size
+STUB void* FAR D_5350_driverEntry; // far pointer into the video driver; the offset is the function number
+STUB u16 D_5354_pageSegment; // segment of video page buffer (ega: 0xa800, t1k: allocated memory)
+STUB u16 D_5356_timerCalibration; // timer calibration
+STUB u16 D_5358_memorySize; // memory size
 STUB u16 D_535a; // current timer value
-STUB u16 D_535c; // int21 error code
+STUB u16 D_535c_dosError; // int21 error code
 
 // 535e..537d
 STUB TextWindow D_535e_textWindows[4];
 
-STUB u16 D_5386_current_text_window_idx; // charset_id (offset in 539a, data in 53a4..53ab)
-STUB u16 D_5388_current_charset_idx; // selected charset idx
+STUB u16 D_5386_textWindowIndex; // charset_id (offset in 539a, data in 53a4..53ab)
+STUB u16 D_5388_charsetIndex; // selected charset idx
 STUB u16 D_538a; // bool: special keystroke
-STUB u16 D_538c; // use keyboard buffer?
+STUB u16 D_538c_keyBufferOff; // Ctrl-B: "Buffer Off/On"
 STUB u16 D_538e; // cursor advance flag
 STUB u16 D_5390; // keystroke cursor begin idx
 STUB u16 D_5392;
-STUB void (FAR *D_5394_fn)(void); // disk swap message function pointer
+STUB void (FAR *D_5394_diskSwapFn)(void); // disk swap message function pointer
 //STUB u16 D_5398; // segment of current charset
 STUB u8* FAR D_5398_currentCharset;        // ptr of current charset
 STUB TextWindow* D_539a_currentTextWindow; // address of current text window data
@@ -559,8 +561,8 @@ STUB u8* FAR D_539c[4];    // charset table
 STUB u16 D_53a4_underline; // underline flag (bit 0 of byte 7)
 STUB u16 D_53a6; // ? flag (bit 1 of byte 7)
 STUB u16 D_53a8_inverse; // inverse flag (bit 1 of byte 7)
-STUB u8  D_53aa_text_fg_color; // text fg color (lo nibble of byte 6)
-STUB u8  D_53ab_text_bg_color; // text bg color (hi nibble of byte 6)
+STUB u8  D_53aa_textFgColor; // text fg color (lo nibble of byte 6)
+STUB u8  D_53ab_textBgColor; // text bg color (hi nibble of byte 6)
 
 STUB u16 D_53b4; // loaded file size (lsb)
 STUB u16 D_53b6; // loaded file size (msb)
@@ -583,7 +585,7 @@ STUB u16 D_540c; // cursor anim idx // TODO: int
 STUB u8 D_540e[8]; // extended ascii code for arrow keys
 STUB u8 D_5416[8]; // special key table
 STUB u8 D_541e; // drive number
-STUB u16 D_5420; // random seed?
+STUB u16 D_5420_randomSeed; // random seed?
 STUB u16 D_5422;
 STUB u16 D_5424;
 STUB u16 D_5426[2]; // timer-related?
@@ -609,142 +611,142 @@ STUB u8 D_559e[8]; // ~55a6)
 // 
 
 // [55a6..6606): savegame (0x1060)
-STUB u16 D_55a6;    // +0x0
+STUB u16 D_55a6_saveStart; // +0x0: two bytes of unknown use; the block is read and written from here
 
 STUB S_55a8 D_55a8_party[0x10]; // ~57a8)
 
 // 5700
 STUB s16 D_57a8_food;        // +0x0202 Food // int (TALK_0682_ReceiveItem, MOVSX)
 STUB s16 D_57aa_gold;        // +0x0204 Gold // int (MAINOUT_1b3e, MOVSX)
-STUB u8  D_57ac;        // +0x0206 #Keys
-STUB u8  D_57ad;        // +0x0207 #Gems
-STUB u8  D_57ae;        // +0x0208 #Torches
-STUB u8  D_57af;        // +0x0209 Grapple
-STUB u8  D_57b0;        // +0x020A #Magic Carpets
-STUB u8  D_57b1;        // +0x020B #Skull Keys
-STUB u8  D_57b2;        // +0x020C Last day Minoc skull keys were taken
-STUB u8  D_57b3;        // +0x020D Amulet of Lord British
-STUB u8  D_57b4;        // +0x020E Crown of Lord British
-STUB u8  D_57b5;        // +0x020F Sceptre of Lord British
-STUB u8  D_57b6[4];     // +0x0210 Shards   // [57b6..57ba)
-STUB u8  D_57ba;        // +0x0214 #Spy Glass
-STUB u8  D_57bb;        // +0x0215 HMS Cape Plans
-STUB u8  D_57bc;        // +0x0216 #Sextant
-STUB u8  D_57bd;        // +0x0217 Pocket Watch
-STUB u8  D_57be;        // +0x0218 Black Badge
-STUB u8  D_57bf;        // +0x0219 Sandalwood Box
+STUB u8  D_57ac_keys; // +0x206
+STUB u8  D_57ad_gems; // +0x207
+STUB u8  D_57ae_torches; // +0x208
+STUB u8  D_57af_grapple; // +0x209
+STUB u8  D_57b0_carpets; // +0x20A magic carpets
+STUB u8  D_57b1_skullKeys; // +0x20B
+STUB u8  D_57b2_skullKeysDay; // +0x20C the day Minoc's skull keys were last taken
+STUB u8  D_57b3_amulet; // +0x20D Lord British's
+STUB u8  D_57b4_crown; // +0x20E
+STUB u8  D_57b5_sceptre; // +0x20F
+STUB u8  D_57b6_shards[4]; // +0x210
+STUB u8  D_57ba_spyglasses; // +0x214
+STUB u8  D_57bb_hmsCapePlans; // +0x215
+STUB u8  D_57bc_sextants; // +0x216
+STUB u8  D_57bd_pocketWatch; // +0x217
+STUB u8  D_57be_blackBadge; // +0x218
+STUB u8  D_57bf_sandalwoodBox; // +0x219
 // FMT pad 2byte (?)
-STUB u8  D_57c0[0x30];  // +0x021A Equipment(Quantity owned by the party) [57c0..57f0)
-#define D_57db D_57c0[0x1b] /* +0x0235 Arrows */
-#define D_57dd D_57c0[0x1d] /* +0x0237 Quarrels */
-STUB u8  D_57f0[0x30];  // +0x024A Spell Mixtures [57f0..5820)
+STUB u8  D_57c0_equipment[0x30]; // +0x21A how many of each piece of equipment the party owns
+#define D_57db_arrows D_57c0_equipment[0x1b] /* +0x0235 Arrows */
+#define D_57dd_quarrels D_57c0_equipment[0x1d] /* +0x0237 Quarrels */
+STUB u8  D_57f0_mixedSpells[0x30]; // +0x24A
 
 // 5800
-STUB u8  D_5820[8];     // +0x027A Scrolls
-STUB u8  D_5828[8];     // +0x0282 Potions (Blue, Yellow, Red, Green, Orange, Purple, Black, White)
-STUB u8  D_5830[8];     // +0x028A 0-0xFF Moonstone X-coordinates (valid only if buried)
-STUB u8  D_5838[8];     // +0x0292 0-0xFF Moonstone Y-coordinates (valid only if buried)
-STUB u8  D_5840[8];     // +0x029A 0=buried,0xFF=Inventory moonstone flags
-STUB u8  D_5848[8];     // +0x02A2 0=Britannia,0xFF=Underworld moonstone Z-coordinates (valid only if buried)
-STUB u8  D_5850[8];     // +0x02AA Reagents (A..H)
-STUB u8  D_5858[3];     // +0x02B2 Day each of the three nightshade/mandrake spots was last harvested [5858..585b)
+STUB u8  D_5820_scrolls[8]; // +0x27A
+STUB u8  D_5828_potions[8]; // +0x282
+STUB u8  D_5830_moonstoneX[8]; // +0x28A
+STUB u8  D_5838_moonstoneY[8]; // +0x292
+STUB u8  D_5840_moonstoneMap[8]; // +0x29A the map it is buried in (0 Britannia); 0xff: carried
+STUB u8  D_5848_moonstoneZ[8]; // +0x2A2
+STUB u8  D_5850_reagents[8]; // +0x2AA
+STUB u8  D_5858_harvestDay[3]; // +0x2B2
 STUB u8  D_585b_partyCount;        // +0x02B5 party member count
-STUB u8  D_585c[0x18];  // [585c..5874)
-STUB u16 D_5874;        // +0x02CE Current year (TODO: int?)
-STUB s16 D_5876;        // selected x direction? // +0x02D0 first party member that is not dead or sleeping? # of active monsters & charmed PCs[2]?
-STUB s16 D_5878;        // selected y direction? // +0x02D2 # of active PCs and charmed monsters[2]?
-STUB u8  D_587a;        // +0x02D4 Icon
+STUB u8  D_585c_takenItemFlags[0x18]; // +0x2B6 the Codex's "non-regenerating object flags" (SJOG sets a bit per find)
+STUB u16 D_5874_year; // +0x2CE
+STUB s16 D_5876_tempX; // +0x2D0 scratch: a direction chosen, a position, the actor found
+STUB s16 D_5878_tempY; // +0x2D2
+STUB u8  D_587a_statusIcon; // +0x2D4 the letter between the party and the food line: 'T', 'Q', 'P', 'N'...
 STUB u8  D_587b_activePlayer;        // +0x02D5 Active character
 STUB u8  D_587c_partyTile; // +0x02D6 party tile
-STUB u8  D_587d;        // +0x02D7 Current month
-STUB u8  D_587e;        // +0x02D8 Current day
+STUB u8  D_587d_month; // +0x2D7
+STUB u8  D_587e_day; // +0x2D8
 STUB u8  D_587f_hour;        // +0x02D9 Current hour
-STUB u8  D_5880;        // +0x02DA copy of 0x2D9
-STUB u8  D_5881;        // +0x02DB Current minute
+STUB u8  D_5880_lastHour; // +0x2DA
+STUB u8  D_5881_minute; // +0x2DB
 STUB u8  D_5882;
 STUB u8  D_5883;        // ?
-STUB u8  D_5884;
-STUB u8  D_5885;        // +0x02DF Phase of Trammel
-STUB u8  D_5886;        // +0x02E0 Phase of Felucca
-STUB u8  D_5887;        // +0x02E1 Current moongate height (in pixels)
+STUB u8  D_5884_clockChimes; // +0x2DE strokes the clock has still to chime
+STUB u8  D_5885_trammelPhase; // +0x2DF
+STUB u8  D_5886_feluccaPhase; // +0x2E0
+STUB u8  D_5887_moongateHeight; // +0x2E1
 STUB u8  D_5888_karma;        // +0x02E2 Karma
 STUB u8  D_5889;
 STUB u8  D_588a;
-STUB u8  D_588b;        // +0x02E5 Current turn count
-STUB u8  D_588c;
+STUB u8  D_588b_turnCount; // +0x2E5
+STUB u8  D_588c_campHealWait; // +0x2E6 hours until camping heals again (the Codex)
 STUB u8  D_588d;
-STUB u8  D_588e;        // +0x02E8 Protective spell duration
+STUB u8  D_588e_protectTurns; // +0x2E8
 STUB u8  D_588f;
 STUB u8  D_5890;
-STUB u8  D_5891;            // +0x02EB animate flag
-STUB u8  D_5892_wind_dir;   // +0x02EC wind direction
-STUB u8  D_5893_map_id;     // +0x02ED map_id (21h~: dungeon, 40: unloaded)
-STUB u8  D_5894;            // +0x02EE Combat backup of 0x2ED
-STUB u8  D_5895_map_level;  // +0x02EF level (depth)
-STUB u8  D_5896_map_x;      // +0x02F0 map_x
-STUB u8  D_5897_map_y;      // +0x02F1 map_y
-STUB u8  D_5898;            // crosshair visible
-STUB u8  D_5899;            // crosshair x
-STUB u8  D_589a;            // crosshair y
-STUB u8  D_589b;            // x upper left chunk
-STUB u8  D_589c;            // y upper left chunk
-STUB u8  D_589d;            // +0x02F7 Attacker's weapon
-STUB u8  D_589e;            // +0x02F8 ?
-STUB u8  D_589f;            // +0x02F9 show focus rectangle & crosshair?
-STUB u8  D_58a0;            // +0x02FA exit direction from combat map
-STUB u8  D_58a1;            // +0x02FB combat type flags
+STUB u8  D_5891_animate; // +0x2EB 0, 1 or 0xff
+STUB u8  D_5892_windDir; // +0x2EC
+STUB u8  D_5893_mapId; // +0x2ED
+STUB u8  D_5894_savedMapId; // +0x2EE the map while D_5893_mapId is a combat map
+STUB u8  D_5895_mapLevel; // +0x2EF
+STUB u8  D_5896_mapX; // +0x2F0
+STUB u8  D_5897_mapY; // +0x2F1
+STUB u8  D_5898_crosshairOn; // +0x2F2
+STUB u8  D_5899_crosshairX; // +0x2F3
+STUB u8  D_589a_crosshairY; // +0x2F4
+STUB u8  D_589b_mapOriginX; // +0x2F5 the map buffer's upper left corner in the world
+STUB u8  D_589c_mapOriginY; // +0x2F6
+STUB u8  D_589d_attackWeapon; // +0x2F7
+STUB u8  D_589e_curCombatant; // +0x2F8 the entry of D_ba14_combatants whose turn it is; 0xff none
+STUB u8  D_589f_focusBlink; // +0x2F9 toggled each frame: the frame around the combatant
+STUB u8  D_58a0_combatExitDir; // +0x2FA
+STUB u8  D_58a1_combatFlags; // +0x2FB
 STUB u8  D_58a2;
-STUB u8  D_58a3;            // +0x02FD battle successful flag (win?)
-STUB u8  D_58a4;            // +0x02FE Update/animate 2D map?
-STUB u8  D_58a5;            // +0x02FF Current light intensity
-STUB u8  D_58a6;
-STUB u8  D_58a7;
+STUB u8  D_58a3_combatOver; // +0x2FD the Codex's "no more enemies"
+STUB u8  D_58a4_viewOn; // +0x2FE the map view is updated and animated
+STUB u8  D_58a5_lightLevel; // +0x2FF
+STUB u8  D_58a6_lightSpellTurns; // +0x300
+STUB u8  D_58a7_torchTurns; // +0x301
 STUB u8  D_58a8[0x20];  // [58a8..58c8)
-STUB u8  D_58c8[3];     // 58cb)
+STUB u8  D_58c8_shadowlordTowns[3]; // +0x322
 STUB u8  D_58cb;
-STUB u16 D_58cc;        // shrine quest active flags TODO: u8?
-STUB u16 D_58ce;        // shrine quest completed flags TODO: u8?
-STUB u8  D_58d0[8];
-STUB u8  D_58d8[8];
-STUB u8  D_58e0[0xe];   // ..58ee)
-STUB u8  D_58ee[0x20];  // ..590e) spell counts
+STUB u16 D_58cc_questsOrdained; // +0x326
+STUB u16 D_58ce_questsDone; // +0x328
+STUB u8  D_58d0_dungeonOpen[8]; // +0x32A 0 sealed, 0x80 open
+STUB u8  D_58d8_shrineDestroyed[8]; // +0x332 bit 7
+STUB u8  D_58e0_roomsCleared[0xe]; // +0x33A
+STUB u8  D_58ee_annotX[0x20]; // +0x348 the Codex's "annotations" (TOWN lists the tiles 0x48/0x49 of the map here)
 // 5900
-STUB u8  D_590e[0x20];  // ..592e)
-STUB u8  D_592e[0x20];  // .594e)
-STUB u8  D_594e;
-STUB u8  D_594f;        // +0x03A9 opened door
-STUB u8  D_5950;        // +0x03AA open_door_x
-STUB u8  D_5951;        // +0x03AB open_door_y
-STUB u8  D_5952;        // +0x03AC # of turns the door stays open
-STUB u8  D_5953;        // +0x03AD ship_x
-STUB u8  D_5954;        // +0x03AE ship_y
-STUB u8  D_5955;
-STUB u8  D_5956;
-STUB u8  D_5957;        // +0x03B1 remaining drunk turn count (TOWN_0dc4)
-STUB u8  D_5958_townShadowlord; // which of the three shadowlords (D_58c8) is in this town, 0xff none (TOWN_02ae)
+STUB u8  D_590e_annotY[0x20]; // +0x368
+STUB u8  D_592e_annotTile[0x20]; // +0x388
+STUB u8  D_594e_annotCount; // +0x3A8
+STUB u8  D_594f_openDoorTile; // +0x3A9
+STUB u8  D_5950_openDoorX; // +0x3AA
+STUB u8  D_5951_openDoorY; // +0x3AB
+STUB u8  D_5952_openDoorTurns; // +0x3AC
+STUB u8  D_5953_boughtShipX; // +0x3AD
+STUB u8  D_5954_boughtShipY; // +0x3AE
+STUB u8  D_5955_sailDir; // +0x3AF
+STUB u8  D_5956_newPrompt; // +0x3B0
+STUB u8  D_5957_drunkTurns; // +0x3B1
+STUB u8  D_5958_townShadowlord; // which of the three shadowlords (D_58c8_shadowlordTowns) is in this town, 0xff none (TOWN_02ae)
 STUB u8  D_5959;
-STUB u8 D_595a[0x200];  // +0x03B4 dungeon map data ..5b5a)
+STUB u8 D_595a_dungeonMap[0x200]; // +0x3B4
 // 5b00
-STUB u8 D_5b5a[0x80];   // +0x05B4 NPC killed flags (4 bytes / 32 bits per settlement) [..5bda) // TODO: u32
-STUB u8 D_5bda[0x80];   // +0x0634 NPC met flags (4 bytes / 32 bits per settlement) [..5c5a)
+STUB u8 D_5b5a_npcKilled[0x80]; // +0x5B4
+STUB u8 D_5bda_npcMet[0x80]; // +0x634
 
-STUB ActorFmt D_5c5a[32]; // ~5d5a) "Object" struct
+STUB ActorFmt D_5c5a_actors[32]; // +0x6B4
 
 // 5d00
 STUB u16 D_5d5a; // unused?
 STUB u16 D_5d5c; // unused?
 
-STUB NpcScheduleFmt D_5d5e[32];  // +0x07B8 NPC Schedules [..5f5e) 0x200
+STUB NpcScheduleFmt D_5d5e_npcSchedules[32]; // +0x7B8
 
 // 5f00
-STUB NpcFmt D_5f5e[32];  // +0x09B8 Character/monster states (16bytes * 32) [..615e) 0x200
+STUB NpcFmt D_5f5e_npcs[32]; // +0x9B8
 
 // 6100
-STUB MovementFmt D_615e[0x20];  // +0x0BB8 Movement list table [..655e)
-//STUB u8 D_615e[0x400];
+STUB MovementFmt D_615e_moveLists[0x20]; // +0xBB8
+//STUB u8 D_615e_moveLists[0x400];
 
-STUB s16 D_655e[0x20];   // +0x0FB8 Movement list pointers [..659e)
-STUB u8 D_659e[0x20];   // +0x0FF8 NPC types [..65be)
+STUB s16 D_655e_moveListPos[0x20]; // +0xFB8
+STUB u8 D_659e_npcTypes[0x20]; // +0xFF8
 STUB u8 D_65be;
 STUB u8 D_65bf;
 STUB u16 D_65c0; // unused?
@@ -752,10 +754,10 @@ STUB s16 D_65c2[0x20];
 
 // 6600
 STUB u8 D_6602;
-STUB u8 D_6603;         // +0x105D orientation in a dungeon
-STUB u8 D_6604;         // +0x105E graphics for the current dungeon
-STUB u8 D_6605;         // +0x105F purchased ship/skiff
-STUB u16 D_6606; // end
+STUB u8 D_6603_dungeonFacing; // +0x105D 0 north, 1 east, 2 south, 3 west
+STUB u8 D_6604_dungeonStyle; // +0x105E 1 cave, 2 mine, 3 dungeon
+STUB u8 D_6605_boughtShip; // +0x105F 0x40 a skiff; 0x80 + n a frigate with n skiffs
+STUB u16 D_6606_saveEnd; // +0x1060: the end of the block
 
 STUB S_6608_Map D_6608_map; // ~6a08) map data: layer4 * y16 * x16 / y32 * x32
 #define D_6608 D_6608_map.raw
@@ -781,11 +783,11 @@ STUB S_6608_Map D_6608_overworld;
 
 STUB u8 D_6a08; // some audio related
 
-STUB u16 D_6a0a[5];
+STUB u16 D_6a0a_powersOfTen[5];
 
 STUB u8 D_6a14[0x20];
 
-STUB u8 D_6a34_u8;
+STUB u8 D_6a34_ambientTick;
 STUB u16 D_6a36[9]; // banjo freq table
 
 STUB u8 D_6a48[0x36]; // iolo's banjo song note table
@@ -818,7 +820,7 @@ STUB u8 D_6aa8[0x24];
 // D_bcb0, D_bd14, D_bd3a, D_bd3b) are declared so that the others land where they are.
 
 BSS u8  D_a9bc;
-BSS u8 D_a9bd[1]; // drive idx (one byte; an array, as the code reads D_a9bd[0])
+BSS u8 D_a9bd_curDisk[1]; // the disk wanted (ULTIMA_251e_SwitchDisks)
 BSS u8 D_a9be; // two bytes on an odd address would have been put on an even one
 BSS u8* D_a9c0; // loaded image pointer
 BSS u8 D_a9c2;
@@ -826,35 +828,35 @@ BSS u8* D_a9c4; // loaded image pointer
 BSS u8* D_a9c6; // loaded image pointer
 
 // disk drive table
-BSS u8 D_a9c8[6];
+BSS u8 D_a9c8_diskDrives[6]; // the drive of each disk; 0xff: not set
 
-#define D_a9c9 D_a9c8[1]
-#define D_a9ca D_a9c8[2]
-#define D_a9cb D_a9c8[3]
-#define D_a9cc D_a9c8[4]
-#define D_a9cd D_a9c8[5]
+#define D_a9c9 D_a9c8_diskDrives[1]
+#define D_a9ca D_a9c8_diskDrives[2]
+#define D_a9cb D_a9c8_diskDrives[3]
+#define D_a9cc D_a9c8_diskDrives[4]
+#define D_a9cd D_a9c8_diskDrives[5]
 
 // used in intro
-BSS u8 D_a9ce; // use sound effect?
+BSS u8 D_a9ce_soundOn; // use sound effect?
 
 BSS u16 D_a9d0[0x15];
 
-BSS u8 D_a9fa; // dirty flag for vital
+BSS u8 D_a9fa_vitalsDirty; // dirty flag for vital
 BSS u8 D_a9fb; // footstep sfx duration in dungeon
 
 // combat?
-BSS ActorFmt D_a9fc[0x20];
+BSS ActorFmt D_a9fc_savedActors[0x20]; // D_5c5a_actors during combat
 
 BSS char* D_aafc_shopName; // current shop name
 BSS char* D_aafe_shopOwner; // current shop owner
 
 BSS char* D_ab00;
-BSS u8 D_ab02[0x160]; // current visible map viewport [b * b], stride 0x20. 0: actor overlay, 0xff: hidden [ab02..ac62)
+BSS u8 D_ab02_viewTiles[0x160]; // the 11x11 view, 0x20 bytes a row: 0 an actor (in D_ac64_viewActors), 0xff hidden
 BSS char* D_ac62;
 
-BSS u8 D_ac64[0xb0]; // actor map / misc map [0x10 * b] (from 51b8)
+BSS u8 D_ac64_viewActors[0xb0]; // actor map / misc map [0x10 * b] (from 51b8)
 
-BSS u8 D_ad14[32 * 32]; // combat map data / misc [ad14..b114)
+BSS u8 D_ad14_combatMap[32 * 32]; // the combat map; outside combat the 32x32 light map
 
 // b100
 
@@ -864,7 +866,7 @@ BSS s16 D_b118_shopPrice; // s16 (FMT MOVSX); the % of a shop text
 BSS u16 D_b11a;
 
 BSS u8* D_b11c;
-BSS u8 D_b11e[0x100]; // animated tile lookup table
+BSS u8 D_b11e_tileFrames[0x100]; // the tile drawn for each map tile (animation)
 
 #if !defined(MATCHING_BUILD)
 #define SCRATCH_SIZE 3000
@@ -872,10 +874,10 @@ BSS u8 D_b11e[0x100]; // animated tile lookup table
 #define SCRATCH_SIZE 2000
 #endif
 
-BSS u8 D_b21e[SCRATCH_SIZE]; // scratch buffer ~b9ee)
+BSS u8 D_b21e_scratch[SCRATCH_SIZE]; // scratch buffer ~b9ee)
 
-#define D_b31e (D_b21e + 0x100)
-#define D_b7fa (D_b21e + 1500)
+#define D_b31e (D_b21e_scratch + 0x100)
+#define D_b7fa (D_b21e_scratch + 1500)
 
 // b900
 
@@ -898,7 +900,7 @@ BSS u8  D_b9ee[0x26]; // owned item counts
 #define D_ba12 D_b9ee[0x24]
 #define D_ba13 D_b9ee[0x25]
 
-BSS CombatEntity D_ba14[32]; // combat entities
+BSS CombatEntity D_ba14_combatants[32]; // combat entities
 
 BSS u8  D_bb14; // pos?
 BSS u8  D_bb15; // pos?

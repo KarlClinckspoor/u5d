@@ -29,16 +29,16 @@ DGROUP	GROUP	CONST, _BSS, _DATA
 	EXTRN	ULTIMA_1DDA_WAITFORKEYSTROKE:NEAR
 	EXTRN	ULTIMA_1EAC_SETDEFAULTDRIVE:NEAR
 	EXTRN	ULTIMA_2032_TOUPPER:NEAR
-	EXTRN	D_5394_FN:WORD
+	EXTRN	D_5394_DISKSWAPFN:WORD
 	EXTRN	ULTIMA_2320_NODISKSWAPMESSAGE:FAR
-	EXTRN	D_A9BD:BYTE
+	EXTRN	D_A9BD_CURDISK:BYTE
 	EXTRN	D_A9C2:BYTE
-	EXTRN	D_A9C8:BYTE
+	EXTRN	D_A9C8_DISKDRIVES:BYTE
 
 ; this module's own data in DGROUP (DS:545e-54b6)
 _DATA	SEGMENT
 	PUBLIC	D_545E
-D_545E	db	0ffh		; the disk (D_a9bd[0]) last selected, 0ffh: none
+D_545E	db	0ffh		; the disk (D_A9BD_CURDISK[0]) last selected, 0ffh: none
 D_545F	db	0ah, 'Please insert the Ultima ', 00h	; printed by 1.16 at 2405
 	PUBLIC	D_547A
 D_547A	db	'V ', 00h
@@ -62,9 +62,9 @@ ULTIMA_2322_DISKSWAPMESSAGE:
 	mov bp,sp
 	sub sp,4
 	push si
-	mov WORD PTR D_5394_FN,OFFSET ULTIMA_2320_NODISKSWAPMESSAGE
-	mov	WORD PTR D_5394_FN+2,_TEXT
-	mov bl,BYTE PTR D_A9BD
+	mov WORD PTR D_5394_DISKSWAPFN,OFFSET ULTIMA_2320_NODISKSWAPMESSAGE
+	mov	WORD PTR D_5394_DISKSWAPFN+2,_TEXT
+	mov bl,BYTE PTR D_A9BD_CURDISK
 	sub bh,bh
 	mov al,[bx-5638h]
 	mov [bp-4],al
@@ -78,19 +78,19 @@ ULTIMA_2322_DISKSWAPMESSAGE:
 	sub ch,ch
 	cmp ax,cx
 	je	L_2374
-	mov bl,BYTE PTR D_A9BD
+	mov bl,BYTE PTR D_A9BD_CURDISK
 	sub bh,bh
 	mov al,[bx-5638h]
 	sub ah,ah
 	push ax
 	call	ULTIMA_1EAC_SETDEFAULTDRIVE
-	mov al,BYTE PTR D_A9BD
+	mov al,BYTE PTR D_A9BD_CURDISK
 L_236d:
 	mov BYTE PTR D_545E,al
 	jmp	NEAR PTR L_250c
 	db	090h
 L_2374:
-	mov al,BYTE PTR D_A9BD
+	mov al,BYTE PTR D_A9BD_CURDISK
 	sub ah,ah
 	mov si,ax
 	add si,0a9c8h
@@ -102,11 +102,11 @@ L_2374:
 	mov al,[si]
 	push ax
 	call	ULTIMA_1EAC_SETDEFAULTDRIVE
-	mov al,BYTE PTR D_A9BD
+	mov al,BYTE PTR D_A9BD_CURDISK
 	cmp BYTE PTR D_545E,al
 	jne	L_236d
 L_239d:
-	mov al,BYTE PTR D_A9BD
+	mov al,BYTE PTR D_A9BD_CURDISK
 	sub ah,ah
 	mov si,ax
 	add si,0a9c8h
@@ -121,7 +121,7 @@ L_239d:
 	mov BYTE PTR D_545E,0ffh
 	jmp	NEAR PTR L_250c
 L_23c4:
-	cmp BYTE PTR D_A9BD+1,2
+	cmp BYTE PTR D_A9BD_CURDISK+1,2
 	jne	L_2400
 	sub ax,ax
 	push ax
@@ -156,7 +156,7 @@ L_2400:
 	call	ULTIMA_16A6_GETDEFAULTDRIVE
 	jmp	SHORT L_247d
 	db	044h, 0f4h	; the rest of 1.16's call ULTIMA_1850_PRINTSTRING
-	cmp BYTE PTR D_A9BD,4
+	cmp BYTE PTR D_A9BD_CURDISK,4
 	jne	L_241a
 	mov ax,49h
 	push ax
@@ -165,7 +165,7 @@ L_241a:
 	mov ax,OFFSET DGROUP:D_547A
 	push ax
 	call	ULTIMA_1850_PRINTSTRING
-	mov al,BYTE PTR D_A9BD
+	mov al,BYTE PTR D_A9BD_CURDISK
 	sub ah,ah
 	or ax,ax
 	je	L_243c
@@ -186,7 +186,7 @@ L_2443:
 	mov ax,OFFSET DGROUP:D_5496
 	push ax
 	call	ULTIMA_1850_PRINTSTRING
-	mov bl,BYTE PTR D_A9BD
+	mov bl,BYTE PTR D_A9BD_CURDISK
 	sub bh,bh
 	cmp byte ptr [bx-5638h],0ffh
 	jne	L_246c
@@ -214,7 +214,7 @@ L_2473:
 	call	ULTIMA_2032_TOUPPER
 L_247d:
 	mov [bp-2],al
-	mov bl,BYTE PTR D_A9BD
+	mov bl,BYTE PTR D_A9BD_CURDISK
 	sub bh,bh
 	cmp byte ptr [bx-5638h],0ffh
 	jne	L_2497
@@ -224,7 +224,7 @@ L_247d:
 	or ax,ax
 	je	L_2473
 L_2497:
-	mov bl,BYTE PTR D_A9BD
+	mov bl,BYTE PTR D_A9BD_CURDISK
 	sub bh,bh
 	cmp byte ptr [bx-5638h],0ffh
 	jne	L_24d4
@@ -239,24 +239,24 @@ L_2497:
 	jne	L_24b8
 	mov BYTE PTR D_A9C2,2
 L_24b8:
-	mov bl,BYTE PTR D_A9BD
+	mov bl,BYTE PTR D_A9BD_CURDISK
 	sub bh,bh
 	mov al,[bp-2]
 	mov [bx-5638h],al
 	cmp bl,3
 	jne	L_24d4
-	cmp BYTE PTR D_A9C8+1,0ffh
+	cmp BYTE PTR D_A9C8_DISKDRIVES+1,0ffh
 	jne	L_24d4
-	mov BYTE PTR D_A9C8+1,al
+	mov BYTE PTR D_A9C8_DISKDRIVES+1,al
 L_24d4:
-	cmp BYTE PTR D_A9BD+1,0
+	cmp BYTE PTR D_A9BD_CURDISK+1,0
 	jne	L_24e4
 	mov ax,0ah
 	push ax
 	call	ULTIMA_16BA_PRINTCHAR
 	jmp	SHORT L_250c
 L_24e4:
-	cmp BYTE PTR D_A9BD+1,2
+	cmp BYTE PTR D_A9BD_CURDISK+1,2
 	jne	L_250c
 	mov ax,1
 	push ax
@@ -276,8 +276,8 @@ L_24e4:
 	push ax
 	call	ULTIMA_0F6E_GRAP_1B_TRANSFERFUL
 L_250c:
-	mov WORD PTR D_5394_FN,OFFSET ULTIMA_2322_DISKSWAPMESSAGE
-	mov	WORD PTR D_5394_FN+2,_TEXT
+	mov WORD PTR D_5394_DISKSWAPFN,OFFSET ULTIMA_2322_DISKSWAPMESSAGE
+	mov	WORD PTR D_5394_DISKSWAPFN+2,_TEXT
 	pop si
 	mov sp,bp
 	pop bp

@@ -40,7 +40,7 @@ u16 ULTIMA_1b38_PollKeyWithCursor(void)
     {
 #if defined(TARGET_DOS32)
         // Temporary
-        ULTIMA_20c8_SomeDelay(1, 21);
+        ULTIMA_20c8_Delay(1, 21);
 #else
         ULTIMA_20fa_WaitTicks(1);
 #endif

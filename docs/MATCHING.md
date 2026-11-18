@@ -464,6 +464,42 @@ comment above each function.
   globals. The full gate is about 6 minutes, `match.py --compile` of everything about the
   same.
 
+### What the shared vocabulary cost
+
+The second step named what every module shares: 28 struct fields, 91 globals of the saved
+game, 60 globals of the game state and the tables, 60 resident functions (the batches are
+`docs/names/vocab-*.txt`: old name, new name, why). 592 of the 594 functions stayed EXACT
+with all of it applied at once; two did not, and both are pass 2's memory.
+
+- **Compile one module to try a name.** `match.py --compile FILE.c` takes a few seconds;
+  everything takes a minute and a half. `rename.py --bisect` on a batch that touches every
+  module compiles everything at each step: the savegame batch took 54 minutes to say that
+  each half matches and the whole does not. Halving cannot find a sum. Apply the batch
+  without `--match`, run `match.py --compile` once, and work on the modules that fail.
+- **TOWN_0f02**: the globals town.c uses grew by 373 characters and the window moved. The
+  fill is the knob: with the 15 last dead references taken out it matches again (12 to 15
+  do; 11 and 16 do not), about one reference for 30 characters. 251 are left. When names
+  town.c uses get longer again, take out more (15 was chosen from 12-15 to leave room).
+  Shortening the `F_` names alone was not enough (188 characters to be had).
+- **CMDS_0000** (the first function of cmds.c, MSC 5.1) is at a limit with no room at all:
+  it loses its loop optimization (frame 42h instead of 3Ch) when any one of the 20 globals
+  it names gets a longer name, by as little as 6 characters, and also with a longer name
+  for `D_595a`, which cmds.c only declares. So declarations count too, at least here: the
+  183 other new names in the headers are accepted one at a time, this one is not, and
+  padding the names by up to 540 characters more finds no second window. The way out is
+  the **short link names**: cmds.c defines the 21 readable names as their short forms
+  (`#define D_5c5a_actors D_5c5a`) before it includes vars.h and funcs.h, so that this one
+  object declares and references the short names while its source reads like the others,
+  and `u5.LINK_DEFINES` gives the linker the short names as second names (without it the
+  link still resolves them by the address they carry, and the gate reports that as a
+  problem). A function that breaks on a rename and cannot be helped by a shorter name
+  gets the same treatment: add the name to the module's list and to `LINK_DEFINES`.
+  rename.py renames both lists with the global.
+- **An experiment that puts names back must put them back in the headers too.** A module
+  with an old name its headers no longer declare does not compile, and `match.py` then
+  says "no object", which a script easily reads as "nothing differs".
+- Git Bash's `sed -i` rewrites a CRLF file with LF; restore from a copy or use the tool.
+
 ### How to go on
 
 One worker per module group in a worktree (`worktree.py`), each with a batch file per
@@ -473,7 +509,7 @@ function, the module's functions, the globals only that module group uses), runs
 commit. Globals used across groups are the conflict surface: `vars.h`, `tools/u5.py` and
 every module that mentions the global change. So:
 
-1. **First, alone: the shared vocabulary.** One worker names the globals of `vars.h` that
+1. **First, alone: the shared vocabulary** *(done; above)*. One worker names the globals of `vars.h` that
    many modules use and whose meaning is already in its comments (the savegame block
    DS:55a8-5c5a with the Codex's offsets, the map and actor tables, the text and video
    state), the struct fields of `structs.h` (free: fields are not in the object), and the

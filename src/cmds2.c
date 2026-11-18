@@ -38,7 +38,7 @@ static void CMDS_1202(int param_1, int param_2, int param_3)
     ULTIMA_1850_PrintString(_TEXT(0x4450, "\nUpon what virtue\ndost thou\nmeditate?\n\n:"));
     ULTIMA_3b1c_GetString(local_12, 0xf);
 
-    if (ULTIMA_6f1e((byte*)D_1f4e[param_1], local_12) == -1)
+    if (ULTIMA_6f1e_CompareWord((byte*)D_1f4e_virtueNames[param_1], local_12) == -1)
     {
         local_16_an = 0;
     }
@@ -48,7 +48,7 @@ static void CMDS_1202(int param_1, int param_2, int param_3)
         ULTIMA_1850_PrintString(_TEXT(0x4479, "\nMantra:"));
         ULTIMA_3b1c_GetString(local_12, 0xf);
 
-        if (ULTIMA_6f1e((byte*)D_1f5e[param_1], local_12) == -1)
+        if (ULTIMA_6f1e_CompareWord((byte*)D_1f5e_mantras[param_1], local_12) == -1)
         {
             local_16_an = 0;
         }
@@ -56,11 +56,11 @@ static void CMDS_1202(int param_1, int param_2, int param_3)
 
     if (local_16_an && D_1f6e[param_1] == param_2 && D_1f76[param_1] == param_3)
     {
-        D_58d8[param_1] &= 0x7f;
+        D_58d8_shrineDestroyed[param_1] &= 0x7f;
         ULTIMA_1850_PrintString(_TEXT(0x4482, "\n\nThe Shrine is\nrestored!\n"));
         ULTIMA_3072_ShakeScreen();
         *ULTIMA_4402_GetTileAddr(param_2, param_3) = TILE_MAP_SHRINE;
-        D_24e6 |= 2;
+        D_24e6_viewDirty |= 2;
     }
     else
     {
@@ -97,7 +97,7 @@ static void CMDS_12c8(char* param_1)
 
     for (local_4_ab = 0, local_e = D_4502; local_4_ab < 8; local_4_ab++)
     {
-        if (ULTIMA_6f1e((byte*)*local_e, param_1) > -1)
+        if (ULTIMA_6f1e_CompareWord((byte*)*local_e, param_1) > -1)
         {
             ULTIMA_1850_PrintString(_TEXT(0x44d7, "\nA word of power is uttered\n"));
             ULTIMA_3072_ShakeScreen();
@@ -142,16 +142,16 @@ static void CMDS_12c8(char* param_1)
 
             if (local_c == TILE_MAP_RUINS)
             {
-                CMDS_1202(local_4_ab, local_6 + D_5896_map_x, local_a + D_5897_map_y);
+                CMDS_1202(local_4_ab, local_6 + D_5896_mapX, local_a + D_5897_mapY);
                 return;
             }
 
-            if (local_6 + D_5896_map_x == D_1e8a[local_4_ab + 0x20] &&
-                local_a + D_5897_map_y == D_1eb2[local_4_ab + 0x20])
+            if (local_6 + D_5896_mapX == D_1e8a_placeX[local_4_ab + 0x20] &&
+                local_a + D_5897_mapY == D_1eb2_placeY[local_4_ab + 0x20])
             {
-                D_58d0[local_4_ab] ^= 0x80;
-                *ULTIMA_4402_GetTileAddr(local_6 + D_5896_map_x, local_a + D_5897_map_y) ^= D_4512[local_4_ab] ^ TILE_MAP_DF;
-                D_24e6 |= 2;
+                D_58d0_dungeonOpen[local_4_ab] ^= 0x80;
+                *ULTIMA_4402_GetTileAddr(local_6 + D_5896_mapX, local_a + D_5897_mapY) ^= D_4512[local_4_ab] ^ TILE_MAP_DF;
+                D_24e6_viewDirty |= 2;
             }
 
             local_8 = 1;
@@ -173,7 +173,7 @@ int CMDS_1418_YellCmd(void)
 
     local_24_an = 1;
 
-    if ((D_587c_partyTile & 0xf8) == TILE_ACTOR_FRIGATE_20 && D_5893_map_id < 0x80)
+    if ((D_587c_partyTile & 0xf8) == TILE_ACTOR_FRIGATE_20 && D_5893_mapId < 0x80)
     {
         if ((D_587c_partyTile & 0xfc) == TILE_ACTOR_FRIGATE_20)
         {
@@ -212,11 +212,11 @@ int CMDS_1418_YellCmd(void)
         else
         {
             ULTIMA_16ba_PrintChar('\n');
-            if (D_5893_map_id >= 1 && D_5893_map_id <= 0x20)
+            if (D_5893_mapId >= 1 && D_5893_mapId <= 0x20)
             {
                 local_24_an = CMDS_1030(local_22);
             }
-            else if (D_5893_map_id == 0)
+            else if (D_5893_mapId == 0)
             {
                 CMDS_12c8(local_22);
             }
@@ -320,33 +320,33 @@ void CMDS_161a_PushCmd(void)
     int local_6;
     int local_4_ab;
 
-    ULTIMA_39cc_SetTile(D_594f, D_5950, D_5951);
+    ULTIMA_39cc_SetTile(D_594f_openDoorTile, D_5950_openDoorX, D_5951_openDoorY);
     if (ULTIMA_35ec_SelectDirection() == 0)
     {
         return;
     }
 
-    local_12_ab = D_5876;
-    local_18_al = D_5878;
+    local_12_ab = D_5876_tempX;
+    local_18_al = D_5878_tempY;
 
-    if (D_5893_map_id > 0x7f)
+    if (D_5893_mapId > 0x7f)
     {
-        local_c = D_5896_map_x;
-        local_e = D_5897_map_y;
-        D_5896_map_x = D_ba14[D_589e].x;
-        D_5897_map_y = D_ba14[D_589e].y;
+        local_c = D_5896_mapX;
+        local_e = D_5897_mapY;
+        D_5896_mapX = D_ba14_combatants[D_589e_curCombatant].x;
+        D_5897_mapY = D_ba14_combatants[D_589e_curCombatant].y;
     }
 
-    local_10_ad = local_12_ab + (uint)D_5896_map_x;
-    local_16_an = local_18_al + (uint)D_5897_map_y;
+    local_10_ad = local_12_ab + (uint)D_5896_mapX;
+    local_16_an = local_18_al + (uint)D_5897_mapY;
 
-    if (D_5893_map_id > 0x7f && COMBAT_111a(local_10_ad, local_16_an) != 0)
+    if (D_5893_mapId > 0x7f && COMBAT_111a(local_10_ad, local_16_an) != 0)
     {
         return;
     }
 
     local_4_ab = *ULTIMA_4402_GetTileAddr(local_10_ad, local_16_an);
-    if (ULTIMA_368e_FindActorTileAtPos(local_10_ad, local_16_an, D_5895_map_level) != 0 || CMDS_14ba_Pushable(local_4_ab) == 0)
+    if (ULTIMA_368e_FindActorTileAtPos(local_10_ad, local_16_an, D_5895_mapLevel) != 0 || CMDS_14ba_Pushable(local_4_ab) == 0)
     {
         ULTIMA_1850_PrintString(_TEXT(0x4559, "Won't budge!\n"));
     }
@@ -356,8 +356,8 @@ void CMDS_161a_PushCmd(void)
         local_14 = local_10_ad + local_12_ab;
         local_1a_ac = local_16_an + local_18_al;
         local_6 = *ULTIMA_4402_GetTileAddr(local_14, local_1a_ac);
-        local_1c_aa = *ULTIMA_4402_GetTileAddr(D_5896_map_x, D_5897_map_y);
-        if (ULTIMA_368e_FindActorTileAtPos(local_14, local_1a_ac, D_5895_map_level) == 0 && local_6 == local_a)
+        local_1c_aa = *ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY);
+        if (ULTIMA_368e_FindActorTileAtPos(local_14, local_1a_ac, D_5895_mapLevel) == 0 && local_6 == local_a)
         {
             CMDS_1548_Pushed(local_4_ab, local_6, local_10_ad, local_16_an, local_14, local_1a_ac, local_12_ab, local_18_al);
         }
@@ -365,7 +365,7 @@ void CMDS_161a_PushCmd(void)
         {
             if (local_1c_aa == local_a)
             {
-                CMDS_15b0_Pulled(local_1c_aa, local_4_ab, D_5896_map_x, D_5897_map_y, local_10_ad, local_16_an, local_12_ab, local_18_al);
+                CMDS_15b0_Pulled(local_1c_aa, local_4_ab, D_5896_mapX, D_5897_mapY, local_10_ad, local_16_an, local_12_ab, local_18_al);
             }
             else
             {
@@ -374,22 +374,22 @@ void CMDS_161a_PushCmd(void)
             }
         }
 
-        D_5896_map_x += local_12_ab;
-        D_5897_map_y += local_18_al;
-        D_24e6 = 1;
+        D_5896_mapX += local_12_ab;
+        D_5897_mapY += local_18_al;
+        D_24e6_viewDirty = 1;
 
-        if (D_5893_map_id > 0x7f)
+        if (D_5893_mapId > 0x7f)
         {
-            local_8 = D_ba14[D_589e].entityIdx;
+            local_8 = D_ba14_combatants[D_589e_curCombatant].entityIdx;
 
-            D_ba14[D_589e].x += local_12_ab;
-            D_ba14[D_589e].y += local_18_al;
+            D_ba14_combatants[D_589e_curCombatant].x += local_12_ab;
+            D_ba14_combatants[D_589e_curCombatant].y += local_18_al;
 
-            D_5c5a[local_8]._2_x += local_12_ab;
-            D_5c5a[local_8]._3_y += local_18_al;
+            D_5c5a_actors[local_8].x += local_12_ab;
+            D_5c5a_actors[local_8].y += local_18_al;
 
-            D_5896_map_x = local_c;
-            D_5897_map_y = local_e;
+            D_5896_mapX = local_c;
+            D_5897_mapY = local_e;
 
             ULTIMA_5910_UpdateFrame();
         }
@@ -408,7 +408,7 @@ int CMDS_17ec_Escape(void)
     local_4_ab = local_6 = 0;
     for (local_8 = 0; local_8 < 0x20; local_8++)
     {
-        if ((D_ba14[local_8].flags & (COMBAT_FLAGS_PLAYER | COMBAT_FLAGS_DEAD)) == COMBAT_FLAGS_PLAYER)
+        if ((D_ba14_combatants[local_8].flags & (COMBAT_FLAGS_PLAYER | COMBAT_FLAGS_DEAD)) == COMBAT_FLAGS_PLAYER)
         {
             local_4_ab = 1;
             break;
@@ -417,12 +417,12 @@ int CMDS_17ec_Escape(void)
 
     if (local_4_ab)
     {
-        if ((D_58a1 & 0x80) != 0)
+        if ((D_58a1_combatFlags & 0x80) != 0)
         {
             ULTIMA_1850_PrintString(_TEXT(0x457b, "-Not here!\n"));
             local_6 = 1;
         }
-        else if (D_58a3 == 0)
+        else if (D_58a3_combatOver == 0)
         {
             ULTIMA_1850_PrintString(_TEXT(0x4587, "-Not yet!\n"));
             local_6 = 1;
@@ -435,7 +435,7 @@ int CMDS_17ec_Escape(void)
 
         for (local_8 = 0; local_8 < 0x20; local_8++)
         {
-            if (D_ba14[local_8].flags != 0)
+            if (D_ba14_combatants[local_8].flags != 0)
             {
                 COMBAT_1236(-local_8 - 1);
                 ULTIMA_5910_UpdateFrame();
@@ -444,7 +444,7 @@ int CMDS_17ec_Escape(void)
 
         for (local_8 = 0; local_8 < 0x20; local_8++)
         {
-            if (D_5c5a[local_8]._0_tile != 0)
+            if (D_5c5a_actors[local_8].tile != 0)
             {
                 COMBAT_1236(local_8 + 1);
                 ULTIMA_5910_UpdateFrame();
@@ -454,7 +454,7 @@ int CMDS_17ec_Escape(void)
         ULTIMA_43ae_AudioSweepTone(0x4b0, 2000, 1, 0x28);
     }
 
-    D_a9fa = 1;
+    D_a9fa_vitalsDirty = 1;
     return local_6;
 }
 

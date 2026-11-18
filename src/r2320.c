@@ -31,9 +31,9 @@ void FAR ULTIMA_2320_NoDiskSwapMessage(void)
 #if !defined(TARGET_DOS16)
 void FAR ULTIMA_2322_DiskSwapMessage(void)
 {
-    D_5394_fn = ULTIMA_2320_NoDiskSwapMessage;
+    D_5394_diskSwapFn = ULTIMA_2320_NoDiskSwapMessage;
 
-    if (D_a9bd[0] == 4)
+    if (D_a9bd_curDisk[0] == 4)
     {
         ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
         ULTIMA_1850_PrintString(_TEXT(0x11400, "Please place the Ultima IV 'party.sav' file into the 'U4SAVE' directory."));
@@ -41,7 +41,7 @@ void FAR ULTIMA_2322_DiskSwapMessage(void)
         ULTIMA_16ba_PrintChar('\n');
     }
 
-    D_5394_fn = ULTIMA_2322_DiskSwapMessage;
+    D_5394_diskSwapFn = ULTIMA_2322_DiskSwapMessage;
 }
 #elif 0
 // Not compiled: the DOS build has ULTIMA_2322 from src/asm/A2322.ASM (above). This is 1.16's
@@ -53,36 +53,36 @@ void FAR ULTIMA_2322_DiskSwapMessage(void)
     byte local_6_an;
     byte local_4;
 
-    D_5394_fn = ULTIMA_2320_NoDiskSwapMessage;
+    D_5394_diskSwapFn = ULTIMA_2320_NoDiskSwapMessage;
 
-    local_6_an = D_a9c8[D_a9bd[0]];
-    if (local_6_an != 0xff && D_545e != D_a9bd[0] && ULTIMA_16a6_GetDefaultDrive() != local_6_an)
+    local_6_an = D_a9c8_diskDrives[D_a9bd_curDisk[0]];
+    if (local_6_an != 0xff && D_545e != D_a9bd_curDisk[0] && ULTIMA_16a6_GetDefaultDrive() != local_6_an)
     {
         // 235a
-        ULTIMA_1eac_SetDefaultDrive(D_a9c8[D_a9bd[0]]);
+        ULTIMA_1eac_SetDefaultDrive(D_a9c8_diskDrives[D_a9bd_curDisk[0]]);
         // 236d
-        D_545e = D_a9bd[0];
+        D_545e = D_a9bd_curDisk[0];
     }
     else
     {
         // 2374
-        if (D_a9c8[D_a9bd[0]] < 0x43 && D_a9c2 > 1)
+        if (D_a9c8_diskDrives[D_a9bd_curDisk[0]] < 0x43 && D_a9c2 > 1)
         {
-            D_a9c8[D_a9bd[0]] ^= 3;
-            ULTIMA_1eac_SetDefaultDrive(D_a9c8[D_a9bd[0]]);
+            D_a9c8_diskDrives[D_a9bd_curDisk[0]] ^= 3;
+            ULTIMA_1eac_SetDefaultDrive(D_a9c8_diskDrives[D_a9bd_curDisk[0]]);
             // 2394
-            if (D_545e != D_a9bd[0])
+            if (D_545e != D_a9bd_curDisk[0])
             {
                 // -> 236d
-                D_545e = D_a9bd[0];
+                D_545e = D_a9bd_curDisk[0];
                 goto L_250c; // TODO: remove goto
             }
         }
 
         // 239d
-        if (D_a9c8[D_a9bd[0]] >= 'C' && D_a9c8[D_a9bd[0]] != 0xff)
+        if (D_a9c8_diskDrives[D_a9bd_curDisk[0]] >= 'C' && D_a9c8_diskDrives[D_a9bd_curDisk[0]] != 0xff)
         {
-            D_a9c8[D_a9bd[0]] = 'A';
+            D_a9c8_diskDrives[D_a9bd_curDisk[0]] = 'A';
             ULTIMA_1eac_SetDefaultDrive('A');
             D_545e = 0xff;
         }
@@ -107,7 +107,7 @@ void FAR ULTIMA_2322_DiskSwapMessage(void)
 
             // 2405
             ULTIMA_1850_PrintString(_TEXT(0x545f, "\nPlease insert the Ultima "));
-            if (D_a9bd[0] == 4)
+            if (D_a9bd_curDisk[0] == 4)
             {
                 ULTIMA_16ba_PrintChar('I');
             }
@@ -116,7 +116,7 @@ void FAR ULTIMA_2322_DiskSwapMessage(void)
 
             // 360k: 0=Program 1,3=Britannia 4=Player 2=Dungeon 5=Underworld
             // 720k: 0=Program 1,3=Britannia 4=Player (2, 5 => 1)
-            switch (D_a9bd[0])
+            switch (D_a9bd_curDisk[0])
             {
             case 0:
                 ULTIMA_1850_PrintString(_TEXT(0x547d, "Program"));
@@ -133,7 +133,7 @@ void FAR ULTIMA_2322_DiskSwapMessage(void)
 
             ULTIMA_1850_PrintString(_TEXT(0x5496, " Disk"));
 
-            if (D_a9c8[D_a9bd[0]] == 0xff)
+            if (D_a9c8_diskDrives[D_a9bd_curDisk[0]] == 0xff)
             {
                 ULTIMA_1850_PrintString(_TEXT(0x549c, " and press drive letter: "));
             }
@@ -151,13 +151,13 @@ void FAR ULTIMA_2322_DiskSwapMessage(void)
 L_GOG_247d:
 #endif
                 // 247d
-                if (D_a9c8[D_a9bd[0]] != 0xff)
+                if (D_a9c8_diskDrives[D_a9bd_curDisk[0]] != 0xff)
                     break;
 
             } while (ULTIMA_1eac_SetDefaultDrive(local_4) == 0);
 
             // 2497
-            if (D_a9c8[D_a9bd[0]] == 0xff)
+            if (D_a9c8_diskDrives[D_a9bd_curDisk[0]] == 0xff)
             {
                 // 24aa
 #if !defined(GOG_BUILD)
@@ -170,8 +170,8 @@ L_GOG_247d:
                     D_a9c2 = 2;
                 }
 
-                D_a9c8[D_a9bd[0]] = local_4;
-                if (D_a9bd[0] == 3 && D_a9c9 == 0xff)
+                D_a9c8_diskDrives[D_a9bd_curDisk[0]] = local_4;
+                if (D_a9bd_curDisk[0] == 3 && D_a9c9 == 0xff)
                 {
                     D_a9c9 = local_4;
                 }
@@ -191,6 +191,6 @@ L_GOG_247d:
     }
 
 L_250c:
-    D_5394_fn = ULTIMA_2322_DiskSwapMessage;
+    D_5394_diskSwapFn = ULTIMA_2322_DiskSwapMessage;
 }
 #endif

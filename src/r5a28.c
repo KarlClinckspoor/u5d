@@ -73,7 +73,7 @@ static void ULTIMA_5a28(int param_1, int param_2_y, int param_3_x, int param_4, 
         local_206[++local_4_ab] = 5;
         ++local_4_ab;
         param_7_map[param_4 * 0x20 + param_5 + 0xa5] =
-            *ULTIMA_4402_GetTileAddr(param_3_x + (uint)D_589b + 5, param_2_y + (uint)D_589c + 5);
+            *ULTIMA_4402_GetTileAddr(param_3_x + (uint)D_589b_mapOriginX + 5, param_2_y + (uint)D_589c_mapOriginY + 5);
 
         while (local_20e_an != local_4_ab)
         {
@@ -113,7 +113,7 @@ static void ULTIMA_5a28(int param_1, int param_2_y, int param_3_x, int param_4, 
 
 #if !defined(MATCHING_BUILD)
                 // TODO: temporary!
-                if (param_7_map == D_ad14)
+                if (param_7_map == D_ad14_combatMap)
                 {
                     if (param_4 + local_214_an < 0 || param_5 + local_212 < 0 || param_4 + local_214_an >= 0x20 || param_5 + local_212 >= 0x20)
                     {
@@ -122,7 +122,7 @@ static void ULTIMA_5a28(int param_1, int param_2_y, int param_3_x, int param_4, 
                         continue;
                     }
                 }
-                else if (param_7_map == D_ab02)
+                else if (param_7_map == D_ab02_viewTiles)
                 {
                     if (param_4 + local_214_an < 0 || param_5 + local_212 < 0 || param_4 + local_214_an >= 0xb || param_5 + local_212 >= 0x20)
                     {
@@ -174,13 +174,13 @@ static void ULTIMA_5a28(int param_1, int param_2_y, int param_3_x, int param_4, 
                 if (local_20c != 0)
                 {
                     // 5ba5
-                    local_216_al = *ULTIMA_4402_GetTileAddr(param_3_x + local_212 + (uint)D_589b, param_2_y + local_214_an + (uint)D_589c);
-                    if (ULTIMA_6ff0(local_212, local_214_an) >= param_1)
+                    local_216_al = *ULTIMA_4402_GetTileAddr(param_3_x + local_212 + (uint)D_589b_mapOriginX, param_2_y + local_214_an + (uint)D_589c_mapOriginY);
+                    if (ULTIMA_6ff0_DistanceFromCenter(local_212, local_214_an) >= param_1)
                     {
                         if (local_210_ab)
                         {
                         L_c:
-                            if (ULTIMA_5dfe(local_216_al, ULTIMA_6ff0(local_212, local_214_an)) == 0)
+                            if (ULTIMA_5dfe(local_216_al, ULTIMA_6ff0_DistanceFromCenter(local_212, local_214_an)) == 0)
                             {
                                 // 5c05
                                 if (
@@ -189,8 +189,8 @@ static void ULTIMA_5a28(int param_1, int param_2_y, int param_3_x, int param_4, 
                                     param_2_y + local_214_an < 0 || param_3_x + local_208 < 0 ||
 #endif
                                     param_7_map[local_20a * 0x20 + local_208] == 0 ||
-                                    D_ad14[(param_2_y + local_20a) * 0x20 + param_3_x + local_208] == 0 ||
-                                    D_ad14[(param_2_y + local_214_an) * 0x20 + param_3_x + local_212] == 0)
+                                    D_ad14_combatMap[(param_2_y + local_20a) * 0x20 + param_3_x + local_208] == 0 ||
+                                    D_ad14_combatMap[(param_2_y + local_214_an) * 0x20 + param_3_x + local_212] == 0)
                                 {
                                     local_216_al = *cell = 0xff;
                                 }
@@ -204,7 +204,7 @@ static void ULTIMA_5a28(int param_1, int param_2_y, int param_3_x, int param_4, 
                                 {
                                     *cell = 0;
                                 }
-                                else if (D_ad14[(param_2_y + local_214_an) * 0x20 + param_3_x + local_212] != 0)
+                                else if (D_ad14_combatMap[(param_2_y + local_214_an) * 0x20 + param_3_x + local_212] != 0)
                                 {
                                 L_5c93:
                                     *cell = local_216_al;
@@ -224,7 +224,7 @@ static void ULTIMA_5a28(int param_1, int param_2_y, int param_3_x, int param_4, 
                         goto L_5c93;
 
                     // 5ca1
-                    if (ULTIMA_5dfe(local_216_al, ULTIMA_6ff0(local_212, local_214_an)) != 0)
+                    if (ULTIMA_5dfe(local_216_al, ULTIMA_6ff0_DistanceFromCenter(local_212, local_214_an)) != 0)
                     {
                         local_206[local_4_ab] = local_214_an;
                         local_4_ab++;
@@ -248,7 +248,8 @@ static void ULTIMA_5a28(int param_1, int param_2_y, int param_3_x, int param_4, 
 
 // update map data?
 // param_1: light intensity
-void ULTIMA_5d0a(int param_1_light, int param_2_x, int param_3_y, int param_4)
+// Build the 11x11 view around map cell (x, y) for the light level: what the party can see.
+void ULTIMA_5d0a_BuildView(int param_1_light, int param_2_x, int param_3_y, int param_4)
 {
     int local5_4;
     int local4_6;
@@ -266,8 +267,8 @@ void ULTIMA_5d0a(int param_1_light, int param_2_x, int param_3_y, int param_4)
 
     if (param_1_light > 0)
     {
-        ULTIMA_5a28(param_1_light, local1_c, local2_a, -111, 0, 0x20, D_ab02);
-        local3_8 = D_ab02;
+        ULTIMA_5a28(param_1_light, local1_c, local2_a, -111, 0, 0x20, D_ab02_viewTiles);
+        local3_8 = D_ab02_viewTiles;
 
         for (local1_c = 0; local1_c < 0xb; local1_c++)
         {
@@ -295,8 +296,8 @@ void ULTIMA_5d0a(int param_1_light, int param_2_x, int param_3_y, int param_4)
             for (local2_a = 0; local2_a < 0xb; local2_a++)
             {
                 GetMapViewport(local2_a, local1_c) = *ULTIMA_4402_GetTileAddr(
-                    local5_4 + local2_a + (uint)D_589b,
-                    local4_6 + local1_c + (uint)D_589c);
+                    local5_4 + local2_a + (uint)D_589b_mapOriginX,
+                    local4_6 + local1_c + (uint)D_589c_mapOriginY);
             }
         }
     }
@@ -320,7 +321,8 @@ static bool ULTIMA_5dfe(byte param_1, int param_2)
     }
 }
 
-void ULTIMA_5e4a(void)
+// Build the 32x32 light map: the cells lit by the lamps, fires and moongates of the map buffer.
+void ULTIMA_5e4a_BuildLightMap(void)
 {
     byte local_92_aj;
     int local_90_al;
@@ -333,9 +335,9 @@ void ULTIMA_5e4a(void)
     u8* local_4_ab;
 
     local_90_al = 0;
-    local_4_ab = D_ad14;
+    local_4_ab = D_ad14_combatMap;
 
-    memset(D_ad14, 0xff, 0x400);
+    memset(D_ad14_combatMap, 0xff, 0x400);
 
     // 5e72
     for (local_8 = 0; local_8 < 0x20; local_8++)
@@ -343,7 +345,7 @@ void ULTIMA_5e4a(void)
         for (local_6 = 0; local_6 < 0x20; local_6++)
         {
             // 5e78
-            local_92_aj = *ULTIMA_4402_GetTileAddr(D_589b + local_6, D_589c + local_8);
+            local_92_aj = *ULTIMA_4402_GetTileAddr(D_589b_mapOriginX + local_6, D_589c_mapOriginY + local_8);
             if (memchr(D_6a9a, local_92_aj, 10) != 0)
             {
                 // 5eb0
@@ -377,13 +379,13 @@ void ULTIMA_5e4a(void)
             }
 
             // 5f3f
-            ULTIMA_5a28(10, local_e, local_c, local_e, local_c, 0x20, D_ad14);
+            ULTIMA_5a28(10, local_e, local_c, local_e, local_c, 0x20, D_ad14_combatMap);
             local_8++;
         } while (local_8 < local_6);
     }
 
     // 5f65
-    local_4_ab = D_ad14;
+    local_4_ab = D_ad14_combatMap;
 
     for (local_6 = 0; local_6 < 0x400; local_6++)
     {
@@ -395,6 +397,6 @@ void ULTIMA_5e4a(void)
     }
 }
 
-void ULTIMA_6fbc(int param_1);
+void ULTIMA_6fbc_TilesetMode(int param_1);
 
-void ULTIMA_6bc2(int param_1, int param_2);
+void ULTIMA_6bc2_SetUpCombat(int param_1, int param_2);

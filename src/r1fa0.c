@@ -24,7 +24,7 @@ void ULTIMA_1fa0_Backspace(int char_count)
     if ((ULTIMA_1f12_GetCurrentTextX() != 0 || ULTIMA_1cee_GetCurrentTextY() != 0) && char_count != 0)
     {
         local_4_ab = D_538e;
-        local_6 = &D_535e_textWindows[D_5386_current_text_window_idx];
+        local_6 = &D_535e_textWindows[D_5386_textWindowIndex];
         D_538e = 0;
 
         for (local_8 = 0; local_8 < char_count; local_8++)

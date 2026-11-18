@@ -14,15 +14,15 @@ DGROUP	GROUP	CONST, _BSS, _DATA
 	ASSUME	CS: _TEXT, DS: DGROUP, SS: DGROUP, ES: DGROUP
 
 	EXTRN	ULTIMA_08E6_CLIPRECTCOORD:NEAR
-	EXTRN	D_5350:WORD
-	EXTRN	D_535C:WORD
+	EXTRN	D_5350_DRIVERENTRY:WORD
+	EXTRN	D_535C_DOSERROR:WORD
 	EXTRN	D_587F_HOUR:BYTE
-	EXTRN	D_5881:BYTE
+	EXTRN	D_5881_MINUTE:BYTE
 
 _TEXT	SEGMENT
 
-	PUBLIC	ULTIMA_71AA
-ULTIMA_71AA:
+	PUBLIC	ULTIMA_71AA_UPDATECLOCKTILES
+ULTIMA_71AA_UPDATECLOCKTILES:
 	push bp
 	mov bp,sp
 	push si
@@ -30,9 +30,9 @@ ULTIMA_71AA:
 	push ds
 	mov ax,2
 	mov bl,BYTE PTR D_587F_HOUR
-	mov bh,BYTE PTR D_5881
-	mov WORD PTR D_5350,6ch
-	call DWORD PTR D_5350
+	mov bh,BYTE PTR D_5881_MINUTE
+	mov WORD PTR D_5350_DRIVERENTRY,6ch
+	call DWORD PTR D_5350_DRIVERENTRY
 	pop ds
 	pop di
 	pop si
@@ -59,8 +59,8 @@ ULTIMA_71CA_DRV_27_SCROLLTEXTWI:
 	mov si,di
 L_71ec:
 	neg si
-	mov WORD PTR D_5350,27h
-	call DWORD PTR D_5350
+	mov WORD PTR D_5350_DRIVERENTRY,27h
+	call DWORD PTR D_5350_DRIVERENTRY
 	pop ds
 	pop di
 	pop si
@@ -87,8 +87,8 @@ ULTIMA_7200_DRV_27_SCROLLTEXTWI:
 	jle	L_7222
 	mov si,di
 L_7222:
-	mov WORD PTR D_5350,27h
-	call DWORD PTR D_5350
+	mov WORD PTR D_5350_DRIVERENTRY,27h
+	call DWORD PTR D_5350_DRIVERENTRY
 	pop ds
 	pop di
 	pop si
@@ -103,14 +103,14 @@ ULTIMA_7234_READFILE:
 	push si
 	push di
 	push ds
-	mov WORD PTR D_535C,0
+	mov WORD PTR D_535C_DOSERROR,0
 	mov dx,[bp+0ah]
 	mov al,2
 	mov ah,3dh
 	int 21h
 	mov bx,ax
 	jb	L_7286
-	cmp WORD PTR D_535C,0
+	cmp WORD PTR D_535C_DOSERROR,0
 	jne	L_7286
 	mov dx,[bp+4]
 	xor cx,cx
@@ -141,7 +141,7 @@ L_7280:
 	int 21h
 	pop ax
 L_7286:
-	mov WORD PTR D_535C,ax
+	mov WORD PTR D_535C_DOSERROR,ax
 	call dword ptr ds:[5394h]
 	xor ax,ax
 L_728f:
@@ -175,10 +175,10 @@ ULTIMA_7296_WRITEFILE:
 	popf
 	pop ax
 	jb	L_72c5
-	mov WORD PTR D_535C,0
+	mov WORD PTR D_535C_DOSERROR,0
 	jae	L_72ce
 L_72c5:
-	mov WORD PTR D_535C,ax
+	mov WORD PTR D_535C_DOSERROR,ax
 	call dword ptr ds:[5394h]
 	xor ax,ax
 L_72ce:

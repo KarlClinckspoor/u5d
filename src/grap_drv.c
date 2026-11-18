@@ -24,7 +24,7 @@ void DRV_0f(int ax)
     //debug("DRV_0f(%d)", ax);
 
     //EGA_0650_0f(ax);
-    D_52ba_vdp._52d8_page = ax;
+    D_52ba_vdp.page = ax;
 }
 
 // 18: transfer area

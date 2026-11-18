@@ -10,7 +10,7 @@
 u8 D_4d7e_innRates[6] = { 0x02, 0x03, 0x02, 0x03, 0x02, 0x03 };
 
 
-// The inn. How many of the roster are staying here (their mapId is this map).
+// The inn. How many of the roster are staying here (their innMapId is this map).
 static int SHOPPES3_0000_CountGuests(void)
 {
     int member;
@@ -20,7 +20,7 @@ static int SHOPPES3_0000_CountGuests(void)
 
     for (member = 0; member < 0x10; member++)
     {
-        if (D_55a8_party[member].mapId == D_5893_map_id)
+        if (D_55a8_party[member].innMapId == D_5893_mapId)
         {
             count_h++;
         }
@@ -116,12 +116,12 @@ static int SHOPPES3_0072_Rest(int intelligence, int gender, int outcome)
 
                 SHOPPES_0026_PrintShopText(_TEXT(0x4e37, "!\"\nsays $.\n\n"));
 
-                ULTIMA_3ae6(10);
-                ULTIMA_39cc_SetTile(D_594f, D_5950, D_5951);
+                ULTIMA_3ae6_WaitFrames(10);
+                ULTIMA_39cc_SetTile(D_594f_openDoorTile, D_5950_openDoorX, D_5951_openDoorY);
 
-                D_5896_map_x = D_4e7a_innBedX[D_b114_shopIndex];
-                D_5897_map_y = D_4e80_innBedY[D_b114_shopIndex];
-                D_24e6 = 1;
+                D_5896_mapX = D_4e7a_innBedX[D_b114_shopIndex];
+                D_5897_mapY = D_4e80_innBedY[D_b114_shopIndex];
+                D_24e6_viewDirty = 1;
 
                 activePlayer_h = D_587b_activePlayer;
 
@@ -139,15 +139,15 @@ static int SHOPPES3_0072_Rest(int intelligence, int gender, int outcome)
 
                 for (member = 0; member < 0xc; member++)
                 {
-                    ULTIMA_4f7c(5);
+                    ULTIMA_4f7c_AdvanceTime(5);
                 }
 
                 while (D_587f_hour != 6)
                 {
-                    ULTIMA_3ae6(1);
-                    ULTIMA_400c();
+                    ULTIMA_3ae6_WaitFrames(1);
+                    ULTIMA_400c_RingRegeneration();
                     ULTIMA_2900_UpdateVitalsDisplay();
-                    ULTIMA_4f7c(9);
+                    ULTIMA_4f7c_AdvanceTime(9);
                     if (D_587f_hour == 0x14 || D_587f_hour == 0x05)
                     {
                         TOWN_0170();
@@ -195,8 +195,8 @@ static int SHOPPES3_0072_Rest(int intelligence, int gender, int outcome)
                 }
 
                 D_587b_activePlayer = activePlayer_h;
-                D_5896_map_x++;
-                D_24e6 = 1;
+                D_5896_mapX++;
+                D_24e6_viewDirty = 1;
                 ULTIMA_2900_UpdateVitalsDisplay();
 
                 outcome = -1;
@@ -212,7 +212,7 @@ static int SHOPPES3_0072_Rest(int intelligence, int gender, int outcome)
 }
 
 // Leave a companion at the inn: taken out of the party to the end of the roster, with
-// this map as mapId and a month count of 0 (S_55a8._17, probably: the bill multiplies by it).
+// this map as innMapId and a month count of 0 (S_55a8.monthsAtInn, probably: the bill multiplies by it).
 static int SHOPPES3_02ae_LeaveCompanion(int intelligence, int gender, int outcome)
 {
     bool asked_i;
@@ -239,7 +239,7 @@ static int SHOPPES3_02ae_LeaveCompanion(int intelligence, int gender, int outcom
         {
             asked_i = 1;
             SHOPPES_0026_PrintShopText(_TEXT(0x4e86, "$ asks,\n\"Who will\nstay?\" "));
-            member = ULTIMA_2e8e();
+            member = ULTIMA_2e8e_SelectPlayer();
             if (member == -1)
             {
                 ULTIMA_1850_PrintString(_TEXT(0x4ea0, "Nobody\n\n"));
@@ -285,8 +285,8 @@ static int SHOPPES3_02ae_LeaveCompanion(int intelligence, int gender, int outcom
                             D_587b_activePlayer--;
                         }
 
-                        D_55a8_party[member].mapId = D_5893_map_id;
-                        D_55a8_party[member]._17 = 0;
+                        D_55a8_party[member].innMapId = D_5893_mapId;
+                        D_55a8_party[member].monthsAtInn = 0;
 
                         saved_n = D_55a8_party[member];
 
@@ -314,7 +314,7 @@ static int SHOPPES3_0494_PrevGuest(int slot)
 {
     while (--slot)
     {
-        if (D_55a8_party[slot].mapId == D_5893_map_id)
+        if (D_55a8_party[slot].innMapId == D_5893_mapId)
         {
             break;
         }
@@ -327,7 +327,7 @@ static int SHOPPES3_04b6_NextGuest(int slot)
 {
     while (++slot < 0x10)
     {
-        if (D_55a8_party[slot].mapId == D_5893_map_id)
+        if (D_55a8_party[slot].innMapId == D_5893_mapId)
         {
             break;
         }
@@ -373,7 +373,7 @@ static int SHOPPES3_04e6_PickUpCompanion(int intelligence, int outcome)
             // e6ff
             ULTIMA_1850_PrintString(_TEXT(0x4fa7, "\n\n\"Who will\ncheck out?\" "));
             ULTIMA_1b94_SelectTextWindow(1);
-            ULTIMA_4efc();
+            ULTIMA_4efc_OpenStatsDivider();
             ULTIMA_1c22_SetTextWindowSize(1, 0x18, 1, 0x26, 9);
             ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
             ULTIMA_1c22_SetTextWindowSize(1, 0x18, 1, 0x27, 9);
@@ -411,7 +411,7 @@ static int SHOPPES3_04e6_PickUpCompanion(int intelligence, int outcome)
             // e7d6
             for (guest_b = 1; guest_b < 0x10; guest_b++)
             {
-                if (D_55a8_party[guest_b].mapId == D_5893_map_id)
+                if (D_55a8_party[guest_b].innMapId == D_5893_mapId)
                 {
                     ULTIMA_1bf2_SetTextPosition(4, ULTIMA_1cee_GetCurrentTextY());
 
@@ -489,7 +489,7 @@ static int SHOPPES3_04e6_PickUpCompanion(int intelligence, int outcome)
             }
 
             // e8e0
-            ULTIMA_4f3c();
+            ULTIMA_4f3c_DrawStatsDivider();
             ULTIMA_2900_UpdateVitalsDisplay();
         }
         else
@@ -499,7 +499,7 @@ static int SHOPPES3_04e6_PickUpCompanion(int intelligence, int outcome)
 
         if (guest_b != 0)
         {
-            months = (uint)D_55a8_party[guest_b]._17;
+            months = (uint)D_55a8_party[guest_b].monthsAtInn;
             if (months == 0)
             {
                 months = 1;
@@ -537,7 +537,7 @@ static int SHOPPES3_04e6_PickUpCompanion(int intelligence, int outcome)
 
                 player_g = &D_55a8_party[D_585b_partyCount++];
 
-                player_g->mapId = 0;
+                player_g->innMapId = 0;
                 if (player_g->status == STATUS_POISONED)
                 {
                     player_g->status = STATUS_DEAD;
@@ -587,7 +587,7 @@ void SHOPPES3_08b4_Inn(int playerIndex)
     intelligence = D_55a8_party[playerIndex].intel;
     gender = D_55a8_party[playerIndex].gender;
 
-    D_587a = D_588e = 0;
+    D_587a_statusIcon = D_588e_protectTurns = 0;
 
     ULTIMA_2900_UpdateVitalsDisplay();
 

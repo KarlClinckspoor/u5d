@@ -34,7 +34,7 @@ int CAST2_009e_OnWho(void)
 
     ULTIMA_1850_PrintString(_TEXT(0x94f4, "On who: "));
 
-    local_4 = ULTIMA_2e8e();
+    local_4 = ULTIMA_2e8e_SelectPlayer();
     if (local_4 < 0)
     {
         ULTIMA_1850_PrintString(_TEXT(0x94fe, "None!"));
@@ -215,15 +215,15 @@ int CAST2_0306(void)
     int local_6_an;
     bool local_4;
 
-    if (D_5893_map_id > 0x7f)
+    if (D_5893_mapId > 0x7f)
     {
-        D_5876 = D_ba14[D_589e].x;
-        D_5878 = D_ba14[D_589e].y;
+        D_5876_tempX = D_ba14_combatants[D_589e_curCombatant].x;
+        D_5878_tempY = D_ba14_combatants[D_589e_curCombatant].y;
     }
     else
     {
-        D_5876 = D_5896_map_x;
-        D_5878 = D_5897_map_y;
+        D_5876_tempX = D_5896_mapX;
+        D_5878_tempY = D_5897_mapY;
     }
 
     // 033e
@@ -238,19 +238,19 @@ int CAST2_0306(void)
         {
         case U5_KEY_UP:
             ULTIMA_1850_PrintString(_TEXT(0x9510, "North\n"));
-            D_5878--;
+            D_5878_tempY--;
             break;
         case U5_KEY_RIGHT:
             ULTIMA_1850_PrintString(_TEXT(0x9518, "East\n"));
-            D_5876++;
+            D_5876_tempX++;
             break;
         case U5_KEY_DOWN:
             ULTIMA_1850_PrintString(_TEXT(0x951e, "South\n"));
-            D_5878++;
+            D_5878_tempY++;
             break;
         case U5_KEY_LEFT:
             ULTIMA_1850_PrintString(_TEXT(0x9526, "West\n"));
-            D_5876--;
+            D_5876_tempX--;
             break;
         case U5_KEY_SPACE:
             ULTIMA_1850_PrintString(_TEXT(0x952c, "Pass\n"));
@@ -276,10 +276,10 @@ int CAST2_03c2(int param_1)
     }
     else
     {
-        ULTIMA_3f14_IncreaseInt(&D_55a8_party[param_1].hp, ULTIMA_3abe(), D_55a8_party[param_1].maxHp);
+        ULTIMA_3f14_IncreaseInt(&D_55a8_party[param_1].hp, ULTIMA_3abe_Random1To30(), D_55a8_party[param_1].maxHp);
 
         local_4 = 1;
-        D_a9fa = 1;
+        D_a9fa_vitalsDirty = 1;
     }
 
     return local_4;
@@ -332,16 +332,16 @@ void CAST2_046c(void)
 {
     int local_4;
 
-    ULTIMA_5d0a(-1, D_5896_map_x - D_589b, D_5897_map_y - D_589c, 0x20);
+    ULTIMA_5d0a_BuildView(-1, D_5896_mapX - D_589b_mapOriginX, D_5897_mapY - D_589c_mapOriginY, 0x20);
 
     for (local_4 = 0; local_4 < 0x14; local_4++)
     {
-        if (D_587a != 'T')
+        if (D_587a_statusIcon != 'T')
         {
             ULTIMA_4552_AnimateActors();
         }
 
-        ULTIMA_5394();
+        ULTIMA_5394_PutActorsInView();
         ULTIMA_56ac_DrawMap();
         ULTIMA_20fa_WaitTicks(1);
     }
@@ -373,14 +373,14 @@ int CAST2_04c2(int param_1)
     local_8 = 0;
     while (local_8 < 8)
     {
-        if (COMBAT_120e() == 0 || COMBAT_0000(TILE_ACTOR_D8, D_5876, D_5878) == 0 || *ULTIMA_4402_GetTileAddr(D_5876, D_5878) == 0xff)
+        if (COMBAT_120e() == 0 || COMBAT_0000(TILE_ACTOR_D8, D_5876_tempX, D_5878_tempY) == 0 || *ULTIMA_4402_GetTileAddr(D_5876_tempX, D_5878_tempY) == 0xff)
         {
             local_8++;
             continue;
         }
 
         // 0524
-        local_4_c = ULTIMA_6506(0x26, 0, D_5876, D_5878, D_5895_map_level);
+        local_4_c = ULTIMA_6506_PlaceCombatant(0x26, 0, D_5876_tempX, D_5878_tempY, D_5895_mapLevel);
         if (local_4_c < 0)
         {
             break;
@@ -388,12 +388,12 @@ int CAST2_04c2(int param_1)
 
         // 054c
         ULTIMA_2192_AudioPulse(0xac8, 1, 12000, 500, 5);
-        local_6 = &D_5c5a[D_ba14[local_4_c].actorIdx];
-        local_6->_0_tile = local_6->_1_animTile = TILE_ACTOR_CIRCLE;
-        ULTIMA_1068(0x1d8, D_5876, D_5878);
-        local_6->_0_tile = local_6->_1_animTile = TILE_ACTOR_D8;
+        local_6 = &D_5c5a_actors[D_ba14_combatants[local_4_c].actorIdx];
+        local_6->tile = local_6->animTile = TILE_ACTOR_CIRCLE;
+        ULTIMA_1068_RevealTile(0x1d8, D_5876_tempX, D_5878_tempY);
+        local_6->tile = local_6->animTile = TILE_ACTOR_D8;
 
-        if (param_1 == 0 && ULTIMA_3abe() >= COMBAT_13e2(D_589e, QUERY_STAT_INTEL))
+        if (param_1 == 0 && ULTIMA_3abe_Random1To30() >= COMBAT_13e2(D_589e_curCombatant, QUERY_STAT_INTEL))
         {
             // 05b2
             ULTIMA_1850_PrintString(_TEXT(0x9532, "Oops...\n"));
@@ -402,7 +402,7 @@ int CAST2_04c2(int param_1)
         else
         {
             // 05c0
-            D_ba14[local_4_c].flags |= COMBAT_FLAGS_CHARMED;
+            D_ba14_combatants[local_4_c].flags |= COMBAT_FLAGS_CHARMED;
             local_a = 1;
         }
 
@@ -480,7 +480,7 @@ int CAST2_05e0_Resurrect(int param_1, int param_2)
         }
 
         local_8 = 1;
-        D_a9fa = 1;
+        D_a9fa_vitalsDirty = 1;
     }
 
     return local_8;
@@ -490,13 +490,13 @@ void CAST2_06ec(void)
 {
     ULTIMA_1c9e_SelectCharset(1);
     ULTIMA_16ba_PrintChar('\n');
-    ULTIMA_16ba_PrintChar(((D_5897_map_y & 0xf0) >> 4) + 0x41);
+    ULTIMA_16ba_PrintChar(((D_5897_mapY & 0xf0) >> 4) + 0x41);
     ULTIMA_16ba_PrintChar('\'');
-    ULTIMA_16ba_PrintChar((D_5897_map_y & 0xf) + 0x41);
+    ULTIMA_16ba_PrintChar((D_5897_mapY & 0xf) + 0x41);
     ULTIMA_1850_PrintString(_TEXT(0x9548, "\", "));
-    ULTIMA_16ba_PrintChar(((D_5896_map_x & 0xf0) >> 4) + 0x41);
+    ULTIMA_16ba_PrintChar(((D_5896_mapX & 0xf0) >> 4) + 0x41);
     ULTIMA_16ba_PrintChar('\'');
-    ULTIMA_16ba_PrintChar((D_5896_map_x & 0xf) + 0x41);
+    ULTIMA_16ba_PrintChar((D_5896_mapX & 0xf) + 0x41);
     ULTIMA_16ba_PrintChar('\"');
     ULTIMA_1c9e_SelectCharset(0);
     ULTIMA_16ba_PrintChar('\n');
@@ -513,7 +513,7 @@ int CAST2_0768(void)
         return -1;
     }
 
-    local_4 = ULTIMA_4402_GetTileAddr(D_5876, D_5878);
+    local_4 = ULTIMA_4402_GetTileAddr(D_5876_tempX, D_5878_tempY);
     local_6_an = 0;
 
     switch (*local_4)
@@ -521,14 +521,14 @@ int CAST2_0768(void)
     case TILE_MAP_97:
         // 07a0
         *local_4 = TILE_MAP_DOOR_B8;
-        D_24e6 |= 2;
+        D_24e6_viewDirty |= 2;
         local_6_an = 1;
         break;
 
     case TILE_MAP_98:
         // 07b2
         *local_4 = TILE_MAP_DOOR_BA;
-        D_24e6 |= 2;
+        D_24e6_viewDirty |= 2;
         local_6_an = 1;
         break;
     }
@@ -545,20 +545,20 @@ int CAST2_07bc(int param_1)
     int local_a;
     int local_c;
 
-    if (D_5893_map_id < 0x80)
+    if (D_5893_mapId < 0x80)
     {
         if (param_1 != 0)
         {
             CAST2_0000_CastEffect(4);
         }
 
-        local_a = D_24d6[D_6603];
-        local_c = D_24de[D_6603];
+        local_a = D_24d6_facingDx[D_6603_dungeonFacing];
+        local_c = D_24de_facingDy[D_6603_dungeonFacing];
 
-        local_4_ab = &GetDungeonMap(D_5896_map_x, D_5897_map_y, D_5895_map_level);
+        local_4_ab = &GetDungeonMap(D_5896_mapX, D_5897_mapY, D_5895_mapLevel);
         if ((*local_4_ab & 0xf0) != 0x80)
         {
-            local_4_ab = &GetDungeonMap((D_5896_map_x + local_a) & 7, (D_5897_map_y + local_c) & 7, D_5895_map_level);
+            local_4_ab = &GetDungeonMap((D_5896_mapX + local_a) & 7, (D_5897_mapY + local_c) & 7, D_5895_mapLevel);
         }
 
         if ((*local_4_ab & 0xf0) == 0x80)
@@ -589,11 +589,11 @@ int CAST2_07bc(int param_1)
         local_8 = 0;
         for (local_6 = 0; local_6 < 0x20; local_6++)
         {
-            if ((D_5c5a[local_6]._0_tile & 0xfc) == TILE_ACTOR_E8 && D_5876 == D_5c5a[local_6]._2_x &&
-                D_5878 == D_5c5a[local_6]._3_y)
+            if ((D_5c5a_actors[local_6].tile & 0xfc) == TILE_ACTOR_E8 && D_5876_tempX == D_5c5a_actors[local_6].x &&
+                D_5878_tempY == D_5c5a_actors[local_6].y)
             {
                 local_8 = 1;
-                ULTIMA_3a74(0, 0, 0, 0, 0, 0, local_6);
+                ULTIMA_3a74_SetActor(0, 0, 0, 0, 0, 0, local_6);
                 break;
             }
         }
@@ -602,12 +602,12 @@ int CAST2_07bc(int param_1)
     return local_8;
 }
 
-void CAST2_08ea(int param_1) { D_58a6 = param_1; }
+void CAST2_08ea(int param_1) { D_58a6_lightSpellTurns = param_1; }
 
 void CAST2_08f8(int param_1, int param_2, int param_3)
 {
-    D_587a = param_1;
-    D_588e = param_2;
+    D_587a_statusIcon = param_1;
+    D_588e_protectTurns = param_2;
 
     CAST2_0000_CastEffect(param_3);
 
@@ -628,7 +628,7 @@ static void CAST2_0914(int param_1)
     {
         for (local_6_an = 0; local_6_an != param_1; local_6_an++)
         {
-            ULTIMA_3a74(TILE_ACTOR_POTION, TILE_ACTOR_POTION, D_4b9e[local_4], D_4bc2[local_4], D_5895_map_level, 0, local_6_an + 1);
+            ULTIMA_3a74_SetActor(TILE_ACTOR_POTION, TILE_ACTOR_POTION, D_4b9e[local_4], D_4bc2[local_4], D_5895_mapLevel, 0, local_6_an + 1);
             local_4++;
         }
     }
@@ -709,7 +709,7 @@ static void CAST2_0966_ShrineOfVirtue(void)
     for (local_a = 0; local_a < 8; local_a++) // 0a2e -> 0a37 -> 0982, 0994
     {
         // 0982
-        if (D_5896_map_x == D_1f6e[local_a] && D_5897_map_y == D_1f76[local_a])
+        if (D_5896_mapX == D_1f6e[local_a] && D_5897_mapY == D_1f76[local_a])
             break; // -> 0a2e ??
     }
 
@@ -720,13 +720,13 @@ static void CAST2_0966_ShrineOfVirtue(void)
     }
 
     // 09a1
-    D_5c5a[0]._0_tile = D_5c5a[0]._1_animTile = TILE_ACTOR_BEGGAR;
+    D_5c5a_actors[0].tile = D_5c5a_actors[0].animTile = TILE_ACTOR_BEGGAR;
     ULTIMA_5910_UpdateFrame();
     // "...and thou dost kneel before the Altar.\n\n"
-    ULTIMA_1850_PrintString((char*)&D_b21e[0x36d]);
-    ULTIMA_3ae6(10);
+    ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x36d]);
+    ULTIMA_3ae6_WaitFrames(10);
     // "Upon what virtue dost thou meditate?\n\n:"
-    ULTIMA_1850_PrintString((char*)&D_b21e[0x398]);
+    ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x398]);
 
     ULTIMA_3b1c_GetString(D_bd08, 0xc);
 
@@ -737,13 +737,13 @@ static void CAST2_0966_ShrineOfVirtue(void)
     }
 
     // 09d6
-    if (ULTIMA_6f1e(D_4b3e[local_a], D_bd08) == -1)
+    if (ULTIMA_6f1e_CompareWord(D_4b3e[local_a], D_bd08) == -1)
     {
         local_c = 0;
     }
 
     // 09ee
-    ULTIMA_3ae6(6);
+    ULTIMA_3ae6_WaitFrames(6);
     ULTIMA_16ba_PrintChar('\n');
 
     for (local_8 = 0; local_8 < 3; local_8++)
@@ -757,13 +757,13 @@ static void CAST2_0966_ShrineOfVirtue(void)
         }
 
         // 0a3a
-        if (ULTIMA_6f1e(D_1f5e[local_a], D_bd08) == -1)
+        if (ULTIMA_6f1e_CompareWord(D_1f5e_mantras[local_a], D_bd08) == -1)
         {
             local_c = 0;
         }
 
         // 0a4b
-        ULTIMA_3ae6(0xc);
+        ULTIMA_3ae6_WaitFrames(0xc);
     }
 
     // NOTE: FMT addition
@@ -773,27 +773,27 @@ static void CAST2_0966_ShrineOfVirtue(void)
     if (!local_c)
     {
         // "\n\nThine thoughts are unfocused.\n"
-        ULTIMA_1850_PrintString((char*)&D_b21e[0x3c0]);
+        ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x3c0]);
     }
     else
     {
         // 0a6c
-        if (((byte)D_58ce & (1 << local_a)) == 0)
+        if (((byte)D_58ce_questsDone & (1 << local_a)) == 0)
         {
             // TODO: 58cc, 58ce: u8?
-            *((byte*)&D_58cc) |= (1 << local_a);
-            ULTIMA_1850_PrintString((char*)&D_b21e[0x3e1]);
+            *((byte*)&D_58cc_questsOrdained) |= (1 << local_a);
+            ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x3e1]);
 
-            D_5c5a[0]._0_tile = D_5c5a[0]._1_animTile = TILE_ACTOR_AVATAR;
+            D_5c5a_actors[0].tile = D_5c5a_actors[0].animTile = TILE_ACTOR_AVATAR;
 
             ULTIMA_266c_GetChar();
             // "\n\nThe Altar speaks and a Quest is ordained! "
-            ULTIMA_1850_PrintString((char*)&D_b21e[0x40e]);
-            ULTIMA_1850_PrintString((char*)&D_b21e[D_4b5e[local_a]]);
+            ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x40e]);
+            ULTIMA_1850_PrintString((char*)&D_b21e_scratch[D_4b5e[local_a]]);
             ULTIMA_1850_PrintString(_TEXT(0x9598, "\"\n"));
             ULTIMA_266c_GetChar();
             // "\n\"Return again when thy Quest is done!\"\n"
-            ULTIMA_1850_PrintString((char*)&D_b21e[0x44b]);
+            ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x44b]);
 
             // 0ac6: a do-while, so the loop ends jb top; jmp end
             local_8 = 0;
@@ -804,7 +804,7 @@ static void CAST2_0966_ShrineOfVirtue(void)
             } while (local_8 < 7);
         }
         // 0b08
-        else if (((byte)D_58cc & (1 << local_a)) == 0)
+        else if (((byte)D_58cc_questsOrdained & (1 << local_a)) == 0)
         {
             // 0b1d -> 0b5f
 
@@ -814,7 +814,7 @@ static void CAST2_0966_ShrineOfVirtue(void)
             {
                 // 0b63
                 // "\n\nOffer how many hundredweights gold? "
-                ULTIMA_1850_PrintString((char*)&D_b21e[0x474]);
+                ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x474]);
 
                 // 0b6a
                 while ((unsigned)(local_4_ab = ULTIMA_266c_GetChar()) < 0x30 || (unsigned)local_4_ab > 0x39)
@@ -835,7 +835,7 @@ static void CAST2_0966_ShrineOfVirtue(void)
                 if ((int)D_57aa_gold < local_4_ab * 100)
                 {
                     // "Thou hast not that much gold!"
-                    ULTIMA_1850_PrintString((char*)&D_b21e[0x49b]);
+                    ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x49b]);
                 }
                 else
                 {
@@ -878,10 +878,10 @@ static void CAST2_0966_ShrineOfVirtue(void)
         else
         {
             // 0c18 (OK)
-            *((byte*)&D_58cc) &= (1 << local_a & (byte)D_58cc) ^ 0xff;
+            *((byte*)&D_58cc_questsOrdained) &= (1 << local_a & (byte)D_58cc_questsOrdained) ^ 0xff;
 
             // "\n\nA thunderous voice booms:\n\n\"WELL DONE!\"\n\n"
-            ULTIMA_1850_PrintString((char*)&D_b21e[0x4b9]);
+            ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x4b9]);
             ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
             ULTIMA_0b86_GRAP_XorFillRect(8, 8, 0xb7, 0xb7);
 
@@ -949,7 +949,7 @@ static void CAST2_0966_ShrineOfVirtue(void)
         }
 
         // 0d16
-        ULTIMA_3ae6(10);
+        ULTIMA_3ae6_WaitFrames(10);
     }
 }
 
@@ -958,31 +958,31 @@ static void CAST2_0d24_Codex(void)
     int local_4;
 
     ULTIMA_266c_GetChar();
-    ULTIMA_1850_PrintString((char*)&D_b21e[0x4e5]);
+    ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x4e5]);
     ULTIMA_266c_GetChar();
-    ULTIMA_1850_PrintString((char*)&D_b21e[0x515]);
+    ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x515]);
     ULTIMA_266c_GetChar();
 
     for (local_4 = 0; local_4 < 8; local_4++)
     {
-        if (((byte)D_58cc & (1 << local_4)) != 0)
+        if (((byte)D_58cc_questsOrdained & (1 << local_4)) != 0)
             break;
     }
 
     if (local_4 == 8)
     {
-        ULTIMA_1850_PrintString((char*)&D_b21e[0x53e]);
+        ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x53e]);
     }
     else
     {
-        *((byte*)&D_58ce) |= 1 << local_4;
+        *((byte*)&D_58ce_questsDone) |= 1 << local_4;
 
         ULTIMA_16ba_PrintChar('\"');
-        ULTIMA_1850_PrintString((char*)&D_b21e[D_4b6e[local_4]]);
+        ULTIMA_1850_PrintString((char*)&D_b21e_scratch[D_4b6e[local_4]]);
         ULTIMA_1850_PrintString(_TEXT(0x95e6, "\"\n\n"));
         ULTIMA_266c_GetChar();
 
-        if ((byte)D_58ce == 0xff)
+        if ((byte)D_58ce_questsDone == 0xff)
         {
             ULTIMA_0a70_GRAP_2d_SetPenColor(D_13ae_redColor);
             ULTIMA_0b86_GRAP_XorFillRect(8, 8, 0xb7, 0xb7);
@@ -993,23 +993,23 @@ static void CAST2_0d24_Codex(void)
             ULTIMA_0a70_GRAP_2d_SetPenColor(D_13ae_redColor);
             ULTIMA_0b86_GRAP_XorFillRect(8, 8, 0xb7, 0xb7);
             ULTIMA_3072_ShakeScreen();
-            ULTIMA_1850_PrintString((char*)&D_b21e[0x555]);
+            ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x555]);
             ULTIMA_266c_GetChar();
             ULTIMA_1850_PrintString(_TEXT(0x95ea, "Thou dost read:\n\n"));
             ULTIMA_1c9e_SelectCharset(1);
-            ULTIMA_1850_PrintString((char*)&D_b21e[0x57f]);
+            ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x57f]);
             ULTIMA_1c9e_SelectCharset(0);
             ULTIMA_266c_GetChar();
             ULTIMA_1c9e_SelectCharset(1);
-            ULTIMA_1850_PrintString((char*)&D_b21e[0x5d1]);
+            ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x5d1]);
             ULTIMA_1c9e_SelectCharset(0);
             ULTIMA_266c_GetChar();
             ULTIMA_1c9e_SelectCharset(1);
-            ULTIMA_1850_PrintString((char*)&D_b21e[0x60c]);
+            ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x60c]);
             ULTIMA_1c9e_SelectCharset(0);
             ULTIMA_266c_GetChar();
             ULTIMA_1c9e_SelectCharset(1);
-            ULTIMA_1850_PrintString((char*)&D_b21e[0x680]);
+            ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x680]);
             ULTIMA_1c9e_SelectCharset(0);
             ULTIMA_266c_GetChar();
         }
@@ -1018,9 +1018,9 @@ static void CAST2_0d24_Codex(void)
 
 static void CAST2_0e64(void)
 {
-    ULTIMA_3ae6(1);
+    ULTIMA_3ae6_WaitFrames(1);
     ULTIMA_433e_AudioFootstep();
-    ULTIMA_3ae6(4);
+    ULTIMA_3ae6_WaitFrames(4);
 }
 
 // CHECKED (loop)
@@ -1034,17 +1034,17 @@ void CAST2_0e76_Shrine(void)
 
     local_8 = 0;
 
-    local_6 = *ULTIMA_4402_GetTileAddr(D_5896_map_x, D_5897_map_y);
-    D_24e6 = 1;
-    D_bd15 = D_5893_map_id;
-    D_5893_map_id = 0xff;
-    D_589e = 0xff;
+    local_6 = *ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY);
+    D_24e6_viewDirty = 1;
+    D_bd15 = D_5893_mapId;
+    D_5893_mapId = 0xff;
+    D_589e_curCombatant = 0xff;
 
     // 0eb3: NOT MATCHING
     for (local_a = 0; local_a < 0x20; local_a++)
     {
-        D_a9fc[local_a] = D_5c5a[local_a];
-        D_5c5a[local_a]._0_tile = 0;
+        D_a9fc_savedActors[local_a] = D_5c5a_actors[local_a];
+        D_5c5a_actors[local_a].tile = 0;
     }
 
 #if defined(ENABLE_BGM)
@@ -1053,21 +1053,21 @@ void CAST2_0e76_Shrine(void)
 
     if (local_6 != TILE_MAP_CODEX)
     {
-        ULTIMA_256e_ReadFileFromDisk(_TEXT(0x95fc, "MISCMAPS.DAT"), D_ac64, 0xb0, 0xb0);
+        ULTIMA_256e_ReadFileFromDisk(_TEXT(0x95fc, "MISCMAPS.DAT"), D_ac64_viewActors, 0xb0, 0xb0);
     }
     else
     {
-        ULTIMA_256e_ReadFileFromDisk(_TEXT(0x960a, "MISCMAPS.DAT"), D_ac64, 0xb0, 0x160);
+        ULTIMA_256e_ReadFileFromDisk(_TEXT(0x960a, "MISCMAPS.DAT"), D_ac64_viewActors, 0xb0, 0x160);
     }
 
-    ULTIMA_256e_ReadFileFromDisk(_TEXT(0x9618, "MISCMSG.DAT"), D_b21e, 2000, 0x3ab);
+    ULTIMA_256e_ReadFileFromDisk(_TEXT(0x9618, "MISCMSG.DAT"), D_b21e_scratch, 2000, 0x3ab);
 
     // 0f0c
     for (local_a = 0; local_a < 0xb; local_a++)
     {
         for (local_c = 0; local_c < 0xb; local_c++)
         {
-            GetCombatMap(local_c, local_a) = D_ac64[local_a * 0x10 + local_c];
+            GetCombatMap(local_c, local_a) = D_ac64_viewActors[local_a * 0x10 + local_c];
         }
     }
 
@@ -1080,7 +1080,7 @@ void CAST2_0e76_Shrine(void)
     // 0f44 (NOT MATCHING)
     for (local_a = 1; local_a < 0x10; local_a++)
     {
-        if (D_55a8_party[local_a].mapId == 0x7f)
+        if (D_55a8_party[local_a].innMapId == 0x7f)
         {
             local_8++;
         }
@@ -1095,12 +1095,12 @@ void CAST2_0e76_Shrine(void)
     if (local_6 != TILE_MAP_CODEX)
     {
         // "\nThou dost approach the tranquil Shrine...\n\n"
-        ULTIMA_1850_PrintString((char*)&D_b21e[0x6ae]);
+        ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x6ae]);
     }
     else
     {
         // "\nThe Codex of Ultimate Wisdom lies before thee..."
-        ULTIMA_1850_PrintString((char*)&D_b21e[0x6db]);
+        ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x6db]);
     }
 
     // 0f7b (OK)
@@ -1109,10 +1109,10 @@ void CAST2_0e76_Shrine(void)
         CAST2_0e64();
     }
 
-    D_5c5a[0]._0_tile = D_5c5a[0]._1_animTile = TILE_ACTOR_AVATAR;
-    D_5c5a[0]._2_x = 5;
-    D_5c5a[0]._3_y = 10;
-    D_5c5a[0]._4_z = D_5895_map_level;
+    D_5c5a_actors[0].tile = D_5c5a_actors[0].animTile = TILE_ACTOR_AVATAR;
+    D_5c5a_actors[0].x = 5;
+    D_5c5a_actors[0].y = 10;
+    D_5c5a_actors[0].z = D_5895_mapLevel;
 
     CAST2_0e64();
     if (local_6 == TILE_MAP_CODEX && local_8 > 0)
@@ -1130,7 +1130,7 @@ void CAST2_0e76_Shrine(void)
         // 0fcf (OK)
         for (local_a = 1; local_a < 0x10; local_a++)
         {
-            if (D_55a8_party[local_a].mapId == 0x7f)
+            if (D_55a8_party[local_a].innMapId == 0x7f)
             {
                 local_c = 0;
                 while (D_55a8_party[local_a].name[local_c] != '\0')
@@ -1150,7 +1150,7 @@ void CAST2_0e76_Shrine(void)
     for (local_a = 0; local_a < local_4_ab; local_a++)
     {
         // 105c
-        D_5c5a[0]._3_y--;
+        D_5c5a_actors[0].y--;
         CAST2_0e64();
     }
 
@@ -1165,33 +1165,33 @@ void CAST2_0e76_Shrine(void)
     }
 
     // 1075
-    D_5c5a[0]._0_tile = D_5c5a[0]._1_animTile = TILE_ACTOR_AVATAR;
-    ULTIMA_3ae6(1);
-    for (local_a = D_5c5a[0]._3_y; local_a < 10; local_a++)
+    D_5c5a_actors[0].tile = D_5c5a_actors[0].animTile = TILE_ACTOR_AVATAR;
+    ULTIMA_3ae6_WaitFrames(1);
+    for (local_a = D_5c5a_actors[0].y; local_a < 10; local_a++)
     {
-        D_5c5a[0]._3_y++;
+        D_5c5a_actors[0].y++;
         CAST2_0e64();
     }
 
-    D_5c5a[0]._0_tile = D_5c5a[0]._2_x = D_5c5a[0]._3_y = 0;
+    D_5c5a_actors[0].tile = D_5c5a_actors[0].x = D_5c5a_actors[0].y = 0;
 
     for (local_a = 0; local_a < 4; local_a++)
     {
         CAST2_0e64();
     }
 
-    ULTIMA_3ae6(10);
+    ULTIMA_3ae6_WaitFrames(10);
 
     // 10c6 (NOT MATCHING)
     for (local_a = 0; local_a < 0x20; local_a++)
     {
-        D_5c5a[local_a] = D_a9fc[local_a];
+        D_5c5a_actors[local_a] = D_a9fc_savedActors[local_a];
     }
 
     // 10e7
-    D_5893_map_id = D_bd15;
-    ULTIMA_4f7c(0x10);
-    ULTIMA_5e4a();
+    D_5893_mapId = D_bd15;
+    ULTIMA_4f7c_AdvanceTime(0x10);
+    ULTIMA_5e4a_BuildLightMap();
 
 #if defined(ENABLE_BGM)
     AUDIO_PlayBgmPerMap();
@@ -1227,23 +1227,23 @@ static void CAST2_10fe_SaveGameIBM(void)
     else
     {
         ULTIMA_1850_PrintString(_TEXT(0x966a, "Yes\nSaving...\n"));
-        local_4 = D_a9bd[0];
-        if (D_a9bd[0] != 5)
+        local_4 = D_a9bd_curDisk[0];
+        if (D_a9bd_curDisk[0] != 5)
         {
             ULTIMA_251e_SwitchDisks(1);
         }
 
-        ULTIMA_256e_ReadFileFromDisk(_TEXT(0x967a, "UNDER.OOL"), D_b21e + 0x100, 0x100, 0);
+        ULTIMA_256e_ReadFileFromDisk(_TEXT(0x967a, "UNDER.OOL"), D_b21e_scratch + 0x100, 0x100, 0);
         ULTIMA_251e_SwitchDisks(1);
-        ULTIMA_256e_ReadFileFromDisk(_TEXT(0x9684, "BRIT.OOL"), D_b21e, 0x100, 0);
+        ULTIMA_256e_ReadFileFromDisk(_TEXT(0x9684, "BRIT.OOL"), D_b21e_scratch, 0x100, 0);
         if (local_4 != 1)
         {
-            ULTIMA_25d8_WriteFileToDisk(_TEXT(0x968e, "UNDER.OOL"), D_b21e + 0x100, 0x100);
+            ULTIMA_25d8_WriteFileToDisk(_TEXT(0x968e, "UNDER.OOL"), D_b21e_scratch + 0x100, 0x100);
         }
 
         ULTIMA_251e_SwitchDisks(3);
-        ULTIMA_25d8_WriteFileToDisk(_TEXT(0x9698, "SAVED.GAM"), &D_55a6, ((int)&D_6606 - (int)&D_55a6) /*0x1060*/);
-        ULTIMA_25d8_WriteFileToDisk(_TEXT(0x96a2, "SAVED.OOL"), D_b21e, 0x200);
+        ULTIMA_25d8_WriteFileToDisk(_TEXT(0x9698, "SAVED.GAM"), &D_55a6_saveStart, ((int)&D_6606_saveEnd - (int)&D_55a6_saveStart) /*0x1060*/);
+        ULTIMA_25d8_WriteFileToDisk(_TEXT(0x96a2, "SAVED.OOL"), D_b21e_scratch, 0x200);
         ULTIMA_251e_SwitchDisks(local_4);
         ULTIMA_1850_PrintString(_TEXT(0x96ac, "Done.\n"));
     }
@@ -1272,19 +1272,19 @@ static void CAST2_10fe_SaveGameFMT(void)
     else
     {
         ULTIMA_1850_PrintString(_TEXT(0x4c128, "Yes\nSaving...\n"));
-        local_4_ab = D_a9bd[0];
-        if (D_a9bd[0] != 5)
+        local_4_ab = D_a9bd_curDisk[0];
+        if (D_a9bd_curDisk[0] != 5)
         {
             ULTIMA_251e_SwitchDisks(1);
         }
 
-        ULTIMA_256e_ReadFileFromDisk(/*0x4c138*/ "UNDER.OOL", D_b21e + 0x100, 0x100, 0);
+        ULTIMA_256e_ReadFileFromDisk(/*0x4c138*/ "UNDER.OOL", D_b21e_scratch + 0x100, 0x100, 0);
         ULTIMA_251e_SwitchDisks(1);
-        ULTIMA_256e_ReadFileFromDisk(/*0x4c144*/ "BRIT.OOL", D_b21e, 0x100, 0);
+        ULTIMA_256e_ReadFileFromDisk(/*0x4c144*/ "BRIT.OOL", D_b21e_scratch, 0x100, 0);
         if (local_4_ab != 1)
         {
             ULTIMA_251e_SwitchDisks(3);
-            ULTIMA_25d8_WriteFileToDisk(/*0x4c150*/ "UNDER.OOL", D_b21e + 0x100, 0x100);
+            ULTIMA_25d8_WriteFileToDisk(/*0x4c150*/ "UNDER.OOL", D_b21e_scratch + 0x100, 0x100);
         }
 
         // DAT_0003ddb0_55a6 = (byte)DAT_00065334_CurrentBgm;
@@ -1292,7 +1292,7 @@ static void CAST2_10fe_SaveGameFMT(void)
 
         ULTIMA_251e_SwitchDisks(3);
         FILE_WriteSavegameFile(/*0x4c15c*/ "SAVED.GAM" /*, local_c*/);
-        ULTIMA_25d8_WriteFileToDisk(/*0x4c168*/ "SAVED.OOL", D_b21e, 0x200);
+        ULTIMA_25d8_WriteFileToDisk(/*0x4c168*/ "SAVED.OOL", D_b21e_scratch, 0x200);
         ULTIMA_251e_SwitchDisks(local_4_ab);
         ULTIMA_1850_PrintString(_TEXT(0x4c174, "Done.\n"));
     }

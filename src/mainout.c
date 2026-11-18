@@ -32,31 +32,31 @@ void MAINOUT_1be8(void);
 
 void MAINOUT_0000(void)
 {
-    ULTIMA_4be8();
-    ULTIMA_4f7c(0);
+    ULTIMA_4be8_ClearSky();
+    ULTIMA_4f7c_AdvanceTime(0);
 
-    D_58a4 = D_5956 = D_24e6 = 1;
-    D_5955 = 0;
-    D_589b = D_5896_map_x & 0xf0;
-    if ((D_5896_map_x & 0xf) < 8)
+    D_58a4_viewOn = D_5956_newPrompt = D_24e6_viewDirty = 1;
+    D_5955_sailDir = 0;
+    D_589b_mapOriginX = D_5896_mapX & 0xf0;
+    if ((D_5896_mapX & 0xf) < 8)
     {
-        D_589b = (D_589b - 0x10) & 0xf0;
+        D_589b_mapOriginX = (D_589b_mapOriginX - 0x10) & 0xf0;
     }
 
     // 0034
-    D_589c = D_5897_map_y & 0xf0;
-    if ((D_5897_map_y & 0xf) < 8)
+    D_589c_mapOriginY = D_5897_mapY & 0xf0;
+    if ((D_5897_mapY & 0xf) < 8)
     {
-        D_589c = (D_589c - 0x10) & 0xf0;
+        D_589c_mapOriginY = (D_589c_mapOriginY - 0x10) & 0xf0;
     }
 
     // 004f
     OUTSUBS_01b4(0, 1);
     OUTSUBS_01b4(0, -1);
-    ULTIMA_4f7c(0);
-    ULTIMA_5e4a();
+    ULTIMA_4f7c_AdvanceTime(0);
+    ULTIMA_5e4a_BuildLightMap();
     ULTIMA_2e96_SetWindDirection(-1);
-    ULTIMA_4a84();
+    ULTIMA_4a84_DrawSunAndMoons();
     OUTSUBS_0566();
 }
 
@@ -70,14 +70,14 @@ void MAINOUT_007a(void)
 
     for (local_6 = 1; local_6 < 32; local_6++)
     {
-        local_4_ab = &D_5c5a[local_6];
+        local_4_ab = &D_5c5a_actors[local_6];
 
-        local_8 = abs(D_5896_map_x - local_4_ab->_2_x);
-        local_a = abs(D_5897_map_y - local_4_ab->_3_y);
+        local_8 = abs(D_5896_mapX - local_4_ab->x);
+        local_a = abs(D_5897_mapY - local_4_ab->y);
 
-        if (local_4_ab->_0_tile != 0 && local_4_ab->_4_z == D_5895_map_level && local_8 < 6 && local_a < 6)
+        if (local_4_ab->tile != 0 && local_4_ab->z == D_5895_mapLevel && local_8 < 6 && local_a < 6)
         {
-            ULTIMA_3ae6(1);
+            ULTIMA_3ae6_WaitFrames(1);
         }
 
         break;
@@ -149,14 +149,14 @@ static int MAINOUT_00da(int param_1)
             }
 
             // 01ad
-            D_5956 = local2_4 = 1;
-            if (D_5c5a[0]._5 < 0x32)
+            D_5956_newPrompt = local2_4 = 1;
+            if (D_5c5a_actors[0].value < 0x32)
             {
                 ULTIMA_1850_PrintString(_TEXT(0x2976, "Hull weak!\n"));
             }
         }
         // 01dc
-        else if (D_587c_partyTile < TILE_ACTOR_FRIGATE_24 && D_5892_wind_dir == 0)
+        else if (D_587c_partyTile < TILE_ACTOR_FRIGATE_24 && D_5892_windDir == 0)
         {
             local2_4 = 1;
         }
@@ -181,7 +181,7 @@ static int MAINOUT_01fe(int param_2, int param_1)
     }
 
     local_4_ab = 1;
-    local_6 = ULTIMA_368e_FindActorTileAtPos(param_2 + (uint)D_5896_map_x, param_1 + (uint)D_5897_map_y, D_5895_map_level);
+    local_6 = ULTIMA_368e_FindActorTileAtPos(param_2 + (uint)D_5896_mapX, param_1 + (uint)D_5897_mapY, D_5895_mapLevel);
     if (local_6 != 0)
     {
         local_4_ab = 0;
@@ -206,7 +206,7 @@ static int MAINOUT_01fe(int param_2, int param_1)
     local_4_ab = local_4_ab && ULTIMA_2c4c_IsWalkableTile(D_587c_partyTile, local_8) != 0 ? 1 : 0;
     if (local_4_ab == 0)
     {
-        if (D_5955 != 0)
+        if (D_5955_sailDir != 0)
         {
             if (local_8 == TILE_MAP_WATER_3)
             {
@@ -228,8 +228,8 @@ static int MAINOUT_01fe(int param_2, int param_1)
                 MAINOUT_109e();
             }
 
-            D_5955 = 0;
-            D_5956 = 1;
+            D_5955_sailDir = 0;
+            D_5956_newPrompt = 1;
         }
         else if (D_587c_partyTile < TILE_ACTOR_FRIGATE_20 || (local_6 & 0xfc) != TILE_ACTOR_WHIRLPOOL)
         {
@@ -237,7 +237,7 @@ static int MAINOUT_01fe(int param_2, int param_1)
             if (local_8 == TILE_MAP_2F)
             {
                 ULTIMA_1850_PrintString(_TEXT(0x29b8, "OUCH!\n"));
-                ULTIMA_2aa8();
+                ULTIMA_2aa8_DamageParty();
             }
             else
             {
@@ -256,19 +256,19 @@ void MAINOUT_0354(int param_1, int param_2)
     int local_6_an;
     int local_4;
 
-    D_5896_map_x += param_1;
-    D_5897_map_y += param_2;
-    D_24e6 = 1;
-    local_4 = D_5896_map_x - D_589b & 0x1f;
-    local_6_an = D_5897_map_y - D_589c & 0x1f;
+    D_5896_mapX += param_1;
+    D_5897_mapY += param_2;
+    D_24e6_viewDirty = 1;
+    local_4 = D_5896_mapX - D_589b_mapOriginX & 0x1f;
+    local_6_an = D_5897_mapY - D_589c_mapOriginY & 0x1f;
 
     if (local_4 < 5 || local_4 > 0x1a || local_6_an < 5 || local_6_an > 0x1a)
     {
         OUTSUBS_02c8(param_1, param_2); // 7bd2
-        D_589b = (char)param_1 * 16 + D_589b & 0xf0; // wrap x?
-        D_589c = (char)param_2 * 16 + D_589c & 0xf0; // wrap y?
+        D_589b_mapOriginX = (char)param_1 * 16 + D_589b_mapOriginX & 0xf0; // wrap x?
+        D_589c_mapOriginY = (char)param_2 * 16 + D_589c_mapOriginY & 0xf0; // wrap y?
         OUTSUBS_01b4(param_1, param_2); // 7b8a
-        ULTIMA_5e4a();
+        ULTIMA_5e4a_BuildLightMap();
     }
 }
 
@@ -280,7 +280,7 @@ static void MAINOUT_03e0(void)
 
     local_4_ab = 0;
 
-    local_8 = *ULTIMA_4402_GetTileAddr(D_5896_map_x, D_5897_map_y);
+    local_8 = *ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY);
     if (local_8 == TILE_MAP_GRASS)
     {
         // 0406
@@ -318,7 +318,7 @@ static void MAINOUT_03e0(void)
             ULTIMA_1850_PrintString(_TEXT(0x29bf, "Slow progress!\n"));
         }
 
-        ULTIMA_4f7c(2);
+        ULTIMA_4f7c_AdvanceTime(2);
         break;
 
     case 2:
@@ -334,7 +334,7 @@ static void MAINOUT_03e0(void)
             ULTIMA_1850_PrintString(_TEXT(0x29cf, "Very slow!\n"));
         }
 
-        ULTIMA_4f7c(4);
+        ULTIMA_4f7c_AdvanceTime(4);
         break;
     }
 }
@@ -351,12 +351,12 @@ static int MAINOUT_0490(int param_1, int param_2)
 
     if ((D_587c_partyTile & 0xfc) == TILE_ACTOR_FRIGATE_20)
     {
-        if (param_1 != D_5955)
+        if (param_1 != D_5955_sailDir)
         {
-            D_5955 = param_1;
+            D_5955_sailDir = param_1;
             D_5883 = 0;
         }
-        D_5956 = 0;
+        D_5956_newPrompt = 0;
     }
 
     // 04b8
@@ -387,7 +387,7 @@ static int MAINOUT_0490(int param_1, int param_2)
 #endif
 
         // 0500
-        if (D_5955 == 0)
+        if (D_5955_sailDir == 0)
         {
             ULTIMA_1850_PrintString(_TEXT(0x29db, "North\n"));
         }
@@ -408,7 +408,7 @@ static int MAINOUT_0490(int param_1, int param_2)
             return;
         }
 #endif
-        if (D_5955 == 0)
+        if (D_5955_sailDir == 0)
         {
             ULTIMA_1850_PrintString(_TEXT(0x29e2, "South\n"));
         }
@@ -429,7 +429,7 @@ static int MAINOUT_0490(int param_1, int param_2)
             return;
         }
 #endif
-        if (D_5955 == 0)
+        if (D_5955_sailDir == 0)
         {
             ULTIMA_1850_PrintString(_TEXT(0x29e9, "East\n"));
         }
@@ -450,7 +450,7 @@ static int MAINOUT_0490(int param_1, int param_2)
             return;
         }
 #endif
-        if (D_5955 == 0)
+        if (D_5955_sailDir == 0)
         {
             ULTIMA_1850_PrintString(_TEXT(0x29ef, "West\n"));
         }
@@ -484,10 +484,10 @@ static int MAINOUT_0598(void)
     int local4_4;
 
     ULTIMA_5910_UpdateFrame();
-    if (D_a9fa != 0)
+    if (D_a9fa_vitalsDirty != 0)
     {
         ULTIMA_2900_UpdateVitalsDisplay();
-        D_a9fa = 0;
+        D_a9fa_vitalsDirty = 0;
     }
 
     // 05b2
@@ -499,23 +499,23 @@ static int MAINOUT_0598(void)
     else
     {
         // 05c6
-        if (D_5956 != 0)
+        if (D_5956_newPrompt != 0)
         {
             ULTIMA_16ba_PrintChar('\n');
-            ULTIMA_4c2a();
+            ULTIMA_4c2a_PrintLeftCap();
         }
 
         // 05d7
-        D_5956 = 1;
-        while (D_5955 != 0)
+        D_5956_newPrompt = 1;
+        while (D_5955_sailDir != 0)
         {
             local3_6 = ULTIMA_2032_ToUpper(ULTIMA_1b38_PollKeyWithCursor());
-            if (local3_6 != 0 && local3_6 != D_5955)
+            if (local3_6 != 0 && local3_6 != D_5955_sailDir)
                 break;
 
             // 05e6
-            local3_6 = (uint)D_5955;
-            if (D_5892_wind_dir != 0)
+            local3_6 = (uint)D_5955_sailDir;
+            if (D_5892_windDir != 0)
             {
                 local2_8 = local1_a = 0;
 
@@ -541,12 +541,12 @@ static int MAINOUT_0598(void)
 
                 // 0619
                 local4_4 = 1;
-                if (D_29f6[D_5892_wind_dir - 1] != local2_8)
+                if (D_29f6[D_5892_windDir - 1] != local2_8)
                 {
                     local4_4++;
                 }
                 // 062e
-                if (D_29fa[D_5892_wind_dir - 1] != local1_a)
+                if (D_29fa[D_5892_windDir - 1] != local1_a)
                 {
                     local4_4++;
                 }
@@ -559,26 +559,26 @@ static int MAINOUT_0598(void)
             }
 
             // 0670
-            if (D_57bb > 0x7f)
+            if (D_57bb_hmsCapePlans > 0x7f)
             {
                 D_a524 = (uint)(D_a524 == 0);
-                ULTIMA_4f7c(1);
+                ULTIMA_4f7c_AdvanceTime(1);
             }
             else
             {
-                ULTIMA_4f7c(2);
+                ULTIMA_4f7c_AdvanceTime(2);
             }
 
-            if (D_a524 == 0 || D_57bb < 0x80)
+            if (D_a524 == 0 || D_57bb_hmsCapePlans < 0x80)
             {
                 MAINOUT_1a60();
             }
 
-            ULTIMA_3ae6(1);
+            ULTIMA_3ae6_WaitFrames(1);
             D_5883 = D_5883 + 1;
         }
 
-        if (D_5955 == 0)
+        if (D_5955_sailDir == 0)
         {
             local3_6 = ULTIMA_266c_GetChar();
         }
@@ -595,7 +595,7 @@ int MAINOUT_06ec_AttackCmd(void)
     int local_a;
 
     ULTIMA_1850_PrintString(_TEXT(0x29fe, "Attack-"));
-    if ((*ULTIMA_4402_GetTileAddr(D_5896_map_x, D_5897_map_y) < TILE_MAP_POISON) &&
+    if ((*ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY) < TILE_MAP_POISON) &&
         ((D_587c_partyTile & 0xfc) == TILE_ACTOR_SKIFF || (D_587c_partyTile & 0xfe) == TILE_ACTOR_FLYING_CARPET))
     {
         ULTIMA_1850_PrintString(_TEXT(0x2a06, "On foot!\n"));
@@ -605,12 +605,12 @@ int MAINOUT_06ec_AttackCmd(void)
     {
         if (ULTIMA_35ec_SelectDirection() != 0)
         {
-            local_6 = (uint)D_5896_map_x + D_5876;
-            local_8 = (uint)D_5897_map_y + D_5878;
-            local_a = ULTIMA_368e_FindActorTileAtPos(local_6, local_8, D_5895_map_level) & 0xfc;
+            local_6 = (uint)D_5896_mapX + D_5876_tempX;
+            local_8 = (uint)D_5897_mapY + D_5878_tempY;
+            local_a = ULTIMA_368e_FindActorTileAtPos(local_6, local_8, D_5895_mapLevel) & 0xfc;
             if (local_a == TILE_ACTOR_PIRATE || (local_a != TILE_ACTOR_SHARD && local_a != TILE_ACTOR_E8 && local_a >= TILE_ACTOR_WIZARD))
             {
-                ULTIMA_6150_Combat(D_5876);
+                ULTIMA_6150_Combat(D_5876_tempX);
             }
             else
             {
@@ -630,7 +630,7 @@ static int MAINOUT_0790_LoadDungeon(char* param_1)
     ULTIMA_1850_PrintString(param_1);
     for (local_4 = 0x20; local_4 < 0x28; local_4++)
     {
-        if (D_1e8a[local_4] == D_5896_map_x && D_1eb2[local_4] == D_5897_map_y)
+        if (D_1e8a_placeX[local_4] == D_5896_mapX && D_1eb2_placeY[local_4] == D_5897_mapY)
             break;
     }
 
@@ -648,11 +648,11 @@ static int MAINOUT_0790_LoadDungeon(char* param_1)
 
         if (local_4 == 0x27)
         {
-            if ((D_58c8[0] & D_58c8[1] & D_58c8[2]) < 0x80)
+            if ((D_58c8_shadowlordTowns[0] & D_58c8_shadowlordTowns[1] & D_58c8_shadowlordTowns[2]) < 0x80)
             {
                 ULTIMA_1850_PrintString(_TEXT(0x2a2f, "\nAttacked at entrance!\n"));
-                local_6_an = ULTIMA_38e4();
-                D_5c5a[local_6_an]._0_tile = TILE_ACTOR_SHADOWLORD;
+                local_6_an = ULTIMA_38e4_FindActorSlot();
+                D_5c5a_actors[local_6_an].tile = TILE_ACTOR_SHADOWLORD;
                 ULTIMA_6150_Combat(local_6_an);
 #if !defined(MATCHING_BUILD)
                 return 0; // TODO: validate return value
@@ -665,33 +665,33 @@ static int MAINOUT_0790_LoadDungeon(char* param_1)
         {
             ULTIMA_1850_PrintString(_TEXT(0x2a47, "\n\n"));
             ULTIMA_16ba_PrintChar(CTRL_CHAR_CENTER_TEXT);
-            ULTIMA_1850_PrintString(D_1e3a[local_4]);
+            ULTIMA_1850_PrintString(D_1e3a_mapNames[local_4]);
             ULTIMA_16ba_PrintChar(CTRL_CHAR_UNCENTER_TEXT);
         }
 
         ULTIMA_16ba_PrintChar('\n');
-        if (D_a9bd[0] != 1)
+        if (D_a9bd_curDisk[0] != 1)
         {
             ULTIMA_251e_SwitchDisks(1);
             while (ULTIMA_1674_TestOpenFile(/*0x2a4a*/ "BRIT.DAT") == 0) {}
         }
 
-        ULTIMA_25d8_WriteFileToDisk(OUTSUBS_0368_GetWorldSavefile(), D_5c5a, 0x100);
+        ULTIMA_25d8_WriteFileToDisk(OUTSUBS_0368_GetWorldSavefile(), D_5c5a_actors, 0x100);
         ULTIMA_251e_SwitchDisks(2);
-        ULTIMA_256e_ReadFileFromDisk(/*0x2a53*/ "DUNGEON.DAT", D_595a, 0x200, local_4 * 0x200 + -0x4000);
-        D_5893_map_id = local_4 + 1;
-        if (D_5895_map_level != 0 && (byte)(local_4 + 1) != 0x28)
+        ULTIMA_256e_ReadFileFromDisk(/*0x2a53*/ "DUNGEON.DAT", D_595a_dungeonMap, 0x200, local_4 * 0x200 + -0x4000);
+        D_5893_mapId = local_4 + 1;
+        if (D_5895_mapLevel != 0 && (byte)(local_4 + 1) != 0x28)
         {
-            D_5895_map_level = 7;
-            D_6603 = 3;
+            D_5895_mapLevel = 7;
+            D_6603_dungeonFacing = 3;
             D_6602 = 4;
-            D_5896_map_x = D_5897_map_y = 7;
+            D_5896_mapX = D_5897_mapY = 7;
         }
         else
         {
-            D_5895_map_level = 0;
-            D_5896_map_x = D_5897_map_y = 1;
-            D_6603 = 1;
+            D_5895_mapLevel = 0;
+            D_5896_mapX = D_5897_mapY = 1;
+            D_6603_dungeonFacing = 1;
             D_6602 = 5;
         }
     }
@@ -713,18 +713,18 @@ int MAINOUT_08de_EnterCmd(void)
 
     ULTIMA_1850_PrintString(_TEXT(0x2a6f, "Enter "));
 
-    local_8 = *ULTIMA_4402_GetTileAddr(D_5896_map_x, D_5897_map_y);
+    local_8 = *ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY);
     switch (local_8)
     {
     case TILE_MAP_SHRINE:
         ULTIMA_1850_PrintString(_TEXT(0x2a76, "the shrine of\n"));
         for (local_6 = 0; local_6 < 8; local_6++)
         {
-            if (D_1f6e[local_6] == D_5896_map_x && D_1f76[local_6] == D_5897_map_y)
+            if (D_1f6e[local_6] == D_5896_mapX && D_1f76[local_6] == D_5897_mapY)
                 break;
         }
 
-        ULTIMA_1850_PrintString(D_1f4e[local_6]);
+        ULTIMA_1850_PrintString(D_1f4e_virtueNames[local_6]);
         ULTIMA_16ba_PrintChar('\n');
         CAST2_0e76_Shrine();
         break;
@@ -793,9 +793,9 @@ int MAINOUT_08de_EnterCmd(void)
 
 static int MAINOUT_0a1a(int param_1)
 {
-    if (*ULTIMA_4402_GetTileAddr(D_5896_map_x, D_5897_map_y) == 0xff && D_587a != 0xe)
+    if (*ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY) == 0xff && D_587a_statusIcon != 0xe)
     {
-        D_58a5 = 0;
+        D_58a5_lightLevel = 0;
         if (param_1 == 0)
         {
             ULTIMA_5910_UpdateFrame();
@@ -805,7 +805,7 @@ static int MAINOUT_0a1a(int param_1)
     else
     {
         param_1 = 0;
-        ULTIMA_4f7c(0);
+        ULTIMA_4f7c_AdvanceTime(0);
     }
 
     return param_1;
@@ -814,13 +814,13 @@ static int MAINOUT_0a1a(int param_1)
 // check earthquake
 static void MAINOUT_0a60(void)
 {
-    if (D_5895_map_level != 0)
+    if (D_5895_mapLevel != 0)
     {
         if (ULTIMA_2092_RandomRange(0, 0xff) == 0x69)
         {
             ULTIMA_1850_PrintString(_TEXT(0x2b1d, "EARTHQUAKE!\n"));
             ULTIMA_3072_ShakeScreen();
-            ULTIMA_2aa8();
+            ULTIMA_2aa8_DamageParty();
         }
     }
 }
@@ -845,20 +845,20 @@ static void MAINOUT_0a84_MainLoop(void)
         if (local_8 == 1)
         {
             ULTIMA_16ba_PrintChar('\n');
-            ULTIMA_4c2a();
+            ULTIMA_4c2a_PrintLeftCap();
             // 0aba
             ULTIMA_1850_PrintString(_TEXT(0x2b2a, "Zzzzzz...\n"));
         }
         else if (local_8 == -1) // 0ac2
         {
-            if (D_a9bd[0] != 1)
+            if (D_a9bd_curDisk[0] != 1)
             {
                 ULTIMA_251e_SwitchDisks(1);
                 // 0ad6
                 while (ULTIMA_1674_TestOpenFile(/*0x2b35*/ "BRIT.DAT") == 0) {}
             }
             // 0ae1
-            ULTIMA_25d8_WriteFileToDisk(OUTSUBS_0368_GetWorldSavefile(), D_5c5a, 0x100);
+            ULTIMA_25d8_WriteFileToDisk(OUTSUBS_0368_GetWorldSavefile(), D_5c5a_actors, 0x100);
             BLCKTHRN_0910_Death();
             local_c = 1;
             local_a = 0;
@@ -866,12 +866,12 @@ static void MAINOUT_0a84_MainLoop(void)
         else
         {
             // 0b00
-            if (ULTIMA_48a8() != 0)
+            if (ULTIMA_48a8_EnterMoongate() != 0)
             {
                 CAST2_0e76_Shrine();
             }
             // 0b0a
-            if (D_5893_map_id != 0)
+            if (D_5893_mapId != 0)
             {
                 return;
             }
@@ -912,7 +912,7 @@ static void MAINOUT_0a84_MainLoop(void)
 
                 case U5_KEY_CTRL_S: // 0b80
                     ULTIMA_1850_PrintString(_TEXT(0x2b54, "Sound "));
-                    if (D_a9ce != 0)
+                    if (D_a9ce_soundOn != 0)
                     {
                         ULTIMA_1850_PrintString(_TEXT(0x2b5b, "Off\n"));
                     }
@@ -921,7 +921,7 @@ static void MAINOUT_0a84_MainLoop(void)
                         ULTIMA_1850_PrintString(_TEXT(0x2b60, "On\n"));
                     }
                     // ?
-                    D_a9ce = !D_a9ce;
+                    D_a9ce_soundOn = !D_a9ce_soundOn;
                     break;
 
                 case U5_KEY_LEFT: // 0baa
@@ -951,17 +951,17 @@ static void MAINOUT_0a84_MainLoop(void)
                 else
                 {
                     // 0c06
-                    local_a = ULTIMA_4080(local_6);
+                    local_a = ULTIMA_4080_SetActivePlayer(local_6);
                 }
             }
         }
         // 0c12
         if ((D_587c_partyTile & 0xfc) != TILE_ACTOR_FRIGATE_20)
         {
-            D_5955 = 0;
+            D_5955_sailDir = 0;
         }
         // 0c20
-        if (D_5893_map_id != 0)
+        if (D_5893_mapId != 0)
         {
             local_c = 1;
         }
@@ -970,8 +970,8 @@ static void MAINOUT_0a84_MainLoop(void)
             if (local_a != 0)
             {
                 // 0c39
-                ULTIMA_4f7c(2);
-                local_12_ab = *ULTIMA_4402_GetTileAddr(D_5896_map_x, D_5897_map_y);
+                ULTIMA_4f7c_AdvanceTime(2);
+                local_12_ab = *ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY);
                 if ((local_12_ab & 0xfe) == TILE_MAP_6A)
                 {
                     MAINOUT_1be8();
@@ -980,16 +980,16 @@ static void MAINOUT_0a84_MainLoop(void)
                 else if (local_12_ab == TILE_MAP_POISON && D_587c_partyTile == TILE_ACTOR_AVATAR)
                 {
                     OUTSUBS_05fc_StepOnPoisonTile();
-                    ULTIMA_3ae6(1);
+                    ULTIMA_3ae6_WaitFrames(1);
                 }
                 else if (local_12_ab == TILE_MAP_LAVA)
                 {
                     OUTSUBS_05ee_StepOnBurningTile();
                 }
-                else if (D_5896_map_x == 0xe9 && D_5897_map_y == 0xeb && D_5895_map_level == 0 && D_5893_map_id == 0)
+                else if (D_5896_mapX == 0xe9 && D_5897_mapY == 0xeb && D_5895_mapLevel == 0 && D_5893_mapId == 0)
                 {
                     ULTIMA_1850_PrintString(_TEXT(0x2b6b, "\n\""));
-                    if ((byte)D_58cc != 0)
+                    if ((byte)D_58cc_questsOrdained != 0)
                     {
                         ULTIMA_1850_PrintString(_TEXT(0x2b6e, "Pass, Seeker!\"\n"));
                     }
@@ -997,17 +997,17 @@ static void MAINOUT_0a84_MainLoop(void)
                     {
                         ULTIMA_1850_PrintString(_TEXT(0x2b7e, "Thou art not upon a Sacred Quest!\n"));
                         ULTIMA_1850_PrintString(_TEXT(0x2ba1, "Passage denied!\"\n"));
-                        D_5897_map_y++;
+                        D_5897_mapY++;
                     }
                 }
 
                 // 0cd0
                 MAINOUT_0a60();
-                ULTIMA_2ae8();
+                ULTIMA_2ae8_EndTurn();
                 if (local_12_ab == 1 && ((D_587c_partyTile & 0xfc) == TILE_ACTOR_SKIFF || (D_587c_partyTile & 0xfe) == TILE_ACTOR_FLYING_CARPET))
                 {
                     ULTIMA_1850_PrintString(_TEXT(0x2bb3, "Rough seas!\n"));
-                    ULTIMA_3522(D_5896_map_x, D_5897_map_y);
+                    ULTIMA_3522_HitEffectAt(D_5896_mapX, D_5897_mapY);
                     MAINOUT_109e();
                 }
                 if ((local_12_ab & 0xfc) == TILE_MAP_WATERFALL)
@@ -1032,16 +1032,16 @@ void MAINOUT_0d22_Entry(void)
 
     MAINOUT_0000();
 
-    if (D_6605 >= 0x40)
+    if (D_6605_boughtShip >= 0x40)
     {
-        local_6 = ULTIMA_38e4();
-        local_4_ab = &D_5c5a[local_6]; // get some actor
-        local_4_ab->_7 = D_6605 & 0x3f;
-        local_4_ab->_2_x = D_5953; // ship_x
-        local_4_ab->_3_y = D_5954; // ship_y
-        local_4_ab->_4_z = 0;
+        local_6 = ULTIMA_38e4_FindActorSlot();
+        local_4_ab = &D_5c5a_actors[local_6]; // get some actor
+        local_4_ab->extra = D_6605_boughtShip & 0x3f;
+        local_4_ab->x = D_5953_boughtShipX; // ship_x
+        local_4_ab->y = D_5954_boughtShipY; // ship_y
+        local_4_ab->z = 0;
 
-        if (D_6605 > 0x7f)
+        if (D_6605_boughtShip > 0x7f)
         {
             local_8 = TILE_ACTOR_FRIGATE_25;
         }
@@ -1050,9 +1050,9 @@ void MAINOUT_0d22_Entry(void)
             local_8 = TILE_ACTOR_SKIFF_29;
         }
 
-        local_4_ab->_0_tile = local_4_ab->_1_animTile = local_8;
-        local_4_ab->_5 = 99;
-        D_6605 = 0;
+        local_4_ab->tile = local_4_ab->animTile = local_8;
+        local_4_ab->value = 99;
+        D_6605_boughtShip = 0;
     }
 
 #if defined(ENABLE_BGM)
@@ -1067,12 +1067,12 @@ int MAINOUT_0d8c(void)
     int local_6_an;
     int local_4;
 
-    if (D_5895_map_level > 0x7f)
+    if (D_5895_mapLevel > 0x7f)
     {
         return 3;
     }
 
-    local_6_an = *ULTIMA_4402_GetTileAddr(D_5896_map_x, D_5897_map_y);
+    local_6_an = *ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY);
     if (local_6_an >= TILE_MAP_20 && local_6_an <= TILE_MAP_26)
     {
         local_4 = 0;
@@ -1128,7 +1128,7 @@ static byte MAINOUT_0e4e(int param_1)
     {
         if (ULTIMA_2092_RandomRange(0, 0x40) < 0x10)
         {
-            if (D_5895_map_level < 0x80)
+            if (D_5895_mapLevel < 0x80)
             {
                 if (param_1 == 1 && ULTIMA_2092_RandomRange(0, 7) == 7)
                 {
@@ -1154,7 +1154,7 @@ static byte MAINOUT_0e4e(int param_1)
     }
     else
     {
-        if (param_1 == TILE_MAP_POISON && D_5895_map_level == 0xff)
+        if (param_1 == TILE_MAP_POISON && D_5895_mapLevel == 0xff)
         {
             return TILE_ACTOR_F8;
         }
@@ -1166,7 +1166,7 @@ static byte MAINOUT_0e4e(int param_1)
 
         if (param_1 < TILE_MAP_HUT || ((byte)param_1 & 0xfc) == TILE_MAP_30)
         {
-            if (D_5895_map_level < 0x80)
+            if (D_5895_mapLevel < 0x80)
             {
                 return D_2bc0[MAINOUT_0e04(D_2bdc)];
             }
@@ -1182,10 +1182,10 @@ static void MAINOUT_0f4e(void)
 {
     do
     {
-        D_5876 = (byte)(ULTIMA_2092_RandomRange(0, 0x1f) + D_589b);
-        D_5878 = (byte)(ULTIMA_2092_RandomRange(0, 0x1f) + D_589c);
-    } while (abs(D_5876 - D_5896_map_x) <= 6 || abs(D_5878 - D_5897_map_y) <= 6 ||
-        abs(D_5876 - D_5896_map_x) >= 0xfa || abs(D_5878 - D_5897_map_y) >= 0xfa);
+        D_5876_tempX = (byte)(ULTIMA_2092_RandomRange(0, 0x1f) + D_589b_mapOriginX);
+        D_5878_tempY = (byte)(ULTIMA_2092_RandomRange(0, 0x1f) + D_589c_mapOriginY);
+    } while (abs(D_5876_tempX - D_5896_mapX) <= 6 || abs(D_5878_tempY - D_5897_mapY) <= 6 ||
+        abs(D_5876_tempX - D_5896_mapX) >= 0xfa || abs(D_5878_tempY - D_5897_mapY) >= 0xfa);
 }
 
 void MAINOUT_0fc4(void)
@@ -1199,8 +1199,8 @@ void MAINOUT_0fc4(void)
     {
         MAINOUT_0f4e();
 
-        local_8 = D_5876;
-        local_a = D_5878;
+        local_8 = D_5876_tempX;
+        local_a = D_5878_tempY;
 
         local_4_ab = MAINOUT_0e4e(*ULTIMA_4402_GetTileAddr(local_8, local_a));
         if (local_4_ab != 0)
@@ -1214,11 +1214,11 @@ void MAINOUT_0fc4(void)
 
     if (local_6 != 0x80)
     {
-        local_6 = ULTIMA_38e4();
-        ULTIMA_3a74(local_4_ab, local_4_ab, local_8, local_a, D_5895_map_level, 0, local_6);
+        local_6 = ULTIMA_38e4_FindActorSlot();
+        ULTIMA_3a74_SetActor(local_4_ab, local_4_ab, local_8, local_a, D_5895_mapLevel, 0, local_6);
         if (local_4_ab == TILE_ACTOR_PIRATE)
         {
-            D_5c5a[local_6]._5 = 100;
+            D_5c5a_actors[local_6].value = 100;
         }
     }
 }

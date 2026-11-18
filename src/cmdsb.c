@@ -32,7 +32,7 @@ static int CMDS_18be(void)
     local_16_ak = 0;
     for (local_8 = 0; local_8 < 8; local_8++)
     {
-        if (D_5850[local_8] != 0)
+        if (D_5850_reagents[local_8] != 0)
         {
             local_12[local_16_ak] = local_8;
             local_16_ak++;
@@ -43,22 +43,22 @@ static int CMDS_18be(void)
     ULTIMA_1c22_SetTextWindowSize(1, 0x18, 1, 0x26, 9);
     ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
     ULTIMA_1c22_SetTextWindowSize(1, 0x18, 1, 0x27, 9);
-    ULTIMA_4efc();
-    ULTIMA_4e50(_TEXT(0x8f64, "Reagents:"));
+    ULTIMA_4efc_OpenStatsDivider();
+    ULTIMA_4e50_ShowStatsTitle(_TEXT(0x8f64, "Reagents:"));
 
     for (local_8 = 0; local_8 != local_16_ak; local_8++)
     {
         ULTIMA_16ba_PrintChar('\n');
         ULTIMA_16ba_PrintChar(' ');
-        ULTIMA_1a3e_PrintNumber(D_5850[local_12[local_8]], 2, 0x30);
+        ULTIMA_1a3e_PrintNumber(D_5850_reagents[local_12[local_8]], 2, 0x30);
         ULTIMA_16ba_PrintChar(' ');
-        ULTIMA_1850_PrintString(D_19d2[local_12[local_8]]);
+        ULTIMA_1850_PrintString(D_19d2_reagentNames[local_12[local_8]]);
     }
 
     // d8f2
     local_6 = local_18_ai = 0;
 
-    ULTIMA_2a28(1);
+    ULTIMA_2a28_InvertPlayerRow(1);
     local_4_ab = 0;
     do
     {
@@ -71,9 +71,9 @@ static int CMDS_18be(void)
             // 19b2
             if (local_6 > 0)
             {
-                ULTIMA_2a28(local_6 + 1);
+                ULTIMA_2a28_InvertPlayerRow(local_6 + 1);
                 local_6--;
-                ULTIMA_2a28(local_6 + 1);
+                ULTIMA_2a28_InvertPlayerRow(local_6 + 1);
             }
             break;
 
@@ -82,9 +82,9 @@ static int CMDS_18be(void)
             // 19d0
             if (local_6 < local_16_ak + -1)
             {
-                ULTIMA_2a28(local_6 + 1);
+                ULTIMA_2a28_InvertPlayerRow(local_6 + 1);
                 local_6++;
-                ULTIMA_2a28(local_6 + 1);
+                ULTIMA_2a28_InvertPlayerRow(local_6 + 1);
             }
             break;
 
@@ -124,7 +124,7 @@ static int CMDS_18be(void)
         }
     } while (local_4_ab == 0);
 
-    ULTIMA_2a28(local_6 + 1);
+    ULTIMA_2a28_InvertPlayerRow(local_6 + 1);
     ULTIMA_1b94_SelectTextWindow(2);
     return local_18_ai;
 }
@@ -141,13 +141,13 @@ static int CMDS_1a70(int param_1)
     {
         local_6 = 1;
         ULTIMA_1850_PrintString(_TEXT(0x8f72, "How much? "));
-        local_4_ab = ULTIMA_3b9e(2);
+        local_4_ab = ULTIMA_3b9e_GetNumber(2);
         if (local_4_ab != 0)
         {
             local_a = 0x80;
             for (local_8 = 0; local_8 < 8; local_8++)
             {
-                if ((param_1 & local_a) != 0 && D_5850[local_8] < local_4_ab)
+                if ((param_1 & local_a) != 0 && D_5850_reagents[local_8] < local_4_ab)
                 {
                     ULTIMA_1850_PrintString(_TEXT(0x8f7e, "Insufficient reagents!\n\n"));
                     local_6 = 0;
@@ -172,7 +172,7 @@ void CMDS_1ad8_MixCmd(void)
     local_8 = 0;
     for (local_a = 0; local_a < 8; local_a++)
     {
-        local_8 += D_5850[local_a];
+        local_8 += D_5850_reagents[local_a];
     }
 
     if (local_8 == 0)
@@ -208,13 +208,13 @@ void CMDS_1ad8_MixCmd(void)
                 if (local_4_ab != 0)
                 {
                     ULTIMA_1850_PrintString(_TEXT(0x8ff0, "Mixing...\n"));
-                    if (D_5893_map_id > 0x20)
+                    if (D_5893_mapId > 0x20)
                     {
                         ULTIMA_20fa_WaitTicks(10);
                     }
                     else
                     {
-                        ULTIMA_3ae6(10);
+                        ULTIMA_3ae6_WaitFrames(10);
                     }
 
                     local_c = 0x80;
@@ -222,7 +222,7 @@ void CMDS_1ad8_MixCmd(void)
                     {
                         if ((local_4_ab & local_c) != 0)
                         {
-                            D_5850[local_a] -= local_8;
+                            D_5850_reagents[local_a] -= local_8;
                         }
                         local_c >>= 1;
                     }
@@ -230,17 +230,17 @@ void CMDS_1ad8_MixCmd(void)
                     if (local_6 >= 0 && D_1cc0[local_6] == local_4_ab)
                     {
                         ULTIMA_1850_PrintString(_TEXT(0x8ffc, "\nDone!\n"));
-                        D_57f0[local_6] += local_8;
-                        if (D_57f0[local_6] > 99)
+                        D_57f0_mixedSpells[local_6] += local_8;
+                        if (D_57f0_mixedSpells[local_6] > 99)
                         {
-                            D_57f0[local_6] = 99;
+                            D_57f0_mixedSpells[local_6] = 99;
                         }
                     }
                     else
                     {
                         ULTIMA_16ba_PrintChar('\n');
                         ULTIMA_39fc_GetFirstActivePartyMember();
-                        ULTIMA_2fd0(D_5876);
+                        ULTIMA_2fd0_SpringTrap(D_5876_tempX);
                     }
                 }
                 else
@@ -251,8 +251,8 @@ void CMDS_1ad8_MixCmd(void)
         }
     }
 
-    ULTIMA_4e20();
-    ULTIMA_4f3c();
+    ULTIMA_4e20_ClearStatsTitle();
+    ULTIMA_4f3c_DrawStatsDivider();
     ULTIMA_2900_UpdateVitalsDisplay();
 }
 
@@ -265,7 +265,7 @@ void CMDS_1c20_KlimbCmd(void)
     int local_6;
     int local_4_ab;
 
-    if (D_57af == 0)
+    if (D_57af_grapple == 0)
     {
         ULTIMA_1850_PrintString(_TEXT(0x9016, "With what?\n"));
         return;
@@ -282,11 +282,11 @@ void CMDS_1c20_KlimbCmd(void)
         return;
     }
 
-    local_6 = D_5876;
-    local_a = D_5878;
+    local_6 = D_5876_tempX;
+    local_a = D_5878_tempY;
 
-    local_8 = D_5896_map_x + D_5876;
-    local_c = D_5897_map_y + D_5878;
+    local_8 = D_5896_mapX + D_5876_tempX;
+    local_c = D_5897_mapY + D_5878_tempY;
 
     local_e_am = *ULTIMA_4402_GetTileAddr(local_8, local_c);
     if (local_e_am == 13)
@@ -304,7 +304,7 @@ void CMDS_1c20_KlimbCmd(void)
             if (D_55a8_party[local_4_ab].status != STATUS_DEAD && D_55a8_party[local_4_ab].dex < ULTIMA_2092_RandomRange(1, 0x1e))
             {
                 ULTIMA_1850_PrintString(_TEXT(0x904a, "Fell!\n"));
-                ULTIMA_2a52(local_4_ab, ULTIMA_2092_RandomRange(1, 5));
+                ULTIMA_2a52_DamagePlayer(local_4_ab, ULTIMA_2092_RandomRange(1, 5));
             }
         }
 

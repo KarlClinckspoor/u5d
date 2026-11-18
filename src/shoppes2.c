@@ -55,7 +55,7 @@ static void SHOPPES2_006a(void)
 
 // CHECKED
 // The original stores 0xff through AL (mov al,0FFh; mov [587B],al), MSC's form for a
-// chained assignment (DUNGEON and ULTIMA.EXE have D_589e = D_587b_activePlayer = 0xff). Here the chain
+// chained assignment (DUNGEON and ULTIMA.EXE have D_589e_curCombatant = D_587b_activePlayer = 0xff). Here the chain
 // names D_587b_activePlayer twice, probably two names of the same byte in the original.
 // The label keeps MSC from folding local_4 = 0 into the index, as the original doesn't.
 static void SHOPPES2_00ac(void)
@@ -106,16 +106,16 @@ static int SHOPPES2_00dc(void)
     {
         ULTIMA_3f14_IncreaseInt(&D_57a8_food, D_bd1a, 9999);
 
-        if (*ULTIMA_4402_GetTileAddr(D_5896_map_x, D_5897_map_y - 1) == TILE_MAP_TABLE_95)
+        if (*ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY - 1) == TILE_MAP_TABLE_95)
         {
-            *ULTIMA_4402_GetTileAddr(D_5896_map_x, D_5897_map_y - 1) = TILE_MAP_TABLE_9B;
+            *ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY - 1) = TILE_MAP_TABLE_9B;
             D_bd1e = TILE_MAP_TABLE_9B;
 
             ULTIMA_5910_UpdateFrame();
         }
-        else if (*ULTIMA_4402_GetTileAddr(D_5896_map_x, D_5897_map_y + 1) == TILE_MAP_TABLE_95)
+        else if (*ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY + 1) == TILE_MAP_TABLE_95)
         {
-            *ULTIMA_4402_GetTileAddr(D_5896_map_x, D_5897_map_y + 1) = TILE_MAP_TABLE_9A;
+            *ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY + 1) = TILE_MAP_TABLE_9A;
             D_bd1e = TILE_MAP_TABLE_9A;
 
             ULTIMA_5910_UpdateFrame();
@@ -160,7 +160,7 @@ static int SHOPPES2_01f4(void)
             if (local_4 == 'N')
             {
                 ULTIMA_1850_PrintString(_TEXT(0x9b72, "No!"));
-                D_5957 = 0x19;
+                D_5957_drunkTurns = 0x19;
                 ULTIMA_3f36_DecreaseByte(&D_5888_karma, 1);
             }
         } while (local_4 != 'Y' && local_4 != 'N');
@@ -256,7 +256,7 @@ static int SHOPPES2_0380(int param_1)
     ULTIMA_16ba_PrintChar('\"');
     SHOPPES_017a_PrintShopFileText(D_4c66[ULTIMA_2092_RandomRange(0, 6)]);
     ULTIMA_1850_PrintString(_TEXT(0x9c4a, "\n\nHow many wouldst\nthou like?\" "));
-    local_4 = local_6_an = ULTIMA_3b9e(2);
+    local_4 = local_6_an = ULTIMA_3b9e_GetNumber(2);
     if (local_6_an == 0)
     {
         ULTIMA_1850_PrintString(_TEXT(0x9c6a, "\n\n\"Hrumph.\""));
@@ -458,7 +458,7 @@ static int SHOPPES2_0508(void)
         local_8 = -1;
         for (; local_4_ab < 0x1a; local_4_ab++)
         {
-            local_6 = ULTIMA_6f1e((byte*)D_4c74[local_4_ab], D_bcf8_inputText);
+            local_6 = ULTIMA_6f1e_CompareWord((byte*)D_4c74[local_4_ab], D_bcf8_inputText);
             if (local_6 == 0 || (0 < local_6 && D_bcf8_inputText[local_6 - 1] == ' '))
             {
                 // e765

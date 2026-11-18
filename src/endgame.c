@@ -24,17 +24,17 @@ static void ENDGAME_0000(void)
 
     do
     {
-        local_c = ULTIMA_0fae_LoadResourceFile(D_25ea[0]); // PROPORT.PCS
+        local_c = ULTIMA_0fae_LoadResourceFile(D_25ea_fileNames[0]); // PROPORT.PCS
     } while (local_c == 0);
 
     do
     {
-        local_4_ab = ULTIMA_0bae_LoadImageFile(D_25ea[0x11]); // TEXT.16
+        local_4_ab = ULTIMA_0bae_LoadImageFile(D_25ea_fileNames[0x11]); // TEXT.16
     } while (local_4_ab == 0);
 
     do
     {
-        local_6 = ULTIMA_0bae_LoadImageFile(D_25ea[0x18]); // END1.16
+        local_6 = ULTIMA_0bae_LoadImageFile(D_25ea_fileNames[0x18]); // END1.16
     } while (local_6 == 0);
 
     ULTIMA_0f46_GRAP_66_Reveal(0, 0, 0x13f, 199);
@@ -49,7 +49,7 @@ static void ENDGAME_0000(void)
             local_a = (uint)D_3df4[local_8];
             do
             {
-                local_6 = ULTIMA_0bae_LoadImageFile(D_25ea[0x18 + local_a]);
+                local_6 = ULTIMA_0bae_LoadImageFile(D_25ea_fileNames[0x18 + local_a]);
             } while (local_6 == 0);
         }
 
@@ -94,8 +94,8 @@ static void ENDGAME_0000(void)
         D_5156 = D_3de2[local_8];
         D_5158 = D_3de8[local_8];
 
-        ULTIMA_256e_ReadFileFromDisk(_TEXT(0x81fe, "END.DAT"), D_b21e, 2000, D_3dca[local_8]);
-        FONT_0000(local_c, D_b21e); // 7ce6 -> 1778:0566
+        ULTIMA_256e_ReadFileFromDisk(_TEXT(0x81fe, "END.DAT"), D_b21e_scratch, 2000, D_3dca[local_8]);
+        FONT_0000(local_c, D_b21e_scratch); // 7ce6 -> 1778:0566
 
         if (local_8 != 0)
         {
@@ -123,7 +123,7 @@ static void ENDGAME_0000(void)
     // a48b
     do
     {
-        local_6 = ULTIMA_0bae_LoadImageFile(D_25ea[0x1c]); // ENDSC.16
+        local_6 = ULTIMA_0bae_LoadImageFile(D_25ea_fileNames[0x1c]); // ENDSC.16
     } while (local_6 == 0);
 
     ULTIMA_0d4c_GRAP_4b_PutImage(local_6, 0, 0x28, 0, 0);
@@ -285,15 +285,15 @@ static void ENDGAME_0326(void)
     ULTIMA_1850_PrintString(_TEXT(0x8332, "Be it known that on\n"));
     D_bcda = 0;
     ENDGAME_023a(_TEXT(0x8348, "the "));
-    ENDGAME_02d6(D_587e);
+    ENDGAME_02d6(D_587e_day);
     ENDGAME_023a(_TEXT(0x834e, " Day of\n"));
     ENDGAME_023a(_TEXT(0x8358, "the "));
-    ENDGAME_02d6(D_587d);
+    ENDGAME_02d6(D_587d_month);
     ENDGAME_023a(_TEXT(0x835e, " Month\n"));
     ULTIMA_1850_PrintString(_TEXT(0x8366, "of the Year\n"));
-    ENDGAME_028c((s16)D_5874 / 100);
+    ENDGAME_028c((s16)D_5874_year / 100);
     ENDGAME_023a(_TEXT(0x8374, " Hundred\n"));
-    ENDGAME_028c((s16)D_5874 % 100);
+    ENDGAME_028c((s16)D_5874_year % 100);
     ENDGAME_023a(_TEXT(0x837e, "\n\n"));
     ENDGAME_023a(D_55a8_party[0].name);
     ENDGAME_023a(_TEXT(0x8382, " the Avatar\n\n"));
@@ -310,9 +310,9 @@ static void ENDGAME_0326(void)
     ULTIMA_1850_PrintString(_TEXT(0x8414, "Report now, thy Quest compleat in\n"));
 
     // a697
-    local_6 = D_5874 - 0x8b;
-    local_8 = D_587d - 4;
-    local_4_ab = D_587e - 5;
+    local_6 = D_5874_year - 0x8b;
+    local_8 = D_587d_month - 4;
+    local_4_ab = D_587e_day - 5;
     if (local_4_ab < 0)
     {
         // a6ba
@@ -383,9 +383,9 @@ static void ENDGAME_0326(void)
 
 static void ENDGAME_04fe(void)
 {
-    ULTIMA_3ae6(2);
+    ULTIMA_3ae6_WaitFrames(2);
     ULTIMA_433e_AudioFootstep();
-    ULTIMA_3ae6(3);
+    ULTIMA_3ae6_WaitFrames(3);
 }
 
 // CHECKED (optimization)
@@ -398,42 +398,42 @@ static int ENDGAME_0510(int param_1, int param_2, int param_3)
     int local_a;
 
     local_8 = 1;
-    local_4_c = &D_5c5a[param_1];
+    local_4_c = &D_5c5a_actors[param_1];
 
-    if (local_4_c->_0_tile == 0)
+    if (local_4_c->tile == 0)
     {
         // a7c0
         local_8 = 0;
     }
-    else if (local_4_c->_2_x == param_2 && local_4_c->_3_y == param_3) // a7c8
+    else if (local_4_c->x == param_2 && local_4_c->y == param_3) // a7c8
     {
         local_8 = 0;
     }
     else
     {
         // a7da
-        local_6 = abs(local_4_c->_2_x - param_2);
-        local_a = abs(local_4_c->_3_y - param_3);
+        local_6 = abs(local_4_c->x - param_2);
+        local_a = abs(local_4_c->y - param_3);
         if (local_6 < local_a)
         {
-            if (local_4_c->_3_y > param_3)
+            if (local_4_c->y > param_3)
             {
-                local_4_c->_3_y--;
+                local_4_c->y--;
             }
             else
             {
                 // a80c
-                local_4_c->_3_y++;
+                local_4_c->y++;
             }
         }
-        else if (local_4_c->_2_x > param_2) // a812
+        else if (local_4_c->x > param_2) // a812
         {
-            local_4_c->_2_x--;
+            local_4_c->x--;
         }
         else
         {
             // a822
-            local_4_c->_2_x++;
+            local_4_c->x++;
         }
 
         ENDGAME_04fe();
@@ -449,14 +449,14 @@ static void ENDGAME_05a2(int param_1)
     int local_6;
     ActorFmt* local_4_c;
     int local_a;
-    local_4_c = &D_5c5a[param_1];
+    local_4_c = &D_5c5a_actors[param_1];
 
-    if (local_4_c->_0_tile != 0 && ULTIMA_2092_RandomRange(0, 1) != 0)
+    if (local_4_c->tile != 0 && ULTIMA_2092_RandomRange(0, 1) != 0)
     {
         for (local_a = 0; local_a < 8; local_a++)
         {
-            local_6 = local_4_c->_2_x;
-            local_8 = local_4_c->_3_y;
+            local_6 = local_4_c->x;
+            local_8 = local_4_c->y;
 
             switch (ULTIMA_2092_RandomRange(0, 3))
             {
@@ -476,14 +476,14 @@ static void ENDGAME_05a2(int param_1)
 
             if (GetMapViewport(local_6, local_8) == TILE_MAP_44)
             {
-                local_4_c->_2_x = local_6;
-                local_4_c->_3_y = local_8;
+                local_4_c->x = local_6;
+                local_4_c->y = local_8;
                 break;
             }
         }
     }
 
-    ULTIMA_3ae6(1);
+    ULTIMA_3ae6_WaitFrames(1);
 }
 
 // CHECKED
@@ -496,33 +496,33 @@ void ENDGAME_0648_EndgameMain(void)
     ActorFmt* local_6;
     int local_4_ab;
 
-    D_589e = 0xff;
+    D_589e_curCombatant = 0xff;
     ULTIMA_2900_UpdateVitalsDisplay();
-    ULTIMA_6f9e(1);
-    ULTIMA_256e_ReadFileFromDisk(_TEXT(0x8480, "MISCMAPS.DAT"), D_ac64, 0xb0, 0x210);
-    ULTIMA_256e_ReadFileFromDisk(_TEXT(0x848e, "ENDMSG.DAT"), D_b21e, 1000, 0);
+    ULTIMA_6f9e_TilesetModePlus3(1);
+    ULTIMA_256e_ReadFileFromDisk(_TEXT(0x8480, "MISCMAPS.DAT"), D_ac64_viewActors, 0xb0, 0x210);
+    ULTIMA_256e_ReadFileFromDisk(_TEXT(0x848e, "ENDMSG.DAT"), D_b21e_scratch, 1000, 0);
 
     for (local_c = 0; local_c < 0xb; local_c++)
     {
         for (local_e_am = 0; local_e_am < 0xb; local_e_am++)
         {
-            GetCombatMap(local_e_am, local_c) = D_ac64[local_c * 0x10 + local_e_am];
+            GetCombatMap(local_e_am, local_c) = D_ac64_viewActors[local_c * 0x10 + local_e_am];
         }
     }
 
     // a949
     for (local_c = 0; local_c < 0x20; local_c++)
     {
-        D_5c5a[local_c]._0_tile = D_5c5a[local_c]._1_animTile = 0;
+        D_5c5a_actors[local_c].tile = D_5c5a_actors[local_c].animTile = 0;
     }
 
     // a966
-    local_6 = &D_5c5a[31];
-    local_6->_0_tile = local_6->_1_animTile = TILE_ACTOR_7C;
-    local_6->_2_x = 5;
-    local_6->_3_y = 8;
-    local_6->_6 = 0;
-    ULTIMA_3ae6(0x28);
+    local_6 = &D_5c5a_actors[31];
+    local_6->tile = local_6->animTile = TILE_ACTOR_7C;
+    local_6->x = 5;
+    local_6->y = 8;
+    local_6->animState = 0;
+    ULTIMA_3ae6_WaitFrames(0x28);
 
     while (ENDGAME_0510(0x1f, 5, 3) != 0)
         ;
@@ -548,15 +548,15 @@ void ENDGAME_0648_EndgameMain(void)
         local_8 = ULTIMA_4d76_FindIndex(_TEXT(0x84a4, CLASS_LIST), D_55a8_party[local_c].cls);
 
         // aa37
-        local_6 = &D_5c5a[local_c];
+        local_6 = &D_5c5a_actors[local_c];
         
-        local_6->_0_tile = local_6->_1_animTile = D_1ade[local_8];
-        local_6->_2_x = 5;
-        local_6->_3_y = 9;
-        local_6->_6 = 0;
+        local_6->tile = local_6->animTile = D_1ade[local_8];
+        local_6->x = 5;
+        local_6->y = 9;
+        local_6->animState = 0;
 
         // aa57
-        ULTIMA_3ae6(1);
+        ULTIMA_3ae6_WaitFrames(1);
 
         // aa5e: *(D_3e5a + local_c), not D_3e5a[local_c]: only then does MSC 5.0 rotate
         // this while and hoist both bytes into SI/DI, as the original does
@@ -565,12 +565,12 @@ void ENDGAME_0648_EndgameMain(void)
     }
 
     // aabc
-    ULTIMA_3ae6(0x28);
-    ULTIMA_1850_PrintString((char*)D_b21e);
+    ULTIMA_3ae6_WaitFrames(0x28);
+    ULTIMA_1850_PrintString((char*)D_b21e_scratch);
     ULTIMA_1850_PrintString(D_55a8_party[0].name);
     ULTIMA_1850_PrintString(_TEXT(0x84ae, "!\"\n\n"));
     ULTIMA_266c_GetChar();
-    ULTIMA_1850_PrintString((char*)&D_b21e[0x21]);
+    ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x21]);
 
     do
     {
@@ -589,7 +589,7 @@ void ENDGAME_0648_EndgameMain(void)
     // ab0c
     if (local_4_ab == 0x4e)
     {
-        ULTIMA_1850_PrintString((char*)&D_b21e[0x49]);
+        ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x49]);
 
         do
         {
@@ -607,13 +607,13 @@ void ENDGAME_0648_EndgameMain(void)
     }
 
     // ab49
-    if (local_4_ab == 0x59 && D_57bf != 0)
+    if (local_4_ab == 0x59 && D_57bf_sandalwoodBox != 0)
     {
 #if defined(ENABLE_BGM)
         AUDIO_PlayBgmForEnding();
 #endif
 
-        ULTIMA_3ae6(8);
+        ULTIMA_3ae6_WaitFrames(8);
 
         while (ENDGAME_0510(0, 5, 4) != 0)
             ;
@@ -621,66 +621,66 @@ void ENDGAME_0648_EndgameMain(void)
         while (ENDGAME_0510(0, 5, 5) != 0)
             ;
 
-        ULTIMA_3ae6(4);
+        ULTIMA_3ae6_WaitFrames(4);
 
-        local_6 = &D_5c5a[6];
+        local_6 = &D_5c5a_actors[6];
         
-        local_6->_0_tile = local_6->_1_animTile = TILE_ACTOR_SANDALWOOD_BOX;
-        local_6->_2_x = 5;
-        local_6->_3_y = 4;
-        local_6->_6 = 0;
+        local_6->tile = local_6->animTile = TILE_ACTOR_SANDALWOOD_BOX;
+        local_6->x = 5;
+        local_6->y = 4;
+        local_6->animState = 0;
 
-        ULTIMA_1850_PrintString((char*)&D_b21e[0xab]);
-        ULTIMA_3ae6(0x28);
+        ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0xab]);
+        ULTIMA_3ae6_WaitFrames(0x28);
         ULTIMA_1850_PrintString(_TEXT(0x84cc, "\n\nHe says:\n\n"));
         ULTIMA_266c_GetChar();
-        ULTIMA_1850_PrintString((char*)&D_b21e[0xd3]);
+        ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0xd3]);
         ULTIMA_266c_GetChar();
-        ULTIMA_1850_PrintString((char*)&D_b21e[0x128]);
+        ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x128]);
         ULTIMA_266c_GetChar();
-        ULTIMA_1850_PrintString((char*)&D_b21e[0x167]);
+        ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x167]);
         ULTIMA_266c_GetChar();
-        ULTIMA_1850_PrintString((char*)&D_b21e[0x1c9]);
+        ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x1c9]);
         ULTIMA_266c_GetChar();
-        ULTIMA_1850_PrintString((char*)&D_b21e[0x211]);
+        ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x211]);
         ULTIMA_266c_GetChar();
-        ULTIMA_1850_PrintString((char*)&D_b21e[0x24b]);
+        ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x24b]);
 
-        D_5c5a[6]._1_animTile = D_5c5a[6]._0_tile = TILE_ACTOR_GEM;
+        D_5c5a_actors[6].animTile = D_5c5a_actors[6].tile = TILE_ACTOR_GEM;
 
         ULTIMA_266c_GetChar();
         ULTIMA_2192_AudioPulse(0x1450, 1, 50000, 10000, 1);
 
-        D_5c5a[6]._1_animTile = D_5c5a[6]._0_tile = 0;
+        D_5c5a_actors[6].animTile = D_5c5a_actors[6].tile = 0;
         GetCombatMap(5, 4) = 0xdc;
 
-        for (D_5887 = 1; D_5887 < 0x10; D_5887++)
+        for (D_5887_moongateHeight = 1; D_5887_moongateHeight < 0x10; D_5887_moongateHeight++)
         {
-            ULTIMA_3ae6(1);
+            ULTIMA_3ae6_WaitFrames(1);
         }
 
-        ULTIMA_3ae6(4);
+        ULTIMA_3ae6_WaitFrames(4);
 
         while (ENDGAME_0510(0x1f, 5, 4) != 0)
             ;
 
-        D_5c5a[31]._0_tile = D_5c5a[31]._1_animTile = 0;
+        D_5c5a_actors[31].tile = D_5c5a_actors[31].animTile = 0;
 
         // ac64
-        ULTIMA_3ae6(1);
+        ULTIMA_3ae6_WaitFrames(1);
 
         for (local_c = 0; local_c < D_585b_partyCount; local_c++)
         {
             while (ENDGAME_0510(local_c, 5, 4) != 0)
                 ;
 
-            D_5c5a[local_c]._0_tile = D_5c5a[local_c]._1_animTile = 0;
-            ULTIMA_3ae6(1);
+            D_5c5a_actors[local_c].tile = D_5c5a_actors[local_c].animTile = 0;
+            ULTIMA_3ae6_WaitFrames(1);
         }
 
-        for (D_5887 = 0xf; D_5887 > 0; D_5887--)
+        for (D_5887_moongateHeight = 0xf; D_5887_moongateHeight > 0; D_5887_moongateHeight--)
         {
-            ULTIMA_3ae6(1);
+            ULTIMA_3ae6_WaitFrames(1);
         }
 
         ULTIMA_10e0_GRAP_51_PutTile(0x44, 5, 4);
@@ -696,9 +696,9 @@ void ENDGAME_0648_EndgameMain(void)
 
     // bad endgame
     ULTIMA_1850_PrintString(_TEXT(0x84da, "\"I see...\n"));
-    ULTIMA_3ae6(0x28);
-    ULTIMA_1850_PrintString((char*)&D_b21e[0x2d5]);
-    D_5c5a[0]._3_y--;
+    ULTIMA_3ae6_WaitFrames(0x28);
+    ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x2d5]);
+    D_5c5a_actors[0].y--;
     ENDGAME_04fe();
 
     do

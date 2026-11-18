@@ -1,0 +1,67 @@
+# Shared vocabulary, batch 3: the resident functions the overlays call.
+# Named from what the body does (2000.c-7000.c, r5a28.c, the assembly modules).
+# graphics
+ULTIMA_0bfc_GRAP_63 ULTIMA_0bfc_GRAP_63_PutMirrored       # driver 63: put image, mirrored
+ULTIMA_0c3c ULTIMA_0c3c_SetClipWindow
+ULTIMA_0f90_GRAP_Pen ULTIMA_0f90_GRAP_LineTo                # a line from the pen position
+ULTIMA_1068 ULTIMA_1068_RevealTile                          # driver 66 in 256 steps, the map animated meanwhile
+ULTIMA_1112_GRAP_60 ULTIMA_1112_GRAP_60_Moongate           # driver 60: a moongate tile, so many rows of it
+ULTIMA_20c8_SomeDelay ULTIMA_20c8_Delay
+ULTIMA_6f9e ULTIMA_6f9e_TilesetModePlus3                    # driver 6c with mode + 3
+ULTIMA_6fbc ULTIMA_6fbc_TilesetMode                         # driver 6c with the mode
+ULTIMA_6ff0 ULTIMA_6ff0_DistanceFromCenter                  # of the 11x11 view, squared (table D_6aa8)
+ULTIMA_71aa ULTIMA_71aa_UpdateClockTiles                    # driver 6c, mode 2, with the hour and the minute
+# the party display
+ULTIMA_2a28 ULTIMA_2a28_InvertPlayerRow
+ULTIMA_2a52 ULTIMA_2a52_DamagePlayer
+ULTIMA_2aa8 ULTIMA_2aa8_DamageParty
+ULTIMA_2ae8 ULTIMA_2ae8_EndTurn
+ULTIMA_2d7a ULTIMA_2d7a_SelectPlayerOrNone
+ULTIMA_2e8e ULTIMA_2e8e_SelectPlayer
+ULTIMA_2fd0 ULTIMA_2fd0_SpringTrap
+ULTIMA_4080 ULTIMA_4080_SetActivePlayer
+ULTIMA_4988 ULTIMA_4988_GetActingPlayer
+ULTIMA_4a84 ULTIMA_4a84_DrawSunAndMoons
+ULTIMA_4be8 ULTIMA_4be8_ClearSky
+ULTIMA_4c2a ULTIMA_4c2a_PrintLeftCap
+ULTIMA_4cce ULTIMA_4cce_PrintRightCap
+ULTIMA_4daa ULTIMA_4daa_HideScrollArrow
+ULTIMA_4dea ULTIMA_4dea_ShowScrollArrow
+ULTIMA_4e20 ULTIMA_4e20_ClearStatsTitle
+ULTIMA_4e50 ULTIMA_4e50_ShowStatsTitle
+ULTIMA_4efc ULTIMA_4efc_OpenStatsDivider
+ULTIMA_4f3c ULTIMA_4f3c_DrawStatsDivider
+# input, numbers
+ULTIMA_3abe ULTIMA_3abe_Random1To30
+ULTIMA_3ae6 ULTIMA_3ae6_WaitFrames
+ULTIMA_3b9e ULTIMA_3b9e_GetNumber
+ULTIMA_6f1e ULTIMA_6f1e_CompareWord
+# the map and its actors
+ULTIMA_3522 ULTIMA_3522_HitEffectAt
+ULTIMA_3564 ULTIMA_3564_HitEffectOnActor
+ULTIMA_3702 ULTIMA_3702_FindLastActorTileAt
+ULTIMA_38e4 ULTIMA_38e4_FindActorSlot
+ULTIMA_3a74 ULTIMA_3a74_SetActor
+ULTIMA_3f6e ULTIMA_3f6e_TestViewTileFlag
+ULTIMA_3fb4 ULTIMA_3fb4_PixelToViewCell
+ULTIMA_400c ULTIMA_400c_RingRegeneration
+ULTIMA_475a ULTIMA_475a_UpdateMoongates
+ULTIMA_47f4 ULTIMA_47f4_GoToMoonstone
+ULTIMA_48a8 ULTIMA_48a8_EnterMoongate
+ULTIMA_4f7c ULTIMA_4f7c_AdvanceTime
+ULTIMA_5394 ULTIMA_5394_PutActorsInView
+ULTIMA_5d0a ULTIMA_5d0a_BuildView
+ULTIMA_5e4a ULTIMA_5e4a_BuildLightMap
+ULTIMA_70a6 ULTIMA_70a6_AnimateLighthouse
+# combat
+ULTIMA_5646 ULTIMA_5646_IsEnemy
+ULTIMA_6506 ULTIMA_6506_PlaceCombatant
+ULTIMA_6794 ULTIMA_6794_ApplyRing
+ULTIMA_6800 ULTIMA_6800_WakeCombatant
+ULTIMA_6880 ULTIMA_6880_SleepIfNotPoisoned
+ULTIMA_68ae ULTIMA_68ae_PutToSleep
+ULTIMA_6936 ULTIMA_6936_InitCombatants
+ULTIMA_6bc2 ULTIMA_6bc2_SetUpCombat
+ULTIMA_6d82 ULTIMA_6d82_IsInView
+ULTIMA_6da8 ULTIMA_6da8_PlayerDefense
+ULTIMA_6e60 ULTIMA_6e60_Unequip

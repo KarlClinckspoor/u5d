@@ -29,7 +29,7 @@ int COMSUBS_0000(int param_1, int param_2, int param_3)
 
     local_6_an = COMBAT_13e2(param_1, QUERY_STAT_INTEL);
     local_4 = COMBAT_13e2(param_2, QUERY_STAT_INTEL);
-    if (ULTIMA_3abe() < (local_4 + 0x1e - local_6_an) / 2)
+    if (ULTIMA_3abe_Random1To30() < (local_4 + 0x1e - local_6_an) / 2)
     {
         return 1;
     }
@@ -43,7 +43,7 @@ void COMSUBS_0056(void)
 
     for (iVar2 = 0; iVar2 < 0x20; iVar2++)
     {
-        if ((D_5c5a[iVar2]._0_tile & 0xfc) == TILE_ACTOR_E8)
+        if ((D_5c5a_actors[iVar2].tile & 0xfc) == TILE_ACTOR_E8)
         {
             if (ULTIMA_2092_RandomRange(0, 0xff) < 0x10)
             {
@@ -55,13 +55,13 @@ void COMSUBS_0056(void)
 
 void COMSUBS_0094_PrintName(int param_1)
 {
-    if ((D_ba14[param_1].flags & COMBAT_FLAGS_PLAYER) != 0)
+    if ((D_ba14_combatants[param_1].flags & COMBAT_FLAGS_PLAYER) != 0)
     {
-        ULTIMA_1850_PrintString(D_55a8_party[D_ba14[param_1].entityIdx].name);
+        ULTIMA_1850_PrintString(D_55a8_party[D_ba14_combatants[param_1].entityIdx].name);
     }
     else
     {
-        ULTIMA_1850_PrintString(D_1856[D_ba14[param_1].entityIdx]);
+        ULTIMA_1850_PrintString(D_1856_enemyNames[D_ba14_combatants[param_1].entityIdx]);
     }
 }
 
@@ -87,9 +87,9 @@ int COMSUBS_00f4(int param_1)
     int local_4_ab;
     ActorFmt* local_a;
 
-    local_4_ab = D_ba14[param_1].entityIdx;
-    local_c = D_ba14[param_1].actorIdx;
-    if (D_587a == 0x1c || D_587a == 'N' || (D_ba14[param_1].flags & COMBAT_FLAGS_PLAYER) != 0)
+    local_4_ab = D_ba14_combatants[param_1].entityIdx;
+    local_c = D_ba14_combatants[param_1].actorIdx;
+    if (D_587a_statusIcon == 0x1c || D_587a_statusIcon == 'N' || (D_ba14_combatants[param_1].flags & COMBAT_FLAGS_PLAYER) != 0)
     {
         return 0;
     }
@@ -98,7 +98,7 @@ int COMSUBS_00f4(int param_1)
     {
         local_e_am = ULTIMA_2092_RandomRange(0, 0x1f);
 
-        local_6 = D_ba14[local_e_am].flags;
+        local_6 = D_ba14_combatants[local_e_am].flags;
         if ((local_6 & COMBAT_FLAGS_PLAYER) != 0 &&
             (local_6 & (COMBAT_FLAGS_DEAD | COMBAT_FLAGS_INVISIBLE | COMBAT_FLAGS_ASLEEP | COMBAT_FLAGS_4 | COMBAT_FLAGS_CHARMED)) == 0)
         {
@@ -106,8 +106,8 @@ int COMSUBS_00f4(int param_1)
             {
                 ULTIMA_16ba_PrintChar('\n');
 
-                D_ba14[local_e_am].flags |= COMBAT_FLAGS_CHARMED;
-                if (D_ba14[local_e_am].entityIdx == D_587b_activePlayer)
+                D_ba14_combatants[local_e_am].flags |= COMBAT_FLAGS_CHARMED;
+                if (D_ba14_combatants[local_e_am].entityIdx == D_587b_activePlayer)
                 {
                     D_587b_activePlayer = 0xff;
                 }
@@ -130,17 +130,17 @@ int COMSUBS_00f4(int param_1)
     {
         ULTIMA_16ba_PrintChar('\n');
         COMSUBS_0094_PrintName(param_1);
-        if (D_5c5a[local_c]._1_animTile == 0)
+        if (D_5c5a_actors[local_c].animTile == 0)
         {
             ULTIMA_1850_PrintString(_TEXT(0x99c2, " reappears!"));
-            D_ba14[param_1].flags &= ~COMBAT_FLAGS_INVISIBLE;
-            D_5c5a[local_c]._1_animTile = D_5c5a[local_c]._0_tile;
+            D_ba14_combatants[param_1].flags &= ~COMBAT_FLAGS_INVISIBLE;
+            D_5c5a_actors[local_c].animTile = D_5c5a_actors[local_c].tile;
         }
         else
         {
             ULTIMA_1850_PrintString(_TEXT(0x99ce, " disappears!"));
-            D_ba14[param_1].flags |= COMBAT_FLAGS_INVISIBLE;
-            D_5c5a[local_c]._1_animTile = 0;
+            D_ba14_combatants[param_1].flags |= COMBAT_FLAGS_INVISIBLE;
+            D_5c5a_actors[local_c].animTile = 0;
         }
 
         return 1;
@@ -150,9 +150,9 @@ int COMSUBS_00f4(int param_1)
     {
         if (COMBAT_120e() != 0)
         {
-            if (COMBAT_0000(TILE_ACTOR_D8, D_5876, D_5878) != 0)
+            if (COMBAT_0000(TILE_ACTOR_D8, D_5876_tempX, D_5878_tempY) != 0)
             {
-                local_8 = ULTIMA_6506(0x26, 0, D_5876, D_5878, D_5895_map_level);
+                local_8 = ULTIMA_6506_PlaceCombatant(0x26, 0, D_5876_tempX, D_5878_tempY, D_5895_mapLevel);
                 if (local_8 != -1)
                 {
                     ULTIMA_16ba_PrintChar('\n');
@@ -160,13 +160,13 @@ int COMSUBS_00f4(int param_1)
                     ULTIMA_1850_PrintString(_TEXT(0x99dc, " gates in a daemon!\n"));
                     ULTIMA_2192_AudioPulse(0xac8, 1, 5000, 1000, 0xf);
 
-                    local_a = &D_5c5a[D_ba14[local_8].actorIdx];
+                    local_a = &D_5c5a_actors[D_ba14_combatants[local_8].actorIdx];
 
-                    local_a->_0_tile = local_a->_1_animTile = TILE_ACTOR_CIRCLE;
+                    local_a->tile = local_a->animTile = TILE_ACTOR_CIRCLE;
 
-                    ULTIMA_1068(0x1d8, D_5876, D_5878);
+                    ULTIMA_1068_RevealTile(0x1d8, D_5876_tempX, D_5878_tempY);
 
-                    local_a->_0_tile = local_a->_1_animTile = TILE_ACTOR_D8;
+                    local_a->tile = local_a->animTile = TILE_ACTOR_D8;
 
                     return 1;
                 }
@@ -183,7 +183,7 @@ void COMSUBS_0312(int param_1, int param_2)
     int local_6;
     int local_4_ab;
     
-    local_4_ab = D_ba14[param_1].flags;
+    local_4_ab = D_ba14_combatants[param_1].flags;
     D_58a2 &= 0xfe;
     if ((D_58a2 & 0x20) != 0)
     {
@@ -210,13 +210,13 @@ void COMSUBS_0312(int param_1, int param_2)
             COMSUBS_0094_PrintName(param_1);
             if ((local_4_ab & COMBAT_FLAGS_PLAYER) != 0)
             {
-                if (param_2 != 0xff && D_ba14[param_2].entityIdx == 0x2d)
+                if (param_2 != 0xff && D_ba14_combatants[param_2].entityIdx == 0x2d)
                 {
                     ULTIMA_1850_PrintString(_TEXT(0x9a10, " dragged under!\n"));
                     ULTIMA_43ae_AudioSweepTone(0x4b0, 2000, 1, 0x28);
-                    D_ba14[param_1].flags |= COMBAT_FLAGS_4;
-                    D_5c5a[D_ba14[param_1].actorIdx]._1_animTile = 0;
-                    ULTIMA_3ae6(4);
+                    D_ba14_combatants[param_1].flags |= COMBAT_FLAGS_4;
+                    D_5c5a_actors[D_ba14_combatants[param_1].actorIdx].animTile = 0;
+                    ULTIMA_3ae6_WaitFrames(4);
                 }
                 else
                 {
@@ -292,7 +292,7 @@ int COMSUBS_048a(int param_1, int param_2, int param_3, int param_4)
 
 int COMSUBS_04d4(int param_1, int param_2)
 {
-    return COMSUBS_048a(D_ba14[param_1].x, D_ba14[param_1].y, D_ba14[param_2].x, D_ba14[param_2].y);
+    return COMSUBS_048a(D_ba14_combatants[param_1].x, D_ba14_combatants[param_1].y, D_ba14_combatants[param_2].x, D_ba14_combatants[param_2].y);
 }
 
 int COMSUBS_0504(int param_1, int param_2)
@@ -307,20 +307,20 @@ int COMSUBS_0504(int param_1, int param_2)
     int local_4_ab;
     ActorFmt* local_8;
 
-    D_5898 = 1;
-    local_c = D_5c5a[D_ba14[param_1].actorIdx]._7;
-    local_8 = &D_5c5a[D_ba14[local_c].actorIdx];
+    D_5898_crosshairOn = 1;
+    local_c = D_5c5a_actors[D_ba14_combatants[param_1].actorIdx].extra;
+    local_8 = &D_5c5a_actors[D_ba14_combatants[local_c].actorIdx];
 
-    if (local_c > 0x1f || (D_ba14[local_c].flags & (COMBAT_FLAGS_DEAD | COMBAT_FLAGS_INVISIBLE)) != 0 || D_ba14[local_c].flags == 0 ||
-        local_8->_0_tile == 0 || COMSUBS_04d4(param_1, local_c) > param_2)
+    if (local_c > 0x1f || (D_ba14_combatants[local_c].flags & (COMBAT_FLAGS_DEAD | COMBAT_FLAGS_INVISIBLE)) != 0 || D_ba14_combatants[local_c].flags == 0 ||
+        local_8->tile == 0 || COMSUBS_04d4(param_1, local_c) > param_2)
     {
         // e742
         local_c = param_1;
     }
 
     // e748
-    D_5899 = D_ba14[local_c].x;
-    D_589a = D_ba14[local_c].y;
+    D_5899_crosshairX = D_ba14_combatants[local_c].x;
+    D_589a_crosshairY = D_ba14_combatants[local_c].y;
 
     local_a = local_e_am = 0;
 
@@ -370,7 +370,7 @@ int COMSUBS_0504(int param_1, int param_2)
             break;
 
         case U5_KEY_SPACE: // 068a
-            if ((D_ba14[param_1].x == D_5899) && (D_ba14[param_1].y == D_589a))
+            if ((D_ba14_combatants[param_1].x == D_5899_crosshairX) && (D_ba14_combatants[param_1].y == D_589a_crosshairY))
             {
                 local_e_am = 1;
             }
@@ -378,7 +378,7 @@ int COMSUBS_0504(int param_1, int param_2)
 
         case U5_KEY_ENTER:  // 06a3
         case 0x41: // 06a3
-            if (D_ba14[param_1].x != D_5899 || D_ba14[param_1].y != D_589a)
+            if (D_ba14_combatants[param_1].x != D_5899_crosshairX || D_ba14_combatants[param_1].y != D_589a_crosshairY)
             {
                 ULTIMA_16ba_PrintChar('\n');
                 if (D_588f != 0)
@@ -396,20 +396,20 @@ int COMSUBS_0504(int param_1, int param_2)
         }
 
         // 05c8
-        local_4_ab = local_10_aa + D_5899;
-        local_6 = local_12_a + D_589a;
+        local_4_ab = local_10_aa + D_5899_crosshairX;
+        local_6 = local_12_a + D_589a_crosshairY;
 
-        local_14_am = COMSUBS_048a(local_4_ab, local_6, D_ba14[param_1].x, D_ba14[param_1].y);
+        local_14_am = COMSUBS_048a(local_4_ab, local_6, D_ba14_combatants[param_1].x, D_ba14_combatants[param_1].y);
         if (local_14_am <= param_2 &&
             local_4_ab >= 0 && local_4_ab < 0xb &&
             local_6 >= 0 && local_6 < 0xb)
         {
-            D_5899 = local_4_ab;
-            D_589a = local_6;
+            D_5899_crosshairX = local_4_ab;
+            D_589a_crosshairY = local_6;
         }
     }
 
-    D_5898 = 0;
+    D_5898_crosshairOn = 0;
     if (local_e_am)
     {
         ULTIMA_16ba_PrintChar('\n');
@@ -429,11 +429,11 @@ int COMSUBS_0748(int param_1, int param_2)
 
     for (local_6 = 0; local_6 < 0x20; local_6++)
     {
-        if (D_ba14[local_6].x == param_1 && D_ba14[local_6].y == param_2)
+        if (D_ba14_combatants[local_6].x == param_1 && D_ba14_combatants[local_6].y == param_2)
         {
-            local_4_ab = D_ba14[local_6].flags;
+            local_4_ab = D_ba14_combatants[local_6].flags;
 
-            if (D_5c5a[D_ba14[local_6].actorIdx]._1_animTile != TILE_ACTOR_F4)
+            if (D_5c5a_actors[D_ba14_combatants[local_6].actorIdx].animTile != TILE_ACTOR_F4)
             {
                 if ((local_4_ab & (COMBAT_FLAGS_PLAYER | COMBAT_FLAGS_MONSTER)) != 0 && (local_4_ab & COMBAT_FLAGS_DEAD) == 0)
                 {
@@ -460,9 +460,9 @@ void COMSUBS_07d4(int param_1, int param_2)
 {
     do
     {
-        D_5876 = ULTIMA_2092_RandomRange(1, 3) + param_1 - 2;
-        D_5878 = ULTIMA_2092_RandomRange(1, 3) + param_2 - 2;
-    } while (D_5876 < 0 || D_5876 > 10 || D_5878 < 0 || D_5878 > 10);
+        D_5876_tempX = ULTIMA_2092_RandomRange(1, 3) + param_1 - 2;
+        D_5878_tempY = ULTIMA_2092_RandomRange(1, 3) + param_2 - 2;
+    } while (D_5876_tempX < 0 || D_5876_tempX > 10 || D_5878_tempY < 0 || D_5878_tempY > 10);
 }
 
 int COMSUBS_0822(int param_1, int param_2, int param_3, int param_4, int param_5)
@@ -476,23 +476,23 @@ int COMSUBS_0822(int param_1, int param_2, int param_3, int param_4, int param_5
 
     local_6 = param_2;
     local_c = param_3;
-    local_4_ab = D_ba14[param_1].x;
-    local_a = D_ba14[param_1].y;
+    local_4_ab = D_ba14_combatants[param_1].x;
+    local_a = D_ba14_combatants[param_1].y;
 
     if (param_4 == 0)
     {
         do
         {
             COMSUBS_07d4(local_6, local_c);
-            if (local_4_ab != D_5876)
+            if (local_4_ab != D_5876_tempX)
                 break;
 
-        } while (local_a == D_5878);
-        local_6 = D_5876;
-        local_c = D_5878;
+        } while (local_a == D_5878_tempY);
+        local_6 = D_5876_tempX;
+        local_c = D_5878_tempY;
     }
 
-    if (D_589d == 25 || D_589d == 34)
+    if (D_589d_attackWeapon == 25 || D_589d_attackWeapon == 34)
     {
         if (param_4 != 0)
         {
@@ -510,8 +510,8 @@ int COMSUBS_0822(int param_1, int param_2, int param_3, int param_4, int param_5
         }
         else
         {
-            local_6 = D_5876;
-            local_c = D_5878;
+            local_6 = D_5876_tempX;
+            local_c = D_5878_tempY;
         }
     }
 
@@ -519,33 +519,33 @@ int COMSUBS_0822(int param_1, int param_2, int param_3, int param_4, int param_5
     {
         local_8 = COMSUBS_0748(local_6, local_c);
 
-        switch (D_589d)
+        switch (D_589d_attackWeapon)
         {
         case 0x13:
         case 53:
-            ULTIMA_6506(TILE_ACTOR_EA, 2, local_6, local_c, D_5895_map_level);
+            ULTIMA_6506_PlaceCombatant(TILE_ACTOR_EA, 2, local_6, local_c, D_5895_mapLevel);
             break;
         case 51:
-            ULTIMA_6506(TILE_ACTOR_E8, 2, local_6, local_c, D_5895_map_level);
+            ULTIMA_6506_PlaceCombatant(TILE_ACTOR_E8, 2, local_6, local_c, D_5895_mapLevel);
             break;
         case 52:
-            ULTIMA_6506(TILE_ACTOR_E9, 2, local_6, local_c, D_5895_map_level);
+            ULTIMA_6506_PlaceCombatant(TILE_ACTOR_E9, 2, local_6, local_c, D_5895_mapLevel);
             break;
         case 54:
-            ULTIMA_6506(TILE_ACTOR_EB, 2, local_6, local_c, D_5895_map_level);
+            ULTIMA_6506_PlaceCombatant(TILE_ACTOR_EB, 2, local_6, local_c, D_5895_mapLevel);
             break;
         }
 
-        if ((D_588f == 0 || param_4 != 0) && local_8 >= 0 && local_8 != D_589e)
+        if ((D_588f == 0 || param_4 != 0) && local_8 >= 0 && local_8 != D_589e_curCombatant)
         {
-            D_5876 = local_6;
-            D_5878 = local_c;
+            D_5876_tempX = local_6;
+            D_5878_tempY = local_c;
             return local_8;
         }
     }
 
-    D_5876 = local_6;
-    D_5878 = local_c;
+    D_5876_tempX = local_6;
+    D_5878_tempY = local_c;
     return -1;
 }
 
@@ -560,16 +560,16 @@ static void COMSUBS_097c(int param_1, int param_2)
     {
     case 0x1a:
     case 0x24:
-        if (--D_57db == 0)
+        if (--D_57db_arrows == 0)
         {
-            D_57c0[param_1] += SJOG_1b34(param_1);
+            D_57c0_equipment[param_1] += SJOG_1b34(param_1);
         }
         break;
 
     case 0x1c:
-        if (--D_57dd == 0)
+        if (--D_57dd_quarrels == 0)
         {
-            D_57c0[param_1] += SJOG_1b34(param_1);
+            D_57c0_equipment[param_1] += SJOG_1b34(param_1);
         }
         break;
 
@@ -581,13 +581,13 @@ static void COMSUBS_097c(int param_1, int param_2)
             break;
         }
 
-        if (D_57c0[param_1] != 0)
+        if (D_57c0_equipment[param_1] != 0)
         {
-            D_57c0[param_1]--;
+            D_57c0_equipment[param_1]--;
             break;
         }
 
-        ULTIMA_6e60(D_ba14[D_589e].entityIdx, param_1);
+        ULTIMA_6e60_Unequip(D_ba14_combatants[D_589e_curCombatant].entityIdx, param_1);
         break;
     }
 }
@@ -597,8 +597,8 @@ int COMSUBS_09fc(int param_1)
     int uVar1;
 
     uVar1 = D_58a8[param_1];
-    if (uVar1 != 0xff && D_ba14[uVar1].flags != 0 && ULTIMA_5646(uVar1) != 0 && (D_ba14[uVar1].flags & (COMBAT_FLAGS_ASLEEP | COMBAT_FLAGS_4)) == 0 &&
-        D_587a != 'T' && COMSUBS_04d4(param_1, uVar1) == 1)
+    if (uVar1 != 0xff && D_ba14_combatants[uVar1].flags != 0 && ULTIMA_5646_IsEnemy(uVar1) != 0 && (D_ba14_combatants[uVar1].flags & (COMBAT_FLAGS_ASLEEP | COMBAT_FLAGS_4)) == 0 &&
+        D_587a_statusIcon != 'T' && COMSUBS_04d4(param_1, uVar1) == 1)
     {
         ULTIMA_16ba_PrintChar('\n');
         COMSUBS_0094_PrintName(uVar1);
@@ -630,36 +630,36 @@ static void COMSUBS_0a68(int param_1, int param_2, int param_3)
             ULTIMA_43ae_AudioSweepTone(0x514, 300, 5, 100);
             if (param_2 == 0x13)
             {
-                if (D_57c0[param_2] != 0)
+                if (D_57c0_equipment[param_2] != 0)
                 {
-                    D_57c0[param_2]--;
+                    D_57c0_equipment[param_2]--;
                 }
                 else
                 {
-                    ULTIMA_6e60(D_ba14[D_589e].entityIdx, param_2);
+                    ULTIMA_6e60_Unequip(D_ba14_combatants[D_589e_curCombatant].entityIdx, param_2);
                 }
             }
 
-            local_a = &D_5c5a[D_ba14[param_1].actorIdx];
-            local_a->_7 = 0xff;
-            local_c = local_e_am = COMSUBS_0748(D_5899, D_589a);
+            local_a = &D_5c5a_actors[D_ba14_combatants[param_1].actorIdx];
+            local_a->extra = 0xff;
+            local_c = local_e_am = COMSUBS_0748(D_5899_crosshairX, D_589a_crosshairY);
             if (local_c > -1)
             {
-                local_a->_7 = local_c;
+                local_a->extra = local_c;
                 COMSUBS_097c(param_2, local_10_aa);
                 local_4_ab = COMBAT_14d6(local_c, param_1, -D_588f, param_2);
-                local_c = COMSUBS_0822(param_1, D_5899, D_589a, local_4_ab, param_3);
+                local_c = COMSUBS_0822(param_1, D_5899_crosshairX, D_589a_crosshairY, local_4_ab, param_3);
             }
             else
             {
-                local_c = COMSUBS_0822(param_1, D_5899, D_589a, 1, param_3);
+                local_c = COMSUBS_0822(param_1, D_5899_crosshairX, D_589a_crosshairY, 1, param_3);
             }
 
-            local_6 = D_5876;
-            local_8 = D_5878;
+            local_6 = D_5876_tempX;
+            local_8 = D_5878_tempY;
             if (local_c > -1)
             {
-                ULTIMA_3564(local_c);
+                ULTIMA_3564_HitEffectOnActor(local_c);
                 ULTIMA_16ba_PrintChar('\n');
                 COMBAT_194a(local_c, param_1);
                 COMSUBS_0312(local_c, param_1);
@@ -672,7 +672,7 @@ static void COMSUBS_0a68(int param_1, int param_2, int param_3)
 
             if (param_2 == 0x26)
             {
-                COMSUBS_12de(local_6, local_8, D_ba14[param_1].x, D_ba14[param_1].y, param_3);
+                COMSUBS_12de(local_6, local_8, D_ba14_combatants[param_1].x, D_ba14_combatants[param_1].y, param_3);
             }
         }
     }
@@ -684,7 +684,7 @@ void COMSUBS_0bf8(int param_1, int param_2, int param_3)
     ULTIMA_16ba_PrintChar('\n');
     if (COMBAT_14d6(param_2, param_1, -D_588f, param_3) != 0)
     {
-        ULTIMA_3564(param_2);
+        ULTIMA_3564_HitEffectOnActor(param_2);
         COMBAT_194a(param_2, param_1);
         COMSUBS_0312(param_2, param_1);
     }
@@ -706,15 +706,15 @@ void COMSUBS_0c52(int param_1, int param_2)
         D_5890 = 1;
     }
 
-    if ((D_ba14[param_1].flags & COMBAT_FLAGS_PLAYER) == 0)
+    if ((D_ba14_combatants[param_1].flags & COMBAT_FLAGS_PLAYER) == 0)
     {
-        local_a = D_159c[D_ba14[param_1].entityIdx];
+        local_a = D_159c[D_ba14_combatants[param_1].entityIdx];
         if (local_a == 1)
         {
             local_a = 0;
         }
 
-        local_4_ab = D_15cc[D_ba14[param_1].entityIdx];
+        local_4_ab = D_15cc[D_ba14_combatants[param_1].entityIdx];
     }
     else
     {
@@ -746,14 +746,14 @@ void COMSUBS_0c52(int param_1, int param_2)
     {
         ULTIMA_1850_PrintString(_TEXT(0x9a84, "Aim! "));
         local_6 = COMSUBS_0504(param_1, 1);
-        local_8 = COMSUBS_0748(D_5899, D_589a);
+        local_8 = COMSUBS_0748(D_5899_crosshairX, D_589a_crosshairY);
         if (local_6 == 0 || local_8 == -1)
         {
             ULTIMA_1850_PrintString(_TEXT(0x9a8a, "Nothing!\n"));
         }
         else
         {
-            D_5c5a[D_ba14[param_1].actorIdx]._7 = local_8;
+            D_5c5a_actors[D_ba14_combatants[param_1].actorIdx].extra = local_8;
             COMSUBS_0bf8(param_1, local_8, param_2);
         }
     }
@@ -771,13 +771,13 @@ static void COMSUBS_0d3c(int param_1, int param_2)
         {
             D_5890 = D_588f = 0;
             ULTIMA_16ba_PrintChar('\n');
-            ULTIMA_1850_PrintString(D_17f6[param_1]);
+            ULTIMA_1850_PrintString(D_17f6_equipNames[param_1]);
             ULTIMA_1850_PrintString(_TEXT(0x9a94, ":\n"));
         }
 
-        D_589d = (u8)param_1;
+        D_589d_attackWeapon = (u8)param_1;
         ULTIMA_1850_PrintString(_TEXT(0x9a98, "Attack-"));
-        COMSUBS_0c52(D_589e, param_1);
+        COMSUBS_0c52(D_589e_curCombatant, param_1);
     }
 }
 
@@ -786,15 +786,15 @@ void COMSUBS_0d96(int param_1, int param_2)
 {
     int local_4;
 
-    if ((D_ba14[param_1].flags & COMBAT_FLAGS_PLAYER) == 0 || param_2 == 0)
+    if ((D_ba14_combatants[param_1].flags & COMBAT_FLAGS_PLAYER) == 0 || param_2 == 0)
     {
-        D_589d = 0xff;
+        D_589d_attackWeapon = 0xff;
         ULTIMA_1850_PrintString(_TEXT(0x9aa0, "Attack-"));
         COMSUBS_0c52(param_1, 0xff);
     }
     else
     {
-        local_4 = D_ba14[param_1].entityIdx;
+        local_4 = D_ba14_combatants[param_1].entityIdx;
         if (param_2 > 1)
         {
             ULTIMA_1bf2_SetTextPosition(0, ULTIMA_1cee_GetCurrentTextY());
@@ -1101,7 +1101,7 @@ int COMSUBS_12de(int param_1, int param_2, int param_3, int param_4, int param_5
     local_e_am = D_a728;
     local_12_a = D_a872;
 
-    if (D_5893_map_id != 0 && D_5893_map_id < 0x21)
+    if (D_5893_mapId != 0 && D_5893_mapId < 0x21)
     {
         local_c = 6;
     }
@@ -1122,14 +1122,14 @@ int COMSUBS_12de(int param_1, int param_2, int param_3, int param_4, int param_5
     while (*local_e_am != 0xff)
     {
         local_a = (local_a & 3) + 1;
-        ULTIMA_3fb4(*local_e_am, *local_12_a);
-        if (D_5876 == -1)
+        ULTIMA_3fb4_PixelToViewCell(*local_e_am, *local_12_a);
+        if (D_5876_tempX == -1)
         {
             break;
         }
 
         COMSUBS_0f4a(*local_e_am, *local_12_a, local_a, param_5, local_e_am, local_12_a);
-        ULTIMA_20c8_SomeDelay(1, 0x28);
+        ULTIMA_20c8_Delay(1, 0x28);
         ULTIMA_0ace_GRAP_18_TransferArea(1, 0, (*local_e_am & 0xf8) - 8, *local_12_a - 8, (*local_e_am & 0xf8) + 0xf, *local_12_a + 0xf);
 
         local_e_am += local_c;
@@ -1152,7 +1152,7 @@ int COMSUBS_12de(int param_1, int param_2, int param_3, int param_4, int param_5
             break;
         }
 
-        if (ULTIMA_3f6e(D_5876, D_5878) == 0 && (param_1 != D_5876 || param_2 != D_5878))
+        if (ULTIMA_3f6e_TestViewTileFlag(D_5876_tempX, D_5878_tempY) == 0 && (param_1 != D_5876_tempX || param_2 != D_5878_tempY))
         {
             return 0;
         }

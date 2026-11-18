@@ -57,8 +57,8 @@ static int ULTIMA_08ca_InsideClipWindow(int ax, int bx)
 	int x = ax;
 	int y = bx;
 
-	if (D_52ba_vdp._52d0_clipWindowX1 <= x && x <= D_52ba_vdp._52d2_clipWindowX2 &&
-		D_52ba_vdp._52d4_clipWindowY1 <= y && y <= D_52ba_vdp._52d6_clipWindowY2)
+	if (D_52ba_vdp.clipX1 <= x && x <= D_52ba_vdp.clipX2 &&
+		D_52ba_vdp.clipY1 <= y && y <= D_52ba_vdp.clipY2)
 	{
 		return 0;
 	}
@@ -221,10 +221,10 @@ static void ULTIMA_0991(int* ax, int* bx, int* cx, int* dx)
 		}
 
 		// 09e3
-		if (*ax == D_52ba_vdp._52d0_clipWindowX1 || *ax == D_52ba_vdp._52d2_clipWindowX2)
+		if (*ax == D_52ba_vdp.clipX1 || *ax == D_52ba_vdp.clipX2)
 		{
 			// 09ef
-			if (*bx == D_52ba_vdp._52d4_clipWindowY1 || *bx == D_52ba_vdp._52d6_clipWindowY2)
+			if (*bx == D_52ba_vdp.clipY1 || *bx == D_52ba_vdp.clipY2)
 				return;
 		}
 
@@ -258,28 +258,28 @@ static void ULTIMA_0a22(int ax, int bx, int cx, int dx, int *si, int *di)
 	int x2 = cx;
 	int y2 = dx;
 
-	if (x1 < D_52ba_vdp._52d0_clipWindowX1)
+	if (x1 < D_52ba_vdp.clipX1)
 		*si |= 1;
 
-	if (x2 < D_52ba_vdp._52d0_clipWindowX1)
+	if (x2 < D_52ba_vdp.clipX1)
 		*di |= 1;
 
-	if (x1 > D_52ba_vdp._52d2_clipWindowX2)
+	if (x1 > D_52ba_vdp.clipX2)
 		*si |= 2;
 
-	if (x2 > D_52ba_vdp._52d2_clipWindowX2)
+	if (x2 > D_52ba_vdp.clipX2)
 		*di |= 2;
 
-	if (y1 > D_52ba_vdp._52d6_clipWindowY2)
+	if (y1 > D_52ba_vdp.clipY2)
 		*si |= 4;
 
-	if (y2 > D_52ba_vdp._52d6_clipWindowY2)
+	if (y2 > D_52ba_vdp.clipY2)
 		*di |= 4;
 
-	if (y1 < D_52ba_vdp._52d4_clipWindowY1)
+	if (y1 < D_52ba_vdp.clipY1)
 		*si |= 8;
 
-	if (y2 < D_52ba_vdp._52d4_clipWindowY1)
+	if (y2 < D_52ba_vdp.clipY1)
 		*di |= 8;
 }
 #endif
@@ -290,10 +290,10 @@ void ULTIMA_0a70_GRAP_2d_SetPenColor(int param_1)
 {
 	if (param_1 != -1)
 	{
-		param_1 &= D_52ba_vdp._52c8_videoDriverSelection == VDP_VIDEO_CGA ? 3 : 0xf;
+		param_1 &= D_52ba_vdp.videoDriver == VDP_VIDEO_CGA ? 3 : 0xf;
 	}
 
-	D_52da_pen_color = param_1;
+	D_52da_penColor = param_1;
 
 	if (param_1 != -1)
 	{
@@ -365,11 +365,11 @@ static void ULTIMA_0b2d_GRAP_Line(int ax, int bx, int cx, int dx, byte carry)
 	int x2 = cx;
 	int y2 = dx;
 
-	D_52ba_vdp._52cc_penX = x2;
-	D_52ba_vdp._52ce_penY = y2;
+	D_52ba_vdp.penX = x2;
+	D_52ba_vdp.penY = y2;
 
 	// pushf
-	if (D_52ba_vdp._52c4 != 0)
+	if (D_52ba_vdp.clipEnabled != 0)
 	{
 		if (ULTIMA_0935_ClipLineCoord(&ax, &bx, &cx, &dx))
 			return; // JC return
@@ -435,7 +435,7 @@ void* ULTIMA_0bae_LoadImageFile(char* file_name)
 	// if (error)
     //     if (ret == 0) ax = -1;
     //     D_535c_dosErrorCode = ax
-	//     D_5394_fn(); // disk swap message
+	//     D_5394_diskSwapFn(); // disk swap message
 	// else
 	//     DRV_42(); // prepare image data for ega (swizzle)
 }
@@ -454,9 +454,10 @@ void ULTIMA_0be4_FreeImage(void* ptr)
 #if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 // put image (forced hflip)
-void ULTIMA_0bfc_GRAP_63(byte* param_1, int param_2, int param_3, int param_4, int param_5)
+// Driver function 63: put an image mirrored (the dungeon view's walls).
+void ULTIMA_0bfc_GRAP_63_PutMirrored(byte* param_1, int param_2, int param_3, int param_4, int param_5)
 {
-    //debug("ULTIMA_0bfc_GRAP_63(ptr,%d,%d,%d,%d)", param_2, param_3, param_4, param_5);
+    //debug("ULTIMA_0bfc_GRAP_63_PutMirrored(ptr,%d,%d,%d,%d)", param_2, param_3, param_4, param_5);
 
     DRV_63(param_1, param_2, param_3, param_4, param_5);
 }
@@ -473,12 +474,13 @@ void ULTIMA_0c22_GRAP_0f_SelectPage(int a)
 #if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 // set clip window coord
-void ULTIMA_0c3c(int a, int b, int c, int d)
+// Set the clip window (x1, y1, x2, y2); D_52c4_clipEnabled switches it on.
+void ULTIMA_0c3c_SetClipWindow(int a, int b, int c, int d)
 {
-    D_52ba_vdp._52d0_clipWindowX1 = a;
-    D_52ba_vdp._52d4_clipWindowY1 = b;
-    D_52ba_vdp._52d2_clipWindowX2 = c;
-    D_52ba_vdp._52d6_clipWindowY2 = d;
+    D_52ba_vdp.clipX1 = a;
+    D_52ba_vdp.clipY1 = b;
+    D_52ba_vdp.clipX2 = c;
+    D_52ba_vdp.clipY2 = d;
 }
 #endif
 
@@ -486,12 +488,12 @@ void ULTIMA_0c3c(int a, int b, int c, int d)
 // ASM
 void ULTIMA_0c64_GRAP_30_Pset(int param_1, int param_2)
 {
-    D_52ba_vdp._52cc_penX = param_1;
-    D_52ba_vdp._52ce_penY = param_2;
+    D_52ba_vdp.penX = param_1;
+    D_52ba_vdp.penY = param_2;
 
-	if (D_52da_pen_color != -1)
+	if (D_52da_penColor != -1)
     {
-        if (D_52ba_vdp._52c4 != 0 && ULTIMA_08ca_InsideClipWindow(param_1, param_2))
+        if (D_52ba_vdp.clipEnabled != 0 && ULTIMA_08ca_InsideClipWindow(param_1, param_2))
         {
             return;
         }
@@ -511,9 +513,9 @@ void ULTIMA_0c9c_GRAP_39_HorizLine(int x1, int y, int x2)
 	int bx = y;
 	int cx = x2;
 
-	D_52ba_vdp._52cc_penX = x2;
+	D_52ba_vdp.penX = x2;
 
-	if (D_52ba_vdp._52c4 != 0)
+	if (D_52ba_vdp.clipEnabled != 0)
 	{
 		if (ULTIMA_0ccd(&ax, &cx))	// JC end
 			return;
@@ -532,7 +534,7 @@ static bool ULTIMA_0ccd(int *pAX, int *pCX)
 		SWAP(pAX, pCX);
 	}
 
-	if ((*pAX >= D_52ba_vdp._52d0_clipWindowX1) && (*pCX <= D_52ba_vdp._52d2_clipWindowX2) &&
+	if ((*pAX >= D_52ba_vdp.clipX1) && (*pCX <= D_52ba_vdp.clipX2) &&
 		*pAX >= 0 && *pAX <= 319 && *pCX <= 319)
 	{
 		return false; // CLC
@@ -555,7 +557,7 @@ void ULTIMA_0cf2_GRAP_3c_VertLine(int param_1, int param_2, int param_3)
     bx = param_2;
     dx = param_3;
     cx = ax;
-    D_52ba_vdp._52ce_penY = dx;
+    D_52ba_vdp.penY = dx;
 	if (bx > dx)
     {
 		// xchg bx, dx
@@ -563,7 +565,7 @@ void ULTIMA_0cf2_GRAP_3c_VertLine(int param_1, int param_2, int param_3)
         dx ^= bx;
         bx ^= dx;
 	}
-    if (D_52ba_vdp._52c4 == 0 || !ULTIMA_0d2b(bx, dx))
+    if (D_52ba_vdp.clipEnabled == 0 || !ULTIMA_0d2b(bx, dx))
     {
         // 0d19
         DRV_3c(ax, bx, dx);
@@ -575,7 +577,7 @@ void ULTIMA_0cf2_GRAP_3c_VertLine(int param_1, int param_2, int param_3)
 // ASM
 static int ULTIMA_0d2b(int bx, int dx)
 {
-    if (D_52ba_vdp._52d4_clipWindowY1 <= bx && dx <= D_52ba_vdp._52d6_clipWindowY2 && 0 <= bx && bx < 200 && dx < 200)
+    if (D_52ba_vdp.clipY1 <= bx && dx <= D_52ba_vdp.clipY2 && 0 <= bx && bx < 200 && dx < 200)
     {
         return 0; // clc
     }
@@ -601,7 +603,7 @@ void ULTIMA_0d4c_GRAP_4b_PutImage(void* rsrc, int idx, int x, int y, int flags)
 void ULTIMA_0de0_DetectVideo(void)
 {
     debug("ULTIMA_0de0_DetectVideo");
-    D_52ba_vdp._52c8_videoDriverSelection = VDP_VIDEO_EGA;
+    D_52ba_vdp.videoDriver = VDP_VIDEO_EGA;
 }
 #endif
 
@@ -649,9 +651,10 @@ void ULTIMA_0f6e_GRAP_1b_TransferFullscreen(int from, int to)
 
 #if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
-void ULTIMA_0f90_GRAP_Pen(int x, int y)
+// Draw a line from the pen position to (x, y).
+void ULTIMA_0f90_GRAP_LineTo(int x, int y)
 {
-	ULTIMA_0b2d_GRAP_Line(D_52ba_vdp._52cc_penX, D_52ba_vdp._52ce_penY, x, y, 0);
+	ULTIMA_0b2d_GRAP_Line(D_52ba_vdp.penX, D_52ba_vdp.penY, x, y, 0);
 }
 #endif
 
@@ -666,8 +669,8 @@ byte* ULTIMA_0fae_LoadResourceFile(char* file_name)
 	mem = (byte*)ULTIMA_125d_LoadResourceFileImpl(file_name);
 	if (!mem)
 	{
-		D_535c = 1;
-	    D_5394_fn();
+		D_535c_dosError = 1;
+	    D_5394_diskSwapFn();
 	}
 
 	// if error (cf == 1)

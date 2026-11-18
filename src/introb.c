@@ -87,9 +87,9 @@ static void INTRO_1e62(void)
 
     ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
     ULTIMA_0b10_GRAP_Line(7, 0x9f, 0x138, 0x9f);
-    ULTIMA_0f90_GRAP_Pen(0x138, 0xb8);
-    ULTIMA_0f90_GRAP_Pen(7, 0xb8);
-    ULTIMA_0f90_GRAP_Pen(7, 0x9f);
+    ULTIMA_0f90_GRAP_LineTo(0x138, 0xb8);
+    ULTIMA_0f90_GRAP_LineTo(7, 0xb8);
+    ULTIMA_0f90_GRAP_LineTo(7, 0x9f);
     ULTIMA_1cca_SetTextForegroundColor(D_13b0_brightWhiteColor);
 }
 
@@ -102,11 +102,11 @@ static void INTRO_1f26(int param_1)
     ULTIMA_1cca_SetTextForegroundColor(D_13b2_blueColor);
     ULTIMA_1bf2_SetTextPosition(0, 0);
     ULTIMA_1850_PrintString(D_3676);
-    ULTIMA_4c2a();
+    ULTIMA_4c2a_PrintLeftCap();
     ULTIMA_1cca_SetTextForegroundColor(D_13b0_brightWhiteColor);
     ULTIMA_1850_PrintString(_TEXT(0x6d3a, " Ultima IV "));
     ULTIMA_1cca_SetTextForegroundColor(D_13b2_blueColor);
-    ULTIMA_4cce();
+    ULTIMA_4cce_PrintRightCap();
     ULTIMA_1850_PrintString(D_367a);
     ULTIMA_16ba_PrintChar(0x7c);
     ULTIMA_1bf2_SetTextPosition(0, 0x11);
@@ -115,10 +115,10 @@ static void INTRO_1f26(int param_1)
     ULTIMA_16ba_PrintChar(0x7e);
     ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
     ULTIMA_0b10_GRAP_Line(param_1 + 0x18, 7, param_1 + 7, 7);
-    ULTIMA_0f90_GRAP_Pen(param_1 + 7, 0x88);
-    ULTIMA_0f90_GRAP_Pen(param_1 + 0x8f, 0x88);
-    ULTIMA_0f90_GRAP_Pen(param_1 + 0x8f, 7);
-    ULTIMA_0f90_GRAP_Pen(param_1 + 0x80, 7);
+    ULTIMA_0f90_GRAP_LineTo(param_1 + 7, 0x88);
+    ULTIMA_0f90_GRAP_LineTo(param_1 + 0x8f, 0x88);
+    ULTIMA_0f90_GRAP_LineTo(param_1 + 0x8f, 7);
+    ULTIMA_0f90_GRAP_LineTo(param_1 + 0x80, 7);
     ULTIMA_1cca_SetTextForegroundColor(D_13b0_brightWhiteColor);
 }
 

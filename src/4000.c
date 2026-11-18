@@ -10,7 +10,7 @@
 #include "town.h"
 
 void MAINOUT_0000(void);
-u8 D_6a34_u8 = 0;
+u8 D_6a34_ambientTick = 0;
 
 u16 D_6a36[9] =
 {
@@ -32,7 +32,8 @@ u8 D_6a7e = 0;
 
 u8 D_6a80[6] = { 0x02, 0x05, 0x0A, 0x14, 0x22, 0x31 };
 
-void ULTIMA_400c(void)
+// Each living member who wears a ring of regeneration (0x2c) gains a hit point one time in eight.
+void ULTIMA_400c_RingRegeneration(void)
 {
     int local_4;
     for (local_4 = 0; local_4 < D_585b_partyCount; local_4++)
@@ -42,14 +43,15 @@ void ULTIMA_400c(void)
 			if (ULTIMA_2092_RandomRange(0, 7) == 7)
 			{
 				ULTIMA_3f14_IncreaseInt(&D_55a8_party[local_4].hp, 1, D_55a8_party[local_4].maxHp);
-				D_a9fa = 1;
+				D_a9fa_vitalsDirty = 1;
 			}
 		}
 	}
 }
 
 // select active player
-int ULTIMA_4080(int param_1)
+// The keys 0-6: set the active player (0 none).
+int ULTIMA_4080_SetActivePlayer(int param_1)
 {
     int local_6_an;
 	int local_4;
@@ -104,10 +106,10 @@ void ULTIMA_4102_AudioPlayAmbientSfx(void)
 	local_e_am = 0;
 	local_4_ab = 0x33;
 
-	if (D_5893_map_id < 0x80)
+	if (D_5893_mapId < 0x80)
 	{
-		local_8 = (uint)D_5896_map_x;
-		local_a = (uint)D_5897_map_y;
+		local_8 = (uint)D_5896_mapX;
+		local_a = (uint)D_5897_mapY;
 	}
 	else
 	{
@@ -156,17 +158,17 @@ void ULTIMA_4102_AudioPlayAmbientSfx(void)
 	{
     case 1:
 		// clock
-        if (D_5884 != 0 && (D_6a34_u8 == 0 || D_6a34_u8 == 4))
+        if (D_5884_clockChimes != 0 && (D_6a34_ambientTick == 0 || D_6a34_ambientTick == 4))
         {
             ULTIMA_2192_AudioPulse(0xc2c, 1, 2000, 20000, -10);
         }
         else
         {
-            if (D_6a34_u8 == 0)
+            if (D_6a34_ambientTick == 0)
             {
                 ULTIMA_22c0_AudioTone(3000, 3);
             }
-            else if (D_6a34_u8 == 4)
+            else if (D_6a34_ambientTick == 4)
             {
                 ULTIMA_22c0_AudioTone(2000, 3);
             }
@@ -197,21 +199,21 @@ void ULTIMA_4102_AudioPlayAmbientSfx(void)
         break;
 	}
 
-    if (D_5884 != 0 && (D_6a34_u8 == 0 || D_6a34_u8 == 4))
+    if (D_5884_clockChimes != 0 && (D_6a34_ambientTick == 0 || D_6a34_ambientTick == 4))
 	{
-		D_5884--;
+		D_5884_clockChimes--;
 	}
 
-	if (++D_6a34_u8 > 7)
+	if (++D_6a34_ambientTick > 7)
 	{
-		D_6a34_u8 = 0;
+		D_6a34_ambientTick = 0;
 	}
 }
 
 void ULTIMA_433e_AudioFootstep(void)
 {
 	ULTIMA_223c_AudioWhiteNoise(1, 0x19, 1000);
-	ULTIMA_20c8_SomeDelay(1, 0x14);
+	ULTIMA_20c8_Delay(1, 0x14);
 	ULTIMA_223c_AudioWhiteNoise(1, 0x19, 1500);
 }
 
@@ -247,7 +249,7 @@ void ULTIMA_43ae_AudioSweepTone(int param_1, int param_2, int param_3, int param
 	for (local_6 = 0; local_6 < param_4; local_6 += param_3)
 	{
 		ULTIMA_22e2_PcspkOn(local_8);
-		ULTIMA_20c8_SomeDelay(1, param_3);
+		ULTIMA_20c8_Delay(1, param_3);
 		local_8 += local_4_b;
 	}
 
@@ -260,7 +262,7 @@ byte* ULTIMA_4402_GetTileAddr(int x, int y)
 	int local_6_an;
 	byte* local_4;
 
-	if (D_5893_map_id > 0x7f) // combat?
+	if (D_5893_mapId > 0x7f) // combat?
 	{
 		// 440f
         // There are cases where y < 0. original bug
@@ -272,10 +274,10 @@ byte* ULTIMA_4402_GetTileAddr(int x, int y)
 
 		local_4 = &GetCombatMap(x, y);
 	}
-	else if (D_5893_map_id == 0) // 4420; overworld
+	else if (D_5893_mapId == 0) // 4420; overworld
 	{
-		x = (x - D_589b) & 0x1f;
-		y = (y - D_589c) & 0x1f;
+		x = (x - D_589b_mapOriginX) & 0x1f;
+		y = (y - D_589c_mapOriginY) & 0x1f;
 		local_6_an = 0;
 		if (y > 0xf)
 		{
@@ -312,19 +314,19 @@ static void ULTIMA_44b8_AnimateTiles(void)
 
 	for (i = 0xd4; i < 0xd8; i++)
 	{
-		D_b11e[i]++;
-		if (D_b11e[i] == 0xd8)
+		D_b11e_tileFrames[i]++;
+		if (D_b11e_tileFrames[i] == 0xd8)
 		{
-			D_b11e[i] = 0xd4;
+			D_b11e_tileFrames[i] = 0xd4;
 		}
 	}
 
 	for (i = 0xd8; i < 0xdc; i++)
 	{
-		D_b11e[i]++;
-		if (D_b11e[i] == 0xdc)
+		D_b11e_tileFrames[i]++;
+		if (D_b11e_tileFrames[i] == 0xdc)
 		{
-			D_b11e[i] = 0xd8;
+			D_b11e_tileFrames[i] = 0xd8;
 		}
 	}
 
@@ -332,15 +334,15 @@ static void ULTIMA_44b8_AnimateTiles(void)
 	{
         for (i = 0x80; i < 0x84; i++)
 		{
-			D_b11e[i] ^= 1;
+			D_b11e_tileFrames[i] ^= 1;
 		}
 
 		for (i = 0xec; i < 0xf0; i++)
 		{
-			D_b11e[i]++;
-			if (D_b11e[i] == 0xf0)
+			D_b11e_tileFrames[i]++;
+			if (D_b11e_tileFrames[i] == 0xf0)
 			{
-				D_b11e[i] = 0xec;
+				D_b11e_tileFrames[i] = 0xec;
 			}
 		}
 
@@ -348,7 +350,7 @@ static void ULTIMA_44b8_AnimateTiles(void)
 		{
             for (i = 0xfa; i < 0xfe; i++)
 			{
-				D_b11e[i] ^= 1;
+				D_b11e_tileFrames[i] ^= 1;
 			}
 		}
 	}
@@ -372,17 +374,17 @@ void ULTIMA_4552_AnimateActors(void)
 
 	for (local_10_aa = 0; local_10_aa < 0x20; local_10_aa++)
 	{
-		local_8 = &D_5c5a[local_10_aa];
-		if (local_8->_0_tile == 0)
+		local_8 = &D_5c5a_actors[local_10_aa];
+		if (local_8->tile == 0)
 		{
 			continue;
 		}
 
-        local_c = local_8->_6 & 0xf;
-        local_14_am = local_8->_6 >> 4;
-        local_4_ab = local_8->_0_tile & 0xfc;
-        local_e_am = D_1b18[((local_4_ab - 0x34) >> 2) + 0xb0];
-		local_12 = &D_1b18[local_e_am * 0x10];
+        local_c = local_8->animState & 0xf;
+        local_14_am = local_8->animState >> 4;
+        local_4_ab = local_8->tile & 0xfc;
+        local_e_am = D_1b18_animSequences[((local_4_ab - 0x34) >> 2) + 0xb0];
+		local_12 = &D_1b18_animSequences[local_e_am * 0x10];
 
 		if (local_c == 0xf)
 		{
@@ -392,11 +394,11 @@ void ULTIMA_4552_AnimateActors(void)
         if (local_c != 0)
         {
             local_c--;
-            local_8->_6 = (local_8->_6 & 0xf0) + local_c;
+            local_8->animState = (local_8->animState & 0xf0) + local_c;
 			continue;
         }
 
-		if (local_8->_1_animTile == 0 || local_8->_1_animTile == TILE_ACTOR_1D || local_8->_1_animTile == TILE_ACTOR_SLEEP)
+		if (local_8->animTile == 0 || local_8->animTile == TILE_ACTOR_1D || local_8->animTile == TILE_ACTOR_SLEEP)
 		{
 			continue;
 		}
@@ -431,14 +433,14 @@ void ULTIMA_4552_AnimateActors(void)
             case 2:
             case 3:
             case 4:
-                local_8->_1_animTile = local_4_ab + local_6 - 1;
+                local_8->animTile = local_4_ab + local_6 - 1;
                 local_14_am++;
                 goto L_done;
 
             case 5:
                 if (ULTIMA_2092_RandomRange(0, 0xff) < 0x40)
                 {
-                    local_8->_1_animTile = local_8->_0_tile;
+                    local_8->animTile = local_8->tile;
                     if (local_4_ab == 0x5c)
                     {
                         local_14_am++;
@@ -475,7 +477,7 @@ void ULTIMA_4552_AnimateActors(void)
                 break;
             }
 
-            local_8->_6 = local_14_am * 0x10 + local_c;
+            local_8->animState = local_14_am * 0x10 + local_c;
         } while (!local_a);
     }
 
@@ -491,16 +493,16 @@ static int ULTIMA_4702(int param_1)
 
 	local_4_ab = 0;
 
-	if (D_5840[param_1] == D_5893_map_id && D_5848[param_1] == D_5895_map_level)
+	if (D_5840_moonstoneMap[param_1] == D_5893_mapId && D_5848_moonstoneZ[param_1] == D_5895_mapLevel)
 	{
-		if (D_5893_map_id != 0)
+		if (D_5893_mapId != 0)
 		{
 			local_4_ab = 1;
 		}
 		else
 		{
-			local_6 = (byte)(D_5830[param_1] - D_589b);
-			local_8 = (byte)(D_5838[param_1] - D_589c);
+			local_6 = (byte)(D_5830_moonstoneX[param_1] - D_589b_mapOriginX);
+			local_8 = (byte)(D_5838_moonstoneY[param_1] - D_589c_mapOriginY);
 
 			if (local_6 < 0x20 && local_8 < 0x20)
 			{
@@ -512,7 +514,8 @@ static int ULTIMA_4702(int param_1)
 	return local_4_ab;
 }
 
-void ULTIMA_475a(void)
+// Raise the moongates at night and lower them by day, and put their tile on the map where a moonstone is buried.
+void ULTIMA_475a_UpdateMoongates(void)
 {
 	int local_a;
 	int local_8;
@@ -522,12 +525,12 @@ void ULTIMA_475a(void)
 	local_a = 0xdc;
 	if (D_587f_hour >= 0x14 || D_587f_hour < 5)
 	{
-        ULTIMA_3ef0_IncreaseByte(&D_5887, 1, 0x10);
+        ULTIMA_3ef0_IncreaseByte(&D_5887_moongateHeight, 1, 0x10);
     }
 	else
 	{
-        ULTIMA_3f36_DecreaseByte(&D_5887, 1);
-        if (D_5887 == 0)
+        ULTIMA_3f36_DecreaseByte(&D_5887_moongateHeight, 1);
+        if (D_5887_moongateHeight == 0)
         {
             local_a = 5;
         }
@@ -537,55 +540,56 @@ void ULTIMA_475a(void)
 	{
 		if (ULTIMA_4702(local_6) != 0)
 		{
-			local_4_ab = ULTIMA_4402_GetTileAddr(D_5830[local_6], D_5838[local_6]);
+			local_4_ab = ULTIMA_4402_GetTileAddr(D_5830_moonstoneX[local_6], D_5838_moonstoneY[local_6]);
 			local_8 = *local_4_ab != local_a;
 			*local_4_ab = local_a;
-			D_24e6 |= 2;
+			D_24e6_viewDirty |= 2;
 			if (local_8 != 0)
 			{
-				ULTIMA_5e4a();
+				ULTIMA_5e4a_BuildLightMap();
 			}
 		}
 	}
 }
 
-int ULTIMA_47f4(int param_1)
+// Take the party to where moonstone `index` is buried; 0 when it is not buried.
+int ULTIMA_47f4_GoToMoonstone(int param_1)
 {
 	int local_4;
 
-	if (D_5840[param_1] == 0xff)
+	if (D_5840_moonstoneMap[param_1] == 0xff)
 	{
 		return 0;
 	}
 
-    if (D_5893_map_id == 0)
+    if (D_5893_mapId == 0)
     {
         ULTIMA_251e_SwitchDisks(1);
 
         while (ULTIMA_1674_TestOpenFile(_TEXT(0xa3ba, "BRIT.DAT")) == 0) {}
 
-        ULTIMA_25d8_WriteFileToDisk(OUTSUBS_0368_GetWorldSavefile(), &D_5c5a[0]._0_tile, 0x100);
+        ULTIMA_25d8_WriteFileToDisk(OUTSUBS_0368_GetWorldSavefile(), &D_5c5a_actors[0].tile, 0x100);
     }
 
-    local_4 = D_5893_map_id;
-    D_5893_map_id = D_5840[param_1];
-    D_5896_map_x = D_5830[param_1];
-    D_5897_map_y = D_5838[param_1];
-    D_5895_map_level = D_5848[param_1];
+    local_4 = D_5893_mapId;
+    D_5893_mapId = D_5840_moonstoneMap[param_1];
+    D_5896_mapX = D_5830_moonstoneX[param_1];
+    D_5897_mapY = D_5838_moonstoneY[param_1];
+    D_5895_mapLevel = D_5848_moonstoneZ[param_1];
 
-    if (D_5893_map_id != 0 && local_4 != 0 && D_5893_map_id < 0x21 && local_4 < 0x21)
+    if (D_5893_mapId != 0 && local_4 != 0 && D_5893_mapId < 0x21 && local_4 < 0x21)
     {
         TOWN_11f0_Entry(1);
     }
     else
     {
-        if (D_5893_map_id == 0 && local_4 == 0)
+        if (D_5893_mapId == 0 && local_4 == 0)
         {
 #if defined(ENABLE_BGM)
 			AUDIO_StopBgm();
 #endif
 
-            ULTIMA_256e_ReadFileFromDisk(OUTSUBS_0368_GetWorldSavefile(), &D_5c5a[0]._0_tile, 0x100, 0);
+            ULTIMA_256e_ReadFileFromDisk(OUTSUBS_0368_GetWorldSavefile(), &D_5c5a_actors[0].tile, 0x100, 0);
             MAINOUT_0000();
 
 #if defined(ENABLE_BGM)
@@ -597,41 +601,42 @@ int ULTIMA_47f4(int param_1)
     return 1;
 }
 
-int ULTIMA_48a8(void)
+// On a moongate: the party sinks into it and comes out at the moonstone of the moon's phase. Returns 1 instead in the first ten minutes after midnight (for the caller to act on), else 0.
+int ULTIMA_48a8_EnterMoongate(void)
 {
 	int local_8;
 	int local_6; // unused
 	int local_4_ab;
 
 	local_8 = 0;
-	if (*ULTIMA_4402_GetTileAddr(D_5896_map_x, D_5897_map_y) == TILE_MAP_MOONGATE)
+	if (*ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY) == TILE_MAP_MOONGATE)
 	{
-		ULTIMA_3ae6(1);
+		ULTIMA_3ae6_WaitFrames(1);
 		ULTIMA_2192_AudioPulse(0x170c, 1, 30000, 2000, 2);
 		local_4_ab = D_587c_partyTile;
 		D_587c_partyTile = TILE_ACTOR_CIRCLE;
-		ULTIMA_1068(0xdc, 5, 5);
+		ULTIMA_1068_RevealTile(0xdc, 5, 5);
 		D_587c_partyTile = 0;
-		ULTIMA_3ae6(1);
+		ULTIMA_3ae6_WaitFrames(1);
 
-		for (D_5887 = 0xf; D_5887 != 0; D_5887--)
+		for (D_5887_moongateHeight = 0xf; D_5887_moongateHeight != 0; D_5887_moongateHeight--)
 		{
-			ULTIMA_1112_GRAP_60(D_5887, 5, 5);
+			ULTIMA_1112_GRAP_60_Moongate(D_5887_moongateHeight, 5, 5);
 			ULTIMA_20fa_WaitTicks(2);
 		}
 
-		*ULTIMA_4402_GetTileAddr(D_5896_map_x, D_5897_map_y) = TILE_MAP_GRASS;
+		*ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY) = TILE_MAP_GRASS;
 
-		D_24e6 |= 2;
+		D_24e6_viewDirty |= 2;
 
 		ULTIMA_10e0_GRAP_51_PutTile(5, 5, 5);
-		if (D_587f_hour == 0 && D_5881 < 10)
+		if (D_587f_hour == 0 && D_5881_minute < 10)
 		{
 			local_8 = 1;
 		}
 		else
 		{
-			ULTIMA_47f4((D_587f_hour < 0xc ? D_5885 : D_5886) - 0x30);
+			ULTIMA_47f4_GoToMoonstone((D_587f_hour < 0xc ? D_5885_trammelPhase : D_5886_feluccaPhase) - 0x30);
 		}
 
 		D_587c_partyTile = local_4_ab;
@@ -640,7 +645,8 @@ int ULTIMA_48a8(void)
 	return local_8;
 }
 
-int ULTIMA_4988(void)
+// The party member who acts: the combatant whose turn it is, else the active player, else the only able one, else ask ("Player: "). -1 none.
+int ULTIMA_4988_GetActingPlayer(void)
 {
     int local_a;
     int local_8;
@@ -648,9 +654,9 @@ int ULTIMA_4988(void)
     bool local_4_ab;
 
     local_a = -1;
-    if (D_5893_map_id > 0x80)
+    if (D_5893_mapId > 0x80)
     {
-        local_a = D_ba14[D_589e].entityIdx;
+        local_a = D_ba14_combatants[D_589e_curCombatant].entityIdx;
     }
     else if (D_587b_activePlayer != 0xff)
     {
@@ -674,7 +680,7 @@ int ULTIMA_4988(void)
             while (!local_4_ab)
             {
                 ULTIMA_1850_PrintString(_TEXT(0xa3c4, "Player: "));
-                local_a = ULTIMA_2e8e();
+                local_a = ULTIMA_2e8e_SelectPlayer();
                 if (local_a < 0)
                 {
                     local_4_ab = 1;
@@ -713,14 +719,15 @@ int ULTIMA_4988(void)
 }
 
 // draw moon phase
-void ULTIMA_4a84(void)
+// Draw the sun and the two moons in the top border for the hour and the day (D_1eda_moonPhases); blank underground.
+void ULTIMA_4a84_DrawSunAndMoons(void)
 {
 	u16 local_16_an;
 	int local_14;
 	byte local_12_aa[12 + 1];
 	int local_4_aa;
 
-	if (D_5893_map_id < 0x21)
+	if (D_5893_mapId < 0x21)
 	{
 		// 4a96
 		for (local_14 = 0; local_14 < 12; local_14++)
@@ -729,7 +736,7 @@ void ULTIMA_4a84(void)
 		}
 
 		local_12_aa[12] = 0;
-		local_16_an = D_5386_current_text_window_idx;
+		local_16_an = D_5386_textWindowIndex;
 		ULTIMA_1b94_SelectTextWindow(0);
 		ULTIMA_1c9e_SelectCharset(1);
 
@@ -741,7 +748,7 @@ void ULTIMA_4a84(void)
 		}
 
 		// 4adf
-		D_5885 = D_1eda[(D_587e - 1) * 2];
+		D_5885_trammelPhase = D_1eda_moonPhases[(D_587e_day - 1) * 2];
 		local_4_aa = -(D_587f_hour - 8);
 		if (local_4_aa < -12)
 		{
@@ -751,11 +758,11 @@ void ULTIMA_4a84(void)
 		// 4b04
 		if (local_4_aa < 12 && local_4_aa >= 0)
 		{
-			local_12_aa[local_4_aa] = D_5885;
+			local_12_aa[local_4_aa] = D_5885_trammelPhase;
 		}
 
 		// 4b19
-		D_5886 = D_1eda[(D_587e - 1) * 2 + 1];
+		D_5886_feluccaPhase = D_1eda_moonPhases[(D_587e_day - 1) * 2 + 1];
 		local_4_aa = -(D_587f_hour - 2);
 		if (local_4_aa < -12)
 		{
@@ -765,12 +772,12 @@ void ULTIMA_4a84(void)
 		// 4b3e
 		if (local_4_aa < 12 && local_4_aa >= 0)
 		{
-			local_12_aa[local_4_aa] = D_5886;
+			local_12_aa[local_4_aa] = D_5886_feluccaPhase;
 		}
 
 		// 4b53
 		ULTIMA_1bf2_SetTextPosition(6, 0);
-		if (D_5893_map_id != 0x19 && D_5895_map_level < 0x80)
+		if (D_5893_mapId != 0x19 && D_5895_mapLevel < 0x80)
 		{
 			for (local_14 = 0; local_12_aa[local_14] != 0;)
 			{
@@ -806,33 +813,35 @@ void ULTIMA_4a84(void)
 }
 
 // print map name?
-void ULTIMA_4be8(void)
+// Blank the sky in the top border.
+void ULTIMA_4be8_ClearSky(void)
 {
 	int local_4;
 
-	local_4 = D_5386_current_text_window_idx;
+	local_4 = D_5386_textWindowIndex;
 	ULTIMA_1b94_SelectTextWindow(0);
 
-	if (D_5893_map_id != 0x19 && D_5895_map_level < 0x80)
+	if (D_5893_mapId != 0x19 && D_5895_mapLevel < 0x80)
 	{
 		ULTIMA_1bf2_SetTextPosition(5, 0);
-		ULTIMA_4c2a();
+		ULTIMA_4c2a_PrintLeftCap();
 		ULTIMA_1850_PrintString(_TEXT(0xa3e2, "            "));
-		ULTIMA_4cce();
+		ULTIMA_4cce_PrintRightCap();
 	}
 
 	ULTIMA_1b94_SelectTextWindow(local_4);
 }
 
 // print >
-void ULTIMA_4c2a(void)
+// Print the left end cap of a title in a border.
+void ULTIMA_4c2a_PrintLeftCap(void)
 {
 	int local_8_al;
 	int local_6_an;
 	int local_4;
 	TextWindow* win;
 
-	win = &D_535e_textWindows[D_5386_current_text_window_idx];
+	win = &D_535e_textWindows[D_5386_textWindowIndex];
 
 	local_6_an = ((uint)win->left + ULTIMA_1f12_GetCurrentTextX()) * 8;
 	local_8_al = ((uint)win->top + ULTIMA_1cee_GetCurrentTextY()) * 8;
@@ -849,14 +858,15 @@ void ULTIMA_4c2a(void)
 }
 
 // print <
-void ULTIMA_4cce(void)
+// Print the right end cap of a title in a border.
+void ULTIMA_4cce_PrintRightCap(void)
 {
 	int local_8_al;
 	int local_6_an;
 	int local_4;
 	TextWindow* win;
 
-	win = &D_535e_textWindows[D_5386_current_text_window_idx];
+	win = &D_535e_textWindows[D_5386_textWindowIndex];
 
 	local_6_an = ((uint)win->left + ULTIMA_1f12_GetCurrentTextX()) * 8;
 	local_8_al = ((uint)win->top + ULTIMA_1cee_GetCurrentTextY()) * 8;
@@ -888,7 +898,8 @@ int ULTIMA_4d76_FindIndex(char* param_2, int param_1)
 	return local_4;
 }
 
-void ULTIMA_4daa(void)
+// Remove the scroll arrow from the border under the stats window.
+void ULTIMA_4daa_HideScrollArrow(void)
 {
 	ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b2_blueColor);
 	ULTIMA_0aa6_GRAP_3f_FillRect(0xf0, 0x51, 0x107, 0x56);
@@ -897,20 +908,22 @@ void ULTIMA_4daa(void)
 	ULTIMA_0c9c_GRAP_39_HorizLine(0xf0, 0x57, 0x107);
 }
 
-void ULTIMA_4dea(int param_1)
+// Show a scroll arrow (character 0x18, 0x19 or 0x12) in the border under the stats window.
+void ULTIMA_4dea_ShowScrollArrow(int param_1)
 {
 	int local_4;
 
-	local_4 = D_5386_current_text_window_idx;
+	local_4 = D_5386_textWindowIndex;
 	ULTIMA_1b94_SelectTextWindow(0);
 	ULTIMA_1bf2_SetTextPosition(0x1e, 10);
-	ULTIMA_4c2a();
+	ULTIMA_4c2a_PrintLeftCap();
 	ULTIMA_16ba_PrintChar(param_1);
-	ULTIMA_4cce();
+	ULTIMA_4cce_PrintRightCap();
 	ULTIMA_1b94_SelectTextWindow(local_4);
 }
 
-void ULTIMA_4e20(void)
+// Remove the title from the top border of the stats window.
+void ULTIMA_4e20_ClearStatsTitle(void)
 {
 	ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b2_blueColor);
 	ULTIMA_0aa6_GRAP_3f_FillRect(0xc0, 0, 0x137, 0x6);
@@ -918,7 +931,8 @@ void ULTIMA_4e20(void)
 	ULTIMA_0c9c_GRAP_39_HorizLine(0xc0, 0x7, 0x137);
 }
 
-void ULTIMA_4e50(char* param_1)
+// Show a title centred in the top border of the stats window.
+void ULTIMA_4e50_ShowStatsTitle(char* param_1)
 {
 	int local_6_an;
 	int local_4;
@@ -932,16 +946,17 @@ void ULTIMA_4e50(char* param_1)
 	ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
 	ULTIMA_0c9c_GRAP_39_HorizLine(192, 7, local_6_an * 8);
 	ULTIMA_0c9c_GRAP_39_HorizLine(local_2 * 8, 7, 311);
-	local_4 = D_5386_current_text_window_idx;
+	local_4 = D_5386_textWindowIndex;
 	ULTIMA_1b94_SelectTextWindow(0);
 	ULTIMA_1bf2_SetTextPosition(local_6_an, 0);
-	ULTIMA_4c2a();
+	ULTIMA_4c2a_PrintLeftCap();
 	ULTIMA_1850_PrintString(param_1);
-	ULTIMA_4cce();
+	ULTIMA_4cce_PrintRightCap();
 	ULTIMA_1b94_SelectTextWindow(local_4);
 }
 
-void ULTIMA_4efc(void)
+// Open the divider between the party and the food line, so that a list can use the whole stats window.
+void ULTIMA_4efc_OpenStatsDivider(void)
 {
 	ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
 	ULTIMA_0cf2_GRAP_3c_VertLine(0xbf, 0x38, 0x3f);
@@ -950,7 +965,8 @@ void ULTIMA_4efc(void)
 	ULTIMA_0aa6_GRAP_3f_FillRect(0xc0, 0x38, 0x137, 0x3f);
 }
 
-void ULTIMA_4f3c(void)
+// Draw the divider between the party and the food line.
+void ULTIMA_4f3c_DrawStatsDivider(void)
 {
 	ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b2_blueColor);
 	ULTIMA_0aa6_GRAP_3f_FillRect(0xbf, 0x39, 0x138, 0x3e);
@@ -961,7 +977,8 @@ void ULTIMA_4f3c(void)
 
 // CHECKED (stack, loop)
 // time related
-void ULTIMA_4f7c(int param_1)
+// Let `minutes` pass: the clock and the calendar, the light and torch turns, the shadowlords' move at midnight, the light level for the hour.
+void ULTIMA_4f7c_AdvanceTime(int param_1)
 {
 	int local_a;
 	int local_8;
@@ -971,25 +988,25 @@ void ULTIMA_4f7c(int param_1)
 	if (param_1 != 0)
 	{
 		// 4f8d
-		if ((D_587a == 'Q') && (param_1 = param_1 >> 1, param_1 == 0))
+		if ((D_587a_statusIcon == 'Q') && (param_1 = param_1 >> 1, param_1 == 0))
 		{
 			param_1++;
 		}
 
 		// 4fa0
-		D_5880 = D_587f_hour;
-		if (D_587a != 'T')
+		D_5880_lastHour = D_587f_hour;
+		if (D_587a_statusIcon != 'T')
 		{
-			D_5881 += param_1;
-			ULTIMA_3f36_DecreaseByte(&D_58a7, param_1);
-			ULTIMA_3f36_DecreaseByte(&D_58a6, param_1);
+			D_5881_minute += param_1;
+			ULTIMA_3f36_DecreaseByte(&D_58a7_torchTurns, param_1);
+			ULTIMA_3f36_DecreaseByte(&D_58a6_lightSpellTurns, param_1);
 		}
 		// 4fc8
-		if (D_5881 > 59)
+		if (D_5881_minute > 59)
 		{
 			// 4fd2
-			D_5881 -= 60;
-			ULTIMA_3f36_DecreaseByte(&D_588c, 1);
+			D_5881_minute -= 60;
+			ULTIMA_3f36_DecreaseByte(&D_588c_campHealWait, 1);
 			D_587f_hour++;
 			if (D_587f_hour > 23)
 			{
@@ -998,13 +1015,13 @@ void ULTIMA_4f7c(int param_1)
 				for (local_6 = 0; local_6 < 3; local_6++)
 				{
 					// 4ffa
-					if (D_58c8[local_6] < 0x80)
+					if (D_58c8_shadowlordTowns[local_6] < 0x80)
 					{
 						do
 						{
 							// 5004
 							local_4_ab = ULTIMA_2092_RandomRange(1, 8);
-							if (D_5893_map_id == local_4_ab)
+							if (D_5893_mapId == local_4_ab)
 							{
 								local_4_ab = 0;
 							}
@@ -1012,25 +1029,25 @@ void ULTIMA_4f7c(int param_1)
 							for (local_8 = 0; local_8 < 3; local_8++)
 							{
 								// 5020
-								if (D_58c8[local_8] == local_4_ab)
+								if (D_58c8_shadowlordTowns[local_8] == local_4_ab)
 								{
 									local_4_ab = 0;
 								}
 							}
 						} while (local_4_ab == 0);
 
-						D_58c8[local_6] = (u8)local_4_ab;
+						D_58c8_shadowlordTowns[local_6] = (u8)local_4_ab;
 					}
 				}
 
 				// 5048
-				D_587e++;
+				D_587e_day++;
 
-				if (D_587e > 28)
+				if (D_587e_day > 28)
 				{
-					D_5858[0] = D_5858[1] = D_5858[2] = 0;
-					D_57b2 = 0;
-					D_587e = 1;
+					D_5858_harvestDay[0] = D_5858_harvestDay[1] = D_5858_harvestDay[2] = 0;
+					D_57b2_skullKeysDay = 0;
+					D_587e_day = 1;
 					D_5959 = 0;
 
 					// 5077
@@ -1038,17 +1055,17 @@ void ULTIMA_4f7c(int param_1)
 					for (local_6 = 0; local_6 < 0x10; local_6++)
 					{
 						// 507a
-						if (D_55a8_party[local_6]._17 < 0x19)
+						if (D_55a8_party[local_6].monthsAtInn < 0x19)
 						{
-							D_55a8_party[local_6]._17++;
+							D_55a8_party[local_6].monthsAtInn++;
 						}
 					}
 
-					D_587d++;
-					if (0xd < D_587d)
+					D_587d_month++;
+					if (0xd < D_587d_month)
 					{
-						D_587d = 1;
-						D_5874++;
+						D_587d_month = 1;
+						D_5874_year++;
 					}
 				}
 
@@ -1060,79 +1077,79 @@ void ULTIMA_4f7c(int param_1)
 
 	// 50a1
 	// setup light intensity
-	if (D_58a5 < 0x33)
+	if (D_58a5_lightLevel < 0x33)
 	{
 		// 50ab
-		local_a = D_58a5;
-		if (D_5893_map_id == 0x19 || D_5895_map_level > 0x7f || D_587f_hour < 5 || D_587f_hour > 0x13)
+		local_a = D_58a5_lightLevel;
+		if (D_5893_mapId == 0x19 || D_5895_mapLevel > 0x7f || D_587f_hour < 5 || D_587f_hour > 0x13)
 		{
 			// 50cf
-			D_58a5 = 2;
+			D_58a5_lightLevel = 2;
 		}
 		else
 		{
 			// 50d6
 			if (D_587f_hour == 5)
 			{
-				D_58a5 = D_6a80[D_5881 / 10];
+				D_58a5_lightLevel = D_6a80[D_5881_minute / 10];
 			}
 			// 50f4
 			else if (D_587f_hour == 19)
 			{
-				D_58a5 = D_6a80[(-(D_5881 - 59)) / 10];
+				D_58a5_lightLevel = D_6a80[(-(D_5881_minute - 59)) / 10];
 			}
 			else
 			{
-				D_58a5 = 0x32;
+				D_58a5_lightLevel = 0x32;
 			}
 		}
 
 		// 5115
-		if (D_58a6 != 0 && D_58a5 < 0x12)
+		if (D_58a6_lightSpellTurns != 0 && D_58a5_lightLevel < 0x12)
 		{
-			D_58a5 = 0x12;
+			D_58a5_lightLevel = 0x12;
 		}
 		// 5128
-		if (D_58a7 != 0 && D_58a5 < 10)
+		if (D_58a7_torchTurns != 0 && D_58a5_lightLevel < 10)
 		{
-			D_58a5 = 10;
+			D_58a5_lightLevel = 10;
 		}
 		// 513b
-		if (local_a != D_58a5)
+		if (local_a != D_58a5_lightLevel)
 		{
-			D_24e6 = 1;
+			D_24e6_viewDirty = 1;
 		}
 	}
 
 	// 514a
-	if (D_587f_hour != D_5880)
+	if (D_587f_hour != D_5880_lastHour)
 	{
-		if (D_5893_map_id < 0x21 && D_5895_map_level < 0x80)
+		if (D_5893_mapId < 0x21 && D_5895_mapLevel < 0x80)
 		{
-			ULTIMA_4a84();
+			ULTIMA_4a84_DrawSunAndMoons();
 		}
 
 		// 5164
 		if (D_587f_hour == 0)
 		{
-			D_5884 = 0xc;
+			D_5884_clockChimes = 0xc;
 		}
 		else
 		{
 			// 5172
 			if (D_587f_hour > 0xc)
 			{
-				D_5884 = D_587f_hour - 0xc;
+				D_5884_clockChimes = D_587f_hour - 0xc;
 			}
 			else
 			{
-				D_5884 = D_587f_hour;
+				D_5884_clockChimes = D_587f_hour;
 			}
 		}
 	}
 
-	if (D_5893_map_id != 0 && D_5893_map_id < 0x21)
+	if (D_5893_mapId != 0 && D_5893_mapId < 0x21)
 	{
-		ULTIMA_71aa();
+		ULTIMA_71aa_UpdateClockTiles();
 	}
 }

@@ -15,15 +15,15 @@ static int ZSTATS_0000(int param_1)
 
     local_4 = -1;
 
-    if (D_5893_map_id > 0x80 && (D_ba14[D_589e].flags & COMBAT_FLAGS_PLAYER) != 0)
+    if (D_5893_mapId > 0x80 && (D_ba14_combatants[D_589e_curCombatant].flags & COMBAT_FLAGS_PLAYER) != 0)
     {
-        local_4 = D_ba14[D_589e].entityIdx;
+        local_4 = D_ba14_combatants[D_589e_curCombatant].entityIdx;
     }
     else
     {
         // 202e
         ULTIMA_1850_PrintString(_TEXT(0x96b4, "Player: "));
-        local_4 = ULTIMA_2d7a(param_1); // Select player
+        local_4 = ULTIMA_2d7a_SelectPlayerOrNone(param_1); // Select player
         if (local_4 >= 0)
         {
             ULTIMA_1850_PrintString(D_55a8_party[local_4].name);
@@ -56,11 +56,11 @@ static void ZSTATS_0082(int param_1)
     int local_a;
     S_55a8* local_4_ab;
 
-    ULTIMA_4daa();
+    ULTIMA_4daa_HideScrollArrow();
 
     local_4_ab = &D_55a8_party[param_1];
 
-    ULTIMA_4e50(local_4_ab->name);
+    ULTIMA_4e50_ShowStatsTitle(local_4_ab->name);
     ULTIMA_1c22_SetTextWindowSize(1, 0x18, 1, 0x26, 9);
     ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
     ULTIMA_1c22_SetTextWindowSize(1, 0x18, 1, 0x27, 9);
@@ -77,11 +77,11 @@ static void ZSTATS_0082(int param_1)
     ULTIMA_1850_PrintString(_TEXT(0x96d6, " Lv-"));
     ULTIMA_1a3e_PrintNumber(local_4_ab->level, 1, 0x20);
     ULTIMA_16ba_PrintChar(' ');
-    ULTIMA_1850_PrintString(D_1a44[local_6]);
+    ULTIMA_1850_PrintString(D_1a44_classNames[local_6]);
     ULTIMA_1c22_SetTextWindowSize(1, 0x18, 1, 0x26, 9);
     ULTIMA_1bf2_SetTextPosition(0, 1);
     ULTIMA_16ba_PrintChar(CTRL_CHAR_CENTER_TEXT);
-    ULTIMA_1850_PrintString(D_1a6a[local_a]);
+    ULTIMA_1850_PrintString(D_1a6a_statusNames[local_a]);
     ULTIMA_1c22_SetTextWindowSize(1, 0x18, 1, 0x27, 9);
     ULTIMA_1bf2_SetTextPosition(0, 3);
     ULTIMA_16ba_PrintChar(CTRL_CHAR_UNCENTER_TEXT);
@@ -110,7 +110,7 @@ static bool ZSTATS_0278(int param_1)
     else
     {
         ULTIMA_16ba_PrintChar(' ');
-        ULTIMA_1850_PrintString(D_1962[param_1]);
+        ULTIMA_1850_PrintString(D_1962_equipShortNames[param_1]);
         ULTIMA_16ba_PrintChar('\n');
         return 1;
     }
@@ -121,10 +121,10 @@ static void ZSTATS_02a8(int param_1)
     S_55a8* local_6_an;
     int local_4;
 
-    ULTIMA_4daa();
+    ULTIMA_4daa_HideScrollArrow();
 
     local_6_an = &D_55a8_party[param_1];
-    ULTIMA_4e50(local_6_an->name);
+    ULTIMA_4e50_ShowStatsTitle(local_6_an->name);
     ULTIMA_1c22_SetTextWindowSize(1, 0x18, 1, 0x26, 9);
     ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
     ULTIMA_16ba_PrintChar(CTRL_CHAR_CENTER_TEXT);
@@ -153,8 +153,8 @@ static void ZSTATS_02a8(int param_1)
 
 static void ZSTATS_039c(void)
 {
-    ULTIMA_4daa();
-    ULTIMA_4e50(_TEXT(0x9724, "Equipment"));
+    ULTIMA_4daa_HideScrollArrow();
+    ULTIMA_4e50_ShowStatsTitle(_TEXT(0x9724, "Equipment"));
     ULTIMA_1c22_SetTextWindowSize(1, 0x18, 1, 0x26, 9);
     ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
     ULTIMA_1c22_SetTextWindowSize(1, 0x18, 1, 0x27, 9);
@@ -163,12 +163,12 @@ static void ZSTATS_039c(void)
     ULTIMA_1850_PrintString(_TEXT(0x9738, "\n Gold: "));
     ULTIMA_1a3e_PrintNumber(D_57aa_gold, 4, 0x20); // Gold
     ULTIMA_1850_PrintString(_TEXT(0x9742, "\n\n Keys......."));
-    ULTIMA_1a3e_PrintNumber(D_57ac, 2, 0x20); // Keys
+    ULTIMA_1a3e_PrintNumber(D_57ac_keys, 2, 0x20); // Keys
     ULTIMA_1850_PrintString(_TEXT(0x9752, "\n Gems......."));
-    ULTIMA_1a3e_PrintNumber(D_57ad, 2, 0x20); // Gems
+    ULTIMA_1a3e_PrintNumber(D_57ad_gems, 2, 0x20); // Gems
     ULTIMA_1850_PrintString(_TEXT(0x9760, "\n Torches...."));
-    ULTIMA_1a3e_PrintNumber(D_57ae, 2, 0x20); // Torches
-    if (D_57af != 0)
+    ULTIMA_1a3e_PrintNumber(D_57ae_torches, 2, 0x20); // Torches
+    if (D_57af_grapple != 0)
     {
         // Grapple
         ULTIMA_1850_PrintString(_TEXT(0x976e, "\n Grapple"));
@@ -304,7 +304,7 @@ void ZSTATS_05e2(int param_1, byte* param_2, char** param_3, uint param_4)
         ULTIMA_1c9e_SelectCharset(1);
         ULTIMA_1850_PrintString(_TEXT(0x9782, "\x1d + "));
         ULTIMA_1c9e_SelectCharset(0);
-        ULTIMA_1850_PrintString(D_1962[40 + param_1]);
+        ULTIMA_1850_PrintString(D_1962_equipShortNames[40 + param_1]);
     }
     else if (param_3[param_1][0] == '(')
     {
@@ -355,7 +355,7 @@ static int ZSTATS_06e8(char* param_1, int param_2, byte* param_3, char** param_4
     int local_6;
     int local_4_ab;
 
-    ULTIMA_4e50(param_1);
+    ULTIMA_4e50_ShowStatsTitle(param_1);
     ZSTATS_045e(8);
     local_8 = false;
     local_6 = ZSTATS_05a4(-1, param_2, param_3, 0xff);
@@ -364,7 +364,7 @@ static int ZSTATS_06e8(char* param_1, int param_2, byte* param_3, char** param_4
         ZSTATS_045e(8);
         ULTIMA_1bf2_SetTextPosition(1, 4);
         ULTIMA_1850_PrintString(_TEXT(0x9794, "(None owned!)"));
-        ULTIMA_4daa();
+        ULTIMA_4daa_HideScrollArrow();
         ULTIMA_1b94_SelectTextWindow(2);
         return ULTIMA_266c_GetChar();
     }
@@ -403,19 +403,19 @@ static int ZSTATS_06e8(char* param_1, int param_2, byte* param_3, char** param_4
         {
         case 0:
             // 07d0
-            ULTIMA_4daa();
+            ULTIMA_4daa_HideScrollArrow();
             break;
         case 1:
             // 0806
-            ULTIMA_4dea(0x19);
+            ULTIMA_4dea_ShowScrollArrow(0x19);
             break;
         case 2:
             // 0810
-            ULTIMA_4dea(0x18);
+            ULTIMA_4dea_ShowScrollArrow(0x18);
             break;
         case 3:
             // 0816
-            ULTIMA_4dea(0x12);
+            ULTIMA_4dea_ShowScrollArrow(0x12);
             break;
         }
 
@@ -527,28 +527,28 @@ void ZSTATS_099a(void)
     local_4 = 0;
     do
     {
-        D_b9ee[local_4] = D_5820[local_4];
-        D_b9f6[local_4] = D_5828[local_4];
-        D_ba03[local_4] = D_5840[local_4] == 0xff ? 0xff : 0;
+        D_b9ee[local_4] = D_5820_scrolls[local_4];
+        D_b9f6[local_4] = D_5828_potions[local_4];
+        D_ba03[local_4] = D_5840_moonstoneMap[local_4] == 0xff ? 0xff : 0;
     } while (++local_4 < 8);
 
-    D_b9fe = D_57b0;
-    D_b9ff = D_57b1;
-    D_ba00 = D_57b3;
-    D_ba01 = D_57b4;
-    D_ba02 = D_57b5;
+    D_b9fe = D_57b0_carpets;
+    D_b9ff = D_57b1_skullKeys;
+    D_ba00 = D_57b3_amulet;
+    D_ba01 = D_57b4_crown;
+    D_ba02 = D_57b5_sceptre;
 
     for (local_4 = 0; local_4 < 3; local_4++)
     {
-        D_ba0b[local_4] = D_57b6[local_4];
+        D_ba0b[local_4] = D_57b6_shards[local_4];
     }
 
-    D_ba0e = D_57ba;
-    D_ba0f = D_57bb != 0 ? 0xff : 0;
-    D_ba10 = D_57bc;
-    D_ba11 = D_57bd;
-    D_ba12 = D_57be;
-    D_ba13 = D_57bf;
+    D_ba0e = D_57ba_spyglasses;
+    D_ba0f = D_57bb_hmsCapePlans != 0 ? 0xff : 0;
+    D_ba10 = D_57bc_sextants;
+    D_ba11 = D_57bd_pocketWatch;
+    D_ba12 = D_57be_blackBadge;
+    D_ba13 = D_57bf_sandalwoodBox;
 }
 
 // CHECKED
@@ -571,7 +571,7 @@ void ZSTATS_0a3a_ZstatsCmd(void)
     // ec3f
     ULTIMA_1850_PrintString(_TEXT(0x97a2, "\nStatus: "));
     ZSTATS_099a();
-    ULTIMA_4efc();
+    ULTIMA_4efc_OpenStatsDivider();
     local_4_ab = local_8 << 1;
     local_6 = 0;
 
@@ -674,25 +674,25 @@ void ZSTATS_0a3a_ZstatsCmd(void)
             {
             case 0xd:
                 // ed6a
-                local_6 = ZSTATS_06e8(_TEXT(0x97ac, "Reagents"), 8, D_5850, D_19d2);
+                local_6 = ZSTATS_06e8(_TEXT(0x97ac, "Reagents"), 8, D_5850_reagents, D_19d2_reagentNames);
                 break;
             case 0xe:
-                local_6 = ZSTATS_06e8(_TEXT(0x97b6, "Spells"), 0x30, D_57f0, D_19e2);
+                local_6 = ZSTATS_06e8(_TEXT(0x97b6, "Spells"), 0x30, D_57f0_mixedSpells, D_19e2_spellNames);
                 break;
             case 0xf:
                 local_6 = ZSTATS_06e8(_TEXT(0x97be, "Items"), 0x26, D_b9ee, D_1916);
                 break;
             case 0x10:
-                local_6 = ZSTATS_06e8(_TEXT(0x97c4, "Armaments"), 0x30, D_57c0, D_1962);
+                local_6 = ZSTATS_06e8(_TEXT(0x97c4, "Armaments"), 0x30, D_57c0_equipment, D_1962_equipShortNames);
                 break;
             }
         }
     }
 
     // 0bd6
-    ULTIMA_4daa();
-    ULTIMA_4e20();
-    ULTIMA_4f3c();
+    ULTIMA_4daa_HideScrollArrow();
+    ULTIMA_4e20_ClearStatsTitle();
+    ULTIMA_4f3c_DrawStatsDivider();
     ULTIMA_2900_UpdateVitalsDisplay();
     ULTIMA_1850_PrintString(_TEXT(0x97ce, "Done\n"));
 }
@@ -741,34 +741,34 @@ static int ZSTATS_0c5c_EquipItem(int param_1, int param_2)
     ActorFmt* local_6;
     uint local_4_aa;
 
-    if (D_5893_map_id > 0x7f)
+    if (D_5893_mapId > 0x7f)
     {
-        local_6 = &D_5c5a[D_ba14[D_589e].actorIdx];
+        local_6 = &D_5c5a_actors[D_ba14_combatants[D_589e_curCombatant].actorIdx];
     }
 
     if (param_2 == 0x1b || param_2 == 0x1d)
     {
         return 0;
     }
-    if (param_2 >= 9 && param_2 <= 0xf && D_5893_map_id > 0x7f && D_58a3 == 0)
+    if (param_2 >= 9 && param_2 <= 0xf && D_5893_mapId > 0x7f && D_58a3_combatOver == 0)
     {
         ZSTATS_0bee(_TEXT(0x97e2, "Thou canst not change armour in heated battle!"));
     }
     else if (ZSTATS_0518(param_1, param_2) != 0)
     {
-        ULTIMA_6e60(param_1, param_2);
-        if (D_57c0[param_2] < 99)
+        ULTIMA_6e60_Unequip(param_1, param_2);
+        if (D_57c0_equipment[param_2] < 99)
         {
-            D_57c0[param_2]++;
+            D_57c0_equipment[param_2]++;
         }
 
-        if (D_5893_map_id > 0x7f && param_2 == 0x2a)
+        if (D_5893_mapId > 0x7f && param_2 == 0x2a)
         {
             local_8 = ULTIMA_4d76_FindIndex(_TEXT(0x9812, "AMBFDTPRS"), D_55a8_party[param_1].cls);
-            local_6->_0_tile = local_6->_1_animTile = D_1ade[local_8];
+            local_6->tile = local_6->animTile = D_1ade[local_8];
         }
     }
-    else if (((param_2 == 0x1a || param_2 == 0x24) && D_57db == 0) || (param_2 == 0x1c && D_57dd == 0))
+    else if (((param_2 == 0x1a || param_2 == 0x24) && D_57db_arrows == 0) || (param_2 == 0x1c && D_57dd_quarrels == 0))
     {
         ZSTATS_0bee(_TEXT(0x981c, "Thou hast no ammunition for that weapon!"));
     }
@@ -854,7 +854,7 @@ static int ZSTATS_0c5c_EquipItem(int param_1, int param_2)
 
 L_wear:
         *local_10_aa = param_2;
-        D_57c0[param_2]--;
+        D_57c0_equipment[param_2]--;
 
         if ((param_2 == 0x2a || param_2 == 0x2c) && ULTIMA_2092_RandomRange(0, 0xf) == 0)
         {
@@ -864,9 +864,9 @@ L_wear:
             return 1;
         }
 
-        if (param_2 == 0x2a && D_5893_map_id > 0x7f)
+        if (param_2 == 0x2a && D_5893_mapId > 0x7f)
         {
-            local_6->_0_tile = local_6->_1_animTile = 0x1d;
+            local_6->tile = local_6->animTile = 0x1d;
         }
     }
     return 0;
@@ -902,7 +902,7 @@ int ZSTATS_0f2e(int param_1, int param_2, int param_3)
 
     if (param_3 == 0x52)
     {
-        local_14_ap = D_57c0;
+        local_14_ap = D_57c0_equipment;
         local_a_ae = 0x30;
     }
     else
@@ -947,7 +947,7 @@ int ZSTATS_0f2e(int param_1, int param_2, int param_3)
 
                 // f161..f17e
                 // Equipments
-                ZSTATS_05e2(local_12_ab, local_14_ap, D_1962, local_c_ac);
+                ZSTATS_05e2(local_12_ab, local_14_ap, D_1962_equipShortNames, local_c_ac);
             }
             else
             {
@@ -992,19 +992,19 @@ int ZSTATS_0f2e(int param_1, int param_2, int param_3)
         {
         case 0:
             // f254
-            ULTIMA_4daa();
+            ULTIMA_4daa_HideScrollArrow();
             break;
         case 1:
             // f28a..f28d
-            ULTIMA_4dea(0x19);
+            ULTIMA_4dea_ShowScrollArrow(0x19);
             break;
         case 2:
             // f294..f28d
-            ULTIMA_4dea(0x18);
+            ULTIMA_4dea_ShowScrollArrow(0x18);
             break;
         case 3:
             // f29a..f28d
-            ULTIMA_4dea(0x12);
+            ULTIMA_4dea_ShowScrollArrow(0x12);
             break;
         }
 
@@ -1163,7 +1163,7 @@ void ZSTATS_1296_ReadyCmd(void)
     if (local_6_an < 0)
         return;
 
-    local_4 = ZSTATS_05a4(-1, 0x30, D_57c0, local_6_an);
+    local_4 = ZSTATS_05a4(-1, 0x30, D_57c0_equipment, local_6_an);
     if (local_4 == -1)
     {
         ULTIMA_1850_PrintString(_TEXT(0x997e, "Thou art empty-\nhanded!\n"));
@@ -1171,17 +1171,17 @@ void ZSTATS_1296_ReadyCmd(void)
     }
 
     ULTIMA_1850_PrintString(_TEXT(0x9998, "Item: "));
-    ULTIMA_4efc();
+    ULTIMA_4efc_OpenStatsDivider();
     ULTIMA_1b94_SelectTextWindow(1);
 
-    ULTIMA_4e50(D_55a8_party[local_6_an].name);
+    ULTIMA_4e50_ShowStatsTitle(D_55a8_party[local_6_an].name);
 
     ZSTATS_045e(0x08);
 
     ZSTATS_0f2e(local_4, local_6_an, 0x52);
 
-    ULTIMA_4daa();
-    ULTIMA_4e20();
-    ULTIMA_4f3c();
+    ULTIMA_4daa_HideScrollArrow();
+    ULTIMA_4e20_ClearStatsTitle();
+    ULTIMA_4f3c_DrawStatsDivider();
     ULTIMA_2900_UpdateVitalsDisplay();
 }

@@ -9,7 +9,7 @@
 
 #include <string.h>
 
-#if !defined(TARGET_DOS16) // the original's are A6F1E.ASM's data (ULTIMA_6ff0)
+#if !defined(TARGET_DOS16) // the original's are A6F1E.ASM's data (ULTIMA_6ff0_DistanceFromCenter)
 u16 D_6aa4 = 0;
 
 u8 D_6aa8[0x24] =
@@ -40,39 +40,39 @@ void ULTIMA_5f86_SpecialMapHandler(int param_1, int param_2, int param_3)
     int local_6;
     int local_4_ab; // active character
 
-    D_58a1 = param_1;
-    local_8 = D_5896_map_x;
-    local_c = D_5897_map_y;
-    local_a = D_5895_map_level;
+    D_58a1_combatFlags = param_1;
+    local_8 = D_5896_mapX;
+    local_c = D_5897_mapY;
+    local_a = D_5895_mapLevel;
 
-    D_5894 = D_5893_map_id;
+    D_5894_savedMapId = D_5893_mapId;
     local_4_ab = D_587b_activePlayer;
-    D_5893_map_id = 0xff;
+    D_5893_mapId = 0xff;
 
     // copy actors
     for (local_e_am = 0; local_e_am < 0x20; local_e_am++)
     {
-        D_a9fc[local_e_am] = D_5c5a[local_e_am];
+        D_a9fc_savedActors[local_e_am] = D_5c5a_actors[local_e_am];
     }
 
     if (param_1 == 0)
     {
-        if ((D_5c5a[param_2]._0_tile & 0xfc) == TILE_ACTOR_PIRATE)
+        if ((D_5c5a_actors[param_2].tile & 0xfc) == TILE_ACTOR_PIRATE)
         {
             local_6 = 0x1;
         }
         else
         {
-            local_6 = ((D_5c5a[param_2]._0_tile - TILE_ACTOR_WIZARD) >> 2);
+            local_6 = ((D_5c5a_actors[param_2].tile - TILE_ACTOR_WIZARD) >> 2);
         }
 
-        if (D_5c5a[param_2]._5 > 0x7f)
+        if (D_5c5a_actors[param_2].value > 0x7f)
         {
             local_6 += 0x100;
         }
 
         // 6021
-        ULTIMA_6bc2(1, local_6); // ***CONFLICT***
+        ULTIMA_6bc2_SetUpCombat(1, local_6); // ***CONFLICT***
     }
     else
     {
@@ -99,8 +99,8 @@ void ULTIMA_5f86_SpecialMapHandler(int param_1, int param_2, int param_3)
 
     // 605c
 L_605c:
-    D_589e = D_587b_activePlayer = 0xff;
-    D_58a3 = 0;
+    D_589e_curCombatant = D_587b_activePlayer = 0xff;
+    D_58a3_combatOver = 0;
 
     COMBAT_0b94_MainLoop(); // COMBAT.0b94
 
@@ -109,14 +109,14 @@ L_606c:
     if (D_bb16 != 0)
     {
         D_bb16 = 0;
-        ULTIMA_6fbc(1);
+        ULTIMA_6fbc_TilesetMode(1);
     }
 
-    D_5896_map_x = local_8;
-    D_5897_map_y = local_c;
-    D_5895_map_level = local_a;
-    D_5893_map_id = D_5894;
-    D_24e6 = 1;
+    D_5896_mapX = local_8;
+    D_5897_mapY = local_c;
+    D_5895_mapLevel = local_a;
+    D_5893_mapId = D_5894_savedMapId;
+    D_24e6_viewDirty = 1;
 
 #if defined(ENABLE_BGM)
     AUDIO_PlayBgmPerMap();
@@ -135,7 +135,7 @@ L_606c:
 
     for (local_e_am = 0; local_e_am < 0x20; local_e_am++)
     {
-        D_5c5a[local_e_am] = D_a9fc[local_e_am];
+        D_5c5a_actors[local_e_am] = D_a9fc_savedActors[local_e_am];
     }
 }
 
@@ -144,18 +144,18 @@ static void ULTIMA_60ec_LoadSpecialMap(int param_1)
 {
     int local_4;
 
-    ULTIMA_256e_ReadFileFromDisk(_TEXT(0xa3f0, "BRIT.CBT"), D_ad14, 0x160, param_1 * 0x160);
+    ULTIMA_256e_ReadFileFromDisk(_TEXT(0xa3f0, "BRIT.CBT"), D_ad14_combatMap, 0x160, param_1 * 0x160);
 
     for (local_4 = 0; local_4 < 6; local_4++)
     {
-        D_1724[local_4] = GetCombatMapPartyX(COMBAT_MAP_SPECIAL_PARTY_SOUTH, local_4);
-        D_172c[local_4] = GetCombatMapPartyY(COMBAT_MAP_SPECIAL_PARTY_SOUTH, local_4);
+        D_1724_combatPartyX[local_4] = GetCombatMapPartyX(COMBAT_MAP_SPECIAL_PARTY_SOUTH, local_4);
+        D_172c_combatPartyY[local_4] = GetCombatMapPartyY(COMBAT_MAP_SPECIAL_PARTY_SOUTH, local_4);
     }
 
     for (local_4 = 0; local_4 < 0x10; local_4++)
     {
-        D_1704[local_4] = GetCombatMapMonsterX(local_4);
-        D_1714[local_4] = GetCombatMapMonsterY(local_4);
+        D_1704_combatEnemyX[local_4] = GetCombatMapMonsterX(local_4);
+        D_1714_combatEnemyY[local_4] = GetCombatMapMonsterY(local_4);
     }
 }
 
@@ -166,7 +166,7 @@ void ULTIMA_6150_Combat(int param_1)
     int local_a;
     int local_4_ab;
 
-    local_a = D_5c5a[param_1]._0_tile & 0xfc;
+    local_a = D_5c5a_actors[param_1].tile & 0xfc;
 
     ULTIMA_16ba_PrintChar('\n');
     ULTIMA_16ba_PrintChar(CTRL_CHAR_CENTER_TEXT);
@@ -176,13 +176,13 @@ void ULTIMA_6150_Combat(int param_1)
     }
     else
     {
-        ULTIMA_1850_PrintString(D_18b6[(local_a - 0x40) / 4]); // TILE_ACTOR_40
+        ULTIMA_1850_PrintString(D_18b6_enemyNamesPlural[(local_a - 0x40) / 4]); // TILE_ACTOR_40
     }
 
     ULTIMA_16ba_PrintChar(CTRL_CHAR_UNCENTER_TEXT);
     ULTIMA_1850_PrintString(_TEXT(0xa402, "\n\n"));
 
-    local_6 = *ULTIMA_4402_GetTileAddr(D_5c5a[param_1]._2_x, D_5c5a[param_1]._3_y);
+    local_6 = *ULTIMA_4402_GetTileAddr(D_5c5a_actors[param_1].x, D_5c5a_actors[param_1].y);
     if (local_6 < TILE_MAP_POISON || (local_6 & 0xfe) != TILE_MAP_6A && ((local_6 & 0xf0) == TILE_MAP_60))
     {
         local_8 = true;
@@ -195,11 +195,11 @@ void ULTIMA_6150_Combat(int param_1)
     if (local_a == 0xfc) // 61f3
     {
         local_4_ab = 10;
-        if (D_57b5 != 0)
+        if (D_57b5_sceptre != 0)
         {
             ULTIMA_1850_PrintString(_TEXT(0xa406, "The Sceptre is reclaimed!\n"));
             ULTIMA_2192_AudioPulse(0xfd2, 1, 65000, 1, 1);
-            D_57b5 = 0;
+            D_57b5_sceptre = 0;
         }
     }
     else
@@ -278,7 +278,7 @@ void ULTIMA_6150_Combat(int param_1)
                 local_4_ab = 8;
                 break;
             default:
-                if (D_5893_map_id != 0)
+                if (D_5893_mapId != 0)
                 {
                     local_4_ab = 8;
                 }
@@ -295,15 +295,15 @@ void ULTIMA_6150_Combat(int param_1)
     ULTIMA_5f86_SpecialMapHandler(0, param_1, 0);
 
     SJOG_203e(param_1);
-    ULTIMA_5e4a();
-    ULTIMA_4f7c(0);
+    ULTIMA_5e4a_BuildLightMap();
+    ULTIMA_4f7c_AdvanceTime(0);
 }
 
 void ULTIMA_6360_Camping(int param_1, int param_2)
 {
     ULTIMA_60ec_LoadSpecialMap(0);
     ULTIMA_5f86_SpecialMapHandler(4, param_1, param_2);
-    ULTIMA_5e4a();
+    ULTIMA_5e4a_BuildLightMap();
 }
 
 // draw frame
@@ -334,19 +334,19 @@ void ULTIMA_637e_DrawFrame(void)
 
     ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
     ULTIMA_0b10_GRAP_Line(7, 7, 7, 184);
-    ULTIMA_0f90_GRAP_Pen(184, 184);
-    ULTIMA_0f90_GRAP_Pen(184, 7);
-    ULTIMA_0f90_GRAP_Pen(7, 7);
+    ULTIMA_0f90_GRAP_LineTo(184, 184);
+    ULTIMA_0f90_GRAP_LineTo(184, 7);
+    ULTIMA_0f90_GRAP_LineTo(7, 7);
     ULTIMA_0b10_GRAP_Line(191, 191, 191, 87);
-    ULTIMA_0f90_GRAP_Pen(319, 87);
+    ULTIMA_0f90_GRAP_LineTo(319, 87);
     ULTIMA_0b10_GRAP_Line(191, 7, 312, 7);
-    ULTIMA_0f90_GRAP_Pen(312, 56);
-    ULTIMA_0f90_GRAP_Pen(191, 56);
-    ULTIMA_0f90_GRAP_Pen(191, 7);
+    ULTIMA_0f90_GRAP_LineTo(312, 56);
+    ULTIMA_0f90_GRAP_LineTo(191, 56);
+    ULTIMA_0f90_GRAP_LineTo(191, 7);
     ULTIMA_0b10_GRAP_Line(191, 63, 312, 63);
-    ULTIMA_0f90_GRAP_Pen(312, 80);
-    ULTIMA_0f90_GRAP_Pen(191, 80);
-    ULTIMA_0f90_GRAP_Pen(191, 63);
+    ULTIMA_0f90_GRAP_LineTo(312, 80);
+    ULTIMA_0f90_GRAP_LineTo(191, 80);
+    ULTIMA_0f90_GRAP_LineTo(191, 63);
 
     ULTIMA_1cca_SetTextForegroundColor(D_13b0_brightWhiteColor);
 }
@@ -355,7 +355,8 @@ void ULTIMA_637e_DrawFrame(void)
 // place actor on combat map
 // param_2: player / monster?
 // return: placed actor idx
-int ULTIMA_6506(int param_1, int param_2, int param_3, int param_4, int param_5)
+// Put a combatant on the combat map. kind 0: an enemy of type `entity`; 1: party member `entity`; 2: an object with tile `entity`. Returns its slot (for kind 2 the actor slot), -1 when full.
+int ULTIMA_6506_PlaceCombatant(int param_1, int param_2, int param_3, int param_4, int param_5)
 {
     int local_a;
     int local_8;
@@ -382,9 +383,9 @@ int ULTIMA_6506(int param_1, int param_2, int param_3, int param_4, int param_5)
         {
             // 653f
             // 6577
-            if (D_ba14[local_6].flags == 0) // combat actor slot not occupied?
+            if (D_ba14_combatants[local_6].flags == 0) // combat actor slot not occupied?
             {
-                local_4_aa = &D_ba14[local_6];
+                local_4_aa = &D_ba14_combatants[local_6];
                 local_8 = local_6;
 
                 // 6587
@@ -407,7 +408,7 @@ int ULTIMA_6506(int param_1, int param_2, int param_3, int param_4, int param_5)
                     local_4_aa->hp = D_13bc_enemyStats[param_1].maxHp;
                     // local_6 reused as a scratch variable (the loop ends with the break below):
                     // the original keeps Random(7) - 4 in DI, local_6's register, and the
-                    // assignment also stops MSC from walking D_ba14 with pointers.
+                    // assignment also stops MSC from walking D_ba14_combatants with pointers.
                     local_6 = ULTIMA_3aae_Random(7) - 4;
                     local_4_aa->dex = local_6 + D_13bc_enemyStats[param_1].dex;
                     if (local_4_aa->dex > 0x1e)
@@ -439,14 +440,14 @@ int ULTIMA_6506(int param_1, int param_2, int param_3, int param_4, int param_5)
         // 6634
         for (local_6 = 0; local_6 < 0x20; local_6++)
         {
-            if (D_5c5a[local_6]._0_tile == 0)
+            if (D_5c5a_actors[local_6].tile == 0)
             {
                 // 6685
                 if (param_2 == 0)
                 {
                     local_4_aa->actorIdx = local_6;
                     
-                    D_5c5a[local_6]._1_animTile = D_5c5a[local_6]._0_tile = param_1 * 4 + TILE_ACTOR_WIZARD; // local_14
+                    D_5c5a_actors[local_6].animTile = D_5c5a_actors[local_6].tile = param_1 * 4 + TILE_ACTOR_WIZARD; // local_14
                 }
 
                 // 669a
@@ -458,22 +459,22 @@ int ULTIMA_6506(int param_1, int param_2, int param_3, int param_4, int param_5)
                 // 66a6
                 if (param_2 == 2)
                 {
-                    D_5c5a[local_6]._1_animTile = D_5c5a[local_6]._0_tile = param_1;
+                    D_5c5a_actors[local_6].animTile = D_5c5a_actors[local_6].tile = param_1;
                     local_8 = local_6;
                 }
 
                 // 66bb
-                D_5c5a[local_6]._2_x = param_3;
-                D_5c5a[local_6]._3_y = param_4;
-                D_5c5a[local_6]._4_z = param_5;
-                D_5c5a[local_6]._7 = 0xff;
+                D_5c5a_actors[local_6].x = param_3;
+                D_5c5a_actors[local_6].y = param_4;
+                D_5c5a_actors[local_6].z = param_5;
+                D_5c5a_actors[local_6].extra = 0xff;
                 if (param_2 == 0)
                 {
-                    D_5c5a[local_6]._5 = local_4_aa->hp;
+                    D_5c5a_actors[local_6].value = local_4_aa->hp;
                 }
                 else
                 {
-                    D_5c5a[local_6]._5 = param_1;
+                    D_5c5a_actors[local_6].value = param_1;
                 }
 
                 // 66f8
@@ -502,9 +503,9 @@ int ULTIMA_6506(int param_1, int param_2, int param_3, int param_4, int param_5)
     {
         for (local_6 = 0; local_6 < 0x20; local_6++)
         {
-            if (D_5c5a[D_ba14[local_6].actorIdx]._7 == local_8)
+            if (D_5c5a_actors[D_ba14_combatants[local_6].actorIdx].extra == local_8)
             {
-                D_5c5a[D_ba14[local_6].actorIdx]._7 = 0xff;
+                D_5c5a_actors[D_ba14_combatants[local_6].actorIdx].extra = 0xff;
             }
         }
     }
@@ -512,26 +513,28 @@ int ULTIMA_6506(int param_1, int param_2, int param_3, int param_4, int param_5)
     return local_8;
 }
 
-void ULTIMA_6794(int param_1)
+// A ring worn into combat takes effect: invisibility (0x2a), regeneration (0x2c).
+void ULTIMA_6794_ApplyRing(int param_1)
 {
-    CombatEntity* local_4 = &D_ba14[param_1];
+    CombatEntity* local_4 = &D_ba14_combatants[param_1];
     if ((local_4->flags & COMBAT_FLAGS_PLAYER) != 0 && (local_4->flags & (COMBAT_FLAGS_DEAD | COMBAT_FLAGS_ASLEEP)) == 0)
     {
         if (D_55a8_party[local_4->entityIdx].equips[4] == 42)
         {
-            D_5c5a[local_4->actorIdx]._1_animTile = TILE_ACTOR_1D;
+            D_5c5a_actors[local_4->actorIdx].animTile = TILE_ACTOR_1D;
             local_4->flags |= COMBAT_FLAGS_INVISIBLE;
         }
         else if (D_55a8_party[local_4->entityIdx].equips[4] == 44)
         {
-            ULTIMA_400c(local_4->entityIdx); // sic
+            ULTIMA_400c_RingRegeneration(local_4->entityIdx); // sic
         }
     }
 }
 
-void ULTIMA_6800(int param_1)
+// Wake a sleeping combatant.
+void ULTIMA_6800_WakeCombatant(int param_1)
 {
-    CombatEntity* local_4 = &D_ba14[param_1];
+    CombatEntity* local_4 = &D_ba14_combatants[param_1];
     if ((local_4->flags & COMBAT_FLAGS_ASLEEP) != 0)
     {
         if ((local_4->flags & COMBAT_FLAGS_PLAYER) != 0)
@@ -539,16 +542,16 @@ void ULTIMA_6800(int param_1)
             D_55a8_party[local_4->entityIdx].status = STATUS_GOOD;
             if ((local_4->flags & COMBAT_FLAGS_INVISIBLE) != 0)
             {
-                D_5c5a[local_4->actorIdx]._1_animTile = TILE_ACTOR_1D;
+                D_5c5a_actors[local_4->actorIdx].animTile = TILE_ACTOR_1D;
             }
             else
             {
-                D_5c5a[local_4->actorIdx]._1_animTile = D_5c5a[local_4->actorIdx]._0_tile;
+                D_5c5a_actors[local_4->actorIdx].animTile = D_5c5a_actors[local_4->actorIdx].tile;
             }
         }
         else
         {
-            D_5c5a[local_4->actorIdx]._6 = 0;
+            D_5c5a_actors[local_4->actorIdx].animState = 0;
         }
         local_4->flags &= ~COMBAT_FLAGS_ASLEEP;
     }
@@ -556,24 +559,26 @@ void ULTIMA_6800(int param_1)
     ULTIMA_2900_UpdateVitalsDisplay();
 }
 
-void ULTIMA_6880(int param_1)
+// Put a combatant to sleep, unless a poisoned party member.
+void ULTIMA_6880_SleepIfNotPoisoned(int param_1)
 {
-    if ((D_ba14[param_1].flags & COMBAT_FLAGS_PLAYER) == 0 || D_55a8_party[D_ba14[param_1].entityIdx].status != STATUS_POISONED)
+    if ((D_ba14_combatants[param_1].flags & COMBAT_FLAGS_PLAYER) == 0 || D_55a8_party[D_ba14_combatants[param_1].entityIdx].status != STATUS_POISONED)
     {
-        ULTIMA_68ae(param_1);
+        ULTIMA_68ae_PutToSleep(param_1);
     }
 }
 
-void ULTIMA_68ae(int param_1)
+// Put a combatant to sleep.
+void ULTIMA_68ae_PutToSleep(int param_1)
 {
-    CombatEntity* local_4 = &D_ba14[param_1];
+    CombatEntity* local_4 = &D_ba14_combatants[param_1];
     if ((local_4->flags & COMBAT_FLAGS_PLAYER) != 0)
     {
         if (D_55a8_party[local_4->entityIdx].status != STATUS_DEAD)
         {
             D_55a8_party[local_4->entityIdx].status = STATUS_SLEEP;
             local_4->flags |= COMBAT_FLAGS_ASLEEP;
-            D_5c5a[local_4->actorIdx]._1_animTile = TILE_ACTOR_SLEEP;
+            D_5c5a_actors[local_4->actorIdx].animTile = TILE_ACTOR_SLEEP;
 
             if (param_1 == D_587b_activePlayer)
             {
@@ -584,7 +589,7 @@ void ULTIMA_68ae(int param_1)
 
             ULTIMA_2900_UpdateVitalsDisplay();
 
-            if ((D_58a1 & 4) == 0)
+            if ((D_58a1_combatFlags & 4) == 0)
             {
                 ULTIMA_5910_UpdateFrame();
             }
@@ -594,7 +599,7 @@ void ULTIMA_68ae(int param_1)
     {
         local_4->flags |= COMBAT_FLAGS_ASLEEP;
         D_58a2 = 4;
-        D_5c5a[local_4->actorIdx]._6 = 0xff;
+        D_5c5a_actors[local_4->actorIdx].animState = 0xff;
 
         ULTIMA_5910_UpdateFrame();
     }
@@ -602,7 +607,8 @@ void ULTIMA_68ae(int param_1)
 
 // CHECKED
 // initialize combat entities
-void ULTIMA_6936(void)
+// Clear the actors and the combatants and place the party on the combat map.
+void ULTIMA_6936_InitCombatants(void)
 {
     byte local_10_aa;
     byte local_e_am;
@@ -617,10 +623,10 @@ void ULTIMA_6936(void)
     // clear
     for (local_6 = 0; local_6 < 0x20; local_6++)
     {
-        local_4_aa = &D_ba14[local_6];
+        local_4_aa = &D_ba14_combatants[local_6];
 
-        D_5c5a[local_6]._0_tile = D_5c5a[local_6]._1_animTile = D_5c5a[local_6]._2_x = D_5c5a[local_6]._6 = 0;
-        D_5c5a[local_6]._3_y = D_5c5a[local_6]._4_z = D_5c5a[local_6]._5 = 0;
+        D_5c5a_actors[local_6].tile = D_5c5a_actors[local_6].animTile = D_5c5a_actors[local_6].x = D_5c5a_actors[local_6].animState = 0;
+        D_5c5a_actors[local_6].y = D_5c5a_actors[local_6].z = D_5c5a_actors[local_6].value = 0;
 
         local_4_aa->hp = local_4_aa->dex = local_4_aa->flags = local_4_aa->entityIdx = 0;
 
@@ -649,63 +655,64 @@ void ULTIMA_6936(void)
                 {
                     ULTIMA_1850_PrintString(_TEXT(0xa422, "A ring has vanished!\n"));
                     ULTIMA_43ae_AudioSweepTone(0x4b0, 2000, 1, 0x28);
-                    ULTIMA_6e60(local_6, local_10_aa);
+                    ULTIMA_6e60_Unequip(local_6, local_10_aa);
                 }
                 local_10_aa = 0;
             }
 
-            local_8 = D_1724[local_6];
-            local_e_am = D_172c[local_6];
-            local_a = ULTIMA_6506(local_6, 1, local_8, local_e_am, D_5895_map_level);
+            local_8 = D_1724_combatPartyX[local_6];
+            local_e_am = D_172c_combatPartyY[local_6];
+            local_a = ULTIMA_6506_PlaceCombatant(local_6, 1, local_8, local_e_am, D_5895_mapLevel);
 
-            D_5c5a[D_ba14[local_a].actorIdx]._7 = 0xff;
+            D_5c5a_actors[D_ba14_combatants[local_a].actorIdx].extra = 0xff;
 
             // setup tile (according to class)
             switch (D_55a8_party[local_6].cls)
             {
             case CLASS_AVATAR:
-                D_5c5a[D_ba14[local_a].actorIdx]._0_tile = TILE_ACTOR_4C;
+                D_5c5a_actors[D_ba14_combatants[local_a].actorIdx].tile = TILE_ACTOR_4C;
                 break;
             case CLASS_FIGHTER:
             case CLASS_PALADIN:
             case CLASS_RANGER:
-                D_5c5a[D_ba14[local_a].actorIdx]._0_tile = TILE_ACTOR_FIGHTER;
+                D_5c5a_actors[D_ba14_combatants[local_a].actorIdx].tile = TILE_ACTOR_FIGHTER;
                 break;
             case CLASS_DRUID:
             case CLASS_MAGE:
-                D_5c5a[D_ba14[local_a].actorIdx]._0_tile = TILE_ACTOR_WIZARD;
+                D_5c5a_actors[D_ba14_combatants[local_a].actorIdx].tile = TILE_ACTOR_WIZARD;
                 break;
             case CLASS_BARD:
             case CLASS_SHEPHERD:
             case CLASS_TINKER:
-                D_5c5a[D_ba14[local_a].actorIdx]._0_tile = TILE_ACTOR_BARD_44;
+                D_5c5a_actors[D_ba14_combatants[local_a].actorIdx].tile = TILE_ACTOR_BARD_44;
                 break;
             }
 
-            D_5c5a[D_ba14[local_a].actorIdx]._1_animTile = D_5c5a[D_ba14[local_a].actorIdx]._0_tile;
+            D_5c5a_actors[D_ba14_combatants[local_a].actorIdx].animTile = D_5c5a_actors[D_ba14_combatants[local_a].actorIdx].tile;
 
             if (D_55a8_party[local_6].status == STATUS_SLEEP)
             {
-                ULTIMA_68ae(local_a);
+                ULTIMA_68ae_PutToSleep(local_a);
             }
             else
             {
-                ULTIMA_6794(local_a);
+                ULTIMA_6794_ApplyRing(local_a);
             }
         }
     }
 
     if (GetCombatMap(5, 5) == 0xdc)
     {
-        local_c = ULTIMA_6506(1, 2, 5, 5, D_5895_map_level);
-        D_5c5a[local_c]._5 = D_5895_map_level * 3 + 7;
+        local_c = ULTIMA_6506_PlaceCombatant(1, 2, 5, 5, D_5895_mapLevel);
+        D_5c5a_actors[local_c].value = D_5895_mapLevel * 3 + 7;
         GetCombatMap(5, 5) = D_bb15;
     }
 }
 
 // CHECKED
 // prepare combat
-void ULTIMA_6bc2(int param_1, int param_2)
+// Set up a combat: the party (unless flag 4, camping), then the enemies of type `enemy`, as many as its statistics allow.
+void ULTIMA_6bc2_SetUpCombat(int param_1, int param_2)
 {
     byte local_30_a;
     int local_2e_ak;
@@ -726,10 +733,10 @@ void ULTIMA_6bc2(int param_1, int param_2)
         local_8 = 1;
     }
 
-    D_58a0 = 0;
+    D_58a0_combatExitDir = 0;
     if ((param_1 & 4) == 0)
     {
-        ULTIMA_6936();
+        ULTIMA_6936_InitCombatants();
     }
 
     for (local_2a = 0; local_2a < 0x10; local_2a++)
@@ -755,7 +762,7 @@ void ULTIMA_6bc2(int param_1, int param_2)
         ULTIMA_1850_PrintString(_TEXT(0xa438, "*** CONFLICT ***\n"));
     }
 
-    if (D_5894 != 0 && D_5894 < 0x21 && param_2 != 0xc && local_8 != 0)
+    if (D_5894_savedMapId != 0 && D_5894_savedMapId < 0x21 && param_2 != 0xc && local_8 != 0)
     {
         local_6 = 1;
     }
@@ -778,9 +785,9 @@ void ULTIMA_6bc2(int param_1, int param_2)
         }
     }
 
-    local_2c_am = D_1704[local_28[0]];
-    local_30_a = D_1714[local_28[0]];
-    ULTIMA_6506(param_2, 0, local_2c_am, local_30_a, D_5895_map_level);
+    local_2c_am = D_1704_combatEnemyX[local_28[0]];
+    local_30_a = D_1714_combatEnemyY[local_28[0]];
+    ULTIMA_6506_PlaceCombatant(param_2, 0, local_2c_am, local_30_a, D_5895_mapLevel);
 
     local_2e_ak = local_6 / 4 + 1;
     for (local_2a = 1; local_2a < local_6; local_2a++)
@@ -788,15 +795,16 @@ void ULTIMA_6bc2(int param_1, int param_2)
         local_4_ab = param_2;
         if (local_2a < local_2e_ak && ULTIMA_3aae_Random(8) == 0)
         {
-            local_4_ab = D_16d4[param_2];
+            local_4_ab = D_16d4_enemyCompanion[param_2];
         }
-        local_2c_am = D_1704[local_28[local_2a]];
-        local_30_a = D_1714[local_28[local_2a]];
-        ULTIMA_6506(local_4_ab, 0, local_2c_am, local_30_a, D_5895_map_level);
+        local_2c_am = D_1704_combatEnemyX[local_28[local_2a]];
+        local_30_a = D_1714_combatEnemyY[local_28[local_2a]];
+        ULTIMA_6506_PlaceCombatant(local_4_ab, 0, local_2c_am, local_30_a, D_5895_mapLevel);
     }
 }
 
-int ULTIMA_6d82(int param_1, int param_2)
+// Whether (x, y) is inside the 11x11 view.
+int ULTIMA_6d82_IsInView(int param_1, int param_2)
 {
     if (param_1 > -1 && param_1 < 11 && param_2 > -1 && param_2 < 11)
     {
@@ -809,7 +817,8 @@ int ULTIMA_6d82(int param_1, int param_2)
 }
 
 // calc player def
-int ULTIMA_6da8(int param_1)
+// A party member's defence: the sum over the six pieces of equipment (D_1634_equipDefense), 3 more under the protection spell.
+int ULTIMA_6da8_PlayerDefense(int param_1)
 {
     int local_6_an;
     S_55a8* local_4;
@@ -817,7 +826,7 @@ int ULTIMA_6da8(int param_1)
     local_6_an = 0;
     local_4 = &D_55a8_party[param_1];
 
-    if (D_5894 == 40 && local_4->equips[1] != 0x0f)
+    if (D_5894_savedMapId == 40 && local_4->equips[1] != 0x0f)
     {
         return 0;
     }
@@ -832,41 +841,41 @@ int ULTIMA_6da8(int param_1)
         if (CMP(local_4->equips[0]))
         {
             // 6dd6
-            local_6_an += D_1634[local_4->equips[0]];
+            local_6_an += D_1634_equipDefense[local_4->equips[0]];
         }
 
         if (CMP(local_4->equips[1]))
         {
             // 6dec
-            local_6_an += D_1634[local_4->equips[1]];
+            local_6_an += D_1634_equipDefense[local_4->equips[1]];
         }
 
         if (CMP(local_4->equips[2]))
         {
             // 6dff
-            local_6_an += D_1634[local_4->equips[2]];
+            local_6_an += D_1634_equipDefense[local_4->equips[2]];
         }
 
         if (CMP(local_4->equips[3]))
         {
             // 6e12
-            local_6_an += D_1634[local_4->equips[3]];
+            local_6_an += D_1634_equipDefense[local_4->equips[3]];
         }
 
         if (CMP(local_4->equips[4]))
         {
             // 6e25
-            local_6_an += D_1634[local_4->equips[4]];
+            local_6_an += D_1634_equipDefense[local_4->equips[4]];
         }
 
         if (CMP(local_4->equips[5]))
         {
             // 6e38
-            local_6_an += D_1634[local_4->equips[5]];
+            local_6_an += D_1634_equipDefense[local_4->equips[5]];
         }
 
         // 6e4b
-        if (D_587a == 80)
+        if (D_587a_statusIcon == 80)
         {
             local_6_an += 3;
         }
@@ -876,7 +885,8 @@ int ULTIMA_6da8(int param_1)
 }
 
 // unequip
-int ULTIMA_6e60(int param_1, int param_2)
+// Take a piece of equipment off a party member; 0 when not worn.
+int ULTIMA_6e60_Unequip(int param_1, int param_2)
 {
     int local_4;
 
@@ -902,9 +912,9 @@ int ULTIMA_6e60(int param_1, int param_2)
     {
         D_55a8_party[param_1].equips[4] = 0xff;
 
-        if (param_2 == 0x2a && D_5893_map_id > 0x7f && D_589e < 0x20)
+        if (param_2 == 0x2a && D_5893_mapId > 0x7f && D_589e_curCombatant < 0x20)
         {
-            D_ba14[D_589e].flags &= ~COMBAT_FLAGS_INVISIBLE;
+            D_ba14_combatants[D_589e_curCombatant].flags &= ~COMBAT_FLAGS_INVISIBLE;
         }
     }
     else if (param_2 == D_55a8_party[param_1].equips[5])
@@ -917,7 +927,7 @@ int ULTIMA_6e60(int param_1, int param_2)
     }
 
     // BUG: equip def is recalculated but discarded.
-    ULTIMA_6da8(param_1);
+    ULTIMA_6da8_PlayerDefense(param_1);
 
     return local_4;
 }
@@ -935,7 +945,8 @@ u8 DAT_000738d8[] = {0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x28,
 #if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 // from FMT (27c98)
-int ULTIMA_6f1e(byte* param_1, char* param_2)
+// Compare a word of a table (up to 9 characters, taken as upper case) with the start of `text`: 0 equal, -1 not.
+int ULTIMA_6f1e_CompareWord(byte* param_1, char* param_2)
 {
     byte bVar1;
     int iVar2;
@@ -977,7 +988,8 @@ static int ULTIMA_6f90(char* di)
 
 #if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
-void ULTIMA_6f9e(int param_1)
+// Driver function 6c with mode + 3 (DNGLOOK, ENDGAME); what the modes do is the driver's business.
+void ULTIMA_6f9e_TilesetModePlus3(int param_1)
 {
     // bx: not initialized
     byte bl = 0;
@@ -989,7 +1001,8 @@ void ULTIMA_6f9e(int param_1)
 
 #if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
-void ULTIMA_6fbc(int param_1)
+// Driver function 6c with the mode (0, 1); what the modes do is the driver's business.
+void ULTIMA_6fbc_TilesetMode(int param_1)
 {
     // bx: not initialized
     byte bl = 0;
@@ -1013,7 +1026,8 @@ void ULTIMA_6fd6_GRAP_AnimateTiles(void)
 
 #if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
-int ULTIMA_6ff0(register int param_1, register int param_2)
+// The squared distance of view cell (x, y) from the centre (5, 5) of the 11x11 view (table D_6aa8); 0 outside.
+int ULTIMA_6ff0_DistanceFromCenter(register int param_1, register int param_2)
 {
     if ((param_1 < 0xb) && (param_2 < 0xb))
     {

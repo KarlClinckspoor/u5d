@@ -143,15 +143,15 @@ void INTRO_014e_Introduction(void)
     byte* local_6;
     byte* local_4_ab;
 
-    if (D_5893_map_id != 64)
+    if (D_5893_mapId != 64)
     {
         ULTIMA_102e_UnloadTileset();
     }
 
-    D_5893_map_id = 0x40;
+    D_5893_mapId = 0x40;
     do
     {
-        local_c = ULTIMA_0fae_LoadResourceFile(D_25ea[0]);
+        local_c = ULTIMA_0fae_LoadResourceFile(D_25ea_fileNames[0]);
     } while (local_c == 0);
 
     FONT_0000(local_c, _TEXT(0x2f30, ""));
@@ -163,13 +163,13 @@ void INTRO_014e_Introduction(void)
 
     do
     {
-        local_4_ab = ULTIMA_0bae_LoadImageFile(D_25ea[0x11]);
+        local_4_ab = ULTIMA_0bae_LoadImageFile(D_25ea_fileNames[0x11]);
     } while (local_4_ab == 0);
 
     // 01b2
     do
     {
-        local_6 = ULTIMA_0bae_LoadImageFile(D_25ea[0x12]);
+        local_6 = ULTIMA_0bae_LoadImageFile(D_25ea_fileNames[0x12]);
     } while (local_6 == 0);
 
     local_8 = 0;
@@ -182,7 +182,7 @@ void INTRO_014e_Introduction(void)
             local_8 = D_30ae[local_a];
             do
             {
-                local_6 = ULTIMA_0bae_LoadImageFile(D_25ea[local_8 + 0x12]);
+                local_6 = ULTIMA_0bae_LoadImageFile(D_25ea_fileNames[local_8 + 0x12]);
             } while (local_6 == 0);
         }
 
@@ -235,8 +235,8 @@ void INTRO_014e_Introduction(void)
         }
         else
         {
-            ULTIMA_256e_ReadFileFromDisk(/*0x2f8d*/ "STORY.DAT", D_b21e, 2000, D_3016[local_a]);
-            FONT_0000(local_c, D_b21e);
+            ULTIMA_256e_ReadFileFromDisk(/*0x2f8d*/ "STORY.DAT", D_b21e_scratch, 2000, D_3016[local_a]);
+            FONT_0000(local_c, D_b21e_scratch);
         }
 
         if (local_a != 0)
@@ -289,9 +289,9 @@ void INTRO_043e(char* param_1)
     ULTIMA_0b10_GRAP_Line(8, 0xc0, local_4 * 8, 0xc0);
     ULTIMA_0b10_GRAP_Line(local_6_an * 8, 0xc0, 0x137, 0xc0);
     ULTIMA_1bf2_SetTextPosition(local_4, 0x18);
-    ULTIMA_4c2a();
+    ULTIMA_4c2a_PrintLeftCap();
     ULTIMA_1850_PrintString(param_1);
-    ULTIMA_4cce();
+    ULTIMA_4cce_PrintRightCap();
 }
 
 static void INTRO_04e0_DrawMenuBorders(void)
@@ -328,9 +328,9 @@ static void INTRO_04e0_DrawMenuBorders(void)
     D_538e = 1;
     ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
     ULTIMA_0b10_GRAP_Line(7, 127, 312, 127);
-    ULTIMA_0f90_GRAP_Pen(312, 192);
-    ULTIMA_0f90_GRAP_Pen(7, 192);
-    ULTIMA_0f90_GRAP_Pen(7, 127);
+    ULTIMA_0f90_GRAP_LineTo(312, 192);
+    ULTIMA_0f90_GRAP_LineTo(7, 192);
+    ULTIMA_0f90_GRAP_LineTo(7, 127);
     ULTIMA_1cca_SetTextForegroundColor(D_13b0_brightWhiteColor);
 }
 
@@ -340,10 +340,10 @@ void INTRO_05b0_DisplayTitle(int param_1) // (0 for fast display)
     int local_6_p; // unused
 
     D_a9be = 2;
-    if (D_5893_map_id != 0x40)
+    if (D_5893_mapId != 0x40)
     {
         ULTIMA_102e_UnloadTileset();
-        D_5893_map_id = 0x40;
+        D_5893_mapId = 0x40;
     }
     do
     {
@@ -428,7 +428,7 @@ void INTRO_072e_Acknowledgements(void)
 
     do
     {
-        local_4 = ULTIMA_0bae_LoadImageFile(D_25ea[27]); // "STARTSC.16"
+        local_4 = ULTIMA_0bae_LoadImageFile(D_25ea_fileNames[27]); // "STARTSC.16"
     } while (local_4 == 0);
 
     ULTIMA_0c22_GRAP_0f_SelectPage(1);
@@ -456,7 +456,7 @@ void INTRO_072e_Acknowledgements(void)
 
     do
     {
-        D_bb1a = ULTIMA_0bae_LoadImageFile(D_25ea[26]); // "ULTIMA.16"
+        D_bb1a = ULTIMA_0bae_LoadImageFile(D_25ea_fileNames[26]); // "ULTIMA.16"
     } while (D_bb1a == 0);
 
     ULTIMA_0c22_GRAP_0f_SelectPage(1);

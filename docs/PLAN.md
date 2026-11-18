@@ -197,11 +197,26 @@ Next, in order:
      moved; 31 locals carry a slot suffix.
    - TOWN_0f02's fill no longer names other modules' globals (`F_xxxx` in town.c), so naming
      a global elsewhere cannot move its window.
-   - To continue: first one worker for the shared vocabulary (`vars.h`'s savegame block and
-     tables, `structs.h` fields, the resident functions the overlays call), then up to four
-     workers on module groups in worktrees, the resident code last (the order and the
-     groups are in MATCHING.md). About 600 of the 640 globals and half of the function
-     names are still to do; locals and parameters everywhere but in the pilot.
+   - Done (shared vocabulary; batches in `docs/names/vocab-*.txt`): 28 struct fields (the
+     actors' tile/animTile/x/y/z/value/animState/extra, the NPC state, the party record's
+     monthsAtInn and innMapId, the video parameters; the U4 party's virtues), 91 globals of
+     the saved game with the Codex's SAVED.GAM offsets (`D_5c5a_actors`, `D_5893_mapId`,
+     `D_57ac_keys`, `D_5876_tempX`...; the ten snake_case names are lowerCamel now), 60
+     globals of the state, the tables and the text and video variables (`D_ba14_combatants`,
+     `D_ab02_viewTiles`, `D_24e6_viewDirty`, `D_17f6_equipNames`...), and 60 resident
+     functions with a comment above each (`ULTIMA_4f7c_AdvanceTime`,
+     `ULTIMA_2a52_DamagePlayer`, `ULTIMA_6506_PlaceCombatant`...). Two functions moved:
+     TOWN_0f02 (15 fill references taken out) and CMDS_0000 (cmds.c keeps 21 short link
+     names); MATCHING.md, "What the shared vocabulary cost".
+   - Left of the shared names, for whoever meets them: the savegame bytes whose use is
+     one module group's (`D_5882`, `D_5883`, `D_5889`, `D_588a`, `D_588d`, `D_588f`,
+     `D_5890`, `D_58a2`, `D_58a8`, `D_58cb`, `D_5959`, `D_5d5a`, `D_5d5c`, `D_65be`-`D_65c2`,
+     `D_6602`), the fields `_18`, `_8`, `_a` and `_52c0`-`_52c6`, the parameters of the
+     resident functions (free: any name), the static resident functions and the assembly's
+     private labels (the resident code comes last), and the tables only one group uses.
+   - To continue: up to four workers on module groups in worktrees, the resident code
+     last (the order and the groups are in MATCHING.md). A worker applies a batch without
+     `--match`, compiles its modules, and gates before each commit.
 
 ## What is left
 

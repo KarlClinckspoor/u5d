@@ -5,9 +5,9 @@
 
 extern void ULTIMA_102e_UnloadTileset(void);
 extern void ULTIMA_1044_GRAP_4e_CopyBitImageIntoPage(byte* a, int b, int c, int d);
-extern int ULTIMA_1068(int a, int b, int c);
+extern int ULTIMA_1068_RevealTile(int a, int b, int c);
 extern void ULTIMA_10e0_GRAP_51_PutTile(uint a, int b, int c);
-extern void ULTIMA_1112_GRAP_60(int a, int b, int c);
+extern void ULTIMA_1112_GRAP_60_Moongate(int a, int b, int c);
 extern int ULTIMA_1140_GRAP_6f_AnimateOriginLogo(void);
 
 // Timer

@@ -184,7 +184,7 @@ u8 D_15fc[0x38] =
     0x10, 0x1e, 0x63, 0x12, 0x00, 0x15, 0x00, 0x00
 };
 
-u8 D_1634[0x30] =
+u8 D_1634_equipDefense[0x30] =
 {
     0x01, 0x02, 0x03, 0x03, 0x02, 0x03, 0x03, 0x05,
     0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x07, 0x0a,
@@ -216,7 +216,7 @@ u8 D_169c[0x38] =
     0x04, 0x03, 0x04, 0x05, 0x06, 0x03, 0x04, 0x00
 };
 
-u8 D_16d4[0x30] =
+u8 D_16d4_enemyCompanion[0x30] =
 {
     0x21, 0x01, 0x01, 0x03, 0x04, 0x04, 0x04, 0x04,
     0x04, 0x04, 0x0a, 0x04, 0x0c, 0x0d, 0x0e, 0x0f,
@@ -226,21 +226,21 @@ u8 D_16d4[0x30] =
     0x28, 0x14, 0x2a, 0x2b, 0x2c, 0x2d, 0x14, 0x26
 };
 
-u8 D_1704[0x10] =
+u8 D_1704_combatEnemyX[0x10] =
 {
     0x02, 0x05, 0x08, 0x04, 0x06, 0x01, 0x05, 0x09,
     0x03, 0x07, 0x00, 0x04, 0x06, 0x0a, 0x02, 0x08
 };
 
-u8 D_1714[0x10] =
+u8 D_1714_combatEnemyY[0x10] =
 {
     0x00, 0x00, 0x00, 0x01, 0x01, 0x02, 0x02, 0x02,
     0x03, 0x03, 0x04, 0x04, 0x04, 0x04, 0x05, 0x05
 };
 
-u8 D_1724[8] = { 0x05, 0x04, 0x06, 0x03, 0x05, 0x07 };
+u8 D_1724_combatPartyX[8] = { 0x05, 0x04, 0x06, 0x03, 0x05, 0x07 };
 
-u8 D_172c[8] = { 0x07, 0x08, 0x08, 0x09, 0x09, 0x09 };
+u8 D_172c_combatPartyY[8] = { 0x07, 0x08, 0x08, 0x09, 0x09, 0x09 };
 
 u8 D_1734[8] = { 0x29, 0x14, 0x15, 0x18, 0x16, 0x19, 0x24, 0x14 };
 
@@ -289,7 +289,7 @@ char D_17e6[] = "Magic Axe";
 char D_17f0[] = "Ankh";
 
 // TODO: pointer offset
-char* D_17f6[0x30] =
+char* D_17f6_equipNames[0x30] =
 {
     _STATIC_TEXT(0x0042, "Leather Helm"),
     D_174c,
@@ -342,7 +342,7 @@ char* D_17f6[0x30] =
 };
 
 // TODO: pointer offset
-char* D_1856[0x30] =
+char* D_1856_enemyNames[0x30] =
 {
     _STATIC_TEXT(0x01c3, "Mage"),
     _STATIC_TEXT(0x01c8, "Bard"),
@@ -394,7 +394,7 @@ char* D_1856[0x30] =
     _STATIC_TEXT(0x030f, "Shadow Lord")
 };
 
-char* D_18b6[0x30] =
+char* D_18b6_enemyNamesPlural[0x30] =
 {
     _STATIC_TEXT(0x031b, "WIZARDS"),
     _STATIC_TEXT(0x0323, "BARD"),
@@ -488,7 +488,7 @@ char* D_1916[0x26] =
     _STATIC_TEXT(0x0557, "Wooden Box")
 };
 
-char* D_1962[56] =
+char* D_1962_equipShortNames[56] =
 {
     _STATIC_TEXT(0x0562, "Leath Helm"),
     D_174c,
@@ -548,7 +548,7 @@ char* D_1962[56] =
     _STATIC_TEXT(0x06a6, "White")
 };
 
-char* D_19d2[8] =
+char* D_19d2_reagentNames[8] =
 {
     _STATIC_TEXT(0x06ac, "Sulfur Ash"),
     _STATIC_TEXT(0x06b7, "Ginseng"),
@@ -560,7 +560,7 @@ char* D_19d2[8] =
     _STATIC_TEXT(0x06f0, "Mandrake")
 };
 
-char* D_19e2[48 + 1] =
+char* D_19e2_spellNames[48 + 1] =
 {
     _STATIC_TEXT(0x06f9, "In Lor"),
     _STATIC_TEXT(0x0700, "Grav Por"),
@@ -613,7 +613,7 @@ char* D_19e2[48 + 1] =
     _STATIC_TEXT(0x08b4, "Frotz") // UNUSED
 };
 
-char* D_1a44[10] =
+char* D_1a44_classNames[10] =
 {
     _STATIC_TEXT(0x08ba, "Avatar"),
     _STATIC_TEXT(0x08c1, "Mage"),
@@ -629,7 +629,7 @@ char* D_1a44[10] =
 
 s16 D_1a58[9] = { 1, 2, 2, 1, 1, 1, 1, 1, 0 };
 
-char* D_1a6a[5] =
+char* D_1a6a_statusNames[5] =
 {
     _STATIC_TEXT(0x0908, "Good Health"),
     _STATIC_TEXT(0x0914, "Poisoned"),
@@ -677,7 +677,7 @@ u8 D_1ae8[0x30] =
     0x15, 0x15, 0x18, 0x18, 0x18, 0x19, 0x1a, 0x1b
 };
 
-u8 D_1b18[0xb0 + 0x33] =
+u8 D_1b18_animSequences[0xb0 + 0x33] =
 {
     0x02, 0x03, 0x04, 0x05, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -863,7 +863,7 @@ u8 D_1e1a[0x20] =
     0x0, 0x2, 0x4, 0x5, 0x6, 0x7, 0xA, 0xE
 };
 
-char* D_1e3a[0x28] = {
+char* D_1e3a_mapNames[0x28] = {
     _STATIC_TEXT(0x0a3d, "MOONGLOW"),
     _STATIC_TEXT(0x0a46, "BRITAIN"),
     _STATIC_TEXT(0x0a4e, "JHELOM"),
@@ -906,7 +906,7 @@ char* D_1e3a[0x28] = {
     _STATIC_TEXT(0x0b83, "DOOM")
 };
 
-u8 D_1e8a[0x28] =
+u8 D_1e8a_placeX[0x28] =
 {
     0xE8, 0x51, 0x24, 0x3A, 0x9F, 0x6A, 0x16, 0xBB,
     0x58, 0x98, 0x68, 0xD8, 0x2D, 0xB0, 0xC9, 0x99,
@@ -915,7 +915,7 @@ u8 D_1e8a[0x28] =
     0xF0, 0x5B, 0x48, 0x7E, 0x9C, 0x3A, 0xEF, 0x80,
 };
 
-u8 D_1eb2[0x28] =
+u8 D_1eb2_placeY[0x28] =
 {
     0x87, 0x6A, 0xDE, 0x2B, 0x14, 0xB8, 0x80, 0xA9,
     0x78, 0x18, 0xD8, 0x78, 0x3E, 0xD0, 0x3B, 0x5B,
@@ -924,7 +924,7 @@ u8 D_1eb2[0x28] =
     0x49, 0x43, 0xA8, 0x14, 0x1B, 0x66, 0xF0, 0x80
 };
 
-u8 D_1eda[28 * 2] =
+u8 D_1eda_moonPhases[28 * 2] =
 {
     0x30, 0x30, 0x31, 0x30, 0x31, 0x31,	0x32, 0x32,
     0x32, 0x33, 0x33, 0x34, 0x33, 0x35,	0x34, 0x36,
@@ -949,7 +949,7 @@ u8 D_1f42[6] = {0x00, 0x01, 0x09, 0x0a, 0x03, 0x07};
 
 u8 D_1f48[6] = {0x01, 0x01, 0x01, 0x01, 0x05, 0x05};
 
-char* D_1f4e[8] =
+char* D_1f4e_virtueNames[8] =
 {
     _STATIC_TEXT(0x0b88, "Honesty"),
     _STATIC_TEXT(0x0b90, "Compassion"),
@@ -961,7 +961,7 @@ char* D_1f4e[8] =
     _STATIC_TEXT(0x0bc7, "Humility")
 };
 
-char* D_1f5e[8] =
+char* D_1f5e_mantras[8] =
 {
     _STATIC_TEXT(0x0bd0, "Ahm"),
     _STATIC_TEXT(0x0bd4, "Mu"),
@@ -1045,15 +1045,15 @@ PairS8 D_1f7e[0x100] =
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 };
 
-s16 D_217e = -1;
+s16 D_217e_beaconX = -1;
 
-s16 D_2180 = -1;
+s16 D_2180_beaconY = -1;
 
-s16 D_2182 = -1;
+s16 D_2182_beacon2X = -1;
 
-s16 D_2184 = -1;
+s16 D_2184_beacon2Y = -1;
 
-u8 D_2186 = 0xff;
+u8 D_2186_beaconStep = 0xff;
 
 s8 D_2188[0x32] =
 {
@@ -1406,11 +1406,11 @@ u8 D_24c6[0x10] =
     0x08, 0x03, 0x04, 0x07, 0x08, 0x03, 0x06, 0x07
 };
 
-s16 D_24d6[4] = {0, 1, 0, -1};
+s16 D_24d6_facingDx[4] = {0, 1, 0, -1};
 
-s16 D_24de[4] = {-1, 0, 1, 0};
+s16 D_24de_facingDy[4] = {-1, 0, 1, 0};
 
-u8 D_24e6 = 1;
+u8 D_24e6_viewDirty = 1;
 
 u8 D_24e7 = 0;
 
@@ -1548,7 +1548,7 @@ char* D_24ea_wordTable[0x80] =
     _STATIC_TEXT(0x1285, "work")
 };
 
-char* D_25ea[30] =
+char* D_25ea_fileNames[30] =
 {
     /*0x128a*/ "PROPORT.PCS",
     /*0x1296*/ "BRITISH.BIT",
@@ -1615,20 +1615,20 @@ int CDECL main(int argc, char** argv/*, char** envp*/)
     }
 
     // 0021
-    D_52ba_vdp._52ba_forceCga = local_4 == 'C';
+    D_52ba_vdp.forceCga = local_4 == 'C';
     D_52f3_forceHerc = local_4 == 'H';
     D_52f1_forceTandy = local_4 == 'T';
     D_52ef_forceEga = local_4 == 'E';
 
     // 0061
-    D_5394_fn = ULTIMA_2322_DiskSwapMessage;
+    D_5394_diskSwapFn = ULTIMA_2322_DiskSwapMessage;
 
-    D_a9bd[0] = 0;
+    D_a9bd_curDisk[0] = 0;
     D_a9be = 0;
     D_a9c2 = 1;
 
-    if ((D_a9c8[0] = ULTIMA_16a6_GetDefaultDrive()) >= 'C')
-        local_6_an = D_a9c8[0];
+    if ((D_a9c8_diskDrives[0] = ULTIMA_16a6_GetDefaultDrive()) >= 'C')
+        local_6_an = D_a9c8_diskDrives[0];
     else
         local_6_an = 0xff;
 
@@ -1638,8 +1638,8 @@ int CDECL main(int argc, char** argv/*, char** envp*/)
     D_a9c9 = local_6_an;
 
     D_a9cb = 0xff;
-    D_b11c = D_b21e;
-    D_538c = 1;
+    D_b11c = D_b21e_scratch;
+    D_538c_keyBufferOff = 1;
 
     INTRO_0986_Main(); // 00ad
     ULTIMA_2900_UpdateVitalsDisplay();
@@ -1656,7 +1656,7 @@ int CDECL main(int argc, char** argv/*, char** envp*/)
     {
         local_2 = 0;
 
-        if (D_5893_map_id == 0)
+        if (D_5893_mapId == 0)
         {
             MAINOUT_0d22_Entry();
             local_2 = 1;
@@ -1664,10 +1664,10 @@ int CDECL main(int argc, char** argv/*, char** envp*/)
         }
         
         // 00d1
-        if (D_5893_map_id != 0)
+        if (D_5893_mapId != 0)
         {
             // 00db
-            if (D_5893_map_id < 0x21)
+            if (D_5893_mapId < 0x21)
             {
                 TOWN_11f0_Entry(local_2 != 0 || local_8_al != 0);
                 TOWN_141e_MainLoop();
@@ -1687,15 +1687,15 @@ int CDECL main(int argc, char** argv/*, char** envp*/)
 
             // 0122
             while (!ULTIMA_1674_TestOpenFile(/*0x1393*/ "BRIT.DAT")) {}
-            ULTIMA_256e_ReadFileFromDisk(OUTSUBS_0368_GetWorldSavefile(), D_5c5a, 0x100, 0);
+            ULTIMA_256e_ReadFileFromDisk(OUTSUBS_0368_GetWorldSavefile(), D_5c5a_actors, 0x100, 0);
 
-            if (D_5893_map_id == 0 && D_5895_map_level != 0)
+            if (D_5893_mapId == 0 && D_5895_mapLevel != 0)
             {
                 ULTIMA_251e_SwitchDisks(5);
 
                 // 0154
                 while (!ULTIMA_1674_TestOpenFile(/*0x139c*/ "UNDER.DAT")) {}
-                ULTIMA_25d8_WriteFileToDisk(OUTSUBS_0368_GetWorldSavefile(), D_5c5a, 0x100);
+                ULTIMA_25d8_WriteFileToDisk(OUTSUBS_0368_GetWorldSavefile(), D_5c5a_actors, 0x100);
             }
         }
         // 016e

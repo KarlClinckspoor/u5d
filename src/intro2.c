@@ -59,25 +59,25 @@ void INTRO_0986_Main(void)
     int local_4_ab;
 
     // 098e
-    D_a9ce = 1;
+    D_a9ce_soundOn = 1;
     local_e = 0;
 
     // 0995
     for (local_e = 0; local_e < 0x100; local_e++)
     {
-        D_b11e[local_e] = (char)local_e;
+        D_b11e_tileFrames[local_e] = (char)local_e;
     }
 
     ULTIMA_0de0_DetectVideo();
     ULTIMA_1158_InitTimer();
-    local_8 = D_5356;
+    local_8 = D_5356_timerCalibration;
 
     // force cga if low memory
-    if (D_52c8 == VDP_VIDEO_TANDY && D_5358 < 0x170)
+    if (D_52c8_videoDriver == VDP_VIDEO_TANDY && D_5358_memorySize < 0x170)
     {
         D_52f1_forceTandy = 0;
-        D_52ba_vdp._52ba_forceCga = 1;
-        D_52c8 = VDP_VIDEO_CGA;
+        D_52ba_vdp.forceCga = 1;
+        D_52c8_videoDriver = VDP_VIDEO_CGA;
     }
 
     // 09d2
@@ -87,7 +87,7 @@ void INTRO_0986_Main(void)
 
     ULTIMA_0892_InitializeVideoDriver(1);
 
-    if (D_52c8 != VDP_VIDEO_CGA && D_52c8 != VDP_VIDEO_HERC)
+    if (D_52c8_videoDriver != VDP_VIDEO_CGA && D_52c8_videoDriver != VDP_VIDEO_HERC)
     {
         D_13b2_blueColor = 1;
         D_13ae_redColor = 4;
@@ -103,7 +103,7 @@ void INTRO_0986_Main(void)
         local_e = 0;
 
         // cga / herc: *.16 -> *.4
-        while (*(local_6 = D_25ea[local_e++]) != 0) // 0a35
+        while (*(local_6 = D_25ea_fileNames[local_e++]) != 0) // 0a35
         {
             // 0a22
             while (*local_6++ != '.')
@@ -124,7 +124,7 @@ void INTRO_0986_Main(void)
         ULTIMA_0878_RestoreVideoMode();
         exit(1);
     }
-    if (D_52c8 == VDP_VIDEO_HERC)
+    if (D_52c8_videoDriver == VDP_VIDEO_HERC)
     {
         // 0a64
         while (ULTIMA_1d02_LoadCharset(/*0x3182*/ "ibm.hcs", 0) == 0)
@@ -161,7 +161,7 @@ void INTRO_0986_Main(void)
         while (ULTIMA_0ff4_LoadTileset(D_25f0[0]) == 0)
         {
         }
-        D_5893_map_id = 0x41;
+        D_5893_mapId = 0x41;
         // -> 0cc9
     }
     else
@@ -171,18 +171,18 @@ void INTRO_0986_Main(void)
 
         do
         {
-            local_12_ab = ULTIMA_0fae_LoadResourceFile(D_25ea[2]); // "TITLE.BIT"
+            local_12_ab = ULTIMA_0fae_LoadResourceFile(D_25ea_fileNames[2]); // "TITLE.BIT"
         } while (local_12_ab == 0);
 
         do
         {
-            local_14 = ULTIMA_0fae_LoadResourceFile(D_25ea[1]); // "BRITISH.BIT"
+            local_14 = ULTIMA_0fae_LoadResourceFile(D_25ea_fileNames[1]); // "BRITISH.BIT"
         } while (local_14 == 0);
 
 #if !defined(MATCHING_BUILD)
-        ULTIMA_256e_ReadFileFromDisk(/*0x31b5*/ "BRITISH.PTH", D_b21e, SCRATCH_SIZE, 0);
+        ULTIMA_256e_ReadFileFromDisk(/*0x31b5*/ "BRITISH.PTH", D_b21e_scratch, SCRATCH_SIZE, 0);
 #else
-        ULTIMA_256e_ReadFileFromDisk(/*0x31b5*/ "BRITISH.PTH", &D_55a6, ((int)&D_6606 - (int)&D_55a6) /*0x1060*/, 0);
+        ULTIMA_256e_ReadFileFromDisk(/*0x31b5*/ "BRITISH.PTH", &D_55a6_saveStart, ((int)&D_6606_saveEnd - (int)&D_55a6_saveStart) /*0x1060*/, 0);
 #endif
         // "origin systems inc."
         if (local_a != 0)
@@ -238,7 +238,7 @@ void INTRO_0986_Main(void)
         ULTIMA_0fdc_FreeBitImage(local_14);
         ULTIMA_0fdc_FreeBitImage(local_12_ab);
 
-        D_5893_map_id = 0x40;
+        D_5893_mapId = 0x40;
         ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
         ULTIMA_0c22_GRAP_0f_SelectPage(0);
         INTRO_05b0_DisplayTitle(local_a);
@@ -284,11 +284,11 @@ void INTRO_0986_Main(void)
             {
                 // 0d4d
                 ULTIMA_1bf2_SetTextPosition(0xf, 0xf);
-                ULTIMA_4c2a();
+                ULTIMA_4c2a_PrintLeftCap();
                 ULTIMA_1850_PrintString(_TEXT(0x31dd, "Select: "));
-                ULTIMA_4cce();
+                ULTIMA_4cce_PrintRightCap();
                 ULTIMA_1bf2_SetTextPosition(0x17, 0xf);
-                D_5356 = 0x113;
+                D_5356_timerCalibration = 0x113;
                 local_4_ab = 0;
                 do
                 {
@@ -301,7 +301,7 @@ void INTRO_0986_Main(void)
                     // 0d86
                     local_4_ab++;
                 } while (local_4_ab < 200 && local_10_ad == 0);
-                D_5356 = local_8;
+                D_5356_timerCalibration = local_8;
                 switch (local_10_ad)
                 {
                 case U5_KEY_LEFT:
@@ -368,19 +368,19 @@ void INTRO_0986_Main(void)
             ULTIMA_2e96_SetWindDirection(0);
             ULTIMA_1b94_SelectTextWindow(2);
             ULTIMA_1bf2_SetTextPosition(0, 0xc);
-            if (D_5893_map_id == 0x40)
+            if (D_5893_mapId == 0x40)
             {
                 while (ULTIMA_0ff4_LoadTileset(D_25f0[0]) == 0)
                 {
                 }
-                D_5893_map_id = 0x41;
+                D_5893_mapId = 0x41;
             }
             // 0ead
             ULTIMA_251e_SwitchDisks(3);
 #if !defined(TARGET_DOS16)
             FILE_ReadSavegameFile(/*0x31e6*/ "SAVED.GAM");
 #else
-            ULTIMA_256e_ReadFileFromDisk(/*0x31e6*/ "SAVED.GAM", &D_55a6, ((int)&D_6606 - (int)&D_55a6) /*0x1060*/, 0);
+            ULTIMA_256e_ReadFileFromDisk(/*0x31e6*/ "SAVED.GAM", &D_55a6_saveStart, ((int)&D_6606_saveEnd - (int)&D_55a6_saveStart) /*0x1060*/, 0);
 #endif
             if (D_55a8_party[0].name[0] == '\0')
             {
@@ -401,11 +401,11 @@ void INTRO_0986_Main(void)
             else
             {
                 // 0f26
-                ULTIMA_256e_ReadFileFromDisk(/*0x323f*/ "SAVED.OOL", D_b21e, 0x200, 0);
+                ULTIMA_256e_ReadFileFromDisk(/*0x323f*/ "SAVED.OOL", D_b21e_scratch, 0x200, 0);
                 ULTIMA_251e_SwitchDisks(1);
-                ULTIMA_25d8_WriteFileToDisk(/*0x3249*/ "BRIT.OOL", D_b21e, 0x100);
+                ULTIMA_25d8_WriteFileToDisk(/*0x3249*/ "BRIT.OOL", D_b21e_scratch, 0x100);
                 ULTIMA_25d8_WriteFileToDisk(/*0x3252*/ "UNDER.OOL", D_b31e, 0x100);
-                if ((D_5893_map_id == 0) && (D_5895_map_level != 0))
+                if ((D_5893_mapId == 0) && (D_5895_mapLevel != 0))
                 {
                     ULTIMA_251e_SwitchDisks(5);
                     while (ULTIMA_1674_TestOpenFile(/*0x325c*/ "UNDER.DAT") == 0)
@@ -414,7 +414,7 @@ void INTRO_0986_Main(void)
                     ULTIMA_25d8_WriteFileToDisk(/*0x3266*/ "UNDER.OOL", D_b31e, 0x100);
                 }
                 ULTIMA_2e96_SetWindDirection(-1);
-                D_52ba_vdp._52be_tileYOffset = 8;
+                D_52ba_vdp.tileYOffset = 8;
                 return;
             }
             break;
@@ -458,10 +458,10 @@ void INTRO_0986_Main(void)
 #endif
 
             // 0ff4
-            if (D_5893_map_id != 0x40)
+            if (D_5893_mapId != 0x40)
             {
                 ULTIMA_102e_UnloadTileset();
-                D_5893_map_id = 0x40;
+                D_5893_mapId = 0x40;
             }
             INTRO_072e_Acknowledgements();
             break;
@@ -494,9 +494,9 @@ int INTRO_1016_ConvertU4Savegame(void)
     local_10_ad = 8;
 
     D_a9be = 1;
-    D_a9bd[0] = 4;
+    D_a9bd_curDisk[0] = 4;
 
-    D_a9c8[D_a9bd[0]] = ULTIMA_16a6_GetDefaultDrive();
+    D_a9c8_diskDrives[D_a9bd_curDisk[0]] = ULTIMA_16a6_GetDefaultDrive();
     // the label keeps MSC from folding local_10_ad = 8 into the call, as the original doesn't
 L_1048:
     ULTIMA_256e_ReadFileFromDisk(/*0x3278*/ "party.sav", &D_bc88, 0x28, local_10_ad);
@@ -603,8 +603,8 @@ L_1048:
 
     ULTIMA_256e_ReadFileFromDisk(/*0x32f9*/ "party.sav", &D_bb1c, 0xb6, 0x140);
 
-    if (D_bb1c._6 == 0 && D_bb1c._8 == 0 && D_bb1c._a == 0 && D_bb1c._c == 0 && D_bb1c._e == 0 && D_bb1c._10 == 0 &&
-        D_bb1c._12 == 0 && D_bb1c._14 == 0)
+    if (D_bb1c.honesty == 0 && D_bb1c.compassion == 0 && D_bb1c.valor == 0 && D_bb1c.justice == 0 && D_bb1c.sacrifice == 0 && D_bb1c.honor == 0 &&
+        D_bb1c.spirituality == 0 && D_bb1c.humility == 0)
     {
         D_3304 = 1;
     }
@@ -678,16 +678,16 @@ void INTRO_132a_TransferFromU4(void)
 
 #if defined(GOG_BUILD)
     // GOG patched (1332..134c)
-    local_e = D_5893_map_id == 66 ? 65 : D_5893_map_id;
-    D_a9cc = D_a9cb = D_a9c8[0];
+    local_e = D_5893_mapId == 66 ? 65 : D_5893_mapId;
+    D_a9cc = D_a9cb = D_a9c8_diskDrives[0];
 #else
     // MATCHING (1.16)
-    if (D_5893_map_id == 66)
+    if (D_5893_mapId == 66)
     {
-        D_5893_map_id = 65;
+        D_5893_mapId = 65;
     }
 
-    local_e = D_5893_map_id;
+    local_e = D_5893_mapId;
 
     D_a9cb = D_a9cc = 0xff;
 #endif
@@ -695,7 +695,7 @@ void INTRO_132a_TransferFromU4(void)
 #if !defined(TARGET_DOS16)
     FILE_ReadSavegameFile(/*0x3345*/ "INIT.GAM");
 #else
-    ULTIMA_256e_ReadFileFromDisk(/*0x3345*/ "INIT.GAM", &D_55a6, ((byte*)&D_6606 - (byte*)&D_55a6), 0);
+    ULTIMA_256e_ReadFileFromDisk(/*0x3345*/ "INIT.GAM", &D_55a6_saveStart, ((byte*)&D_6606_saveEnd - (byte*)&D_55a6_saveStart), 0);
 #endif
     ULTIMA_256e_ReadFileFromDisk(/*0x334e*/ "INIT.OOL", D_b31e, 0x100, 0);
     ULTIMA_1c22_SetTextWindowSize(0, 0, 0, 0x27, 0x18);
@@ -705,7 +705,7 @@ void INTRO_132a_TransferFromU4(void)
 
 #if defined(GOG_BUILD)
     // GOG patched (1392..1399)
-    local_12 = D_a9c8[0];
+    local_12 = D_a9c8_diskDrives[0];
     goto L_GOG_1402;
 #endif
 
@@ -718,14 +718,14 @@ void INTRO_132a_TransferFromU4(void)
     ULTIMA_1bf2_SetTextPosition(3, 0x12);
     ULTIMA_1850_PrintString(_TEXT(0x33b8, "or press <Esc> to abort transfer"));
 
-    D_5394_fn = ULTIMA_2320_NoDiskSwapMessage;
+    D_5394_diskSwapFn = ULTIMA_2320_NoDiskSwapMessage;
 
     do
     {
         local_12 = ULTIMA_2032_ToUpper(ULTIMA_1dda_WaitForKeystroke(0));
         if (local_12 == U5_KEY_ESC)
         {
-            D_5893_map_id = local_e;
+            D_5893_mapId = local_e;
             return;
         }
 #if defined(GOG_BUILD)
@@ -734,11 +734,11 @@ L_GOG_1402:
 #endif
     } while (ULTIMA_1eac_SetDefaultDrive(local_12) == 0);
 
-    D_5394_fn = ULTIMA_2322_DiskSwapMessage;
+    D_5394_diskSwapFn = ULTIMA_2322_DiskSwapMessage;
 
     if (INTRO_1016_ConvertU4Savegame() != 0)
     {
-        D_5893_map_id = local_e;
+        D_5893_mapId = local_e;
         return;
     }
 
@@ -1147,17 +1147,17 @@ L_GOG_1402:
     ULTIMA_251e_SwitchDisks(3);
     ULTIMA_1850_PrintString(_TEXT(0x361e, "\n\n Conversion complete, saving...\n"));
 
-    memset(D_b21e, 0, 0x100);
+    memset(D_b21e_scratch, 0, 0x100);
 
-    ULTIMA_25d8_WriteFileToDisk(/*0x3641*/ "SAVED.OOL", D_b21e, 0x200);
+    ULTIMA_25d8_WriteFileToDisk(/*0x3641*/ "SAVED.OOL", D_b21e_scratch, 0x200);
 #if !defined(TARGET_DOS16)
     FILE_WriteSavegameFile(/*0x364b*/ "SAVED.GAM");
 #else
-    ULTIMA_25d8_WriteFileToDisk(/*0x364b*/ "SAVED.GAM", &D_55a6, ((byte*)&D_6606 - (byte*)&D_55a6));
+    ULTIMA_25d8_WriteFileToDisk(/*0x364b*/ "SAVED.GAM", &D_55a6_saveStart, ((byte*)&D_6606_saveEnd - (byte*)&D_55a6_saveStart));
 #endif
     ULTIMA_251e_SwitchDisks(0);
 
-    D_5893_map_id = local_e;
+    D_5893_mapId = local_e;
     D_a9be = 0;
 }
 #endif

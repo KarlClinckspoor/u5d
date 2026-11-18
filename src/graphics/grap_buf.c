@@ -91,7 +91,7 @@ void GRAP_BUF_SetPenColor(byte color)
 
 void GRAP_BUF_SetPage(int page)
 {
-    D_52ba_vdp._52d8_page = page;
+    D_52ba_vdp.page = page;
 }
 
 static inline byte* GetPage(int page)
@@ -213,13 +213,13 @@ static void DisplayDebugMessages(void)
     _debugPenX = 0;
     _debugPenY = 0;
 
-    PrintDebugOverlayStringFmt("P: X%d Y%d", D_5c5a[0]._2_x, D_5c5a[0]._3_y);
-    PrintDebugOverlayStringFmt("Map: %d", D_5893_map_id);
-    PrintDebugOverlayStringFmt("Time: %02d-%02d %02d:%02d", D_587d, D_587e, D_587f_hour, D_5881);
+    PrintDebugOverlayStringFmt("P: X%d Y%d", D_5c5a_actors[0].x, D_5c5a_actors[0].y);
+    PrintDebugOverlayStringFmt("Map: %d", D_5893_mapId);
+    PrintDebugOverlayStringFmt("Time: %02d-%02d %02d:%02d", D_587d_month, D_587e_day, D_587f_hour, D_5881_minute);
 #endif
     return;
 
-    if (D_5893_map_id > 0)
+    if (D_5893_mapId > 0)
     {
         PrintDebugOverlayString("NPC:");
 
@@ -231,8 +231,8 @@ static void DisplayDebugMessages(void)
                 break;
             }
 
-            PrintDebugOverlayStringFmt("%2x: %d X%d Y%d %d %d %d %d %d", i, D_5f5e[i]._0, D_5f5e[i]._2_x, D_5f5e[i]._4_y,
-                                       D_5f5e[i]._6_z, D_5f5e[i]._8, D_5f5e[i]._a, D_5f5e[i]._c, D_5f5e[i]._e);
+            PrintDebugOverlayStringFmt("%2x: %d X%d Y%d %d %d %d %d %d", i, D_5f5e_npcs[i].mode, D_5f5e_npcs[i].x, D_5f5e_npcs[i].y,
+                                       D_5f5e_npcs[i].z, D_5f5e_npcs[i]._8, D_5f5e_npcs[i]._a, D_5f5e_npcs[i].actorIdx, D_5f5e_npcs[i].scheduleIdx);
         }
     }
     else
@@ -246,9 +246,9 @@ static void DisplayDebugMessages(void)
                 PrintDebugOverlayString("...");
                 break;
             }
-            PrintDebugOverlayStringFmt("%2x: T%02x A%02x X%d Y%d Z%d %d %d %d", i, D_5c5a[i]._0_tile, D_5c5a[i]._1_animTile,
-                                       D_5c5a[i]._2_x, D_5c5a[i]._3_y, D_5c5a[i]._4_z, D_5c5a[i]._5, D_5c5a[i]._6,
-                                       D_5c5a[i]._7);
+            PrintDebugOverlayStringFmt("%2x: T%02x A%02x X%d Y%d Z%d %d %d %d", i, D_5c5a_actors[i].tile, D_5c5a_actors[i].animTile,
+                                       D_5c5a_actors[i].x, D_5c5a_actors[i].y, D_5c5a_actors[i].z, D_5c5a_actors[i].value, D_5c5a_actors[i].animState,
+                                       D_5c5a_actors[i].extra);
         }
     }
 }
@@ -296,7 +296,7 @@ void GRAP_BUF_PrintChar(byte* ptr, int offset, byte fgColor, byte bgColor, int p
         {
             byte col = b & s_bitMask[x] ? s_colorTable[fgColor] : s_colorTable[bgColor];
 
-            GrPutPixel(D_52ba_vdp._52d8_page, penX * 8 + x, penY * 8 + y, col);
+            GrPutPixel(D_52ba_vdp.page, penX * 8 + x, penY * 8 + y, col);
         }
     }
 
@@ -343,7 +343,7 @@ void GRAP_BUF_FillWindow(int x1, int y1, int x2, int y2, int xorMode)
     if (x1 > x2)
         return;
 
-    byte* target = GetPage(D_52ba_vdp._52d8_page);
+    byte* target = GetPage(D_52ba_vdp.page);
 
     for (int y = y1; y <= y2; y++)
     {
@@ -361,7 +361,7 @@ void GRAP_BUF_FillWindow(int x1, int y1, int x2, int y2, int xorMode)
         }
     }
 
-    if (D_52ba_vdp._52d8_page == 0)
+    if (D_52ba_vdp.page == 0)
     {
         s_dirty = true;
     }
@@ -404,7 +404,7 @@ void GRAP_BUF_PutTile(int tileX, int tileY, int tileIdx, int xOffset, int yOffse
     {
         for (int x = dstX; x < dstX + width; x += 2)
         {
-            GrPutByte(D_52ba_vdp._52d8_page, x, y, *tile++);
+            GrPutByte(D_52ba_vdp.page, x, y, *tile++);
         }
     }
 
@@ -445,11 +445,11 @@ static void PutTileRevealPixel(int tileX, int tileY, int tileIdx, int relX, int 
 
     if ((relX & 1) == 0)
     {
-        GrPutPixel(D_52ba_vdp._52d8_page, dstX, dstY, packed >> 4);
+        GrPutPixel(D_52ba_vdp.page, dstX, dstY, packed >> 4);
     }
     else
     {
-        GrPutPixel(D_52ba_vdp._52d8_page, dstX, dstY, packed & 0x0f);
+        GrPutPixel(D_52ba_vdp.page, dstX, dstY, packed & 0x0f);
     }
 
     s_dirty = true;
@@ -490,7 +490,7 @@ void PlotLine(int x1, int y1, int x2, int y2)
 
     while (1)
     {
-        GrPutPixel(D_52ba_vdp._52d8_page, x1, y1, s_grapPenColor);
+        GrPutPixel(D_52ba_vdp.page, x1, y1, s_grapPenColor);
         e2 = 2 * error;
 
         if (e2 >= dy)
@@ -521,7 +521,7 @@ void GRAP_BUF_Line(int x1, int y1, int x2, int y2)
 
     PlotLine(x1, y1, x2, y2);
 
-    if (D_52ba_vdp._52d8_page == 0)
+    if (D_52ba_vdp.page == 0)
     {
         s_dirty = true;
     }
@@ -549,9 +549,9 @@ void GRAP_BUF_Pset(int x, int y)
 {
     // ULTIMA_08e6_ClipRectCoord(&x1, &y1, &x2, &y2);
 
-    GrPutClippedPixel(D_52ba_vdp._52d8_page, x, y, s_grapPenColor);
+    GrPutClippedPixel(D_52ba_vdp.page, x, y, s_grapPenColor);
 
-    if (D_52ba_vdp._52d8_page == 0)
+    if (D_52ba_vdp.page == 0)
     {
         s_dirty = true;
     }
@@ -578,7 +578,7 @@ void GRAP_BUF_PutImage(ImageView* view, int x, int y, int flags)
     int width = view->width;
     int height = view->height;
     int byteWidth = view->byteWidth;
-    int page = D_52ba_vdp._52d8_page;
+    int page = D_52ba_vdp.page;
 
     if (width <= 0 || height <= 0)
         return;
@@ -654,7 +654,7 @@ void GRAP_BUF_PutBitImage(BitImageView* view, int x, int y)
     int h = view->height;
     byte* buf = view->bits;
     int stride = view->stride;
-    int page = D_52ba_vdp._52d8_page;
+    int page = D_52ba_vdp.page;
 
     for (int yy = 0; yy < h; yy++)
     {

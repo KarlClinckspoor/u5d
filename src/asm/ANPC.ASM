@@ -1,6 +1,6 @@
 ; ANPC.ASM: NPC.OVL 12e0-132a, hand-written assembly in the original.
 ; The last routine of NPC.OVL, linked after npc.c. NPC_12E0(npc, hour): of the four times
-; in the NPC's schedule (D_5D5E[npc].time, 16-byte entries, field at +0Ch), which one the
+; in the NPC's schedule (D_5D5E_NPCSCHEDULES[npc].time, 16-byte entries, field at +0Ch), which one the
 ; hour is nearest after, counting back in byte arithmetic. The answer for the fourth time is
 ; 1, not 3, in the original.
 ; Written by hand from the original bytes; tools/asmbuild.py checks it.
@@ -17,7 +17,7 @@ _BSS	ENDS
 DGROUP	GROUP	CONST, _BSS, _DATA
 	ASSUME	CS: _TEXT, DS: DGROUP, SS: DGROUP, ES: DGROUP
 
-	EXTRN	D_5D5E:BYTE
+	EXTRN	D_5D5E_NPCSCHEDULES:BYTE
 
 _TEXT	SEGMENT
 
@@ -29,7 +29,7 @@ NPC_12E0:
 	push si
 	push di
 	push ds
-	lea si,D_5D5E
+	lea si,D_5D5E_NPCSCHEDULES
 	mov ax,[bp+6]
 	mov cl,4
 	shl ax,cl

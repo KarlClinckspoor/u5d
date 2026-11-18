@@ -28,8 +28,8 @@ int ULTIMA_1dda_WaitForKeystroke(int param_1)
 
     if (param_1 > 1)
     {
-        local_6 = D_5356;
-        D_5356 = 500;
+        local_6 = D_5356_timerCalibration;
+        D_5356_timerCalibration = 500;
     }
 
     do
@@ -43,7 +43,7 @@ int ULTIMA_1dda_WaitForKeystroke(int param_1)
 
     if (param_1 > 1)
     {
-        D_5356 = local_6;
+        D_5356_timerCalibration = local_6;
     }
 
     return local_8;

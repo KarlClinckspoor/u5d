@@ -33,12 +33,12 @@ void ULTIMA_256e_ReadFileFromDisk(char* fileName, void* addr, u16 size, u16 offs
     return;
 #endif
 
-    if (D_a9bd[0] == 3 && D_a9c8[D_a9bd[0]] == 0xff)
+    if (D_a9bd_curDisk[0] == 3 && D_a9c8_diskDrives[D_a9bd_curDisk[0]] == 0xff)
     {
         ULTIMA_2322_DiskSwapMessage(); // in another object: a far call
     }
 
-    ULTIMA_1eac_SetDefaultDrive(D_a9c8[D_a9bd[0]]);
+    ULTIMA_1eac_SetDefaultDrive(D_a9c8_diskDrives[D_a9bd_curDisk[0]]);
 
     while (local_4 == 0)
     {
@@ -52,7 +52,7 @@ static void FAR ULTIMA_25ca_WriteError(void)
     ULTIMA_1dda_WaitForKeystroke(0);
 }
 
-// D_a9c8[D_a9bd[0]] rather than D_a9c8[local_6]: the repeated D_a9bd[0] is what MSC keeps
+// D_a9c8_diskDrives[D_a9bd_curDisk[0]] rather than D_a9c8_diskDrives[local_6]: the repeated D_a9bd_curDisk[0] is what MSC keeps
 // in SI (a common subexpression), besides storing it in local_6.
 void ULTIMA_25d8_WriteFileToDisk(char* fileName, void* addr, u16 size)
 {
@@ -66,25 +66,25 @@ void ULTIMA_25d8_WriteFileToDisk(char* fileName, void* addr, u16 size)
 
     local_4_b = 0;
 
-    local_6 = D_a9bd[0];
-    if (D_a9bd[0] == 3 && D_a9c8[D_a9bd[0]] == 0xff)
+    local_6 = D_a9bd_curDisk[0];
+    if (D_a9bd_curDisk[0] == 3 && D_a9c8_diskDrives[D_a9bd_curDisk[0]] == 0xff)
     {
         ULTIMA_2322_DiskSwapMessage(); // in another object: a far call
     }
 
-    ULTIMA_1eac_SetDefaultDrive(D_a9c8[D_a9bd[0]]);
+    ULTIMA_1eac_SetDefaultDrive(D_a9c8_diskDrives[D_a9bd_curDisk[0]]);
 
     while (local_4_b == 0)
     {
         while (ULTIMA_1674_TestOpenFile(fileName) == 0) {}
 
-        D_5394_fn = ULTIMA_25ca_WriteError;
+        D_5394_diskSwapFn = ULTIMA_25ca_WriteError;
 
         local_4_b = ULTIMA_7296_WriteFile(fileName, addr, size);
 
-        D_5394_fn = ULTIMA_2322_DiskSwapMessage;
+        D_5394_diskSwapFn = ULTIMA_2322_DiskSwapMessage;
     }
 
-    D_a9bd[0] = local_6;
-    ULTIMA_1eac_SetDefaultDrive(D_a9c8[D_a9bd[0]]);
+    D_a9bd_curDisk[0] = local_6;
+    ULTIMA_1eac_SetDefaultDrive(D_a9c8_diskDrives[D_a9bd_curDisk[0]]);
 }

@@ -48,8 +48,8 @@ static int CAST_1c36(s16* param_1, s16* param_2, int param_3, int param_4, int p
 
     local_90_ad = 0;
 
-    local_60_ad = D_ba14[param_4].x * 0x10 + 8;
-    local_62_ab = D_ba14[param_4].y * 0x10 + 8;
+    local_60_ad = D_ba14_combatants[param_4].x * 0x10 + 8;
+    local_62_ab = D_ba14_combatants[param_4].y * 0x10 + 8;
 
     switch (param_5)
     {
@@ -112,15 +112,15 @@ static int CAST_1c36(s16* param_1, s16* param_2, int param_3, int param_4, int p
                 {
                     if (CAST_1bb0(local_30_ac[local_5c], local_5a_aa[local_5c], param_3) != 0)
                     {
-                        if (local_90_ad < 0x3f && D_5876 > -1 && D_5878 > -1 && D_5876 < 0xb && D_5878 < 0xb &&
-                            GetMapViewport(D_5876, D_5878) == 0)
+                        if (local_90_ad < 0x3f && D_5876_tempX > -1 && D_5878_tempY > -1 && D_5876_tempX < 0xb && D_5878_tempY < 0xb &&
+                            GetMapViewport(D_5876_tempX, D_5878_tempY) == 0)
                         {
                             local_90_ad++;
 
-                            param_1[local_90_ad] = D_5876;
-                            param_2[local_90_ad] = D_5878;
+                            param_1[local_90_ad] = D_5876_tempX;
+                            param_2[local_90_ad] = D_5878_tempY;
 
-                            GetMapViewport(D_5876, D_5878) = 0xff;
+                            GetMapViewport(D_5876_tempX, D_5878_tempY) = 0xff;
                         }
                     }
                     else
@@ -203,7 +203,7 @@ static int CAST_1c36(s16* param_1, s16* param_2, int param_3, int param_4, int p
 }
 
 // CHECKED
-// MSC 5.0: the first switch's cases ordered 1, default, 2; "ULTIMA_3abe() >= COMBAT_13e2()"
+// MSC 5.0: the first switch's cases ordered 1, default, 2; "ULTIMA_3abe_Random1To30() >= COMBAT_13e2()"
 // (MSC calls the right-hand side first); the last loop's "> -1". The original's 10 bytes
 // after the ret are the zero padding at the end of CAST.OVL.
 void CAST_1f60(int param_1, int param_2, int param_3)
@@ -218,7 +218,7 @@ void CAST_1f60(int param_1, int param_2, int param_3)
     int local_10eg;
 
     local_10ch = 1;
-    local_104c = &D_55a8_party[D_ba14[param_1].entityIdx];
+    local_104c = &D_55a8_party[D_ba14_combatants[param_1].entityIdx];
 #if !defined(MATCHING_BUILD)
     local_10eg = CAST2_0306();
 #else
@@ -252,7 +252,7 @@ void CAST_1f60(int param_1, int param_2, int param_3)
             for (local_108a = 0x1f; local_108a > -1; local_108a--)
             {
                 // dfac?
-                local_106b = &D_ba14[local_108a]; // local_114
+                local_106b = &D_ba14_combatants[local_108a]; // local_114
                 if (local_106b->x == local_82l[local_10ch] && local_106b->y == local_102d[local_10ch] &&
                     (local_106b->turnTimer & 0x80) == 0 && (local_106b->flags & COMBAT_FLAGS_DEAD) == 0 && local_106b->flags != 0)
                 {
@@ -263,8 +263,8 @@ void CAST_1f60(int param_1, int param_2, int param_3)
                         // e012
                         if (COMSUBS_0000(param_1, local_108a, 0) == 0 && CAST_0000(local_108a) == 0)
                         {
-                            ULTIMA_3564(local_108a);
-                            ULTIMA_68ae(local_108a);
+                            ULTIMA_3564_HitEffectOnActor(local_108a);
+                            ULTIMA_68ae_PutToSleep(local_108a);
                             COMSUBS_0312(local_108a, param_1); // -> e034 -> e0b2
                         }
 
@@ -272,9 +272,9 @@ void CAST_1f60(int param_1, int param_2, int param_3)
 
                     case 2:
                         // e03c
-                        if (ULTIMA_3abe() >= COMBAT_13e2(local_108a, QUERY_STAT_DEX))
+                        if (ULTIMA_3abe_Random1To30() >= COMBAT_13e2(local_108a, QUERY_STAT_DEX))
                         {
-                            ULTIMA_3564(local_108a);
+                            ULTIMA_3564_HitEffectOnActor(local_108a);
                             COMBAT_18ba(local_108a, param_1);
                             COMSUBS_0312(local_108a, param_1); // -> e034 -> e0b2
                         }
@@ -283,7 +283,7 @@ void CAST_1f60(int param_1, int param_2, int param_3)
 
                     case 3:
                         // e05c
-                        ULTIMA_3564(local_108a);
+                        ULTIMA_3564_HitEffectOnActor(local_108a);
 
                         ULTIMA_3f14_IncreaseInt(&local_104c->exp, COMBAT_1574(local_108a, ULTIMA_3aae_Random(0x1e)), 9999);
                         COMSUBS_0312(local_108a, param_1); // -> e034 -> e0b2
@@ -293,7 +293,7 @@ void CAST_1f60(int param_1, int param_2, int param_3)
                         // e07e
                         if (COMSUBS_0000(param_1, local_108a, 0) == 0 && CAST_0000(local_108a) == 0)
                         {
-                            ULTIMA_3564(local_108a);
+                            ULTIMA_3564_HitEffectOnActor(local_108a);
 
                             ULTIMA_3f14_IncreaseInt(&local_104c->exp, COMBAT_1574(local_108a, 99), 9999); // -> e070
                             COMSUBS_0312(local_108a, param_1); // -> e034 -> e0b2
@@ -312,7 +312,7 @@ void CAST_1f60(int param_1, int param_2, int param_3)
         for (local_108a = 0x1f; local_108a > -1; local_108a--)
         {
             // e0d1
-            D_ba14[local_108a].turnTimer &= 0x7f;
+            D_ba14_combatants[local_108a].turnTimer &= 0x7f;
         }
     }
 }

@@ -14,12 +14,12 @@ DGROUP	GROUP	CONST, _BSS, _DATA
 	ASSUME	CS: _TEXT, DS: DGROUP, SS: DGROUP, ES: DGROUP
 
 	EXTRN	D_1F7E:BYTE
-	EXTRN	D_5356:WORD
+	EXTRN	D_5356_TIMERCALIBRATION:WORD
 
 ; this module's own data in DGROUP (DS:5420-5450)
 _DATA	SEGMENT
-	PUBLIC	D_5420
-D_5420	LABEL	WORD
+	PUBLIC	D_5420_RANDOMSEED
+D_5420_RANDOMSEED	LABEL	WORD
 	db	000h, 000h
 	PUBLIC	D_5422
 D_5422	LABEL	WORD
@@ -83,7 +83,7 @@ ULTIMA_207E_SRAND:
 	push di
 	push ds
 	mov ax,[bp+4]
-	mov WORD PTR D_5420,ax
+	mov WORD PTR D_5420_RANDOMSEED,ax
 	pop ds
 	pop di
 	pop si
@@ -98,14 +98,14 @@ ULTIMA_2092_RANDOMRANGE:
 	push si
 	push di
 	push ds
-	mov ax,WORD PTR D_5420
+	mov ax,WORD PTR D_5420_RANDOMSEED
 	add ax,9248h
 	ror ax,1
 	ror ax,1
 	ror ax,1
 	xor ax,9248h
 	add ax,11h
-	mov WORD PTR D_5420,ax
+	mov WORD PTR D_5420_RANDOMSEED,ax
 	and ax,7fffh
 	mov bx,[bp+6]
 	mov cx,[bp+4]
@@ -121,14 +121,14 @@ ULTIMA_2092_RANDOMRANGE:
 	pop bp
 	ret 4
 
-	PUBLIC	ULTIMA_20C8_SOMEDELAY
-ULTIMA_20C8_SOMEDELAY:
+	PUBLIC	ULTIMA_20C8_DELAY
+ULTIMA_20C8_DELAY:
 	push bp
 	mov bp,sp
 	push si
 	push di
 	push ds
-	mov ax,WORD PTR D_5356
+	mov ax,WORD PTR D_5356_TIMERCALIBRATION
 	mov bx,[bp+6]
 	mov cx,D_5426[bx]
 	jcxz	L_20dc
@@ -160,7 +160,7 @@ ULTIMA_20FA_WAITTICKS:
 	mov ax,[bp+4]
 	cmp ax,1
 	jne	L_2110
-	cmp WORD PTR D_5356,0f0h
+	cmp WORD PTR D_5356_TIMERCALIBRATION,0f0h
 	jle	L_2152
 L_2110:
 	mov WORD PTR D_544A,ax

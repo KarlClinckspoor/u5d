@@ -1,0 +1,33 @@
+# Shared vocabulary, batch 1: struct fields (structs.h). Free for the compiler.
+# S_55a8, a party member's record (SAVED.GAM +2, 32 bytes each)
+field _17 monthsAtInn          # +17: counted up each month to 0x19 (ULTIMA_4f7c); the inn's bill multiplies by it
+field mapId innMapId           # +1f: 0 in the party, 0x7f gone, else the map of the inn where the member waits
+# ActorFmt, the 32 objects/monsters on the map (DS:5c5a; the Codex's "monster/object table")
+field _0_tile tile
+field _1_animTile animTile
+field _2_x x
+field _3_y y
+field _4_z z
+field _5 value                 # hull of a frigate, hit points of a monster, item of an object
+field _6 animState             # low nibble: frames to wait (0xf never); high nibble: place in the sequence
+field _7 extra                 # skiffs aboard a frigate; otherwise by use
+# NpcFmt, the state of the 32 NPCs of a town (DS:5f5e)
+field _0 mode
+field _4_y y
+field _6_z z
+field _c actorIdx              # the NPC's slot in D_5c5a
+field _e scheduleIdx           # which of the three schedule entries is in force
+# VideoDriverParams (DS:52ba)
+field _52ba_forceCga forceCga
+field _52bc_tileXOffset tileXOffset
+field _52be_tileYOffset tileYOffset
+field _52c4 clipEnabled
+field _52c8_videoDriverSelection videoDriver
+field _52ca_machineType machineType
+field _52cc_penX penX
+field _52ce_penY penY
+field _52d0_clipWindowX1 clipX1
+field _52d2_clipWindowX2 clipX2
+field _52d4_clipWindowY1 clipY1
+field _52d6_clipWindowY2 clipY2
+field _52d8_page page
