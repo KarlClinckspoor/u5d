@@ -635,7 +635,8 @@ with all of it applied at once; two did not, and both are pass 2's memory.
   declaration alone never counts, "What pass 2 counts, measured" below): the
   183 other new names in the headers are accepted one at a time, this one is not, and
   padding the names by up to 540 characters more finds no second window. The way out is
-  the **short link names**: cmds.c defines the 21 readable names as their short forms
+  the **short link names** (since replaced by dead references: "What pass 2 counts,
+  measured"): cmds.c defined the 21 readable names as their short forms
   (`#define D_5c5a_actors D_5c5a`) before it includes vars.h and funcs.h, so that this one
   object declares and references the short names while its source reads like the others,
   and `u5.LINK_DEFINES` gives the linker the short names as second names (without it the
@@ -659,7 +660,8 @@ batch per module). Each module took one batch, one compile of its files and the 
 
 - **What moved.** TOWN_0f02 once more (6 more fill references out for 257 characters; 245
   left), and CMDS_0000 three times, each time because a function it **calls** got a longer
-  name (COMBAT_0000, OUTSUBS_0658, DNGLOOK_117e): cmds.c's short link names are now 24.
+  name (COMBAT_0000, OUTSUBS_0658, DNGLOOK_117e): cmds.c's short link names were then 24
+  (27 after the resident names; replaced by 72 dead references since).
   For an overlay function the alias needs a second `LINK_DEFINES` entry, the call stub
   (`STUB_COMBAT_0000` for `STUB_` and 26 characters of the long name); without it the call
   links straight to the function and the gate fails. Nothing else moved: INTRO_014e and
@@ -1544,10 +1546,12 @@ moves a probe function's window edge). MSC 5.0 and 5.1 give the same costs, and 
   at K = 261, while TOWN_0C78 already breaks from K = 35. So the original's town.c had about
   7.5 KB more pass-2 memory in use between TOWN_0c78 and TOWN_0f02 than u5d's (about 260 more
   names or literals there); no uniform header surplus or memory size explains all three.
-- **A candidate for CMDS_0000:** 74 dead references to undefined 8-letter externs on one line
-  at the top of CMDS_0000, with all readable names, no short link names: every cmds.c
-  function EXACT, window 64-84 references (about 300 characters of names either way). Not
-  yet gated (the stand-in step).
+- **CMDS_0000 now uses dead references** (since the names were finished): 72 dead
+  references to undefined 8-letter externs (`Q0000000`...) on one line at the top of
+  CMDS_0000, with every readable name and no short link names; exact for 64 to 80 (about
+  240 characters of names either way), and the gate passes for both targets. The 27 short
+  link names and their `LINK_DEFINES` (stubs included) are gone. TOWN_0f02's fill is now
+  written four references to a line (62 lines instead of 245: dead lines cost nothing).
 
 **The order of communal variables** (both compilers): C1 gives each symbol-table entry the
 next serial number from 9 at the top of the file (every declared name of any kind, a named
