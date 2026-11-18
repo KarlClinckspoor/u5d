@@ -996,7 +996,7 @@ void DNGLOOK_0d3e(void)
     }
     else
     {
-        local_32_am = D_5c5a[1]._5;
+        local_32_am = D_5c5a[1].value;
     }
 
     local_4_ab = ULTIMA_2092_RandomRange(1, D_13bc_enemyStats[local_32_am].maxEncounterCount);
@@ -1105,8 +1105,8 @@ void DNGLOOK_109e(int param_1)
         D_bb17 = 1;
         if (param_1 != 0)
         {
-            D_5c5a[1]._0_tile = D_5c5a[1]._1_animTile = 0;
-            D_5c5a[1]._5 = D_5c5a[1]._2_x = D_5c5a[1]._3_y = 0xff;
+            D_5c5a[1].tile = D_5c5a[1].animTile = 0;
+            D_5c5a[1].value = D_5c5a[1].x = D_5c5a[1].y = 0xff;
         }
 
         ULTIMA_0a70_GRAP_2d_SetPenColor(0);
@@ -1126,7 +1126,7 @@ void DNGLOOK_1130(void)
 
     if ((D_bb17 & 1) != 0)
     {
-        if (D_5c5a[1]._5 != 0xff)
+        if (D_5c5a[1].value != 0xff)
         {
             ULTIMA_0be4_FreeImage(D_a9c6);
         }
@@ -1191,8 +1191,8 @@ void DNGLOOK_117e(int param_1, int param_2)
 
         for (local_10_aa = 0; local_10_aa < D_585b_partyCount; local_10_aa++)
         {
-            D_ba14[local_10_aa].x = D_5c5a[local_10_aa]._2_x = GetCombatMapSpecial(local_4_ab, local_c);
-            D_ba14[local_10_aa].y = D_5c5a[local_10_aa]._3_y = GetCombatMapSpecial(local_4_ab, local_e_am);
+            D_ba14[local_10_aa].x = D_5c5a[local_10_aa].x = GetCombatMapSpecial(local_4_ab, local_c);
+            D_ba14[local_10_aa].y = D_5c5a[local_10_aa].y = GetCombatMapSpecial(local_4_ab, local_e_am);
             local_c++;
             local_e_am++;
         }
@@ -1240,18 +1240,18 @@ void DNGLOOK_117e(int param_1, int param_2)
                 {
                     if (local_16_ak == 1)
                     {
-                        D_5c5a[local_12_a]._5 = D_5895_map_level * 3 + 7;
+                        D_5c5a[local_12_a].value = D_5895_map_level * 3 + 7;
                         // nop
                     }
                     else if (local_16_ak == 2)
                     {
-                        D_5c5a[local_12_a]._5 = ULTIMA_2092_RandomRange(1, D_5895_map_level * 10 + 10);
+                        D_5c5a[local_12_a].value = ULTIMA_2092_RandomRange(1, D_5895_map_level * 10 + 10);
                     }
                     else if (local_16_ak < 0x10)
                     {
                         ASSERT(local_16_ak != 0);
                         // TODO: offset
-                        D_5c5a[local_12_a]._5 = D_3850[local_16_ak - 3] + ULTIMA_2092_RandomRange(0, D_3842[local_16_ak - 3] - 1);
+                        D_5c5a[local_12_a].value = D_3850[local_16_ak - 3] + ULTIMA_2092_RandomRange(0, D_3842[local_16_ak - 3] - 1);
                     }
                 }
             }

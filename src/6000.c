@@ -57,16 +57,16 @@ void ULTIMA_5f86_SpecialMapHandler(int param_1, int param_2, int param_3)
 
     if (param_1 == 0)
     {
-        if ((D_5c5a[param_2]._0_tile & 0xfc) == TILE_ACTOR_PIRATE)
+        if ((D_5c5a[param_2].tile & 0xfc) == TILE_ACTOR_PIRATE)
         {
             local_6 = 0x1;
         }
         else
         {
-            local_6 = ((D_5c5a[param_2]._0_tile - TILE_ACTOR_WIZARD) >> 2);
+            local_6 = ((D_5c5a[param_2].tile - TILE_ACTOR_WIZARD) >> 2);
         }
 
-        if (D_5c5a[param_2]._5 > 0x7f)
+        if (D_5c5a[param_2].value > 0x7f)
         {
             local_6 += 0x100;
         }
@@ -166,7 +166,7 @@ void ULTIMA_6150_Combat(int param_1)
     int local_a;
     int local_4_ab;
 
-    local_a = D_5c5a[param_1]._0_tile & 0xfc;
+    local_a = D_5c5a[param_1].tile & 0xfc;
 
     ULTIMA_16ba_PrintChar('\n');
     ULTIMA_16ba_PrintChar(CTRL_CHAR_CENTER_TEXT);
@@ -182,7 +182,7 @@ void ULTIMA_6150_Combat(int param_1)
     ULTIMA_16ba_PrintChar(CTRL_CHAR_UNCENTER_TEXT);
     ULTIMA_1850_PrintString(_TEXT(0xa402, "\n\n"));
 
-    local_6 = *ULTIMA_4402_GetTileAddr(D_5c5a[param_1]._2_x, D_5c5a[param_1]._3_y);
+    local_6 = *ULTIMA_4402_GetTileAddr(D_5c5a[param_1].x, D_5c5a[param_1].y);
     if (local_6 < TILE_MAP_POISON || (local_6 & 0xfe) != TILE_MAP_6A && ((local_6 & 0xf0) == TILE_MAP_60))
     {
         local_8 = true;
@@ -439,14 +439,14 @@ int ULTIMA_6506(int param_1, int param_2, int param_3, int param_4, int param_5)
         // 6634
         for (local_6 = 0; local_6 < 0x20; local_6++)
         {
-            if (D_5c5a[local_6]._0_tile == 0)
+            if (D_5c5a[local_6].tile == 0)
             {
                 // 6685
                 if (param_2 == 0)
                 {
                     local_4_aa->actorIdx = local_6;
                     
-                    D_5c5a[local_6]._1_animTile = D_5c5a[local_6]._0_tile = param_1 * 4 + TILE_ACTOR_WIZARD; // local_14
+                    D_5c5a[local_6].animTile = D_5c5a[local_6].tile = param_1 * 4 + TILE_ACTOR_WIZARD; // local_14
                 }
 
                 // 669a
@@ -458,22 +458,22 @@ int ULTIMA_6506(int param_1, int param_2, int param_3, int param_4, int param_5)
                 // 66a6
                 if (param_2 == 2)
                 {
-                    D_5c5a[local_6]._1_animTile = D_5c5a[local_6]._0_tile = param_1;
+                    D_5c5a[local_6].animTile = D_5c5a[local_6].tile = param_1;
                     local_8 = local_6;
                 }
 
                 // 66bb
-                D_5c5a[local_6]._2_x = param_3;
-                D_5c5a[local_6]._3_y = param_4;
-                D_5c5a[local_6]._4_z = param_5;
-                D_5c5a[local_6]._7 = 0xff;
+                D_5c5a[local_6].x = param_3;
+                D_5c5a[local_6].y = param_4;
+                D_5c5a[local_6].z = param_5;
+                D_5c5a[local_6].extra = 0xff;
                 if (param_2 == 0)
                 {
-                    D_5c5a[local_6]._5 = local_4_aa->hp;
+                    D_5c5a[local_6].value = local_4_aa->hp;
                 }
                 else
                 {
-                    D_5c5a[local_6]._5 = param_1;
+                    D_5c5a[local_6].value = param_1;
                 }
 
                 // 66f8
@@ -502,9 +502,9 @@ int ULTIMA_6506(int param_1, int param_2, int param_3, int param_4, int param_5)
     {
         for (local_6 = 0; local_6 < 0x20; local_6++)
         {
-            if (D_5c5a[D_ba14[local_6].actorIdx]._7 == local_8)
+            if (D_5c5a[D_ba14[local_6].actorIdx].extra == local_8)
             {
-                D_5c5a[D_ba14[local_6].actorIdx]._7 = 0xff;
+                D_5c5a[D_ba14[local_6].actorIdx].extra = 0xff;
             }
         }
     }
@@ -519,7 +519,7 @@ void ULTIMA_6794(int param_1)
     {
         if (D_55a8_party[local_4->entityIdx].equips[4] == 42)
         {
-            D_5c5a[local_4->actorIdx]._1_animTile = TILE_ACTOR_1D;
+            D_5c5a[local_4->actorIdx].animTile = TILE_ACTOR_1D;
             local_4->flags |= COMBAT_FLAGS_INVISIBLE;
         }
         else if (D_55a8_party[local_4->entityIdx].equips[4] == 44)
@@ -539,16 +539,16 @@ void ULTIMA_6800(int param_1)
             D_55a8_party[local_4->entityIdx].status = STATUS_GOOD;
             if ((local_4->flags & COMBAT_FLAGS_INVISIBLE) != 0)
             {
-                D_5c5a[local_4->actorIdx]._1_animTile = TILE_ACTOR_1D;
+                D_5c5a[local_4->actorIdx].animTile = TILE_ACTOR_1D;
             }
             else
             {
-                D_5c5a[local_4->actorIdx]._1_animTile = D_5c5a[local_4->actorIdx]._0_tile;
+                D_5c5a[local_4->actorIdx].animTile = D_5c5a[local_4->actorIdx].tile;
             }
         }
         else
         {
-            D_5c5a[local_4->actorIdx]._6 = 0;
+            D_5c5a[local_4->actorIdx].animState = 0;
         }
         local_4->flags &= ~COMBAT_FLAGS_ASLEEP;
     }
@@ -573,7 +573,7 @@ void ULTIMA_68ae(int param_1)
         {
             D_55a8_party[local_4->entityIdx].status = STATUS_SLEEP;
             local_4->flags |= COMBAT_FLAGS_ASLEEP;
-            D_5c5a[local_4->actorIdx]._1_animTile = TILE_ACTOR_SLEEP;
+            D_5c5a[local_4->actorIdx].animTile = TILE_ACTOR_SLEEP;
 
             if (param_1 == D_587b_activePlayer)
             {
@@ -594,7 +594,7 @@ void ULTIMA_68ae(int param_1)
     {
         local_4->flags |= COMBAT_FLAGS_ASLEEP;
         D_58a2 = 4;
-        D_5c5a[local_4->actorIdx]._6 = 0xff;
+        D_5c5a[local_4->actorIdx].animState = 0xff;
 
         ULTIMA_5910_UpdateFrame();
     }
@@ -619,8 +619,8 @@ void ULTIMA_6936(void)
     {
         local_4_aa = &D_ba14[local_6];
 
-        D_5c5a[local_6]._0_tile = D_5c5a[local_6]._1_animTile = D_5c5a[local_6]._2_x = D_5c5a[local_6]._6 = 0;
-        D_5c5a[local_6]._3_y = D_5c5a[local_6]._4_z = D_5c5a[local_6]._5 = 0;
+        D_5c5a[local_6].tile = D_5c5a[local_6].animTile = D_5c5a[local_6].x = D_5c5a[local_6].animState = 0;
+        D_5c5a[local_6].y = D_5c5a[local_6].z = D_5c5a[local_6].value = 0;
 
         local_4_aa->hp = local_4_aa->dex = local_4_aa->flags = local_4_aa->entityIdx = 0;
 
@@ -658,31 +658,31 @@ void ULTIMA_6936(void)
             local_e_am = D_172c[local_6];
             local_a = ULTIMA_6506(local_6, 1, local_8, local_e_am, D_5895_map_level);
 
-            D_5c5a[D_ba14[local_a].actorIdx]._7 = 0xff;
+            D_5c5a[D_ba14[local_a].actorIdx].extra = 0xff;
 
             // setup tile (according to class)
             switch (D_55a8_party[local_6].cls)
             {
             case CLASS_AVATAR:
-                D_5c5a[D_ba14[local_a].actorIdx]._0_tile = TILE_ACTOR_4C;
+                D_5c5a[D_ba14[local_a].actorIdx].tile = TILE_ACTOR_4C;
                 break;
             case CLASS_FIGHTER:
             case CLASS_PALADIN:
             case CLASS_RANGER:
-                D_5c5a[D_ba14[local_a].actorIdx]._0_tile = TILE_ACTOR_FIGHTER;
+                D_5c5a[D_ba14[local_a].actorIdx].tile = TILE_ACTOR_FIGHTER;
                 break;
             case CLASS_DRUID:
             case CLASS_MAGE:
-                D_5c5a[D_ba14[local_a].actorIdx]._0_tile = TILE_ACTOR_WIZARD;
+                D_5c5a[D_ba14[local_a].actorIdx].tile = TILE_ACTOR_WIZARD;
                 break;
             case CLASS_BARD:
             case CLASS_SHEPHERD:
             case CLASS_TINKER:
-                D_5c5a[D_ba14[local_a].actorIdx]._0_tile = TILE_ACTOR_BARD_44;
+                D_5c5a[D_ba14[local_a].actorIdx].tile = TILE_ACTOR_BARD_44;
                 break;
             }
 
-            D_5c5a[D_ba14[local_a].actorIdx]._1_animTile = D_5c5a[D_ba14[local_a].actorIdx]._0_tile;
+            D_5c5a[D_ba14[local_a].actorIdx].animTile = D_5c5a[D_ba14[local_a].actorIdx].tile;
 
             if (D_55a8_party[local_6].status == STATUS_SLEEP)
             {
@@ -698,7 +698,7 @@ void ULTIMA_6936(void)
     if (GetCombatMap(5, 5) == 0xdc)
     {
         local_c = ULTIMA_6506(1, 2, 5, 5, D_5895_map_level);
-        D_5c5a[local_c]._5 = D_5895_map_level * 3 + 7;
+        D_5c5a[local_c].value = D_5895_map_level * 3 + 7;
         GetCombatMap(5, 5) = D_bb15;
     }
 }

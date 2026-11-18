@@ -373,14 +373,14 @@ void ULTIMA_4552_AnimateActors(void)
 	for (local_10_aa = 0; local_10_aa < 0x20; local_10_aa++)
 	{
 		local_8 = &D_5c5a[local_10_aa];
-		if (local_8->_0_tile == 0)
+		if (local_8->tile == 0)
 		{
 			continue;
 		}
 
-        local_c = local_8->_6 & 0xf;
-        local_14_am = local_8->_6 >> 4;
-        local_4_ab = local_8->_0_tile & 0xfc;
+        local_c = local_8->animState & 0xf;
+        local_14_am = local_8->animState >> 4;
+        local_4_ab = local_8->tile & 0xfc;
         local_e_am = D_1b18[((local_4_ab - 0x34) >> 2) + 0xb0];
 		local_12 = &D_1b18[local_e_am * 0x10];
 
@@ -392,11 +392,11 @@ void ULTIMA_4552_AnimateActors(void)
         if (local_c != 0)
         {
             local_c--;
-            local_8->_6 = (local_8->_6 & 0xf0) + local_c;
+            local_8->animState = (local_8->animState & 0xf0) + local_c;
 			continue;
         }
 
-		if (local_8->_1_animTile == 0 || local_8->_1_animTile == TILE_ACTOR_1D || local_8->_1_animTile == TILE_ACTOR_SLEEP)
+		if (local_8->animTile == 0 || local_8->animTile == TILE_ACTOR_1D || local_8->animTile == TILE_ACTOR_SLEEP)
 		{
 			continue;
 		}
@@ -431,14 +431,14 @@ void ULTIMA_4552_AnimateActors(void)
             case 2:
             case 3:
             case 4:
-                local_8->_1_animTile = local_4_ab + local_6 - 1;
+                local_8->animTile = local_4_ab + local_6 - 1;
                 local_14_am++;
                 goto L_done;
 
             case 5:
                 if (ULTIMA_2092_RandomRange(0, 0xff) < 0x40)
                 {
-                    local_8->_1_animTile = local_8->_0_tile;
+                    local_8->animTile = local_8->tile;
                     if (local_4_ab == 0x5c)
                     {
                         local_14_am++;
@@ -475,7 +475,7 @@ void ULTIMA_4552_AnimateActors(void)
                 break;
             }
 
-            local_8->_6 = local_14_am * 0x10 + local_c;
+            local_8->animState = local_14_am * 0x10 + local_c;
         } while (!local_a);
     }
 
@@ -564,7 +564,7 @@ int ULTIMA_47f4(int param_1)
 
         while (ULTIMA_1674_TestOpenFile(_TEXT(0xa3ba, "BRIT.DAT")) == 0) {}
 
-        ULTIMA_25d8_WriteFileToDisk(OUTSUBS_0368_GetWorldSavefile(), &D_5c5a[0]._0_tile, 0x100);
+        ULTIMA_25d8_WriteFileToDisk(OUTSUBS_0368_GetWorldSavefile(), &D_5c5a[0].tile, 0x100);
     }
 
     local_4 = D_5893_map_id;
@@ -585,7 +585,7 @@ int ULTIMA_47f4(int param_1)
 			AUDIO_StopBgm();
 #endif
 
-            ULTIMA_256e_ReadFileFromDisk(OUTSUBS_0368_GetWorldSavefile(), &D_5c5a[0]._0_tile, 0x100, 0);
+            ULTIMA_256e_ReadFileFromDisk(OUTSUBS_0368_GetWorldSavefile(), &D_5c5a[0].tile, 0x100, 0);
             MAINOUT_0000();
 
 #if defined(ENABLE_BGM)
@@ -1038,9 +1038,9 @@ void ULTIMA_4f7c(int param_1)
 					for (local_6 = 0; local_6 < 0x10; local_6++)
 					{
 						// 507a
-						if (D_55a8_party[local_6]._17 < 0x19)
+						if (D_55a8_party[local_6].monthsAtInn < 0x19)
 						{
-							D_55a8_party[local_6]._17++;
+							D_55a8_party[local_6].monthsAtInn++;
 						}
 					}
 

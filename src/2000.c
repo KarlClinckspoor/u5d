@@ -371,8 +371,8 @@ void ULTIMA_2900_UpdateVitalsDisplay(void)
     {
         // ship
         ULTIMA_1850_PrintString(_TEXT(0x54bd, "Ship:"));
-        ULTIMA_1a3e_PrintNumber(D_5c5a[0]._5, 1, ' ');
-        if (D_5c5a[0]._5 < 10)
+        ULTIMA_1a3e_PrintNumber(D_5c5a[0].value, 1, ' ');
+        if (D_5c5a[0].value < 10)
         {
             ULTIMA_16ba_PrintChar(' ');
         }

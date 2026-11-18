@@ -652,7 +652,7 @@ void SHOPPES_07be_Stables(int param_1)
 
     for (local_c = 0; local_c < 32; local_c++)
     {
-        if (D_5c5a[local_c]._0_tile == 0)
+        if (D_5c5a[local_c].tile == 0)
             break;
     }
     local_10_ad_am = local_c;
@@ -721,11 +721,11 @@ void SHOPPES_07be_Stables(int param_1)
                         SHOPPES_019a_FalsehoodSurcharge();
 
                         local_6 = &D_5c5a[local_10_ad_am];
-                        local_6->_6 = local_6->_7 = local_6->_5 = 0;
-                        local_6->_0_tile = local_6->_1_animTile = TILE_ACTOR_HORSE;
-                        local_6->_2_x = local_a;
-                        local_6->_3_y = local_e_am;
-                        local_6->_4_z = D_5895_map_level;
+                        local_6->animState = local_6->extra = local_6->value = 0;
+                        local_6->tile = local_6->animTile = TILE_ACTOR_HORSE;
+                        local_6->x = local_a;
+                        local_6->y = local_e_am;
+                        local_6->z = D_5895_map_level;
 
                         ULTIMA_5910_UpdateFrame();
                         ULTIMA_2900_UpdateVitalsDisplay();

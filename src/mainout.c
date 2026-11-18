@@ -72,10 +72,10 @@ void MAINOUT_007a(void)
     {
         local_4_ab = &D_5c5a[local_6];
 
-        local_8 = abs(D_5896_map_x - local_4_ab->_2_x);
-        local_a = abs(D_5897_map_y - local_4_ab->_3_y);
+        local_8 = abs(D_5896_map_x - local_4_ab->x);
+        local_a = abs(D_5897_map_y - local_4_ab->y);
 
-        if (local_4_ab->_0_tile != 0 && local_4_ab->_4_z == D_5895_map_level && local_8 < 6 && local_a < 6)
+        if (local_4_ab->tile != 0 && local_4_ab->z == D_5895_map_level && local_8 < 6 && local_a < 6)
         {
             ULTIMA_3ae6(1);
         }
@@ -150,7 +150,7 @@ static int MAINOUT_00da(int param_1)
 
             // 01ad
             D_5956 = local2_4 = 1;
-            if (D_5c5a[0]._5 < 0x32)
+            if (D_5c5a[0].value < 0x32)
             {
                 ULTIMA_1850_PrintString(_TEXT(0x2976, "Hull weak!\n"));
             }
@@ -652,7 +652,7 @@ static int MAINOUT_0790_LoadDungeon(char* param_1)
             {
                 ULTIMA_1850_PrintString(_TEXT(0x2a2f, "\nAttacked at entrance!\n"));
                 local_6_an = ULTIMA_38e4();
-                D_5c5a[local_6_an]._0_tile = TILE_ACTOR_SHADOWLORD;
+                D_5c5a[local_6_an].tile = TILE_ACTOR_SHADOWLORD;
                 ULTIMA_6150_Combat(local_6_an);
 #if !defined(MATCHING_BUILD)
                 return 0; // TODO: validate return value
@@ -1036,10 +1036,10 @@ void MAINOUT_0d22_Entry(void)
     {
         local_6 = ULTIMA_38e4();
         local_4_ab = &D_5c5a[local_6]; // get some actor
-        local_4_ab->_7 = D_6605 & 0x3f;
-        local_4_ab->_2_x = D_5953; // ship_x
-        local_4_ab->_3_y = D_5954; // ship_y
-        local_4_ab->_4_z = 0;
+        local_4_ab->extra = D_6605 & 0x3f;
+        local_4_ab->x = D_5953; // ship_x
+        local_4_ab->y = D_5954; // ship_y
+        local_4_ab->z = 0;
 
         if (D_6605 > 0x7f)
         {
@@ -1050,8 +1050,8 @@ void MAINOUT_0d22_Entry(void)
             local_8 = TILE_ACTOR_SKIFF_29;
         }
 
-        local_4_ab->_0_tile = local_4_ab->_1_animTile = local_8;
-        local_4_ab->_5 = 99;
+        local_4_ab->tile = local_4_ab->animTile = local_8;
+        local_4_ab->value = 99;
         D_6605 = 0;
     }
 
@@ -1218,7 +1218,7 @@ void MAINOUT_0fc4(void)
         ULTIMA_3a74(local_4_ab, local_4_ab, local_8, local_a, D_5895_map_level, 0, local_6);
         if (local_4_ab == TILE_ACTOR_PIRATE)
         {
-            D_5c5a[local_6]._5 = 100;
+            D_5c5a[local_6].value = 100;
         }
     }
 }

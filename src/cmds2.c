@@ -385,8 +385,8 @@ void CMDS_161a_PushCmd(void)
             D_ba14[D_589e].x += local_12_ab;
             D_ba14[D_589e].y += local_18_al;
 
-            D_5c5a[local_8]._2_x += local_12_ab;
-            D_5c5a[local_8]._3_y += local_18_al;
+            D_5c5a[local_8].x += local_12_ab;
+            D_5c5a[local_8].y += local_18_al;
 
             D_5896_map_x = local_c;
             D_5897_map_y = local_e;
@@ -444,7 +444,7 @@ int CMDS_17ec_Escape(void)
 
         for (local_8 = 0; local_8 < 0x20; local_8++)
         {
-            if (D_5c5a[local_8]._0_tile != 0)
+            if (D_5c5a[local_8].tile != 0)
             {
                 COMBAT_1236(local_8 + 1);
                 ULTIMA_5910_UpdateFrame();

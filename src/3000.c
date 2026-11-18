@@ -542,7 +542,7 @@ void ULTIMA_3564(int param_1)
         param_1 = local_4->actorIdx;
     }
 
-    ULTIMA_10e0_GRAP_51_PutTile(0, D_5c5a[param_1]._2_x, D_5c5a[param_1]._3_y);
+    ULTIMA_10e0_GRAP_51_PutTile(0, D_5c5a[param_1].x, D_5c5a[param_1].y);
 
     if (D_5893_map_id > 0x7f && (local_4->flags & COMBAT_FLAGS_PLAYER) != 0)
     {
@@ -605,10 +605,10 @@ int ULTIMA_368e_FindActorTileAtPos(int param_1_x, int param_2_y, int param_3_lev
 {
     for (D_5876 = 1; D_5876 < 32; D_5876++)
     {
-        if (D_5c5a[D_5876]._2_x == param_1_x && D_5c5a[D_5876]._3_y == param_2_y &&
-            (D_5893_map_id > 0x7f || (D_5893_map_id < 0x80 && D_5c5a[D_5876]._4_z == param_3_level)))
+        if (D_5c5a[D_5876].x == param_1_x && D_5c5a[D_5876].y == param_2_y &&
+            (D_5893_map_id > 0x7f || (D_5893_map_id < 0x80 && D_5c5a[D_5876].z == param_3_level)))
         {
-            return D_5c5a[D_5876]._0_tile;
+            return D_5c5a[D_5876].tile;
         }
     }
 
@@ -620,10 +620,10 @@ int ULTIMA_3702(int param_1, int param_2, int param_3)
 {
     for (D_5876 = 31; D_5876 >= 0; D_5876--)
     {
-        if (D_5c5a[D_5876]._2_x == param_1 && D_5c5a[D_5876]._3_y == param_2 &&
-            (D_5893_map_id > 0x7f || (D_5893_map_id < 0x80 && D_5c5a[D_5876]._4_z == param_3)))
+        if (D_5c5a[D_5876].x == param_1 && D_5c5a[D_5876].y == param_2 &&
+            (D_5893_map_id > 0x7f || (D_5893_map_id < 0x80 && D_5c5a[D_5876].z == param_3)))
         {
-            return D_5c5a[D_5876]._0_tile;
+            return D_5c5a[D_5876].tile;
         }
     }
 
@@ -640,32 +640,32 @@ static int ULTIMA_3776(byte param_1)
 
     for (local_8 = 0x1f; local_8 >= 0; local_8--)
     {
-        if (D_5c5a[local_8]._0_tile == 0)
+        if (D_5c5a[local_8].tile == 0)
         {
             return local_8;
         }
 
-        if (D_5c5a[local_8]._0_tile == param_1)
+        if (D_5c5a[local_8].tile == param_1)
         {
-            if (D_5896_map_x >= D_5c5a[local_8]._2_x)
+            if (D_5896_map_x >= D_5c5a[local_8].x)
             {
-                local_4_ab = D_5896_map_x - D_5c5a[local_8]._2_x;
+                local_4_ab = D_5896_map_x - D_5c5a[local_8].x;
             }
             else
             {
-                local_4_ab = ~(D_5896_map_x - D_5c5a[local_8]._2_x) + 1;
+                local_4_ab = ~(D_5896_map_x - D_5c5a[local_8].x) + 1;
             }
 
-            if (D_5897_map_y >= D_5c5a[local_8]._3_y)
+            if (D_5897_map_y >= D_5c5a[local_8].y)
             {
-                local_6 = D_5897_map_y - D_5c5a[local_8]._3_y;
+                local_6 = D_5897_map_y - D_5c5a[local_8].y;
             }
             else
             {
-                local_6 = ~(D_5897_map_y - D_5c5a[local_8]._3_y) + 1;
+                local_6 = ~(D_5897_map_y - D_5c5a[local_8].y) + 1;
             }
 
-            if (D_5c5a[local_8]._4_z != D_5895_map_level || (D_5c5a[local_8]._4_z == D_5895_map_level && local_4_ab >= 6 && local_6 >= 6))
+            if (D_5c5a[local_8].z != D_5895_map_level || (D_5c5a[local_8].z == D_5895_map_level && local_4_ab >= 6 && local_6 >= 6))
             {
                 return local_8;
             }
@@ -684,12 +684,12 @@ static int ULTIMA_3868(int param_1, int param_2, int param_3)
 
     for (local_8 = 1; local_8 < 0x18; local_8++)
     {
-        if (D_5c5a[local_8]._0_tile >= param_1 && D_5c5a[local_8]._0_tile <= param_2 && D_5c5a[local_8]._0_tile != TILE_ACTOR_CROWN)
+        if (D_5c5a[local_8].tile >= param_1 && D_5c5a[local_8].tile <= param_2 && D_5c5a[local_8].tile != TILE_ACTOR_CROWN)
         {
             if (param_3 != 0)
             {
-                local_4_ab = D_5c5a[local_8]._2_x - D_5896_map_x + 5;
-                local_6 = D_5c5a[local_8]._3_y - D_5897_map_y + 5;
+                local_4_ab = D_5c5a[local_8].x - D_5896_map_x + 5;
+                local_6 = D_5c5a[local_8].y - D_5897_map_y + 5;
                 if (local_4_ab > 10 || local_6 > 10)
                 {
                     return local_8;
@@ -774,12 +774,12 @@ int ULTIMA_39fc_GetFirstActivePartyMember(void)
 
 void ULTIMA_3a74(byte a, byte b, byte c, byte d, byte e, byte f, int g)
 {
-    D_5c5a[g]._0_tile = a;
-    D_5c5a[g]._1_animTile = b;
-    D_5c5a[g]._2_x = c;
-    D_5c5a[g]._3_y = d;
-    D_5c5a[g]._4_z = e;
-    D_5c5a[g]._5 = f;
+    D_5c5a[g].tile = a;
+    D_5c5a[g].animTile = b;
+    D_5c5a[g].x = c;
+    D_5c5a[g].y = d;
+    D_5c5a[g].z = e;
+    D_5c5a[g].value = f;
 }
 
 int ULTIMA_3aae_Random(int param_1)
@@ -938,7 +938,7 @@ static void ULTIMA_3c9a_HoleUpCmd(void)
     byte local_4_aa;
 
     local_a = &D_5c5a[0];
-    local_e_am = D_5c5a[0]._1_animTile;
+    local_e_am = D_5c5a[0].animTile;
 
     ULTIMA_1850_PrintString(_TEXT(0xa2c2, "Hole up & "));
 
@@ -946,7 +946,7 @@ static void ULTIMA_3c9a_HoleUpCmd(void)
     {
         ULTIMA_1850_PrintString(_TEXT(0xa2ce, "\nrepair...\n\n"));
 
-        if (D_5c5a[0]._1_animTile < TILE_ACTOR_FRIGATE_24)
+        if (D_5c5a[0].animTile < TILE_ACTOR_FRIGATE_24)
         {
             ULTIMA_1850_PrintString(_TEXT(0xa2dc, "Sails must be\n"));
             ULTIMA_1850_PrintString(_TEXT(0xa2ec, "lowered!\n\n"));
@@ -966,15 +966,15 @@ static void ULTIMA_3c9a_HoleUpCmd(void)
 
             do
             {
-                local_a->_5 += ULTIMA_2092_RandomRange(1, 3);
-                if (local_a->_5 > 99)
+                local_a->value += ULTIMA_2092_RandomRange(1, 3);
+                if (local_a->value > 99)
                 {
-                    local_a->_5 = 99;
+                    local_a->value = 99;
                 }
-            } while (local_a->_5 < 10);
+            } while (local_a->value < 10);
 
             ULTIMA_1850_PrintString(_TEXT(0xa2f8, "Hull now "));
-            ULTIMA_1a3e_PrintNumber(local_a->_5, 2, 0x20);
+            ULTIMA_1a3e_PrintNumber(local_a->value, 2, 0x20);
             ULTIMA_1850_PrintString(_TEXT(0xa302, "!\n\n"));
             D_a9fa = 1;
         }
@@ -994,7 +994,7 @@ static void ULTIMA_3c9a_HoleUpCmd(void)
         }
         else
         {
-            if (D_5893_map_id < 0x21 && local_a->_1_animTile != TILE_ACTOR_AVATAR)
+            if (D_5893_map_id < 0x21 && local_a->animTile != TILE_ACTOR_AVATAR)
             {
                 ULTIMA_1850_PrintString(_TEXT(0xa322, "On foot!\n"));
             }

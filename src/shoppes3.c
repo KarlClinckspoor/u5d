@@ -10,7 +10,7 @@
 u8 D_4d7e_innRates[6] = { 0x02, 0x03, 0x02, 0x03, 0x02, 0x03 };
 
 
-// The inn. How many of the roster are staying here (their mapId is this map).
+// The inn. How many of the roster are staying here (their innMapId is this map).
 static int SHOPPES3_0000_CountGuests(void)
 {
     int member;
@@ -20,7 +20,7 @@ static int SHOPPES3_0000_CountGuests(void)
 
     for (member = 0; member < 0x10; member++)
     {
-        if (D_55a8_party[member].mapId == D_5893_map_id)
+        if (D_55a8_party[member].innMapId == D_5893_map_id)
         {
             count_h++;
         }
@@ -212,7 +212,7 @@ static int SHOPPES3_0072_Rest(int intelligence, int gender, int outcome)
 }
 
 // Leave a companion at the inn: taken out of the party to the end of the roster, with
-// this map as mapId and a month count of 0 (S_55a8._17, probably: the bill multiplies by it).
+// this map as innMapId and a month count of 0 (S_55a8.monthsAtInn, probably: the bill multiplies by it).
 static int SHOPPES3_02ae_LeaveCompanion(int intelligence, int gender, int outcome)
 {
     bool asked_i;
@@ -285,8 +285,8 @@ static int SHOPPES3_02ae_LeaveCompanion(int intelligence, int gender, int outcom
                             D_587b_activePlayer--;
                         }
 
-                        D_55a8_party[member].mapId = D_5893_map_id;
-                        D_55a8_party[member]._17 = 0;
+                        D_55a8_party[member].innMapId = D_5893_map_id;
+                        D_55a8_party[member].monthsAtInn = 0;
 
                         saved_n = D_55a8_party[member];
 
@@ -314,7 +314,7 @@ static int SHOPPES3_0494_PrevGuest(int slot)
 {
     while (--slot)
     {
-        if (D_55a8_party[slot].mapId == D_5893_map_id)
+        if (D_55a8_party[slot].innMapId == D_5893_map_id)
         {
             break;
         }
@@ -327,7 +327,7 @@ static int SHOPPES3_04b6_NextGuest(int slot)
 {
     while (++slot < 0x10)
     {
-        if (D_55a8_party[slot].mapId == D_5893_map_id)
+        if (D_55a8_party[slot].innMapId == D_5893_map_id)
         {
             break;
         }
@@ -411,7 +411,7 @@ static int SHOPPES3_04e6_PickUpCompanion(int intelligence, int outcome)
             // e7d6
             for (guest_b = 1; guest_b < 0x10; guest_b++)
             {
-                if (D_55a8_party[guest_b].mapId == D_5893_map_id)
+                if (D_55a8_party[guest_b].innMapId == D_5893_map_id)
                 {
                     ULTIMA_1bf2_SetTextPosition(4, ULTIMA_1cee_GetCurrentTextY());
 
@@ -499,7 +499,7 @@ static int SHOPPES3_04e6_PickUpCompanion(int intelligence, int outcome)
 
         if (guest_b != 0)
         {
-            months = (uint)D_55a8_party[guest_b]._17;
+            months = (uint)D_55a8_party[guest_b].monthsAtInn;
             if (months == 0)
             {
                 months = 1;
@@ -537,7 +537,7 @@ static int SHOPPES3_04e6_PickUpCompanion(int intelligence, int outcome)
 
                 player_g = &D_55a8_party[D_585b_partyCount++];
 
-                player_g->mapId = 0;
+                player_g->innMapId = 0;
                 if (player_g->status == STATUS_POISONED)
                 {
                     player_g->status = STATUS_DEAD;

@@ -20,7 +20,7 @@ static int SJOG_0000(void)
 
     while (--i >= 0)
     {
-        if (D_5c5a[i]._0_tile == 0)
+        if (D_5c5a[i].tile == 0)
             return i;
     }
 
@@ -199,15 +199,15 @@ static void SJOG_01f2(int param_1, int param_2)
         if (ULTIMA_2092_RandomRange(0, 3) == 0)
         {
             ULTIMA_1850_PrintString(_TEXT(0x863a, "food!\n"));
-            D_5c5a[param_1]._0_tile = D_5c5a[param_1]._1_animTile = TILE_ACTOR_FOOD;
+            D_5c5a[param_1].tile = D_5c5a[param_1].animTile = TILE_ACTOR_FOOD;
         }
         else
         {
             ULTIMA_1850_PrintString(_TEXT(0x8642, "gold!\n"));
-            D_5c5a[param_1]._0_tile = D_5c5a[param_1]._1_animTile = TILE_ACTOR_GOLD;
+            D_5c5a[param_1].tile = D_5c5a[param_1].animTile = TILE_ACTOR_GOLD;
         }
         
-        D_5c5a[param_1]._5 = ULTIMA_2092_RandomRange(1, 3);
+        D_5c5a[param_1].value = ULTIMA_2092_RandomRange(1, 3);
         D_24e6 |= 2;
         ULTIMA_5910_UpdateFrame();
     }
@@ -219,7 +219,7 @@ static void SJOG_02ea(int param_1, int param_2)
     int local_6;
     int local_4_ab;
 
-    local_4_ab = D_5c5a[param_1]._5;
+    local_4_ab = D_5c5a[param_1].value;
     if ((local_4_ab & 0x80) == 0)
     {
         local_8 = (-(D_55a8_party[param_2].intel - 0x1e)) >> 1;
@@ -278,7 +278,7 @@ static int SJOG_03a8(int param_1, int param_2, int param_3)
             while (--local_8 >= 0)
             {
                 // 03ee
-                if (ULTIMA_368e_FindActorTileAtPos(param_1, param_2, param_3) == TILE_ACTOR_MOONSTONE && D_5c5a[D_5876]._5 == local_6)
+                if (ULTIMA_368e_FindActorTileAtPos(param_1, param_2, param_3) == TILE_ACTOR_MOONSTONE && D_5c5a[D_5876].value == local_6)
                 {
                     local_4_ab = 1;
                 }
@@ -685,11 +685,11 @@ void SJOG_095c_SearchCmd(void)
 
     for (local_6 = 1; local_6 < 0x20; local_6++)
     {
-        if (D_5c5a[local_6]._2_x == local_a &&
-            D_5c5a[local_6]._3_y == local_c &&
-            (D_5893_map_id > 0x7f || D_5c5a[local_6]._4_z == D_5895_map_level))
+        if (D_5c5a[local_6].x == local_a &&
+            D_5c5a[local_6].y == local_c &&
+            (D_5893_map_id > 0x7f || D_5c5a[local_6].z == D_5895_map_level))
         {
-            if ((local_8 = D_5c5a[local_6]._0_tile) == TILE_ACTOR_CHEST)
+            if ((local_8 = D_5c5a[local_6].tile) == TILE_ACTOR_CHEST)
                 break;
         }
     }
@@ -798,7 +798,7 @@ static void SJOG_0baa(int a, int b, int c, int param_4)
 
     if ((local_8 = ULTIMA_4988()) != -1)
     {
-        local_4_ab = D_5c5a[param_4]._5;
+        local_4_ab = D_5c5a[param_4].value;
         if (local_4_ab < 0x80)
         {
             ULTIMA_1850_PrintString(_TEXT(0x8a58, "Key broke!\n"));
@@ -809,7 +809,7 @@ static void SJOG_0baa(int a, int b, int c, int param_4)
             if (local_6 < ULTIMA_2092_RandomRange(1, 0x1e))
             {
                 ULTIMA_1850_PrintString(_TEXT(0x8a64, "Success!\n"));
-                D_5c5a[param_4]._5 &= 0x7f;
+                D_5c5a[param_4].value &= 0x7f;
                 return;
             }
             ULTIMA_1850_PrintString(_TEXT(0x8a6e, "Key broke!\n"));
@@ -1010,9 +1010,9 @@ void SJOG_0d4a_JimmyCmd(void)
         // ceac (the counter is local_6, reused)
         for (local_6 = 1; local_6 < 0x20; local_6++)
         {
-            if (D_5c5a[local_6]._2_x == local_8 && D_5c5a[local_6]._3_y == local_a &&
-                (D_5893_map_id > 0x7f || D_5c5a[local_6]._4_z == D_5895_map_level) &&
-                D_5c5a[local_6]._0_tile == TILE_ACTOR_CHEST)
+            if (D_5c5a[local_6].x == local_8 && D_5c5a[local_6].y == local_a &&
+                (D_5893_map_id > 0x7f || D_5c5a[local_6].z == D_5895_map_level) &&
+                D_5c5a[local_6].tile == TILE_ACTOR_CHEST)
             {
                 // exit from the loop
                 break;
@@ -1060,12 +1060,12 @@ static void SJOG_0f88(int param_1, int param_2, int param_3, int param_4, int pa
         ULTIMA_3a74(param_1, param_1, param_3, param_4, param_5, local_4, iVar1_ak);
         if (D_5893_map_id < 0x80)
         {
-            D_5c5a[iVar1_ak]._7 = 0;
-            D_5c5a[iVar1_ak]._4_z = param_5;
+            D_5c5a[iVar1_ak].extra = 0;
+            D_5c5a[iVar1_ak].z = param_5;
         }
         else
         {
-            D_5c5a[iVar1_ak]._7 = 0x20;
+            D_5c5a[iVar1_ak].extra = 0x20;
         }
         D_24e6 = D_24e6 | 2;
         ULTIMA_5910_UpdateFrame();
@@ -1137,13 +1137,13 @@ static void SJOG_112c_OpenChest(int param_1, int param_2, int param_3)
     local_a = 0;
     for (local_6 = 1; local_6 < 0x20; local_6++)
     {
-        if (D_5c5a[local_6]._2_x == param_1 && D_5c5a[local_6]._3_y == param_2 &&
-            (D_5893_map_id > 0x7f || (D_5893_map_id < 0x80 && D_5c5a[local_6]._4_z == param_3)))
+        if (D_5c5a[local_6].x == param_1 && D_5c5a[local_6].y == param_2 &&
+            (D_5893_map_id > 0x7f || (D_5893_map_id < 0x80 && D_5c5a[local_6].z == param_3)))
         {
-            if (D_5c5a[local_6]._0_tile == TILE_ACTOR_CHEST)
+            if (D_5c5a[local_6].tile == TILE_ACTOR_CHEST)
                 break;
 
-            if (D_5c5a[local_6]._0_tile == TILE_ACTOR_SANDALWOOD_BOX)
+            if (D_5c5a[local_6].tile == TILE_ACTOR_SANDALWOOD_BOX)
             {
                 ULTIMA_1850_PrintString(_TEXT(0x8b64, "Can't!\n"));
                 return;
@@ -1162,7 +1162,7 @@ static void SJOG_112c_OpenChest(int param_1, int param_2, int param_3)
         return;
     }
 
-    local_8 = D_5c5a[local_6]._5;
+    local_8 = D_5c5a[local_6].value;
     ULTIMA_3a74(0, 0, 0, 0, 0, 0, local_6);
     D_24e6 = D_24e6 | 2;
     if (D_5893_map_id >= 1 && D_5893_map_id <= 0x20)
@@ -1191,7 +1191,7 @@ static void SJOG_112c_OpenChest(int param_1, int param_2, int param_3)
                 {
                     local_4_ab->flags |= COMBAT_FLAGS_DEAD;
 
-                    D_5c5a[local_4_ab->actorIdx]._0_tile = D_5c5a[local_4_ab->actorIdx]._1_animTile = TILE_ACTOR_SLEEP;
+                    D_5c5a[local_4_ab->actorIdx].tile = D_5c5a[local_4_ab->actorIdx].animTile = TILE_ACTOR_SLEEP;
                     break;
                 }
             }
@@ -1769,10 +1769,10 @@ void SJOG_18ce_GetCmd(void)
     // 1921 (NOT MATCHING: loop)
     for (local_6 = 1; local_6 < 0x20; local_6++)
     {
-        if (D_5c5a[local_6]._2_x == local_a && D_5c5a[local_6]._3_y == local_e_am &&
-            (D_5893_map_id > 0x7f || (D_5893_map_id < 0x80 && D_5c5a[local_6]._4_z == D_5895_map_level)))
+        if (D_5c5a[local_6].x == local_a && D_5c5a[local_6].y == local_e_am &&
+            (D_5893_map_id > 0x7f || (D_5893_map_id < 0x80 && D_5c5a[local_6].z == D_5895_map_level)))
         {
-            local_8 = D_5c5a[local_6]._0_tile;
+            local_8 = D_5c5a[local_6].tile;
             if (local_8 < TILE_ACTOR_HORSE || local_8 == TILE_ACTOR_MOONSTONE || local_8 == TILE_ACTOR_CARPET || (local_8 & 0xfc) == TILE_ACTOR_SHARD)
                 break;
         }
@@ -1781,7 +1781,7 @@ void SJOG_18ce_GetCmd(void)
     // 197f (NOT MATCHING)
     if (local_6 < 0x20)
     {
-        local_4_ab = D_5c5a[local_6]._5;
+        local_4_ab = D_5c5a[local_6].value;
         SJOG_1458_GetObject(local_8, local_4_ab, local_6);
         return;
     }
@@ -2027,10 +2027,10 @@ int SJOG_1c56_CombatMovePlayer(int param_1, int param_2)
         return SJOG_1bb2_CombatExit(param_1, param_2);
     }
 
-    if (COMBAT_0000(D_5c5a[local_8]._0_tile, local_4_ab, local_6) != 0)
+    if (COMBAT_0000(D_5c5a[local_8].tile, local_4_ab, local_6) != 0)
     {
-        D_5c5a[local_8]._2_x = D_ba14[param_1].x = local_4_ab;
-        D_5c5a[local_8]._3_y = D_ba14[param_1].y = local_6;
+        D_5c5a[local_8].x = D_ba14[param_1].x = local_4_ab;
+        D_5c5a[local_8].y = D_ba14[param_1].y = local_6;
 
         ULTIMA_433e_AudioFootstep();
         if ((D_58a1 & 0x82) != 0)
@@ -2112,8 +2112,8 @@ int SJOG_1d6a_CombatKlimb(void)
         if (*ULTIMA_4402_GetTileAddr(local_8, local_a) == TILE_MAP_4C && ULTIMA_3702(local_8, local_a, 0) == 0)
         {
             local_6 = &D_5c5a[D_ba14[D_589e].actorIdx];
-            local_6->_2_x = D_ba14[D_589e].x = local_8;
-            local_6->_3_y = D_ba14[D_589e].y = local_a;
+            local_6->x = D_ba14[D_589e].x = local_8;
+            local_6->y = D_ba14[D_589e].y = local_a;
 
             COMBAT_111a(local_8, local_a);
         }
@@ -2257,16 +2257,16 @@ void SJOG_203e(int param_1)
         {
             local_4 = &D_5c5a[param_1];
 
-            if (D_58a3 != 0 && (local_4->_0_tile & 0xfc) == TILE_ACTOR_PIRATE)
+            if (D_58a3 != 0 && (local_4->tile & 0xfc) == TILE_ACTOR_PIRATE)
             {
-                local_4->_0_tile -= 8;
-                local_4->_1_animTile -= 8;
-                local_4->_5 = 99;
-                local_4->_7 = 2;
+                local_4->tile -= 8;
+                local_4->animTile -= 8;
+                local_4->value = 99;
+                local_4->extra = 2;
             }
             else
             {
-                local_4->_0_tile = local_4->_1_animTile = local_4->_2_x = local_4->_3_y = local_4->_4_z = 0;
+                local_4->tile = local_4->animTile = local_4->x = local_4->y = local_4->z = 0;
             }
         }
 
@@ -2285,7 +2285,7 @@ int SJOG_20d8(int param_1, int param_2, int param_3)
 
     if (param_1 > -1 && param_1 < 11 && param_2 > -1 && param_2 < 11)
     {
-        local_6_o = COMBAT_0000(D_5c5a[local_4->actorIdx]._0_tile, param_1, param_2);
+        local_6_o = COMBAT_0000(D_5c5a[local_4->actorIdx].tile, param_1, param_2);
         local_6_o = 1 - local_6_o;
     }
     else

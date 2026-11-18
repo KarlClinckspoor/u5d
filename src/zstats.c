@@ -765,7 +765,7 @@ static int ZSTATS_0c5c_EquipItem(int param_1, int param_2)
         if (D_5893_map_id > 0x7f && param_2 == 0x2a)
         {
             local_8 = ULTIMA_4d76_FindIndex(_TEXT(0x9812, "AMBFDTPRS"), D_55a8_party[param_1].cls);
-            local_6->_0_tile = local_6->_1_animTile = D_1ade[local_8];
+            local_6->tile = local_6->animTile = D_1ade[local_8];
         }
     }
     else if (((param_2 == 0x1a || param_2 == 0x24) && D_57db == 0) || (param_2 == 0x1c && D_57dd == 0))
@@ -866,7 +866,7 @@ L_wear:
 
         if (param_2 == 0x2a && D_5893_map_id > 0x7f)
         {
-            local_6->_0_tile = local_6->_1_animTile = 0x1d;
+            local_6->tile = local_6->animTile = 0x1d;
         }
     }
     return 0;

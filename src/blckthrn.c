@@ -178,7 +178,7 @@ static void BLCKTHRN_00be(byte* param_1)
             case 9:
                 // a3e0
                 local_e_a = *param_1++;
-                D_5c5a[local_e_a]._0_tile = D_5c5a[local_e_a]._1_animTile = 0;
+                D_5c5a[local_e_a].tile = D_5c5a[local_e_a].animTile = 0;
                 break;
             }
 
@@ -200,12 +200,12 @@ static void BLCKTHRN_00be(byte* param_1)
         for (local_8_an = 0; local_8_an < local_6; local_8_an++)
         {
             // a495
-            D_5c5a[local_e_a]._2_x += local_12_ab;
-            D_5c5a[local_e_a]._3_y += local_16_an;
+            D_5c5a[local_e_a].x += local_12_ab;
+            D_5c5a[local_e_a].y += local_16_an;
             if (local_a_ae)
             {
-                D_5c5a[local_10_ad]._2_x += local_14_ap;
-                D_5c5a[local_10_ad]._3_y += local_18_al;
+                D_5c5a[local_10_ad].x += local_14_ap;
+                D_5c5a[local_10_ad].y += local_18_al;
             }
 
             if (local_c_ac)
@@ -309,9 +309,9 @@ static void BLCKTHRN_03ae(int param_1)
         ULTIMA_2192_AudioPulse(0xa50, 1, 200, local_24_aa, 0);
     }
 
-    ULTIMA_3522(D_5c5a[1]._2_x, D_5c5a[1]._3_y);
+    ULTIMA_3522(D_5c5a[1].x, D_5c5a[1].y);
 
-    D_5c5a[1]._0_tile = D_5c5a[1]._1_animTile = 0;
+    D_5c5a[1].tile = D_5c5a[1].animTile = 0;
     GetCombatMap(5, 7) = 0x80;
 
     local_26 = 0;
@@ -337,7 +337,7 @@ static void BLCKTHRN_03ae(int param_1)
 
     // a752
     D_55a8_party[0xf] = local_22_ab;
-    D_55a8_party[0xf].mapId = 0x7f;
+    D_55a8_party[0xf].innMapId = 0x7f;
 
     D_585b_partyCount--;
     ULTIMA_2900_UpdateVitalsDisplay();
@@ -512,11 +512,11 @@ void BLCKTHRN_060e_Capture(void)
         for (local_8 = 0; local_8 < local_a_i; local_8++)
         {
             local_4_c = &D_5c5a[local_8];
-            local_4_c->_2_x = D_1f42[D_1f12[(local_a_i - 1) * 8 + local_8]];
-            local_4_c->_3_y = D_1f48[D_1f12[(local_a_i - 1) * 8 + local_8]];
+            local_4_c->x = D_1f42[D_1f12[(local_a_i - 1) * 8 + local_8]];
+            local_4_c->y = D_1f48[D_1f12[(local_a_i - 1) * 8 + local_8]];
 
             local_6_b = ULTIMA_4d76_FindIndex(_TEXT(0x701a, CLASS_LIST), D_55a8_party[local_8].cls);
-            local_4_c->_0_tile = local_4_c->_1_animTile = D_1ade[local_6_b];
+            local_4_c->tile = local_4_c->animTile = D_1ade[local_6_b];
         }
 
         // aa61
@@ -551,7 +551,7 @@ void BLCKTHRN_060e_Capture(void)
         ULTIMA_1850_PrintString((char*)&D_b21e[0x32c]);
         ULTIMA_266c_GetChar();
         BLCKTHRN_054a(local_c_h, local_a_i);
-        if (D_5c5a[8]._0_tile != 0)
+        if (D_5c5a[8].tile != 0)
         {
             BLCKTHRN_00be(D_3716);
         }
@@ -625,8 +625,8 @@ void BLCKTHRN_0910_Death(void)
 
     GetCombatMap(5, 5) = 0; // 0xadb9
 
-    D_5c5a[0]._0_tile = D_5c5a[0]._1_animTile = TILE_ACTOR_AVATAR;
-    D_5c5a[0]._2_x = D_5c5a[0]._3_y = 5;
+    D_5c5a[0].tile = D_5c5a[0].animTile = TILE_ACTOR_AVATAR;
+    D_5c5a[0].x = D_5c5a[0].y = 5;
 
     ULTIMA_5910_UpdateFrame();
 
@@ -639,22 +639,22 @@ void BLCKTHRN_0910_Death(void)
     ULTIMA_1850_PrintString(_TEXT(0x7172, "\n\nSomeone shouts\n\n\"FORTIS FORTUNA\nAVENTARI\""));
     ULTIMA_20fa_WaitTicks(6);
 
-    D_5c5a[1]._0_tile = D_5c5a[1]._1_animTile = TILE_ACTOR_CIRCLE;
-    D_5c5a[1]._2_x = 2;
-    D_5c5a[1]._3_y = 7;
+    D_5c5a[1].tile = D_5c5a[1].animTile = TILE_ACTOR_CIRCLE;
+    D_5c5a[1].x = 2;
+    D_5c5a[1].y = 7;
     GetCombatMap(2, 7) = 0;
     ULTIMA_1068(0x5e, 2, 7);
     GetCombatMap(2, 7) = TILE_MAP_5E;
-    D_5c5a[1]._0_tile = 0;
+    D_5c5a[1].tile = 0;
     ULTIMA_5910_UpdateFrame();
 
     ULTIMA_20fa_WaitTicks(4);
-    D_5c5a[1]._0_tile = TILE_ACTOR_CIRCLE;
-    D_5c5a[1]._2_x = 8;
+    D_5c5a[1].tile = TILE_ACTOR_CIRCLE;
+    D_5c5a[1].x = 8;
     GetCombatMap(8, 7) = 0;
     ULTIMA_1068(0x5f, 8, 7);
     GetCombatMap(8, 7) = TILE_MAP_5F;
-    D_5c5a[1]._0_tile = 0;
+    D_5c5a[1].tile = 0;
     ULTIMA_5910_UpdateFrame();
 
     ULTIMA_20fa_WaitTicks(4);
@@ -662,11 +662,11 @@ void BLCKTHRN_0910_Death(void)
     ULTIMA_3072_ShakeScreen();
     ULTIMA_3072_ShakeScreen();
     GetCombatMap(5, 2) = 0;
-    D_5c5a[1]._0_tile = D_5c5a[1]._1_animTile = TILE_ACTOR_CIRCLE;
-    D_5c5a[1]._2_x = 5;
-    D_5c5a[1]._3_y = 2;
+    D_5c5a[1].tile = D_5c5a[1].animTile = TILE_ACTOR_CIRCLE;
+    D_5c5a[1].x = 5;
+    D_5c5a[1].y = 2;
     ULTIMA_1068(0x174, 5, 2);
-    D_5c5a[1]._0_tile = D_5c5a[1]._1_animTile = TILE_ACTOR_74;
+    D_5c5a[1].tile = D_5c5a[1].animTile = TILE_ACTOR_74;
     ULTIMA_5910_UpdateFrame();
 
     // ad93

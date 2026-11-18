@@ -1615,7 +1615,7 @@ int CDECL main(int argc, char** argv/*, char** envp*/)
     }
 
     // 0021
-    D_52ba_vdp._52ba_forceCga = local_4 == 'C';
+    D_52ba_vdp.forceCga = local_4 == 'C';
     D_52f3_forceHerc = local_4 == 'H';
     D_52f1_forceTandy = local_4 == 'T';
     D_52ef_forceEga = local_4 == 'E';

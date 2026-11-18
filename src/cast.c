@@ -284,10 +284,10 @@ static int CAST_02d2_AnSanct(void)
             {
                 local_6 = &D_5c5a[local_a];
 
-                if (local_6->_0_tile == TILE_ACTOR_CHEST && local_6->_2_x == D_5876 && local_6->_3_y == D_5878 &&
-                    (D_5893_map_id > 0x7f || local_6->_4_z == D_5895_map_level))
+                if (local_6->tile == TILE_ACTOR_CHEST && local_6->x == D_5876 && local_6->y == D_5878 &&
+                    (D_5893_map_id > 0x7f || local_6->z == D_5895_map_level))
                 {
-                    local_6->_5 &= 0x7f;
+                    local_6->value &= 0x7f;
 
                     CAST2_0000_CastEffect(2);
 
@@ -386,12 +386,12 @@ static int CAST_04b0_KalXen(void)
         local_6 = &D_5c5a[D_ba14[local_8].actorIdx];
 
         // 056c
-        local_6->_1_animTile = local_6->_0_tile = TILE_ACTOR_CIRCLE;
+        local_6->animTile = local_6->tile = TILE_ACTOR_CIRCLE;
 
         // 0588
         ULTIMA_1068(local_10_ad, D_5876, D_5878);
 
-        local_6->_1_animTile = local_6->_0_tile = local_e;
+        local_6->animTile = local_6->tile = local_e;
         D_ba14[local_8].flags |= COMBAT_FLAGS_CHARMED;
 
         local_a = 1;
@@ -437,11 +437,11 @@ static int CAST_05dc_InPor(void)
                 if (COMBAT_120e() == 0)
                     continue;
 
-                if (COMBAT_0000(local_4_c->_0_tile, D_5876, D_5878) == 0)
+                if (COMBAT_0000(local_4_c->tile, D_5876, D_5878) == 0)
                     continue;
 
-                local_4_c->_2_x = D_ba14[D_589e].x = D_5876;
-                local_4_c->_3_y = D_ba14[D_589e].y = D_5878;
+                local_4_c->x = D_ba14[D_589e].x = D_5876;
+                local_4_c->y = D_ba14[D_589e].y = D_5878;
 
                 local_c = 1;
                 break;
@@ -516,7 +516,7 @@ static void CAST_074c_QuasWis(void)
         {
             D_ba14[local_6_p].flags &= ~COMBAT_FLAGS_INVISIBLE;
             local_4 = &D_5c5a[D_ba14[local_6_p].actorIdx];
-            local_4->_1_animTile = local_4->_0_tile;
+            local_4->animTile = local_4->tile;
 
             ULTIMA_5394();
             ULTIMA_56ac_DrawMap();
@@ -724,7 +724,7 @@ static int CAST_0a5c_BetRelXen(void)
 
 static int CAST_0afe_LorSanct(void)
 {
-    D_5c5a[D_ba14[D_589e].actorIdx]._1_animTile = TILE_ACTOR_1D;
+    D_5c5a[D_ba14[D_589e].actorIdx].animTile = TILE_ACTOR_1D;
     D_ba14[D_589e].flags |= COMBAT_FLAGS_INVISIBLE;
     CAST2_0000_CastEffect(7);
     return 1;
@@ -756,7 +756,7 @@ static int CAST_0b28_InQuasXen(void)
         local_4_ab = local_c = 0xff;
         for (local_a = 0; local_a < 0x20; local_a++)
         {
-            if (D_5c5a[local_a]._0_tile == 0)
+            if (D_5c5a[local_a].tile == 0)
             {
                 local_c = local_a;
                 break;
@@ -791,8 +791,8 @@ static int CAST_0b28_InQuasXen(void)
                     }
                     else
                     {
-                        D_5c5a[local_c]._2_x = D_ba14[local_4_ab].x = D_5876;
-                        D_5c5a[local_c]._3_y = D_ba14[local_4_ab].y = D_5878;
+                        D_5c5a[local_c].x = D_ba14[local_4_ab].x = D_5876;
+                        D_5c5a[local_c].y = D_ba14[local_4_ab].y = D_5878;
                         local_8 = 1;
                     }
                 } while (local_8 == 0);
@@ -866,7 +866,7 @@ static int CAST_0d4c_AnTym(void)
 
     for (local_4 = 0; local_4 < 0x20; local_4++)
     {
-        if (D_5c5a[local_4]._0_tile == TILE_ACTOR_SHADOWLORD)
+        if (D_5c5a[local_4].tile == TILE_ACTOR_SHADOWLORD)
         {
             ULTIMA_1850_PrintString(_TEXT(0x45f2, "Magic absorbed!\n"));
             ULTIMA_2192_AudioPulse(0x2648, 1, 28000, 1000, 2);
@@ -1456,7 +1456,7 @@ static int CAST_135a_UsePotion(int param_1)
         {
             ULTIMA_1850_PrintString(_TEXT(0x4739, "Poof!\n"));
             local_6 = &D_5c5a[D_ba14[D_589e].actorIdx];
-            local_6->_0_tile = local_6->_1_animTile = TILE_ACTOR_90;
+            local_6->tile = local_6->animTile = TILE_ACTOR_90;
         }
         else
         {
@@ -1470,7 +1470,7 @@ static int CAST_135a_UsePotion(int param_1)
             D_ba14[D_589e].flags |= COMBAT_FLAGS_INVISIBLE;
             local_6 = &D_5c5a[D_ba14[D_589e].actorIdx];
             ULTIMA_1850_PrintString(_TEXT(0x4740, "Invisible!\n"));
-            local_6->_0_tile = local_6->_1_animTile = TILE_ACTOR_1D;
+            local_6->tile = local_6->animTile = TILE_ACTOR_1D;
         }
         else
         {

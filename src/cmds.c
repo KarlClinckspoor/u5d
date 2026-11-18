@@ -113,14 +113,14 @@ int CMDS_0000(int param_1, int param_2, int param_3)
     if (local_6 != -1)
     {
         local_4_ab = &D_5c5a[D_ba14[local_6].actorIdx];
-        local_28_aj = local_4_ab->_0_tile;
-        local_2c = local_4_ab->_1_animTile;
+        local_28_aj = local_4_ab->tile;
+        local_2c = local_4_ab->animTile;
         
-        local_4_ab->_0_tile = local_4_ab->_1_animTile = TILE_ACTOR_5F;
+        local_4_ab->tile = local_4_ab->animTile = TILE_ACTOR_5F;
         D_6a08 = 1;
         ULTIMA_3ae6(0x34);
-        local_4_ab->_0_tile = local_28_aj;
-        local_4_ab->_1_animTile = local_2c;
+        local_4_ab->tile = local_28_aj;
+        local_4_ab->animTile = local_2c;
         if (D_ba14[local_6].entityIdx != param_2)
         {
             ULTIMA_6880(local_6);
@@ -142,7 +142,7 @@ int CMDS_0000(int param_1, int param_2, int param_3)
             }
         }
 
-        local_18 = D_5c5a[local_1a->actorIdx]._0_tile;
+        local_18 = D_5c5a[local_1a->actorIdx].tile;
     }
 
     while (local_2a_aa != D_587f_hour)
@@ -231,8 +231,8 @@ int CMDS_0000(int param_1, int param_2, int param_3)
 
             if (ULTIMA_6d82(D_5876, D_5878) != 0 && COMBAT_0000(local_18, D_5876, D_5878) != 0)
             {
-                local_1a->x = D_5c5a[local_1a->actorIdx]._2_x = D_5876;
-                local_1a->y = D_5c5a[local_1a->actorIdx]._3_y = D_5878;
+                local_1a->x = D_5c5a[local_1a->actorIdx].x = D_5876;
+                local_1a->y = D_5c5a[local_1a->actorIdx].y = D_5878;
                 ULTIMA_5910_UpdateFrame();
             }
         }
@@ -400,7 +400,7 @@ void CMDS_0552_HoleUpCmd(void)
         D_587b_activePlayer = local_4_ab;
         D_5896_map_x++;
         D_24e6 = 1;
-        D_5c5a[0]._2_x++;
+        D_5c5a[0].x++;
 
         ULTIMA_2900_UpdateVitalsDisplay();
         ULTIMA_5910_UpdateFrame();
@@ -550,14 +550,14 @@ int CMDS_07f6_BoardCmd(void)
 
         ULTIMA_1850_PrintString(_TEXT(0x427c, "Ship\n"));
 
-        local_a = D_5c5a[local_6]._5;
+        local_a = D_5c5a[local_6].value;
         if (local_a < 10)
         {
             ULTIMA_1850_PrintString(_TEXT(0x4282, "\nDANGER: SHIP BADLY DAMAGED!\n"));
         }
 
-        D_5c5a[0]._5 = local_a;
-        local_8 = D_5c5a[local_6]._7;
+        D_5c5a[0].value = local_a;
+        local_8 = D_5c5a[local_6].extra;
 
         if ((D_587c_partyTile & 0xfe) == TILE_ACTOR_FLYING_CARPET)
         {
@@ -575,7 +575,7 @@ int CMDS_07f6_BoardCmd(void)
         }
 
         D_587c_partyTile = local_c;
-        D_5c5a[0]._7 = local_8;
+        D_5c5a[0].extra = local_8;
         D_a9fa = 1;
     }
     else
@@ -646,16 +646,16 @@ static void CMDS_0962(void)
                     // 0a10
                     local_6 = D_5876;
 
-                    local_8 = D_5c5a[local_6]._2_x - D_5896_map_x + 5;
-                    local_a = D_5c5a[local_6]._3_y - D_5897_map_y + 5;
+                    local_8 = D_5c5a[local_6].x - D_5896_map_x + 5;
+                    local_a = D_5c5a[local_6].y - D_5897_map_y + 5;
                     local_4_ab = COMSUBS_12de(5, 5, local_8, local_a, 1);
                     if (local_4_ab != 0)
                     {
                         ULTIMA_5910_UpdateFrame();
                         ULTIMA_3522(local_12_ab, local_16_an);
 
-                        D_5c5a[local_6]._5 -= ULTIMA_2092_RandomRange(1, 0x14);
-                        if (D_5c5a[local_6]._5 > 0x7f)
+                        D_5c5a[local_6].value -= ULTIMA_2092_RandomRange(1, 0x14);
+                        if (D_5c5a[local_6].value > 0x7f)
                         {
                             ULTIMA_3a74(0, 0, 0, 0, 0, 0, local_6);
                             D_24e6 |= 2;
@@ -992,13 +992,13 @@ void CMDS_0eb4_XitCmd(void)
             local_4_ab = D_587c_partyTile;
             D_587c_partyTile = TILE_ACTOR_AVATAR;
 
-            local_a = D_5c5a[0]._7;
+            local_a = D_5c5a[0].extra;
         }
-        else if (D_5c5a[0]._7 != 0)
+        else if (D_5c5a[0].extra != 0)
         {
             local_4_ab = D_587c_partyTile;
             D_587c_partyTile += 4;
-            local_a = D_5c5a[0]._7 - 1;
+            local_a = D_5c5a[0].extra - 1;
         }
         else if (D_57b0 != 0)
         {
@@ -1006,7 +1006,7 @@ void CMDS_0eb4_XitCmd(void)
             local_4_ab = D_587c_partyTile;
             D_587c_partyTile = TILE_ACTOR_FLYING_CARPET;
 
-            local_a = D_5c5a[0]._7;
+            local_a = D_5c5a[0].extra;
         }
         else
         {
@@ -1018,8 +1018,8 @@ void CMDS_0eb4_XitCmd(void)
     }
 
     local_6 = ULTIMA_38e4();
-    ULTIMA_3a74(local_4_ab, local_4_ab, D_5896_map_x, D_5897_map_y, D_5895_map_level, D_5c5a[0]._5, local_6);
-    D_5c5a[local_6]._7 = local_a; // BUG: local_a NOT INITIALIZED when (D_587c & 0xfc) != 0x24
+    ULTIMA_3a74(local_4_ab, local_4_ab, D_5896_map_x, D_5897_map_y, D_5895_map_level, D_5c5a[0].value, local_6);
+    D_5c5a[local_6].extra = local_a; // BUG: local_a NOT INITIALIZED when (D_587c & 0xfc) != 0x24
     ULTIMA_2900_UpdateVitalsDisplay();
 
 #if defined(ENABLE_BGM)
@@ -1063,7 +1063,7 @@ int CMDS_1030(char* param_1)
         {
             for (local_c = 0; local_c < 0x20; local_c++)
             {
-                if (D_5c5a[local_c]._0_tile == TILE_ACTOR_SHADOWLORD)
+                if (D_5c5a[local_c].tile == TILE_ACTOR_SHADOWLORD)
                 {
                     ULTIMA_1850_PrintString(_TEXT(0x4418, "\nNo effect!\n"));
                     RETURN_AX(local_6);
@@ -1084,11 +1084,11 @@ int CMDS_1030(char* param_1)
                 }
             }
 
-            D_5f5e[local_4_ab]._0 = 1;
-            D_5f5e[local_4_ab]._c = local_c;
-            D_5f5e[local_4_ab]._2_x = D_5896_map_x;
-            D_5f5e[local_4_ab]._4_y = D_5897_map_y - 2;
-            D_5f5e[local_4_ab]._6_z = D_5895_map_level;
+            D_5f5e[local_4_ab].mode = 1;
+            D_5f5e[local_4_ab].actorIdx = local_c;
+            D_5f5e[local_4_ab].x = D_5896_map_x;
+            D_5f5e[local_4_ab].y = D_5897_map_y - 2;
+            D_5f5e[local_4_ab].z = D_5895_map_level;
 
             for (local_8 = 0; local_8 < 4; local_8++)
             {
@@ -1108,9 +1108,9 @@ int CMDS_1030(char* param_1)
             ULTIMA_1850_PrintString(_TEXT(0x4425, "\nA shadowlord appears\n"));
             ULTIMA_2192_AudioPulse(0x28a0, 1, 30000, 2000, 2);
 
-            D_5c5a[local_c]._0_tile = D_5c5a[local_c]._1_animTile = TILE_ACTOR_CIRCLE;
+            D_5c5a[local_c].tile = D_5c5a[local_c].animTile = TILE_ACTOR_CIRCLE;
             ULTIMA_1068(0x1fc, 5, 3);
-            D_5c5a[local_c]._0_tile = D_5c5a[local_c]._1_animTile = TILE_ACTOR_SHADOWLORD;
+            D_5c5a[local_c].tile = D_5c5a[local_c].animTile = TILE_ACTOR_SHADOWLORD;
 
             /* FMT
                 if (DAT_0003e08a_587a != 0x54) { // Icon != 0x54

@@ -35,10 +35,10 @@ typedef struct S_55a8
 	s16 maxHp;		// 12 / 55ba; max_hp (HM)
 	s16 exp;		// 14 / 55bc; exp
 	u8 level;		// 16 / 55be; level
-	u8 _17;			// 17 / 55bf
-	u8 _18;			// 18 / 55c0; def?
-	u8 equips[6];	// 19 / 55c1 ; equips ([4]: magic_ring, [5]: amulet)
-	u8 mapId;		// 1f / 55c7
+	u8 monthsAtInn;	// 17 / 55bf; counted up each month, to 25 (ULTIMA_4f7c); the inn bills for it (SHOPPES3)
+	u8 _18;			// 18 / 55c0; def? (read once, in COMBAT)
+	u8 equips[6];	// 19 / 55c1 ; equips ([0]: helmet, [1]: armour, [2], [3]: weapon and shield (the hands), [4]: magic_ring, [5]: amulet); 0xff none
+	u8 innMapId;		// 1f / 55c7; 0: in the party; 0x7f: gone (probably); else the map of the inn where the member waits
 } S_55a8;
 
 // x/y pair (u8) "coord"
@@ -65,22 +65,22 @@ typedef struct Pair2
 // 52ba
 typedef struct VideoDriverParams
 {
-	int _52ba_forceCga;         // 52ba 0
-	int _52bc_tileXOffset;      // 52bc 2
-	int _52be_tileYOffset;      // 52be 4
+	int forceCga;         // 52ba 0
+	int tileXOffset;      // 52bc 2
+	int tileYOffset;      // 52be 4
 	int _52c0;                  // 52c0
 	int _52c2;                  // 52c2
-	int _52c4;                  // 52c4
+	int clipEnabled;                  // 52c4
 	int _52c6;                  // 52c6
-	int _52c8_videoDriverSelection; // 52c8: video driver selection (0=cga, 1=ega, 2=tandy, 3=herc, ffff=none)
-	int _52ca_machineType;      // 52ca: machine type (0=pcjr, 2=ibm, 3=tandy, 6=other)
-	int _52cc_penX;             // 52cc
-	int _52ce_penY;             // 52ce
-	int _52d0_clipWindowX1;     // 52d0
-	int _52d2_clipWindowX2;     // 52d2
-	int _52d4_clipWindowY1;     // 52d4
-	int _52d6_clipWindowY2;     // 52d6
-	int _52d8_page;             // 52d8 1e
+	int videoDriver; // 52c8: video driver selection (0=cga, 1=ega, 2=tandy, 3=herc, ffff=none)
+	int machineType;      // 52ca: machine type (0=pcjr, 2=ibm, 3=tandy, 6=other)
+	int penX;             // 52cc
+	int penY;             // 52ce
+	int clipX1;     // 52d0
+	int clipX2;     // 52d2
+	int clipY1;     // 52d4
+	int clipY2;     // 52d6
+	int page;             // 52d8 1e
 } VideoDriverParams;            // size: 0x20?
 
 // 535e size: 8
@@ -96,30 +96,31 @@ typedef struct TextWindow
 	u8 flags; // 7; flags: bits 0..2
 } TextWindow;
 
-// 5c00: Actor. size: 8 "Obj"
+// 5c5a: Actor. size: 8 "Obj": the 32 objects and monsters on the map; [0] is the party.
+// (the Codex's "monster/object table", SAVED.GAM +0x6B4)
 typedef struct ActorFmt // D_5c5a..
 {
-	u8 _0_tile; // base tile (shape)
-	u8 _1_animTile; // animated tile
-	u8 _2_x;
-	u8 _3_y;
-	u8 _4_z;
-	u8 _5; // hull (frigate)
-	u8 _6;
-	u8 _7;
+	u8 tile; // base tile (shape)
+	u8 animTile; // animated tile
+	u8 x;
+	u8 y;
+	u8 z; // level
+	u8 value; // by kind: hull of a frigate, hit points of a monster in combat, item or count of an object
+	u8 animState; // low nibble: frames to wait (0xf: never animate); high nibble: place in the tile sequence (ULTIMA_4552_AnimateActors)
+	u8 extra; // by kind: skiffs aboard a frigate; 0xff none
 } ActorFmt;
 
 // 5f5e: Character (npc) / monster. size: 16
 typedef struct NpcFmt
 {
-	u16 _0;   // 0 / 5f5e
-	s16 _2_x; // 2 / 5f60 x
-	s16 _4_y; // 4 / 5f62 y
-	u16 _6_z; // 6 / 5f64 z
+	u16 mode;   // 0 / 5f5e; what the NPC is doing, 0-7 (0: not there; NPC.OVL sets and tests it)
+	s16 x; // 2 / 5f60 x
+	s16 y; // 4 / 5f62 y
+	u16 z; // 6 / 5f64 z
 	u16 _8;   // 8 / 5f66
 	u16 _a;   // a / 5f68
-	u16 _c;   // c / 5f6a   // TODO: s16?
-	u16 _e;   // e / 5f6c
+	u16 actorIdx;   // c / 5f6a; the NPC's slot in D_5c5a   // TODO: s16?
+	u16 scheduleIdx;   // e / 5f6c; which entry of the NPC's schedule is in force
 } NpcFmt;
 
 // size: 16
@@ -164,18 +165,18 @@ typedef struct CombatEntity
 // U4 party related (party.sav:0x140)
 typedef struct S_bb1c
 {
-	u8 _0[6]; // bb1c; fill
+	u8 fill0[6]; // bb1c; fill
 
-	u16 _6; // bb22; honesty
-	u16 _8; // bb24; compassion
-	u16 _a; // bb26; valour
-	u16 _c; // bb28; justice
-	u16 _e; // bb2a; sacrifice
-	u16 _10; // bb2c; honor
-	u16 _12; // bb2e; spirituality
-	u16 _14; // bb30; humility
+	u16 honesty; // bb22 (+6)
+	u16 compassion; // bb24 (+8)
+	u16 valor; // bb26 (+a)
+	u16 justice; // bb28 (+c)
+	u16 sacrifice; // bb2a (+e)
+	u16 honor; // bb2c (+10)
+	u16 spirituality; // bb2e (+12)
+	u16 humility; // bb30 (+14)
 
-	u8 _16[0xa0]; // fill
+	u8 fill16[0xa0]; // fill
 } S_bb1c;
 
 // size: 40
@@ -189,14 +190,14 @@ typedef struct S_bc88_U4Party
 	u16 dex;	// bc90; dex
 	u16 intel;	// bc92; int
 	u16 mag;	// bc94; mag
-	u16 _e;		// bc96; not accessed
-	u16 _10;	// bc98; weapon; not accessed
-	u16 _12;	// bc9a; armor; not accessed
+	u16 unused0e;	// bc96; not accessed
+	u16 weapon;	// bc98; weapon; not accessed
+	u16 armor;	// bc9a; armor; not accessed
 	u8 name[16]; // bc9c; name
 	u8 gender;	// bcac; gender
 	u8 cls;		// bcad; class
-	u8 _26;		// bcae; not accessed
-	u8 _27;		// bcaf
+	u8 unused26;	// bcae; not accessed
+	u8 unused27;	// bcaf
 } S_bc88_U4Party;
 
 #pragma pack(pop)

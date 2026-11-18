@@ -102,15 +102,15 @@ void DUNGEON_0134(int param_1)
     ActorFmt* local_4_ab;
 
     local_4_ab = &D_5c5a[1];
-    local_6 = D_5c5a[1]._5;
+    local_6 = D_5c5a[1].value;
     if (param_1 != 0)
     {
         local_8 = ULTIMA_2092_RandomRange(0, 7);
-        D_5c5a[1]._0_tile = D_5c5a[1]._1_animTile = local_8;
-        D_5c5a[1]._7 = 0;
-        D_5c5a[1]._6 = D_1744[local_8];
-        D_5c5a[1]._5 = D_173c[local_8];
-        D_5c5a[1]._4_z = D_5895_map_level;
+        D_5c5a[1].tile = D_5c5a[1].animTile = local_8;
+        D_5c5a[1].extra = 0;
+        D_5c5a[1].animState = D_1744[local_8];
+        D_5c5a[1].value = D_173c[local_8];
+        D_5c5a[1].z = D_5895_map_level;
         if (local_6 != 0xff)
         {
             ULTIMA_0be4_FreeImage(D_a9c6);
@@ -118,16 +118,16 @@ void DUNGEON_0134(int param_1)
         D_a9c6 = 0;
         if (DUNGEON_0252() == 0)
         {
-            local_4_ab->_0_tile = local_4_ab->_1_animTile = 0;
-            local_4_ab->_5 = 0xff;
+            local_4_ab->tile = local_4_ab->animTile = 0;
+            local_4_ab->value = 0xff;
         }
     }
 
-    if (local_4_ab->_5 != 0xff)
+    if (local_4_ab->value != 0xff)
     {
         do
         {
-            D_a9c6 = ULTIMA_0bae_LoadImageFile(D_25ea[local_4_ab->_0_tile + 8]);
+            D_a9c6 = ULTIMA_0bae_LoadImageFile(D_25ea[local_4_ab->tile + 8]);
         } while (D_a9c6 == 0);
     }
 }
@@ -189,12 +189,12 @@ static int DUNGEON_0252(void)
             local_4_ab = local_a % 8;
             if (local_4_ab != D_5896_map_x && local_6 != D_5897_map_y)
             {
-                D_5c5a[1]._2_x = D_5c5a[2]._2_x = local_4_ab;
-                D_5c5a[1]._3_y = D_5c5a[2]._3_y = local_6;
+                D_5c5a[1].x = D_5c5a[2].x = local_4_ab;
+                D_5c5a[1].y = D_5c5a[2].y = local_6;
 
-                if ((D_5c5a[1]._5 == 0x16 || D_5c5a[1]._5 == 0x18) && (int)ULTIMA_2092_RandomRange(0, 99) > 0x30)
+                if ((D_5c5a[1].value == 0x16 || D_5c5a[1].value == 0x18) && (int)ULTIMA_2092_RandomRange(0, 99) > 0x30)
                 {
-                    D_5c5a[1]._7 = 0xff;
+                    D_5c5a[1].extra = 0xff;
                 }
 
                 local_a = 1;
@@ -205,7 +205,7 @@ static int DUNGEON_0252(void)
 
     if (local_8 == 8)
     {
-        D_5c5a[1]._2_x = D_5c5a[2]._2_x = D_5c5a[1]._3_y = D_5c5a[2]._3_y = 0xff;
+        D_5c5a[1].x = D_5c5a[2].x = D_5c5a[1].y = D_5c5a[2].y = 0xff;
         local_a = 0;
     }
 
@@ -417,7 +417,7 @@ static int DUNGEON_0502(int param_1, byte param_2)
         else
         {
             // 067c~: OK
-            if (local_8 == D_5c5a[1]._2_x && local_a == D_5c5a[1]._3_y)
+            if (local_8 == D_5c5a[1].x && local_a == D_5c5a[1].y)
             {
                 ULTIMA_1850_PrintString(_TEXT(0x2d23, "Blocked!\n"));
             }
@@ -535,16 +535,16 @@ static int DUNGEON_07e2(void)
     local_4_ab = &D_5c5a[1];
     local_18_al = &D_5c5a[2];
 
-    if (D_5c5a[1]._5 != 0xff)
+    if (D_5c5a[1].value != 0xff)
     {
-        if (local_4_ab->_5 != 0x1b)
+        if (local_4_ab->value != 0x1b)
         {
             // 0819
             for (local_c = 0; local_c < 8; local_c++)
             {
                 // 083e
                 local_a = ULTIMA_2092_RandomRange(0, 3);
-                local_12_ab = D_24d6[local_a] + local_4_ab->_2_x;
+                local_12_ab = D_24d6[local_a] + local_4_ab->x;
                 if (local_12_ab > 7)
                 {
                     local_12_ab = 0;
@@ -555,7 +555,7 @@ static int DUNGEON_07e2(void)
                 }
 
                 // 0866
-                local_14 = D_24de[local_a] + local_4_ab->_3_y;
+                local_14 = D_24de[local_a] + local_4_ab->y;
                 if (local_14 > 7)
                 {
                     local_14 = 0;
@@ -571,8 +571,8 @@ static int DUNGEON_07e2(void)
 
                 if (local_16_an != 0x60 && local_16_an != 0x80 && local_16_an < 0xa0)
                 {
-                    local_6 = local_18_al->_2_x;
-                    local_8 = local_18_al->_3_y;
+                    local_6 = local_18_al->x;
+                    local_8 = local_18_al->y;
                     if (local_12_ab != local_6 || local_14 != local_8 || ULTIMA_2092_RandomRange(0, 7) == 1)
                     {
                         local_e = 900;
@@ -584,19 +584,19 @@ static int DUNGEON_07e2(void)
             // 08d6
             if (local_e == 900)
             {
-                local_18_al->_2_x = local_4_ab->_2_x;
-                local_18_al->_3_y = local_4_ab->_3_y;
-                local_4_ab->_2_x = (byte)local_12_ab;
-                local_4_ab->_3_y = (byte)local_14;
+                local_18_al->x = local_4_ab->x;
+                local_18_al->y = local_4_ab->y;
+                local_4_ab->x = (byte)local_12_ab;
+                local_4_ab->y = (byte)local_14;
             }
         }
 
         // 0917
-        if (local_4_ab->_2_x == D_5896_map_x && local_4_ab->_3_y == D_5897_map_y)
+        if (local_4_ab->x == D_5896_map_x && local_4_ab->y == D_5897_map_y)
         {
             local_10_ad = 1;
-            local_4_ab->_2_x = local_18_al->_2_x;
-            local_4_ab->_3_y = local_18_al->_3_y;
+            local_4_ab->x = local_18_al->x;
+            local_4_ab->y = local_18_al->y;
         }
     }
     return local_10_ad;
@@ -699,15 +699,15 @@ static void DUNGEON_0b7e(void)
 
     local_4 = &D_5c5a[2];
 
-    if (((local_4->_2_x - 1) & 7) == D_5896_map_x)
+    if (((local_4->x - 1) & 7) == D_5896_map_x)
     {
         D_6602 = 1;
     }
-    else if (((local_4->_2_x + 1) & 7) == D_5896_map_x)
+    else if (((local_4->x + 1) & 7) == D_5896_map_x)
     {
         D_6602 = 3;
     }
-    else if (((local_4->_3_y - 1) & 7) == D_5897_map_y)
+    else if (((local_4->y - 1) & 7) == D_5897_map_y)
     {
         D_6602 = 2;
     }
@@ -747,7 +747,7 @@ static void DUNGEON_0b7e(void)
     D_58a0 = 0;
     D_58a1 = 2;
     DNGLOOK_0d3e();
-    ULTIMA_5f86_SpecialMapHandler(2, D_5c5a[1]._5, 0);
+    ULTIMA_5f86_SpecialMapHandler(2, D_5c5a[1].value, 0);
     DNGLOOK_0fda();
     DNGLOOK_109e(1);
     DUNGEON_0134(1);

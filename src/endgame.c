@@ -400,40 +400,40 @@ static int ENDGAME_0510(int param_1, int param_2, int param_3)
     local_8 = 1;
     local_4_c = &D_5c5a[param_1];
 
-    if (local_4_c->_0_tile == 0)
+    if (local_4_c->tile == 0)
     {
         // a7c0
         local_8 = 0;
     }
-    else if (local_4_c->_2_x == param_2 && local_4_c->_3_y == param_3) // a7c8
+    else if (local_4_c->x == param_2 && local_4_c->y == param_3) // a7c8
     {
         local_8 = 0;
     }
     else
     {
         // a7da
-        local_6 = abs(local_4_c->_2_x - param_2);
-        local_a = abs(local_4_c->_3_y - param_3);
+        local_6 = abs(local_4_c->x - param_2);
+        local_a = abs(local_4_c->y - param_3);
         if (local_6 < local_a)
         {
-            if (local_4_c->_3_y > param_3)
+            if (local_4_c->y > param_3)
             {
-                local_4_c->_3_y--;
+                local_4_c->y--;
             }
             else
             {
                 // a80c
-                local_4_c->_3_y++;
+                local_4_c->y++;
             }
         }
-        else if (local_4_c->_2_x > param_2) // a812
+        else if (local_4_c->x > param_2) // a812
         {
-            local_4_c->_2_x--;
+            local_4_c->x--;
         }
         else
         {
             // a822
-            local_4_c->_2_x++;
+            local_4_c->x++;
         }
 
         ENDGAME_04fe();
@@ -451,12 +451,12 @@ static void ENDGAME_05a2(int param_1)
     int local_a;
     local_4_c = &D_5c5a[param_1];
 
-    if (local_4_c->_0_tile != 0 && ULTIMA_2092_RandomRange(0, 1) != 0)
+    if (local_4_c->tile != 0 && ULTIMA_2092_RandomRange(0, 1) != 0)
     {
         for (local_a = 0; local_a < 8; local_a++)
         {
-            local_6 = local_4_c->_2_x;
-            local_8 = local_4_c->_3_y;
+            local_6 = local_4_c->x;
+            local_8 = local_4_c->y;
 
             switch (ULTIMA_2092_RandomRange(0, 3))
             {
@@ -476,8 +476,8 @@ static void ENDGAME_05a2(int param_1)
 
             if (GetMapViewport(local_6, local_8) == TILE_MAP_44)
             {
-                local_4_c->_2_x = local_6;
-                local_4_c->_3_y = local_8;
+                local_4_c->x = local_6;
+                local_4_c->y = local_8;
                 break;
             }
         }
@@ -513,15 +513,15 @@ void ENDGAME_0648_EndgameMain(void)
     // a949
     for (local_c = 0; local_c < 0x20; local_c++)
     {
-        D_5c5a[local_c]._0_tile = D_5c5a[local_c]._1_animTile = 0;
+        D_5c5a[local_c].tile = D_5c5a[local_c].animTile = 0;
     }
 
     // a966
     local_6 = &D_5c5a[31];
-    local_6->_0_tile = local_6->_1_animTile = TILE_ACTOR_7C;
-    local_6->_2_x = 5;
-    local_6->_3_y = 8;
-    local_6->_6 = 0;
+    local_6->tile = local_6->animTile = TILE_ACTOR_7C;
+    local_6->x = 5;
+    local_6->y = 8;
+    local_6->animState = 0;
     ULTIMA_3ae6(0x28);
 
     while (ENDGAME_0510(0x1f, 5, 3) != 0)
@@ -550,10 +550,10 @@ void ENDGAME_0648_EndgameMain(void)
         // aa37
         local_6 = &D_5c5a[local_c];
         
-        local_6->_0_tile = local_6->_1_animTile = D_1ade[local_8];
-        local_6->_2_x = 5;
-        local_6->_3_y = 9;
-        local_6->_6 = 0;
+        local_6->tile = local_6->animTile = D_1ade[local_8];
+        local_6->x = 5;
+        local_6->y = 9;
+        local_6->animState = 0;
 
         // aa57
         ULTIMA_3ae6(1);
@@ -625,10 +625,10 @@ void ENDGAME_0648_EndgameMain(void)
 
         local_6 = &D_5c5a[6];
         
-        local_6->_0_tile = local_6->_1_animTile = TILE_ACTOR_SANDALWOOD_BOX;
-        local_6->_2_x = 5;
-        local_6->_3_y = 4;
-        local_6->_6 = 0;
+        local_6->tile = local_6->animTile = TILE_ACTOR_SANDALWOOD_BOX;
+        local_6->x = 5;
+        local_6->y = 4;
+        local_6->animState = 0;
 
         ULTIMA_1850_PrintString((char*)&D_b21e[0xab]);
         ULTIMA_3ae6(0x28);
@@ -646,12 +646,12 @@ void ENDGAME_0648_EndgameMain(void)
         ULTIMA_266c_GetChar();
         ULTIMA_1850_PrintString((char*)&D_b21e[0x24b]);
 
-        D_5c5a[6]._1_animTile = D_5c5a[6]._0_tile = TILE_ACTOR_GEM;
+        D_5c5a[6].animTile = D_5c5a[6].tile = TILE_ACTOR_GEM;
 
         ULTIMA_266c_GetChar();
         ULTIMA_2192_AudioPulse(0x1450, 1, 50000, 10000, 1);
 
-        D_5c5a[6]._1_animTile = D_5c5a[6]._0_tile = 0;
+        D_5c5a[6].animTile = D_5c5a[6].tile = 0;
         GetCombatMap(5, 4) = 0xdc;
 
         for (D_5887 = 1; D_5887 < 0x10; D_5887++)
@@ -664,7 +664,7 @@ void ENDGAME_0648_EndgameMain(void)
         while (ENDGAME_0510(0x1f, 5, 4) != 0)
             ;
 
-        D_5c5a[31]._0_tile = D_5c5a[31]._1_animTile = 0;
+        D_5c5a[31].tile = D_5c5a[31].animTile = 0;
 
         // ac64
         ULTIMA_3ae6(1);
@@ -674,7 +674,7 @@ void ENDGAME_0648_EndgameMain(void)
             while (ENDGAME_0510(local_c, 5, 4) != 0)
                 ;
 
-            D_5c5a[local_c]._0_tile = D_5c5a[local_c]._1_animTile = 0;
+            D_5c5a[local_c].tile = D_5c5a[local_c].animTile = 0;
             ULTIMA_3ae6(1);
         }
 
@@ -698,7 +698,7 @@ void ENDGAME_0648_EndgameMain(void)
     ULTIMA_1850_PrintString(_TEXT(0x84da, "\"I see...\n"));
     ULTIMA_3ae6(0x28);
     ULTIMA_1850_PrintString((char*)&D_b21e[0x2d5]);
-    D_5c5a[0]._3_y--;
+    D_5c5a[0].y--;
     ENDGAME_04fe();
 
     do

@@ -283,9 +283,9 @@ int TALK_031e_TalkToNpc(int npcIndex)
     npc = &D_5f5e[npcIndex];
     schedule = &D_5d5e[npcIndex];
 
-    if (schedule->type[npc->_e] == 4)
+    if (schedule->type[npc->scheduleIdx] == 4)
     {
-        schedule->type[npc->_e] = 1;
+        schedule->type[npc->scheduleIdx] = 1;
     }
     // c2ea: the guard test jumps past its message with a goto. As an else-if, MSC keeps the
     // guard's copy of the shared print tail and reloads npc for the guard test. With the
@@ -293,7 +293,7 @@ int TALK_031e_TalkToNpc(int npcIndex)
     // jmp near are that then-branch's dead jump over its else) and BX still holds npc.
     else
     {
-        if (D_5c5a[npc->_c]._0_tile != TILE_ACTOR_GUARD || ((npc->_e & 1) != 0 && (npc->_a) != 0))
+        if (D_5c5a[npc->actorIdx].tile != TILE_ACTOR_GUARD || ((npc->scheduleIdx & 1) != 0 && (npc->_a) != 0))
             goto L_join;
         ULTIMA_1850_PrintString(_TEXT(0x9148, "The guard offers\nno response!\n"));
         return 0;
@@ -339,7 +339,7 @@ L_join:
             return TALK_01e2_GuardDemandsTribute();
         }
 
-        if ((npc->_e & 1) != 0 && (NPC_12e0(D_bcdc_talkNpcIndex, D_587f_hour) & 1) != 0)
+        if ((npc->scheduleIdx & 1) != 0 && (NPC_12e0(D_bcdc_talkNpcIndex, D_587f_hour) & 1) != 0)
         {
             TALK_00e6_TalkToMerchant(dialogNumber_f);
             return 0;
@@ -552,7 +552,7 @@ static int TALK_05b6_PayGold(void)
     {
         D_57aa_gold -= amount;
         ULTIMA_2900_UpdateVitalsDisplay();
-        if ((D_5c5a[D_5f5e[D_bcdc_talkNpcIndex]._c]._0_tile & 0xfc) == TILE_ACTOR_BEGGAR && D_588b >= 100)
+        if ((D_5c5a[D_5f5e[D_bcdc_talkNpcIndex].actorIdx].tile & 0xfc) == TILE_ACTOR_BEGGAR && D_588b >= 100)
         {
             D_588b = 0;
             ULTIMA_3ef0_IncreaseByte(&D_5888_karma, 1, 99);
@@ -784,7 +784,7 @@ static int TALK_080a_Join(void)
     }
 
     // c848
-    D_55a8_party[rosterIndex_h].mapId = 0;
+    D_55a8_party[rosterIndex_h].innMapId = 0;
 
     member = D_55a8_party[rosterIndex_h];
     D_55a8_party[rosterIndex_h] = D_55a8_party[D_585b_partyCount];

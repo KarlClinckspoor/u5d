@@ -361,7 +361,7 @@ STUB u8 D_3e6e[4];
 STUB char* D_3e72[3];
 
 STUB u8 D_3e78[0x72]; // TODO: size
-STUB u8 D_3eea[0x72]; // hidden item - _5 TODO: size
+STUB u8 D_3eea[0x72]; // hidden item - value TODO: size
 STUB u8 D_3f5c[0x72]; // hidden item - map id TODO: size
 STUB u8 D_3fce[0x72]; // hidden item - map z TODO: size
 STUB u8 D_4040[0x72]; // hidden item - map x TODO: size
@@ -502,8 +502,8 @@ STUB VideoDriverParams D_52ba_vdp;
 STUB int D_52c4;
 STUB int D_52c8;
 #else
-#define D_52c4 D_52ba_vdp._52c4
-#define D_52c8 D_52ba_vdp._52c8_videoDriverSelection
+#define D_52c4 D_52ba_vdp.clipEnabled
+#define D_52c8 D_52ba_vdp.videoDriver
 #endif
 
 STUB int D_52da_pen_color;

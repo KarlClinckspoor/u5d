@@ -54,10 +54,10 @@ void TOWN_0052_SetNpcKilled(int param_1)
 // despawn npc
 void TOWN_00b0_DespawnNpc(int param_1)
 {
-    ActorFmt* actor = &D_5c5a[D_5f5e[param_1]._c];
+    ActorFmt* actor = &D_5c5a[D_5f5e[param_1].actorIdx];
 
-    actor->_0_tile = actor->_1_animTile = actor->_2_x = actor->_3_y = actor->_4_z = actor->_6 = actor->_7 = D_5f5e[param_1]._0 =
-        D_5f5e[param_1]._2_x = D_5f5e[param_1]._4_y = D_5f5e[param_1]._6_z = D_5f5e[param_1]._a = 0;
+    actor->tile = actor->animTile = actor->x = actor->y = actor->z = actor->animState = actor->extra = D_5f5e[param_1].mode =
+        D_5f5e[param_1].x = D_5f5e[param_1].y = D_5f5e[param_1].z = D_5f5e[param_1]._a = 0;
     D_5d5e[param_1].type[0] = D_5d5e[param_1].type[1] = D_5d5e[param_1].type[2] = 0;
     D_659e[param_1] = 0;
     D_24e6 |= 2;
@@ -70,7 +70,7 @@ int TOWN_011e(int param_1)
 
     for (local_4 = 0; local_4 < 0x20; local_4++)
     {
-        if ((int)D_5f5e[local_4]._c == param_1 && D_659e[local_4] != 0 && D_5f5e[local_4]._0 != 0)
+        if ((int)D_5f5e[local_4].actorIdx == param_1 && D_659e[local_4] != 0 && D_5f5e[local_4].mode != 0)
         {
             local_2 = local_4;
             break;
@@ -178,7 +178,7 @@ void TOWN_02ae(void)
         TOWN_0212();
         for (local_8 = 0; local_8 < 0x20; local_8++)
         {
-            if (D_5c5a[local_8]._0_tile == TILE_ACTOR_SHADOWLORD)
+            if (D_5c5a[local_8].tile == TILE_ACTOR_SHADOWLORD)
             {
                 return;
             }
@@ -200,13 +200,13 @@ void TOWN_02ae(void)
 
         ASSERT(D_5893_map_id > 0 && D_5893_map_id <= 8);
 
-        D_5f5e[local_4_ab]._0 = 1;
-        D_5f5e[local_4_ab]._c = local_a;
+        D_5f5e[local_4_ab].mode = 1;
+        D_5f5e[local_4_ab].actorIdx = local_a;
         
-        D_5f5e[local_4_ab]._2_x = local_6->_2_x = 0xf;
-        D_5f5e[local_4_ab]._4_y = local_6->_3_y = D_13a6[D_5893_map_id - 1];
-        D_5f5e[local_4_ab]._6_z = local_6->_6 = local_6->_5 = local_6->_4_z = local_6->_7 = 0;
-        local_6->_0_tile = local_6->_1_animTile = TILE_ACTOR_SHADOWLORD;
+        D_5f5e[local_4_ab].x = local_6->x = 0xf;
+        D_5f5e[local_4_ab].y = local_6->y = D_13a6[D_5893_map_id - 1];
+        D_5f5e[local_4_ab].z = local_6->animState = local_6->value = local_6->z = local_6->extra = 0;
+        local_6->tile = local_6->animTile = TILE_ACTOR_SHADOWLORD;
 
         for (local_8 = 0; local_8 < 4; local_8++)
         {
@@ -219,7 +219,7 @@ void TOWN_02ae(void)
             // setup npc schedules
             D_5d5e[local_4_ab].type[local_8] = 6;
             D_5d5e[local_4_ab].x[local_8] = 0xf;
-            D_5d5e[local_4_ab].y[local_8] = local_6->_3_y;
+            D_5d5e[local_4_ab].y[local_8] = local_6->y;
             D_5d5e[local_4_ab].z[local_8] = 0;
         }
 
@@ -585,7 +585,7 @@ void TOWN_0958(void)
 
     for (local_4 = 0; local_4 < 0x20; local_4++)
     {
-        if (D_5f5e[local_4]._0 != 0)
+        if (D_5f5e[local_4].mode != 0)
         {
             local_6_an = D_659e[local_4];
             if (local_6_an == TILE_ACTOR_SHADOWLORD || local_6_an == TILE_ACTOR_D8 || local_6_an == TILE_ACTOR_GUARD)
@@ -607,7 +607,7 @@ void TOWN_0958(void)
 void TOWN_09bc(int param_1)
 {
     TOWN_0052_SetNpcKilled(param_1);
-    ULTIMA_6150_Combat(D_5f5e[param_1]._c);
+    ULTIMA_6150_Combat(D_5f5e[param_1].actorIdx);
     TOWN_00b0_DespawnNpc(param_1);
     TOWN_0408(0);
     TOWN_02ae();
@@ -809,13 +809,13 @@ void TOWN_0c78(void)
     {
         local_4_c = &D_5c5a[local_a];
 
-        local_e = local_4_c->_0_tile;
-        if (((byte)local_e & 0xfe) != TILE_ACTOR_HORSE || local_4_c->_4_z != D_5895_map_level ||
+        local_e = local_4_c->tile;
+        if (((byte)local_e & 0xfe) != TILE_ACTOR_HORSE || local_4_c->z != D_5895_map_level ||
             ULTIMA_2092_RandomRange(0, 1) != 0)
             continue;
         {
-            local_6 = local_4_c->_2_x;
-            local_8 = local_4_c->_3_y;
+            local_6 = local_4_c->x;
+            local_8 = local_4_c->y;
 
             if (TOWN_0c4a(local_6, local_8 + 1) == 0 &&
                 TOWN_0c4a(local_6 + 1, local_8) == 0 &&
@@ -847,9 +847,9 @@ void TOWN_0c78(void)
                     if ((ULTIMA_2c4c_IsWalkableTile(TILE_ACTOR_HORSE, *ULTIMA_4402_GetTileAddr(local_6, local_8)) != 0) &&
                         (ULTIMA_3702(local_6, local_8, D_5895_map_level) == 0))
                     {
-                        local_4_c->_0_tile = local_4_c->_1_animTile = local_e;
-                        local_4_c->_2_x = (byte)local_6;
-                        local_4_c->_3_y = (byte)local_8;
+                        local_4_c->tile = local_4_c->animTile = local_e;
+                        local_4_c->x = (byte)local_6;
+                        local_4_c->y = (byte)local_8;
                         D_24e6 |= 2;
                     }
                 }

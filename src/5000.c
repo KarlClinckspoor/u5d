@@ -166,10 +166,10 @@ void ULTIMA_5394(void)
 
     if (D_5893_map_id < 0x80)
     {
-        D_5c5a[0]._2_x = D_5896_map_x;
-        D_5c5a[0]._3_y = D_5897_map_y;
-        D_5c5a[0]._4_z = D_5895_map_level;
-        D_5c5a[0]._1_animTile = D_5c5a[0]._0_tile = D_587c_partyTile;
+        D_5c5a[0].x = D_5896_map_x;
+        D_5c5a[0].y = D_5897_map_y;
+        D_5c5a[0].z = D_5895_map_level;
+        D_5c5a[0].animTile = D_5c5a[0].tile = D_587c_partyTile;
         
         for (local_e_am = 0; local_e_am < 0xb; local_e_am++)
         {
@@ -192,52 +192,52 @@ void ULTIMA_5394(void)
     // 542a
     for (local_c = 31; local_c >= 0; local_c--)
     {
-        if (D_5c5a[local_c]._0_tile != 0)
+        if (D_5c5a[local_c].tile != 0)
         {
-            local_8 = local_4_ab = D_5c5a[local_c]._2_x;
-            local_a = local_6 = D_5c5a[local_c]._3_y;
+            local_8 = local_4_ab = D_5c5a[local_c].x;
+            local_a = local_6 = D_5c5a[local_c].y;
 
             if (D_5893_map_id < 0x80)
             {
                 local_8 -= D_5896_map_x - 5;
                 local_a -= D_5897_map_y - 5;
-                if (D_5c5a[local_c]._4_z != D_5895_map_level || local_8 > 10 || local_a > 10)
+                if (D_5c5a[local_c].z != D_5895_map_level || local_8 > 10 || local_a > 10)
                     continue;
             }
 
-            if (D_5c5a[local_c]._1_animTile != 0 &&
+            if (D_5c5a[local_c].animTile != 0 &&
                 GetMapViewport(local_8, local_a) != 0xff &&
                 GetMapViewport(local_8, local_a) != TILE_MAP_87)
             {
-                if ((D_5c5a[local_c]._0_tile & 0xfc) == TILE_ACTOR_E8 || D_5c5a[local_c]._0_tile == TILE_ACTOR_SLEEP || D_5c5a[local_c]._0_tile == TILE_ACTOR_DEAD)
+                if ((D_5c5a[local_c].tile & 0xfc) == TILE_ACTOR_E8 || D_5c5a[local_c].tile == TILE_ACTOR_SLEEP || D_5c5a[local_c].tile == TILE_ACTOR_DEAD)
                 {
                     // 5503
                     if (GetMapViewport(local_8, local_a) != 0)
                     {
-                        GetActorMap(local_8, local_a) = D_5c5a[local_c]._1_animTile;
+                        GetActorMap(local_8, local_a) = D_5c5a[local_c].animTile;
                         GetMapViewport(local_8, local_a) = 0;
                     }
                 }
-                else if (D_5c5a[local_c]._1_animTile == TILE_ACTOR_1D || D_5c5a[local_c]._1_animTile == TILE_ACTOR_SLEEP)
+                else if (D_5c5a[local_c].animTile == TILE_ACTOR_1D || D_5c5a[local_c].animTile == TILE_ACTOR_SLEEP)
                 {
-                    GetActorMap(local_8, local_a) = D_5c5a[local_c]._1_animTile;
+                    GetActorMap(local_8, local_a) = D_5c5a[local_c].animTile;
                     GetMapViewport(local_8, local_a) = 0;
                 }
-                else if (D_5c5a[local_c]._0_tile == TILE_ACTOR_BARD)
+                else if (D_5c5a[local_c].tile == TILE_ACTOR_BARD)
                 {
                     if (GetMapViewport(local_8, local_a) == TILE_MAP_CHAIR_92)
                     {
-                        GetActorMap(local_8, local_a) = D_5c5a[local_c]._1_animTile;
+                        GetActorMap(local_8, local_a) = D_5c5a[local_c].animTile;
                         GetMapViewport(local_8, local_a) = 0;
                     }
                     else
                     {
-                        ULTIMA_51b8(local_8, local_a, local_4_ab, local_6, D_5c5a[local_c]._1_animTile - 8);
+                        ULTIMA_51b8(local_8, local_a, local_4_ab, local_6, D_5c5a[local_c].animTile - 8);
                     }
                 }
                 else
                 {
-                    ULTIMA_51b8(local_8, local_a, local_4_ab, local_6, D_5c5a[local_c]._1_animTile);
+                    ULTIMA_51b8(local_8, local_a, local_4_ab, local_6, D_5c5a[local_c].animTile);
                 }
             }
         }

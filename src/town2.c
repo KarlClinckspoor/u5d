@@ -113,7 +113,7 @@ void TOWN_11f0_Entry(int param_1)
     {
         for (local_4 = 1; local_4 < 0x20; local_4++)
         {
-            D_5c5a[local_4]._0_tile = 0;
+            D_5c5a[local_4].tile = 0;
         }
         D_5957 = 0;
         D_58a4 = 1;
@@ -220,7 +220,7 @@ static void TOWN_1352(int param_1)
     int local_4;
 
     local_4 = 0;
-    local_6_p = &D_5c5a[D_5f5e[D_65bf]._c];
+    local_6_p = &D_5c5a[D_5f5e[D_65bf].actorIdx];
 
     ULTIMA_5910_UpdateFrame();
 
@@ -231,7 +231,7 @@ static void TOWN_1352(int param_1)
             ULTIMA_16ba_PrintChar('\n');
             TOWN_10da(D_65bf);
         }
-        else if (local_6_p->_0_tile != TILE_ACTOR_GUARD)
+        else if (local_6_p->tile != TILE_ACTOR_GUARD)
         {
             local_4 = 1;
         }
@@ -254,7 +254,7 @@ static void TOWN_1352(int param_1)
 
     if (local_4 != 0)
     {
-        if (D_5c5a[D_5f5e[D_65bf]._c]._0_tile >= TILE_ACTOR_WIZARD)
+        if (D_5c5a[D_5f5e[D_65bf].actorIdx].tile >= TILE_ACTOR_WIZARD)
         {
             ULTIMA_1850_PrintString(_TEXT(0x2881, "\nAttacked!\n"));
             TOWN_09bc(D_65bf);
@@ -416,9 +416,9 @@ void TOWN_141e_MainLoop(void)
                 ULTIMA_39cc_SetTile(D_594f, D_5950, D_5951);
             }
             // 160d
-            D_5c5a[0]._2_x = D_5896_map_x;
-            D_5c5a[0]._3_y = D_5897_map_y;
-            D_5c5a[0]._4_z = D_5895_map_level;
+            D_5c5a[0].x = D_5896_map_x;
+            D_5c5a[0].y = D_5897_map_y;
+            D_5c5a[0].z = D_5895_map_level;
             if ((D_587c_partyTile < TILE_ACTOR_RIDING_HORSE || D_587c_partyTile >= TILE_ACTOR_CIRCLE || local_8 == 0x20 ||
                 (local_6 = !local_6, !local_6)) &&
                 D_587a != 'T' && (D_587a != 'Q' || (local_10_ad = !local_10_ad, !local_10_ad)))
@@ -451,7 +451,7 @@ void TOWN_1694(void)
     for (local_4 = 1; local_4 < 0x20; local_4++)
     {
         ULTIMA_3a74(0, 0, 0, 0, 0, 0, local_4);
-        D_5f5e[local_4]._c = 0;
+        D_5f5e[local_4].actorIdx = 0;
     }
 
     for (local_4 = 1; local_4 < 0x20; local_4++)
@@ -460,8 +460,8 @@ void TOWN_1694(void)
         {
             local_6_an = NPC_12e0(local_4, D_587f_hour);
             TOWN_1726(local_4, D_5d5e[local_4].x[local_6_an], D_5d5e[local_4].y[local_6_an], D_5d5e[local_4].z[local_6_an]);
-            D_5f5e[local_4]._0 = 1;
-            D_5f5e[local_4]._e = local_6_an;
+            D_5f5e[local_4].mode = 1;
+            D_5f5e[local_4].scheduleIdx = local_6_an;
             D_655e[local_4] = -1;
         }
     }
@@ -478,13 +478,13 @@ void TOWN_1726(int param_1, int param_2, int param_3, int param_4)
 
     local_4_c = &D_5f5e[param_1];
 
-    if (param_4 != D_5895_map_level && local_4_c->_c != 0)
+    if (param_4 != D_5895_map_level && local_4_c->actorIdx != 0)
     {
-        D_5c5a[local_4_c->_c]._0_tile = 0;
-        local_4_c->_c = 0;
+        D_5c5a[local_4_c->actorIdx].tile = 0;
+        local_4_c->actorIdx = 0;
     }
 
-    if (param_4 == D_5895_map_level && local_4_c->_c == 0)
+    if (param_4 == D_5895_map_level && local_4_c->actorIdx == 0)
     {
         local_6 = ULTIMA_38e4();
 
@@ -503,22 +503,22 @@ void TOWN_1726(int param_1, int param_2, int param_3, int param_4)
 
         ULTIMA_3a74(D_659e[param_1], D_659e[param_1], param_2, param_3, param_4, local_8, local_6);
 
-        D_5c5a[local_6]._6 = 0;
-        local_4_c->_c = local_6;
+        D_5c5a[local_6].animState = 0;
+        local_4_c->actorIdx = local_6;
     }
 
-    if (param_4 == D_5895_map_level && local_4_c->_c != 0)
+    if (param_4 == D_5895_map_level && local_4_c->actorIdx != 0)
     {
-        local_6 = local_4_c->_c;
-        D_5c5a[local_6]._2_x = param_2;
-        D_5c5a[local_6]._3_y = param_3;
-        D_5c5a[local_6]._4_z = param_4;
+        local_6 = local_4_c->actorIdx;
+        D_5c5a[local_6].x = param_2;
+        D_5c5a[local_6].y = param_3;
+        D_5c5a[local_6].z = param_4;
     }
 
-    local_4_c->_2_x = param_2;
-    local_4_c->_4_y = param_3;
-    local_4_c->_6_z = param_4;
-    local_4_c->_0 = 1;
+    local_4_c->x = param_2;
+    local_4_c->y = param_3;
+    local_4_c->z = param_4;
+    local_4_c->mode = 1;
 }
 
 // after the last of TOWN's strings in its _DATA (DS:28c6)

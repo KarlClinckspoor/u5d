@@ -99,15 +99,15 @@ static void DUNGEON_111e(int param_1)
 
     if (D_587a == 'T')
     {
-        D_5c5a[1]._6 = D_1744[D_5c5a[1]._0_tile];
+        D_5c5a[1].animState = D_1744[D_5c5a[1].tile];
     }
 
     // 113a
-    local_c = D_5c5a[1]._7 == 0xff;
+    local_c = D_5c5a[1].extra == 0xff;
     // 1148
-    local_a = (D_5c5a[1]._6 & 0x90);
-    local_4_b = (D_5c5a[1]._6 & 0x60);
-    local_8 = D_5c5a[1]._6 & 0xf;
+    local_a = (D_5c5a[1].animState & 0x90);
+    local_4_b = (D_5c5a[1].animState & 0x60);
+    local_8 = D_5c5a[1].animState & 0xf;
 
     if (D_587a == 'T')
     {
@@ -155,7 +155,7 @@ static void DUNGEON_111e(int param_1)
         // 1220
         ULTIMA_0d4c_GRAP_4b_PutImage(D_a9c6, local_6 * 3 + param_1 - 1, D_2e2a[param_1], D_2e32[local_c][param_1], local_c);
         ULTIMA_0bfc_GRAP_63(D_a9c6, local_e_lc * 3 + param_1 - 1, 0x60, D_2e32[local_c][param_1], local_c);
-        D_5c5a[1]._6 = local_4_b + local_a + local_8;
+        D_5c5a[1].animState = local_4_b + local_a + local_8;
     }
 }
 
@@ -581,7 +581,7 @@ L_field:
             DUNGEON_134a((int)x, 1, 1);
         }
 
-        if (param_3 != 0 && (u8)(param_1 & 7) == D_5c5a[1]._2_x && (u8)(param_2 & 7) == D_5c5a[1]._3_y)
+        if (param_3 != 0 && (u8)(param_1 & 7) == D_5c5a[1].x && (u8)(param_2 & 7) == D_5c5a[1].y)
         {
             DUNGEON_111e(param_3);
         }
@@ -655,7 +655,7 @@ L_wall:
         DUNGEON_134a(param_3 * 2 + D_2f1e[6], 1, 1);
     }
 
-    if (param_3 != 0 && (u8)(param_1 & 7) == D_5c5a[1]._2_x && (u8)(param_2 & 7) == D_5c5a[1]._3_y)
+    if (param_3 != 0 && (u8)(param_1 & 7) == D_5c5a[1].x && (u8)(param_2 & 7) == D_5c5a[1].y)
     {
         DUNGEON_111e(param_3);
     }
@@ -836,13 +836,13 @@ int DUNGEON_1d4a_AttackCmd(void)
 
     local_6 = (D_24d6[D_6603] + D_5896_map_x) & 7;
     local_8 = (D_24de[D_6603] + D_5897_map_y) & 7;
-    if (local_6 == D_5c5a[1]._2_x && local_8 == D_5c5a[1]._3_y)
+    if (local_6 == D_5c5a[1].x && local_8 == D_5c5a[1].y)
     {
         D_58a1 = 2;
         DNGLOOK_1130();
         DNGLOOK_0c6c();
         DNGLOOK_0d3e();
-        ULTIMA_5f86_SpecialMapHandler(2, D_5c5a[1]._5, 0);
+        ULTIMA_5f86_SpecialMapHandler(2, D_5c5a[1].value, 0);
 
         if (D_58a0 == 5)
         {

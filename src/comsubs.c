@@ -43,7 +43,7 @@ void COMSUBS_0056(void)
 
     for (iVar2 = 0; iVar2 < 0x20; iVar2++)
     {
-        if ((D_5c5a[iVar2]._0_tile & 0xfc) == TILE_ACTOR_E8)
+        if ((D_5c5a[iVar2].tile & 0xfc) == TILE_ACTOR_E8)
         {
             if (ULTIMA_2092_RandomRange(0, 0xff) < 0x10)
             {
@@ -130,17 +130,17 @@ int COMSUBS_00f4(int param_1)
     {
         ULTIMA_16ba_PrintChar('\n');
         COMSUBS_0094_PrintName(param_1);
-        if (D_5c5a[local_c]._1_animTile == 0)
+        if (D_5c5a[local_c].animTile == 0)
         {
             ULTIMA_1850_PrintString(_TEXT(0x99c2, " reappears!"));
             D_ba14[param_1].flags &= ~COMBAT_FLAGS_INVISIBLE;
-            D_5c5a[local_c]._1_animTile = D_5c5a[local_c]._0_tile;
+            D_5c5a[local_c].animTile = D_5c5a[local_c].tile;
         }
         else
         {
             ULTIMA_1850_PrintString(_TEXT(0x99ce, " disappears!"));
             D_ba14[param_1].flags |= COMBAT_FLAGS_INVISIBLE;
-            D_5c5a[local_c]._1_animTile = 0;
+            D_5c5a[local_c].animTile = 0;
         }
 
         return 1;
@@ -162,11 +162,11 @@ int COMSUBS_00f4(int param_1)
 
                     local_a = &D_5c5a[D_ba14[local_8].actorIdx];
 
-                    local_a->_0_tile = local_a->_1_animTile = TILE_ACTOR_CIRCLE;
+                    local_a->tile = local_a->animTile = TILE_ACTOR_CIRCLE;
 
                     ULTIMA_1068(0x1d8, D_5876, D_5878);
 
-                    local_a->_0_tile = local_a->_1_animTile = TILE_ACTOR_D8;
+                    local_a->tile = local_a->animTile = TILE_ACTOR_D8;
 
                     return 1;
                 }
@@ -215,7 +215,7 @@ void COMSUBS_0312(int param_1, int param_2)
                     ULTIMA_1850_PrintString(_TEXT(0x9a10, " dragged under!\n"));
                     ULTIMA_43ae_AudioSweepTone(0x4b0, 2000, 1, 0x28);
                     D_ba14[param_1].flags |= COMBAT_FLAGS_4;
-                    D_5c5a[D_ba14[param_1].actorIdx]._1_animTile = 0;
+                    D_5c5a[D_ba14[param_1].actorIdx].animTile = 0;
                     ULTIMA_3ae6(4);
                 }
                 else
@@ -308,11 +308,11 @@ int COMSUBS_0504(int param_1, int param_2)
     ActorFmt* local_8;
 
     D_5898 = 1;
-    local_c = D_5c5a[D_ba14[param_1].actorIdx]._7;
+    local_c = D_5c5a[D_ba14[param_1].actorIdx].extra;
     local_8 = &D_5c5a[D_ba14[local_c].actorIdx];
 
     if (local_c > 0x1f || (D_ba14[local_c].flags & (COMBAT_FLAGS_DEAD | COMBAT_FLAGS_INVISIBLE)) != 0 || D_ba14[local_c].flags == 0 ||
-        local_8->_0_tile == 0 || COMSUBS_04d4(param_1, local_c) > param_2)
+        local_8->tile == 0 || COMSUBS_04d4(param_1, local_c) > param_2)
     {
         // e742
         local_c = param_1;
@@ -433,7 +433,7 @@ int COMSUBS_0748(int param_1, int param_2)
         {
             local_4_ab = D_ba14[local_6].flags;
 
-            if (D_5c5a[D_ba14[local_6].actorIdx]._1_animTile != TILE_ACTOR_F4)
+            if (D_5c5a[D_ba14[local_6].actorIdx].animTile != TILE_ACTOR_F4)
             {
                 if ((local_4_ab & (COMBAT_FLAGS_PLAYER | COMBAT_FLAGS_MONSTER)) != 0 && (local_4_ab & COMBAT_FLAGS_DEAD) == 0)
                 {
@@ -641,11 +641,11 @@ static void COMSUBS_0a68(int param_1, int param_2, int param_3)
             }
 
             local_a = &D_5c5a[D_ba14[param_1].actorIdx];
-            local_a->_7 = 0xff;
+            local_a->extra = 0xff;
             local_c = local_e_am = COMSUBS_0748(D_5899, D_589a);
             if (local_c > -1)
             {
-                local_a->_7 = local_c;
+                local_a->extra = local_c;
                 COMSUBS_097c(param_2, local_10_aa);
                 local_4_ab = COMBAT_14d6(local_c, param_1, -D_588f, param_2);
                 local_c = COMSUBS_0822(param_1, D_5899, D_589a, local_4_ab, param_3);
@@ -753,7 +753,7 @@ void COMSUBS_0c52(int param_1, int param_2)
         }
         else
         {
-            D_5c5a[D_ba14[param_1].actorIdx]._7 = local_8;
+            D_5c5a[D_ba14[param_1].actorIdx].extra = local_8;
             COMSUBS_0bf8(param_1, local_8, param_2);
         }
     }

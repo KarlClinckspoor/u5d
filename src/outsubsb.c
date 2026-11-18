@@ -34,12 +34,12 @@ void OUTSUBS_0658(void)
 
     local_ptr = &D_5c5a[10];
     
-    D_5c5a[10]._2_x = D_5c5a[10]._3_y = 5;
-    D_5c5a[10]._0_tile = D_5c5a[10]._1_animTile = TILE_ACTOR_CIRCLE;
+    D_5c5a[10].x = D_5c5a[10].y = 5;
+    D_5c5a[10].tile = D_5c5a[10].animTile = TILE_ACTOR_CIRCLE;
 
     ULTIMA_1068(0x174, 5, 5);
 
-    D_5c5a[10]._0_tile = D_5c5a[10]._1_animTile = TILE_ACTOR_74;
+    D_5c5a[10].tile = D_5c5a[10].animTile = TILE_ACTOR_74;
 
     for (local_8 = 0; local_8 < D_585b_partyCount; local_8++)
     {
@@ -58,9 +58,9 @@ void OUTSUBS_0658(void)
             }
 
             local_6_aa = ULTIMA_4d76_FindIndex(_TEXT(0x7760, CLASS_LIST), D_55a8_party[local_8].cls);
-            local_ptr->_0_tile = local_ptr->_1_animTile = D_1ade[local_6_aa];
+            local_ptr->tile = local_ptr->animTile = D_1ade[local_6_aa];
 
-            D_5c5a[10]._6 = 0;
+            D_5c5a[10].animState = 0;
 
             ULTIMA_3ae6(1);
             ULTIMA_2192_AudioPulse(5500, 1, 5000, 200, 13);
@@ -70,7 +70,7 @@ void OUTSUBS_0658(void)
 
             for (local_a = 0; local_a < 3; local_a++)
             {
-                D_5c5a[10]._6 = 1;
+                D_5c5a[10].animState = 1;
                 ULTIMA_3ae6(1);
             }
 
@@ -146,11 +146,11 @@ void OUTSUBS_0658(void)
     ULTIMA_266c_GetChar();
     ULTIMA_1850_PrintString(_TEXT(0x77f8, "\n\nThe strangely familiar old man vanishes...\n"));
 
-    D_5c5a[10]._0_tile = D_5c5a[10]._1_animTile = TILE_ACTOR_CIRCLE;
+    D_5c5a[10].tile = D_5c5a[10].animTile = TILE_ACTOR_CIRCLE;
 
     ULTIMA_1068(GetCombatMap(5, 5), 5, 5);
 
-    D_5c5a[10]._0_tile = D_5c5a[10]._1_animTile = 0;
+    D_5c5a[10].tile = D_5c5a[10].animTile = 0;
 
     ULTIMA_3ae6(1);
     ULTIMA_4f7c(0);

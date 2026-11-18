@@ -72,15 +72,15 @@ void MAINOUT_109e(void)
     if ((D_587c_partyTile & 0xf8) == TILE_ACTOR_FRIGATE_20)
     {
         local_4 = ULTIMA_2092_RandomRange(1, 0x1e);
-        if (local_4 < D_5c5a[0]._5)
+        if (local_4 < D_5c5a[0].value)
         {
-            D_5c5a[0]._5 -= local_4;
+            D_5c5a[0].value -= local_4;
             ULTIMA_2900_UpdateVitalsDisplay();
         }
         else
         {
             ULTIMA_1850_PrintString(_TEXT(0x6ada, "Ship sunk!\n"));
-            local_6_an = D_5c5a[0]._7;
+            local_6_an = D_5c5a[0].extra;
             if (local_6_an > 0 || D_57b0 != 0)
             {
                 ULTIMA_1850_PrintString(_TEXT(0x6ae6, "Abandon ship!\n"));
@@ -127,25 +127,25 @@ static void MAINOUT_1168(int param_1, int param_2, int param_3)
 
     if (param_2 == 0)
     {
-        if (D_5c5a[param_1]._1_animTile == TILE_ACTOR_PIRATE || D_5c5a[param_1]._1_animTile == TILE_ACTOR_2E)
+        if (D_5c5a[param_1].animTile == TILE_ACTOR_PIRATE || D_5c5a[param_1].animTile == TILE_ACTOR_2E)
         {
-            D_5c5a[param_1]._1_animTile = (ULTIMA_2092_RandomRange(0, 3) & 2) + TILE_ACTOR_2D;
+            D_5c5a[param_1].animTile = (ULTIMA_2092_RandomRange(0, 3) & 2) + TILE_ACTOR_2D;
         }
     }
 
     if (param_3 == 0)
     {
-        if (D_5c5a[param_1]._1_animTile == TILE_ACTOR_2D || D_5c5a[param_1]._1_animTile == TILE_ACTOR_2F)
+        if (D_5c5a[param_1].animTile == TILE_ACTOR_2D || D_5c5a[param_1].animTile == TILE_ACTOR_2F)
         {
-            D_5c5a[param_1]._1_animTile = (ULTIMA_2092_RandomRange(0, 3) & 2) + TILE_ACTOR_PIRATE;
+            D_5c5a[param_1].animTile = (ULTIMA_2092_RandomRange(0, 3) & 2) + TILE_ACTOR_PIRATE;
         }
     }
 
     ULTIMA_5910_UpdateFrame();
     ULTIMA_43ae_AudioSweepTone(0x514, 300, 5, 100);
 
-    local_6 = D_5c5a[param_1]._2_x - D_5896_map_x + 5;
-    local_8 = D_5c5a[param_1]._3_y - D_5897_map_y + 5;
+    local_6 = D_5c5a[param_1].x - D_5896_map_x + 5;
+    local_8 = D_5c5a[param_1].y - D_5897_map_y + 5;
     local_4_ab = COMSUBS_12de(local_6, local_8, 5, 5, 1);
     if (local_4_ab != 0)
     {
@@ -159,7 +159,7 @@ static void MAINOUT_1248(int param_1)
 {
     int local_4;
 
-    if ((D_5c5a[param_1]._0_tile & 0xfc) == TILE_ACTOR_WHIRLPOOL)
+    if ((D_5c5a[param_1].tile & 0xfc) == TILE_ACTOR_WHIRLPOOL)
     {
         if (D_587c_partyTile == TILE_ACTOR_AVATAR)
         {
@@ -168,7 +168,7 @@ static void MAINOUT_1248(int param_1)
         }
         else
         {
-            D_5c5a[param_1]._0_tile = D_5c5a[param_1]._1_animTile = 0;
+            D_5c5a[param_1].tile = D_5c5a[param_1].animTile = 0;
             ULTIMA_1850_PrintString(_TEXT(0x6b04, "\nWHIRLPOOL!\n"));
 
             local_4 = D_587c_partyTile;
@@ -193,7 +193,7 @@ static void MAINOUT_1248(int param_1)
 #endif
         }
     }
-    else if ((D_5c5a[param_1]._0_tile & 0xfc) != TILE_ACTOR_E0)
+    else if ((D_5c5a[param_1].tile & 0xfc) != TILE_ACTOR_E0)
     {
         ULTIMA_5910_UpdateFrame();
         ULTIMA_1850_PrintString(_TEXT(0x6b12, "\nAttacked!\n"));
@@ -225,14 +225,14 @@ static int MAINOUT_131a(int param_1)
     int local_6;
     int local_4_ab;
 
-    local_c = D_5c5a[param_1]._0_tile;
-    local_6 = abs(D_5c5a[param_1]._2_x - D_5896_map_x);
+    local_c = D_5c5a[param_1].tile;
+    local_6 = abs(D_5c5a[param_1].x - D_5896_map_x);
     if (local_6 > 0x7f)
     {
         local_6 = 0x100 - local_6;
     }
 
-    local_8 = abs(D_5c5a[param_1]._3_y - D_5897_map_y);
+    local_8 = abs(D_5c5a[param_1].y - D_5897_map_y);
     if (local_8 > 0x7f)
     {
         local_8 = 0x100 - local_8;
@@ -251,8 +251,8 @@ static int MAINOUT_131a(int param_1)
             ULTIMA_5910_UpdateFrame();
             ULTIMA_43ae_AudioSweepTone(0x514, 300, 5, 100);
 
-            local_a = D_5c5a[param_1]._2_x - D_5896_map_x + 5;
-            local_e_am = D_5c5a[param_1]._3_y - D_5897_map_y + 5;
+            local_a = D_5c5a[param_1].x - D_5896_map_x + 5;
+            local_e_am = D_5c5a[param_1].y - D_5897_map_y + 5;
 
             local_4_ab = COMSUBS_12de(local_a, local_e_am, 5, 5, 3);
             if (local_4_ab != 0)
@@ -276,7 +276,7 @@ static int MAINOUT_131a(int param_1)
 
 static int MAINOUT_1482(int param_1, int param_2, int param_3)
 {
-    if (ULTIMA_2c4c_IsWalkableTile(D_5c5a[param_1]._0_tile, *ULTIMA_4402_GetTileAddr(param_2, param_3)) == 0)
+    if (ULTIMA_2c4c_IsWalkableTile(D_5c5a[param_1].tile, *ULTIMA_4402_GetTileAddr(param_2, param_3)) == 0)
         return 0;
 
     if (ULTIMA_3702(param_2, param_3, D_5895_map_level) != 0)
@@ -300,13 +300,13 @@ static int MAINOUT_14ea(int param_1)
     int local_6_an;
     int local_4;
 
-    local_4 = abs(D_5c5a[param_1]._2_x - D_5896_map_x);
+    local_4 = abs(D_5c5a[param_1].x - D_5896_map_x);
     if (local_4 > 0x7f)
     {
         local_4 = 0x100 - local_4;
     }
 
-    local_6_an = abs(D_5c5a[param_1]._3_y - D_5897_map_y);
+    local_6_an = abs(D_5c5a[param_1].y - D_5897_map_y);
     if (local_6_an > 0x7f)
     {
         local_6_an = 0x100 - local_6_an;
@@ -328,9 +328,9 @@ static void MAINOUT_1578(int param_1, int param_2, int param_3)
     int local_8;
     int local_4_ab;
 
-    local_6 = D_5c5a[param_1]._0_tile;
-    local_8 = D_5c5a[param_1]._2_x + param_2;
-    local_a = D_5c5a[param_1]._3_y + param_3;
+    local_6 = D_5c5a[param_1].tile;
+    local_8 = D_5c5a[param_1].x + param_2;
+    local_a = D_5c5a[param_1].y + param_3;
     local_c = *ULTIMA_4402_GetTileAddr(local_8, local_a);
     if ((local_6 & 0xfc) == TILE_ACTOR_PIRATE)
     {
@@ -351,7 +351,7 @@ static void MAINOUT_1578(int param_1, int param_2, int param_3)
             local_4_ab = 3;
         }
 
-        D_5c5a[param_1]._0_tile = D_5c5a[param_1]._1_animTile = local_4_ab + TILE_ACTOR_PIRATE;
+        D_5c5a[param_1].tile = D_5c5a[param_1].animTile = local_4_ab + TILE_ACTOR_PIRATE;
     }
     else if (local_6 != TILE_ACTOR_DC && local_6 != TILE_ACTOR_94 && local_6 != TILE_ACTOR_D8 && local_6 != TILE_ACTOR_F0)
     {
@@ -382,16 +382,16 @@ static void MAINOUT_1578(int param_1, int param_2, int param_3)
         }
     }
 
-    D_a526 = D_5c5a[param_1]._2_x;
-    D_a527 = D_5c5a[param_1]._3_y;
+    D_a526 = D_5c5a[param_1].x;
+    D_a527 = D_5c5a[param_1].y;
 
-    D_5c5a[param_1]._2_x = local_8;
-    D_5c5a[param_1]._3_y = local_a;
+    D_5c5a[param_1].x = local_8;
+    D_5c5a[param_1].y = local_a;
     D_24e6 |= 2;
 
     if (*ULTIMA_4402_GetTileAddr(local_8, local_a) == TILE_MAP_MOONGATE)
     {
-        D_5c5a[param_1]._0_tile = D_5c5a[param_1]._1_animTile = 0;
+        D_5c5a[param_1].tile = D_5c5a[param_1].animTile = 0;
     }
 }
 
@@ -405,8 +405,8 @@ static void MAINOUT_16fc(int param_1)
     int local_6;
     int local_4_ab;
 
-    local_6 = D_5c5a[param_1]._2_x;
-    local_8 = D_5c5a[param_1]._3_y;
+    local_6 = D_5c5a[param_1].x;
+    local_8 = D_5c5a[param_1].y;
 
     local_4_ab = 0;
     local_a = local_6 - 1;
@@ -480,15 +480,15 @@ static void MAINOUT_17d4(int param_1, int param_2)
     int local_6;
     int local_4_ab;
 
-    local_8 = D_5c5a[param_1]._2_x;
-    local_c = D_5c5a[param_1]._3_y;
-    local_a = (D_5c5a[param_1]._2_x - D_5896_map_x) & 0xff;
+    local_8 = D_5c5a[param_1].x;
+    local_c = D_5c5a[param_1].y;
+    local_a = (D_5c5a[param_1].x - D_5896_map_x) & 0xff;
     if (local_a > 0x7f)
     {
         local_a -= 0x100;
     }
 
-    local_e_am = (D_5c5a[param_1]._3_y - D_5897_map_y) & 0xff;
+    local_e_am = (D_5c5a[param_1].y - D_5897_map_y) & 0xff;
     if (local_e_am > 0x7f)
     {
         local_e_am -= 0x100;
@@ -620,11 +620,11 @@ static void MAINOUT_198c(int param_1)
     int local_6;
     uint local_4_ab;
 
-    local_8 = D_5c5a[param_1]._0_tile;
+    local_8 = D_5c5a[param_1].tile;
     if ((local_8 & 0xfc) == TILE_ACTOR_WHIRLPOOL)
     {
-        D_5c5a[param_1]._5 ^= 1;
-        if (D_5c5a[param_1]._5 == 0)
+        D_5c5a[param_1].value ^= 1;
+        if (D_5c5a[param_1].value == 0)
         {
             return;
         }
@@ -637,7 +637,7 @@ static void MAINOUT_198c(int param_1)
     }
     else if (local_8 == TILE_ACTOR_SHADOWLORD)
     {
-        if (MAINOUT_14ea(param_1) != 0 && D_5c5a[param_1]._5++ < 0x14)
+        if (MAINOUT_14ea(param_1) != 0 && D_5c5a[param_1].value++ < 0x14)
         {
             MAINOUT_17d4(param_1, 0);
             return;
@@ -650,12 +650,12 @@ static void MAINOUT_198c(int param_1)
             return;
         }
 
-        local_6 = D_5c5a[param_1]._0_tile - TILE_ACTOR_PIRATE;
+        local_6 = D_5c5a[param_1].tile - TILE_ACTOR_PIRATE;
 
         local_4_ab = D_2bf8[local_6][D_5892_wind_dir - 1];
-        if (local_4_ab != 4 && local_4_ab < ++D_5c5a[param_1]._7)
+        if (local_4_ab != 4 && local_4_ab < ++D_5c5a[param_1].extra)
         {
-            D_5c5a[param_1]._7 = 0;
+            D_5c5a[param_1].extra = 0;
             return;
         }
     }
@@ -699,7 +699,7 @@ int MAINOUT_1a60(void)
 
     for (local_6_an = 0x1f; 0 < local_6_an; local_6_an--)
     {
-        if (MAINOUT_105c(D_5c5a[local_6_an]._0_tile) != 0)
+        if (MAINOUT_105c(D_5c5a[local_6_an].tile) != 0)
         {
             local_4 += MAINOUT_131a(local_6_an);
             if (local_4 == 0)
@@ -711,8 +711,8 @@ int MAINOUT_1a60(void)
 
     for (local_6_an = 0x1f; 0 < local_6_an; local_6_an--)
     {
-        if (MAINOUT_105c(D_5c5a[local_6_an]._0_tile) != 0 &&
-            ((byte)(D_5c5a[local_6_an]._2_x - D_589b) > 0x1f || (byte)(D_5c5a[local_6_an]._3_y - D_589c) > 0x1f))
+        if (MAINOUT_105c(D_5c5a[local_6_an].tile) != 0 &&
+            ((byte)(D_5c5a[local_6_an].x - D_589b) > 0x1f || (byte)(D_5c5a[local_6_an].y - D_589c) > 0x1f))
         {
             ULTIMA_3a74(0, 0, 0, 0, 0, 0, local_6_an);
         }

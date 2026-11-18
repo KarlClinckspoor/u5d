@@ -76,7 +76,7 @@ void INTRO_0986_Main(void)
     if (D_52c8 == VDP_VIDEO_TANDY && D_5358 < 0x170)
     {
         D_52f1_forceTandy = 0;
-        D_52ba_vdp._52ba_forceCga = 1;
+        D_52ba_vdp.forceCga = 1;
         D_52c8 = VDP_VIDEO_CGA;
     }
 
@@ -414,7 +414,7 @@ void INTRO_0986_Main(void)
                     ULTIMA_25d8_WriteFileToDisk(/*0x3266*/ "UNDER.OOL", D_b31e, 0x100);
                 }
                 ULTIMA_2e96_SetWindDirection(-1);
-                D_52ba_vdp._52be_tileYOffset = 8;
+                D_52ba_vdp.tileYOffset = 8;
                 return;
             }
             break;
@@ -603,8 +603,8 @@ L_1048:
 
     ULTIMA_256e_ReadFileFromDisk(/*0x32f9*/ "party.sav", &D_bb1c, 0xb6, 0x140);
 
-    if (D_bb1c._6 == 0 && D_bb1c._8 == 0 && D_bb1c._a == 0 && D_bb1c._c == 0 && D_bb1c._e == 0 && D_bb1c._10 == 0 &&
-        D_bb1c._12 == 0 && D_bb1c._14 == 0)
+    if (D_bb1c.honesty == 0 && D_bb1c.compassion == 0 && D_bb1c.valor == 0 && D_bb1c.justice == 0 && D_bb1c.sacrifice == 0 && D_bb1c.honor == 0 &&
+        D_bb1c.spirituality == 0 && D_bb1c.humility == 0)
     {
         D_3304 = 1;
     }
