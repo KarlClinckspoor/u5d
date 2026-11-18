@@ -247,21 +247,16 @@ from a rule or from source, each named where it lives:
   D_bd14, D_bd3a, D_bd3b) are referenced by no code and declared only to fill the layout.
 - **`D_6608_overworld`** is a linker definition; which object defined the second name is
   not known.
-- **The EXE checksum** (0x7e39) is copied (the script's `exe` line); what PLINK86 summed
-  was not found. Tried (MATCHING.md, "The link"): word and byte sums and XORs over every
-  range between the header's fields, the relocation table, the image and PLINK86's
-  segments, with the overlays and DATA.OVL, CRC-16s, rotating sums; all also on the file
-  with GOG's eight patched bytes of ULTIMA_2322 restored (its MZ checksum would be e957,
-  the GOG file's 0d37). Left: the sum of the program as PLINK86 wrote it before the
-  overlays and DGROUP went to their own files, whose header is unknown. PLINK86 1.28
-  (1983, archive.org) writes the plain MZ checksum of the EXE when the overlays go to
-  files of their own. Ultima V's linker was PLINK86plus 2.24 (its loader has 2.24's bytes
-  wherever 2.21's and 2.24's differ), which also writes the plain MZ checksum of the EXE:
-  so ULTIMA.EXE was changed after the link in more than GOG's eight bytes; the change is
-  dated January 1992 (ULTIMA.EXE 1992-01-09, INTRO.OVL 1992-01-20, the other overlays
-  1988-10-19), not GOG's (MATCHING.md,
-  "The link"). 2.24 itself is now at hand (`../tools/plink86plus-2.24`): linking u5d's
-  objects with it could test the link script's placement facts and the communal order.
+- **The EXE checksum** (0x7e39) is copied (the script's `exe` line), but now explained:
+  it is PLINK86plus 2.24's MZ checksum of the linked program before Origin's
+  copy-protection wrapper (PLSTART, CS:81d0-86f0) was appended, with PLINK's entry point
+  072e:0322 and stack 1b38:0800 (found with the 1988 release's ULTIMA.EXE; MATCHING.md,
+  "The link"). Left: computing it in u5link instead of copying it.
+- **The 1988 release** (v1.16 720K, `../gamedata-1988`, outside the repository) differs from
+  GOG's (1992) in ULTIMA.EXE (43 bytes: the wrapper's entry, ULTIMA_2322, one byte in
+  A1EAC) and INTRO.OVL (31 bytes, INTRO_132a). Against it, ULTIMA_2322 and INTRO_132a are
+  compiler output (u5d's 1.16 C: 506/508 and 2796/2808 bytes). Open: whether to target it
+  as well as GOG's.
 - **Stand-in devices** in the source, each explained in its note: ULTIMA_1850's comment-line
   padding, TOWN_0f02's dead references (both pass 2's pool), DUNGEON_1952's register slot
   sharing, AINTRO2's BYTE-aligned `_DATA`, A2322 holding D_545e and r2320's strings.

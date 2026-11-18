@@ -207,6 +207,36 @@ identical and every name defined. It opens no game file to link.
   the same bytes again: its main folder is GOG's, and the upgrade's changed EXE and overlays
   are the fans' patches of those.
 
+- **The 1988 release, and the checksum solved.** Disk images of the 1988 release (TOSEC
+  sets: v1.14 360K, v1.16 360K, v1.16 720K; the program disk both as a cracked `.ima` and
+  as flux images of the copy-protected original, `.mfm`/`.86f`) have the October 1988 files.
+  `research/disks/hxcmfm.py` decodes an HxC `.mfm` image to sectors (the 720K program
+  disk decodes cleanly but for track 6 side 0, the protection: 1024-byte sectors and
+  sectors numbered 170-190), `research/disks/fat12.py` reads a FAT12 image. Of v1.16 720K
+  (program disk `[cp]` and player disk), every overlay and DATA.OVL is GOG's, dated
+  1988-10-19 09:32/09:33; ULTIMA.EXE (09:33) and INTRO.OVL (09:32) are not. They are kept
+  outside the repository as `../gamedata-1988` (the player disk plus the program disk).
+  - ULTIMA.EXE, 1988 against GOG (1992): 43 bytes. CS:81d0-81f3 (36 bytes), CS:2405-2409
+    and 24aa-24ac (ULTIMA_2322, the eight known bytes), CS:1f0b (one byte, `45` -> `5a`,
+    in A1EAC: probably the highest drive letter accepted, `E` -> `Z`). The cracked image's
+    ULTIMA.EXE differs from the original in 11 header bytes only.
+  - INTRO.OVL, 1988 against GOG: 31 bytes, all in INTRO_132a (1332-134d, 1392-139a).
+  - **PLSTART (CS:81d0-86f0) is Origin's copy-protection wrapper**, not PLINK's: the 1988
+    file starts there with a jump and a call into it; the 1992 file has a 36-byte stub in
+    its place that sets SS:SP to (load + 1b38):0800 and returns to 072e:0322, PLINK's start
+    in the loader's segment. The wrapper was appended to the linked program and took the
+    entry point; the rest of its 0x520 bytes is the same in both files.
+  - **The checksum is PLINK's MZ checksum of the program before the wrapper**: the 1988
+    ULTIMA.EXE with the image cut at 81d0, CS:IP 072e:0322, SS:SP 1b38:0800 and the size
+    fields set to match, every other header field as it is (0x800-byte header, the same
+    409 relocations, minimum allocation 139b), sums to 7e39. So the `exe` line's checksum
+    is a rule now: the MZ checksum of the linked image without PLSTART, with PLINK's
+    entry point and stack.
+  - u5d's C for both functions, written for 1.16 and compiled only for the native build,
+    is close to the 1988 bytes: ULTIMA_2322 506 of 508 bytes (first difference at 0x23),
+    INTRO_132a 2796 of 2808 (at 0x05) (`U5_GAMEDATA=../gamedata-1988`, variants.py with
+    the `#if` opened). With the 1988 files as the target, both are compiler output again.
+
 ### Linking with PLINK86plus 2.24
 
 The original linker links u5d's own objects (`research/plink/plu5.py`, `plcmp.py`; the linker
