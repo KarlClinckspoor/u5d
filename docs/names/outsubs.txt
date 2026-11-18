@@ -1,0 +1,66 @@
+# OUTSUBS (outsubs.c + outsubsb.c): the overworld's helpers: loading the four map chunks in view from BRIT.DAT /
+# UNDER.DAT, entering a town, falling, the underworld's items, burning and poison tiles, the apparition. One overlay.
+# functions
+OUTSUBS_0000 OUTSUBS_0000_DungeonSealedAt          # the chunk of a dungeon (table D_3866) whose dungeon is sealed (D_58d0 == 0)? 1 when not in the table too
+OUTSUBS_004a OUTSUBS_004a_ShrineDestroyedAt        # the chunk is a shrine's (D_386e) and the shrine is destroyed (bit 7 of D_58d8)
+OUTSUBS_0098 OUTSUBS_0098_LoadChunk                # reads one 16x16 chunk into slot 0-3 of D_6608; sealed dungeons and destroyed shrines get their changed tile
+OUTSUBS_01b4 OUTSUBS_01b4_LoadViewChunks           # loads the chunks that come into view (-1/1 steps in x and y); finds the lighthouse beacon (tile 0x1b) in the four
+OUTSUBS_02c8 OUTSUBS_02c8_ShiftChunks              # after a scroll, copies the two chunks that stay in view to their new slots
+OUTSUBS_0566 OUTSUBS_0566_PlaceAmuletShards     # in the underworld: the Amulet's piece and the shards not yet taken (Shadowlord alive) are actors on the map
+#= OUTSUBS_0368_GetWorldSavefile # the saved-map file of the level: BRIT.OOL on the surface, UNDER.OOL below
+#= OUTSUBS_0388_EnterTown # prints the verb, finds the town at the party's position (D_1e8a/D_1eb2) and enters it: 0, or 1 with "What town?"
+#= OUTSUBS_0458_Falls # "F-A-L-L-S!!!": hurts the party, and at the one hole (0x36, 0x8a) falls into the underworld
+#= OUTSUBS_05ee_StepOnBurningTile # "Burning!": the party is damaged
+#= OUTSUBS_05fc_StepOnPoisonTile # each living member may be poisoned (dexterity against a roll of 1 to 30)
+OUTSUBS_0658 OUTSUBS_0658_Apparition # "An apparition!": heals the party, raises levels by experience, then speaks a speech chosen by karma
+# locals and parameters
+outsubs.c:OUTSUBS_0000 param_1 chunkWord
+outsubs.c:OUTSUBS_0000 local2_4 index
+outsubs.c:OUTSUBS_0000 local1_6 sealed
+outsubs.c:OUTSUBS_004a param_1 chunkWord
+outsubs.c:OUTSUBS_004a local2_4 index
+outsubs.c:OUTSUBS_004a local1_6 destroyed
+outsubs.c:OUTSUBS_0098 param_1 fileName
+outsubs.c:OUTSUBS_0098 param_2 slot
+outsubs.c:OUTSUBS_0098 param_3 chunkWord
+outsubs.c:OUTSUBS_0098 local_c row
+outsubs.c:OUTSUBS_0098 local_a col
+outsubs.c:OUTSUBS_0098 local_8 baseY
+outsubs.c:OUTSUBS_0098 local_6 baseX
+outsubs.c:OUTSUBS_0098 local_4_ab fileOffset
+outsubs.c:OUTSUBS_01b4 param_1 stepX
+outsubs.c:OUTSUBS_01b4 param_2 stepY
+outsubs.c:OUTSUBS_01b4 local_c beaconOffset
+outsubs.c:OUTSUBS_01b4 local_a originWord
+outsubs.c:OUTSUBS_01b4 local_8 beaconPtr
+outsubs.c:OUTSUBS_01b4 local_6 rightStep
+outsubs.c:OUTSUBS_01b4 local_4_ab fileName
+outsubs.c:OUTSUBS_02c8 param_1 stepX
+outsubs.c:OUTSUBS_02c8 param_2 stepY
+outsubs.c:OUTSUBS_02c8 local_a srcSlotB
+outsubs.c:OUTSUBS_02c8 local_8 srcSlotA
+outsubs.c:OUTSUBS_02c8 local_6 dstSlotB
+outsubs.c:OUTSUBS_02c8 local_4_ab dstSlotA
+outsubs.c:OUTSUBS_0368_GetWorldSavefile local_4 fileName
+outsubs.c:OUTSUBS_0388_EnterTown param_1 verb
+outsubs.c:OUTSUBS_0388_EnterTown local_6_an placeIndex
+outsubs.c:OUTSUBS_0388_EnterTown local_4 failed
+outsubs.c:OUTSUBS_0458_Falls local_6_an savedTile
+outsubs.c:OUTSUBS_0458_Falls local_4 member
+outsubs.c:OUTSUBS_0566 local1_6 index
+outsubs.c:OUTSUBS_0566 local2_4 actor
+outsubs.c:OUTSUBS_05fc_StepOnPoisonTile local_4 member
+outsubsb.c:OUTSUBS_0658 local_e_am newLevel
+outsubsb.c:OUTSUBS_0658 local_c karmaIndex
+outsubsb.c:OUTSUBS_0658 local_a step
+outsubsb.c:OUTSUBS_0658 local_8 member
+outsubsb.c:OUTSUBS_0658 local_6_aa classIndex
+outsubsb.c:OUTSUBS_0658 local_ptr memberActor
+# globals
+D_3866 D_3866_dungeonChunks          # the chunk number (high byte of the map offset) of each of the 8 dungeon entrances
+D_386e D_386e_shrineChunks           # the chunk number of each of the 8 shrines
+D_3876 D_3876_chunkFileIndex         # chunk number (0-255) -> its index in BRIT.DAT (x 0x100 bytes); 0xff: not stored, plain water
+D_3a06 D_3a06_shardX                 # position and actor value of the three shards on the underworld map
+D_3a0a D_3a0a_shardY
+D_3a0e D_3a0e_shardValue
+D_1a74 D_1a74_karmaTextOffsets       # offsets of the apparition's five karma speeches in KARMA.DAT

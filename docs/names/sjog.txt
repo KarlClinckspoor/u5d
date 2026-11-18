@@ -1,0 +1,217 @@
+# SJOG (sjog.c): the commands Search, Jimmy, Open and Get (on the map and in a dungeon), what a chest holds and what
+# lies hidden on the maps (the table D_3e78..D_40b2), and the helpers of combat: moving a player, leaving the field,
+# klimbing, the end of a combat, whether a cell is blocked, charm. One overlay, MSC 5.0.
+# functions
+SJOG_0000 SJOG_0000_FindFreeActor              # the last free actor slot (tile 0), counting down from 31; 0 when none
+SJOG_002a SJOG_002a_StepFromCell               # the cell beside (x, y) in a direction (0 north, 1 east, 2 south, 3 west), into D_5876/D_5878
+SJOG_006c SJOG_006c_AskDungeonCell             # "Dir-": a key picks the cell ahead, here, right or left of the facing, into D_5876/D_5878; 0 for Pass
+SJOG_012a SJOG_012a_PrintItemName              # "a chest!", "a sack of gold!" ...: what an actor tile is
+SJOG_01f2 SJOG_01f2_SearchBody                 # searching a body: usually it crumbles to nothing (7 in 8), 1 in 32 a plague poisons the member, else nothing, worms, guts or a bloody pulp; or food or gold under it
+SJOG_02ea SJOG_02ea_SearchChestTrap            # searching a chest: the member's intelligence against the chest's trap value tells "no trap", "a simple trap", "a complex trap" or just "a trap"
+SJOG_03a8 SJOG_03a8_SearchMoonstone            # a buried moonstone (the tables D_5830..D_5848) at this place and map becomes an actor; 1 when found
+SJOG_045a SJOG_045a_HarvestReagent             # at the three places D_3e66/D_3e6a, at hour 0, once a day: 2 to 15 sprigs of mandrake root or nightshade; 1 when it did
+SJOG_0514 SJOG_0514_FindHiddenItem             # looks the place up in the table of hidden items (D_3f5c..D_40b2: map, level, x, y, tile, value); a find that is not taken yet becomes an actor, else "nothing of note"
+SJOG_0baa SJOG_0baa_JimmyChest                 # picking a chest's lock with a key: a locked one (value >= 0x80) opens by dexterity, else the key is used up
+SJOG_0f88 SJOG_0f88_DropItem                   # puts one item actor of a chest's contents at the place: the amount by kind and level (kinds 1 and 2 random), and what it is is printed
+SJOG_1040 SJOG_1040_DropTreasure               # the chest's treasure: each of the eight kinds D_4124 (gold, food, torches, gems, keys...) that the chest's level allows, by a roll
+SJOG_10b8 SJOG_10b8_DropGear                   # the chest's gear: half its level in tries on the 48 entries of D_413c (weapons, armour, scrolls, potions...) by their level thresholds D_416c
+SJOG_1b34 SJOG_1b34_UnequipAll                 # takes the item off every party member who has it equipped; how many did
+SJOG_1b6c SJOG_1b6c_CountCombatants            # counts the living combatants: the enemies into D_5876, the party's side into D_5878
+SJOG_203e SJOG_203e_EndCombat                  # the combat is over: the actors are put back; the monster's actor is removed (a pirate ship sinks to a wreck); the map id is restored
+SJOG_20d8 SJOG_20d8_IsCellBlocked              # 1 when the cell (x, y) is not free for the combatant (0 off the map when it may leave)
+SJOG_2148 SJOG_2148_IsSurrounded               # 1 when all four neighbouring cells of the combatant are blocked (the probing walk is as in the original)
+SJOG_21ce SJOG_21ce_BreakCharm                 # the first charmed party member among the first six is freed: sound, the item 0x23 taken off, put to sleep; the index or -1
+SJOG_2012 SJOG_2012_TurnUpkeep                 # at a combatant's turn: the ring, fading fields, the protection spell's turns count down
+#= SJOG_0646_SearchInDungeon # Search in a dungeon: what the cell ahead hides: traps (by level and dexterity), pits, bombs, hidden doors, fields, treasure
+#= SJOG_095c_SearchCmd # the Search command: in a dungeon its own; else a direction, then a chest's trap, a body, a hidden door, a moonstone, reagents, or an item of the hidden table
+#= SJOG_0c3e_JimmyInDungeon # Jimmy in a dungeon: a locked chest (0x4?) opens or loses a key, by dexterity and level
+#= SJOG_0d4a_JimmyCmd # the Jimmy command: a key opens a locked door (dexterity), frees a prisoner behind bars (84, 85: karma + 2, the NPC changed), or picks a chest
+#= SJOG_112c_OpenChest # opens a chest: the trap (value 0x80 up) springs, the treasure and the gear drop; karma falls by 2 in a town
+#= SJOG_12d4_OpenInDungeon # Open in a dungeon: a chest (0x4?) springs its trap and becomes an open one (0x7?)
+#= SJOG_1374_OpenCmd # the Open command: in a dungeon its own; else a direction, then a door (the open door shuts again after four turns), a trunk, or a chest
+#= SJOG_1458_GetObject # takes an object (tile kind, amount, actor slot) into the party's goods: food, gold, torches, gems, keys, scrolls, potions, gear, the shards, crown, sceptre, amulet, a carpet, the sandalwood box; the actor is removed
+#= SJOG_179e_GetInDungeon # Get in a dungeon: an open chest (0x7?) gives its treasure, by level
+#= SJOG_18ce_GetCmd # the Get command: in a dungeon its own; else a direction, then an object there, a torch from a wall, or food from crops and tables
+#= SJOG_1bb2_CombatExit # a combatant leaves the field (not on a ship): the first player's direction fixes where the party leaves; 1 when it left
+#= SJOG_1c56_CombatMovePlayer # moves a combatant of the party one cell in a direction: off the map it leaves; a blocked cell sounds a tone; 1 when it moved
+#= SJOG_1d6a_CombatKlimb # Klimb in combat: a ladder up or down leaves the field (up 5, down 6); or one step across a 0x4c tile
+#= SJOG_1ea4_CheckMirror # a combatant who steps on the row-2 mirror of the endgame room leaves the field (exit code 0x4d)
+#= SJOG_1f26_CombatMiscCmd # a command the world has and combat refuses: prints its word, a message, two tones; always 1
+#= SJOG_1f7a_CombatSetActivePlayer # a number key in combat selects that party member as the active player when he or she can act; 1 when it did
+# locals and parameters
+sjog.c:SJOG_0000 i slot
+sjog.c:SJOG_002a param_1 dir
+sjog.c:SJOG_002a param_2 fromX
+sjog.c:SJOG_002a param_3 fromY
+sjog.c:SJOG_006c param_1 facing
+sjog.c:SJOG_006c local_6_an key
+sjog.c:SJOG_006c local_4 newDir
+sjog.c:SJOG_012a param_1 tile
+sjog.c:SJOG_01f2 param_1 actor
+sjog.c:SJOG_01f2 param_2 member
+sjog.c:SJOG_02ea param_1 chest
+sjog.c:SJOG_02ea param_2 member
+sjog.c:SJOG_02ea local_8 chance
+sjog.c:SJOG_02ea local_6 sensed
+sjog.c:SJOG_02ea local_4_ab chestValue
+sjog.c:SJOG_03a8 param_1 x
+sjog.c:SJOG_03a8 param_2 y
+sjog.c:SJOG_03a8 param_3 level
+sjog.c:SJOG_03a8 local_6 stone
+sjog.c:SJOG_03a8 local_8 slot
+sjog.c:SJOG_03a8 local_4_ab present
+sjog.c:SJOG_03a8 local_a newSlot
+sjog.c:SJOG_045a param_1 x
+sjog.c:SJOG_045a param_2 y
+sjog.c:SJOG_045a local_6 reagent
+sjog.c:SJOG_045a local_8 spot
+sjog.c:SJOG_045a local_4_ab amount
+sjog.c:SJOG_045a local_a nameList
+sjog.c:SJOG_0514 param_1 x
+sjog.c:SJOG_0514 param_2 y
+sjog.c:SJOG_0514 local_6 slot
+sjog.c:SJOG_0514 local_4_ab entry
+sjog.c:SJOG_0514 local_8 bit
+sjog.c:SJOG_0514 local_a found
+sjog.c:SJOG_0514 si itemTile
+sjog.c:SJOG_0646_SearchInDungeon local_10_aa member
+sjog.c:SJOG_0646_SearchInDungeon local_e_am cell
+sjog.c:SJOG_0646_SearchInDungeon local_c lookY
+sjog.c:SJOG_0646_SearchInDungeon local_a lookX
+sjog.c:SJOG_0646_SearchInDungeon local_8 trapLevel
+sjog.c:SJOG_0646_SearchInDungeon local_6 skill
+sjog.c:SJOG_0646_SearchInDungeon local_4_ab dex
+sjog.c:SJOG_095c_SearchCmd local_10_aa tile
+sjog.c:SJOG_095c_SearchCmd local_e_am member
+sjog.c:SJOG_095c_SearchCmd local_a lookX
+sjog.c:SJOG_095c_SearchCmd local_c lookY
+sjog.c:SJOG_095c_SearchCmd local_6 index
+sjog.c:SJOG_095c_SearchCmd local_4_ab found
+sjog.c:SJOG_095c_SearchCmd local_8 actorTile
+sjog.c:SJOG_0baa a chestX
+sjog.c:SJOG_0baa b chestY
+sjog.c:SJOG_0baa c chestLevel
+sjog.c:SJOG_0baa param_4 chest
+sjog.c:SJOG_0baa local_8 member
+sjog.c:SJOG_0baa local_6 skill
+sjog.c:SJOG_0baa local_4_ab chestValue
+sjog.c:SJOG_0c3e_JimmyInDungeon local_e_am cell
+sjog.c:SJOG_0c3e_JimmyInDungeon local_c member
+sjog.c:SJOG_0c3e_JimmyInDungeon local_a lookY
+sjog.c:SJOG_0c3e_JimmyInDungeon local_8 lookX
+sjog.c:SJOG_0c3e_JimmyInDungeon local_6 skill
+sjog.c:SJOG_0c3e_JimmyInDungeon local_4_ab dex
+sjog.c:SJOG_0d4a_JimmyCmd local_6 tile
+sjog.c:SJOG_0d4a_JimmyCmd local_4_ab npcIndex
+sjog.c:SJOG_0d4a_JimmyCmd local_c member
+sjog.c:SJOG_0d4a_JimmyCmd local_8 targetX
+sjog.c:SJOG_0d4a_JimmyCmd local_a targetY
+sjog.c:SJOG_0f88 param_1 kind
+sjog.c:SJOG_0f88 param_2 amount
+sjog.c:SJOG_0f88 param_3 x
+sjog.c:SJOG_0f88 param_4 y
+sjog.c:SJOG_0f88 param_5 z
+sjog.c:SJOG_0f88 param_6 level
+sjog.c:SJOG_0f88 param_7 dropped
+sjog.c:SJOG_0f88 iVar1_ak slot
+sjog.c:SJOG_0f88 local_4 value
+sjog.c:SJOG_1040 param_1 level
+sjog.c:SJOG_1040 param_2 x
+sjog.c:SJOG_1040 param_3 y
+sjog.c:SJOG_1040 param_4 z
+sjog.c:SJOG_1040 param_5 dropped
+sjog.c:SJOG_1040 local_6_an index
+sjog.c:SJOG_1040 local_4 amount
+sjog.c:SJOG_10b8 param_1 level
+sjog.c:SJOG_10b8 param_2 x
+sjog.c:SJOG_10b8 param_3 y
+sjog.c:SJOG_10b8 param_4 z
+sjog.c:SJOG_10b8 param_5 dropped
+sjog.c:SJOG_10b8 local_6_an pick
+sjog.c:SJOG_10b8 local_4 tries
+sjog.c:SJOG_112c_OpenChest param_1 x
+sjog.c:SJOG_112c_OpenChest param_2 y
+sjog.c:SJOG_112c_OpenChest param_3 z
+sjog.c:SJOG_112c_OpenChest local_c member
+sjog.c:SJOG_112c_OpenChest local_a dropped
+sjog.c:SJOG_112c_OpenChest local_8 chestValue
+sjog.c:SJOG_112c_OpenChest local_6 index
+sjog.c:SJOG_112c_OpenChest local_4_ab combatant
+sjog.c:SJOG_12d4_OpenInDungeon local_6_an cell
+sjog.c:SJOG_12d4_OpenInDungeon local_4 member
+sjog.c:SJOG_1374_OpenCmd local_8 targetY
+sjog.c:SJOG_1374_OpenCmd local_6 targetX
+sjog.c:SJOG_1374_OpenCmd local_4_ab tile
+sjog.c:SJOG_1458_GetObject param_1 kind
+sjog.c:SJOG_1458_GetObject param_2 amount
+sjog.c:SJOG_1458_GetObject param_3 slot
+sjog.c:SJOG_179e_GetInDungeon local_a cell
+sjog.c:SJOG_179e_GetInDungeon local_8 index
+sjog.c:SJOG_179e_GetInDungeon local_6 gearType
+sjog.c:SJOG_179e_GetInDungeon local_4_ab amount
+sjog.c:SJOG_18ce_GetCmd local_10_aa stepY
+sjog.c:SJOG_18ce_GetCmd local_e_am targetY
+sjog.c:SJOG_18ce_GetCmd local_c stepX
+sjog.c:SJOG_18ce_GetCmd local_a targetX
+sjog.c:SJOG_18ce_GetCmd local_8 tile
+sjog.c:SJOG_18ce_GetCmd local_6 index
+sjog.c:SJOG_18ce_GetCmd local_4_ab value
+sjog.c:SJOG_1b34 param_1 item
+sjog.c:SJOG_1b34 local_6_an count
+sjog.c:SJOG_1b34 local_4 member
+sjog.c:SJOG_1b6c local_6_an isEnemy
+sjog.c:SJOG_1b6c local_4 index
+sjog.c:SJOG_1bb2_CombatExit param_1 combatant
+sjog.c:SJOG_1bb2_CombatExit param_2 dir
+sjog.c:SJOG_1c56_CombatMovePlayer param_1 combatant
+sjog.c:SJOG_1c56_CombatMovePlayer param_2 dir
+sjog.c:SJOG_1c56_CombatMovePlayer local_8 actorIndex
+sjog.c:SJOG_1c56_CombatMovePlayer local_c stepY
+sjog.c:SJOG_1c56_CombatMovePlayer local_a stepX
+sjog.c:SJOG_1c56_CombatMovePlayer local_6 destY
+sjog.c:SJOG_1c56_CombatMovePlayer local_4_ab destX
+sjog.c:SJOG_1d6a_CombatKlimb local_c key
+sjog.c:SJOG_1d6a_CombatKlimb local_a targetY
+sjog.c:SJOG_1d6a_CombatKlimb local_8 targetX
+sjog.c:SJOG_1d6a_CombatKlimb local_6 actor
+sjog.c:SJOG_1d6a_CombatKlimb local_4_ab tile
+sjog.c:SJOG_1ea4_CheckMirror local_4 combatant
+sjog.c:SJOG_1f26_CombatMiscCmd param_1 word
+sjog.c:SJOG_1f26_CombatMiscCmd param_2 kind
+sjog.c:SJOG_1f7a_CombatSetActivePlayer param_1 member
+sjog.c:SJOG_1f7a_CombatSetActivePlayer local_8 canAct
+sjog.c:SJOG_1f7a_CombatSetActivePlayer local_6 index
+sjog.c:SJOG_1f7a_CombatSetActivePlayer local_4_ab flags
+sjog.c:SJOG_203e param_1 actor
+sjog.c:SJOG_203e local_6_an index
+sjog.c:SJOG_203e local_4 monster
+sjog.c:SJOG_20d8 param_1 x
+sjog.c:SJOG_20d8 param_2 y
+sjog.c:SJOG_20d8 param_3 combatant
+sjog.c:SJOG_20d8 local_6_o blocked
+sjog.c:SJOG_20d8 local_4 entity
+sjog.c:SJOG_2148 param_1 combatant
+sjog.c:SJOG_2148 local_c dir
+sjog.c:SJOG_2148 local_a y
+sjog.c:SJOG_2148 local_8 x
+sjog.c:SJOG_2148 local_6 blockedCount
+sjog.c:SJOG_2148 local_4_ab entity
+sjog.c:SJOG_21ce local_4 index
+# globals
+D_3e66 D_3e66_harvestX               # the three places where reagents grow (x, y) and which reagent (index into D_5850_reagents)
+D_3e6a D_3e6a_harvestY
+D_3e6e D_3e6e_harvestReagent
+D_3e78 D_3e78_hiddenTile             # the table of 0x71 hidden items, one entry each: the actor tile ...
+D_3eea D_3eea_hiddenValue            # ... its value ...
+D_3f5c D_3f5c_hiddenMap              # ... the map ...
+D_3fce D_3fce_hiddenLevel            # ... the level ...
+D_4040 D_4040_hiddenX                # ... and the place
+D_40b2 D_40b2_hiddenY
+D_4124 D_4124_treasureKind           # a chest's eight kinds of treasure (actor tiles: gold, food, torches...), the level at which each starts ...
+D_412c D_412c_treasureMinLevel
+D_4134 D_4134_treasureMaxAmount      # ... and the most of each
+D_413c D_413c_gearKind               # a chest's 48 gear entries: the actor tile (5 weapon, 6 shield, 9 ring...) and the level it needs
+D_416c D_416c_gearMinLevel
+D_41bc D_41bc_dungeonLootOdds        # a dungeon chest's seven rolls: the least roll that gives each ...
+D_41c4 D_41c4_dungeonLootMax         # ... the most of it ...
+D_41cc D_41cc_dungeonLootKind        # ... and what it is

@@ -1,0 +1,215 @@
+# DUNGEON (dungeon.c + dungeonb.c): the dungeons: the command loop, walking and turning, traps and fields, the wandering
+# monster of the level, entering a room (a fight on a combat map from DUNGEON.CBT), klimbing, and the first-person view
+# (walls, doors, fields, ladders, the monster). One overlay: dungeon.c is MSC 5.1, dungeonb.c (from DUNGEON_1020 or
+# DUNGEON_104c) MSC 5.0. DUNGEON_1952 has a stand-in device (its note): its locals are renamed through the tool only.
+# functions
+DUNGEON_0000 DUNGEON_0000_EnterRoom             # "Entering room...": a cell of kind 0xa? / 0xf? opens its room: the combat map is read from dungeon.cbt, the party fights; a won room is marked cleared
+DUNGEON_0134 DUNGEON_0134_SetUpMonster          # the level's wandering monster (actor 1): with the flag, a new one (type of D_173c by a roll of 0-7, placed at random) and its picture loaded
+DUNGEON_0252 DUNGEON_0252_PlaceMonster          # puts actors 1 and 2 on a random open cell (eight tries, not on the party's row and column); 1 when it found one
+DUNGEON_0332 DUNGEON_0332_DrawFrame             # the view's top and bottom bars and the labels "L " (level) and "Dir:"
+DUNGEON_03d6 DUNGEON_03d6_WaitForKey            # the prompt; while no key is there the view is redrawn (light flicker); returns the key (arrow keys as 0xfa+)
+DUNGEON_0502 DUNGEON_0502_WalkCmd               # Advance / Turn right / Back up / Turn left / Turn around: blocked by walls and doors, an electric field (0x83) hurts; 1 when it moved
+DUNGEON_07e2 DUNGEON_07e2_MoveMonster           # the wandering monster takes a random step (not into pits, fields or walls); 1 when it reaches the party
+DUNGEON_0a4c DUNGEON_0a4c_FallThroughPit        # a pit trap: falls a level at a time while the cell below is a pit too, "splat" damage; a room cell on arrival is entered
+DUNGEON_0b7e DUNGEON_0b7e_MonsterAttacks        # "Attacked from the ...!": the party turns to face the monster, then a fight
+DUNGEON_0c76 DUNGEON_0c76_AfterStep             # after a command that moved: sleepers may wake, the monster moves, a room is entered, a trap or field acts, the turn ends
+DUNGEON_1020 DUNGEON_1020_StepSound             # every other step a noise of volume D_a9fb that dies down by 4
+DUNGEON_104c DUNGEON_104c_ShowPlaceName         # the name of a special place of this dungeon (D_2e10) in a small window on the view
+DUNGEON_10dc DUNGEON_10dc_CellAt                # the cell of this level at (x, y) wrapped to 8x8; bit 3 (visited) cleared below 0x90
+DUNGEON_111e DUNGEON_111e_DrawMonster           # the wandering monster at a distance of 1-3: its frames (size, mirroring, animation by its state) as pictures
+DUNGEON_127e DUNGEON_127e_DrawField             # a field at that distance: random short lines in the field's colour (sleep magenta, poison green, fire red, energy blue)
+DUNGEON_134a DUNGEON_134a_DrawPiece             # one piece of the view (a wall part from DNGn.16, or from ITEMS.16 above 0x1f), plain or mirrored, at the place of its distance
+DUNGEON_145c DUNGEON_145c_DrawDrip              # the drip of a stalactite in its phases (0-5); phase 5 is the sound; the next phase is returned
+DUNGEON_150a DUNGEON_150a_DrawAhead             # the cell straight ahead at that distance: its pieces, drips, the place's name; 1 when it is open and the view goes on
+DUNGEON_1682 DUNGEON_1682_DrawSideCell          # a cell beside the corridor (side 0 left, 1 right) at that distance
+DUNGEON_1786 DUNGEON_1786_DrawWallDots          # the dots of a ladder's rungs (or a hole) at that distance, one set per frame
+DUNGEON_1952 DUNGEON_1952_DrawCell              # a cell at a distance, from the far end back: wall pieces, ladders, fields, the visited mark, the monster there
+DUNGEON_1a90 DUNGEON_1a90_DrawView              # renders the first-person view into page 1: the cells in front (up to four, in light), then back to front; dark without a torch or light
+DUNGEON_1be0 DUNGEON_1be0_Redraw                # vitals, the view to the screen, step sound, level and direction
+DUNGEON_1c0c DUNGEON_1c0c_CanLandOn             # whether the cell under the party on that level is free (the logic is probably not what was meant)
+#= DUNGEON_01d2_PrintWalkDir # prints the level number and the facing (North, East, South, West) in the view's bars
+#= DUNGEON_0470_ElectricField # the party walks into an electric field: "Ouch!", flash, thrown back a step, party hurt
+#= DUNGEON_06c4_ProcessCommand # one key of the dungeon: Ctrl-K karma, E exit, V version, S sound, movement, a number selects a player, else the common commands
+#= DUNGEON_0948_SleepSpell # a sleep field: each member may fall asleep (dexterity against a roll), the field is used up
+#= DUNGEON_09e6_Poison # a poison field: each member may be poisoned
+#= DUNGEON_0e2e_MainLoop # the dungeon's overlay entry and command loop: sets the dungeon's wall and floor tiles by its number, loads the pictures, runs until the party leaves or dies
+#= DUNGEON_1c6a_Klimb # Klimb one level (-1 up, 1 down): blocked cells fail, from level 0 up or level 7 down it leaves; 1 when it leaves
+#= DUNGEON_1d08_Exit # leaves the dungeon to the surface or the underworld, at the dungeon's place on the map
+#= DUNGEON_1d4a_AttackCmd # the Attack command: fights the monster when it is in the cell ahead
+#= DUNGEON_1e10_KlimbCmd # the Klimb command: a ladder or the grapple allows up, down or both (then asks U/D)
+# locals and parameters
+dungeon.c:DUNGEON_0000 param_1 cell
+dungeon.c:DUNGEON_0000 local_1e_an level
+dungeon.c:DUNGEON_0000 local_1c room
+dungeon.c:DUNGEON_0000 local_1a_aa savedMonster2
+dungeon.c:DUNGEON_0000 local_12 savedMonster1
+dungeon.c:DUNGEON_0000 local_a fileOffset
+dungeon.c:DUNGEON_0000 local_8 savedY
+dungeon.c:DUNGEON_0000 local_6 savedX
+dungeon.c:DUNGEON_0000 local_4_ab savedPlayer
+dungeon.c:DUNGEON_0134 param_1 respawn
+dungeon.c:DUNGEON_0134 local_8 type
+dungeon.c:DUNGEON_0134 local_6 oldValue
+dungeon.c:DUNGEON_0134 local_4_ab monster
+dungeon.c:DUNGEON_01d2_PrintWalkDir local_6_an level
+dungeon.c:DUNGEON_01d2_PrintWalkDir local_4 savedWindow
+dungeon.c:DUNGEON_0252 local_c kind
+dungeon.c:DUNGEON_0252 local_a offset
+dungeon.c:DUNGEON_0252 local_8 tries
+dungeon.c:DUNGEON_0252 local_e cellPtr
+dungeon.c:DUNGEON_0252 local_6 cellY
+dungeon.c:DUNGEON_0252 local_4_ab cellX
+dungeon.c:DUNGEON_0332 local_4 savedWindow
+dungeon.c:DUNGEON_03d6 local_6_an key
+dungeon.c:DUNGEON_03d6 local_4 fullView
+dungeon.c:DUNGEON_0470_ElectricField param_1 direction
+dungeon.c:DUNGEON_0502 param_1 key
+dungeon.c:DUNGEON_0502 param_2 cell
+dungeon.c:DUNGEON_0502 local_c destCell
+dungeon.c:DUNGEON_0502 local_a destY
+dungeon.c:DUNGEON_0502 local_8 destX
+dungeon.c:DUNGEON_0502 local_6 stepDir
+dungeon.c:DUNGEON_0502 local_4_ab moved
+dungeon.c:DUNGEON_06c4_ProcessCommand param_1 key
+dungeon.c:DUNGEON_06c4_ProcessCommand local_6_an cell
+dungeon.c:DUNGEON_06c4_ProcessCommand local_4 result
+dungeon.c:DUNGEON_07e2 local_18_al previous
+dungeon.c:DUNGEON_07e2 local_16_an kind
+dungeon.c:DUNGEON_07e2 local_14 newY
+dungeon.c:DUNGEON_07e2 local_12_ab newX
+dungeon.c:DUNGEON_07e2 local_10_ad reached
+dungeon.c:DUNGEON_07e2 local_e moved
+dungeon.c:DUNGEON_07e2 local_c tries
+dungeon.c:DUNGEON_07e2 local_a dir
+dungeon.c:DUNGEON_07e2 local_8 oldY
+dungeon.c:DUNGEON_07e2 local_6 oldX
+dungeon.c:DUNGEON_07e2 local_4_ab monster
+dungeon.c:DUNGEON_0948_SleepSpell local_4 member
+dungeon.c:DUNGEON_09e6_Poison local_4 member
+dungeon.c:DUNGEON_0a4c param_1 cell
+dungeon.c:DUNGEON_0b7e local_4 monster
+dungeon.c:DUNGEON_0c76 param_1 cell
+dungeon.c:DUNGEON_0c76 param_2 monsterMoves
+dungeon.c:DUNGEON_0c76 local_a attacked
+dungeon.c:DUNGEON_0c76 local_8 woken
+dungeon.c:DUNGEON_0c76 local_6 member
+dungeon.c:DUNGEON_0c76 local_4_ab kind
+dungeon.c:DUNGEON_0e2e_MainLoop param_1 fresh
+dungeon.c:DUNGEON_0e2e_MainLoop local_10_ad awake
+dungeon.c:DUNGEON_0e2e_MainLoop local_e running
+dungeon.c:DUNGEON_0e2e_MainLoop local_c turnTaken
+dungeon.c:DUNGEON_0e2e_MainLoop local_a key
+dungeon.c:DUNGEON_0e2e_MainLoop local_8 kind
+dungeon.c:DUNGEON_0e2e_MainLoop local_6 quickToggle
+dungeon.c:DUNGEON_0e2e_MainLoop local_4_ab cell
+dungeonb.c:DUNGEON_104c param_1 number
+dungeonb.c:DUNGEON_104c local_4_b nameIndex
+dungeonb.c:DUNGEON_10dc param_1 x
+dungeonb.c:DUNGEON_10dc param_2 y
+dungeonb.c:DUNGEON_10dc local_4_b cell
+dungeonb.c:DUNGEON_111e param_1 dist
+dungeonb.c:DUNGEON_111e local_e_lc mirrorB
+dungeonb.c:DUNGEON_111e local_c big
+dungeonb.c:DUNGEON_111e local_a flags90
+dungeonb.c:DUNGEON_111e local_8 frame
+dungeonb.c:DUNGEON_111e local_6 mirrorA
+dungeonb.c:DUNGEON_111e local_4_b flags60
+dungeonb.c:DUNGEON_127e param_1 dist
+dungeonb.c:DUNGEON_127e param_2 fieldKind
+dungeonb.c:DUNGEON_127e local_a lineY
+dungeonb.c:DUNGEON_127e local_8 lineNo
+dungeonb.c:DUNGEON_127e local_6 lineX
+dungeonb.c:DUNGEON_127e local_4_ab savedClip
+dungeonb.c:DUNGEON_134a param_1 piece
+dungeonb.c:DUNGEON_134a param_2 fromItems
+dungeonb.c:DUNGEON_134a param_3 mirrored
+dungeonb.c:DUNGEON_134a local_a pieceY
+dungeonb.c:DUNGEON_134a local_8 pieceX
+dungeonb.c:DUNGEON_134a local_6 column
+dungeonb.c:DUNGEON_134a local_4_ab frame
+dungeonb.c:DUNGEON_145c param_1 dropX
+dungeonb.c:DUNGEON_145c param_2 dropY
+dungeonb.c:DUNGEON_145c param_3 phase
+dungeonb.c:DUNGEON_145c param_4 dist
+dungeonb.c:DUNGEON_150a param_1 x
+dungeonb.c:DUNGEON_150a param_2 y
+dungeonb.c:DUNGEON_150a param_3 dist
+dungeonb.c:DUNGEON_150a local_8 phase
+dungeonb.c:DUNGEON_150a local_6 cell
+dungeonb.c:DUNGEON_150a local_4_ab piece
+dungeonb.c:DUNGEON_1682 param_1 x
+dungeonb.c:DUNGEON_1682 param_2 y
+dungeonb.c:DUNGEON_1682 param_3 side
+dungeonb.c:DUNGEON_1682 param_4 dist
+dungeonb.c:DUNGEON_1682 local_a phase
+dungeonb.c:DUNGEON_1682 local_8 cell
+dungeonb.c:DUNGEON_1682 local_6 dropX
+dungeonb.c:DUNGEON_1682 local_4_ab piece
+dungeonb.c:DUNGEON_1786 param_1 dist
+dungeonb.c:DUNGEON_1786 param_2 frame
+dungeonb.c:DUNGEON_1786 local_4_b dotNo
+dungeonb.c:DUNGEON_1952 param_1 cellX
+dungeonb.c:DUNGEON_1952 param_2 cellY
+dungeonb.c:DUNGEON_1952 param_3 dist
+dungeonb.c:DUNGEON_1952 local_4_b kind
+dungeonb.c:DUNGEON_1952 local_6 cell
+dungeonb.c:DUNGEON_1952 x piece
+dungeonb.c:DUNGEON_1a90 param_1 fullView
+dungeonb.c:DUNGEON_1a90 local_a stepX
+dungeonb.c:DUNGEON_1a90 local_c stepY
+dungeonb.c:DUNGEON_1a90 local_4_ab dist
+dungeonb.c:DUNGEON_1a90 local_6_x cellX
+dungeonb.c:DUNGEON_1a90 local_8_y cellY
+dungeonb.c:DUNGEON_1c0c param_1 level
+dungeonb.c:DUNGEON_1c0c param_2 mustBeEmpty
+dungeonb.c:DUNGEON_1c0c local_6_an kind
+dungeonb.c:DUNGEON_1c0c local_4_b free
+dungeonb.c:DUNGEON_1c6a_Klimb param_1 dir
+dungeonb.c:DUNGEON_1c6a_Klimb param_2 mustBeEmpty
+dungeonb.c:DUNGEON_1c6a_Klimb local_4_b leaves
+dungeonb.c:DUNGEON_1d4a_AttackCmd local_8 targetY
+dungeonb.c:DUNGEON_1d4a_AttackCmd local_6 targetX
+dungeonb.c:DUNGEON_1d4a_AttackCmd local_4_ab result
+dungeonb.c:DUNGEON_1e10_KlimbCmd local_a kind
+dungeonb.c:DUNGEON_1e10_KlimbCmd local_8 visited
+dungeonb.c:DUNGEON_1e10_KlimbCmd local_6 canDown
+dungeonb.c:DUNGEON_1e10_KlimbCmd local_4_ab canUp
+# globals
+D_2c76 D_2c76_facingOfDir            # the facing for D_6602 (0-3 the four directions, 4 and 5 the ladders keep a facing 0 and 2)
+D_24e7 D_24e7_stepToggle             # toggles at each step; the step noise sounds on every other
+D_a9fb D_a9fb_stepVolume             # the step noise's volume (0xf on a move, dying away)
+D_173c D_173c_monsterTypes           # the value (monster type) of each of the 8 dungeon monster tiles
+D_1744 D_1744_monsterAnimStates      # and its starting animation state
+D_a9c0 D_a9c0_wallImage              # the loaded pictures: the dungeon's walls (DNGn.16), ITEMS.16, the monster's
+D_a9c4 D_a9c4_itemsImage
+D_a9c6 D_a9c6_monsterImage
+D_bb14 D_bb14_wallTile               # the combat map's wall and floor tiles for this dungeon's rooms
+D_bb15 D_bb15_floorTile
+D_bb17 D_bb17_loadFlags              # what the dungeon has loaded: 1 its pictures, 2 the dungeon is in use (set by the main loop), 4 the tileset mode
+D_2de8 D_2de8_placeNameBase          # per dungeon (map - 0x21): the first place name in D_2e10 ...
+D_2df0 D_2df0_placeNameCount         # ... how many it has ...
+D_2df8 D_2df8_placeNameX             # ... and the window's x and y of each name
+D_2e04 D_2e04_placeNameY
+D_2e26 D_2e26_monsterTurnMirror      # DUNGEON_111e: mirror bits of the monster's walking frames
+D_2e2a D_2e2a_monsterX               # the monster's x by distance, and its y (two sizes) ...
+D_2e32 D_2e32_monsterY
+D_2e42 D_2e42_fieldTop               # DUNGEON_127e: per distance the field lines' top, bottom, number and width
+D_2e4a D_2e4a_fieldBottom
+D_2e52 D_2e52_fieldCount
+D_2e5a D_2e5a_fieldWidth
+D_2e62 D_2e62_pieceX                 # DUNGEON_134a: the x of a wall piece by distance (plain and mirrored)
+D_2e72 D_2e72_itemPieceX             # the x of an item piece by distance
+D_2e7a D_2e7a_itemPieceY             # and its y
+D_2e8a D_2e8a_aheadPieceOffset       # DUNGEON_150a: the piece of the cell ahead by its kind (0xa-0xf)
+D_2e90 D_2e90_aheadDripY             # the drip's y by phase (two distances)
+D_2e9a D_2e9a_sideDripY              # the same for the cells beside
+D_2ea4 D_2ea4_dotsDist0              # DUNGEON_1786: the dots of a wall's frames, by distance
+D_2f10 D_2f10_dotsDist0Extra
+D_2ed4 D_2ed4_dotsDist1
+D_2ef2 D_2ef2_dotsDist2
+D_2f0a D_2f0a_dotsDist3
+D_2f16 D_2f16_mirroredPiece          # DUNGEON_1952: the piece drawn mirrored (and plain) for each cell kind
+D_2f1e D_2f1e_plainPiece
+D_2f26 D_2f26_dotFrame               # 0-2, advanced at each view
+D_2f28 D_2f28_sideDx                 # the step to the left of the facing
+D_2f2c D_2f2c_sideDy

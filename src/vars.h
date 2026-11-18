@@ -51,8 +51,8 @@ STUB u8 D_172c_combatPartyY[8]; // six used
 // gap 2
 STUB u8 D_1734[8];
 
-STUB u8 D_173c[8];
-STUB u8 D_1744[8];
+STUB u8 D_173c_monsterTypes[8];
+STUB u8 D_1744_monsterAnimStates[8];
 
 STUB char* D_17f6_equipNames[0x30]; // Equipment names
 
@@ -71,7 +71,7 @@ STUB char* D_19e2_spellNames[48 + 1]; // spell names
 STUB char* D_1a44_classNames[10]; // Class/Jobs (Avatar, Mage, Bard, ...)
 STUB s16 D_1a58[9];
 STUB char* D_1a6a_statusNames[5]; // Health (Good Health, Poisoned, ...)
-STUB u16 D_1a74[5]; // karma string offset
+STUB u16 D_1a74_karmaTextOffsets[5]; // karma string offset
 STUB u8 D_1a7e[0x30]; // equipment type?
 STUB u8 D_1aae[0x30];
 STUB u8 D_1ade[9];
@@ -88,7 +88,7 @@ STUB u8 D_1c90[0x30];
 STUB u8 D_1cc0[0x30];
 STUB u16 D_1cf0[0x15];
 
-STUB u8 D_1d1a[0x100];
+STUB u8 D_1d1a_cellPattern[0x100];
 
 STUB u8 D_1e1a[0x20]; // map offset table ~1e3a)
 STUB char* D_1e3a_mapNames[0x28]; // map name table ~1e8a)
@@ -96,10 +96,10 @@ STUB u8 D_1e8a_placeX[0x28]; // where each map's place is in the world
 STUB u8 D_1eb2_placeY[0x28]; // ~1ed9) town position y
 STUB u8 D_1eda_moonPhases[28 * 2]; // for each day of the month: Trammel's, Felucca's
 
-STUB u8 D_1f12[0x30]; // TODO: size, offset
+STUB u8 D_1f12_prisonCellOf[0x30]; // TODO: size, offset
 
-STUB u8 D_1f42[6];
-STUB u8 D_1f48[6];
+STUB u8 D_1f42_prisonCellX[6];
+STUB u8 D_1f48_prisonCellY[6];
 
 STUB char* D_1f4e_virtueNames[8];
 STUB char* D_1f5e_mantras[8]; // mantra
@@ -123,25 +123,25 @@ STUB char* D_22ca_shopOwners[8][16]; // shop owners, likewise
 STUB u8 D_23ca_shopMapIds[8][16]; // the map of each shop: a kind's row is searched for the current map (TALK_00e6_TalkToMerchant)
 
 // dnglook
-STUB u8 D_244a[8];
-STUB u8 D_2452[6];
-STUB u8 D_2458[6];
-STUB u8 D_245e[6];
-STUB u8 D_2464[6];
-STUB u8 D_246a[6];
-STUB u8 D_2470[6];
-STUB u8 D_2476[0x10];
-STUB u8 D_2486[0x10];
-STUB u8 D_2496[0x10];
-STUB u8 D_24a6[0x10];
-STUB u8 D_24b6[0x10];
-STUB u8 D_24c6[0x10];
+STUB u8 D_244a_centreTiles[8];
+STUB u8 D_2452_roomPartyX[6];
+STUB u8 D_2458_roomPartyY[6];
+STUB u8 D_245e_partyLineA[6];
+STUB u8 D_2464_partyLineB[6];
+STUB u8 D_246a_partyLineC[6];
+STUB u8 D_2470_partyLineD[6];
+STUB u8 D_2476_monsterLineA[0x10];
+STUB u8 D_2486_monsterLineB[0x10];
+STUB u8 D_2496_monsterLineC[0x10];
+STUB u8 D_24a6_monsterLineD[0x10];
+STUB u8 D_24b6_roomMonsterX[0x10];
+STUB u8 D_24c6_roomMonsterY[0x10];
 
 STUB s16 D_24d6_facingDx[4]; // by facing: north, east, south, west
 STUB s16 D_24de_facingDy[4]; // direction offset
 
 STUB u8 D_24e6_viewDirty; // the map view must be built again (bit 1: the light map too)
-STUB u8 D_24e7; // footstep sfx related flag in dungeon
+STUB u8 D_24e7_stepToggle; // footstep sfx related flag in dungeon
 
 STUB char* D_24ea_wordTable[0x80]; // the words that bytes of the .TLK scripts (below 0x81) and of SHOPPE.DAT (from 0x80) stand for
 STUB char* D_25ea_fileNames[30]; // ~2626) compressed file name table
@@ -161,70 +161,70 @@ STUB u32 D_28c6_npcValueMask[0x20]; // ~2946) town
 // 2946~: code strings
 
 // 2900
-STUB u8 D_29f6[4]; // mainout: wind-releated
-STUB u8 D_29fa[4]; // mainout: wind-releated
+STUB u8 D_29f6_windDx[4]; // mainout: wind-releated
+STUB u8 D_29fa_windDy[4]; // mainout: wind-releated
 
 // ...code strings...
 
 // mainout
-STUB u8 D_2bc0[0xc];
-STUB u8 D_2bcc[0x8];
-STUB u8 D_2bd4[0x6];
-STUB u8 D_2bda[0x2];
+STUB u8 D_2bc0_landMonsters[0xc];
+STUB u8 D_2bcc_deepLandMonsters[0x8];
+STUB u8 D_2bd4_seaMonsters[0x6];
+STUB u8 D_2bda_deepSeaMonsters[0x2];
 
-STUB u8 D_2bdc[0xc];
-STUB u8 D_2be8[0x8];
-STUB u8 D_2bf0[0x6];
-STUB u8 D_2bf6[0x2];
+STUB u8 D_2bdc_landWeights[0xc];
+STUB u8 D_2be8_deepLandWeights[0x8];
+STUB u8 D_2bf0_seaWeights[0x6];
+STUB u8 D_2bf6_deepSeaWeights[0x2];
 
-STUB u16 D_2bf8[4][4];
-STUB u8 D_2c18[0x3d];
+STUB u16 D_2bf8_sailDelay[4][4];
+STUB u8 D_2c18_chaseRange[0x3d];
 
 // 2c58~: Entering room...
 
 // u8 2c54
-STUB u8 D_2c55;
+STUB u8 D_2c55_quickToggle;
 // u8 2c56
-STUB u8 D_2c57;
+STUB u8 D_2c57_mountToggle;
 // ^ mainout
 
 // dungeon
-STUB u8 D_2c76[6]; // TODO: size
+STUB u8 D_2c76_facingOfDir[6]; // TODO: size
 
-STUB u8 D_2de8[8];
-STUB u8 D_2df0[8];
-STUB u8 D_2df8[12];
-STUB u8 D_2e04[12];
+STUB u8 D_2de8_placeNameBase[8];
+STUB u8 D_2df0_placeNameCount[8];
+STUB u8 D_2df8_placeNameX[12];
+STUB u8 D_2e04_placeNameY[12];
 STUB char* D_2e10[11];
 
-STUB u8 D_2e26[4];
-STUB s16 D_2e2a[4]; // int
-STUB s16 D_2e32[2][4]; // int
-STUB s16 D_2e42[4]; // int
-STUB s16 D_2e4a[4]; // int
-STUB s16 D_2e52[4]; // int
-STUB s16 D_2e5a[4]; // int
-STUB s16 D_2e62[2][4]; // int
-STUB s16 D_2e72[4]; // int
-STUB s16 D_2e7a[2][4]; // int
-STUB u8 D_2e8a[6]; // offset confirmed
-STUB u8 D_2e90[10]; // offset confirmed
-STUB u8 D_2e9a[10];
+STUB u8 D_2e26_monsterTurnMirror[4];
+STUB s16 D_2e2a_monsterX[4]; // int
+STUB s16 D_2e32_monsterY[2][4]; // int
+STUB s16 D_2e42_fieldTop[4]; // int
+STUB s16 D_2e4a_fieldBottom[4]; // int
+STUB s16 D_2e52_fieldCount[4]; // int
+STUB s16 D_2e5a_fieldWidth[4]; // int
+STUB s16 D_2e62_pieceX[2][4]; // int
+STUB s16 D_2e72_itemPieceX[4]; // int
+STUB s16 D_2e7a_itemPieceY[2][4]; // int
+STUB u8 D_2e8a_aheadPieceOffset[6]; // offset confirmed
+STUB u8 D_2e90_aheadDripY[10]; // offset confirmed
+STUB u8 D_2e9a_sideDripY[10];
 
-STUB Pair D_2ea4[3][8];
-STUB Pair D_2ed4[3][5];
-STUB Pair D_2ef2[3][4];
-STUB Pair D_2f0a[3];
-STUB Pair D_2f10[3];
+STUB Pair D_2ea4_dotsDist0[3][8];
+STUB Pair D_2ed4_dotsDist1[3][5];
+STUB Pair D_2ef2_dotsDist2[3][4];
+STUB Pair D_2f0a_dotsDist3[3];
+STUB Pair D_2f10_dotsDist0Extra[3];
 
-STUB u8 D_2f16[8]; // TODO: size
-STUB u8 D_2f1e[8]; // TODO: size
+STUB u8 D_2f16_mirroredPiece[8]; // TODO: size
+STUB u8 D_2f1e_plainPiece[8]; // TODO: size
 
-#define D_2f24 D_2f1e[6]
-STUB u8 D_2f26;
+#define D_2f24 D_2f1e_plainPiece[6]
+STUB u8 D_2f26_dotFrame;
 
-STUB s8 D_2f28[4]; // direction x
-STUB s8 D_2f2c[4]; // direction y
+STUB s8 D_2f28_sideDx[4]; // direction x
+STUB s8 D_2f2c_sideDy[4]; // direction y
 // ^ dungeon
 
 // intro
@@ -254,42 +254,42 @@ STUB char* D_3666[8];
 STUB u8 D_367e_npcBlockedTiles[0x20]; // TODO: size ~369e)
 
 // blckthrn
-STUB u8 D_369e[0x3c]; // TODO: size
-STUB u8 D_36da[0x27];
-STUB u8 D_3702[12];
-STUB u8 D_370e[8];
-STUB u8 D_3716[10];
+STUB u8 D_369e_scriptAfterTest[0x3c]; // TODO: size
+STUB u8 D_36da_scriptThreat[0x27];
+STUB u8 D_3702_scriptGuardsEnter[12];
+STUB u8 D_370e_scriptRelease[8];
+STUB u8 D_3716_scriptBlackthornLeaves[10];
 
 STUB u16 D_3720[6];
 STUB u16 D_372c[6];
 STUB u16 D_3738[6];
 STUB s16 D_3744[6]; // ~3750)
 
-STUB u8 D_3750[8];
-STUB u8 D_3758[8];
-STUB u8 D_3760[0xb0]; // ~3810)
+STUB u8 D_3750_planetStartPos[8];
+STUB u8 D_3758_planetRow[8];
+STUB u8 D_3760_orbitSteps[0xb0]; // ~3810)
 
 STUB char* D_3810[9]; // ~3822)
-STUB u8 D_3822[16]; // ~3832)
+STUB u8 D_3822_shoreLandMask[16]; // ~3832)
 
-STUB u8 D_3832[8]; // ~383a; [7] + gap 1?
+STUB u8 D_3832_edgeBits[8]; // ~383a; [7] + gap 1?
 
-STUB u8 D_383a[6];
-STUB u8 D_3840;
+STUB u8 D_383a_roomsNeverCleared[6];
+STUB u8 D_3840_neverClearedCount;
 //STUB u8 D_3841;
 
-STUB u8 D_3842[0xd]; // ~384f)? TODO: size, offset
-STUB u8 D_3850[0xd]; // ~385d)? TODO: size, offset
+STUB u8 D_3842_objectValueRange[0xd]; // ~384f)? TODO: size, offset
+STUB u8 D_3850_objectValueBase[0xd]; // ~385d)? TODO: size, offset
                      // D_383f, D_384d
 
-STUB u8 D_385e[8]; // ~3866)
-STUB u8 D_3866[8]; // ~386e)
-STUB u8 D_386e[8]; // ~3876)
-STUB u8 D_3876[0x100]; // ~3976) TODO: size?
+STUB u8 D_385e_randomMonsterTypes[8]; // ~3866)
+STUB u8 D_3866_dungeonChunks[8]; // ~386e)
+STUB u8 D_386e_shrineChunks[8]; // ~3876)
+STUB u8 D_3876_chunkFileIndex[0x100]; // ~3976) TODO: size?
 
-STUB u8 D_3a06[4];
-STUB u8 D_3a0a[4];
-STUB u8 D_3a0e[3];
+STUB u8 D_3a06_shardX[4];
+STUB u8 D_3a0a_shardY[4];
+STUB u8 D_3a0e_shardValue[3];
 
 STUB u16 D_3a26[6];
 STUB u8 D_3a32_reagentPrices[5][8];
@@ -357,31 +357,31 @@ STUB char* D_3e42[12];
 STUB u8 D_3e5a[6];
 STUB u8 D_3e60[6];
 
-STUB u8 D_3e66[4];
-STUB u8 D_3e6a[4];
-STUB u8 D_3e6e[4];
+STUB u8 D_3e66_harvestX[4];
+STUB u8 D_3e6a_harvestY[4];
+STUB u8 D_3e6e_harvestReagent[4];
 STUB char* D_3e72[3];
 
-STUB u8 D_3e78[0x72]; // TODO: size
-STUB u8 D_3eea[0x72]; // hidden item - value TODO: size
-STUB u8 D_3f5c[0x72]; // hidden item - map id TODO: size
-STUB u8 D_3fce[0x72]; // hidden item - map z TODO: size
-STUB u8 D_4040[0x72]; // hidden item - map x TODO: size
-STUB u8 D_40b2[0x72]; // hidden item - map y TODO: size
+STUB u8 D_3e78_hiddenTile[0x72]; // TODO: size
+STUB u8 D_3eea_hiddenValue[0x72]; // hidden item - value TODO: size
+STUB u8 D_3f5c_hiddenMap[0x72]; // hidden item - map id TODO: size
+STUB u8 D_3fce_hiddenLevel[0x72]; // hidden item - map z TODO: size
+STUB u8 D_4040_hiddenX[0x72]; // hidden item - map x TODO: size
+STUB u8 D_40b2_hiddenY[0x72]; // hidden item - map y TODO: size
 
 // 4100
-STUB u8 D_4124[8];
-STUB u8 D_412c[8];
-STUB u8 D_4134[8];
+STUB u8 D_4124_treasureKind[8];
+STUB u8 D_412c_treasureMinLevel[8];
+STUB u8 D_4134_treasureMaxAmount[8];
 
-STUB u8 D_413c[0x30];
-STUB u8 D_416c[0x30]; // ~419c)
+STUB u8 D_413c_gearKind[0x30];
+STUB u8 D_416c_gearMinLevel[0x30]; // ~419c)
 
 STUB char* D_419c[8];
 STUB char* D_41ac[8];
-STUB u8 D_41bc[8];
-STUB u8 D_41c4[8];
-STUB u8 D_41cc[8];
+STUB u8 D_41bc_dungeonLootOdds[8];
+STUB u8 D_41c4_dungeonLootMax[8];
+STUB u8 D_41cc_dungeonLootKind[8];
 
 STUB char* D_444a[3];
 
@@ -500,7 +500,7 @@ STUB u16 D_520c; // AFONT.ASM's: where FONT_0e52 saves the video page
 STUB VideoDriverParams D_52ba_vdp;
 #if defined(TARGET_DOS16)
 // A0878.ASM's own names for two fields: the C modules read them as plain globals, which MSC
-// optimizes differently from a struct field (LOOKOBJ_0cf4)
+// optimizes differently from a struct field (LOOKOBJ_0cf4_DrawShore)
 STUB int D_52c4_clipEnabled;
 STUB int D_52c8_videoDriver;
 #else
@@ -617,7 +617,7 @@ STUB S_55a8 D_55a8_party[0x10]; // ~57a8)
 
 // 5700
 STUB s16 D_57a8_food;        // +0x0202 Food // int (TALK_0682_ReceiveItem, MOVSX)
-STUB s16 D_57aa_gold;        // +0x0204 Gold // int (MAINOUT_1b3e, MOVSX)
+STUB s16 D_57aa_gold;        // +0x0204 Gold // int (MAINOUT_1b3e_TrollToll, MOVSX)
 STUB u8  D_57ac_keys; // +0x206
 STUB u8  D_57ad_gems; // +0x207
 STUB u8  D_57ae_torches; // +0x208
@@ -809,8 +809,8 @@ STUB u8 D_6aa8[0x24];
 
 // a500
 
-// DS:a524-a9bc is the modules' _BSS, their static variables, in link order: D_a524 (mainout.c),
-// D_a526 and D_a527 (mainoutb.c), D_a528 and D_a628 (dnglook.c), D_a728_pathXs and D_a872_pathYs (comsubs.c).
+// DS:a524-a9bc is the modules' _BSS, their static variables, in link order: D_a524_capeToggle (mainout.c),
+// D_a526_lastX and D_a527_lastY (mainoutb.c), D_a528_viewQueueX and D_a628_viewQueueY (dnglook.c), D_a728_pathXs and D_a872_pathYs (comsubs.c).
 
 // a900
 
@@ -822,10 +822,10 @@ STUB u8 D_6aa8[0x24];
 BSS u8  D_a9bc_townJustEntered;
 BSS u8 D_a9bd_curDisk[1]; // the disk wanted (ULTIMA_251e_SwitchDisks)
 BSS u8 D_a9be; // two bytes on an odd address would have been put on an even one
-BSS u8* D_a9c0; // loaded image pointer
+BSS u8* D_a9c0_wallImage; // loaded image pointer
 BSS u8 D_a9c2;
-BSS u8* D_a9c4; // loaded image pointer
-BSS u8* D_a9c6; // loaded image pointer
+BSS u8* D_a9c4_itemsImage; // loaded image pointer
+BSS u8* D_a9c6_monsterImage; // loaded image pointer
 
 // disk drive table
 BSS u8 D_a9c8_diskDrives[6]; // the drive of each disk; 0xff: not set
@@ -842,7 +842,7 @@ BSS u8 D_a9ce_soundOn; // use sound effect?
 BSS u16 D_a9d0_rayBalance[0x15];
 
 BSS u8 D_a9fa_vitalsDirty; // dirty flag for vital
-BSS u8 D_a9fb; // footstep sfx duration in dungeon
+BSS u8 D_a9fb_stepVolume; // footstep sfx duration in dungeon
 
 // combat?
 BSS ActorFmt D_a9fc_savedActors[0x20]; // D_5c5a_actors during combat
@@ -902,10 +902,10 @@ BSS u8  D_b9ee[0x26]; // owned item counts
 
 BSS CombatEntity D_ba14_combatants[32]; // combat entities
 
-BSS u8  D_bb14; // pos?
-BSS u8  D_bb15; // pos?
+BSS u8  D_bb14_wallTile; // pos?
+BSS u8  D_bb15_floorTile; // pos?
 BSS u8  D_bb16;
-BSS u8  D_bb17;
+BSS u8  D_bb17_loadFlags;
 BSS u16 D_bb18; // "lord british" index
 BSS void* D_bb1a; // pointer
 

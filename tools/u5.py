@@ -147,7 +147,7 @@ OBJECT_PARTS = [('R2320', 'A2322', 'R251E'), ('INTRO2', 'AINTRO2'), ('AFONT0', '
 # original reaches the overworld map through a name of its own for DS:6608 (vars.h); which
 # object defined it is not known.
 LINK_DEFINES = {'D_6608_OVERWORLD': 'D_6608_MAP'}
-# cmds.c knows 22 names by their short forms (the note at its top: CMDS_0000's pass-2 memory)
+# cmds.c knows 24 names by their short forms (the note at its top: CMDS_0000's pass-2 memory)
 LINK_DEFINES.update({
     'D_5876': 'D_5876_TEMPX',
     'D_5878': 'D_5878_TEMPY',
@@ -163,6 +163,10 @@ LINK_DEFINES.update({
     'D_BA14': 'D_BA14_COMBATANTS',
     'COMBAT_0000': 'COMBAT_0000_ISCELLFREE',
     'STUB_COMBAT_0000': 'STUB_COMBAT_0000_ISCELLFREE',    # the overlay call stub (PLTAB) has the long name
+    'DNGLOOK_117E': 'DNGLOOK_117E_PLACECOMBATANTS',
+    'STUB_DNGLOOK_117E': 'STUB_DNGLOOK_117E_PLACECOMBATAN',
+    'OUTSUBS_0658': 'OUTSUBS_0658_APPARITION',
+    'STUB_OUTSUBS_0658': 'STUB_OUTSUBS_0658_APPARITION',
     'ULTIMA_3AE6': 'ULTIMA_3AE6_WAITFRAMES',
     'ULTIMA_400C': 'ULTIMA_400C_RINGREGENERATION',
     'ULTIMA_4A84': 'ULTIMA_4A84_DRAWSUNANDMOONS',
@@ -182,8 +186,8 @@ LINK_DEFINES.update({
 # it first met it; within an object that is MSC's symbol-table order, which depends on names
 # the original's source had and u5d does not (docs/MATCHING.md, "The resident data").
 COMMUNALS = [n.upper() for n in (
-    'D_a9bc_townJustEntered D_a9bd_curDisk D_a9be D_a9c0 D_a9c2 D_a9c4 D_a9c6 D_a9c8_diskDrives D_a9ce_soundOn D_a9d0_rayBalance D_a9fa_vitalsDirty D_a9fb D_a9fc_savedActors D_aafc_shopName D_aafe_shopOwner D_ab00_itemName D_ab02_viewTiles D_ac62_placeName D_ac64_viewActors D_ad14_combatMap '
-    'D_b114_shopIndex D_b116_shopKind D_b118_shopPrice D_b11a_shopQuantity D_b11c D_b11e_tileFrames D_b21e_scratch D_b9ee D_ba14_combatants D_bb14 D_bb15 D_bb16 D_bb17 '
+    'D_a9bc_townJustEntered D_a9bd_curDisk D_a9be D_a9c0_wallImage D_a9c2 D_a9c4_itemsImage D_a9c6_monsterImage D_a9c8_diskDrives D_a9ce_soundOn D_a9d0_rayBalance D_a9fa_vitalsDirty D_a9fb_stepVolume D_a9fc_savedActors D_aafc_shopName D_aafe_shopOwner D_ab00_itemName D_ab02_viewTiles D_ac62_placeName D_ac64_viewActors D_ad14_combatMap '
+    'D_b114_shopIndex D_b116_shopKind D_b118_shopPrice D_b11a_shopQuantity D_b11c D_b11e_tileFrames D_b21e_scratch D_b9ee D_ba14_combatants D_bb14_wallTile D_bb15_floorTile D_bb16 D_bb17_loadFlags '
     'D_bb18 D_bb1a D_bb1c D_bbd2 D_bc88 D_bcb0 '
     'D_bcb2 D_bcda '
     'D_bcdc_talkNpcIndex D_bcde_talkPtr D_bce0_talkCodeArgs D_bce4_talkWord D_bcf4_talkLabel D_bcf6_talkKeywordIndex D_bcf8_inputText '

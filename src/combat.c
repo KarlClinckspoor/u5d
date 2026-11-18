@@ -234,7 +234,7 @@ static int COMBAT_0226_MonsterAttack(int monster)
 
 // A monster's turn. Nothing happens while time is stopped (status T), to a swallowed monster, or on half the turns under status Q.
 // A sleeper may wake; a fleeing one may recover a hit point; otherwise it tries its tricks (COMSUBS_00f4) and its attack
-// (COMBAT_0226), then it moves (COMBAT_0ee4). One that moves out of the view escapes (the Shadow Lord's escape: SJOG_21ce).
+// (COMBAT_0226), then it moves (COMBAT_0ee4). One that moves out of the view escapes (the Shadow Lord's escape: SJOG_21ce_BreakCharm).
 static void COMBAT_03f4_MonsterTurn(void)
 {
     int actorIdx;
@@ -299,7 +299,7 @@ static void COMBAT_03f4_MonsterTurn(void)
 
                     if ((entity->flags & COMBAT_FLAGS_PLAYER) == 0 && entity->entityIdx == 0x2f)
                     {
-                        SJOG_21ce();
+                        SJOG_21ce_BreakCharm();
                     }
                 }
                 ULTIMA_5910_UpdateFrame();
@@ -398,7 +398,7 @@ static void COMBAT_063e_ProcessCommand(void)
 
     if (D_587b_activePlayer != 0xff && ((D_ba14_combatants[D_589e_curCombatant].flags & COMBAT_FLAGS_PLAYER) == 0 || D_587b_activePlayer != member))
     {
-        SJOG_2012();
+        SJOG_2012_TurnUpkeep();
     }
     else
     {
@@ -765,7 +765,7 @@ static void COMBAT_063e_ProcessCommand(void)
         // ae09
         if (key < 0x30 || key > 0x36)
         {
-            SJOG_2012();
+            SJOG_2012_TurnUpkeep();
             ULTIMA_5910_UpdateFrame();
             SJOG_1ea4_CheckMirror();
         }
@@ -775,7 +775,7 @@ static void COMBAT_063e_ProcessCommand(void)
 // CHECKED
 // The battle loop. Every combatant has a timer (36 minus its dexterity); when it runs out, a monster acts (COMBAT_03f4) or the party
 // member is asked (COMBAT_063e). Every ten turns the clock advances. VICTORY! when no monster is left, BATTLE IS LOST! when no
-// member. Returns 1 (0 when SJOG_1b6c's two counts in D_5876/D_5878 are both zero).
+// member. Returns 1 (0 when SJOG_1b6c_CountCombatants's two counts in D_5876/D_5878 are both zero).
 int COMBAT_0b94_MainLoop(void)
 {
     int finished_c;
@@ -789,7 +789,7 @@ int COMBAT_0b94_MainLoop(void)
     ULTIMA_5910_UpdateFrame();
     ULTIMA_2900_UpdateVitalsDisplay();
     ULTIMA_1b16_ClearKbdBuffer();
-    SJOG_1b6c();
+    SJOG_1b6c_CountCombatants();
 
     if (D_5876_tempX == 0)
     {
@@ -856,7 +856,7 @@ int COMBAT_0b94_MainLoop(void)
                             // af23
                             D_58a8[D_589e_curCombatant] = 0xff;
                             COMBAT_1b1e_TerrainEffect(D_589e_curCombatant);
-                            SJOG_1b6c();
+                            SJOG_1b6c_CountCombatants();
 
                             // af39
                             if (D_5878_tempY == 0)
@@ -872,7 +872,7 @@ int COMBAT_0b94_MainLoop(void)
                                 }
 
                                 // af5a
-                                if (SJOG_21ce() == -1)
+                                if (SJOG_21ce_BreakCharm() == -1)
                                 {
                                     ULTIMA_5910_UpdateFrame();
                                     if (D_58a3_combatOver == 0)
@@ -984,7 +984,7 @@ static int COMBAT_0d30_ChooseTarget(int combatant)
 
     if (playersSeen_k == -1 && best_k == -1)
     {
-        best_k = SJOG_21ce();
+        best_k = SJOG_21ce_BreakCharm();
     }
 
     if (best_k == -1)
@@ -1039,7 +1039,7 @@ static int COMBAT_0d30_ChooseTarget(int combatant)
 }
 
 // CHECKED
-// A monster's move. A teleporter (ENEMY_FLAG_TELEPORT) tries to jump to a free random cell: always when boxed in (SJOG_2148), else 3 in 4.
+// A monster's move. A teleporter (ENEMY_FLAG_TELEPORT) tries to jump to a free random cell: always when boxed in (SJOG_2148_IsSurrounded), else 3 in 4.
 // The Mimic and the Reaper (0x1a, 0x1b) never move. Otherwise it steps toward its target when it can, else a random side step; leaving
 // the view sets D_58a2 to 0x10. Returns 1 when it moved.
 static int COMBAT_0ee4_MonsterMove(int combatant)
@@ -1057,7 +1057,7 @@ static int COMBAT_0ee4_MonsterMove(int combatant)
     {
         // 0f17
         if ((self_f->flags & COMBAT_FLAGS_PLAYER) == 0 && (D_153c_enemyFlags[self_f->entityIdx] & ENEMY_FLAG_TELEPORT) != 0 && D_587a_statusIcon != 0x4e && D_587a_statusIcon != 0x1c &&
-            (SJOG_2148(combatant) != 0 || ULTIMA_3aae_Random(3) != 3) && COMBAT_120e_RandomCell() != 0)
+            (SJOG_2148_IsSurrounded(combatant) != 0 || ULTIMA_3aae_Random(3) != 3) && COMBAT_120e_RandomCell() != 0)
         {
             if (COMBAT_0000_IsCellFree(D_5c5a_actors[self_f->actorIdx].tile, D_5876_tempX, D_5878_tempY) != 0)
             {
@@ -1071,18 +1071,18 @@ static int COMBAT_0ee4_MonsterMove(int combatant)
         }
 
         // 0fab
-        if (moved_h == 0 && SJOG_2148(combatant) == 0)
+        if (moved_h == 0 && SJOG_2148_IsSurrounded(combatant) == 0)
         {
             // 0fc1
             target = COMBAT_0d30_ChooseTarget(combatant);
-            if (ULTIMA_3aae_Random(0xff) > 0x7f && SJOG_20d8(self_f->x + D_5876_tempX, self_f->y, combatant) == 0)
+            if (ULTIMA_3aae_Random(0xff) > 0x7f && SJOG_20d8_IsCellBlocked(self_f->x + D_5876_tempX, self_f->y, combatant) == 0)
             {
                 D_5878_tempY = 0;
                 moveCode = 999;
             }
             else
             {
-                if (SJOG_20d8(self_f->x, self_f->y + D_5878_tempY, combatant) == 0)
+                if (SJOG_20d8_IsCellBlocked(self_f->x, self_f->y + D_5878_tempY, combatant) == 0)
                 {
                     D_5876_tempX = 0;
                     moveCode = 998;
@@ -1117,7 +1117,7 @@ static int COMBAT_0ee4_MonsterMove(int combatant)
                     }
 
                     // 1070
-                    if (SJOG_20d8(self_f->x + D_5876_tempX, self_f->y + D_5878_tempY, combatant) == 0)
+                    if (SJOG_20d8_IsCellBlocked(self_f->x + D_5876_tempX, self_f->y + D_5878_tempY, combatant) == 0)
                     {
                         moveCode = 991;
                     }
@@ -1616,7 +1616,7 @@ int COMBAT_1574_ApplyDamage(int target, int damage)
                 D_5c5a_actors[entity->actorIdx].tile = D_5c5a_actors[entity->actorIdx].animTile = TILE_ACTOR_CIRCLE;
                 ULTIMA_1068_RevealTile(GetCombatMap(entity->x, entity->y), entity->x, entity->y);
                 COMBAT_1236_RemoveEntity(-(target + 1));
-                SJOG_21ce();
+                SJOG_21ce_BreakCharm();
             }
             else
             {

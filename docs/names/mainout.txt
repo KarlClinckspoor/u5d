@@ -1,0 +1,179 @@
+# MAINOUT (mainout.c + mainoutb.c): the overworld: the main command loop, walking and sailing, entering towns,
+# dungeons and shrines, and the creatures that roam it (spawning, moving, attacking). One overlay: mainout.c is MSC 5.1,
+# mainoutb.c (from MAINOUT_109e) MSC 5.0.
+# functions
+MAINOUT_0000 MAINOUT_0000_SetUpOverworld       # enters the overworld: clears the sky, sets the view origin around the party, loads the map chunks, the light map, wind, sun and moons, the underworld's items
+MAINOUT_007a MAINOUT_007a_WaitIfActorNear      # one frame's wait when an actor of the table is within five cells (only actor 1 is looked at: the loop breaks at once)
+MAINOUT_00da MAINOUT_00da_TurnVehicle          # "Ride/Fly/Row/Head": turns the party's tile to the direction; 1 when the party only turned (no step), also a frigate under no wind
+MAINOUT_01fe MAINOUT_01fe_CanStepTo            # whether the party may step by (x, y): the actor there and the walkable tile decide; prints Blocked!, OUCH!, COLLISION!, BREAKING UP!, Docked!
+MAINOUT_0354 MAINOUT_0354_MoveParty            # the party moves by (x, y); near the edge of the 32x32 view the chunks are shifted and loaded
+MAINOUT_03e0 MAINOUT_03e0_SlowTerrain          # after a step: on rough terrain (forest, hills, mountains) the monsters move once or twice more, "Slow progress!" / "Very slow!"
+MAINOUT_0490 MAINOUT_0490_WalkInDirection      # a direction key: prints the direction, turns the vehicle, steps when allowed (and the frigate sets sail); 1 when it stepped
+MAINOUT_0598 MAINOUT_0598_WaitForKey           # redraws, handles the falling tile, prints the prompt; a frigate under sail moves with the wind until a key; returns the key
+MAINOUT_0a1a MAINOUT_0a1a_UpdateDarkness       # on a blank (0xff) tile without the status 0xe the light level is 0, the view is redrawn once
+MAINOUT_0a60 MAINOUT_0a60_CheckEarthquake      # underground: one in 256 turns "EARTHQUAKE!" damages the party
+MAINOUT_0d8c MAINOUT_0d8c_SpawnChance          # how likely a monster spawn is, 0 (towns, castles) to 5: by the tile under the party, + 3 at night; 3 in the underworld
+MAINOUT_0e04 MAINOUT_0e04_PickWeighted         # an index picked by weights that add up to 256 (a roll of 0-255 minus each weight)
+MAINOUT_0e4e MAINOUT_0e4e_MonsterForTile       # the monster (actor tile) that may appear on that terrain: sea, land or underworld tables, whirlpools in deep water; 0 for none
+MAINOUT_0f4e MAINOUT_0f4e_PickSpawnCell        # a random cell of the 32x32 view more than six away from the party, into D_5876/D_5878
+MAINOUT_0fc4 MAINOUT_0fc4_SpawnMonster         # looks up to 128 times for a cell and a monster that fit, and puts it there (pirates get hull value 100)
+MAINOUT_105c MAINOUT_105c_IsMovingActor        # whether an actor tile is one that moves by itself: 0x2c-0x2f and 0x80 up except 0xb4-0xb7 and 0xe8-0xeb
+MAINOUT_109e MAINOUT_109e_DamageVehicle        # a blow to the party's vehicle: a ship loses 1 to 30 hull points and sinks (abandon ship, or drowning); on foot the party is hurt
+MAINOUT_1168 MAINOUT_1168_PirateFire           # a pirate ship fires (cannon sound, a missile to the party); a hit hurts the vehicle
+MAINOUT_1248 MAINOUT_1248_ActorTouchesParty    # an actor next to the party: a whirlpool pulls the ship into the underworld, else "Attacked!" and combat (not on a skiff or carpet over water)
+MAINOUT_131a MAINOUT_131a_ActorAttack          # next to the party: touches it; sea monsters fire from three cells at 1 in 8; a pirate ship in line says "BOOOM!"; 1 when it acted
+MAINOUT_1482 MAINOUT_1482_CanActorEnter        # the cell is walkable for the actor and holds no other actor
+MAINOUT_14c8 MAINOUT_14c8_NotLastCell          # 0 for the cell the last moved actor came from (D_a526/D_a527)
+MAINOUT_14ea MAINOUT_14ea_InChaseRange         # the actor is within six cells and in the pattern D_2c18
+MAINOUT_1578 MAINOUT_1578_MoveActor            # moves an actor by (x, y): a pirate ship turns to face it; rough terrain may stop it; it leaves a moongate's cell empty
+MAINOUT_16fc MAINOUT_16fc_MoveRandomly         # tries random directions, up to three times, and takes the first free cell
+MAINOUT_17d4 MAINOUT_17d4_MoveTowardParty      # one step toward the party, along x or y by chance; otherwise at random (the second parameter is only written)
+MAINOUT_198c MAINOUT_198c_ActorTurn            # one actor's move by kind: a whirlpool every other turn, the Shadowlord after the party (20 moves), a ship by the wind, else toward the party
+MAINOUT_1a60 MAINOUT_1a60_MonstersTurn         # the monsters' turn after a step: may spawn one, each moving actor attacks or moves, those out of the view vanish; the number that attacked
+MAINOUT_1b3e MAINOUT_1b3e_TrollToll            # the trolls ask for a toll (99 - 3 x strength of the first, gold); not paid, they fight
+MAINOUT_1be8 MAINOUT_1be8_BridgeTrolls         # crossing a bridge: one in eight, each party member's dexterity tests whether the trolls under it see them
+#= MAINOUT_06ec_AttackCmd # the Attack command: a direction, then combat with what is there, if it can be fought (not on a skiff or carpet over water)
+#= MAINOUT_0790_LoadDungeon # prints what is entered, finds the dungeon at the party's position (D_1e8a/D_1eb2, entries 0x20-0x27), saves the actors and reads its DUNGEON.DAT level; Doom's entrance may be guarded
+#= MAINOUT_08de_EnterCmd # the Enter command: by the tile under the party, a shrine, a town, castle, keep, hut, lighthouse, dungeon, cave, mine or the palace of Blackthorn; 1 when it went in
+#= MAINOUT_0a84_MainLoop # the overworld's command loop: sleeping, death, moongates, a key (Ctrl-K karma, E exit, V version, S sound, direction, commands), then the tile's effects and the monsters' turn
+#= MAINOUT_0d22_Entry # the overlay's entry: sets up the overworld, puts a bought ship at its place, runs the main loop
+# locals and parameters
+mainout.c:MAINOUT_007a local_8 distX
+mainout.c:MAINOUT_007a local_a distY
+mainout.c:MAINOUT_007a local_6 index
+mainout.c:MAINOUT_007a local_4_ab actor
+mainout.c:MAINOUT_00da param_1 dir
+mainout.c:MAINOUT_00da local1_6 oldTile
+mainout.c:MAINOUT_00da local2_4 turned
+mainout.c:MAINOUT_01fe param_2 stepX
+mainout.c:MAINOUT_01fe param_1 stepY
+mainout.c:MAINOUT_01fe local_8 destTile
+mainout.c:MAINOUT_01fe local_6 blockerTile
+mainout.c:MAINOUT_01fe local_4_ab canStep
+mainout.c:MAINOUT_0354 param_1 stepX
+mainout.c:MAINOUT_0354 param_2 stepY
+mainout.c:MAINOUT_0354 local_6_an relY
+mainout.c:MAINOUT_0354 local_4 relX
+mainout.c:MAINOUT_03e0 local_8 tile
+mainout.c:MAINOUT_03e0 local_6 terrainClass
+mainout.c:MAINOUT_03e0 local_4_ab moved
+mainout.c:MAINOUT_0490 param_1 dir
+mainout.c:MAINOUT_0490 param_2 noMove
+mainout.c:MAINOUT_0490 local_8 stepY
+mainout.c:MAINOUT_0490 local_6 stepX
+mainout.c:MAINOUT_0490 local_4_ab result
+mainout.c:MAINOUT_0598 local1_a windStepY
+mainout.c:MAINOUT_0598 local2_8 windStepX
+mainout.c:MAINOUT_0598 local3_6 key
+mainout.c:MAINOUT_0598 local4_4 windScore
+mainout.c:MAINOUT_06ec_AttackCmd local_6 targetX
+mainout.c:MAINOUT_06ec_AttackCmd local_8 targetY
+mainout.c:MAINOUT_06ec_AttackCmd local_4_ab result
+mainout.c:MAINOUT_06ec_AttackCmd local_a targetTile
+mainout.c:MAINOUT_0790_LoadDungeon param_1 verb
+mainout.c:MAINOUT_0790_LoadDungeon local_6_an slot
+mainout.c:MAINOUT_0790_LoadDungeon local_4 dungeonIndex
+mainout.c:MAINOUT_08de_EnterCmd local_6 shrineIndex
+mainout.c:MAINOUT_08de_EnterCmd local_4_ab result
+mainout.c:MAINOUT_08de_EnterCmd local_8 tile
+mainout.c:MAINOUT_0a1a param_1 wasDark
+mainout.c:MAINOUT_0a84_MainLoop local_12_ab tileUnder
+mainout.c:MAINOUT_0a84_MainLoop local_10_ad unused1
+mainout.c:MAINOUT_0a84_MainLoop local_e unused2
+mainout.c:MAINOUT_0a84_MainLoop local_c done
+mainout.c:MAINOUT_0a84_MainLoop local_a turnTaken
+mainout.c:MAINOUT_0a84_MainLoop local_8 awake
+mainout.c:MAINOUT_0a84_MainLoop local_6 key
+mainout.c:MAINOUT_0a84_MainLoop local_4_ab dark
+mainout.c:MAINOUT_0d22_Entry local_8 shipTile
+mainout.c:MAINOUT_0d22_Entry local_6 slot
+mainout.c:MAINOUT_0d22_Entry local_4_ab ship
+mainout.c:MAINOUT_0d8c local_6_an tile
+mainout.c:MAINOUT_0d8c local_4 chance
+mainout.c:MAINOUT_0e04 param_1 weights
+mainout.c:MAINOUT_0e04 local_6_an index
+mainout.c:MAINOUT_0e04 local_4 roll
+mainout.c:MAINOUT_0e4e param_1 tile
+mainout.c:MAINOUT_0fc4 local_a spawnY
+mainout.c:MAINOUT_0fc4 local_8 spawnX
+mainout.c:MAINOUT_0fc4 local_6 tries
+mainout.c:MAINOUT_0fc4 local_4_ab monsterTile
+mainout.c:MAINOUT_105c param_1 tile
+mainoutb.c:MAINOUT_109e local_6_an skiffs
+mainoutb.c:MAINOUT_109e local_4 damage
+mainoutb.c:MAINOUT_1168 param_1 actor
+mainoutb.c:MAINOUT_1168 param_2 distX
+mainoutb.c:MAINOUT_1168 param_3 distY
+mainoutb.c:MAINOUT_1168 local_8 shotY
+mainoutb.c:MAINOUT_1168 local_6 shotX
+mainoutb.c:MAINOUT_1168 local_4_ab hit
+mainoutb.c:MAINOUT_1248 param_1 actor
+mainoutb.c:MAINOUT_1248 local_4 savedTile
+mainoutb.c:MAINOUT_131a param_1 actor
+mainoutb.c:MAINOUT_131a local_e_am shotY
+mainoutb.c:MAINOUT_131a local_c tile
+mainoutb.c:MAINOUT_131a local_a shotX
+mainoutb.c:MAINOUT_131a local_8 distY
+mainoutb.c:MAINOUT_131a local_6 distX
+mainoutb.c:MAINOUT_131a local_4_ab hit
+mainoutb.c:MAINOUT_1482 param_1 actor
+mainoutb.c:MAINOUT_1482 param_2 destX
+mainoutb.c:MAINOUT_1482 param_3 destY
+mainoutb.c:MAINOUT_14c8 param_1 destX
+mainoutb.c:MAINOUT_14c8 param_2 destY
+mainoutb.c:MAINOUT_14ea param_1 actor
+mainoutb.c:MAINOUT_14ea local_6_an distY
+mainoutb.c:MAINOUT_14ea local_4 distX
+mainoutb.c:MAINOUT_1578 param_1 actor
+mainoutb.c:MAINOUT_1578 param_2 stepX
+mainoutb.c:MAINOUT_1578 param_3 stepY
+mainoutb.c:MAINOUT_1578 local_6 tile
+mainoutb.c:MAINOUT_1578 local_c destTile
+mainoutb.c:MAINOUT_1578 local_a destY
+mainoutb.c:MAINOUT_1578 local_8 destX
+mainoutb.c:MAINOUT_1578 local_4_ab facing
+mainoutb.c:MAINOUT_16fc param_1 actor
+mainoutb.c:MAINOUT_16fc local_10_aa northY
+mainoutb.c:MAINOUT_16fc local_e_am eastX
+mainoutb.c:MAINOUT_16fc local_c southY
+mainoutb.c:MAINOUT_16fc local_a westX
+mainoutb.c:MAINOUT_16fc local_8 y
+mainoutb.c:MAINOUT_16fc local_6 x
+mainoutb.c:MAINOUT_16fc local_4_ab tries
+mainoutb.c:MAINOUT_17d4 param_1 actor
+mainoutb.c:MAINOUT_17d4 param_2 mode
+mainoutb.c:MAINOUT_17d4 local_e_am relY
+mainoutb.c:MAINOUT_17d4 local_c y
+mainoutb.c:MAINOUT_17d4 local_a relX
+mainoutb.c:MAINOUT_17d4 local_8 x
+mainoutb.c:MAINOUT_17d4 local_6 stepY
+mainoutb.c:MAINOUT_17d4 local_4_ab stepX
+mainoutb.c:MAINOUT_198c param_1 actor
+mainoutb.c:MAINOUT_198c local_8 tile
+mainoutb.c:MAINOUT_198c local_6 facing
+mainoutb.c:MAINOUT_198c local_4_ab delay
+mainoutb.c:MAINOUT_1a60 local_6_an index
+mainoutb.c:MAINOUT_1a60 local_4 acted
+mainoutb.c:MAINOUT_1b3e local_8 toll
+mainoutb.c:MAINOUT_1b3e local_6 slot
+mainoutb.c:MAINOUT_1b3e local_4_ab answer
+mainoutb.c:MAINOUT_1be8 local_6_an dot
+mainoutb.c:MAINOUT_1be8 local_4 member
+# globals
+D_29f6 D_29f6_windDx                 # the wind's step by direction (D_5892_windDir - 1): x ...
+D_29fa D_29fa_windDy                 # ... and y
+D_a524 D_a524_capeToggle             # alternates each turn while sailing with the HMS Cape plans (the ship moves every other turn)
+D_2bc0 D_2bc0_landMonsters           # the land monsters (actor tiles) that spawn on the surface ...
+D_2bdc D_2bdc_landWeights            # ... and their weights
+D_2bcc D_2bcc_deepLandMonsters       # the underworld's land monsters ...
+D_2be8 D_2be8_deepLandWeights        # ... and their weights
+D_2bd4 D_2bd4_seaMonsters            # the sea monsters of the surface ...
+D_2bf0 D_2bf0_seaWeights             # ... and their weights
+D_2bda D_2bda_deepSeaMonsters        # the sea monsters of the underworld ...
+D_2bf6 D_2bf6_deepSeaWeights         # ... and their weights
+D_2bf8 D_2bf8_sailDelay              # a pirate ship's turns per move by its facing (4) and the wind direction (4); 4 is none
+D_2c18 D_2c18_chaseRange             # 11 x 6 pattern of the cells (x + y * 11, within five of the party) where the Shadowlord pursues
+D_2c55 D_2c55_quickToggle            # toggles each monster turn under the Quickness status
+D_2c57 D_2c57_mountToggle            # toggles each monster turn while riding a horse or carpet
+D_a526 D_a526_lastX                  # where the last moved actor came from
+D_a527 D_a527_lastY

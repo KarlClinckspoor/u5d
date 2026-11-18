@@ -15,8 +15,8 @@
 #include "outsubs.h"
 #include "town.h"
 
-void MAINOUT_0354(int param_1, int param_2);
-int MAINOUT_105c(int param_1);
+void MAINOUT_0354_MoveParty(int stepX, int stepY);
+int MAINOUT_105c_IsMovingActor(int tile);
 
 // CMDS.OVL's MSC 5.1 code is two objects: cmds.c (CMDS_0000-CMDS_1030) and this one, from
 // CMDS_1202 (its _DATA starts at DS:4450, an even address, after D_444a). Compiled after

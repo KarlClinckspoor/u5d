@@ -1,0 +1,72 @@
+# BLCKTHRN (blckthrn.c): Lord Blackthorn's cutscenes: the party is captured (BLCKTHRN_060e), questioned about the
+# virtues in his throne room (his test), and the Avatar's death scene (BLCKTHRN_0910). One overlay.
+# The cutscene scripts are byte strings run by BLCKTHRN_00be: 1 pair the next move with the one after, 2 n repeat the
+# next move n times, 3/4 footsteps on/off, 5 n wait n frames, 6 tile x y set a map cell, 7 redraw, 8 footsteps for the
+# repeat count, 9 n hide actor n, 0 ends; a code of 0x10 or more is a move: (code & 0xfc) picks the actor, (code & 3) the direction.
+# functions
+BLCKTHRN_0000 BLCKTHRN_0000_Footsteps              # so many footsteps, two frames each
+BLCKTHRN_002e BLCKTHRN_002e_MoveActorOf            # a script move code: the actor it moves (0x10 -> 6, 0x14 -> 7, 0x18 -> 8, 0x1c -> 0, 0x20 -> 1); the step is left in D_5876/D_5878
+BLCKTHRN_00be BLCKTHRN_00be_RunScript              # runs a cutscene script (codes above)
+BLCKTHRN_0278 BLCKTHRN_0278_AskVirtue              # prints question 0-3 of the scene's text (D_b21e) and the virtue's name; question 3 has no virtue
+BLCKTHRN_02ea BLCKTHRN_02ea_ReadMantraAnswer       # reads "Your response?" and tells whether it contains the virtue's mantra (any case)
+BLCKTHRN_03ae BLCKTHRN_03ae_SlicePartyMember       # a thunderbolt and a sound sweep, the actor at slot 1 vanishes; the second living member leaves the party (to slot 15)
+BLCKTHRN_0510 BLCKTHRN_0510_KeyThenScript          # waits for a key, then runs the script D_369e
+BLCKTHRN_051c BLCKTHRN_051c_ThreatenCompanion      # the first threat: scene text, the script D_36da, then the second member is to die
+BLCKTHRN_054a BLCKTHRN_054a_Interrogation          # up to four rounds about the virtue: an answer with its mantra marks the shrine 0xff, costs 5 karma and ends it; a round may slice a member
+#= BLCKTHRN_060e_Capture # the party is captured: the first intact shrine's virtue is the topic; guards, chains, Blackthorn's speech, the interrogation; then the party is set at the castle (10, 7)
+#= BLCKTHRN_0910_Death # the death scene: darkness, "Thou hast found refuge", the old man speaks by karma, the party is resurrected and put at (10, 10) of map 0x11
+# locals and parameters
+blckthrn.c:BLCKTHRN_0000 param_1 count
+blckthrn.c:BLCKTHRN_0000 local_4 step
+blckthrn.c:BLCKTHRN_002e param_1 moveCode
+blckthrn.c:BLCKTHRN_002e local_4 actorIndex
+blckthrn.c:BLCKTHRN_00be param_1 script
+blckthrn.c:BLCKTHRN_00be local_18_al stepBY
+blckthrn.c:BLCKTHRN_00be local_16_an stepAY
+blckthrn.c:BLCKTHRN_00be local_14_ap stepBX
+blckthrn.c:BLCKTHRN_00be local_12_ab stepAX
+blckthrn.c:BLCKTHRN_00be local_10_ad actorB
+blckthrn.c:BLCKTHRN_00be local_e_a actorA
+blckthrn.c:BLCKTHRN_00be local_c_ac walkSound
+blckthrn.c:BLCKTHRN_00be local_a_ae pairMove
+blckthrn.c:BLCKTHRN_00be local_8_an stepNo
+blckthrn.c:BLCKTHRN_00be local_6 repeatCount
+blckthrn.c:BLCKTHRN_00be local_4_ab opcode
+blckthrn.c:BLCKTHRN_0278 param_1 question
+blckthrn.c:BLCKTHRN_0278 param_2 virtue
+blckthrn.c:BLCKTHRN_02ea param_1 virtue
+blckthrn.c:BLCKTHRN_02ea local_1c mantraLen
+blckthrn.c:BLCKTHRN_02ea local_1a charNo
+blckthrn.c:BLCKTHRN_02ea local_18 startPos
+blckthrn.c:BLCKTHRN_02ea local_16 found
+blckthrn.c:BLCKTHRN_02ea local_14_aa answer
+blckthrn.c:BLCKTHRN_03ae param_1 withSpeech
+blckthrn.c:BLCKTHRN_03ae local_28 member
+blckthrn.c:BLCKTHRN_03ae local_26 aliveSeen
+blckthrn.c:BLCKTHRN_03ae local_24_aa counter
+blckthrn.c:BLCKTHRN_03ae local_22_ab sliced
+blckthrn.c:BLCKTHRN_054a param_1 virtue
+blckthrn.c:BLCKTHRN_054a param_2 aliveCount
+blckthrn.c:BLCKTHRN_054a local_6_an threatened
+blckthrn.c:BLCKTHRN_054a local_4 round
+blckthrn.c:BLCKTHRN_060e_Capture local_10_a unused
+blckthrn.c:BLCKTHRN_060e_Capture local_e_ae col
+blckthrn.c:BLCKTHRN_060e_Capture local_c_h virtue
+blckthrn.c:BLCKTHRN_060e_Capture local_a_i aliveCount
+blckthrn.c:BLCKTHRN_060e_Capture local_8 index
+blckthrn.c:BLCKTHRN_060e_Capture local_6_b classIndex
+blckthrn.c:BLCKTHRN_060e_Capture local_4_c actor
+blckthrn.c:BLCKTHRN_0910_Death local_c savedMapId
+blckthrn.c:BLCKTHRN_0910_Death local_6 pitch
+blckthrn.c:BLCKTHRN_0910_Death local_8 index
+blckthrn.c:BLCKTHRN_0910_Death local_a col
+blckthrn.c:BLCKTHRN_0910_Death local_4_ab karmaIndex
+# globals
+D_369e D_369e_scriptAfterTest         # script after the questions end (guards act, Blackthorn leaves?)
+D_36da D_36da_scriptThreat            # script of the threat against the second member
+D_3702 D_3702_scriptGuardsEnter       # guards 6 and 7 walk in (run just after "Footsteps!")
+D_370e D_370e_scriptRelease           # after "Release this good lady/man": the guards free the prisoners
+D_3716 D_3716_scriptBlackthornLeaves  # if Blackthorn (actor 8) is still there after the questioning
+D_1f12 D_1f12_prisonCellOf            # [party size - 1][member] -> index into the cell coordinate tables, where a captured member stands
+D_1f42 D_1f42_prisonCellX
+D_1f48 D_1f48_prisonCellY

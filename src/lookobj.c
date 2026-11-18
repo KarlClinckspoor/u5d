@@ -12,30 +12,32 @@ void ULTIMA_0c64_GRAP_30_Pset(int param_1, int param_2);
 int ULTIMA_2e8e_SelectPlayer();
 void ULTIMA_56ac_DrawMap(void);
 
-static void LOOKOBJ_0000(int param_1)
+// the description of a tile, from LOOK2.DAT (offset table at tile * 2)
+static void LOOKOBJ_0000_PrintTileName(int tile)
 {
-    char local_84_ag[0x80];
-    u16 local_4;
+    char text[0x80];
+    u16 textOffset_c;
 
-    local_4 = 0;
-    ULTIMA_256e_ReadFileFromDisk(_TEXT(0x71f8, "LOOK2.DAT"), &local_4, 2, param_1 << 1);
-    ULTIMA_256e_ReadFileFromDisk(_TEXT(0x7202, "LOOK2.DAT"), local_84_ag, 0x80, local_4);
-    ULTIMA_1850_PrintString(local_84_ag);
+    textOffset_c = 0;
+    ULTIMA_256e_ReadFileFromDisk(_TEXT(0x71f8, "LOOK2.DAT"), &textOffset_c, 2, tile << 1);
+    ULTIMA_256e_ReadFileFromDisk(_TEXT(0x7202, "LOOK2.DAT"), text, 0x80, textOffset_c);
+    ULTIMA_1850_PrintString(text);
 }
 
-static void LOOKOBJ_0042(byte param_1, byte param_2, byte param_3)
+// "a well": drop a coin and wish; a vehicle's name (Corvette, Horse...) in towns 0x16 or 0x1f makes a horse appear
+static void LOOKOBJ_0042_Well(byte wellX, byte wellY, byte wellLevel)
 {
-    char local_14_am;
-    char local_10[14];
-    int local_12;
+    char answer;
+    char wish_e[14];
+    int slot_o;
 
     ULTIMA_1850_PrintString(_TEXT(0x720c, "a well.\n\nDrop a coin?"));
 
-    while ((local_14_am = ULTIMA_266c_GetChar()) != 'Y' && local_14_am != 'N')
+    while ((answer = ULTIMA_266c_GetChar()) != 'Y' && answer != 'N')
     {
     }
 
-    if (local_14_am == 'N')
+    if (answer == 'N')
     {
         ULTIMA_1850_PrintString(_TEXT(0x7222, "No\n"));
     }
@@ -49,16 +51,16 @@ static void LOOKOBJ_0042(byte param_1, byte param_2, byte param_3)
 
         ULTIMA_1850_PrintString(_TEXT(0x722c, "\nThy wish?\n"));
         D_57aa_gold--;
-        ULTIMA_3b1c_GetString(local_10, 0xc);
-        if (local_10[0] == 0)
+        ULTIMA_3b1c_GetString(wish_e, 0xc);
+        if (wish_e[0] == 0)
         {
             ULTIMA_1850_PrintString(_TEXT(0x7238, "Nothing\n"));
             return;
         }
 
-        if (ULTIMA_6f1e_CompareWord(_TEXT(0x7242, "Corvette"), local_10) > -1 || ULTIMA_6f1e_CompareWord(_TEXT(0x724c, "Ferrari"), local_10) > -1 ||
-            ULTIMA_6f1e_CompareWord(_TEXT(0x7254, "Lamborghini"), local_10) > -1 || ULTIMA_6f1e_CompareWord(_TEXT(0x7260, "Lotus"), local_10) > -1 ||
-            ULTIMA_6f1e_CompareWord(_TEXT(0x7266, "Porsche"), local_10) > -1 || ULTIMA_6f1e_CompareWord(_TEXT(0x726e, "Horse"), local_10) > -1)
+        if (ULTIMA_6f1e_CompareWord(_TEXT(0x7242, "Corvette"), wish_e) > -1 || ULTIMA_6f1e_CompareWord(_TEXT(0x724c, "Ferrari"), wish_e) > -1 ||
+            ULTIMA_6f1e_CompareWord(_TEXT(0x7254, "Lamborghini"), wish_e) > -1 || ULTIMA_6f1e_CompareWord(_TEXT(0x7260, "Lotus"), wish_e) > -1 ||
+            ULTIMA_6f1e_CompareWord(_TEXT(0x7266, "Porsche"), wish_e) > -1 || ULTIMA_6f1e_CompareWord(_TEXT(0x726e, "Horse"), wish_e) > -1)
         {
             if (D_5893_mapId != 0x16 && D_5893_mapId != 0x1f)
             {
@@ -68,8 +70,8 @@ static void LOOKOBJ_0042(byte param_1, byte param_2, byte param_3)
             {
                 ULTIMA_1850_PrintString(_TEXT(0x7284, "\nPoof!\n"));
                 ULTIMA_223c_AudioWhiteNoise(10, 3000, 2000);
-                local_12 = ULTIMA_38e4_FindActorSlot();
-                ULTIMA_3a74_SetActor(TILE_ACTOR_HORSE, TILE_ACTOR_HORSE, param_1 + 1, param_2, param_3, 0, local_12);
+                slot_o = ULTIMA_38e4_FindActorSlot();
+                ULTIMA_3a74_SetActor(TILE_ACTOR_HORSE, TILE_ACTOR_HORSE, wellX + 1, wellY, wellLevel, 0, slot_o);
             }
         }
         else
@@ -79,22 +81,23 @@ static void LOOKOBJ_0042(byte param_1, byte param_2, byte param_3)
     }
 }
 
-static void LOOKOBJ_0162(void)
+// "a gurgling fountain": who will drink? the dead and the asleep are incapacitated, nobody is healed
+static void LOOKOBJ_0162_Fountain(void)
 {
-    byte local_6_an;
-    int local_4;
+    byte status;
+    int member_h;
 
     ULTIMA_1850_PrintString(_TEXT(0x729c, "a gurgling fountain!\n\n"));
     ULTIMA_1850_PrintString(_TEXT(0x72b4, "Who will drink?\n"));
 
-    if ((local_4 = ULTIMA_2e8e_SelectPlayer()) == -1)
+    if ((member_h = ULTIMA_2e8e_SelectPlayer()) == -1)
     {
         ULTIMA_1850_PrintString(_TEXT(0x72c6, "None!\n"));
     }
     else
     {
-        local_6_an = D_55a8_party[local_4].status;
-        if (local_6_an == STATUS_DEAD || local_6_an == STATUS_SLEEP)
+        status = D_55a8_party[member_h].status;
+        if (status == STATUS_DEAD || status == STATUS_SLEEP)
         {
             ULTIMA_1850_PrintString(_TEXT(0x72ce, "Incapacitated!\n\n"));
         }
@@ -105,95 +108,98 @@ static void LOOKOBJ_0162(void)
     }
 }
 
-static void LOOKOBJ_01ac(int param_1, int param_2)
+// a white star at the sky's cell (x, y): 3x3 pixels, with dots to each side, clipped at the right edge
+static void LOOKOBJ_01ac_DrawStar(int starX, int starY)
 {
-    int local_6_an;
-    int local_4;
+    int dx;
+    int dy_d;
 
     ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
-    ULTIMA_0c64_GRAP_30_Pset(param_1 * 8 + 6, param_2 * 8 + 8);
+    ULTIMA_0c64_GRAP_30_Pset(starX * 8 + 6, starY * 8 + 8);
 
-    for (local_4 = 0; local_4 < 3; local_4++)
+    for (dy_d = 0; dy_d < 3; dy_d++)
     {
-        for (local_6_an = 0; local_6_an < 3; local_6_an++)
+        for (dx = 0; dx < 3; dx++)
         {
-            if (param_1 * 8 + local_6_an <= 0xb0)
+            if (starX * 8 + dx <= 0xb0)
             {
-                ULTIMA_0c64_GRAP_30_Pset(param_1 * 8 + local_6_an + 7, param_2 * 8 + local_4 + 7);
+                ULTIMA_0c64_GRAP_30_Pset(starX * 8 + dx + 7, starY * 8 + dy_d + 7);
             }
         }
     }
 
-    if (param_1 * 8 <= 0xad)
+    if (starX * 8 <= 0xad)
     {
-        ULTIMA_0c64_GRAP_30_Pset(param_1 * 8 + 10, param_2 * 8 + 8);
+        ULTIMA_0c64_GRAP_30_Pset(starX * 8 + 10, starY * 8 + 8);
     }
 }
 
-static void LOOKOBJ_024c(int param_1, int param_2)
+// a red mark (a flame shape) at the star's cell, for a planet in front of which a Shadowlord stands
+static void LOOKOBJ_024c_DrawRedMark(int starX, int starY)
 {
-    int local_6_an;
-    int local_4;
+    int pixelY;
+    int pixelX;
 
-    local_4 = param_1 * 8;
-    local_6_an = param_2 * 8;
+    pixelX = starX * 8;
+    pixelY = starY * 8;
 
     ULTIMA_0a70_GRAP_2d_SetPenColor(D_13ae_redColor);
 
-    if (local_4 > 2)
+    if (pixelX > 2)
     {
-        ULTIMA_0cf2_GRAP_3c_VertLine(local_4 + 5, local_6_an + 10, local_6_an + 0xc);
+        ULTIMA_0cf2_GRAP_3c_VertLine(pixelX + 5, pixelY + 10, pixelY + 0xc);
     }
 
-    if (local_4 > 2)
+    if (pixelX > 2)
     {
-        ULTIMA_0cf2_GRAP_3c_VertLine(local_4 + 6, local_6_an + 10, local_6_an + 0xc);
+        ULTIMA_0cf2_GRAP_3c_VertLine(pixelX + 6, pixelY + 10, pixelY + 0xc);
     }
 
-    if (local_4 > 2)
+    if (pixelX > 2)
     {
-        ULTIMA_0cf2_GRAP_3c_VertLine(local_4 + 7, local_6_an + 8, local_6_an + 0xc);
+        ULTIMA_0cf2_GRAP_3c_VertLine(pixelX + 7, pixelY + 8, pixelY + 0xc);
     }
 
-    if (local_4 <= 0xaf)
+    if (pixelX <= 0xaf)
     {
-        ULTIMA_0cf2_GRAP_3c_VertLine(local_4 + 8, local_6_an + 8, local_6_an + 0xc);
+        ULTIMA_0cf2_GRAP_3c_VertLine(pixelX + 8, pixelY + 8, pixelY + 0xc);
     }
 
-    if (local_4 <= 0xae)
+    if (pixelX <= 0xae)
     {
-        ULTIMA_0cf2_GRAP_3c_VertLine(local_4 + 9, local_6_an + 6, local_6_an + 10);
+        ULTIMA_0cf2_GRAP_3c_VertLine(pixelX + 9, pixelY + 6, pixelY + 10);
     }
 
-    if (local_4 <= 0xad)
+    if (pixelX <= 0xad)
     {
-        ULTIMA_0cf2_GRAP_3c_VertLine(local_4 + 10, local_6_an + 6, local_6_an + 10);
+        ULTIMA_0cf2_GRAP_3c_VertLine(pixelX + 10, pixelY + 6, pixelY + 10);
     }
 
-    if (local_4 <= 0xac)
+    if (pixelX <= 0xac)
     {
-        ULTIMA_0cf2_GRAP_3c_VertLine(local_4 + 0xb, local_6_an + 5, local_6_an + 8);
+        ULTIMA_0cf2_GRAP_3c_VertLine(pixelX + 0xb, pixelY + 5, pixelY + 8);
     }
 
-    if (local_4 <= 0xab)
+    if (pixelX <= 0xab)
     {
-        ULTIMA_0cf2_GRAP_3c_VertLine(local_4 + 0xc, local_6_an + 5, local_6_an + 7);
+        ULTIMA_0cf2_GRAP_3c_VertLine(pixelX + 0xc, pixelY + 5, pixelY + 7);
     }
 }
 
 // CHECKED
-void LOOKOBJ_0366(void)
+// by day "the sun!" (it burns the active player); at night draws the sky and the eight planets for the date
+void LOOKOBJ_0366_LookSky(void)
 {
-    int local_16_ak;
-    int local_14_am;
-    int local_12_a;
-    int local_10_aa;
-    int local_e_am;
-    byte local_c;
-    int local_a;
-    int local_8;
-    int local_6;
-    int local_4_ab;
+    int day;
+    int month;
+    int planet;
+    int yearOfCentury_b;
+    int starY;
+    byte key_j;
+    int col_e;
+    int starX;
+    int row_k;
+    int orbitPos;
 
     if (D_587f_hour >= 6 && D_587f_hour < 0x12)
     {
@@ -209,12 +215,12 @@ void LOOKOBJ_0366(void)
     else
     {
         D_24e6_viewDirty = 1;
-        for (local_6 = 0; local_6 < 0xb; local_6++)
+        for (row_k = 0; row_k < 0xb; row_k++)
         {
             // memset?
-            for (local_a = 0; local_a < 0xb; local_a++)
+            for (col_e = 0; col_e < 0xb; col_e++)
             {
-                GetMapViewport(local_a, local_6) = 0xff;
+                GetMapViewport(col_e, row_k) = 0xff;
             }
         }
 
@@ -222,51 +228,51 @@ void LOOKOBJ_0366(void)
         ULTIMA_56ac_DrawMap();
         ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b2_blueColor + 8);
 
-        for (local_6 = 0; local_6 < 0x50; local_6++)
+        for (row_k = 0; row_k < 0x50; row_k++)
         {
             ULTIMA_0c64_GRAP_30_Pset(ULTIMA_2092_RandomRange(9, 0xb6), ULTIMA_2092_RandomRange(9, 0xac));
         }
 
-        for (local_12_a = 0; local_12_a < 8; local_12_a++)
+        for (planet = 0; planet < 8; planet++)
         {
-            local_10_aa = (int)D_5874_year % 100;
-            local_14_am = D_587d_month;
-            local_16_ak = D_587e_day;
-            local_4_ab = D_3750[local_12_a];
-            while (local_10_aa > 0x27 || (local_10_aa == 0x27 && local_14_am > 4) || (local_10_aa == 0x27 && local_14_am == 4 && local_16_ak > 5))
+            yearOfCentury_b = (int)D_5874_year % 100;
+            month = D_587d_month;
+            day = D_587e_day;
+            orbitPos = D_3750_planetStartPos[planet];
+            while (yearOfCentury_b > 0x27 || (yearOfCentury_b == 0x27 && month > 4) || (yearOfCentury_b == 0x27 && month == 4 && day > 5))
             {
-                local_16_ak--;
-                if (local_16_ak == 0)
+                day--;
+                if (day == 0)
                 {
-                    local_16_ak = 0x1c;
-                    local_14_am--;
+                    day = 0x1c;
+                    month--;
                 }
 
-                if (local_14_am == 0)
+                if (month == 0)
                 {
-                    local_14_am = 0xd;
-                    local_10_aa--;
+                    month = 0xd;
+                    yearOfCentury_b--;
                 }
 
                 do
                 {
-                    local_4_ab--;
-                    if (local_4_ab < 0)
+                    orbitPos--;
+                    if (orbitPos < 0)
                     {
-                        local_4_ab = 0x15;
+                        orbitPos = 0x15;
                     }
-                } while (D_3760[local_12_a * 0x16 + local_4_ab] == 0);
+                } while (D_3760_orbitSteps[planet * 0x16 + orbitPos] == 0);
             }
 
-            local_8 = local_4_ab + 1;
-            local_e_am = D_3758[local_12_a];
-            LOOKOBJ_01ac(local_8, local_e_am);
-            local_8--;
-            for (local_a = 0; local_a < 3; local_a++)
+            starX = orbitPos + 1;
+            starY = D_3758_planetRow[planet];
+            LOOKOBJ_01ac_DrawStar(starX, starY);
+            starX--;
+            for (col_e = 0; col_e < 3; col_e++)
             {
-                if (D_58c8_shadowlordTowns[local_a] == local_12_a + 1)
+                if (D_58c8_shadowlordTowns[col_e] == planet + 1)
                 {
-                    LOOKOBJ_024c(local_8, local_e_am);
+                    LOOKOBJ_024c_DrawRedMark(starX, starY);
                 }
             }
         }
@@ -275,58 +281,59 @@ void LOOKOBJ_0366(void)
 
         do
         {
-        } while ((local_c = ULTIMA_1b38_PollKeyWithCursor()) == 0);
+        } while ((key_j = ULTIMA_1b38_PollKeyWithCursor()) == 0);
     }
 }
 
-static void LOOKOBJ_0502(int param_1, int param_2, int param_3)
+// what a tile is: the sky, a well, a fountain, a clock (the time), the altars' words, a dungeon's name, else its LOOK2.DAT text
+static void LOOKOBJ_0502_DescribeTile(int tile, int tileX, int tileY)
 {
-    int local_4;
+    int hour12;
 
-    while (param_1 == TILE_MAP_E0 || param_1 == TILE_MAP_E1 || param_1 == TILE_MAP_E2)
+    while (tile == TILE_MAP_E0 || tile == TILE_MAP_E1 || tile == TILE_MAP_E2)
     {
-        switch (param_1)
+        switch (tile)
         {
         case TILE_MAP_E0:
-            param_3--;
+            tileY--;
             break;
 
         case TILE_MAP_E1:
-            param_2++;
+            tileX++;
             break;
 
         case TILE_MAP_E2:
-            param_2--;
+            tileX--;
             break;
         }
 
-        param_1 = *ULTIMA_4402_GetTileAddr(param_2, param_3);
+        tile = *ULTIMA_4402_GetTileAddr(tileX, tileY);
     }
 
-    if (param_1 == TILE_MAP_59)
+    if (tile == TILE_MAP_59)
     {
-        LOOKOBJ_0366();
+        LOOKOBJ_0366_LookSky();
     }
-    else if (param_1 == TILE_MAP_WELL)
+    else if (tile == TILE_MAP_WELL)
     {
-        LOOKOBJ_0042(D_5896_mapX, D_5897_mapY, D_5895_mapLevel);
+        LOOKOBJ_0042_Well(D_5896_mapX, D_5897_mapY, D_5895_mapLevel);
     }
-    else if ((param_1 & 0xfc) == TILE_MAP_FOUNTAIN)
+    else if ((tile & 0xfc) == TILE_MAP_FOUNTAIN)
     {
-        LOOKOBJ_0162();
+        LOOKOBJ_0162_Fountain();
     }
     else
     {
-        LOOKOBJ_0000(param_1);
-        if ((param_1 & 0xfe) == TILE_MAP_CLOCK)
+        LOOKOBJ_0000_PrintTileName(tile);
+        if ((tile & 0xfe) == TILE_MAP_CLOCK)
         {
-            local_4 = D_587f_hour % 0xc;
-            if (local_4 == 0)
+            hour12 = D_587f_hour % 0xc;
+            if (hour12 == 0)
             {
-                local_4 = 0xc;
+                hour12 = 0xc;
             }
 
-            ULTIMA_1a3e_PrintNumber(local_4, 1, 0x20);
+            ULTIMA_1a3e_PrintNumber(hour12, 1, 0x20);
             ULTIMA_16ba_PrintChar(':');
             ULTIMA_1a3e_PrintNumber(D_5881_minute, 2, 0x30);
 
@@ -339,7 +346,7 @@ static void LOOKOBJ_0502(int param_1, int param_2, int param_3)
                 ULTIMA_1850_PrintString(_TEXT(0x7310, " AM.\n"));
             }
         }
-        else if (param_1 == TILE_MAP_DE)
+        else if (tile == TILE_MAP_DE)
         {
             switch (D_5893_mapId)
             {
@@ -356,9 +363,9 @@ static void LOOKOBJ_0502(int param_1, int param_2, int param_3)
                 break;
             }
         }
-        else if (param_1 == TILE_MAP_DF)
+        else if (tile == TILE_MAP_DF)
         {
-            switch (param_2)
+            switch (tileX)
             {
             case 0xf0:
                 ULTIMA_1850_PrintString(_TEXT(0x732e, "Deceit\n"));
@@ -403,30 +410,31 @@ static void LOOKOBJ_0502(int param_1, int param_2, int param_3)
     }
 }
 
-static void LOOKOBJ_06a4(int param_1)
+// the description of the creature or person looked at (LOOK2.DAT, offset table at 0x200 + tile * 2)
+static void LOOKOBJ_06a4_DescribeActor(int actorTile)
 {
-    char local_84_ag[128];
-    u16 local_4;
+    char text[128];
+    u16 textOffset_c;
 
-    local_4 = 0;
+    textOffset_c = 0;
 
     // NOTE: FMT does some other things here
 
-    ULTIMA_256e_ReadFileFromDisk(_TEXT(0x7374, "LOOK2.DAT"), &local_4, 2, param_1 * 2 + 0x200);
-    ULTIMA_256e_ReadFileFromDisk(_TEXT(0x737e, "LOOK2.DAT"), local_84_ag, 0x80, local_4);
+    ULTIMA_256e_ReadFileFromDisk(_TEXT(0x7374, "LOOK2.DAT"), &textOffset_c, 2, actorTile * 2 + 0x200);
+    ULTIMA_256e_ReadFileFromDisk(_TEXT(0x737e, "LOOK2.DAT"), text, 0x80, textOffset_c);
 
-    ULTIMA_1850_PrintString(local_84_ag);
+    ULTIMA_1850_PrintString(text);
 
     if (ULTIMA_1f12_GetCurrentTextX() != 0)
     {
         ULTIMA_16ba_PrintChar('\n');
     }
 }
-u8 D_3750[8] = { 0x12, 0x02, 0x08, 0x0f, 0x0b, 0x06, 0x04, 0x02 };
+u8 D_3750_planetStartPos[8] = { 0x12, 0x02, 0x08, 0x0f, 0x0b, 0x06, 0x04, 0x02 };
 
-u8 D_3758[8] = { 0x12, 0x11, 0x0f, 0x0d, 0x0b, 0x08, 0x05, 0x01 };
+u8 D_3758_planetRow[8] = { 0x12, 0x11, 0x0f, 0x0d, 0x0b, 0x08, 0x05, 0x01 };
 
-u8 D_3760[0xb0] =
+u8 D_3760_orbitSteps[0xb0] =
 {
     0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00,
@@ -465,20 +473,21 @@ char* D_3810[9] =
     _STATIC_TEXT(0x7418, "     hlllli     ")
 };
 
-u8 D_3822[16] =
+u8 D_3822_shoreLandMask[16] =
 {
     0x05, 0x06, 0x04, 0x01, 0x03, 0x06, 0x05, 0x07,
     0x07, 0x0e, 0x00, 0x00, 0x01, 0x02, 0x08, 0x04
 };
 
-u8 D_3832[8] = { 0x0a, 0x05, 0x0c, 0x06, 0x03, 0x09, 0x0f, 0x00 };
+u8 D_3832_edgeBits[8] = { 0x0a, 0x05, 0x0c, 0x06, 0x03, 0x09, 0x0f, 0x00 };
 
-static void LOOKOBJ_06f8(int param_1)
+// a sign's text from the scratch buffer (-1: the default "Live by the Eight Laws" sign): frame characters, a key press at 0xd
+static void LOOKOBJ_06f8_PrintSignText(int signPos)
 {
-    byte local_6_an;
-    char* local_4;
+    byte code;
+    char* picture_c;
 
-    if (param_1 == -1)
+    if (signPos == -1)
     {
         ULTIMA_1c9e_SelectCharset(1);
         ULTIMA_1850_PrintString(_TEXT(0x742a, "abbbbbbbbbbbbbbc\ng              g\ng  LIVE@BY@[E  g\n"));
@@ -487,14 +496,14 @@ static void LOOKOBJ_06f8(int param_1)
     }
     else
     {
-        for (param_1 = param_1 + 4; D_b21e_scratch[param_1] == '\n'; param_1 += 6)
+        for (signPos = signPos + 4; D_b21e_scratch[signPos] == '\n'; signPos += 6)
         {
         }
 
         do
         {
-            local_6_an = D_b21e_scratch[param_1];
-            if (local_6_an & 0x80)
+            code = D_b21e_scratch[signPos];
+            if (code & 0x80)
             {
                 ULTIMA_1c9e_SelectCharset(0);
             }
@@ -503,28 +512,28 @@ static void LOOKOBJ_06f8(int param_1)
                 ULTIMA_1c9e_SelectCharset(1);
             }
 
-            if (local_6_an == 0x26 || local_6_an == 0x27)
+            if (code == 0x26 || code == 0x27)
             {
                 ULTIMA_16ba_PrintChar(0x6c);
             }
-            else if (local_6_an >= 0x29 && local_6_an <= 0x31)
+            else if (code >= 0x29 && code <= 0x31)
             {
                 ULTIMA_1c9e_SelectCharset(1);
-                for (local_4 = D_3810[local_6_an - 0x29]; *local_4 != '\0';)
+                for (picture_c = D_3810[code - 0x29]; *picture_c != '\0';)
                 {
-                    ULTIMA_16ba_PrintChar((byte)*local_4++);
+                    ULTIMA_16ba_PrintChar((byte)*picture_c++);
                 }
             }
-            else if (local_6_an == 0xd)
+            else if (code == 0xd)
             {
                 ULTIMA_1c9e_SelectCharset(0);
-                local_6_an = ULTIMA_266c_GetChar();
+                code = ULTIMA_266c_GetChar();
             }
             else
             {
-                ULTIMA_16ba_PrintChar(local_6_an & 0x7f);
+                ULTIMA_16ba_PrintChar(code & 0x7f);
             }
-        } while (D_b21e_scratch[++param_1] != 0);
+        } while (D_b21e_scratch[++signPos] != 0);
 
         ULTIMA_1c9e_SelectCharset(0);
 
@@ -535,14 +544,15 @@ static void LOOKOBJ_06f8(int param_1)
     }
 }
 
-static void LOOKOBJ_07e4(byte param_1, byte param_2, byte param_3)
+// the sign at (level, x, y): the WANTED poster of the party in town 4, else SIGNS.DAT's text for the place
+static void LOOKOBJ_07e4_ReadSign(byte signLevel, byte signX, byte signY)
 {
-    s16 local_48[33];
-    int local_6;
-    int local_4_ab;
+    s16 signOffsets[33];
+    int signPos;
+    int done_j;
 
-    local_4_ab = 0;
-    if (D_5893_mapId == 0x4 && param_1 == 0 && param_2 == 0x11 && param_3 == 0x15)
+    done_j = 0;
+    if (D_5893_mapId == 0x4 && signLevel == 0 && signX == 0x11 && signY == 0x15)
     {
         ULTIMA_1c9e_SelectCharset(1);
         ULTIMA_1850_PrintString(_TEXT(0x7492, "abbbbbbbbbbbbbc\ng   "));
@@ -552,14 +562,14 @@ static void LOOKOBJ_07e4(byte param_1, byte param_2, byte param_3)
         ULTIMA_1850_PrintString(_TEXT(0x74b4, "g\ng"));
         ULTIMA_1bf2_SetTextPosition(0xe, ULTIMA_1cee_GetCurrentTextY());
         ULTIMA_1850_PrintString(_TEXT(0x74b8, "g\ng"));
-        for (local_6 = 0; local_6 < 3; local_6++)
+        for (signPos = 0; signPos < 3; signPos++)
         {
-            if (local_6 < D_585b_partyCount)
+            if (signPos < D_585b_partyCount)
             {
                 ULTIMA_1c9e_SelectCharset(0);
-                ULTIMA_1bf2_SetTextPosition(7 - (ULTIMA_216c_strlen(D_55a8_party[local_6].name) / 2),
+                ULTIMA_1bf2_SetTextPosition(7 - (ULTIMA_216c_strlen(D_55a8_party[signPos].name) / 2),
                     ULTIMA_1cee_GetCurrentTextY());
-                ULTIMA_1850_PrintString(D_55a8_party[local_6].name);
+                ULTIMA_1850_PrintString(D_55a8_party[signPos].name);
                 ULTIMA_1c9e_SelectCharset(1);
             }
 
@@ -577,84 +587,85 @@ static void LOOKOBJ_07e4(byte param_1, byte param_2, byte param_3)
     }
     else
     {
-        ULTIMA_256e_ReadFileFromDisk(_TEXT(0x74e6, "signs.dat"), local_48, 0x42, 0);
-        local_6 = local_48[D_5893_mapId];
+        ULTIMA_256e_ReadFileFromDisk(_TEXT(0x74e6, "signs.dat"), signOffsets, 0x42, 0);
+        signPos = signOffsets[D_5893_mapId];
         memset(D_b21e_scratch, 0xff, SCRATCH_SIZE);
 
-        if (local_6 == 0)
+        if (signPos == 0)
         {
-            LOOKOBJ_06f8(-1);
+            LOOKOBJ_06f8_PrintSignText(-1);
         }
         else
         {
-            ULTIMA_256e_ReadFileFromDisk(_TEXT(0x74f0, "signs.dat"), D_b21e_scratch, SCRATCH_SIZE, local_6);
-            local_6 = 0;
-            // di = local_4_ab
-            // si = local_6
+            ULTIMA_256e_ReadFileFromDisk(_TEXT(0x74f0, "signs.dat"), D_b21e_scratch, SCRATCH_SIZE, signPos);
+            signPos = 0;
+            // di = done_j
+            // si = signPos
             do
             {
-                if (D_b21e_scratch[local_6 + 1] == param_1 && D_b21e_scratch[local_6 + 2] == param_2 && D_b21e_scratch[local_6 + 3] == param_3)
+                if (D_b21e_scratch[signPos + 1] == signLevel && D_b21e_scratch[signPos + 2] == signX && D_b21e_scratch[signPos + 3] == signY)
                 {
-                    LOOKOBJ_06f8(local_6);
-                    local_4_ab++;
+                    LOOKOBJ_06f8_PrintSignText(signPos);
+                    done_j++;
                 }
                 else
                 {
-                    local_6 += 4;
+                    signPos += 4;
 #if !defined(MATCHING_BUILD)
-                    for (; local_6 < SCRATCH_SIZE; )
+                    for (; signPos < SCRATCH_SIZE; )
                     {
-                        if (D_b21e_scratch[local_6++] == 0)
+                        if (D_b21e_scratch[signPos++] == 0)
                             break;
                     }
 
-                    local_4_ab = local_6 == SCRATCH_SIZE;
+                    done_j = signPos == SCRATCH_SIZE;
 #else
-                    while (D_b21e_scratch[local_6++] != 0)
+                    while (D_b21e_scratch[signPos++] != 0)
                     {
                     }
 
-                    local_4_ab = D_b21e_scratch[local_6] == 0xff ? 1 : 0;
+                    done_j = D_b21e_scratch[signPos] == 0xff ? 1 : 0;
 #endif
 
-                    if (local_4_ab)
+                    if (done_j)
                     {
-                        LOOKOBJ_06f8(-1);
+                        LOOKOBJ_06f8_PrintSignText(-1);
                     }
                 }
-            } while (local_4_ab == 0);
+            } while (done_j == 0);
         }
     }
 }
 
+// the Look command: a direction, then what is there: the creature, a sign, a tile; a tile 0x29 (a crystal ball?) gives a death vision or the view of the whole map
 void LOOKOBJ_099c_LookCmd(void)
 {
-    int local_c;
-    int local_a;
-    int local_8;
-    int local_6;
-    int local_4_ab;
+    int member_g;
+    int lookY;
+    int lookX;
+    int actorTile;
+    int tile_b;
 
     if (ULTIMA_35ec_SelectDirection() == 0)
     {
         return;
     }
 
-    local_8 = D_5896_mapX + D_5876_tempX;
-    local_a = D_5897_mapY + D_5878_tempY;
-    local_4_ab = *ULTIMA_4402_GetTileAddr(local_8, local_a);
-    local_6 = ULTIMA_368e_FindActorTileAtPos(local_8, local_a, D_5895_mapLevel);
-    if (local_4_ab == TILE_MAP_29)
+    lookX = D_5896_mapX + D_5876_tempX;
+    lookY = D_5897_mapY + D_5878_tempY;
+    tile_b = *ULTIMA_4402_GetTileAddr(lookX, lookY);
+    actorTile = ULTIMA_368e_FindActorTileAtPos(lookX, lookY, D_5895_mapLevel);
+    if (tile_b == TILE_MAP_29)
     {
-        if ((local_c = ULTIMA_4988_GetActingPlayer()) == -1)
+        if ((member_g = ULTIMA_4988_GetActingPlayer()) == -1)
         {
             return;
         }
 
-        if (D_55a8_party[local_c].intel <= ULTIMA_2092_RandomRange(1, 0x1e))
+        if (D_55a8_party[member_g].intel <= ULTIMA_2092_RandomRange(1, 0x1e))
         {
             ULTIMA_1850_PrintString(_TEXT(0x74fa, "Death vision!\n"));
-            ULTIMA_2a52_DamagePlayer(local_c, 1);
+            ULTIMA_2a52_DamagePlayer(member_g, 1);
             ULTIMA_2900_UpdateVitalsDisplay();
             return;
         }
@@ -664,13 +675,13 @@ void LOOKOBJ_099c_LookCmd(void)
     }
 
     ULTIMA_1850_PrintString(_TEXT(0x751c, "\nThou dost see\n"));
-    if (local_6 != 0)
+    if (actorTile != 0)
     {
-        LOOKOBJ_06a4(local_6);
+        LOOKOBJ_06a4_DescribeActor(actorTile);
         return;
     }
 
-    switch (local_4_ab)
+    switch (tile_b)
     {
     case TILE_MAP_89:
     case TILE_MAP_8A:
@@ -678,22 +689,24 @@ void LOOKOBJ_099c_LookCmd(void)
     case TILE_MAP_A4:
     case TILE_MAP_SIGN_F8:
         ULTIMA_1850_PrintString(_TEXT(0x752c, "\n"));
-        LOOKOBJ_07e4(D_5895_mapLevel, local_8, local_a);
+        LOOKOBJ_07e4_ReadSign(D_5895_mapLevel, lookX, lookY);
         break;
 
     default:
-        LOOKOBJ_0502(local_4_ab, local_8, local_a);
+        LOOKOBJ_0502_DescribeTile(tile_b, lookX, lookY);
         break;
     }
 }
 
-static void LOOKOBJ_0a9c(int param_1, int param_2)
+// the pixel position (D_5876/D_5878) of the vision's cell (x, y): 4 pixels a cell, at 0x20
+static void LOOKOBJ_0a9c_SetCellOrigin(int cellX, int cellY)
 {
-    D_5876_tempX = param_1 * 4 + 0x20;
-    D_5878_tempY = param_2 * 4 + 0x20;
+    D_5876_tempX = cellX * 4 + 0x20;
+    D_5878_tempY = cellY * 4 + 0x20;
 }
 
-static void LOOKOBJ_0abe(void)
+// 4 green dots in a checker
+static void LOOKOBJ_0abe_DrawGreenDots(void)
 {
     ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b4_greenColor + 8);
     ULTIMA_0c64_GRAP_30_Pset(D_5876_tempX + 1, D_5878_tempY);
@@ -702,34 +715,39 @@ static void LOOKOBJ_0abe(void)
     ULTIMA_0c64_GRAP_30_Pset(D_5876_tempX + 3, D_5878_tempY + 3);
 }
 
-static void LOOKOBJ_0b04(void)
+// a solid light green 4x4 cell
+static void LOOKOBJ_0b04_DrawGreenBlock(void)
 {
     ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b4_greenColor + 8);
     ULTIMA_0aa6_GRAP_3f_FillRect(D_5876_tempX, D_5878_tempY, D_5876_tempX + 3, D_5878_tempY + 3);
 }
 
-static void LOOKOBJ_0b28(void)
+// two white vertical bars
+static void LOOKOBJ_0b28_DrawVertBars(void)
 {
     ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
     ULTIMA_0b10_GRAP_Line(D_5876_tempX, D_5878_tempY, D_5876_tempX, D_5878_tempY + 3);
     ULTIMA_0b10_GRAP_Line(D_5876_tempX + 2, D_5878_tempY, D_5876_tempX + 2, D_5878_tempY + 3);
 }
 
-static void LOOKOBJ_0b60(void)
+// white lines along the top and bottom
+static void LOOKOBJ_0b60_DrawHorizBars(void)
 {
     ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
     ULTIMA_0b10_GRAP_Line(D_5876_tempX, D_5878_tempY, D_5876_tempX + 3, D_5878_tempY);
     ULTIMA_0b10_GRAP_Line(D_5876_tempX, D_5878_tempY + 3, D_5876_tempX + 3, D_5878_tempY + 3);
 }
 
-static void LOOKOBJ_0b98(void)
+// two short white lines in the middle
+static void LOOKOBJ_0b98_DrawInnerBars(void)
 {
     ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
     ULTIMA_0b10_GRAP_Line(D_5876_tempX + 1, D_5878_tempY + 1, D_5876_tempX + 2, D_5878_tempY + 1);
     ULTIMA_0b10_GRAP_Line(D_5876_tempX + 1, D_5878_tempY + 2, D_5876_tempX + 2, D_5878_tempY + 2);
 }
 
-static void LOOKOBJ_0bd0(void)
+// a white frame around the cell
+static void LOOKOBJ_0bd0_DrawFrame(void)
 {
     ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
     ULTIMA_0b10_GRAP_Line(D_5876_tempX, D_5878_tempY, D_5876_tempX + 3, D_5878_tempY);
@@ -738,7 +756,8 @@ static void LOOKOBJ_0bd0(void)
     ULTIMA_0b10_GRAP_Line(D_5876_tempX + 3, D_5878_tempY + 1, D_5876_tempX + 3, D_5878_tempY + 2);
 }
 
-static void LOOKOBJ_0c36(void)
+// yellow blocks in two corners
+static void LOOKOBJ_0c36_DrawYellowSteps(void)
 {
     ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b8_brightYellowColor);
     ULTIMA_0b10_GRAP_Line(D_5876_tempX, D_5878_tempY, D_5876_tempX + 1, D_5878_tempY);
@@ -747,7 +766,8 @@ static void LOOKOBJ_0c36(void)
     ULTIMA_0b10_GRAP_Line(D_5876_tempX + 2, D_5878_tempY + 3, D_5876_tempX + 3, D_5878_tempY + 3);
 }
 
-static void LOOKOBJ_0c9c(void)
+// green lines on rows 0 and 2 and two dots
+static void LOOKOBJ_0c9c_DrawGreenStripes(void)
 {
     ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b4_greenColor + 8);
     ULTIMA_0b10_GRAP_Line(D_5876_tempX, D_5878_tempY, D_5876_tempX + 3, D_5878_tempY);
@@ -757,44 +777,46 @@ static void LOOKOBJ_0c9c(void)
 }
 
 // CHECKED
-static void LOOKOBJ_0cf4(int param_1)
+// four dots: green on the land corners of a shore tile (0x60-0x6f, D_3822 masks), water-coloured on the others
+static void LOOKOBJ_0cf4_DrawShore(int tile)
 {
-    int local_e_am;
+    int cornerBit;
 
-    int local_c;
-    int local_a[4];
+    int corner_j;
+    int colors[4];
 
-    local_e_am = 8;
+    cornerBit = 8;
 
-    for (local_c = 0; local_c < 4; local_c++)
+    for (corner_j = 0; corner_j < 4; corner_j++)
     {
-        if ((param_1 & 0xf0) == 0x60 && (D_3822[param_1 & 0xf] & local_e_am) == 0)
+        if ((tile & 0xf0) == 0x60 && (D_3822_shoreLandMask[tile & 0xf] & cornerBit) == 0)
         {
-            local_a[local_c] = D_13b4_greenColor + 8;
+            colors[corner_j] = D_13b4_greenColor + 8;
         }
         else if (D_52c8_videoDriver == 0 || D_52c8_videoDriver == 3)
         {
-            local_a[local_c] = D_13b6_magentaColor;
+            colors[corner_j] = D_13b6_magentaColor;
         }
         else
         {
-            local_a[local_c] = D_13b2_blueColor + 8;
+            colors[corner_j] = D_13b2_blueColor + 8;
         }
 
-        local_e_am >>= 1;
+        cornerBit >>= 1;
     }
 
-    ULTIMA_0a70_GRAP_2d_SetPenColor(local_a[0]);
+    ULTIMA_0a70_GRAP_2d_SetPenColor(colors[0]);
     ULTIMA_0c64_GRAP_30_Pset(D_5876_tempX + 1, D_5878_tempY);
-    ULTIMA_0a70_GRAP_2d_SetPenColor(local_a[1]);
+    ULTIMA_0a70_GRAP_2d_SetPenColor(colors[1]);
     ULTIMA_0c64_GRAP_30_Pset(D_5876_tempX + 3, D_5878_tempY + 1);
-    ULTIMA_0a70_GRAP_2d_SetPenColor(local_a[2]);
+    ULTIMA_0a70_GRAP_2d_SetPenColor(colors[2]);
     ULTIMA_0c64_GRAP_30_Pset(D_5876_tempX + 1, D_5878_tempY + 2);
-    ULTIMA_0a70_GRAP_2d_SetPenColor(local_a[3]);
+    ULTIMA_0a70_GRAP_2d_SetPenColor(colors[3]);
     ULTIMA_0c64_GRAP_30_Pset(D_5876_tempX + 3, D_5878_tempY + 3);
 }
 
-static void LOOKOBJ_0dda(void)
+// two water-coloured dots (magenta on drivers 0 and 3, else light blue)
+static void LOOKOBJ_0dda_DrawWaterDots(void)
 {
     if (D_52c8_videoDriver == 0 || D_52c8_videoDriver == 3)
     {
@@ -809,7 +831,8 @@ static void LOOKOBJ_0dda(void)
     ULTIMA_0c64_GRAP_30_Pset(D_5876_tempX + 2, D_5878_tempY + 2);
 }
 
-static void LOOKOBJ_0e16(void)
+// two green dots and two water-coloured dots
+static void LOOKOBJ_0e16_DrawMarsh(void)
 {
     ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b4_greenColor + 8);
     ULTIMA_0c64_GRAP_30_Pset(D_5876_tempX + 1, D_5878_tempY);
@@ -828,36 +851,37 @@ static void LOOKOBJ_0e16(void)
     ULTIMA_0c64_GRAP_30_Pset(D_5876_tempX + 2, D_5878_tempY + 3);
 }
 
-static void LOOKOBJ_0e7a(int param_1)
+// tiles 0x20-0x26: green dots, a red centre, white edges as D_3832 says and a black dot in the corner of some
+static void LOOKOBJ_0e7a_DrawEdgedBlock(int tile)
 {
-    int local_4;
+    int edges;
 
-    LOOKOBJ_0abe();
+    LOOKOBJ_0abe_DrawGreenDots();
     ULTIMA_0a70_GRAP_2d_SetPenColor(D_13ae_redColor);
     ULTIMA_0aa6_GRAP_3f_FillRect(D_5876_tempX + 1, D_5878_tempY + 1, D_5876_tempX + 2, D_5878_tempY + 2);
 
-    // param_1: 0x20 ~ 0x26 (LOOKOBJ_0f7e -> D_1d1a -> val == 0x10)
-    local_4 = D_3832[param_1 - 0x20];
-    if ((local_4 & 8) != 0)
+    // tile: 0x20 ~ 0x26 (LOOKOBJ_0f7e_DrawMapCell -> D_1d1a_cellPattern -> val == 0x10)
+    edges = D_3832_edgeBits[tile - 0x20];
+    if ((edges & 8) != 0)
     {
         ULTIMA_0b10_GRAP_Line(D_5876_tempX + 1, D_5878_tempY, D_5876_tempX + 2, D_5878_tempY);
     }
-    if ((local_4 & 4) != 0)
+    if ((edges & 4) != 0)
     {
         ULTIMA_0b10_GRAP_Line(D_5876_tempX + 3, D_5878_tempY + 1, D_5876_tempX + 3, D_5878_tempY + 2);
     }
-    if ((local_4 & 2) != 0)
+    if ((edges & 2) != 0)
     {
         ULTIMA_0b10_GRAP_Line(D_5876_tempX + 1, D_5878_tempY + 3, D_5876_tempX + 2, D_5878_tempY + 3);
     }
-    if ((local_4 & 1) != 0)
+    if ((edges & 1) != 0)
     {
         ULTIMA_0b10_GRAP_Line(D_5876_tempX, D_5878_tempY + 1, D_5876_tempX, D_5878_tempY + 2);
     }
 
     ULTIMA_0a70_GRAP_2d_SetPenColor(0);
 
-    switch (param_1)
+    switch (tile)
     {
     case 0x22:
         ULTIMA_0c64_GRAP_30_Pset(D_5876_tempX + 1, D_5878_tempY + 2);
@@ -877,51 +901,52 @@ static void LOOKOBJ_0e7a(int param_1)
     }
 }
 
-static void LOOKOBJ_0f7e(int param_1, int param_2, int param_3)
+// draws one cell of the vision by the pattern D_1d1a gives its tile (0 nothing, 1-16 the pictures above, 90 white)
+static void LOOKOBJ_0f7e_DrawMapCell(int tile, int cellX, int cellY)
 {
-    int local_4;
+    int pattern;
 
-    local_4 = D_1d1a[param_1];
-    LOOKOBJ_0a9c(param_2, param_3);
+    pattern = D_1d1a_cellPattern[tile];
+    LOOKOBJ_0a9c_SetCellOrigin(cellX, cellY);
 
-    switch (local_4)
+    switch (pattern)
     {
     case 0:
         break;
     case 1: // 0fba
-        LOOKOBJ_0abe();
+        LOOKOBJ_0abe_DrawGreenDots();
         break;
     case 2: // 0fc0
-        LOOKOBJ_0b04();
+        LOOKOBJ_0b04_DrawGreenBlock();
         break;
     case 3: // 0fc6
         ULTIMA_0a70_GRAP_2d_SetPenColor(D_13ae_redColor);
         ULTIMA_0aa6_GRAP_3f_FillRect(D_5876_tempX, D_5878_tempY, D_5876_tempX + 3, D_5878_tempY + 3);
         break;
     case 4: // 0fea
-        LOOKOBJ_0b60();
+        LOOKOBJ_0b60_DrawHorizBars();
         break;
     case 5: // 0ff0
-        LOOKOBJ_0b98();
+        LOOKOBJ_0b98_DrawInnerBars();
         break;
     case 6: // 0ff6
-        LOOKOBJ_0bd0();
+        LOOKOBJ_0bd0_DrawFrame();
         break;
     case 7: // 0ffc -> 0fca
         ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
         ULTIMA_0aa6_GRAP_3f_FillRect(D_5876_tempX, D_5878_tempY, D_5876_tempX + 3, D_5878_tempY + 3);
         break;
     case 8: // 1002
-        LOOKOBJ_0c36();
+        LOOKOBJ_0c36_DrawYellowSteps();
         break;
     case 9: // 1008
-        LOOKOBJ_0c9c();
+        LOOKOBJ_0c9c_DrawGreenStripes();
         break;
     case 10: // 1011
-        LOOKOBJ_0cf4(param_1);
+        LOOKOBJ_0cf4_DrawShore(tile);
         break;
     case 11: // 1018
-        LOOKOBJ_0dda();
+        LOOKOBJ_0dda_DrawWaterDots();
         break;
     case 12: // 101e
         if ((D_52c8_videoDriver == 0) || (D_52c8_videoDriver == 3))
@@ -935,7 +960,7 @@ static void LOOKOBJ_0f7e(int param_1, int param_2, int param_3)
         ULTIMA_0c64_GRAP_30_Pset(D_5876_tempX + 2, D_5878_tempY + 2);
         break;
     case 13: // 1050
-        LOOKOBJ_0e16();
+        LOOKOBJ_0e16_DrawMarsh();
         break;
     case 14: // 1056
         ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
@@ -947,7 +972,7 @@ static void LOOKOBJ_0f7e(int param_1, int param_2, int param_3)
         ULTIMA_0aa6_GRAP_3f_FillRect(D_5876_tempX, D_5878_tempY, D_5876_tempX + 3, D_5878_tempY + 3);
         break;
     case 16: // 1096
-        LOOKOBJ_0e7a(param_1);
+        LOOKOBJ_0e7a_DrawEdgedBlock(tile);
         break;
     case 90: // 0ffc
         ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
@@ -956,40 +981,41 @@ static void LOOKOBJ_0f7e(int param_1, int param_2, int param_3)
     }
 }
 
-void LOOKOBJ_10fc_ViewCmd(int param_1, int param_2)
+// the vision: draws the 32x32 map around the origin four pixels a cell and blinks the party's cell until a key
+void LOOKOBJ_10fc_ViewCmd(int viewX, int viewY)
 {
-    int local_6_an;
-    int local_4;
+    int col;
+    int row;
 
-    param_1 -= D_589b_mapOriginX;
-    param_2 -= D_589c_mapOriginY;
-    param_1 &= 0xff;
-    param_2 &= 0xff;
+    viewX -= D_589b_mapOriginX;
+    viewY -= D_589c_mapOriginY;
+    viewX &= 0xff;
+    viewY &= 0xff;
 
     ULTIMA_0c22_GRAP_0f_SelectPage(1);
     ULTIMA_0a70_GRAP_2d_SetPenColor(0);
     ULTIMA_0aa6_GRAP_3f_FillRect(8, 8, 0xb7, 0xb7);
 
-    for (local_4 = 0; local_4 < 0x20; local_4++)
+    for (row = 0; row < 0x20; row++)
     {
-        for (local_6_an = 0; local_6_an < 0x20; local_6_an++)
+        for (col = 0; col < 0x20; col++)
         {
-            LOOKOBJ_0f7e(*ULTIMA_4402_GetTileAddr((uint)D_589b_mapOriginX + local_6_an, (uint)D_589c_mapOriginY + local_4),
-                           local_6_an, local_4);
+            LOOKOBJ_0f7e_DrawMapCell(*ULTIMA_4402_GetTileAddr((uint)D_589b_mapOriginX + col, (uint)D_589c_mapOriginY + row),
+                           col, row);
         }
     }
 
     ULTIMA_0ace_GRAP_18_TransferArea(1, 0, 8, 8, 0xb7, 0xb7);
     ULTIMA_0c22_GRAP_0f_SelectPage(0);
-    LOOKOBJ_0a9c(param_1, param_2);
+    LOOKOBJ_0a9c_SetCellOrigin(viewX, viewY);
 
-    local_4 = 0;
+    row = 0;
     while (ULTIMA_1b38_PollKeyWithCursor() == 0)
     {
-        local_4++;
-        if (local_4 == 4)
+        row++;
+        if (row == 4)
         {
-            local_4 = 0;
+            row = 0;
             ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
             ULTIMA_0b86_GRAP_XorFillRect(D_5876_tempX, D_5878_tempY, D_5876_tempX + 3, D_5878_tempY + 3);
         }

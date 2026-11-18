@@ -1,6 +1,6 @@
 #include "common/common.h"
 // CMDS_0000 sits at a limit of pass 2's memory, which the names of the globals this object
-// declares and uses count against: with the readable names of the 22 below (found by taking
+// declares and uses count against: with the readable names of the 24 below (found by taking
 // the new names one at a time) it loses its loop optimization. So this object alone knows
 // them by their short names; the source below uses the readable ones, and the link
 // resolves the short ones by the address they carry. After common.h, which defines
@@ -20,6 +20,8 @@
 #define D_a9ce_soundOn D_a9ce
 #define D_ba14_combatants D_ba14
 #define COMBAT_0000_IsCellFree COMBAT_0000
+#define DNGLOOK_117e_PlaceCombatants DNGLOOK_117e
+#define OUTSUBS_0658_Apparition OUTSUBS_0658
 #define ULTIMA_3ae6_WaitFrames ULTIMA_3ae6
 #define ULTIMA_400c_RingRegeneration ULTIMA_400c
 #define ULTIMA_4a84_DrawSunAndMoons ULTIMA_4a84
@@ -46,8 +48,8 @@
 #include "outsubs.h"
 #include "town.h"
 
-void MAINOUT_0354(int param_1, int param_2);
-int MAINOUT_105c(int param_1);
+void MAINOUT_0354_MoveParty(int stepX, int stepY);
+int MAINOUT_105c_IsMovingActor(int tile);
 
 // CHECKED
 // hole up (impl)
@@ -80,7 +82,7 @@ int CMDS_0000(int param_1, int param_2, int param_3)
     D_587b_activePlayer = 0xff;
     if ((param_1 & 2) != 0)
     {
-        DNGLOOK_117e(GetDungeonMap((uint)D_5896_mapX, (uint)D_5897_mapY, D_5895_mapLevel & 0xff), 0);
+        DNGLOOK_117e_PlaceCombatants(GetDungeonMap((uint)D_5896_mapX, (uint)D_5897_mapY, D_5895_mapLevel & 0xff), 0);
     }
     else
     {
@@ -218,7 +220,7 @@ int CMDS_0000(int param_1, int param_2, int param_3)
                 ULTIMA_2900_UpdateVitalsDisplay();
                 if ((param_1 & 2) != 0)
                 {
-                    DNGLOOK_117e(GetDungeonMap((uint)D_5896_mapX, (uint)D_5897_mapY, D_5895_mapLevel & 0xff), 1);
+                    DNGLOOK_117e_PlaceCombatants(GetDungeonMap((uint)D_5896_mapX, (uint)D_5897_mapY, D_5895_mapLevel & 0xff), 1);
                 }
                 else
                 {
@@ -313,7 +315,7 @@ int CMDS_0000(int param_1, int param_2, int param_3)
         if ((param_1 & 0x82) == 0 && ULTIMA_2092_RandomRange(0, 99) < 0x19)
         {
             D_588d = D_587d_month;
-            OUTSUBS_0658();
+            OUTSUBS_0658_Apparition();
         }
 
         D_588c_campHealWait = 0xe;
@@ -672,7 +674,7 @@ static void CMDS_0962(void)
 
                 local_c = ULTIMA_368e_FindActorTileAtPos(local_12_ab, local_16_an, D_5895_mapLevel);
 
-                if (MAINOUT_105c(local_c) != 0 && (local_c & 0xfc) != 0xec)
+                if (MAINOUT_105c_IsMovingActor(local_c) != 0 && (local_c & 0xfc) != 0xec)
                 {
                     // 0a10
                     local_6 = D_5876_tempX;

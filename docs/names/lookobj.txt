@@ -1,0 +1,103 @@
+# LOOKOBJ (lookobj.c): the Look command (what is at a place: tiles, signs, wells, fountains, the sky, creatures)
+# and the "view" (a vision of the whole 32x32 map drawn four pixels a cell). One overlay, MSC 5.0.
+# functions
+LOOKOBJ_0000 LOOKOBJ_0000_PrintTileName          # the description of a tile, from LOOK2.DAT (offset table at tile * 2)
+LOOKOBJ_0042 LOOKOBJ_0042_Well                   # "a well": drop a coin and wish; a vehicle's name (Corvette, Horse...) in towns 0x16 or 0x1f makes a horse appear
+LOOKOBJ_0162 LOOKOBJ_0162_Fountain               # "a gurgling fountain": who will drink? the dead and the asleep are incapacitated, nobody is healed
+LOOKOBJ_01ac LOOKOBJ_01ac_DrawStar               # a white star at the sky's cell (x, y): 3x3 pixels, with dots to each side, clipped at the right edge
+LOOKOBJ_024c LOOKOBJ_024c_DrawRedMark            # a red mark (a flame shape) at the star's cell, for a planet in front of which a Shadowlord stands
+LOOKOBJ_0366 LOOKOBJ_0366_LookSky                # by day "the sun!" (it burns the active player); at night draws the sky and the eight planets for the date
+LOOKOBJ_0502 LOOKOBJ_0502_DescribeTile           # what a tile is: the sky, a well, a fountain, a clock (the time), the altars' words, a dungeon's name, else its LOOK2.DAT text
+LOOKOBJ_06a4 LOOKOBJ_06a4_DescribeActor          # the description of the creature or person looked at (LOOK2.DAT, offset table at 0x200 + tile * 2)
+LOOKOBJ_06f8 LOOKOBJ_06f8_PrintSignText          # a sign's text from the scratch buffer (-1: the default "Live by the Eight Laws" sign): frame characters, a key press at 0xd
+LOOKOBJ_07e4 LOOKOBJ_07e4_ReadSign               # the sign at (level, x, y): the WANTED poster of the party in town 4, else SIGNS.DAT's text for the place
+LOOKOBJ_0a9c LOOKOBJ_0a9c_SetCellOrigin          # the pixel position (D_5876/D_5878) of the vision's cell (x, y): 4 pixels a cell, at 0x20
+LOOKOBJ_0abe LOOKOBJ_0abe_DrawGreenDots          # 4 green dots in a checker
+LOOKOBJ_0b04 LOOKOBJ_0b04_DrawGreenBlock         # a solid light green 4x4 cell
+LOOKOBJ_0b28 LOOKOBJ_0b28_DrawVertBars           # two white vertical bars
+LOOKOBJ_0b60 LOOKOBJ_0b60_DrawHorizBars          # white lines along the top and bottom
+LOOKOBJ_0b98 LOOKOBJ_0b98_DrawInnerBars          # two short white lines in the middle
+LOOKOBJ_0bd0 LOOKOBJ_0bd0_DrawFrame              # a white frame around the cell
+LOOKOBJ_0c36 LOOKOBJ_0c36_DrawYellowSteps        # yellow blocks in two corners
+LOOKOBJ_0c9c LOOKOBJ_0c9c_DrawGreenStripes       # green lines on rows 0 and 2 and two dots
+LOOKOBJ_0cf4 LOOKOBJ_0cf4_DrawShore              # four dots: green on the land corners of a shore tile (0x60-0x6f, D_3822 masks), water-coloured on the others
+LOOKOBJ_0dda LOOKOBJ_0dda_DrawWaterDots          # two water-coloured dots (magenta on drivers 0 and 3, else light blue)
+LOOKOBJ_0e16 LOOKOBJ_0e16_DrawMarsh              # two green dots and two water-coloured dots
+LOOKOBJ_0e7a LOOKOBJ_0e7a_DrawEdgedBlock         # tiles 0x20-0x26: green dots, a red centre, white edges as D_3832 says and a black dot in the corner of some
+LOOKOBJ_0f7e LOOKOBJ_0f7e_DrawMapCell            # draws one cell of the vision by the pattern D_1d1a gives its tile (0 nothing, 1-16 the pictures above, 90 white)
+# locals and parameters
+lookobj.c:LOOKOBJ_0000 param_1 tile
+lookobj.c:LOOKOBJ_0000 local_84_ag text
+lookobj.c:LOOKOBJ_0000 local_4 textOffset
+lookobj.c:LOOKOBJ_0042 param_1 wellX
+lookobj.c:LOOKOBJ_0042 param_2 wellY
+lookobj.c:LOOKOBJ_0042 param_3 wellLevel
+lookobj.c:LOOKOBJ_0042 local_14_am answer
+lookobj.c:LOOKOBJ_0042 local_10 wish
+lookobj.c:LOOKOBJ_0042 local_12 slot
+lookobj.c:LOOKOBJ_0162 local_6_an status
+lookobj.c:LOOKOBJ_0162 local_4 member
+lookobj.c:LOOKOBJ_01ac param_1 starX
+lookobj.c:LOOKOBJ_01ac param_2 starY
+lookobj.c:LOOKOBJ_01ac local_6_an dx
+lookobj.c:LOOKOBJ_01ac local_4 dy
+lookobj.c:LOOKOBJ_024c param_1 starX
+lookobj.c:LOOKOBJ_024c param_2 starY
+lookobj.c:LOOKOBJ_024c local_6_an pixelY
+lookobj.c:LOOKOBJ_024c local_4 pixelX
+lookobj.c:LOOKOBJ_0366 local_16_ak day
+lookobj.c:LOOKOBJ_0366 local_14_am month
+lookobj.c:LOOKOBJ_0366 local_12_a planet
+lookobj.c:LOOKOBJ_0366 local_10_aa yearOfCentury
+lookobj.c:LOOKOBJ_0366 local_e_am starY
+lookobj.c:LOOKOBJ_0366 local_c key
+lookobj.c:LOOKOBJ_0366 local_a col
+lookobj.c:LOOKOBJ_0366 local_8 starX
+lookobj.c:LOOKOBJ_0366 local_6 row
+lookobj.c:LOOKOBJ_0366 local_4_ab orbitPos
+lookobj.c:LOOKOBJ_0502 param_1 tile
+lookobj.c:LOOKOBJ_0502 param_2 tileX
+lookobj.c:LOOKOBJ_0502 param_3 tileY
+lookobj.c:LOOKOBJ_0502 local_4 hour12
+lookobj.c:LOOKOBJ_06a4 param_1 actorTile
+lookobj.c:LOOKOBJ_06a4 local_84_ag text
+lookobj.c:LOOKOBJ_06a4 local_4 textOffset
+lookobj.c:LOOKOBJ_06f8 param_1 signPos
+lookobj.c:LOOKOBJ_06f8 local_6_an code
+lookobj.c:LOOKOBJ_06f8 local_4 picture
+lookobj.c:LOOKOBJ_07e4 param_1 signLevel
+lookobj.c:LOOKOBJ_07e4 param_2 signX
+lookobj.c:LOOKOBJ_07e4 param_3 signY
+lookobj.c:LOOKOBJ_07e4 local_48 signOffsets
+lookobj.c:LOOKOBJ_07e4 local_6 signPos
+lookobj.c:LOOKOBJ_07e4 local_4_ab done
+lookobj.c:LOOKOBJ_099c_LookCmd local_c member
+lookobj.c:LOOKOBJ_099c_LookCmd local_a lookY
+lookobj.c:LOOKOBJ_099c_LookCmd local_8 lookX
+lookobj.c:LOOKOBJ_099c_LookCmd local_6 actorTile
+lookobj.c:LOOKOBJ_099c_LookCmd local_4_ab tile
+lookobj.c:LOOKOBJ_0a9c param_1 cellX
+lookobj.c:LOOKOBJ_0a9c param_2 cellY
+lookobj.c:LOOKOBJ_0cf4 param_1 tile
+lookobj.c:LOOKOBJ_0cf4 local_e_am cornerBit
+lookobj.c:LOOKOBJ_0cf4 local_c corner
+lookobj.c:LOOKOBJ_0cf4 local_a colors
+lookobj.c:LOOKOBJ_0e7a param_1 tile
+lookobj.c:LOOKOBJ_0e7a local_4 edges
+lookobj.c:LOOKOBJ_0f7e param_1 tile
+lookobj.c:LOOKOBJ_0f7e param_2 cellX
+lookobj.c:LOOKOBJ_0f7e param_3 cellY
+lookobj.c:LOOKOBJ_0f7e local_4 pattern
+lookobj.c:LOOKOBJ_10fc_ViewCmd param_1 viewX
+lookobj.c:LOOKOBJ_10fc_ViewCmd param_2 viewY
+lookobj.c:LOOKOBJ_10fc_ViewCmd local_6_an col
+lookobj.c:LOOKOBJ_10fc_ViewCmd local_4 row
+#= LOOKOBJ_099c_LookCmd # the Look command: a direction, then what is there: the creature, a sign, a tile; a tile 0x29 (a crystal ball?) gives a death vision or the view of the whole map
+#= LOOKOBJ_10fc_ViewCmd # the vision: draws the 32x32 map around the origin four pixels a cell and blinks the party's cell until a key
+# globals
+D_3750 D_3750_planetStartPos        # the eight planets: the position on its orbit (index into D_3760's row) at the reference date, 5th of the 4th month of year 39
+D_3758 D_3758_planetRow             # and the sky row (y cell) of each
+D_3760 D_3760_orbitSteps            # per planet 22 flags of its orbit: 1 where it may stand (the walk back in time skips the 0 slots)
+D_3822 D_3822_shoreLandMask         # per shore tile (0x60-0x6f): 4 bits (one per corner) set where it is water
+D_3832 D_3832_edgeBits              # per tile 0x20-0x26: which of the four edges are drawn (bits 8, 4, 2, 1 = top, right, bottom, left)
+D_1d1a D_1d1a_cellPattern           # tile -> the pattern that draws it in the vision (0 none, 1-16, 90)

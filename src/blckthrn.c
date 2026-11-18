@@ -9,7 +9,7 @@
 #include "blckthrn.h"
 #include "cast2.h"
 #include "town.h"
-u8 D_369e[0x3c] =
+u8 D_369e_scriptAfterTest[0x3c] =
 {
     0x13, 0x06, 0x44, 0x00, 0x04, 0x07, 0x11, 0x11,
     0x02, 0x02, 0x01, 0x13, 0x1f, 0x12, 0x11, 0x11,
@@ -21,7 +21,7 @@ u8 D_369e[0x3c] =
     0x06, 0x08, 0x00, 0x00
 };
 
-u8 D_36da[0x27] =
+u8 D_36da_scriptThreat[0x27] =
 {
     0x05, 0x16, 0x12, 0x02, 0x07, 0x11, 0x22, 0x02,
     0x02, 0x01, 0x13, 0x23, 0x22, 0x05, 0x03, 0x06,
@@ -30,11 +30,11 @@ u8 D_36da[0x27] =
     0xe9, 0x05, 0x09, 0x02, 0x03, 0x15, 0x00//, 0x00 (gap 1?)
 };
 
-u8 D_3702[12] = {0x08, 0x01, 0x10, 0x14, 0x02, 0x03, 0x01, 0x13, 0x15, 0x05, 0x08, 0x00};
+u8 D_3702_scriptGuardsEnter[12] = {0x08, 0x01, 0x10, 0x14, 0x02, 0x03, 0x01, 0x13, 0x15, 0x05, 0x08, 0x00};
 
-u8 D_370e[8] = {0x05, 0x0b, 0x13, 0x02, 0x04, 0x10, 0x11, 0x00};
+u8 D_370e_scriptRelease[8] = {0x05, 0x0b, 0x13, 0x02, 0x04, 0x10, 0x11, 0x00};
 
-u8 D_3716[10] = {0x05, 0x04, 0x19, 0x02, 0x05, 0x1a, 0x09, 0x08, 0x07, 0x00};
+u8 D_3716_scriptBlackthornLeaves[10] = {0x05, 0x04, 0x19, 0x02, 0x05, 0x1a, 0x09, 0x08, 0x07, 0x00};
 
 u16 D_3720[6] = { 0x1130, 0x101d, 0x0e53, 0x0b75, 0x0ce4, 0x0ce4 };
 
@@ -44,45 +44,47 @@ u16 D_3738[6] = { 0x0bb8, 0x0bb8, 0x0bb8, 0x03e8, 0x0064, 0x9ca4 };
 
 s16 D_3744[6] = { 1, 1, 1, 1, 1, -1 };
 
-static void BLCKTHRN_0000(int param_1)
+// so many footsteps, two frames each
+static void BLCKTHRN_0000_Footsteps(int count)
 {
-    int local_4;
+    int step;
 
-    for (local_4 = 0; local_4 < param_1; local_4++)
+    for (step = 0; step < count; step++)
     {
         ULTIMA_433e_AudioFootstep();
         ULTIMA_3ae6_WaitFrames(2);
     }
 }
 
-static int BLCKTHRN_002e(int param_1)
+// a script move code: the actor it moves (0x10 -> 6, 0x14 -> 7, 0x18 -> 8, 0x1c -> 0, 0x20 -> 1); the step is left in D_5876/D_5878
+static int BLCKTHRN_002e_MoveActorOf(int moveCode)
 {
-    int local_4;
+    int actorIndex;
 
-    SET_UNINITIALIZED_16(local_4);
+    SET_UNINITIALIZED_16(actorIndex);
 
-    switch (param_1 & 0xfc)
+    switch (moveCode & 0xfc)
     {
     case 0x10:
-        local_4 = 6;
+        actorIndex = 6;
         break;
     case 0x14:
-        local_4 = 7;
+        actorIndex = 7;
         break;
     case 0x18:
-        local_4 = 8;
+        actorIndex = 8;
         break;
     case 0x1c:
-        local_4 = 0;
+        actorIndex = 0;
         break;
     case 0x20:
-        local_4 = 1;
+        actorIndex = 1;
         break;
     }
 
     D_5876_tempX = D_5878_tempY = 0;
 
-    switch (param_1 & 3)
+    switch (moveCode & 3)
     {
     case 0:
         D_5878_tempY--;
@@ -98,70 +100,71 @@ static int BLCKTHRN_002e(int param_1)
         break;
     }
 
-    CHECK_UNINITIALIZED_16(local_4);
+    CHECK_UNINITIALIZED_16(actorIndex);
 
-    return local_4;
+    return actorIndex;
 }
 
 // CHECKED
-static void BLCKTHRN_00be(byte* param_1)
+// runs a cutscene script (codes above)
+static void BLCKTHRN_00be_RunScript(byte* script)
 {
-    int local_18_al;
-    int local_16_an;
-    int local_14_ap;
-    int local_12_ab;
-    int local_10_ad;
-    int local_e_a;
-    bool local_c_ac; // di
-    bool local_a_ae;
-    int local_8_an;
-    int local_6;
-    int local_4_ab;
+    int stepBY;
+    int stepAY;
+    int stepBX;
+    int stepAX;
+    int actorB_i;
+    int actorA_j;
+    bool walkSound_k; // di
+    bool pairMove;
+    int stepNo_g;
+    int repeatCount_e;
+    int opcode_f;
 
-    local_c_ac = 1;
-    local_6 = 1; // a35c
-    local_a_ae = 0; // -> a4ce
+    walkSound_k = 1;
+    repeatCount_e = 1; // a35c
+    pairMove = 0; // -> a4ce
 
-    while ((local_4_ab = *param_1++) != 0)
+    while ((opcode_f = *script++) != 0)
     {
-        if (local_4_ab < 0x10)
+        if (opcode_f < 0x10)
         {
             // a4ec
-            switch (local_4_ab)
+            switch (opcode_f)
             {
             case 1:
                 // a360
-                local_a_ae = 1;
+                pairMove = 1;
                 break;
 
             case 2:
                 // a368
-                local_6 = *param_1;
-                param_1++;
+                repeatCount_e = *script;
+                script++;
                 break;
 
             case 3:
                 // a378
-                local_c_ac = 1;
+                walkSound_k = 1;
                 break;
 
             case 4:
                 // a37e
-                local_c_ac = 0;
+                walkSound_k = 0;
                 break;
 
             case 5:
                 // a384
-                ULTIMA_3ae6_WaitFrames(*param_1++);
+                ULTIMA_3ae6_WaitFrames(*script++);
                 break;
 
             case 6:
                 // a396
-                local_e_a = *param_1++;
-                local_12_ab = *param_1++;
-                local_16_an = *param_1++;
-                GetCombatMap(local_12_ab, local_16_an) = local_e_a;
-                //param_1 += 4;
+                actorA_j = *script++;
+                stepAX = *script++;
+                stepAY = *script++;
+                GetCombatMap(stepAX, stepAY) = actorA_j;
+                //script += 4;
                 break;
 
             case 7:
@@ -171,14 +174,14 @@ static void BLCKTHRN_00be(byte* param_1)
 
             case 8:
                 // a3d2
-                BLCKTHRN_0000(local_6);
-                local_6 = 1;
+                BLCKTHRN_0000_Footsteps(repeatCount_e);
+                repeatCount_e = 1;
                 break;
 
             case 9:
                 // a3e0
-                local_e_a = *param_1++;
-                D_5c5a_actors[local_e_a].tile = D_5c5a_actors[local_e_a].animTile = 0;
+                actorA_j = *script++;
+                D_5c5a_actors[actorA_j].tile = D_5c5a_actors[actorA_j].animTile = 0;
                 break;
             }
 
@@ -186,56 +189,57 @@ static void BLCKTHRN_00be(byte* param_1)
         }
 
         // a41c
-        local_e_a = BLCKTHRN_002e(local_4_ab);
-        local_12_ab = D_5876_tempX;
-        local_16_an = D_5878_tempY;
-        if (local_a_ae)
+        actorA_j = BLCKTHRN_002e_MoveActorOf(opcode_f);
+        stepAX = D_5876_tempX;
+        stepAY = D_5878_tempY;
+        if (pairMove)
         {
-            local_10_ad = BLCKTHRN_002e(*param_1++);
-            local_14_ap = D_5876_tempX;
-            local_18_al = D_5878_tempY;
+            actorB_i = BLCKTHRN_002e_MoveActorOf(*script++);
+            stepBX = D_5876_tempX;
+            stepBY = D_5878_tempY;
         }
 
         // a454 ->
-        for (local_8_an = 0; local_8_an < local_6; local_8_an++)
+        for (stepNo_g = 0; stepNo_g < repeatCount_e; stepNo_g++)
         {
             // a495
-            D_5c5a_actors[local_e_a].x += local_12_ab;
-            D_5c5a_actors[local_e_a].y += local_16_an;
-            if (local_a_ae)
+            D_5c5a_actors[actorA_j].x += stepAX;
+            D_5c5a_actors[actorA_j].y += stepAY;
+            if (pairMove)
             {
-                D_5c5a_actors[local_10_ad].x += local_14_ap;
-                D_5c5a_actors[local_10_ad].y += local_18_al;
+                D_5c5a_actors[actorB_i].x += stepBX;
+                D_5c5a_actors[actorB_i].y += stepBY;
             }
 
-            if (local_c_ac)
+            if (walkSound_k)
             {
-                BLCKTHRN_0000(1);
+                BLCKTHRN_0000_Footsteps(1);
             }
         }
 
-        local_6 = 1; // a4c9
-        local_a_ae = 0; // a4ce
+        repeatCount_e = 1; // a4c9
+        pairMove = 0; // a4ce
     }
 }
 
-static void BLCKTHRN_0278(int param_1, int param_2)
+// prints question 0-3 of the scene's text (D_b21e) and the virtue's name; question 3 has no virtue
+static void BLCKTHRN_0278_AskVirtue(int question, int virtue)
 {
-    switch (param_1)
+    switch (question)
     {
     case 0:
         ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x0]);
-        ULTIMA_1850_PrintString(D_1f4e_virtueNames[param_2]);
+        ULTIMA_1850_PrintString(D_1f4e_virtueNames[virtue]);
         ULTIMA_1850_PrintString(_TEXT(0x6f6e, "?\""));
         break;
     case 1:
         ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x2d]);
-        ULTIMA_1850_PrintString(D_1f4e_virtueNames[param_2]);
+        ULTIMA_1850_PrintString(D_1f4e_virtueNames[virtue]);
         ULTIMA_1850_PrintString(_TEXT(0x6f72, "?\""));
         break;
     case 2:
         ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x52]);
-        ULTIMA_1850_PrintString(D_1f4e_virtueNames[param_2]);
+        ULTIMA_1850_PrintString(D_1f4e_virtueNames[virtue]);
         ULTIMA_1850_PrintString(_TEXT(0x6f76, "?\""));
         break;
     case 3:
@@ -244,51 +248,53 @@ static void BLCKTHRN_0278(int param_1, int param_2)
     }
 }
 
-static int BLCKTHRN_02ea(int param_1)
+// reads "Your response?" and tells whether it contains the virtue's mantra (any case)
+static int BLCKTHRN_02ea_ReadMantraAnswer(int virtue)
 {
-    int local_1c;
-    int local_1a;
-    int local_18;
-    int local_16;
-    char local_14_aa[18];
+    int mantraLen;
+    int charNo_f;
+    int startPos;
+    int found_e;
+    char answer[18];
 
     ULTIMA_1850_PrintString(_TEXT(0x6f7a, "\n\nYour response?\n:"));
-    ULTIMA_3b1c_GetString(local_14_aa, 0xe);
+    ULTIMA_3b1c_GetString(answer, 0xe);
     ULTIMA_1850_PrintString(_TEXT(0x6f8e, "\n\n"));
-    local_1c = ULTIMA_216c_strlen(D_1f5e_mantras[param_1]);
-    local_16 = 0;
+    mantraLen = ULTIMA_216c_strlen(D_1f5e_mantras[virtue]);
+    found_e = 0;
 
-    for (local_18 = 0; local_18 <= ULTIMA_216c_strlen(local_14_aa) - local_1c; local_18++)
+    for (startPos = 0; startPos <= ULTIMA_216c_strlen(answer) - mantraLen; startPos++)
     {
-        local_16 = 1;
+        found_e = 1;
 
-        for (local_1a = 0; local_1a < local_1c; local_1a++)
+        for (charNo_f = 0; charNo_f < mantraLen; charNo_f++)
         {
-            if (ULTIMA_2032_ToUpper((byte)local_14_aa[local_18 + local_1a]) != ULTIMA_2032_ToUpper((byte)D_1f5e_mantras[param_1][local_1a]))
+            if (ULTIMA_2032_ToUpper((byte)answer[startPos + charNo_f]) != ULTIMA_2032_ToUpper((byte)D_1f5e_mantras[virtue][charNo_f]))
             {
-                local_16 = 0;
+                found_e = 0;
                 break;
             }
         }
 
-        if (local_16 != 0)
+        if (found_e != 0)
         {
             break;
         }
     }
 
-    return local_16;
+    return found_e;
 }
 
 // CHECKED
-static void BLCKTHRN_03ae(int param_1)
+// a thunderbolt and a sound sweep, the actor at slot 1 vanishes; the second living member leaves the party (to slot 15)
+static void BLCKTHRN_03ae_SlicePartyMember(int withSpeech)
 {
-    int local_28;
-    int local_26;
-    int local_24_aa;
-    S_55a8 local_22_ab;
+    int member;
+    int aliveSeen_d;
+    int counter;
+    S_55a8 sliced_l;
 
-    if (param_1 != 0)
+    if (withSpeech != 0)
     {
         ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0xf1]);
     }
@@ -299,14 +305,14 @@ static void BLCKTHRN_03ae(int param_1)
 
     ULTIMA_3ae6_WaitFrames(10);
 
-    for (local_24_aa = 2000; local_24_aa < 25000; local_24_aa += 0x32)
+    for (counter = 2000; counter < 25000; counter += 0x32)
     {
-        ULTIMA_2192_AudioPulse(0xa50, 1, 200, local_24_aa, 0);
+        ULTIMA_2192_AudioPulse(0xa50, 1, 200, counter, 0);
     }
 
-    for (local_24_aa = 25000; 2000 < local_24_aa; local_24_aa -= 0x32)
+    for (counter = 25000; 2000 < counter; counter -= 0x32)
     {
-        ULTIMA_2192_AudioPulse(0xa50, 1, 200, local_24_aa, 0);
+        ULTIMA_2192_AudioPulse(0xa50, 1, 200, counter, 0);
     }
 
     ULTIMA_3522_HitEffectAt(D_5c5a_actors[1].x, D_5c5a_actors[1].y);
@@ -314,34 +320,34 @@ static void BLCKTHRN_03ae(int param_1)
     D_5c5a_actors[1].tile = D_5c5a_actors[1].animTile = 0;
     GetCombatMap(5, 7) = 0x80;
 
-    local_26 = 0;
-    for (local_28 = 0; local_28 < D_585b_partyCount; local_28++)
+    aliveSeen_d = 0;
+    for (member = 0; member < D_585b_partyCount; member++)
     {
-        if (D_55a8_party[local_28].status != STATUS_DEAD)
+        if (D_55a8_party[member].status != STATUS_DEAD)
         {
-            local_26++;
+            aliveSeen_d++;
         }
-        if (local_26 == 2)
+        if (aliveSeen_d == 2)
             break;
     }
 
     // a6fc
-    local_22_ab = D_55a8_party[local_28];
+    sliced_l = D_55a8_party[member];
 
     // NOT MATCHING
-    for (local_24_aa = local_28; local_24_aa < 0xf; local_24_aa++)
+    for (counter = member; counter < 0xf; counter++)
     {
         // a73b
-        D_55a8_party[local_24_aa] = D_55a8_party[local_24_aa + 1];
+        D_55a8_party[counter] = D_55a8_party[counter + 1];
     }
 
     // a752
-    D_55a8_party[0xf] = local_22_ab;
+    D_55a8_party[0xf] = sliced_l;
     D_55a8_party[0xf].innMapId = 0x7f;
 
     D_585b_partyCount--;
     ULTIMA_2900_UpdateVitalsDisplay();
-    if (param_1 != 0)
+    if (withSpeech != 0)
     {
         ULTIMA_1850_PrintString(_TEXT(0x6f92, "\n\n"));
         ULTIMA_1850_PrintString(D_55a8_party[0xf].name);
@@ -353,16 +359,18 @@ static void BLCKTHRN_03ae(int param_1)
     ULTIMA_16ba_PrintChar('\n');
 }
 
-static void BLCKTHRN_0510(void)
+// waits for a key, then runs the script D_369e
+static void BLCKTHRN_0510_KeyThenScript(void)
 {
     ULTIMA_266c_GetChar();
-    BLCKTHRN_00be(D_369e);
+    BLCKTHRN_00be_RunScript(D_369e_scriptAfterTest);
 }
 
-static void BLCKTHRN_051c(void)
+// the first threat: scene text, the script D_36da, then the second member is to die
+static void BLCKTHRN_051c_ThreatenCompanion(void)
 {
     ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x229]);
-    BLCKTHRN_00be(D_36da);
+    BLCKTHRN_00be_RunScript(D_36da_scriptThreat);
     ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x25f]);
     ULTIMA_1850_PrintString(D_55a8_party[1].name);
     ULTIMA_1850_PrintString(_TEXT(0x6fac, " die!\" "));
@@ -370,47 +378,48 @@ static void BLCKTHRN_051c(void)
     ULTIMA_1850_PrintString(_TEXT(0x6fb4, "\n\n"));
 }
 
-static void BLCKTHRN_054a(int param_1, int param_2)
+// up to four rounds about the virtue: an answer with its mantra marks the shrine 0xff, costs 5 karma and ends it; a round may slice a member
+static void BLCKTHRN_054a_Interrogation(int virtue, int aliveCount)
 {
-    bool local_6_an;
-    int local_4;
+    bool threatened;
+    int round_h;
 
-    local_6_an = 0;
+    threatened = 0;
     ULTIMA_1850_PrintString(_TEXT(0x6fb8, "\n\n"));
 
-    for (local_4 = 0; local_4 < 4; local_4++)
+    for (round_h = 0; round_h < 4; round_h++)
     {
-        BLCKTHRN_0278(local_4, param_1);
-        if (BLCKTHRN_02ea(param_1) != 0)
+        BLCKTHRN_0278_AskVirtue(round_h, virtue);
+        if (BLCKTHRN_02ea_ReadMantraAnswer(virtue) != 0)
         {
-            *(D_58d8_shrineDestroyed + param_1) = 0xff;
+            *(D_58d8_shrineDestroyed + virtue) = 0xff;
             ULTIMA_3f36_DecreaseByte(&D_5888_karma, 5);
-            if (param_2 > 1)
+            if (aliveCount > 1)
             {
-                BLCKTHRN_03ae(0);
-                BLCKTHRN_0510();
+                BLCKTHRN_03ae_SlicePartyMember(0);
+                BLCKTHRN_0510_KeyThenScript();
             }
             else
             {
                 ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x29c]);
-                BLCKTHRN_0510();
+                BLCKTHRN_0510_KeyThenScript();
             }
             break;
         }
 
-        if (param_2 < 2)
+        if (aliveCount < 2)
         {
             ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x2dc]);
-            BLCKTHRN_0510();
+            BLCKTHRN_0510_KeyThenScript();
             break;
         }
 
-        if (local_6_an)
+        if (threatened)
         {
             ULTIMA_4f7c_AdvanceTime(2);
             ULTIMA_2900_UpdateVitalsDisplay();
 
-            switch (local_4)
+            switch (round_h)
             {
             case 0:
                 GetCombatMap(5, 9) = 0xea;
@@ -422,35 +431,36 @@ static void BLCKTHRN_054a(int param_1, int param_2)
                 GetCombatMap(5, 9) = 0xe8;
                 break;
             case 3:
-                BLCKTHRN_03ae(1);
+                BLCKTHRN_03ae_SlicePartyMember(1);
                 break;
             }
         }
         else
         {
-            local_6_an = 1;
-            BLCKTHRN_051c();
+            threatened = 1;
+            BLCKTHRN_051c_ThreatenCompanion();
         }
     }
 }
 
+// the party is captured: the first intact shrine's virtue is the topic; guards, chains, Blackthorn's speech, the interrogation; then the party is set at the castle (10, 7)
 void BLCKTHRN_060e_Capture(void)
 {
-    int local_10_a;
-    int local_e_ae;
-    int local_c_h;
-    int local_a_i;
-    int local_8;
+    int unused_j;
+    int col;
+    int virtue_m;
+    int aliveCount;
+    int index;
 
-    int local_6_b;
-    ActorFmt* local_4_c;
+    int classIndex;
+    ActorFmt* actor_g;
 
-    local_a_i = 0;
-    for (local_8 = 0; local_8 != D_585b_partyCount; local_8++)
+    aliveCount = 0;
+    for (index = 0; index != D_585b_partyCount; index++)
     {
-        if (D_55a8_party[local_8].status != STATUS_DEAD)
+        if (D_55a8_party[index].status != STATUS_DEAD)
         {
-            local_a_i = local_a_i + 1;
+            aliveCount = aliveCount + 1;
         }
     }
 
@@ -458,15 +468,15 @@ void BLCKTHRN_060e_Capture(void)
     ULTIMA_5910_UpdateFrame();
     ULTIMA_1850_PrintString(_TEXT(0x6fbc, "\nThou art subdued and blindfolded!"));
 
-    for (local_c_h = 0; local_c_h < 8; local_c_h++)
+    for (virtue_m = 0; virtue_m < 8; virtue_m++)
     {
-        if (D_58d8_shrineDestroyed[local_c_h] == 0)
+        if (D_58d8_shrineDestroyed[virtue_m] == 0)
             break;
     }
 
-    if (local_c_h < 8)
+    if (virtue_m < 8)
     {
-        local_10_a = 0;
+        unused_j = 0;
 
         ULTIMA_3ae6_WaitFrames(2);
         ULTIMA_0a70_GRAP_2d_SetPenColor(0);
@@ -475,7 +485,7 @@ void BLCKTHRN_060e_Capture(void)
         ULTIMA_4a84_DrawSunAndMoons();
         ULTIMA_2e96_SetWindDirection(-1);
 
-        for (local_8 = 0; local_8 < 5; local_8++)
+        for (index = 0; index < 5; index++)
         {
             ULTIMA_20fa_WaitTicks(5);
             ULTIMA_433e_AudioFootstep();
@@ -483,15 +493,15 @@ void BLCKTHRN_060e_Capture(void)
 
         ULTIMA_1850_PrintString(_TEXT(0x6fe0, "\n\nStrong guards drag thee away!"));
 
-        for (local_8 = 0; local_8 < (D_a9ce_soundOn != 0 ? 0x12 : 3); local_8++)
+        for (index = 0; index < (D_a9ce_soundOn != 0 ? 0x12 : 3); index++)
         {
             ULTIMA_20fa_WaitTicks(5);
             ULTIMA_433e_AudioFootstep();
         }
 
-        for (local_8 = 0; local_8 < 0x20; local_8++)
+        for (index = 0; index < 0x20; index++)
         {
-            ULTIMA_3a74_SetActor(0, 0, 0, 0, 0, 0, local_8);
+            ULTIMA_3a74_SetActor(0, 0, 0, 0, 0, 0, index);
         }
 
         D_5893_mapId = 0xff;
@@ -500,23 +510,23 @@ void BLCKTHRN_060e_Capture(void)
         ULTIMA_256e_ReadFileFromDisk(_TEXT(0x7000, "MISCMAPS.DAT"), D_ac64_viewActors, 0xb0, 0);
         ULTIMA_256e_ReadFileFromDisk(_TEXT(0x700e, "MISCMSG.DAT"), D_b21e_scratch, 1000, 0);
 
-        for (local_8 = 0; local_8 < 0xb; local_8++)
+        for (index = 0; index < 0xb; index++)
         {
-            for (local_e_ae = 0; local_e_ae < 0xb; local_e_ae++)
+            for (col = 0; col < 0xb; col++)
             {
-                GetCombatMap(local_e_ae, local_8) = D_ac64_viewActors[local_8 * 0x10 + local_e_ae];
+                GetCombatMap(col, index) = D_ac64_viewActors[index * 0x10 + col];
             }
         }
 
         // a9ef
-        for (local_8 = 0; local_8 < local_a_i; local_8++)
+        for (index = 0; index < aliveCount; index++)
         {
-            local_4_c = &D_5c5a_actors[local_8];
-            local_4_c->x = D_1f42[D_1f12[(local_a_i - 1) * 8 + local_8]];
-            local_4_c->y = D_1f48[D_1f12[(local_a_i - 1) * 8 + local_8]];
+            actor_g = &D_5c5a_actors[index];
+            actor_g->x = D_1f42_prisonCellX[D_1f12_prisonCellOf[(aliveCount - 1) * 8 + index]];
+            actor_g->y = D_1f48_prisonCellY[D_1f12_prisonCellOf[(aliveCount - 1) * 8 + index]];
 
-            local_6_b = ULTIMA_4d76_FindIndex(_TEXT(0x701a, CLASS_LIST), D_55a8_party[local_8].cls);
-            local_4_c->tile = local_4_c->animTile = D_1ade[local_6_b];
+            classIndex = ULTIMA_4d76_FindIndex(_TEXT(0x701a, CLASS_LIST), D_55a8_party[index].cls);
+            actor_g->tile = actor_g->animTile = D_1ade[classIndex];
         }
 
         // aa61
@@ -524,10 +534,10 @@ void BLCKTHRN_060e_Capture(void)
         ULTIMA_1850_PrintString(_TEXT(0x7024, "\n\nThou hast been chained and manacled!"));
         ULTIMA_3ae6_WaitFrames(0x32);
         ULTIMA_1850_PrintString(_TEXT(0x704c, "\n\nFootsteps!"));
-        BLCKTHRN_0000(8);
+        BLCKTHRN_0000_Footsteps(8);
         ULTIMA_3a74_SetActor(TILE_ACTOR_GUARD, TILE_ACTOR_GUARD, 4, 10, 0, 0, 6);
         ULTIMA_3a74_SetActor(TILE_ACTOR_GUARD, TILE_ACTOR_GUARD, 6, 10, 0, 0, 7);
-        BLCKTHRN_00be(D_3702);
+        BLCKTHRN_00be_RunScript(D_3702_scriptGuardsEnter);
         ULTIMA_2192_AudioPulse(0xaf0, 1, 13000, 100, 5);
         ULTIMA_3a74_SetActor(TILE_ACTOR_CIRCLE, TILE_ACTOR_CIRCLE, 5, 5, 0, 0, 8);
         ULTIMA_1068_RevealTile(0x178, 5, 5);
@@ -547,13 +557,13 @@ void BLCKTHRN_060e_Capture(void)
             ULTIMA_1850_PrintString(_TEXT(0x70c8, "man "));
         }
         ULTIMA_1850_PrintString(_TEXT(0x70ce, "at once!\""));
-        BLCKTHRN_00be(D_370e);
+        BLCKTHRN_00be_RunScript(D_370e_scriptRelease);
         ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x32c]);
         ULTIMA_266c_GetChar();
-        BLCKTHRN_054a(local_c_h, local_a_i);
+        BLCKTHRN_054a_Interrogation(virtue_m, aliveCount);
         if (D_5c5a_actors[8].tile != 0)
         {
-            BLCKTHRN_00be(D_3716);
+            BLCKTHRN_00be_RunScript(D_3716_scriptBlackthornLeaves);
         }
     }
 
@@ -567,13 +577,14 @@ void BLCKTHRN_060e_Capture(void)
 }
 
 // CHECKED
+// the death scene: darkness, "Thou hast found refuge", the old man speaks by karma, the party is resurrected and put at (10, 10) of map 0x11
 void BLCKTHRN_0910_Death(void)
 {
-    int local_c;
-    int local_6;
-    uint local_8;
-    int local_a;
-    int local_4_ab;
+    int savedMapId;
+    int pitch_n;
+    uint index;
+    int col;
+    int karmaIndex;
 
 #if defined(ENABLE_BGM)
     AUDIO_StopBgm();
@@ -592,7 +603,7 @@ void BLCKTHRN_0910_Death(void)
     }
 
     ULTIMA_20fa_WaitTicks(10);
-    local_c = D_5893_mapId;
+    savedMapId = D_5893_mapId;
     D_5893_mapId = 0xff;
     D_589e_curCombatant = 0xff;
     ULTIMA_1850_PrintString(_TEXT(0x70e2, "\nAn unending darkness engulfs thee..."));
@@ -602,17 +613,17 @@ void BLCKTHRN_0910_Death(void)
     ULTIMA_0c22_GRAP_0f_SelectPage(0);
     ULTIMA_0f46_GRAP_66_Reveal(8, 8, 0xb7, 0xb7);
 
-    for (local_8 = 0; local_8 < 0xb; local_8++)
+    for (index = 0; index < 0xb; index++)
     {
-        for (local_a = 0; local_a < 0xb; local_a++)
+        for (col = 0; col < 0xb; col++)
         {
-            GetCombatMap(local_a, local_8) = 0xff;
+            GetCombatMap(col, index) = 0xff;
         }
     }
 
-    for (local_8 = 0; local_8 < 0x20; local_8++)
+    for (index = 0; index < 0x20; index++)
     {
-        ULTIMA_3a74_SetActor(0, 0, 0, 0, 0, 0, local_8);
+        ULTIMA_3a74_SetActor(0, 0, 0, 0, 0, 0, index);
     }
 
     ULTIMA_5910_UpdateFrame();
@@ -631,9 +642,9 @@ void BLCKTHRN_0910_Death(void)
     ULTIMA_5910_UpdateFrame();
 
     // ac9d: NOT MATCHING
-    for (local_8 = 0; local_8 < 6; local_8++)
+    for (index = 0; index < 6; index++)
     {
-        ULTIMA_2192_AudioPulse(D_3720[local_8], 1, D_372c[local_8], D_3738[local_8], D_3744[local_8]);
+        ULTIMA_2192_AudioPulse(D_3720[index], 1, D_372c[index], D_3738[index], D_3744[index]);
     }
 
     ULTIMA_1850_PrintString(_TEXT(0x7172, "\n\nSomeone shouts\n\n\"FORTIS FORTUNA\nAVENTARI\""));
@@ -670,21 +681,21 @@ void BLCKTHRN_0910_Death(void)
     ULTIMA_5910_UpdateFrame();
 
     // ad93
-    local_4_ab = D_5888_karma / 0x14;
+    karmaIndex = D_5888_karma / 0x14;
     ULTIMA_1850_PrintString(_TEXT(0x71be, "\n\""));
-    ULTIMA_256e_ReadFileFromDisk(_TEXT(0x71c2, "KARMA.DAT"), D_b21e_scratch, 2000, D_1a74[local_4_ab]);
+    ULTIMA_256e_ReadFileFromDisk(_TEXT(0x71c2, "KARMA.DAT"), D_b21e_scratch, 2000, D_1a74_karmaTextOffsets[karmaIndex]);
     ULTIMA_1850_PrintString((char*)D_b21e_scratch);
     ULTIMA_16ba_PrintChar('\"');
     ULTIMA_266c_GetChar();
     ULTIMA_1850_PrintString(_TEXT(0x71cc, "\n\nStrange words are intoned."));
     ULTIMA_20fa_WaitTicks(4);
 
-    for (local_8 = 0; local_8 < D_585b_partyCount; local_8++)
+    for (index = 0; index < D_585b_partyCount; index++)
     {
-        local_6 = (u32)36400 / (local_8 + 7);
-        ULTIMA_2192_AudioPulse(local_6, 1, 30000, 2000, 2);
-        CAST2_05e0_Resurrect(local_8, 0xff);
-        D_55a8_party[local_8].hp = D_55a8_party[local_8].maxHp;
+        pitch_n = (u32)36400 / (index + 7);
+        ULTIMA_2192_AudioPulse(pitch_n, 1, 30000, 2000, 2);
+        CAST2_05e0_Resurrect(index, 0xff);
+        D_55a8_party[index].hp = D_55a8_party[index].maxHp;
         ULTIMA_2900_UpdateVitalsDisplay();
     }
 
@@ -721,7 +732,7 @@ void BLCKTHRN_0910_Death(void)
         D_57a8_food = 0x3f;
     }
 
-    if (local_c != 0 && local_c < 0x21)
+    if (savedMapId != 0 && savedMapId < 0x21)
     {
         TOWN_11f0_Entry(1);
     }

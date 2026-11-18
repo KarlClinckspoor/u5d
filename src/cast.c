@@ -15,7 +15,7 @@
 #include "zstats.h"
 #include "time/time.h"
 
-void MAINOUT_0000(void);
+void MAINOUT_0000_SetUpOverworld(void);
 
 u8 D_4592_fieldMissileKinds[4] = {0x35, 0x33, 0x34, 0x36};
 
@@ -509,7 +509,7 @@ static int CAST_05dc_InPor(void)
 
             if (result != 0)
             {
-                MAINOUT_0000();
+                MAINOUT_0000_SetUpOverworld();
             }
         }
     }
@@ -1840,7 +1840,7 @@ void CAST_1792_UseCmd(void)
                 if (D_587f_hour < 6 || 0x12 < D_587f_hour)
                 {
                     ULTIMA_1850_PrintString(_TEXT(0x4998, "Looking...\n"));
-                    LOOKOBJ_0366();
+                    LOOKOBJ_0366_LookSky();
                     break;
                 }
 

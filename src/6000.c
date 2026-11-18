@@ -89,7 +89,7 @@ void ULTIMA_5f86_SpecialMapHandler(int param_1, int param_2, int param_3)
         else if ((param_1 & 2) != 0) // 6046
         {
             local_6 = param_2;
-            DNGLOOK_117e(0, 2);
+            DNGLOOK_117e_PlaceCombatants(0, 2);
         }
         else
         {
@@ -294,7 +294,7 @@ void ULTIMA_6150_Combat(int param_1)
     ULTIMA_60ec_LoadSpecialMap(local_4_ab);
     ULTIMA_5f86_SpecialMapHandler(0, param_1, 0);
 
-    SJOG_203e(param_1);
+    SJOG_203e_EndCombat(param_1);
     ULTIMA_5e4a_BuildLightMap();
     ULTIMA_4f7c_AdvanceTime(0);
 }
@@ -705,7 +705,7 @@ void ULTIMA_6936_InitCombatants(void)
     {
         local_c = ULTIMA_6506_PlaceCombatant(1, 2, 5, 5, D_5895_mapLevel);
         D_5c5a_actors[local_c].value = D_5895_mapLevel * 3 + 7;
-        GetCombatMap(5, 5) = D_bb15;
+        GetCombatMap(5, 5) = D_bb15_floorTile;
     }
 }
 
