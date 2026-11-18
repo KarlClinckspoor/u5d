@@ -80,7 +80,7 @@ void ULTIMA_5f86_SpecialMapHandler(int param_1, int param_2, int param_3)
         {
             // 6034
             // hole up
-            if (CMDS_0000(param_1, param_2, param_3) != 0)
+            if (CMDS_0000_HoleUpRest(param_1, param_2, param_3) != 0)
             {
                 goto L_605c;
             }

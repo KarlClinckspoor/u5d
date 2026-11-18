@@ -386,7 +386,7 @@ STUB u8 D_41cc_dungeonLootKind[8];
 STUB char* D_444a[3];
 
 STUB char* D_4502[8];
-STUB u8 D_4512[8];
+STUB u8 D_4512_wordTile[8];
 
 STUB u8 D_4592_fieldMissileKinds[4];
 STUB u8 D_4596_dungeonFieldCells[4];

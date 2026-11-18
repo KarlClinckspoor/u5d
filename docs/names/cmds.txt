@@ -1,0 +1,165 @@
+# CMDS (cmds.c, cmds2.c, cmdsb.c): the commands Hole up / camp, Board, Xit, Fire, Ignite torch, New order, Yell (shadowlords' names,
+# words of power, shrine mantras), Push/pull, Escape, Mix reagents and Klimb. One overlay, three objects (MSC 5.1, 5.1, 5.0).
+# functions
+CMDS_0000 CMDS_0000_HoleUpRest        # the rest itself: the party sleeps for some hours, one in 64 hours brings an ambush (a combat); 1 on an ambush, else the party heals
+CMDS_06ee CMDS_06ee_RequireOnFoot     # 1 when the party is on foot (Avatar tile); else "On foot" and 0
+CMDS_070c CMDS_070c_CanBoardShip      # 1 when the party is on foot, on a carpet or on a skiff; else "On foot" and 0
+CMDS_073e CMDS_073e_IsLandNearby      # 1 when one of the four cells around the party is land
+CMDS_0788 CMDS_0788_IsLandAt          # 1 when the view cell is land: a walkable tile, or a ground actor tile
+CMDS_0962 CMDS_0962_FireBroadsides    # on the overworld a frigate fires to either side (not ahead): the first moving actor in three cells is hit (damage 1 to 20) and may be killed
+CMDS_1030 CMDS_1030_YellShadowlord    # a shadowlord's name (FAULINEI, ASTAROTH, NOSFENTOR) yelled on maps 0x1e to 0x20 calls that shadowlord up as an NPC
+CMDS_1202 CMDS_1202_RestoreShrine     # at ruins: the virtue and its three mantras, spoken right, restore the destroyed shrine
+CMDS_12c8 CMDS_12c8_YellWordOfPower   # an overworld word of power (FALLAX ... VERAMOCOR) opens or closes the shrine or dungeon entrance beside the party, or restores a shrine at ruins
+CMDS_14ba_Pushable CMDS_14ba_IsPushable   # 1 for the tiles that can be pushed: chairs, desk, barrel, vanity, dresser, trunk, cannons ...
+CMDS_1504 CMDS_1504_FacingTile        # the chair or cannon tile turned for a push (or a pull) in the direction (dx, dy)
+CMDS_1548_Pushed CMDS_1548_PutPushed  # puts a pushed object on its new cell and the empty tile behind, turning chairs and cannons; "Pushed!"
+CMDS_15b0_Pulled CMDS_15b0_PutPulled  # the same for a pulled object; "Pulled!"
+CMDS_18be CMDS_18be_SelectReagents    # the reagent list with a cursor: keys move, return toggles, M accepts, Esc aborts; the bit mask of the chosen reagents (-1 aborted)
+CMDS_1a70 CMDS_1a70_AskMixAmount      # "How much?" until the amount is covered by every chosen reagent; the amount
+# locals and parameters
+cmds.c:CMDS_0000 param_1 mode
+cmds.c:CMDS_0000 param_2 watchIdx
+cmds.c:CMDS_0000 param_3 hours
+cmds.c:CMDS_0000 local_2c oldAnim
+cmds.c:CMDS_0000 local_2a_aa wakeHour
+cmds.c:CMDS_0000 local_28_aj oldTile
+cmds.c:CMDS_0000 local_26_al slot
+cmds.c:CMDS_0000 local_24_an idx
+cmds.c:CMDS_0000 local_22 member
+cmds.c:CMDS_0000 local_20_ab lastHour
+cmds.c:CMDS_0000 local_1e_an ambush
+cmds.c:CMDS_0000 local_1c oldActive
+cmds.c:CMDS_0000 local_1a watcher
+cmds.c:CMDS_0000 local_18 watchTile
+cmds.c:CMDS_0000 local_16 poisoned
+cmds.c:CMDS_0000 local_6 bardSlot
+cmds.c:CMDS_0000 local_4_ab bardActor
+cmds.c:CMDS_0552 local_c lastHour
+cmds.c:CMDS_0552 local_a i
+cmds.c:CMDS_0552 local_8 wakeHour
+cmds.c:CMDS_0552 local_6 key
+cmds.c:CMDS_0552 local_4_ab savedActive
+cmds.c:CMDS_0788 param_1 viewY
+cmds.c:CMDS_0788 param_2 viewX
+cmds.c:CMDS_0788 local_4 tile
+cmds.c:CMDS_07f6 local_c tile
+cmds.c:CMDS_07f6 local_a hull
+cmds.c:CMDS_07f6 local_8 skiffs
+cmds.c:CMDS_07f6 local_6 actorSlot
+cmds.c:CMDS_07f6 local_4_ab npc
+cmds.c:CMDS_0962 local_16_an y
+cmds.c:CMDS_0962 local_14 dirY
+cmds.c:CMDS_0962 local_12_ab x
+cmds.c:CMDS_0962 local_10_ad dirX
+cmds.c:CMDS_0962 local_e step
+cmds.c:CMDS_0962 local_c tile
+cmds.c:CMDS_0962 local_a targetY
+cmds.c:CMDS_0962 local_8 targetX
+cmds.c:CMDS_0962 local_6 actorSlot
+cmds.c:CMDS_0962 local_4_ab hit
+cmds.c:CMDS_0aea local_20_ac cannonTile
+cmds.c:CMDS_0aea local_1e_ao dirY
+cmds.c:CMDS_0aea local_1c_aa y
+cmds.c:CMDS_0aea local_1a_ac hitActor
+cmds.c:CMDS_0aea local_18_al range
+cmds.c:CMDS_0aea local_16_an dirX
+cmds.c:CMDS_0aea local_14 x
+cmds.c:CMDS_0aea local_12_ab endY
+cmds.c:CMDS_0aea local_10_ad tileAt
+cmds.c:CMDS_0aea local_e endX
+cmds.c:CMDS_0aea local_c startY
+cmds.c:CMDS_0aea local_a target
+cmds.c:CMDS_0aea local_8 startX
+cmds.c:CMDS_0aea local_6 npc
+cmds.c:CMDS_0aea local_4_ab hitWall
+cmds.c:CMDS_0ddc local_24 first
+cmds.c:CMDS_0ddc local_26 second
+cmds.c:CMDS_0ddc local_22_ab swap
+cmds.c:CMDS_0eb4 local_a skiffs
+cmds.c:CMDS_0eb4 local_8 tileUnder
+cmds.c:CMDS_0eb4 local_6 slot
+cmds.c:CMDS_0eb4 local_4_ab newTile
+cmds.c:CMDS_1030 param_1 word
+cmds.c:CMDS_1030 local_c slot
+cmds.c:CMDS_1030 local_a which
+cmds.c:CMDS_1030 local_8 j
+cmds.c:CMDS_1030 local_6 result
+cmds.c:CMDS_1030 local_4_ab npc
+cmds2.c:CMDS_1202 param_1 virtue
+cmds2.c:CMDS_1202 param_2 x
+cmds2.c:CMDS_1202 param_3 y
+cmds2.c:CMDS_1202 local_16_an right
+cmds2.c:CMDS_1202 local_14 i
+cmds2.c:CMDS_1202 local_12 spoken
+cmds2.c:CMDS_12c8 param_1 word
+cmds2.c:CMDS_12c8 local_e wordPtr
+cmds2.c:CMDS_12c8 local_c tile
+cmds2.c:CMDS_12c8 local_a dy
+cmds2.c:CMDS_12c8 local_8 found
+cmds2.c:CMDS_12c8 local_6 dx
+cmds2.c:CMDS_12c8 local_4_ab virtue
+cmds2.c:CMDS_1418 local_24_an result
+cmds2.c:CMDS_1418 local_22 word
+cmds2.c:CMDS_14ba param_1 tile
+cmds2.c:CMDS_1504 param_1 dx
+cmds2.c:CMDS_1504 param_2 dy
+cmds2.c:CMDS_1504 param_3 tile
+cmds2.c:CMDS_1504 param_4 reverse
+cmds2.c:CMDS_1548 param_1 objTile
+cmds2.c:CMDS_1548 param_2 beyondTile
+cmds2.c:CMDS_1548 param_3 objX
+cmds2.c:CMDS_1548 param_4 objY
+cmds2.c:CMDS_1548 param_5 beyondX
+cmds2.c:CMDS_1548 param_6 beyondY
+cmds2.c:CMDS_1548 param_7 dx
+cmds2.c:CMDS_1548 param_8 dy
+cmds2.c:CMDS_15b0 param_1 floorTile
+cmds2.c:CMDS_15b0 param_2 objTile
+cmds2.c:CMDS_15b0 param_3 partyX
+cmds2.c:CMDS_15b0 param_4 partyY
+cmds2.c:CMDS_15b0 param_5 objX
+cmds2.c:CMDS_15b0 param_6 objY
+cmds2.c:CMDS_15b0 param_7 dx
+cmds2.c:CMDS_15b0 param_8 dy
+cmds2.c:CMDS_161a local_1c_aa floorUnder
+cmds2.c:CMDS_161a local_1a_ac beyondY
+cmds2.c:CMDS_161a local_18_al dy
+cmds2.c:CMDS_161a local_16_an objY
+cmds2.c:CMDS_161a local_14 beyondX
+cmds2.c:CMDS_161a local_12_ab dx
+cmds2.c:CMDS_161a local_10_ad objX
+cmds2.c:CMDS_161a local_e savedY
+cmds2.c:CMDS_161a local_c savedX
+cmds2.c:CMDS_161a local_a emptyTile
+cmds2.c:CMDS_161a local_8 entity
+cmds2.c:CMDS_161a local_6 beyondTile
+cmds2.c:CMDS_161a local_4_ab objTile
+cmds2.c:CMDS_17ec local_8 i
+cmds2.c:CMDS_17ec local_6 refused
+cmds2.c:CMDS_17ec local_4_ab anyPlayer
+cmdsb.c:CMDS_18be local_18_ai mask
+cmdsb.c:CMDS_18be local_16_ak count
+cmdsb.c:CMDS_18be local_14_am bit
+cmdsb.c:CMDS_18be local_12 owned
+cmdsb.c:CMDS_18be local_a key
+cmdsb.c:CMDS_18be local_8 i
+cmdsb.c:CMDS_18be local_6 cursor
+cmdsb.c:CMDS_18be local_4_ab done
+cmdsb.c:CMDS_1a70 param_1 mask
+cmdsb.c:CMDS_1a70 local_6 enough
+cmdsb.c:CMDS_1a70 local_4_ab amount
+cmdsb.c:CMDS_1a70 local_8 i
+cmdsb.c:CMDS_1a70 local_a bit
+cmdsb.c:CMDS_1ad8 local_c bit
+cmdsb.c:CMDS_1ad8 local_a i
+cmdsb.c:CMDS_1ad8 local_8 amount
+cmdsb.c:CMDS_1ad8 local_6 spell
+cmdsb.c:CMDS_1ad8 local_4_ab mask
+cmdsb.c:CMDS_1c20 local_e_am tile
+cmdsb.c:CMDS_1c20 local_c y
+cmdsb.c:CMDS_1c20 local_a dy
+cmdsb.c:CMDS_1c20 local_8 x
+cmdsb.c:CMDS_1c20 local_6 dx
+cmdsb.c:CMDS_1c20 local_4_ab member
+# globals (the others the commands use are shared; D_444a and D_4502 are patched by translate.c)
+D_4512 D_4512_wordTile            # per virtue: the tile of its shrine or dungeon entrance that its word of power works at

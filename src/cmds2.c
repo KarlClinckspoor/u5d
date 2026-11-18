@@ -18,48 +18,49 @@
 void MAINOUT_0354_MoveParty(int stepX, int stepY);
 int MAINOUT_105c_IsMovingActor(int tile);
 
-// CMDS.OVL's MSC 5.1 code is two objects: cmds.c (CMDS_0000-CMDS_1030) and this one, from
-// CMDS_1202 (its _DATA starts at DS:4450, an even address, after D_444a). Compiled after
-// the first part's functions, MSC 5.1 drops loop optimizations in CMDS_12c8 (its loop
+// CMDS.OVL's MSC 5.1 code is two objects: cmds.c (CMDS_0000_HoleUpRest-CMDS_1030_YellShadowlord) and this one, from
+// CMDS_1202_RestoreShrine (its _DATA starts at DS:4450, an even address, after D_444a). Compiled after
+// the first part's functions, MSC 5.1 drops loop optimizations in CMDS_12c8_YellWordOfPower (its loop
 // registers); as an object of its own it gives the original's code.
 
 // defined in cmds.c
-int CMDS_1030(char* param_1);
+int CMDS_1030_YellShadowlord(char* word);
 
-// meditate
-static void CMDS_1202(int param_1, int param_2, int param_3)
+// At ruins: asks the virtue and three mantras; right answers at the shrine's place restore the destroyed
+// shrine.
+static void CMDS_1202_RestoreShrine(int virtue, int x, int y)
 {
-    bool local_16_an;
-    int local_14;
-    char local_12[16];
+    bool right;
+    int i;
+    char spoken[16];
 
-    local_16_an = 1;
+    right = 1;
 
     ULTIMA_1850_PrintString(_TEXT(0x4450, "\nUpon what virtue\ndost thou\nmeditate?\n\n:"));
-    ULTIMA_3b1c_GetString(local_12, 0xf);
+    ULTIMA_3b1c_GetString(spoken, 0xf);
 
-    if (ULTIMA_6f1e_CompareWord((byte*)D_1f4e_virtueNames[param_1], local_12) == -1)
+    if (ULTIMA_6f1e_CompareWord((byte*)D_1f4e_virtueNames[virtue], spoken) == -1)
     {
-        local_16_an = 0;
+        right = 0;
     }
 
-    for (local_14 = 0; local_14 < 3; local_14++)
+    for (i = 0; i < 3; i++)
     {
         ULTIMA_1850_PrintString(_TEXT(0x4479, "\nMantra:"));
-        ULTIMA_3b1c_GetString(local_12, 0xf);
+        ULTIMA_3b1c_GetString(spoken, 0xf);
 
-        if (ULTIMA_6f1e_CompareWord((byte*)D_1f5e_mantras[param_1], local_12) == -1)
+        if (ULTIMA_6f1e_CompareWord((byte*)D_1f5e_mantras[virtue], spoken) == -1)
         {
-            local_16_an = 0;
+            right = 0;
         }
     }
 
-    if (local_16_an && D_1f6e[param_1] == param_2 && D_1f76[param_1] == param_3)
+    if (right && D_1f6e[virtue] == x && D_1f76[virtue] == y)
     {
-        D_58d8_shrineDestroyed[param_1] &= 0x7f;
+        D_58d8_shrineDestroyed[virtue] &= 0x7f;
         ULTIMA_1850_PrintString(_TEXT(0x4482, "\n\nThe Shrine is\nrestored!\n"));
         ULTIMA_3072_ShakeScreen();
-        *ULTIMA_4402_GetTileAddr(param_2, param_3) = TILE_MAP_SHRINE;
+        *ULTIMA_4402_GetTileAddr(x, y) = TILE_MAP_SHRINE;
         D_24e6_viewDirty |= 2;
     }
     else
@@ -80,57 +81,59 @@ char* D_4502[8] =
     _STATIC_TEXT(0x44cd, "VERAMOCOR")
 };
 
-u8 D_4512[8] = {0x18, 0x16, 0x16, 0x18, 0x18, 0x17, 0x17, 0x16};
+u8 D_4512_wordTile[8] = {0x18, 0x16, 0x16, 0x18, 0x18, 0x17, 0x17, 0x16};
 
+// An overworld word of power (FALLAX ... VERAMOCOR, one per virtue) opens or closes the shrine or dungeon
+// entrance beside the party, or goes to the shrine restoring at ruins; else "No effect!".
 // CHECKED
 // local_4_ab and local_a are stack locals that the loop optimizer keeps in SI and DI.
-static void CMDS_12c8(char* param_1)
+static void CMDS_12c8_YellWordOfPower(char* word)
 {
-    char** local_e;
-    byte local_c;
-    int local_a; // <- di
-    bool local_8;
-    int local_6;
-    int local_4_ab; // <- si
+    char** wordPtr_m;
+    byte tile;
+    int dy; // <- di
+    bool found;
+    int dx;
+    int virtue_b; // <- si
 
-    local_8 = 0;
+    found = 0;
 
-    for (local_4_ab = 0, local_e = D_4502; local_4_ab < 8; local_4_ab++)
+    for (virtue_b = 0, wordPtr_m = D_4502; virtue_b < 8; virtue_b++)
     {
-        if (ULTIMA_6f1e_CompareWord((byte*)*local_e, param_1) > -1)
+        if (ULTIMA_6f1e_CompareWord((byte*)*wordPtr_m, word) > -1)
         {
             ULTIMA_1850_PrintString(_TEXT(0x44d7, "\nA word of power is uttered\n"));
             ULTIMA_3072_ShakeScreen();
 
-            local_c = GetMapViewport(4, 5);
-            if (D_4512[local_4_ab] == local_c || local_c == TILE_MAP_DF || local_c == TILE_MAP_RUINS)
+            tile = GetMapViewport(4, 5);
+            if (D_4512_wordTile[virtue_b] == tile || tile == TILE_MAP_DF || tile == TILE_MAP_RUINS)
             {
-                local_6 = -1;
-                local_a = 0;
+                dx = -1;
+                dy = 0;
             }
             else
             {
-                local_c = GetMapViewport(5, 6);
-                if (D_4512[local_4_ab] == local_c || local_c == TILE_MAP_DF || local_c == TILE_MAP_RUINS)
+                tile = GetMapViewport(5, 6);
+                if (D_4512_wordTile[virtue_b] == tile || tile == TILE_MAP_DF || tile == TILE_MAP_RUINS)
                 {
-                    local_6 = 0;
-                    local_a = 1;
+                    dx = 0;
+                    dy = 1;
                 }
                 else
                 {
-                    local_c = GetMapViewport(6, 5);
-                    if (D_4512[local_4_ab] == local_c || local_c == TILE_MAP_DF || local_c == TILE_MAP_RUINS)
+                    tile = GetMapViewport(6, 5);
+                    if (D_4512_wordTile[virtue_b] == tile || tile == TILE_MAP_DF || tile == TILE_MAP_RUINS)
                     {
-                        local_6 = 1;
-                        local_a = 0;
+                        dx = 1;
+                        dy = 0;
                     }
                     else
                     {
-                        local_c = GetMapViewport(5, 4);
-                        if (D_4512[local_4_ab] == local_c || local_c == TILE_MAP_DF || local_c == TILE_MAP_RUINS)
+                        tile = GetMapViewport(5, 4);
+                        if (D_4512_wordTile[virtue_b] == tile || tile == TILE_MAP_DF || tile == TILE_MAP_RUINS)
                         {
-                            local_6 = 0;
-                            local_a = -1;
+                            dx = 0;
+                            dy = -1;
                         }
                         else
                         {
@@ -140,38 +143,40 @@ static void CMDS_12c8(char* param_1)
                 }
             }
 
-            if (local_c == TILE_MAP_RUINS)
+            if (tile == TILE_MAP_RUINS)
             {
-                CMDS_1202(local_4_ab, local_6 + D_5896_mapX, local_a + D_5897_mapY);
+                CMDS_1202_RestoreShrine(virtue_b, dx + D_5896_mapX, dy + D_5897_mapY);
                 return;
             }
 
-            if (local_6 + D_5896_mapX == D_1e8a_placeX[local_4_ab + 0x20] &&
-                local_a + D_5897_mapY == D_1eb2_placeY[local_4_ab + 0x20])
+            if (dx + D_5896_mapX == D_1e8a_placeX[virtue_b + 0x20] &&
+                dy + D_5897_mapY == D_1eb2_placeY[virtue_b + 0x20])
             {
-                D_58d0_dungeonOpen[local_4_ab] ^= 0x80;
-                *ULTIMA_4402_GetTileAddr(local_6 + D_5896_mapX, local_a + D_5897_mapY) ^= D_4512[local_4_ab] ^ TILE_MAP_DF;
+                D_58d0_dungeonOpen[virtue_b] ^= 0x80;
+                *ULTIMA_4402_GetTileAddr(dx + D_5896_mapX, dy + D_5897_mapY) ^= D_4512_wordTile[virtue_b] ^ TILE_MAP_DF;
                 D_24e6_viewDirty |= 2;
             }
 
-            local_8 = 1;
+            found = 1;
             break;
         }
-        local_e++;
+        wordPtr_m++;
     }
 
-    if (!local_8)
+    if (!found)
     {
         ULTIMA_1850_PrintString(_TEXT(0x44f4, "\nNo effect!\n"));
     }
 }
 
+// The Yell command: on a frigate "FURL!" and "HOIST!" (the sails); else asks a word: a shadowlord's name, or
+// a word of power on the overworld.
 int CMDS_1418_YellCmd(void)
 {
-    int local_24_an;
-    char local_22[32];
+    int result;
+    char word[32];
 
-    local_24_an = 1;
+    result = 1;
 
     if ((D_587c_partyTile & 0xf8) == TILE_ACTOR_FRIGATE_20 && D_5893_mapId < 0x80)
     {
@@ -180,7 +185,7 @@ int CMDS_1418_YellCmd(void)
             ULTIMA_1850_PrintString(_TEXT(0x451a, "FURL!\n"));
             D_587c_partyTile += 4;
 #if !defined(MATCHING_BUILD)
-            return local_24_an; // TODO: validate return value
+            return result; // TODO: validate return value
 #else
             return; // sic
 #endif
@@ -190,7 +195,7 @@ int CMDS_1418_YellCmd(void)
             ULTIMA_1850_PrintString(_TEXT(0x4521, "HOIST!\n"));
             D_587c_partyTile -= 4;
 #if !defined(MATCHING_BUILD)
-            return local_24_an; // TODO: validate return value
+            return result; // TODO: validate return value
 #else
             return; // sic
 #endif
@@ -199,12 +204,12 @@ int CMDS_1418_YellCmd(void)
     else
     {
         ULTIMA_1850_PrintString(_TEXT(0x4529, "what?\n:"));
-        ULTIMA_3b1c_GetString(local_22, 0x1e);
-        if (local_22[0] == 0)
+        ULTIMA_3b1c_GetString(word, 0x1e);
+        if (word[0] == 0)
         {
             ULTIMA_1850_PrintString(_TEXT(0x4531, "Nothing\n"));
 #if !defined(MATCHING_BUILD)
-            return local_24_an; // TODO: validate return value
+            return result; // TODO: validate return value
 #else
             return; // sic
 #endif
@@ -214,11 +219,11 @@ int CMDS_1418_YellCmd(void)
             ULTIMA_16ba_PrintChar('\n');
             if (D_5893_mapId >= 1 && D_5893_mapId <= 0x20)
             {
-                local_24_an = CMDS_1030(local_22);
+                result = CMDS_1030_YellShadowlord(word);
             }
             else if (D_5893_mapId == 0)
             {
-                CMDS_12c8(local_22);
+                CMDS_12c8_YellWordOfPower(word);
             }
             else
             {
@@ -227,12 +232,14 @@ int CMDS_1418_YellCmd(void)
         }
     }
 
-    return local_24_an;
+    return result;
 }
 
-static int CMDS_14ba_Pushable(byte param_1)
+// 1 for the tiles that can be pushed or pulled: chairs, desk, barrel, vanity, dresser, trunk, cannons and a
+// few others.
+static int CMDS_14ba_IsPushable(byte tile)
 {
-    switch (param_1)
+    switch (tile)
     {
     case TILE_MAP_5B:
     case TILE_MAP_CHAIR_90:
@@ -256,69 +263,76 @@ static int CMDS_14ba_Pushable(byte param_1)
     return 0;
 }
 
-static int CMDS_1504(int param_1, int param_2, int param_3, int param_4)
+// The chair or cannon tile turned for a push (or, with reverse, a pull) in the direction (dx, dy).
+static int CMDS_1504_FacingTile(int dx, int dy, int tile, int reverse)
 {
-    if (param_1 == 1 && param_2 == 0)
+    if (dx == 1 && dy == 0)
     {
-        param_3++;
+        tile++;
     }
-    if (param_1 == 0 && param_2 == 1)
+    if (dx == 0 && dy == 1)
     {
-        param_3 += 2;
+        tile += 2;
     }
-    if (param_1 == -1 && param_2 == 0)
+    if (dx == -1 && dy == 0)
     {
-        param_3 += 3;
+        tile += 3;
     }
-    if (param_4 != 0)
+    if (reverse != 0)
     {
-        param_3 ^= 2;
+        tile ^= 2;
     }
 
-    return param_3;
+    return tile;
 }
 
-static void CMDS_1548_Pushed(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, int param_7,
-                 int param_8)
+// Puts a pushed object on its new cell and the tile that lay there on the old one, turning chairs and
+// cannons; "Pushed!".
+static void CMDS_1548_PutPushed(int objTile, int beyondTile, int objX, int objY, int beyondX, int beyondY, int dx,
+                 int dy)
 {
     ULTIMA_1850_PrintString(_TEXT(0x4547, "Pushed!\n"));
-    *ULTIMA_4402_GetTileAddr(param_5, param_6) = param_1;
-    *ULTIMA_4402_GetTileAddr(param_3, param_4) = param_2;
-    param_1 &= 0xfc;
-    if (param_1 == TILE_MAP_CHAIR_90 || param_1 == TILE_MAP_CANNON_B4)
+    *ULTIMA_4402_GetTileAddr(beyondX, beyondY) = objTile;
+    *ULTIMA_4402_GetTileAddr(objX, objY) = beyondTile;
+    objTile &= 0xfc;
+    if (objTile == TILE_MAP_CHAIR_90 || objTile == TILE_MAP_CANNON_B4)
     {
-        *ULTIMA_4402_GetTileAddr(param_5, param_6) = CMDS_1504(param_7, param_8, param_1, 0);
+        *ULTIMA_4402_GetTileAddr(beyondX, beyondY) = CMDS_1504_FacingTile(dx, dy, objTile, 0);
     }
 }
 
-static void CMDS_15b0_Pulled(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6, int param_7,
-                 int param_8)
+// The same for a pulled object (it takes the party's cell and the floor under the party goes to the old
+// one); "Pulled!".
+static void CMDS_15b0_PutPulled(int floorTile, int objTile, int partyX, int partyY, int objX, int objY, int dx,
+                 int dy)
 {
     ULTIMA_1850_PrintString(_TEXT(0x4550, "Pulled!\n"));
-    *ULTIMA_4402_GetTileAddr(param_3, param_4) = param_2;
-    *ULTIMA_4402_GetTileAddr(param_5, param_6) = param_1;
-    param_2 &= 0xfc;
-    if (param_2 == TILE_MAP_CHAIR_90 || param_2 == TILE_MAP_CANNON_B4)
+    *ULTIMA_4402_GetTileAddr(partyX, partyY) = objTile;
+    *ULTIMA_4402_GetTileAddr(objX, objY) = floorTile;
+    objTile &= 0xfc;
+    if (objTile == TILE_MAP_CHAIR_90 || objTile == TILE_MAP_CANNON_B4)
     {
-        *ULTIMA_4402_GetTileAddr(param_3, param_4) = CMDS_1504(param_7, param_8, param_2, 1);
+        *ULTIMA_4402_GetTileAddr(partyX, partyY) = CMDS_1504_FacingTile(dx, dy, objTile, 1);
     }
 }
 
+// The Push command (also in combat): an object in the chosen direction moves on when the cell beyond is
+// free, else it is pulled to the party when the party stands on free floor; "Won't budge!" otherwise.
 void CMDS_161a_PushCmd(void)
 {
-    int local_1c_aa;
-    int local_1a_ac;
-    int local_18_al;
-    int local_16_an;
-    int local_14;
-    int local_12_ab;
-    int local_10_ad;
-    int local_e;
-    int local_c;
-    int local_a;
-    int local_8;
-    int local_6;
-    int local_4_ab;
+    int floorUnder_p;
+    int beyondY_f;
+    int dy_c;
+    int objY_l;
+    int beyondX_g;
+    int dx_d;
+    int objX_m;
+    int savedY_d;
+    int savedX_e;
+    int emptyTile_c;
+    int entity_c;
+    int beyondTile;
+    int objTile;
 
     ULTIMA_39cc_SetTile(D_594f_openDoorTile, D_5950_openDoorX, D_5951_openDoorY);
     if (ULTIMA_35ec_SelectDirection() == 0)
@@ -326,46 +340,46 @@ void CMDS_161a_PushCmd(void)
         return;
     }
 
-    local_12_ab = D_5876_tempX;
-    local_18_al = D_5878_tempY;
+    dx_d = D_5876_tempX;
+    dy_c = D_5878_tempY;
 
     if (D_5893_mapId > 0x7f)
     {
-        local_c = D_5896_mapX;
-        local_e = D_5897_mapY;
+        savedX_e = D_5896_mapX;
+        savedY_d = D_5897_mapY;
         D_5896_mapX = D_ba14_combatants[D_589e_curCombatant].x;
         D_5897_mapY = D_ba14_combatants[D_589e_curCombatant].y;
     }
 
-    local_10_ad = local_12_ab + (uint)D_5896_mapX;
-    local_16_an = local_18_al + (uint)D_5897_mapY;
+    objX_m = dx_d + (uint)D_5896_mapX;
+    objY_l = dy_c + (uint)D_5897_mapY;
 
-    if (D_5893_mapId > 0x7f && COMBAT_111a_FireMapTrigger(local_10_ad, local_16_an) != 0)
+    if (D_5893_mapId > 0x7f && COMBAT_111a_FireMapTrigger(objX_m, objY_l) != 0)
     {
         return;
     }
 
-    local_4_ab = *ULTIMA_4402_GetTileAddr(local_10_ad, local_16_an);
-    if (ULTIMA_368e_FindActorTileAtPos(local_10_ad, local_16_an, D_5895_mapLevel) != 0 || CMDS_14ba_Pushable(local_4_ab) == 0)
+    objTile = *ULTIMA_4402_GetTileAddr(objX_m, objY_l);
+    if (ULTIMA_368e_FindActorTileAtPos(objX_m, objY_l, D_5895_mapLevel) != 0 || CMDS_14ba_IsPushable(objTile) == 0)
     {
         ULTIMA_1850_PrintString(_TEXT(0x4559, "Won't budge!\n"));
     }
     else
     {
-        local_a = (local_4_ab & 0xfc) == TILE_MAP_CANNON_B4 ? TILE_MAP_45 : TILE_MAP_44;
-        local_14 = local_10_ad + local_12_ab;
-        local_1a_ac = local_16_an + local_18_al;
-        local_6 = *ULTIMA_4402_GetTileAddr(local_14, local_1a_ac);
-        local_1c_aa = *ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY);
-        if (ULTIMA_368e_FindActorTileAtPos(local_14, local_1a_ac, D_5895_mapLevel) == 0 && local_6 == local_a)
+        emptyTile_c = (objTile & 0xfc) == TILE_MAP_CANNON_B4 ? TILE_MAP_45 : TILE_MAP_44;
+        beyondX_g = objX_m + dx_d;
+        beyondY_f = objY_l + dy_c;
+        beyondTile = *ULTIMA_4402_GetTileAddr(beyondX_g, beyondY_f);
+        floorUnder_p = *ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY);
+        if (ULTIMA_368e_FindActorTileAtPos(beyondX_g, beyondY_f, D_5895_mapLevel) == 0 && beyondTile == emptyTile_c)
         {
-            CMDS_1548_Pushed(local_4_ab, local_6, local_10_ad, local_16_an, local_14, local_1a_ac, local_12_ab, local_18_al);
+            CMDS_1548_PutPushed(objTile, beyondTile, objX_m, objY_l, beyondX_g, beyondY_f, dx_d, dy_c);
         }
         else
         {
-            if (local_1c_aa == local_a)
+            if (floorUnder_p == emptyTile_c)
             {
-                CMDS_15b0_Pulled(local_1c_aa, local_4_ab, D_5896_mapX, D_5897_mapY, local_10_ad, local_16_an, local_12_ab, local_18_al);
+                CMDS_15b0_PutPulled(floorUnder_p, objTile, D_5896_mapX, D_5897_mapY, objX_m, objY_l, dx_d, dy_c);
             }
             else
             {
@@ -374,79 +388,80 @@ void CMDS_161a_PushCmd(void)
             }
         }
 
-        D_5896_mapX += local_12_ab;
-        D_5897_mapY += local_18_al;
+        D_5896_mapX += dx_d;
+        D_5897_mapY += dy_c;
         D_24e6_viewDirty = 1;
 
         if (D_5893_mapId > 0x7f)
         {
-            local_8 = D_ba14_combatants[D_589e_curCombatant].entityIdx;
+            entity_c = D_ba14_combatants[D_589e_curCombatant].entityIdx;
 
-            D_ba14_combatants[D_589e_curCombatant].x += local_12_ab;
-            D_ba14_combatants[D_589e_curCombatant].y += local_18_al;
+            D_ba14_combatants[D_589e_curCombatant].x += dx_d;
+            D_ba14_combatants[D_589e_curCombatant].y += dy_c;
 
-            D_5c5a_actors[local_8].x += local_12_ab;
-            D_5c5a_actors[local_8].y += local_18_al;
+            D_5c5a_actors[entity_c].x += dx_d;
+            D_5c5a_actors[entity_c].y += dy_c;
 
-            D_5896_mapX = local_c;
-            D_5897_mapY = local_e;
+            D_5896_mapX = savedX_e;
+            D_5897_mapY = savedY_d;
 
             ULTIMA_5910_UpdateFrame();
         }
     }
 }
 
-// escape
+// The Escape command in combat: refused while players are alive and the fight is not yet over or cannot be
+// left; else all combatants and actors are removed; 1 when refused.
 int CMDS_17ec_Escape(void)
 {
-    int local_8;
-    int local_6;
-    bool local_4_ab;
+    int i;
+    int refused_h;
+    bool anyPlayer;
 
     ULTIMA_1850_PrintString(_TEXT(0x4574, "Escape"));
 
-    local_4_ab = local_6 = 0;
-    for (local_8 = 0; local_8 < 0x20; local_8++)
+    anyPlayer = refused_h = 0;
+    for (i = 0; i < 0x20; i++)
     {
-        if ((D_ba14_combatants[local_8].flags & (COMBAT_FLAGS_PLAYER | COMBAT_FLAGS_DEAD)) == COMBAT_FLAGS_PLAYER)
+        if ((D_ba14_combatants[i].flags & (COMBAT_FLAGS_PLAYER | COMBAT_FLAGS_DEAD)) == COMBAT_FLAGS_PLAYER)
         {
-            local_4_ab = 1;
+            anyPlayer = 1;
             break;
         }
     }
 
-    if (local_4_ab)
+    if (anyPlayer)
     {
         if ((D_58a1_combatFlags & 0x80) != 0)
         {
             ULTIMA_1850_PrintString(_TEXT(0x457b, "-Not here!\n"));
-            local_6 = 1;
+            refused_h = 1;
         }
         else if (D_58a3_combatOver == 0)
         {
             ULTIMA_1850_PrintString(_TEXT(0x4587, "-Not yet!\n"));
-            local_6 = 1;
+            refused_h = 1;
         }
     }
 
-    if (local_6 == 0)
+    if (refused_h == 0)
     {
         ULTIMA_16ba_PrintChar('!');
 
-        for (local_8 = 0; local_8 < 0x20; local_8++)
+        for (i = 0; i < 0x20; i++)
         {
-            if (D_ba14_combatants[local_8].flags != 0)
+            if (D_ba14_combatants[i].flags != 0)
             {
-                COMBAT_1236_RemoveEntity(-local_8 - 1);
+                COMBAT_1236_RemoveEntity(-i - 1);
                 ULTIMA_5910_UpdateFrame();
             }
         }
 
-        for (local_8 = 0; local_8 < 0x20; local_8++)
+        for (i = 0; i < 0x20; i++)
         {
-            if (D_5c5a_actors[local_8].tile != 0)
+            if (D_5c5a_actors[i].tile != 0)
             {
-                COMBAT_1236_RemoveEntity(local_8 + 1);
+                COMBAT_1236_RemoveEntity(i + 1);
                 ULTIMA_5910_UpdateFrame();
             }
         }
@@ -455,7 +470,7 @@ int CMDS_17ec_Escape(void)
     }
 
     D_a9fa_vitalsDirty = 1;
-    return local_6;
+    return refused_h;
 }
 
 // CMDS_MIX.C?

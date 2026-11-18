@@ -113,7 +113,7 @@ MODULES['vars.c'] = ('data', None)
 # (docs/MATCHING.md).
 MODULES['intro0.c'] = ('ovl', 'INTRO')
 MODULES['intro2.c'] = ('ovl', 'INTRO')
-# Likewise CMDS.OVL: cmds.c (to CMDS_1030), cmds2.c (from CMDS_1202), cmdsb.c.
+# Likewise CMDS.OVL: cmds.c (to CMDS_1030_YellShadowlord), cmds2.c (from CMDS_1202_RestoreShrine), cmdsb.c.
 MODULES['cmds2.c'] = ('ovl', 'CMDS')
 # TOWN.OVL: town.c (to TOWN_0f02_TileEffects) and town2.c (from TOWN_10da_ShoutBegone).
 MODULES['town2.c'] = ('ovl', 'TOWN')
@@ -147,7 +147,7 @@ OBJECT_PARTS = [('R2320', 'A2322', 'R251E'), ('INTRO2', 'AINTRO2'), ('AFONT0', '
 # original reaches the overworld map through a name of its own for DS:6608 (vars.h); which
 # object defined it is not known.
 LINK_DEFINES = {'D_6608_OVERWORLD': 'D_6608_MAP'}
-# cmds.c knows 24 names by their short forms (the note at its top: CMDS_0000's pass-2 memory)
+# cmds.c knows 24 names by their short forms (the note at its top: CMDS_0000_HoleUpRest's pass-2 memory)
 LINK_DEFINES.update({
     'D_5876': 'D_5876_TEMPX',
     'D_5878': 'D_5878_TEMPY',
