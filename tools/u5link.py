@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Link the objects into ULTIMA.EXE, the overlays and DATA.OVL.
 
-    python tools/u5link.py [--out DIR] [--script FILE] [-v]
+    python tools/u5link.py [--out DIR] [--script FILE] [--target T] [-v]
 
 PLINK86, which linked the original, is not available, and MS LINK's overlays are a different
 scheme; this is a small linker for this one program (Exhume's docs/link.md calls it a link
@@ -23,10 +23,21 @@ link. What it does:
                      uninitialised (communal) variables are allocated after the last _BSS;
   output             build/out/ULTIMA.EXE (the MZ header with its relocation table, then the
                      resident image), build/out/<NAME>.OVL, build/out/DATA.OVL (its header,
-                     then DGROUP), then a per-file comparison: with the GOG files when they
-                     are found (tools/u5.py, find_gamedata), else with their SHA-1s
-                     (u5.GOG_SHA1). The exit status is 0 when all 25 are identical and every
-                     name was defined.
+                     then DGROUP), then a per-file comparison: with the target's game files
+                     when they are found (tools/u5.py, find_gamedata), else with their SHA-1s
+                     (u5.release_sha1()). The exit status is 0 when all 25 are identical and
+                     every name was defined.
+
+The target (--target, else $U5_TARGET, else gog) chooses the objects (build/obj or
+build/obj-1988, or $U5_OBJ), the link script's lines (those marked target= for another
+target are left out) and the files compared with.
+
+The EXE checksum is PLINK86's, by rule: the MZ checksum of the program as PLINK86 wrote it,
+before Origin's copy-protection wrapper (PLSTART) was appended (see Linker.plink_header). The
+GOG release is the 1988 link patched in 1992, and the patch did not write the checksum again:
+for the gog target it is the checksum of the 1988 link (u5.PATCH_OF), linked from the 1988
+objects of the modules that differ by target (build/obj-1988 beside build/obj, where
+tools/asmbuild.py and dosbuild.py put them) and the gog objects of the others.
 
 A name no object defines is still resolved by the address it carries (ULTIMA_1850 is CS:1850,
 D_5893 is DS:5893), so that a partial build links: such references are counted and listed,
@@ -40,15 +51,38 @@ import u5  # noqa: E402
 import asmgen  # noqa: E402
 
 OUT = os.path.join(u5.BUILD, 'out')
-SCRIPT = os.path.join(u5.SRC, 'u5d.lnk')
+
+
+def script_path():
+    """The link script, src/u5d.lnk (read when used: $U5_SRC may name another src/)."""
+    return os.path.join(u5.SRC, 'u5d.lnk')
+
+
 SKIP_SEGMENTS = {'STACK', '_BSS', 'c_common'}
 LINKER_DEFINED = {'_edata', '_end'}
 
 
+def script_lines(text, target):
+    """The lines of the link script that hold for target: a line with target=T holds for T
+    only, and is given without that word."""
+    out = []
+    for line in text.splitlines():
+        w = line.split('#')[0].split()
+        t = [x for x in w if x.startswith('target=')]
+        if t:
+            if t[0][len('target='):] != target:
+                continue
+            line = line.replace(' ' + t[0], '', 1)
+        out.append(line)
+    return out
+
+
 class Script:
-    """The link script (src/u5d.lnk; its comments say what each kind of line is)."""
-    def __init__(self, path=None):
-        self.path = path or SCRIPT
+    """The link script (src/u5d.lnk; its comments say what each kind of line is), the lines
+    that hold for target (u5.TARGET)."""
+    def __init__(self, path=None, target=None):
+        self.path = path or script_path()
+        self.target = target or u5.TARGET
         self.exe, self.dgroup, self.defines = {}, {}, {}
         self.overlays = {}        # name -> {'base', 'size', 'header'}, in the script's order
         self.modules = []         # (library and public or None, name, overlay or None, code address or None, {segment: DS offset})
@@ -56,6 +90,13 @@ class Script:
             raise SystemExit('the link script %s is missing (tools/linkscript.py writes it)' % self.path)
         for no, line in enumerate(open(self.path, encoding='ascii'), 1):
             w = line.split('#')[0].split()
+            t = [x for x in w if x.startswith('target=')]
+            if t:
+                if t[0][len('target='):] not in u5.TARGETS:
+                    raise SystemExit('%s, line %d: unknown target (%s)' % (self.path, no, line.strip()))
+                if t[0][len('target='):] != self.target:
+                    continue
+                w.remove(t[0])
             if not w:
                 continue
             try:
@@ -107,8 +148,12 @@ class Module:
 
 
 class Linker:
-    def __init__(self, script):
+    def __init__(self, script, obj_path=None):
+        """obj_path(name): the file of object name (default: in u5.OBJ)."""
         self.script = script
+        self.target = script.target
+        self.obj_path = obj_path or (lambda name: os.path.join(u5.OBJ, name + '.OBJ'))
+        self.checksum_value = None
         self.root_end = script.exe['image']
         self.modules = []
         self.publics = {}         # name -> (kind 'code'|'data', address, module)
@@ -136,7 +181,7 @@ class Linker:
                     continue
                 m = Module(name, objs[0], 'lib')
             else:
-                p = os.path.join(u5.OBJ, name + '.OBJ')
+                p = self.obj_path(name)
                 if not os.path.exists(p):
                     self.notes.append('%s: no object' % name)
                     continue
@@ -276,7 +321,7 @@ class Linker:
         assembly module. The parts of one original object (u5.OBJECT_PARTS: a C file and the
         assembly that stands for one of its functions) are taken together, from the last word
         to the first, as MSC wrote that object's single fixup record."""
-        part_of = {n: g for g in u5.OBJECT_PARTS for n in g}
+        part_of = {n: g for g in u5.object_parts(self.target) for n in g}
         out, done = [], set()
         for m in sorted((m for m in modules if m.code), key=lambda m: m.code[1]):
             if m.name in done:
@@ -313,11 +358,23 @@ class Linker:
             self.notes.append('%s: a header of %d bytes, where the original has %d' % (what, len(hdr), size))
         return hdr
 
-    def exe_header(self, image):
-        """ULTIMA.EXE's MZ header. Rules: the file size, the relocation count and table (after
-        the 0x1e-byte header, in relocation_order), the header padded to 512 bytes, the entry
-        point at PLINK86's start-up segment. The rest is PLINK86's, as the link script's exe
-        line has it."""
+    def module_of(self, name):
+        return next((m for m in self.modules if m.name == name and m.code), None)
+
+    def program_end(self, image):
+        """Where the program PLINK86 linked ends: at Origin's copy-protection wrapper (PLSTART,
+        appended to it), else at the end of the image."""
+        start = self.module_of('PLSTART')
+        return start.code[1] if start else len(image)
+
+    def plink_header(self, size, checksum=0):
+        """ULTIMA.EXE's MZ header as PLINK86 wrote it, for a program of size bytes (the image
+        up to PLSTART). Rules: the file size, the relocation count and table (after the
+        0x1e-byte header, in relocation_order), the header padded to 512 bytes, the entry point
+        at PLINK86's start-up (PLMGR's PLINK_START, 072e:0322), the stack after DGROUP (crt0's
+        STACK segment: SS its paragraph, 1b38, SP its length, 0800), and the minimum allocation
+        from the end of the program to the end of that stack. PLINK86's own fields are the link
+        script's exe line: the table's offset (fixed) and the word at 0x1c."""
         x = self.script.exe
         relocs = []
         for loc in self.relocation_order([m for m in self.modules if m.kind != 'ovl']):
@@ -326,20 +383,49 @@ class Linker:
             relocs.append((loc - f * 16, f))
         table = b''.join(struct.pack('<HH', o, s) for o, s in relocs)
         hsize = (x['fixed'] + len(table) + 511) // 512 * 512
-        size = hsize + len(image)
-        start = next((m for m in self.modules if m.name == 'PLSTART' and m.code), None)
-        entry = start.code[1] >> 4 if start else 0
-        # memory beyond the image: up to the end of the stack that follows DGROUP (crt0's
-        # STACK segment), plus the start-up segment's size once more (measured: PLINK86 adds
-        # every segment's size, and the start-up code lies under overlay area 1)
-        top = u5.DGROUP_SEG + (self.publics.get('_end', (0, 0))[1] + 15) // 16 + self.stack_size() // 16
-        minalloc = top + ((start.code[0].length + 15) // 16 if start else 0) - len(image) // 16
-        hdr = struct.pack('<2s13H', b'MZ', size % 512, (size + 511) // 512, len(relocs), hsize // 16,
-                          minalloc, 0xffff,
-                          len(image) // 16 + x['stackgap'], x['sp'],    # SS:SP, PLINK86's start-up stack
-                          x['checksum'], 0, entry, x['fixed'], 0)
+        total = hsize + size
+        entry = self.publics.get('PLINK_START')
+        if entry and entry[2] and entry[2].code:
+            cs = self.segment_frame(entry[2])
+            ip = entry[1] - cs * 16
+        else:
+            cs = ip = 0
+            note = 'no PLINK_START (src/asm/PLMGR.ASM): the EXE checksum\'s entry point is not known'
+            if note not in self.notes:
+                self.notes.append(note)
+        # the stack: crt0's STACK segment, from the paragraph after DGROUP's end (_end)
+        ss = u5.DGROUP_SEG + (self.publics.get('_end', (0, 0))[1] + 15) // 16
+        sp = self.stack_size()
+        minalloc = ss + sp // 16 - size // 16
+        hdr = struct.pack('<2s13H', b'MZ', total % 512, (total + 511) // 512, len(relocs), hsize // 16,
+                          minalloc, 0xffff, ss, sp, checksum, ip, cs, x['fixed'], 0)
         hdr += struct.pack('<H', x['word1c'])                                    # PLINK86 writes 1 here
         return hdr + table + bytes(hsize - len(hdr) - len(table))
+
+    def checksum(self, image):
+        """PLINK86's checksum (the MZ checksum: the one's complement of the sum of the file's
+        words, the field itself zero) of the program it linked: plink_header and the image up
+        to PLSTART."""
+        size = self.program_end(image)
+        f = self.plink_header(size) + bytes(image[:size])
+        f += bytes(len(f) & 1)
+        return ~sum(struct.unpack('<%dH' % (len(f) // 2), f)) & 0xffff
+
+    def exe_header(self, image, checksum):
+        """ULTIMA.EXE's MZ header: PLINK86's (plink_header, with the checksum given) as Origin's
+        copy-protection wrapper left it when it was appended to the program: the file size
+        counts the wrapper, the entry point is the wrapper's (PLSTART's segment, 081d:0000) and
+        so is the stack (SS stackgap paragraphs past the end of the image, SP sp: the link
+        script's exe line). The rest is PLINK86's: the minimum allocation, for one, still ends
+        at the end of the stack counted from the end of the program without the wrapper."""
+        x = self.script.exe
+        hdr = bytearray(self.plink_header(self.program_end(image), checksum))
+        size = len(hdr) + len(image)
+        start = self.module_of('PLSTART')
+        struct.pack_into('<HH', hdr, 2, size % 512, (size + 511) // 512)
+        struct.pack_into('<HH', hdr, 0x0e, len(image) // 16 + x['stackgap'], x['sp'])
+        struct.pack_into('<HH', hdr, 0x14, 0, start.code[1] >> 4 if start else 0)
+        return bytes(hdr)
 
     def stack_size(self):
         for m in self.modules:
@@ -451,16 +537,39 @@ def compare(name, ours, orig):
                                                '' if len(ours) == len(orig) else ', length %d' % len(ours))
 
 
+def patch_base_checksum(lk, script=None):
+    """The EXE checksum of a target that is another's link patched afterwards (u5.PATCH_OF:
+    gog, the 1988 link patched in 1992): that link's, linked here as the other target from
+    its objects of the modules that differ by target (u5.patch_base_obj(): build/obj-1988)
+    and this target's objects of the others. Its notes join lk's."""
+    base, folder = u5.PATCH_OF[lk.target], u5.patch_base_obj()
+    differ = u5.target_dependent_objects(base)
+
+    def obj_path(name):
+        return os.path.join(folder if name in differ else u5.OBJ, name + '.OBJ')
+    blk = Linker(Script(script, base), obj_path)
+    blk.gather()
+    root = blk.link()[0]
+    what = 'EXE checksum (the %s link, with %s from %s)' % (
+        base, ' '.join(sorted(differ)), os.path.relpath(folder, u5.ROOT))
+    lk.notes += ['%s: %s' % (what, n) for n in blk.notes]
+    if blk.by_convention or blk.unresolved:
+        lk.notes.append('%s: %d names resolved by their address, %d unresolved' % (
+            what, len(blk.by_convention), len(blk.unresolved)))
+    return blk.checksum(root)
+
+
 def link(out=OUT, fill=None, script=None):
-    """Link what build/obj holds, as the link script says, and write the 25 files to out.
-    Returns (linker, {file name: our bytes}). fill: the folder of the game files, to start
-    from the original's bytes; nothing else reads a game file."""
+    """Link the target's objects (u5.TARGET, u5.OBJ) as the link script says, and write the
+    25 files to out. Returns (linker, {file name: our bytes}). fill: the folder of the game
+    files, to start from the original's bytes; nothing else reads a game file."""
     lk = Linker(Script(script))
     lk.fill = fill
     lk.gather()
     root, overlays, dgroup = lk.link()
+    lk.checksum_value = patch_base_checksum(lk, script) if lk.target in u5.PATCH_OF else lk.checksum(root)
     files = {ovl + '.OVL': bytes(buf) for ovl, buf in overlays.items()}
-    files['ULTIMA.EXE'] = lk.exe_header(root) + bytes(root)
+    files['ULTIMA.EXE'] = lk.exe_header(root, lk.checksum_value) + bytes(root)
     files['DATA.OVL'] = lk.data_header() + bytes(dgroup)
     os.makedirs(out, exist_ok=True)
     for name, data in files.items():
@@ -476,19 +585,25 @@ def main():
                     help='start from the original bytes where no object covers them (shows how close the '
                          'parts are; needs the game files)')
     ap.add_argument('-v', '--verbose', action='store_true')
+    u5.add_target_argument(ap)
     a = ap.parse_args()
+    u5.set_target(a.target)
     gd = u5.find_gamedata() if a.fill else u5.find_gamedata(required=False)
     lk, files = link(a.out, gd if a.fill else None, a.script)
     bad = 0
-    print('compared with ' + ('the game files in %s' % gd if gd else 'the SHA-1s of the GOG files (no game files found)'))
-    for name in sorted(set(files) | set(u5.GOG_SHA1)):
+    table = u5.release_sha1()
+    print('%s, compared with %s' % (u5.TARGET_TITLE[u5.TARGET], 'the game files in %s' % gd if gd else
+                                    'the SHA-1s of its files (no game files found)'))
+    print('EXE checksum %04x (%s)' % (lk.checksum_value, 'the %s link\'s' % u5.PATCH_OF[u5.TARGET]
+                                       if u5.TARGET in u5.PATCH_OF else 'this link\'s'))
+    for name in sorted(set(files) | set(table)):
         ours = files.get(name)
         if ours is None:
             print('%-13s not built' % name)
             bad += 1
             continue
         if not gd:
-            same = hashlib.sha1(ours).hexdigest() == u5.GOG_SHA1.get(name)
+            same = hashlib.sha1(ours).hexdigest() == table.get(name)
             print('%-13s %s (%d bytes)' % (name, 'identical' if same else 'DIFFERENT', len(ours)))
             bad += not same
             continue

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Compile u5d's C files with Microsoft C 5.1 in a headless DOSBox-X.
 
-    python tools/dosbuild.py [FILE.c ...] [--dosbox PATH] [--log] [--obj DIR]
+    python tools/dosbuild.py [FILE.c ...] [--dosbox PATH] [--log] [--obj DIR] [--target T]
 
 With no files, compiles every file of the DOS build (tools/u5.py, MODULES). The objects
 and their listings (/Fc: source, assembly and code bytes interleaved) are written to
@@ -10,7 +10,8 @@ build/obj/NAME.OBJ and build/obj/NAME.COD, or to the folder given with --obj DIR
 src/ is copied to a scratch drive C: (a new folder under build/dos per run, so builds of
 different files can run at the same time), the compiler in build/msc51 is mounted as
 D:, and one batch file compiles everything in a single DOSBox-X session. Each file gets
-the switches of src/build.bat (u5.CFLAGS, with u5.CFLAGS_BY_FILE for exceptions).
+the switches of src/build.bat (u5.CFLAGS, with u5.CFLAGS_BY_FILE for exceptions), and the
+target's macros (--target 1988 or $U5_TARGET=1988: /DRELEASE_1988; tools/u5.py, TARGETS).
 """
 import argparse, os, shutil, subprocess, sys, tempfile
 
@@ -96,7 +97,7 @@ def compile_files(files, dosbox=None, flags=None, show_log=False, src=None, quie
              r'set TMP=C:\TMP', r'cd \S', r'echo. > C:\BUILD.LOG']
     for f in files:
         dos_name(f)
-        opts = flags or u5.CFLAGS_BY_FILE.get(f, u5.CFLAGS)
+        opts = (flags or u5.CFLAGS_BY_FILE.get(f, u5.CFLAGS)) + u5.target_defines()
         lines.append(r'echo ==== %s >> C:\BUILD.LOG' % f)
         lines.append(r'CL %s /c /Fc %s >> C:\BUILD.LOG' % (opts, f))
     open(os.path.join(DOS, 'BUILD.BAT'), 'w', newline='').write('\r\n'.join(lines) + '\r\n')
@@ -145,6 +146,19 @@ def compile_files(files, dosbox=None, flags=None, show_log=False, src=None, quie
     return results
 
 
+def compile_patch_base(files, dosbox=None, quiet=True):
+    """For a target that is another's link patched afterwards (u5.PATCH_OF: gog), compile
+    the files of the list that build differently by target (u5.target_dependent) for that
+    other target too, into its folder (u5.patch_base_obj(): build/obj-1988 beside build/obj),
+    where tools/u5link.py takes them for the EXE checksum. Returns {file: [error lines]}."""
+    base, folder = u5.PATCH_OF.get(u5.TARGET), u5.patch_base_obj()
+    todo = [f for f in files if base and u5.target_dependent(os.path.join(u5.SRC, f))]
+    if not todo:
+        return {}
+    with u5.building(base, folder):
+        return compile_files(todo, dosbox, quiet=quiet)
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('files', nargs='*')
@@ -152,10 +166,13 @@ def main():
     ap.add_argument('--flags', help='override the compiler switches for every file')
     ap.add_argument('--log', action='store_true', help='print the compiler output')
     ap.add_argument('--obj', metavar='DIR', help='write the objects and listings here (default $U5_OBJ, else build/obj)')
+    u5.add_target_argument(ap)
     a = ap.parse_args()
+    u5.set_target(a.target)
     u5.set_obj(a.obj)
     files = [os.path.basename(f) for f in a.files] or sorted(u5.MODULES)
     res = compile_files(files, a.dosbox, a.flags, a.log)
+    compile_patch_base(files, a.dosbox)
     if any(res.get(f) for f in files):
         sys.exit(1)
 

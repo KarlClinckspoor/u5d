@@ -9,11 +9,12 @@
 # exe: ULTIMA.EXE. image is the length of the resident image (the file after its
 # header). The other fields are PLINK86's own, read from the original's header: the
 # relocation table starts at fixed (the header's length before it), the word at 1c
-# is word1c, SS is stackgap paragraphs past the end of the image and SP is sp (the
-# start-up code's stack), and checksum is the word at 12 (not the MZ checksum; what
-# PLINK86 summed is not known). Sizes, relocation count and table, header length,
-# minimum allocation and entry point are the linker's rules.
-exe      image=86f0 fixed=1e word1c=0001 stackgap=0100 sp=0064 checksum=7e39
+# is word1c, and SS is stackgap paragraphs past the end of the image and SP is sp
+# (the stack of Origin's wrapper, PLSTART, which took the entry point). Sizes,
+# relocation count and table, header length, minimum allocation, entry point and the
+# checksum (PLINK86's MZ checksum of the program without the wrapper) are the
+# linker's rules.
+exe      image=86f0 fixed=1e word1c=0001 stackgap=0100 sp=0064
 
 # dgroup: DATA.OVL is a header of this length (the far pointers in DGROUP, then zeros)
 # and DGROUP, size bytes from DS:0000.
@@ -90,8 +91,9 @@ object   R1FA0    code=1fa0
 object   A2056    code=2056 _DATA=5420
 object   R216C    code=216c
 object   A2192    code=2192 _DATA=5450
-object   R2320    code=2320
-object   A2322    code=2322 _DATA=545e
+object   R2320    code=2320 target=gog
+object   A2322    code=2322 _DATA=545e target=gog
+object   R2320    code=2320 _DATA=545e target=1988
 object   R251E    code=251e
 object   R256E    code=256e CONST=a0e0
 object   2000     code=266c _DATA=54b6
@@ -118,7 +120,7 @@ object   DUNGEONB code=DUNGEON:104c _DATA=2de8 CONST=6bb0
 object   INTRO0   code=INTRO:0010
 object   INTRO    code=INTRO:014e _DATA=2f30
 object   INTRO2   code=INTRO:0986 _DATA=3182
-object   AINTRO2  code=INTRO:132a _DATA=3345
+object   AINTRO2  code=INTRO:132a _DATA=3345 target=gog
 object   INTROB   code=INTRO:1e22 _DATA=3656 CONST=6cf8
 object   AINTRO   code=INTRO:2090
 object   AFLAMES  code=FLAMES:0000

@@ -1,14 +1,18 @@
 #!/usr/bin/env python3
 """Assemble the assembly modules (src/asm/*.ASM) with MASM 4.0 in DOSBox-X, and check them.
 
-    python tools/asmbuild.py [NAME.ASM ...]      assemble (default: all) and compare
+    python tools/asmbuild.py [NAME.ASM ...] [--target T]    assemble (default: all) and compare
 
 Each module's first line says which range of the original it is: "ULTIMA.EXE CS:xxxx-yyyy" for
 the resident image, or "NAME.OVL xxxx-yyyy" (offsets in the .OVL file, as in u5d's names) for an assembly part of
-an overlay. Its _TEXT is compared with those bytes, fixups masked.
+an overlay. Its _TEXT is compared with those bytes, fixups masked, in the target's game files
+(--target, else $U5_TARGET, else gog). The target's macros are defined (MASM /DRELEASE_1988
+for 1988), and the objects go to the target's folder (build/obj, build/obj-1988, or $U5_OBJ).
+For the gog target, the modules that differ by target (IFDEF RELEASE_1988) are also assembled
+for 1988, into build/obj-1988: tools/u5link.py takes the EXE checksum from that link.
 MASM 4.0 (MASM.EXE, from the sibling U1 project or your own copy) is expected in build/masm.
 """
-import argparse, glob, os, re, shutil, subprocess, sys, tempfile
+import argparse, os, re, shutil, subprocess, sys, tempfile
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import omf  # noqa: E402
@@ -28,7 +32,7 @@ def assemble_many(paths, dosbox=None):
     for p in paths:
         n = os.path.splitext(os.path.basename(p))[0].upper()
         shutil.copy(p, os.path.join(d, n + '.ASM'))
-        lines.append('D:\\MASM /Mx %s.ASM,%s.OBJ,%s.LST; > %s.LOG' % (n, n, n, n))
+        lines.append('D:\\MASM /Mx%s %s.ASM,%s.OBJ,%s.LST; > %s.LOG' % (u5.target_defines(), n, n, n, n))
     open(os.path.join(d, 'B.BAT'), 'w', newline='').write('\r\n'.join(lines) + '\r\n')
     conf = os.path.join(d, 'c.conf')
     open(conf, 'w').write('[sdl]\noutput=surface\n[cpu]\ncycles=max\n[log]\nlogfile=\n[autoexec]\n'
@@ -85,12 +89,26 @@ def original_bytes(gamedata, place):
     return u5.read_file(gamedata, ovl + '.OVL')[a:b]     # file offsets, as u5d's names
 
 
+def assemble_patch_base(paths, dosbox=None):
+    """For a target that is another's link patched afterwards (u5.PATCH_OF: gog), assemble
+    the modules of the list that differ by target for that other target too, into its folder
+    (u5.patch_base_obj(): build/obj-1988 beside build/obj), where tools/u5link.py takes them
+    for the EXE checksum. Returns {path: (Object or None, log)}."""
+    base = u5.PATCH_OF.get(u5.TARGET)
+    todo = [p for p in paths if base and u5.target_dependent(p) and p in u5.asm_modules(base)]
+    if not todo:
+        return {}
+    with u5.building(base, u5.patch_base_obj()):
+        return assemble_many(todo, dosbox)
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('files', nargs='*')
+    u5.add_target_argument(ap)
     a = ap.parse_args()
-    paths = [p if os.path.exists(p) else os.path.join(u5.SRC, 'asm', p) for p in a.files] or \
-        sorted(glob.glob(os.path.join(u5.SRC, 'asm', '*.ASM')))
+    u5.set_target(a.target)
+    paths = [p if os.path.exists(p) else os.path.join(u5.SRC, 'asm', p) for p in a.files] or u5.asm_modules()
     gd = u5.find_gamedata()
     bad = 0
     for p, (obj, log) in assemble_many(paths).items():
@@ -108,6 +126,14 @@ def main():
         print('%-14s %-22s %5d bytes  %s' % (os.path.basename(p), where, len(orig),
                                                     'identical' if same else '%d differ, length %d' % (len(diffs), seg.length)))
         bad += not same
+    extra = assemble_patch_base(paths)
+    if extra:
+        failed = [os.path.basename(p) for p, (o, log) in extra.items() if o is None]
+        print('also assembled for %s (the EXE checksum, tools/u5link.py) into %s: %s%s' % (
+            u5.TARGET_TITLE[u5.PATCH_OF[u5.TARGET]], os.path.relpath(u5.patch_base_obj(), u5.ROOT),
+            ' '.join(sorted(os.path.basename(p) for p in extra)),
+            '; MASM failed: ' + ' '.join(failed) if failed else ''))
+        bad += len(failed)
     sys.exit(1 if bad else 0)
 
 

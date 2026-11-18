@@ -1,5 +1,12 @@
 ; PLSTART.ASM: ULTIMA.EXE CS:81d0-86f0, hand-written assembly in the original.
 ; Drafted from the original bytes by tools/asmgen.py and checked by tools/asmbuild.py.
+; This is Origin's copy-protection wrapper, not PLINK86's: it was appended to the linked
+; program and took the entry point (081d:0000). The linked program starts at PLINK86's
+; start-up, PLMGR's PLINK_START (072e:0322), with the stack after DGROUP (1b38:0800).
+; The releases differ in the first 35 bytes (81d0-81f3, IFDEF RELEASE_1988 below): the
+; 1988 file enters the wrapper (a jump over its variables, then a call into it); the January
+; 1992 patch (the GOG release) put a stub there that sets that stack and returns to
+; PLINK_START, so the rest of the wrapper is never run. The rest is the same in both.
 
 	TITLE	PLSTART
 PLSTART_TEXT	SEGMENT  PARA PUBLIC 'CODE'
@@ -16,6 +23,22 @@ DGROUP	GROUP	CONST, _BSS, _DATA
 
 PLSTART_TEXT	SEGMENT
 L_81d0:
+IFDEF RELEASE_1988
+; 1988: into the wrapper, past its variables
+	jmp	SHORT L_81dc
+	db	000h, 000h, 000h, 012h, 000h
+L_81d7:
+	db	0eah, 000h, 000h, 000h, 000h	; jmp 0:0 (the wrapper's way out)
+L_81dc:
+	pushf
+	push ax
+	push cx
+	call	L_83e0
+	db	0c2h, 0dah, 050h, 017h, 052h, 01fh, 052h, 007h
+	db	068h, 0c5h, 011h, 0fdh, 0e0h, 0deh, 0a1h, 0cch
+	db	056h
+ELSE
+; 1992 patch (GOG): SS:SP = (load + 1b38):0800, return to PLINK_START (load + 072e):0322
 	mov ax,ds
 	mov es,ax
 	add ax,1b48h
@@ -34,6 +57,7 @@ L_81d7:
 	db	089h, 0c6h	; mov si,ax
 	db	089h, 0c7h	; mov di,ax
 	db	0cbh	; retf
+ENDIF
 	db	00ch, 034h, 099h, 0dch, 05ch, 020h, 0dch, 0a8h
 	db	0dfh, 035h, 01bh, 0dch, 035h, 0aeh, 0ddh, 06eh
 	db	0dch, 034h

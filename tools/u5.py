@@ -4,7 +4,12 @@ Every number here was measured from the GOG release of Ultima V (see docs/MATCHI
 "The layout of the binary"). tools/layout.py --check re-derives them from the game files.
 Where each module's code and data go is in the link script (src/u5d.lnk), which
 tools/linkscript.py measures and tools/u5link.py links from.
+
+u5d builds two releases, chosen by the target (TARGETS below): the GOG release (the default)
+and the October 1988 release it was patched from.
 """
+import contextlib
+import glob
 import os
 import re
 import shutil
@@ -14,13 +19,59 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 BUILD = os.path.join(ROOT, 'build')
 MSC51 = os.path.join(BUILD, 'msc51')
+
+# The releases u5d builds, chosen by the target: a tool's --target, else $U5_TARGET, else gog.
+#   gog    the GOG release: Origin's October 1988 link of v1.16 as patched in January 1992
+#          (ULTIMA.EXE: the entry of PLSTART, ULTIMA_2322 and one byte of A1EAC; INTRO.OVL:
+#          INTRO_132a). The default.
+#   1988   the October 1988 release, v1.16 720K (the files are kept as ../gamedata-1988).
+# The two differ only in ULTIMA.EXE and INTRO.OVL. A target's sources are compiled and
+# assembled with its macros defined (CL and MASM /DRELEASE_1988 for 1988, none for gog): the
+# parts that differ are `#if defined(RELEASE_1988)` in C (ULTIMA_2322 in r2320.c, INTRO_132a
+# in intro2.c: 1.16's C, compiler output in 1988), `IFDEF RELEASE_1988` in assembly (PLSTART's
+# first 35 bytes, one byte of A1EAC).
+TARGETS = ('gog', '1988')
+DEFAULT_TARGET = 'gog'
+TARGET_TITLE = {'gog': 'the GOG release', '1988': 'the 1988 release'}
+TARGET_DEFINES = {'gog': (), '1988': ('RELEASE_1988',)}
+# the folder of a target's game files, in this repository or beside it (find_gamedata)
+GAMEDATA_DIR = {'gog': 'gamedata', '1988': 'gamedata-1988'}
+# A target whose files are another target's link patched afterwards. The patch did not write
+# the EXE checksum again, so the checksum is the other target's link's (tools/u5link.py): the
+# GOG target's build also builds the 1988 form of the modules that differ, for it.
+PATCH_OF = {'gog': '1988'}
+# Assembly modules a target leaves out, because C stands for them there: the 1988 target
+# compiles ULTIMA_2322 (with D_545e and r2320.c's strings) from src/r2320.c and INTRO_132a
+# (with its strings) from src/intro2.c; A2322.ASM and AINTRO2.ASM are the 1992 patch's bytes.
+# The link script's lines for them carry target=gog (tools/linkscript.py).
+ASM_EXCLUDED = {'gog': (), '1988': ('A2322', 'AINTRO2')}
+
+
+def _target(t):
+    t = t or DEFAULT_TARGET
+    if t not in TARGETS:
+        raise SystemExit('unknown target %r (U5_TARGET or --target): one of %s' % (t, ', '.join(TARGETS)))
+    return t
+
+
+TARGET = _target(os.environ.get('U5_TARGET'))
+
 # Where the sources are read, and where the objects (NAME.OBJ, NAME.COD) are written and read.
 # $U5_SRC and $U5_OBJ (or --obj DIR of dosbuild.py and match.py) name private folders, so
 # that several workers can compile and compare at the same time (docs/MATCHING.md, "Working
 # in parallel"). The tools read u5.SRC and u5.OBJ when they use them, not when they start.
+# Each target has its own object folder: build/obj for gog, build/obj-1988 for 1988.
 DEFAULT_OBJ = os.path.join(BUILD, 'obj')
 SRC = os.path.abspath(os.environ.get('U5_SRC') or os.path.join(ROOT, 'src'))
-OBJ = os.path.abspath(os.environ.get('U5_OBJ') or DEFAULT_OBJ)
+
+
+def default_obj(target=None):
+    """The shared object folder of a target: build/obj (gog), build/obj-1988 (1988)."""
+    target = target or TARGET
+    return DEFAULT_OBJ if target == DEFAULT_TARGET else DEFAULT_OBJ + '-' + target
+
+
+OBJ = os.path.abspath(os.environ.get('U5_OBJ') or default_obj())
 
 
 def set_obj(path):
@@ -31,11 +82,94 @@ def set_obj(path):
         os.environ['U5_OBJ'] = OBJ
 
 
+def set_target(target):
+    """Build and compare target, in this process and the ones it starts. The object folder
+    becomes the target's own, unless one was named ($U5_OBJ, set_obj)."""
+    global TARGET, OBJ
+    if target:
+        TARGET = _target(target)
+        os.environ['U5_TARGET'] = TARGET
+        if not os.environ.get('U5_OBJ'):
+            OBJ = os.path.abspath(default_obj())
+
+
+@contextlib.contextmanager
+def building(target, obj):
+    """Within the block, the tools in this process build target into the folder obj (the
+    variables only: processes started inside inherit the outer ones)."""
+    global TARGET, OBJ
+    old = TARGET, OBJ
+    TARGET, OBJ = _target(target), os.path.abspath(obj)
+    try:
+        yield
+    finally:
+        TARGET, OBJ = old
+
+
+def add_target_argument(ap):
+    """--target for a tool's argparse parser (apply it with set_target(a.target))."""
+    ap.add_argument('--target', choices=TARGETS,
+                    help='the release to build and compare: gog (the default, else $U5_TARGET) or 1988')
+
+
+def target_defines(target=None):
+    """The compiler and assembler switches of a target: ' /DRELEASE_1988' or ''."""
+    return ''.join(' /D' + d for d in TARGET_DEFINES[target or TARGET])
+
+
+def patch_base_obj():
+    """For a target that is another's link patched afterwards (PATCH_OF): the folder of that
+    other target's objects, where the build puts the other form of the modules that differ:
+    build/obj-1988 beside build/obj, DIR-1988 beside a private DIR. None for other targets."""
+    base = PATCH_OF.get(TARGET)
+    if not base:
+        return None
+    if os.path.normcase(OBJ) == os.path.normcase(os.path.abspath(default_obj())):
+        return os.path.abspath(default_obj(base))
+    return OBJ + '-' + base
+
+
+def mentions_target_macro(path):
+    """Whether a source file uses a target's macro (RELEASE_1988): in a preprocessor line of
+    C (#if, #elif, ...), in assembly outside a comment (IFDEF ...). Comments do not count."""
+    lines = open(path, encoding='latin-1').read().splitlines()
+    if path.upper().endswith('.ASM'):
+        lines = [l.split(';')[0] for l in lines]
+    else:
+        lines = [l for l in lines if l.lstrip().startswith('#')]
+    macros = [d for t in TARGETS for d in TARGET_DEFINES[t]]
+    return any(re.search(r'\b%s\b' % d, l) for l in lines for d in macros)
+
+
+def target_dependent(path):
+    """Whether a source builds differently by target: it uses a target's macro, or (a C file)
+    some header in src/ does. Every other source gives the same object for every target."""
+    if mentions_target_macro(path):
+        return True
+    if path.lower().endswith('.c'):
+        return any(mentions_target_macro(h) for h in glob.glob(os.path.join(SRC, '**', '*.h'), recursive=True))
+    return False
+
+
+def asm_modules(target=None):
+    """The assembly modules of a target's build (src/asm/*.ASM, less ASM_EXCLUDED)."""
+    out = sorted(glob.glob(os.path.join(SRC, 'asm', '*.ASM')))
+    return [p for p in out if os.path.splitext(os.path.basename(p))[0].upper() not in ASM_EXCLUDED[target or TARGET]]
+
+
+def target_dependent_objects(target=None):
+    """The names of the objects (C and assembly) that a target builds differently."""
+    out = {os.path.splitext(os.path.basename(p))[0].upper() for p in asm_modules(target) if target_dependent(p)}
+    out |= {os.path.splitext(f)[0].upper() for f in MODULES if target_dependent(os.path.join(SRC, f))}
+    return out
+
+
 def status_path():
-    """match.py's status file: build/match/status.tsv for the shared object folder, and
-    status.tsv inside a private object folder (a private run never writes the shared one)."""
-    if os.path.normcase(OBJ) == os.path.normcase(DEFAULT_OBJ):
-        return os.path.join(BUILD, 'match', 'status.tsv')
+    """match.py's status file: build/match/status.tsv for the shared object folder (gog),
+    build/match/status-1988.tsv for the 1988 target's, and status.tsv inside a private
+    object folder (a private run never writes the shared one)."""
+    if os.path.normcase(OBJ) == os.path.normcase(os.path.abspath(default_obj())):
+        return os.path.join(BUILD, 'match', 'status.tsv' if TARGET == DEFAULT_TARGET else 'status-%s.tsv' % TARGET)
     return os.path.join(OBJ, 'status.tsv')
 
 
@@ -143,6 +277,12 @@ for _o in ('DUNGEON', 'MAINOUT', 'INTRO', 'OUTSUBS', 'CMDS', 'CAST'):
 # relocation tables have its words in that order (tools/u5link.py, relocation_order).
 OBJECT_PARTS = [('R2320', 'A2322', 'R251E'), ('INTRO2', 'AINTRO2'), ('AFONT0', 'FONT')]
 
+
+def object_parts(target=None):
+    """OBJECT_PARTS for a target: without the assembly modules it leaves out (ASM_EXCLUDED)."""
+    ex = ASM_EXCLUDED[target or TARGET]
+    return [tuple(n for n in g if n not in ex) for g in OBJECT_PARTS]
+
 # A second name for a place that another name defines, as a linker's DEFINE gives. The
 # original reaches the overworld map through a name of its own for DS:6608 (vars.h); which
 # object defined it is not known.
@@ -238,6 +378,18 @@ GOG_SHA1 = {
     'TOWN.OVL': 'fdfed52705b7aa6efc2a89a5b2628f3537292372',
     'ZSTATS.OVL': '94a03813bcb563ccde005d1a09cb67b5e75ea684',
 }
+# SHA-1 of the 1988 release's files (v1.16 720K, October 1988): GOG's but for the two files
+# the 1992 patch changed.
+SHA1_1988 = dict(GOG_SHA1, **{
+    'ULTIMA.EXE': '0633077be971894b28e320917e6a48b2d40a8b87',
+    'INTRO.OVL': '9007ce6ed8377570ec9f22eeecf5a7ee6bcd325f',
+})
+RELEASE_SHA1 = {'gog': GOG_SHA1, '1988': SHA1_1988}
+
+
+def release_sha1(target=None):
+    """{file name: SHA-1} of a target's 25 files."""
+    return RELEASE_SHA1[target or TARGET]
 
 
 def ds_image(gamedata):
@@ -254,21 +406,24 @@ def overlay_stubs(img):
     return out
 
 
-def find_gamedata(given=None, required=True):
-    """The folder of the GOG release's files: the one given, else $U5_GAMEDATA, else
-    gamedata/ here or beside the checkout. A folder that is named (given or $U5_GAMEDATA) is
-    the only one looked in. The files are needed to compare with and to measure from
-    (tools/match.py, tools/linkscript.py, ...), not to build: with required=False the answer
-    is None when they are not found."""
-    named = given or os.environ.get('U5_GAMEDATA')
-    for p in ([named] if named else [os.path.join(ROOT, 'gamedata'), os.path.join(ROOT, '..', 'gamedata')]):
+def find_gamedata(given=None, required=True, target=None):
+    """The folder of the target's game files: the one given, else $U5_GAMEDATA_GOG or
+    $U5_GAMEDATA_1988 (the target's own), else $U5_GAMEDATA, else gamedata/ (gog) or
+    gamedata-1988/ (1988) here or beside the checkout. A folder that is named (given or by
+    a variable) is the only one looked in. The files are needed to compare with and to measure
+    from (tools/match.py, tools/linkscript.py, ...), not to build: with required=False the
+    answer is None when they are not found."""
+    target = target or TARGET
+    named = given or os.environ.get('U5_GAMEDATA_' + target.upper()) or os.environ.get('U5_GAMEDATA')
+    d = GAMEDATA_DIR[target]
+    for p in ([named] if named else [os.path.join(ROOT, d), os.path.join(ROOT, '..', d)]):
         if os.path.exists(os.path.join(p, 'ULTIMA.EXE')):
             return os.path.abspath(p)
     if not required:
         return None
     raise SystemExit('the game files were not found%s: pass --gamedata DIR or set U5_GAMEDATA '
-                     '(a folder holding ULTIMA.EXE and the .OVL files of the GOG release)'
-                     % (' in %s' % named if named else ''))
+                     '(a folder holding ULTIMA.EXE and the .OVL files of %s)'
+                     % (' in %s' % named if named else '', TARGET_TITLE[target]))
 
 
 def find_dosbox(given=None):
