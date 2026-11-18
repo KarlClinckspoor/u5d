@@ -39,7 +39,7 @@ int CAST_0000(int param_1)
 static void CAST_0032(int param_1)
 {
     D_589d_attackWeapon = param_1;
-    COMSUBS_0c52(D_589e_curCombatant, param_1);
+    COMSUBS_0c52_AttackWith(D_589e_curCombatant, param_1);
 }
 
 static int CAST_004c(int param_1)
@@ -69,7 +69,7 @@ static int CAST_004c(int param_1)
     else
     {
         D_589d_attackWeapon = D_4592[param_1];
-        COMSUBS_0c52(D_589e_curCombatant, D_589d_attackWeapon);
+        COMSUBS_0c52_AttackWith(D_589e_curCombatant, D_589d_attackWeapon);
         local_8 = -1;
     }
 
@@ -314,7 +314,7 @@ static void CAST_043e_AnCorpXen(void)
         if (CAST_0000(local_6_p) == 0 && (local_4->flags & (COMBAT_FLAGS_PLAYER | COMBAT_FLAGS_MONSTER)) == COMBAT_FLAGS_MONSTER &&
             ((byte)D_153c_enemyFlags[local_4->entityIdx] & ENEMY_FLAG_UNDEAD) != 0)
         {
-            if (COMSUBS_0000(D_589e_curCombatant, local_6_p, 0) == 0)
+            if (COMSUBS_0000_TargetResists(D_589e_curCombatant, local_6_p, 0) == 0)
             {
                 local_4->hp = 1;
                 local_4->flags |= COMBAT_FLAGS_2;
@@ -644,7 +644,7 @@ static void CAST_091e_InPorVasYlem(int param_1)
                 {
                     ULTIMA_3564_HitEffectOnActor(local_4);
                     ULTIMA_3f14_IncreaseInt(&D_55a8_party[param_1].exp, COMBAT_1574(local_4, ULTIMA_2092_RandomRange(1, 0x14)), 9999); // FMT: &local_8 ??
-                    COMSUBS_0312(local_4, D_589e_curCombatant);
+                    COMSUBS_0312_ReportHit(local_4, D_589e_curCombatant);
                 }
             }
         }
@@ -656,7 +656,7 @@ static int CAST_09a0_AnExXen(void)
     int local_4;
 
     ULTIMA_1850_PrintString(_TEXT(0x45bb, "Creature: "));
-    if (COMSUBS_0504(D_589e_curCombatant, 0xf) == 0)
+    if (COMSUBS_0504_AimCrosshair(D_589e_curCombatant, 0xf) == 0)
     {
         return -1;
     }
@@ -668,10 +668,10 @@ static int CAST_09a0_AnExXen(void)
         return 0;
     }
 
-    local_4 = COMSUBS_0748(D_5899_crosshairX, D_589a_crosshairY);
+    local_4 = COMSUBS_0748_CombatantAt(D_5899_crosshairX, D_589a_crosshairY);
     if (local_4 >= 0)
     {
-        if (CAST_0000(local_4) == 0 && ULTIMA_5646_IsEnemy(local_4) != 0 && COMSUBS_0000(D_589e_curCombatant, local_4, 0) == 0)
+        if (CAST_0000(local_4) == 0 && ULTIMA_5646_IsEnemy(local_4) != 0 && COMSUBS_0000_TargetResists(D_589e_curCombatant, local_4, 0) == 0)
         {
             D_ba14_combatants[local_4].flags ^= COMBAT_FLAGS_CHARMED;
             if ((D_ba14_combatants[local_4].flags & COMBAT_FLAGS_PLAYER) != 0)
@@ -697,20 +697,20 @@ static int CAST_0a5c_BetRelXen(void)
     int local_4_ab;
 
     ULTIMA_1850_PrintString(_TEXT(0x45d1, "Creature: "));
-    if (COMSUBS_0504(D_589e_curCombatant, 0xf) == 0)
+    if (COMSUBS_0504_AimCrosshair(D_589e_curCombatant, 0xf) == 0)
     {
         return -1;
     }
 
     // 0a82
     CAST2_0000_CastEffect(6);
-    local_4_ab = COMSUBS_0748(D_5899_crosshairX, D_589a_crosshairY);
+    local_4_ab = COMSUBS_0748_CombatantAt(D_5899_crosshairX, D_589a_crosshairY);
     if (local_4_ab < 0)
     {
         return 0;
     }
 
-    if (CAST_0000(local_4_ab) == 0 && COMSUBS_0000(D_589e_curCombatant, local_4_ab, 0) == 0)
+    if (CAST_0000(local_4_ab) == 0 && COMSUBS_0000_TargetResists(D_589e_curCombatant, local_4_ab, 0) == 0)
     {
         local_6 = D_ba14_combatants[local_4_ab].x;
         local_8 = D_ba14_combatants[local_4_ab].y;
@@ -739,13 +739,13 @@ static int CAST_0b28_InQuasXen(void)
     int local_4_ab;
 
     ULTIMA_1850_PrintString(_TEXT(0x45dc, "Creature: "));
-    if (COMSUBS_0504(D_589e_curCombatant, 0xf) == 0)
+    if (COMSUBS_0504_AimCrosshair(D_589e_curCombatant, 0xf) == 0)
     {
         return -1;
     }
 
     CAST2_0000_CastEffect(7);
-    local_6 = COMSUBS_0748(D_5899_crosshairX, D_589a_crosshairY);
+    local_6 = COMSUBS_0748_CombatantAt(D_5899_crosshairX, D_589a_crosshairY);
     if (local_6 < 0)
     {
         local_8 = 0;
@@ -817,7 +817,7 @@ static void CAST_0c98_CorpInQuas(void)
         {
             if (CAST_0000(local_6_p) == 0)
             {
-                if (COMSUBS_0000(D_589e_curCombatant, local_6_p, 0) == 0)
+                if (COMSUBS_0000_TargetResists(D_589e_curCombatant, local_6_p, 0) == 0)
                 {
                     local_4->hp = 1;
                     local_4->flags |= COMBAT_FLAGS_2;

@@ -146,7 +146,7 @@ static void MAINOUT_1168(int param_1, int param_2, int param_3)
 
     local_6 = D_5c5a_actors[param_1].x - D_5896_mapX + 5;
     local_8 = D_5c5a_actors[param_1].y - D_5897_mapY + 5;
-    local_4_ab = COMSUBS_12de(local_6, local_8, 5, 5, 1);
+    local_4_ab = COMSUBS_12de_FlyMissile(local_6, local_8, 5, 5, 1);
     if (local_4_ab != 0)
     {
         ULTIMA_5910_UpdateFrame();
@@ -254,7 +254,7 @@ static int MAINOUT_131a(int param_1)
             local_a = D_5c5a_actors[param_1].x - D_5896_mapX + 5;
             local_e_am = D_5c5a_actors[param_1].y - D_5897_mapY + 5;
 
-            local_4_ab = COMSUBS_12de(local_a, local_e_am, 5, 5, 3);
+            local_4_ab = COMSUBS_12de_FlyMissile(local_a, local_e_am, 5, 5, 3);
             if (local_4_ab != 0)
             {
                 ULTIMA_3522_HitEffectAt(D_5896_mapX, D_5897_mapY);

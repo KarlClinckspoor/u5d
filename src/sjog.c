@@ -2222,7 +2222,7 @@ int SJOG_1f7a_CombatSetActivePlayer(int param_1)
 void SJOG_2012(void)
 {
     ULTIMA_6794_ApplyRing(D_589e_curCombatant);
-    COMSUBS_0056();
+    COMSUBS_0056_FadeFields();
 
     if (D_588e_protectTurns != 0 && D_588e_protectTurns != 0xff)
     {

@@ -810,7 +810,7 @@ STUB u8 D_6aa8[0x24];
 // a500
 
 // DS:a524-a9bc is the modules' _BSS, their static variables, in link order: D_a524 (mainout.c),
-// D_a526 and D_a527 (mainoutb.c), D_a528 and D_a628 (dnglook.c), D_a728 and D_a872 (comsubs.c).
+// D_a526 and D_a527 (mainoutb.c), D_a528 and D_a628 (dnglook.c), D_a728_pathXs and D_a872_pathYs (comsubs.c).
 
 // a900
 

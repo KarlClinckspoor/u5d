@@ -678,7 +678,7 @@ static void CMDS_0962(void)
 
                     local_8 = D_5c5a_actors[local_6].x - D_5896_mapX + 5;
                     local_a = D_5c5a_actors[local_6].y - D_5897_mapY + 5;
-                    local_4_ab = COMSUBS_12de(5, 5, local_8, local_a, 1);
+                    local_4_ab = COMSUBS_12de_FlyMissile(5, 5, local_8, local_a, 1);
                     if (local_4_ab != 0)
                     {
                         ULTIMA_5910_UpdateFrame();
@@ -698,7 +698,7 @@ static void CMDS_0962(void)
 
             local_8 = local_10_ad * 3 + 5;
             local_a = local_14 * 3 + 5;
-            COMSUBS_12de(5, 5, local_8, local_a, 1);
+            COMSUBS_12de_FlyMissile(5, 5, local_8, local_a, 1);
         }
     }
 }
@@ -829,7 +829,7 @@ void CMDS_0aea_FireCmd(void)
         }
     }
 
-    COMSUBS_12de(local_8, local_c, local_e, local_12_ab, 1);
+    COMSUBS_12de_FlyMissile(local_8, local_c, local_e, local_12_ab, 1);
     if (local_4_ab || local_1a_ac)
     {
         ULTIMA_3522_HitEffectAt(local_14, local_1c_aa);

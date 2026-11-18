@@ -261,11 +261,11 @@ void CAST_1f60(int param_1, int param_2, int param_3)
                     {
                     case 1:
                         // e012
-                        if (COMSUBS_0000(param_1, local_108a, 0) == 0 && CAST_0000(local_108a) == 0)
+                        if (COMSUBS_0000_TargetResists(param_1, local_108a, 0) == 0 && CAST_0000(local_108a) == 0)
                         {
                             ULTIMA_3564_HitEffectOnActor(local_108a);
                             ULTIMA_68ae_PutToSleep(local_108a);
-                            COMSUBS_0312(local_108a, param_1); // -> e034 -> e0b2
+                            COMSUBS_0312_ReportHit(local_108a, param_1); // -> e034 -> e0b2
                         }
 
                         break;
@@ -276,7 +276,7 @@ void CAST_1f60(int param_1, int param_2, int param_3)
                         {
                             ULTIMA_3564_HitEffectOnActor(local_108a);
                             COMBAT_18ba(local_108a, param_1);
-                            COMSUBS_0312(local_108a, param_1); // -> e034 -> e0b2
+                            COMSUBS_0312_ReportHit(local_108a, param_1); // -> e034 -> e0b2
                         }
 
                         break;
@@ -286,17 +286,17 @@ void CAST_1f60(int param_1, int param_2, int param_3)
                         ULTIMA_3564_HitEffectOnActor(local_108a);
 
                         ULTIMA_3f14_IncreaseInt(&local_104c->exp, COMBAT_1574(local_108a, ULTIMA_3aae_Random(0x1e)), 9999);
-                        COMSUBS_0312(local_108a, param_1); // -> e034 -> e0b2
+                        COMSUBS_0312_ReportHit(local_108a, param_1); // -> e034 -> e0b2
                         break;
 
                     case 4:
                         // e07e
-                        if (COMSUBS_0000(param_1, local_108a, 0) == 0 && CAST_0000(local_108a) == 0)
+                        if (COMSUBS_0000_TargetResists(param_1, local_108a, 0) == 0 && CAST_0000(local_108a) == 0)
                         {
                             ULTIMA_3564_HitEffectOnActor(local_108a);
 
                             ULTIMA_3f14_IncreaseInt(&local_104c->exp, COMBAT_1574(local_108a, 99), 9999); // -> e070
-                            COMSUBS_0312(local_108a, param_1); // -> e034 -> e0b2
+                            COMSUBS_0312_ReportHit(local_108a, param_1); // -> e034 -> e0b2
                         }
                         break;
                     }

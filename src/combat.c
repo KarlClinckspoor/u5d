@@ -117,13 +117,13 @@ static int COMBAT_014e(int param_1, int param_2, int param_3)
             local_6 = COMBAT_14d6(param_2, param_1, -(int)D_588f, 0);
         }
 
-        local_8 = COMSUBS_0822(param_1, D_ba14_combatants[param_2].x, D_ba14_combatants[param_2].y, local_6, local_4_ab);
+        local_8 = COMSUBS_0822_ResolveShot(param_1, D_ba14_combatants[param_2].x, D_ba14_combatants[param_2].y, local_6, local_4_ab);
         if (local_8 >= 0)
         {
             ULTIMA_3564_HitEffectOnActor(local_8);
             ULTIMA_16ba_PrintChar('\n');
             COMBAT_194a(local_8, param_1);
-            COMSUBS_0312(local_8, param_1);
+            COMSUBS_0312_ReportHit(local_8, param_1);
         }
 
         return 1;
@@ -154,11 +154,11 @@ static int COMBAT_0226(int param_1)
     if ((D_ba14_combatants[param_1].flags & COMBAT_FLAGS_CHARMED) != 0)
     {
         // 0278
-        if (COMSUBS_04d4(param_1, local_4_ab) == 1)
+        if (COMSUBS_04d4_CombatantDistance(param_1, local_4_ab) == 1)
         {
             // 0286
             D_589d_attackWeapon = 0x21;
-            COMSUBS_0bf8(param_1, local_4_ab, 0x21);
+            COMSUBS_0bf8_MeleeBlow(param_1, local_4_ab, 0x21);
             // -> 035f
         }
         else
@@ -177,14 +177,14 @@ static int COMBAT_0226(int param_1)
         }
 
         // 02df
-        if (COMSUBS_04d4(param_1, local_4_ab) <= D_159c[local_a])
+        if (COMSUBS_04d4_CombatantDistance(param_1, local_4_ab) <= D_159c[local_a])
         {
             if (local_a == 0x1a)
             {
                 D_5c5a_actors[local_8].animState = 0x20;
             }
 
-            if (COMSUBS_04d4(param_1, local_4_ab) == 1)
+            if (COMSUBS_04d4_CombatantDistance(param_1, local_4_ab) == 1)
             {
                 if (local_a == 0x2d)
                 {
@@ -212,7 +212,7 @@ static int COMBAT_0226(int param_1)
                 ULTIMA_3564_HitEffectOnActor(local_4_ab);
                 ULTIMA_16ba_PrintChar('\n');
                 COMBAT_194a(local_4_ab, param_1);
-                COMSUBS_0312(local_4_ab, param_1);
+                COMSUBS_0312_ReportHit(local_4_ab, param_1);
                 return 1;
             }
 
@@ -267,7 +267,7 @@ static void COMBAT_03f4(void)
             }
             else
             {
-                if (COMSUBS_00f4(D_589e_curCombatant) != 0)
+                if (COMSUBS_00f4_MonsterSpecial(D_589e_curCombatant) != 0)
                 {
                     return;
                 }
@@ -501,7 +501,7 @@ static void COMBAT_063e_ProcessCommand(void)
                         case 0x41:
                             /* 'A' Attack */
                             // ab70
-                            COMSUBS_0d96(D_589e_curCombatant, local_c);
+                            COMSUBS_0d96_AttackCmd(D_589e_curCombatant, local_c);
                             break;
 
                         case 0x43: // ok
@@ -511,7 +511,7 @@ static void COMBAT_063e_ProcessCommand(void)
                             local_4_ab = 1;
                             if ((D_ba14_combatants[D_589e_curCombatant].flags & COMBAT_FLAGS_PLAYER) != 0)
                             {
-                                if (COMSUBS_09fc(D_589e_curCombatant) == 0)
+                                if (COMSUBS_09fc_EnemyInterferes(D_589e_curCombatant) == 0)
                                 {
                                     // abab / 091b
                                     D_588f = D_5890 = 1;
@@ -951,7 +951,7 @@ static int COMBAT_0d30(int param_1)
                     }
 
                     // b06b
-                    local_18_ai = COMSUBS_048a(local_6->x, local_6->y, local_c_an->x, local_c_an->y);
+                    local_18_ai = COMSUBS_048a_Distance(local_6->x, local_6->y, local_c_an->x, local_c_an->y);
                     if (local_18_ai < local_4_ab)
                     {
                         local_4_ab = local_18_ai;
@@ -1597,7 +1597,7 @@ int COMBAT_1574(int param_1, int param_2)
         {
             for (local_c = 0; local_c < 8; local_c++)
             {
-                COMSUBS_07d4(local_a->x, local_a->y);
+                COMSUBS_07d4_PickNearbyCell(local_a->x, local_a->y);
 
                 local_10_aq = D_5876_tempX;
                 local_12_a = D_5878_tempY;
@@ -1842,7 +1842,7 @@ static void COMBAT_1b1e(int param_1)
         // 1c14
         ULTIMA_3564_HitEffectOnActor(param_1);
         COMBAT_1574(param_1, ULTIMA_3aae_Random(10));
-        COMSUBS_0312(param_1, 0xff);
+        COMSUBS_0312_ReportHit(param_1, 0xff);
         D_a9fa_vitalsDirty = 1;
         break;
 
