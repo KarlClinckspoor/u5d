@@ -11,7 +11,116 @@ raw outputs are in `research/rules/` (`out_*.txt` are the outputs quoted below).
 - `edge.py`: the pool edge of a probe function (below), for many test modules at once.
 - `kscan.py`, `kall.py`, `nodev.py`: experiments on u5d's own sources (a copy; src/ untouched).
 
-QUESTION1
+## 1. What pass 2's memory counts
+
+### Method
+
+A probe function (20 assignments, then two loops) in a module where everything is controlled.
+Line records inserted after its entry (as `research/c2lines.py` does) fill the pool; at some
+count n, "the edge", the cut reaches the loops and the code changes (n = 349 under 5.1, 457
+under 5.0, for the bare probe). Anything added to the module moves the edge by its cost, in
+pool units (one unit = one line record). Each table is one run of `edge.py` (coarse step 10,
+then step 1); `out_q1_*.txt`.
+
+### Costs (`q1_costs.py`, `q1_more.py`, `q1_infunc.py`, `q1_add.py`; K = 50 of each)
+
+**MSC 5.0 and 5.1 give the same numbers** (`out_q1_costs_50.txt` = `_51.txt` shifted).
+
+| added to the module (before the probe) | cost in units (K = 50) | per item |
+|---|---|---|
+| `extern int x;` declared, not used (L = 4, 12, 28) | 0, 0, 0 | 0 |
+| prototype, not called (L = 4, 28) | 0, 0 | 0 |
+| struct tag, typedef, `#define` (200), comment lines outside bodies | 0 | 0 |
+| extern referenced in an earlier function (L = 4, 12, 28) | 44, 57, 84 | 0.75 + L/30 |
+| function called in an earlier function (L = 4, 28) | 50, 90 | 0.87 + L/30 |
+| `static int x;`, `int x;` or `int x = 1;`, never referenced (L = 4, 28) | 43, 83 | 0.73 + L/30 |
+| the same statics, also referenced | 44, 84 | (referencing adds nothing) |
+| referenced `extern int x[10]` (L = 12) | 64 | 0.89 + L/30 |
+| referenced `extern struct S x` (L = 12) | 57 | as an int |
+| dead reference `if (0) { x = 0; }` (earlier function or the probe) | as a live reference | 0.75 + L/30 |
+| string literal in an earlier function (1, 10 or 60 chars; 50 times the same one) | 45 | 0.9, any length, no merging |
+| an earlier function definition (with 50 statements, 50 comment lines) | 1 | its own name only |
+| references in a function *after* the probe | 0 | (counted from first appearance on) |
+| the probe's own locals: 10 unused (L = 2, 28) | 9, 18 | 0.85 + L/30 |
+| the probe's locals/parameter renamed 1 -> 29 characters | 2, 1 | L/30 |
+| inside the probe, before the cut: comment-only lines | 50 | 1 |
+| inside the probe: 50 dead lines `if (0) { ... }` | 0 | **0** (pass 1 drops their line records) |
+| inside the probe: 50 statements `a1 = n;` | 250 | 5 |
+| inside the probe: 50 lines under `#if 0` | 0 | 0 |
+
+- **Additive**: three groups that cost 57, 44 and 45 alone cost 146 together (`q1_add.py`).
+- **A unit is 30 bytes** (`q1_mem.py`: below about 256 KB free for C2 under 5.1, 400 paragraphs
+  less memory move the edge by 214 units: 6400 / 214 = 29.9 bytes). So the per-item costs are
+  bytes: **a global symbol ≈ 22 + L bytes** (called function ≈ 26 + L, array ≈ 27 + L), a string
+  literal ≈ 27, a local or parameter ≈ 25 + L, a line record 30.
+
+**Formula.** The pool a function's statements get is
+`P(compiler, free memory) - sum over the module's global symbols seen so far (defined anywhere
+above, or referenced, live or dead, in this or an earlier function) of (22 + L) bytes - 27 per
+string literal so far - sum over the function's locals and parameters of (25 + L)`, in 30-byte
+units, and each non-blank, not compiled-out line of the body takes one unit, each statement
+about four more. Declarations that nothing references cost nothing. P is constant above about
+256 KB free (5.1; 249 KB under 5.0, MATCHING.md) and drops 16 bytes per paragraph below.
+
+u5d checks:
+- MATCHING.md's "`D_595a`, which cmds.c only declares" broke CMDS_0000: **refuted as stated** -
+  CMDS_0000 references it, through `GetDungeonMap` (macros.h), twice. With the rule above,
+  declarations alone never count.
+- "28 bytes plus the name" (MATCHING.md, from TOWN_0f02) and "about one reference for 30
+  characters": confirmed and refined (22 + L; 30 bytes = one unit).
+- ULTIMA_1850 needs 123-563 more lines; with K extra defined names of 8 characters at the top of
+  r1850.c it matches for **K = 140 to 520** (`kscan.py r1850.c`, `out_k_r1850.txt`; 120 and 540
+  not): one 8-character symbol = 1.0 unit, as the table says. Confirmed.
+
+### Two different limits, not one
+
+- **ULTIMA_1850 (5.0) is the cut position**: lines, symbols and memory are interchangeable
+  there, and the window is wide.
+- **TOWN_0f02 and CMDS_0000 (5.1) are not**: line records inserted after the entry of the
+  device-free functions (`nodev.py` + `research/c2lines.py`, 0-798 records) never give the
+  original: TOWN_0f02 cycles through three other codes with a period of about 365, CMDS_0000 does not
+  change at all. They react only to symbol bytes, in narrow windows: loop optimization running
+  out of memory, not a cut.
+
+### One explanation for all three devices? No.
+
+A uniform cause (the original's headers defining more names in every module, or less DOS
+memory for C2: both take the same bytes from every function of a module) was scanned on the
+three modules with the devices removed and K extra defined 8-character names at the top
+(`kscan.py`, `out_k_*.txt`):
+
+| module | what matches | what breaks |
+|---|---|---|
+| r1850.c (5.0) | ULTIMA_1850 for K = 140..520 | ULTIMA_1A3E from about 580 |
+| cmds.c (5.1) | CMDS_0000 for K = 70, 80, 120 (static, step 10; 1..59 never); with dead references in CMDS_0000: **K = 64..84 and 118..128** | CMDS_0962 from 160 |
+| town.c (5.1) | TOWN_0f02 at K = 261 only (258, 264 not) | **TOWN_0C78 from K = 35**, TOWN_0408 from 255, TOWN_09E6 from 306 |
+
+town.c alone rules it out: whatever the original had before TOWN_0C78's loops may exceed u5d's
+by at most about 30 units (1 KB), but TOWN_0f02 needs about 260 units (7.5 KB) more than u5d at
+its third loop. Shorter original names cannot help (savings only add up along the file), longer
+ones would need about 7,000 more characters in TOWN_0c78, 0dc4, 0e34 and 0f02. Comment lines in
+TOWN_0f02 are ruled out above. So the original's town.c had about 7.5 KB of pass-2 memory in
+use between TOWN_0c78's loops and TOWN_0f02's poison loop that u5d's has not: in symbols that
+is about 260 more defined or referenced names or string literals there (or that many locals in
+TOWN_0f02). What they were is not known; a data definition or literal block placed in the
+source between those functions would do it. (For 5.1, the memory route is MATCHING.md's
+c2mem result again: exact at 15782-15793 paragraphs but TOWN_0408, 0c78 and 1694 differ.)
+How sure: high for "no uniform cause"; the three scans are direct.
+
+### Proposals
+
+1. **CMDS_0000: dead references instead of short link names.** cmds.c with all 24 readable names
+   (no `#define` list, no `LINK_DEFINES` aliases, no stub aliases) and **74 dead references**
+   `if (0) { Q0000000 = 0; ... }` (8-character `extern int` names, one line, after the
+   declarations of CMDS_0000) gives CMDS_0000 EXACT and every other cmds.c function EXACT; the
+   window is 64..84 (`out_k_cmds_ref.txt`), so names in cmds.c can grow or shrink by about
+   300 characters before it moves, where the short-name device had no room (6 characters broke
+   it). The fill names must stay undefined (as TOWN's `F_xxxx`; the linker sees EXTDEFs without
+   fixups). Not run through the gate here.
+2. **TOWN_0f02: keep the device**; the dead lines cost nothing, only the 245 symbols (≈7.4 KB),
+   so the fill may be written on fewer lines. Moving it to the top of the file breaks TOWN_0C78
+   (K >= 35), which is why it must sit after TOWN_0e34 (in TOWN_0f02 itself, as now).
+3. **ULTIMA_1850: keep the comment lines** (window 123-563 lines, the widest of the three).
 
 ## 2. The order of communal variables (COMDEF records)
 

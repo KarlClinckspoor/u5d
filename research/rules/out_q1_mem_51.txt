@@ -1,0 +1,9 @@
+paras 16400 (256.25 KB): edge 348
+paras 16300 (254.69 KB): edge 338
+paras 16200 (253.12 KB): edge 285
+paras 16100 (251.56 KB): edge 231
+paras 16000 (250.00 KB): edge 178
+paras 15900 (248.44 KB): edge 125
+paras 15800 (246.88 KB): edge 71
+paras 15600 (243.75 KB): edge 3
+paras 15400 (240.62 KB): edge 15
