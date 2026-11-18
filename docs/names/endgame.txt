@@ -1,0 +1,60 @@
+# ENDGAME (endgame.c): the ending. Lord British's thanks in the throne room (the party walks in, the dead are raised, the
+# Avatar is asked about the sandalwood box and the gem), then the six illustrated text screens (END.DAT) and the
+# certificate; or the bad ending. One overlay.
+# functions
+ENDGAME_0000 ENDGAME_0000_ShowEndScreens          # the six illustrated text screens of the ending (END1.16/END2.16, text from END.DAT) and the final ENDSC.16 picture
+ENDGAME_023a ENDGAME_023a_AppendToLine            # adds text to the 39-character line buffer D_bcb2_lineBuf; a line that ends in a newline is printed
+ENDGAME_028c ENDGAME_028c_SpellNumber             # a number from 1 to 99 in words ("Twenty-One")
+ENDGAME_02d6 ENDGAME_02d6_SpellOrdinal            # a number from 1 to 29 as an ordinal ("First", "Twenty-Third")
+ENDGAME_0326 ENDGAME_0326_PrintCertificate        # the certificate: the date, the Avatar's name, the time the quest took (from day 5 of month 4 of year 139); never returns
+ENDGAME_04fe ENDGAME_04fe_StepPause               # the pause and footstep sound of one step
+ENDGAME_0510 ENDGAME_0510_StepActorToward         # moves an actor one cell toward (x, y); 1 while it still moves, 0 when it is there or unused
+ENDGAME_05a2 ENDGAME_05a2_WanderActor             # half the time moves an actor to a random free neighbouring cell (tile 0x44), then waits a frame
+# locals and parameters
+endgame.c:ENDGAME_0000 local_c fontImage          # PROPORT.PCS, the glyph image
+endgame.c:ENDGAME_0000 local_a loadedFile         # the END image file number now loaded
+endgame.c:ENDGAME_0000 local_8 screen
+endgame.c:ENDGAME_0000 local_6 endImage           # END1.16 / END2.16
+endgame.c:ENDGAME_0000 local_4_ab bannerImage     # TEXT.16
+endgame.c:ENDGAME_023a param_1 text
+endgame.c:ENDGAME_028c param_1 number
+endgame.c:ENDGAME_02d6 param_1 number
+endgame.c:ENDGAME_0326 local_10 numberText
+endgame.c:ENDGAME_0326 local_8 months
+endgame.c:ENDGAME_0326 local_6 years
+endgame.c:ENDGAME_0326 local_4_ab days
+endgame.c:ENDGAME_0510 param_1 actorIndex
+endgame.c:ENDGAME_0510 param_2 destX
+endgame.c:ENDGAME_0510 param_3 destY
+endgame.c:ENDGAME_0510 local_6 distX
+endgame.c:ENDGAME_0510 local_4_c actor
+endgame.c:ENDGAME_0510 local_8 moving
+endgame.c:ENDGAME_0510 local_a distY
+endgame.c:ENDGAME_05a2 param_1 actorIndex
+endgame.c:ENDGAME_05a2 local_8 newY
+endgame.c:ENDGAME_05a2 local_6 newX
+endgame.c:ENDGAME_05a2 local_4_c actor
+endgame.c:ENDGAME_05a2 local_a tries
+endgame.c:ENDGAME_0648 local_e_am col
+endgame.c:ENDGAME_0648 local_c index
+endgame.c:ENDGAME_0648 local_a pending
+endgame.c:ENDGAME_0648 local_8 classIndex
+endgame.c:ENDGAME_0648 local_6 actor
+endgame.c:ENDGAME_0648 local_4_ab key
+# globals (used only by endgame.c)
+D_3da6 D_3da6_textLeft          # per screen: left margin of the text in region 0 and region 1 (to D_5146)
+D_3db2 D_3db2_textRight         # per screen: right margin of region 0 and 1 (to D_514c)
+D_3dca D_3dca_textOffset        # per screen: offset of its text in END.DAT
+D_3dd6 D_3dd6_regionTop         # per screen: y where region 1 begins (to D_5150)
+D_3ddc D_3ddc_regionBottom      # per screen: y where region 1 ends (to D_5152)
+D_3de2 D_3de2_startX            # per screen: the text cursor's x (to D_5156)
+D_3de8 D_3de8_startY            # per screen: the text cursor's y (to D_5158)
+D_3dee D_3dee_imageIndex        # per screen: which image of the END picture file is put
+D_3df4 D_3df4_imageFile         # per screen: which END picture file (0 END1.16, 1 END2.16)
+D_3dfa D_3dfa_imageX            # per screen: x of that image
+D_3e00 D_3e00_imageY            # per screen: y of that image
+D_3e06 D_3e06_hasBanner         # per screen: 1 when the TEXT.16 banner images are put first (screens 0 and 3)
+D_3e5a D_3e5a_partyDestX        # where each party member walks to in the throne room
+D_3e60 D_3e60_partyDestY
+D_bcb2 D_bcb2_lineBuf           # the line of text being put together by ENDGAME_023a (39 characters)
+D_bcda D_bcda_lineLen

@@ -336,26 +336,26 @@ STUB u8 D_3d86_healPrices[8];
 STUB u8 D_3d8e_curePrices[8];
 STUB u16 D_3d96_raisePrices[8];
 
-STUB Pair D_3da6[6];
-STUB Pair2 D_3db2[6];
-STUB u16 D_3dca[6];
+STUB Pair D_3da6_textLeft[6];
+STUB Pair2 D_3db2_textRight[6];
+STUB u16 D_3dca_textOffset[6];
 
-STUB u8 D_3dd6[6];
-STUB u8 D_3ddc[6];
-STUB u8 D_3de2[6];
-STUB u8 D_3de8[6];
-STUB u8 D_3dee[6]; // endgame_0000 image idx
-STUB u8 D_3df4[6];
-STUB u8 D_3dfa[6]; // endgame_0000 image x
-STUB u8 D_3e00[6]; // endgame_0000 image y
-STUB u8 D_3e06[6];
+STUB u8 D_3dd6_regionTop[6];
+STUB u8 D_3ddc_regionBottom[6];
+STUB u8 D_3de2_startX[6];
+STUB u8 D_3de8_startY[6];
+STUB u8 D_3dee_imageIndex[6]; // endgame_0000 image idx
+STUB u8 D_3df4_imageFile[6];
+STUB u8 D_3dfa_imageX[6]; // endgame_0000 image x
+STUB u8 D_3e00_imageY[6]; // endgame_0000 image y
+STUB u8 D_3e06_hasBanner[6];
 
 STUB char* D_3e0c[19];
 STUB char* D_3e32[8];
 STUB char* D_3e42[12];
 
-STUB u8 D_3e5a[6];
-STUB u8 D_3e60[6];
+STUB u8 D_3e5a_partyDestX[6];
+STUB u8 D_3e60_partyDestY[6];
 
 STUB u8 D_3e66_harvestX[4];
 STUB u8 D_3e6a_harvestY[4];
@@ -915,12 +915,12 @@ BSS u8 D_bbd2[0xb6]; // no code refers to it; as large as D_bb1c
 BSS S_bc88_U4Party D_bc88;
 BSS u16 D_bcb0; // no code refers to it
 
-BSS char D_bcb2[0x27 + 1];
+BSS char D_bcb2_lineBuf[0x27 + 1];
 
 BSS u8 D_bd2a[8];
 BSS u8 D_bd32[8];
 
-BSS u8 D_bcda;
+BSS u8 D_bcda_lineLen;
 
 BSS u16 D_bcdc_talkNpcIndex; // the slot of the NPC talked to
 BSS u8* D_bcde_talkPtr; // the place in the NPC's script
