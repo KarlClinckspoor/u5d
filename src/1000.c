@@ -80,7 +80,7 @@ int ULTIMA_1068_RevealTile(int param_1, int param_2, int param_3)
             ULTIMA_5910_UpdateFrame();
         }
 
-        iVar1 = FONT_02fc(1);
+        iVar1 = FONT_02fc_AnimateScene(1);
     } while (iVar1 == 0);
 
     return iVar1;

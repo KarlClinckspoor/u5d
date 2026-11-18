@@ -228,25 +228,25 @@ STUB s8 D_2f2c_sideDy[4]; // direction y
 // ^ dungeon
 
 // intro
-STUB Pair D_2f98[0x15];
-STUB Pair2 D_2fc2[0x15];
-STUB u16 D_3016[0x15];
-STUB u8 D_3040[0x16]; // 0x15 + gap 1
-STUB u8 D_3056[0x16]; // 0x15 + gap 1
+STUB Pair D_2f98_textLeft[0x15];
+STUB Pair2 D_2fc2_textRight[0x15];
+STUB u16 D_3016_storyOffset[0x15];
+STUB u8 D_3040_regionTop[0x16]; // 0x15 + gap 1
+STUB u8 D_3056_regionBottom[0x16]; // 0x15 + gap 1
 STUB u8 D_306c[0x16]; // 0x15 + gap 1
-STUB u8 D_3082[0x16]; // 0x15 + gap 1
-STUB u8 D_3098[0x16]; // 0x15 + gap 1
-STUB u8 D_30ae[0x16]; // 0x15 + gap 1
+STUB u8 D_3082_startY[0x16]; // 0x15 + gap 1
+STUB u8 D_3098_imageIndex[0x16]; // 0x15 + gap 1
+STUB u8 D_30ae_imageFile[0x16]; // 0x15 + gap 1
 STUB u8 D_30c4[0x16]; // 0x15 + gap 1
 STUB u8 D_30da[0x16]; // 0x15 + gap 1
-STUB u8 D_30f0[0x15];
+STUB u8 D_30f0_pageKind[0x15];
 // 0x3105: "WD.BIT"
 
 // 3000
 
 STUB u16 D_3304; // u4 save - is avatar?
 
-STUB u16 D_3656[8];
+STUB u16 D_3656_labelRow[8];
 STUB char* D_3666[8];
 // ^intro
 
@@ -336,26 +336,26 @@ STUB u8 D_3d86_healPrices[8];
 STUB u8 D_3d8e_curePrices[8];
 STUB u16 D_3d96_raisePrices[8];
 
-STUB Pair D_3da6[6];
-STUB Pair2 D_3db2[6];
-STUB u16 D_3dca[6];
+STUB Pair D_3da6_textLeft[6];
+STUB Pair2 D_3db2_textRight[6];
+STUB u16 D_3dca_textOffset[6];
 
-STUB u8 D_3dd6[6];
-STUB u8 D_3ddc[6];
-STUB u8 D_3de2[6];
-STUB u8 D_3de8[6];
-STUB u8 D_3dee[6]; // endgame_0000 image idx
-STUB u8 D_3df4[6];
-STUB u8 D_3dfa[6]; // endgame_0000 image x
-STUB u8 D_3e00[6]; // endgame_0000 image y
-STUB u8 D_3e06[6];
+STUB u8 D_3dd6_regionTop[6];
+STUB u8 D_3ddc_regionBottom[6];
+STUB u8 D_3de2_startX[6];
+STUB u8 D_3de8_startY[6];
+STUB u8 D_3dee_imageIndex[6]; // endgame_0000 image idx
+STUB u8 D_3df4_imageFile[6];
+STUB u8 D_3dfa_imageX[6]; // endgame_0000 image x
+STUB u8 D_3e00_imageY[6]; // endgame_0000 image y
+STUB u8 D_3e06_hasBanner[6];
 
 STUB char* D_3e0c[19];
 STUB char* D_3e32[8];
 STUB char* D_3e42[12];
 
-STUB u8 D_3e5a[6];
-STUB u8 D_3e60[6];
+STUB u8 D_3e5a_partyDestX[6];
+STUB u8 D_3e60_partyDestY[6];
 
 STUB u8 D_3e66_harvestX[4];
 STUB u8 D_3e6a_harvestY[4];
@@ -386,7 +386,7 @@ STUB u8 D_41cc_dungeonLootKind[8];
 STUB char* D_444a[3];
 
 STUB char* D_4502[8];
-STUB u8 D_4512[8];
+STUB u8 D_4512_wordTile[8];
 
 STUB u8 D_4592_fieldMissileKinds[4];
 STUB u8 D_4596_dungeonFieldCells[4];
@@ -478,19 +478,19 @@ STUB u16 D_5152; // TODO: int?
 STUB u16 D_5154;
 STUB u16 D_5156;
 STUB u16 D_5158; // TODO: int?
-STUB u16 D_515a; // = 0
+STUB u16 D_515a_toneStep; // = 0
 
 STUB char* D_515c[4];
 
 // 5200
 
-STUB u8 D_5164[8];
-STUB u8 D_516c[8];
-STUB u8 D_5174[8];
-STUB u16 D_517c[8][8];
-STUB u8 D_51fc[8];
-STUB u8 D_5204[8];
-STUB u16 D_520c; // AFONT.ASM's: where FONT_0e52 saves the video page
+STUB u8 D_5164_intBonus[8];
+STUB u8 D_516c_dexBonus[8];
+STUB u8 D_5174_strBonus[8];
+STUB u16 D_517c_questionOffset[8][8];
+STUB u8 D_51fc_cardX[8];
+STUB u8 D_5204_cardY[8];
+STUB u16 D_520c; // AFONT.ASM's: where FONT_0e52_SaveVideoPage saves the video page
 
 // main parameters
 // int D_52a2;     // __argc
@@ -906,21 +906,21 @@ BSS u8  D_bb14_wallTile; // pos?
 BSS u8  D_bb15_floorTile; // pos?
 BSS u8  D_bb16;
 BSS u8  D_bb17_loadFlags;
-BSS u16 D_bb18; // "lord british" index
-BSS void* D_bb1a; // pointer
+BSS u16 D_bb18_pathPos; // "lord british" index
+BSS void* D_bb1a_titleImage; // pointer
 
-BSS S_bb1c D_bb1c;
-BSS u8 D_bbd2[0xb6]; // no code refers to it; as large as D_bb1c
+BSS S_bb1c D_bb1c_u4Virtues;
+BSS u8 D_bbd2[0xb6]; // no code refers to it; as large as D_bb1c_u4Virtues
 
-BSS S_bc88_U4Party D_bc88;
+BSS S_bc88_U4Party D_bc88_u4Member;
 BSS u16 D_bcb0; // no code refers to it
 
-BSS char D_bcb2[0x27 + 1];
+BSS char D_bcb2_lineBuf[0x27 + 1];
 
-BSS u8 D_bd2a[8];
-BSS u8 D_bd32[8];
+BSS u8 D_bd2a_virtueOffered[8];
+BSS u8 D_bd32_virtueRejected[8];
 
-BSS u8 D_bcda;
+BSS u8 D_bcda_lineLen;
 
 BSS u16 D_bcdc_talkNpcIndex; // the slot of the NPC talked to
 BSS u8* D_bcde_talkPtr; // the place in the NPC's script
@@ -943,16 +943,16 @@ BSS s16 D_bd20_drinksBought; // int?
 BSS s16 D_bd22_thrownOut;
 BSS s16 D_bd24_shipSold;
 
-BSS u8 D_bd26;
-BSS u8 D_bd27;
-BSS u8 D_bd28;
-BSS u8 D_bd29;
+BSS u8 D_bd26_stripLeft;
+BSS u8 D_bd27_stripRight;
+BSS u8 D_bd28_stripWiden;
+BSS u8 D_bd29_sceneNo;
 
 BSS u8 D_bd3a; // no code refers to it
 BSS u8 D_bd3b; // no code refers to it
-BSS u8 D_bd3c;
-BSS u8 D_bd3d;
-BSS u8 D_bd3e;
+BSS u8 D_bd3c_newInt;
+BSS u8 D_bd3d_newDex;
+BSS u8 D_bd3e_newStr;
 
 // ..bd3f]
 

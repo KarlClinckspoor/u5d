@@ -108,12 +108,12 @@ MODULES.update({n + '.c': ('root', None) for n in ('r0d72', 'r1850', 'r1b38', 'r
 # 5000.c (MSC 5.0, ULTIMA_51a0 to 5910) is followed by an MSC 5.1 object from 5a28 to 5f86.
 MODULES['r5a28.c'] = ('root', None)
 MODULES['vars.c'] = ('data', None)
-# INTRO.OVL's MSC 5.1 code is three objects: intro0.c (INTRO_0010, INTRO_0050), intro.c (to
+# INTRO.OVL's MSC 5.1 code is three objects: intro0.c (INTRO_0010_PutBackdropStrips, INTRO_0050), intro.c (to
 # INTRO_094e) and intro2.c (from INTRO_0986_Main), linked in that order before introb.c
 # (docs/MATCHING.md).
 MODULES['intro0.c'] = ('ovl', 'INTRO')
 MODULES['intro2.c'] = ('ovl', 'INTRO')
-# Likewise CMDS.OVL: cmds.c (to CMDS_1030), cmds2.c (from CMDS_1202), cmdsb.c.
+# Likewise CMDS.OVL: cmds.c (to CMDS_1030_YellShadowlord), cmds2.c (from CMDS_1202_RestoreShrine), cmdsb.c.
 MODULES['cmds2.c'] = ('ovl', 'CMDS')
 # TOWN.OVL: town.c (to TOWN_0f02_TileEffects) and town2.c (from TOWN_10da_ShoutBegone).
 MODULES['town2.c'] = ('ovl', 'TOWN')
@@ -147,7 +147,7 @@ OBJECT_PARTS = [('R2320', 'A2322', 'R251E'), ('INTRO2', 'AINTRO2'), ('AFONT0', '
 # original reaches the overworld map through a name of its own for DS:6608 (vars.h); which
 # object defined it is not known.
 LINK_DEFINES = {'D_6608_OVERWORLD': 'D_6608_MAP'}
-# cmds.c knows 24 names by their short forms (the note at its top: CMDS_0000's pass-2 memory)
+# cmds.c knows 24 names by their short forms (the note at its top: CMDS_0000_HoleUpRest's pass-2 memory)
 LINK_DEFINES.update({
     'D_5876': 'D_5876_TEMPX',
     'D_5878': 'D_5878_TEMPY',
@@ -188,12 +188,12 @@ LINK_DEFINES.update({
 COMMUNALS = [n.upper() for n in (
     'D_a9bc_townJustEntered D_a9bd_curDisk D_a9be D_a9c0_wallImage D_a9c2 D_a9c4_itemsImage D_a9c6_monsterImage D_a9c8_diskDrives D_a9ce_soundOn D_a9d0_rayBalance D_a9fa_vitalsDirty D_a9fb_stepVolume D_a9fc_savedActors D_aafc_shopName D_aafe_shopOwner D_ab00_itemName D_ab02_viewTiles D_ac62_placeName D_ac64_viewActors D_ad14_combatMap '
     'D_b114_shopIndex D_b116_shopKind D_b118_shopPrice D_b11a_shopQuantity D_b11c D_b11e_tileFrames D_b21e_scratch D_b9ee D_ba14_combatants D_bb14_wallTile D_bb15_floorTile D_bb16 D_bb17_loadFlags '
-    'D_bb18 D_bb1a D_bb1c D_bbd2 D_bc88 D_bcb0 '
-    'D_bcb2 D_bcda '
+    'D_bb18_pathPos D_bb1a_titleImage D_bb1c_u4Virtues D_bbd2 D_bc88_u4Member D_bcb0 '
+    'D_bcb2_lineBuf D_bcda_lineLen '
     'D_bcdc_talkNpcIndex D_bcde_talkPtr D_bce0_talkCodeArgs D_bce4_talkWord D_bcf4_talkLabel D_bcf6_talkKeywordIndex D_bcf8_inputText '
     'D_bd08_answer D_bd14 D_bd15_savedMapId '
     'D_bd16_pubKind D_bd18_boughtSomething D_bd1a_dinersFed D_bd1c_dinerCount D_bd1e_tableTile D_bd20_drinksBought D_bd22_thrownOut D_bd24_shipSold '
-    'D_bd26 D_bd27 D_bd28 D_bd29 D_bd2a D_bd32 D_bd3a D_bd3b D_bd3c D_bd3d D_bd3e '
+    'D_bd26_stripLeft D_bd27_stripRight D_bd28_stripWiden D_bd29_sceneNo D_bd2a_virtueOffered D_bd32_virtueRejected D_bd3a D_bd3b D_bd3c_newInt D_bd3d_newDex D_bd3e_newStr '
 ).split()]
 
 EXE_HEADER = 0x800  # 0x80 paragraphs

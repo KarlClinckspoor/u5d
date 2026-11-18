@@ -1,0 +1,89 @@
+# INTRO (intro0.c, intro.c, intro2.c, introb.c): the introduction and main menu of the game: the title screens (Origin
+# logo, Lord British drawn by a path, ULTIMA, "Warriors of Destiny"), the menu (Journey Onward, Create New Character,
+# Transfer from Ultima IV, Ultima V Introduction, Acknowledgements, Return to the View), the story pages (STORY.DAT),
+# and the transfer of an Ultima IV character (INTRO_132a is assembly in the DOS build, AINTRO2.ASM). One overlay, four
+# objects. The three const tables D_306c, D_30c4 and D_30da stay as they are: intro.c and introb.c rename them out of the way.
+# functions
+INTRO_0010 INTRO_0010_PutBackdropStrips    # on page 1: the four 50-line pictures 1..4 of ULTIMA.16 stacked at x 0x10 (probably the backdrop of the menu and story pages)
+INTRO_043e INTRO_043e_PrintCaptionBar      # a text centred in a bar closed by caps at the bottom of the screen (scene titles, the copyright line)
+INTRO_12ea INTRO_12ea_ScaleU4Stat          # an Ultima IV stat (up to 50) on Ultima V's scale (up to 30): below 10 as is, up to 29 by halves, then by quarters
+INTRO_1e22 INTRO_1e22_PrintFieldLabel      # the label of one of eight fields ("Name:" ... "INT:") in both windows of the transfer screen
+INTRO_1e62 INTRO_1e62_DrawPromptBox        # the framed box at the bottom of the transfer screen (rows 19 to 22)
+INTRO_1f26 INTRO_1f26_DrawCharacterBox     # a framed " Ultima IV " box for one of the two characters of the transfer screen, at an x offset
+INTRO_2024 INTRO_2024_SetUpTransferScreen  # the transfer screen: the prompt box, three text windows, the two character boxes (old character at left, new at right)
+# locals and parameters
+intro0.c:INTRO_0010 local_4 band
+intro0.c:INTRO_0050 param_1 x
+intro0.c:INTRO_0050 param_2 y
+intro0.c:INTRO_0050 local_e penColor
+intro0.c:INTRO_0050 local_c_yMove yMove
+intro0.c:INTRO_0050 local_a_xMove xMove
+intro0.c:INTRO_0050 local_8 pos
+intro0.c:INTRO_0050 local_6 path
+intro0.c:INTRO_0050 local_4_ab savedCalibration
+intro.c:INTRO_014e local_c fontImage
+intro.c:INTRO_014e local_a page
+intro.c:INTRO_014e local_8 loadedFile
+intro.c:INTRO_014e local_6 pageImage
+intro.c:INTRO_014e local_4_ab bannerImage
+intro.c:INTRO_043e param_1 text
+intro.c:INTRO_043e local_6_an right
+intro.c:INTRO_043e local_4 left
+intro.c:INTRO_04e0 local_4 i
+intro.c:INTRO_05b0 param_1 withSound
+intro.c:INTRO_05b0 local_4 wdImage
+intro.c:INTRO_0676 param_4 selected
+intro.c:INTRO_0676 param_3 row
+intro.c:INTRO_0676 param_2 col
+intro.c:INTRO_0676 param_1 label
+intro.c:INTRO_06bc param_1 selected
+intro.c:INTRO_072e local_6_an pos
+intro.c:INTRO_072e local_4 scrollImage
+intro.c:INTRO_094e param_1 ticks
+intro.c:INTRO_094e local_6_an i
+intro.c:INTRO_094e local_4 key
+intro2.c:INTRO_0986 local_14 britishImage
+intro2.c:INTRO_0986 local_12_ab titleImage
+intro2.c:INTRO_0986 local_10_ad key
+intro2.c:INTRO_0986 local_e index
+intro2.c:INTRO_0986 local_c selected
+intro2.c:INTRO_0986 local_a state
+intro2.c:INTRO_0986 local_8 savedCalibration
+intro2.c:INTRO_0986 local_6 fileName
+intro2.c:INTRO_0986 local_4_ab tries
+intro2.c:INTRO_1016 local_10_ad offset
+intro2.c:INTRO_1016 local_e i
+intro2.c:INTRO_1016 local_c virtues
+intro2.c:INTRO_1016 local_a slot
+intro2.c:INTRO_1016 local_8 u4Member
+intro2.c:INTRO_1016 local_6 member
+intro2.c:INTRO_1016 local_4_ab bad
+intro2.c:INTRO_12ea param_1 stat
+introb.c:INTRO_1e22 param_1 field
+introb.c:INTRO_1e62 local_4 i
+introb.c:INTRO_1f26 param_1 left
+# globals (used only by the intro; D_3304 is shared with the assembly of the transfer)
+D_bb18 D_bb18_pathPos             # the position in the BRITISH.PTH path where Lord British's drawing goes on
+D_bb1a D_bb1a_titleImage          # the ULTIMA.16 picture
+D_bb1c D_bb1c_u4Virtues           # the Ultima IV party file's second record (the virtues; all zero: not an Avatar)
+D_bc88 D_bc88_u4Member            # the Ultima IV party file's first record: the character
+D_2f98 D_2f98_textLeft            # per story page: left margin of the text in region 0 and 1 (to D_5146)
+D_2fc2 D_2fc2_textRight           # right margins (to D_514c)
+D_3016 D_3016_storyOffset         # offset of the page's text in STORY.DAT
+D_3040 D_3040_regionTop           # y where region 1 begins (to D_5150)
+D_3056 D_3056_regionBottom        # y where region 1 ends (to D_5152)
+D_3082 D_3082_startY              # the text cursor's y (to D_5158)
+D_3098 D_3098_imageIndex          # which image of the page's picture file is put
+D_30ae D_30ae_imageFile           # which picture file (0, 1 ...)
+D_30f0 D_30f0_pageKind            # 1 banner pictures first, 2 an extra picture after, 3 the blue door, 4 and up a second image
+D_3656 D_3656_labelRow            # rows of the eight field labels of the transfer screen
+D_3676 D_3676_boxTopLeft          # the top left of the character box: corner and two bars
+D_367a D_367a_boxTopRight         # two bars before the top right corner
+intro2.c:INTRO_132a local_14 oldStat
+intro2.c:INTRO_132a local_e savedMap
+intro2.c:INTRO_132a cVar4 key
+intro2.c:INTRO_132a bVar5 unusedA
+intro2.c:INTRO_132a uVar6 unusedB
+intro2.c:INTRO_132a iVar7 i
+intro2.c:INTRO_132a uVar8 unusedC
+intro2.c:INTRO_132a local_12 drive

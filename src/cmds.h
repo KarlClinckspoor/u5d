@@ -1,7 +1,7 @@
 #ifndef _CMDS_H
 #define _CMDS_H
 
-int CMDS_0000(int param_1, int param_2, int param_3);
+int CMDS_0000_HoleUpRest(int mode, int watchIdx, int hours);
 void CMDS_0552_HoleUpCmd(void);
 int CMDS_07f6_BoardCmd(void);
 void CMDS_0aea_FireCmd(void);

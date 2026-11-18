@@ -15,27 +15,27 @@
 
 #include "time/time.h"
 
-// INTRO.OVL's MSC 5.1 code is three objects: intro0.c (INTRO_0010, INTRO_0050), intro.c
+// INTRO.OVL's MSC 5.1 code is three objects: intro0.c (INTRO_0010_PutBackdropStrips, INTRO_0050), intro.c
 // (INTRO_014e-INTRO_094e) and this one, from INTRO_0986_Main. Compiled after the first part's functions, INTRO_0986 loses
 // optimizations (local_c is not kept in DI); compiled as its own object it is exact.
 
 // defined in intro0.c
-void INTRO_0010(void);
-int INTRO_0050_LordBritishAnim(int param_1, int param_2);
+void INTRO_0010_PutBackdropStrips(void);
+int INTRO_0050_LordBritishAnim(int x, int y);
 
 // defined in intro.c
 void INTRO_014e_Introduction(void);
-void INTRO_05b0_DisplayTitle(int param_1);
-void INTRO_06bc_BuildMainMenu(int param_1);
+void INTRO_05b0_DisplayTitle(int withSound);
+void INTRO_06bc_BuildMainMenu(int selected);
 void INTRO_072e_Acknowledgements(void);
-int INTRO_094e_Pause(int param_1);
+int INTRO_094e_Pause(int ticks);
 
 // defined in introb.c, the part of INTRO.OVL built with MSC 5.0
 void INTRO_2090_AnimateWD(void);
 
 void INTRO_132a_TransferFromU4(void);     // DOS build: src/asm/AINTRO2.ASM
-void INTRO_1e22(int param_1);
-void INTRO_2024(void);
+void INTRO_1e22_PrintFieldLabel(int field);
+void INTRO_2024_SetUpTransferScreen(void);
 void INTRO_20ae_ShowWD(byte* ptr);
 
 // The menu keys are a char array in the original: it follows the strings of the next
@@ -44,33 +44,36 @@ void INTRO_20ae_ShowWD(byte* ptr);
 static char S_0x3270[8] = "JCTUAR";
 #endif
 
+// The start of the program: detects and starts the video, sound and timer, loads the character sets, plays
+// the title sequence (Origin logo, "presents", Lord British, production, title, story), and loops over the
+// main menu: J Journey Onward, C Create, T Transfer, U Introduction, A Acknowledgements, R Return to the
+// View; returns when a saved game was loaded.
 // CHECKED
-// intro_main (initialize video) (8b46)
 void INTRO_0986_Main(void)
 {
-    byte* local_14;
-    byte* local_12_ab;
-    byte local_10_ad;
-    int local_e;
-    int local_c;
-    int local_a;
-    int local_8;
-    char* local_6;
-    int local_4_ab;
+    byte* britishImage;
+    byte* titleImage;
+    byte key_i;
+    int index_j;
+    int selected_i;
+    int state;
+    int savedCalibration_g;
+    char* fileName;
+    int tries_j;
 
     // 098e
     D_a9ce_soundOn = 1;
-    local_e = 0;
+    index_j = 0;
 
     // 0995
-    for (local_e = 0; local_e < 0x100; local_e++)
+    for (index_j = 0; index_j < 0x100; index_j++)
     {
-        D_b11e_tileFrames[local_e] = (char)local_e;
+        D_b11e_tileFrames[index_j] = (char)index_j;
     }
 
     ULTIMA_0de0_DetectVideo();
     ULTIMA_1158_InitTimer();
-    local_8 = D_5356_timerCalibration;
+    savedCalibration_g = D_5356_timerCalibration;
 
     // force cga if low memory
     if (D_52c8_videoDriver == VDP_VIDEO_TANDY && D_5358_memorySize < 0x170)
@@ -100,20 +103,20 @@ void INTRO_0986_Main(void)
     else
     {
         // 0a1a
-        local_e = 0;
+        index_j = 0;
 
         // cga / herc: *.16 -> *.4
-        while (*(local_6 = D_25ea_fileNames[local_e++]) != 0) // 0a35
+        while (*(fileName = D_25ea_fileNames[index_j++]) != 0) // 0a35
         {
             // 0a22
-            while (*local_6++ != '.')
+            while (*fileName++ != '.')
             {
             }
 
-            if (*local_6 == '1')
+            if (*fileName == '1')
             {
-                *local_6++ = '4';
-                *local_6 = '\0';
+                *fileName++ = '4';
+                *fileName = '\0';
             }
         }
     }
@@ -149,8 +152,8 @@ void INTRO_0986_Main(void)
     ULTIMA_1c9e_SelectCharset(0);
     ULTIMA_1c22_SetTextWindowSize(0, 0, 0, 0x27, 0x18);
     ULTIMA_1b94_SelectTextWindow(0);
-    local_a = ULTIMA_2032_ToUpper(ULTIMA_1d5e_PollKey());
-    if (local_a == 0x4a) // 'J'
+    state = ULTIMA_2032_ToUpper(ULTIMA_1d5e_PollKey());
+    if (state == 0x4a) // 'J'
     {
         ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
         ULTIMA_16ba_PrintChar(CTRL_CHAR_CENTER_TEXT);
@@ -167,17 +170,17 @@ void INTRO_0986_Main(void)
     else
     {
         // 0b06
-        local_a = 1;
+        state = 1;
 
         do
         {
-            local_12_ab = ULTIMA_0fae_LoadResourceFile(D_25ea_fileNames[2]); // "TITLE.BIT"
-        } while (local_12_ab == 0);
+            titleImage = ULTIMA_0fae_LoadResourceFile(D_25ea_fileNames[2]); // "TITLE.BIT"
+        } while (titleImage == 0);
 
         do
         {
-            local_14 = ULTIMA_0fae_LoadResourceFile(D_25ea_fileNames[1]); // "BRITISH.BIT"
-        } while (local_14 == 0);
+            britishImage = ULTIMA_0fae_LoadResourceFile(D_25ea_fileNames[1]); // "BRITISH.BIT"
+        } while (britishImage == 0);
 
 #if !defined(MATCHING_BUILD)
         ULTIMA_256e_ReadFileFromDisk(/*0x31b5*/ "BRITISH.PTH", D_b21e_scratch, SCRATCH_SIZE, 0);
@@ -185,73 +188,73 @@ void INTRO_0986_Main(void)
         ULTIMA_256e_ReadFileFromDisk(/*0x31b5*/ "BRITISH.PTH", &D_55a6_saveStart, ((int)&D_6606_saveEnd - (int)&D_55a6_saveStart) /*0x1060*/, 0);
 #endif
         // "origin systems inc."
-        if (local_a != 0)
-            local_a = ULTIMA_0d72_AnimateOriginLogo(local_12_ab) == 0;
+        if (state != 0)
+            state = ULTIMA_0d72_AnimateOriginLogo(titleImage) == 0;
 
         // 0b56
         // "presents"
         ULTIMA_0c22_GRAP_0f_SelectPage(1);
         ULTIMA_0aa6_GRAP_3f_FillRect(0, 0x8c, 0x13f, 199);
-        ULTIMA_1044_GRAP_4e_CopyBitImageIntoPage(local_12_ab, 7, 0x6c, 0x8c);
+        ULTIMA_1044_GRAP_4e_CopyBitImageIntoPage(titleImage, 7, 0x6c, 0x8c);
         ULTIMA_0ace_GRAP_18_TransferArea(1, 0, 0, 0x8c, 0x13f, 199);
-        if (local_a != 0)
+        if (state != 0)
         {
             ULTIMA_20fa_WaitTicks(0x12);
-            local_a = INTRO_094e_Pause(0x14) == 0;
+            state = INTRO_094e_Pause(0x14) == 0;
         }
         // 0bb6
-        if (local_a != 0)
+        if (state != 0)
         {
             // 0bbf
             ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
             // "a"
-            ULTIMA_1044_GRAP_4e_CopyBitImageIntoPage(local_12_ab, 0x8, 0x98, 0);
+            ULTIMA_1044_GRAP_4e_CopyBitImageIntoPage(titleImage, 0x8, 0x98, 0);
             ULTIMA_0f6e_GRAP_1b_TransferFullscreen(1, 0);
-            local_a = INTRO_094e_Pause(0x14) == 0;
-            if (local_a != 0)
+            state = INTRO_094e_Pause(0x14) == 0;
+            if (state != 0)
             {
                 ULTIMA_0c22_GRAP_0f_SelectPage(0);
-                D_bb18 = 0;
-                local_a = 0;
+                D_bb18_pathPos = 0;
+                state = 0;
                 // "lord british" animation
                 if ((INTRO_0050_LordBritishAnim(0x2c, 0x44) != 0) && (INTRO_0050_LordBritishAnim(0x40, 0x5e) != 0) && (INTRO_0050_LordBritishAnim(0x8f, 0x4e) != 0))
                 {
-                    local_a = INTRO_0050_LordBritishAnim(0xa7, 0x69);
+                    state = INTRO_0050_LordBritishAnim(0xa7, 0x69);
                 }
                 // 0c42
                 ULTIMA_0c22_GRAP_0f_SelectPage(1);
             }
             // 0c49
             // "lord british"
-            ULTIMA_1044_GRAP_4e_CopyBitImageIntoPage(local_14, 0, 0x18, 0x42);
+            ULTIMA_1044_GRAP_4e_CopyBitImageIntoPage(britishImage, 0, 0x18, 0x42);
             ULTIMA_0f6e_GRAP_1b_TransferFullscreen(1, 0);
             // "production"
-            ULTIMA_1044_GRAP_4e_CopyBitImageIntoPage(local_12_ab, 9, 0x68, 0xa0);
+            ULTIMA_1044_GRAP_4e_CopyBitImageIntoPage(titleImage, 9, 0x68, 0xa0);
             ULTIMA_0f6e_GRAP_1b_TransferFullscreen(1, 0);
-            if (local_a != 0)
+            if (state != 0)
             {
-                local_a = INTRO_094e_Pause(0x14) == 0;
+                state = INTRO_094e_Pause(0x14) == 0;
             }
         }
 
         // 0c97
-        ULTIMA_0fdc_FreeBitImage(local_14);
-        ULTIMA_0fdc_FreeBitImage(local_12_ab);
+        ULTIMA_0fdc_FreeBitImage(britishImage);
+        ULTIMA_0fdc_FreeBitImage(titleImage);
 
         D_5893_mapId = 0x40;
         ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
         ULTIMA_0c22_GRAP_0f_SelectPage(0);
-        INTRO_05b0_DisplayTitle(local_a);
-        if (local_a != 0)
+        INTRO_05b0_DisplayTitle(state);
+        if (state != 0)
         {
 #if defined(ENABLE_BGM)
             AUDIO_PlayBgm(BGM_ID_1);
 #endif
 
-            FONT_04a4();
+            FONT_04a4_PlayIntroStory();
         }
         // 0cc4
-        local_a = 1;
+        state = 1;
     }
 
     ULTIMA_207e_srand(ULTIMA_2056_GetTime());
@@ -269,16 +272,16 @@ void INTRO_0986_Main(void)
         ULTIMA_1c22_SetTextWindowSize(0, 0, 0, 0x27, 0x18);
         ULTIMA_1c22_SetTextWindowSize(1, 0x18, 1, 0x27, 9);
         ULTIMA_1c22_SetTextWindowSize(2, 0x18, 0xb, 0x27, 0x17);
-        if (local_a == 0x4a) // 'J'
+        if (state == 0x4a) // 'J'
         {
-            local_10_ad = 0x4a; // 'J'
+            key_i = 0x4a; // 'J'
         }
         else
         {
-            // 0d3e: local_c lives in DI from here on (sub di,di). MSC 5.1 does that only
+            // 0d3e: selected_i lives in DI from here on (sub di,di). MSC 5.1 does that only
             // with this function compiled in an object of its own (see the top of the file).
-            local_c = 0;
-            INTRO_043e(_TEXT(0x31c1, "Copyright 1988 Lord British"));
+            selected_i = 0;
+            INTRO_043e_PrintCaptionBar(_TEXT(0x31c1, "Copyright 1988 Lord British"));
             INTRO_06bc_BuildMainMenu(0);
             do
             {
@@ -289,46 +292,46 @@ void INTRO_0986_Main(void)
                 ULTIMA_4cce_PrintRightCap();
                 ULTIMA_1bf2_SetTextPosition(0x17, 0xf);
                 D_5356_timerCalibration = 0x113;
-                local_4_ab = 0;
+                tries_j = 0;
                 do
                 {
                     // 0d75
-                    local_10_ad = ULTIMA_2032_ToUpper(ULTIMA_1b38_PollKeyWithCursor());
-                    if (local_10_ad == 0)
+                    key_i = ULTIMA_2032_ToUpper(ULTIMA_1b38_PollKeyWithCursor());
+                    if (key_i == 0)
                     {
                         INTRO_2090_AnimateWD();
                     }
                     // 0d86
-                    local_4_ab++;
-                } while (local_4_ab < 200 && local_10_ad == 0);
-                D_5356_timerCalibration = local_8;
-                switch (local_10_ad)
+                    tries_j++;
+                } while (tries_j < 200 && key_i == 0);
+                D_5356_timerCalibration = savedCalibration_g;
+                switch (key_i)
                 {
                 case U5_KEY_LEFT:
                 case U5_KEY_UP:
-                    local_c--;
-                    if (local_c < 0)
+                    selected_i--;
+                    if (selected_i < 0)
                     {
-                        local_c = 5;
+                        selected_i = 5;
                     }
-                    INTRO_06bc_BuildMainMenu(local_c);
+                    INTRO_06bc_BuildMainMenu(selected_i);
                     break;
                 case U5_KEY_RIGHT:
                 case U5_KEY_DOWN:
-                    local_c++;
-                    if (5 < local_c)
+                    selected_i++;
+                    if (5 < selected_i)
                     {
-                        local_c = 0;
+                        selected_i = 0;
                     }
-                    INTRO_06bc_BuildMainMenu(local_c);
+                    INTRO_06bc_BuildMainMenu(selected_i);
                     break;
                 case U5_KEY_ENTER:  // CR
                 case U5_KEY_SPACE: // ' '
                     // 0de2
-                    local_10_ad = _XTEXT(0x3270, "JCTUAR")[local_c];
+                    key_i = _XTEXT(0x3270, "JCTUAR")[selected_i];
                     break;
                 case 0:
-                    local_10_ad = 0x52;
+                    key_i = 0x52;
                     break;
                 case 0x4a: // 'J'
                     INTRO_06bc_BuildMainMenu(0);
@@ -349,14 +352,14 @@ void INTRO_0986_Main(void)
                     INTRO_06bc_BuildMainMenu(5);
                     break;
                 default:
-                    local_10_ad = 0;
+                    key_i = 0;
                     break;
                 }
-            } while (local_10_ad <= 0x20);
+            } while (key_i <= 0x20);
         }
 
         // 0e47
-        switch ((int)local_10_ad)
+        switch ((int)key_i)
         {
         case 0x4a: // 'J'
 #if defined(ENABLE_BGM)
@@ -396,7 +399,7 @@ void INTRO_0986_Main(void)
                 ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
                 ULTIMA_0c22_GRAP_0f_SelectPage(0);
                 INTRO_05b0_DisplayTitle(0);
-                local_a = 0;
+                state = 0;
             }
             else
             {
@@ -431,7 +434,7 @@ void INTRO_0986_Main(void)
 
         case 0x43: // 'C'
             // 0fa8
-            FONT_0b0a();
+            FONT_0b0a_CreateCharacter();
         L_0fab:
             ULTIMA_1c22_SetTextWindowSize(0, 0, 0, 0x27, 0x18);
             ULTIMA_1b94_SelectTextWindow(0);
@@ -439,7 +442,7 @@ void INTRO_0986_Main(void)
             ULTIMA_0c22_GRAP_0f_SelectPage(1);
             ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
             INTRO_05b0_DisplayTitle(0);
-            INTRO_0010();
+            INTRO_0010_PutBackdropStrips();
             ULTIMA_0c22_GRAP_0f_SelectPage(0);
             break;
 
@@ -467,7 +470,7 @@ void INTRO_0986_Main(void)
             break;
 
         case 0x52:       // 'R'
-            FONT_04a4(); // thunk
+            FONT_04a4_PlayIntroStory(); // thunk
             break;
         }
     } while (1);
@@ -475,54 +478,57 @@ void INTRO_0986_Main(void)
 
 u16 D_3304 = 0;
 
+// Reads the Ultima IV party file (PARTY.SAV): refuses bad data, copies name, sex, class, stats and
+// experience into the first party member, and sets D_3304 when the virtues are all zero (not an Avatar); 1
+// on bad data.
 // CHECKED
 // Not static: in the DOS build INTRO_132a (src/asm/AINTRO2.ASM) calls this one,
-// INTRO_1278 and INTRO_12ea from another object.
+// INTRO_1278 and INTRO_12ea_ScaleU4Stat from another object.
 int INTRO_1016_ConvertU4Savegame(void)
 {
-    int local_10_ad;
-    int local_e;
-    S_bb1c* local_c;
-    int local_a;
-    S_bc88_U4Party* local_8;
-    S_55a8* local_6;
-    bool local_4_ab;
+    int offset;
+    int i_j;
+    S_bb1c* virtues;
+    int slot;
+    S_bc88_U4Party* u4Member;
+    S_55a8* member_i;
+    bool bad_j;
 
-    local_4_ab = 0;
-    local_8 = &D_bc88;
-    local_a = 0;
-    local_10_ad = 8;
+    bad_j = 0;
+    u4Member = &D_bc88_u4Member;
+    slot = 0;
+    offset = 8;
 
     D_a9be = 1;
     D_a9bd_curDisk[0] = 4;
 
     D_a9c8_diskDrives[D_a9bd_curDisk[0]] = ULTIMA_16a6_GetDefaultDrive();
-    // the label keeps MSC from folding local_10_ad = 8 into the call, as the original doesn't
+    // the label keeps MSC from folding offset = 8 into the call, as the original doesn't
 L_1048:
-    ULTIMA_256e_ReadFileFromDisk(/*0x3278*/ "party.sav", &D_bc88, 0x28, local_10_ad);
+    ULTIMA_256e_ReadFileFromDisk(/*0x3278*/ "party.sav", &D_bc88_u4Member, 0x28, offset);
 
-    if (D_bc88.str > 0x46 || D_bc88.dex > 0x46 || D_bc88.intel > 0x46 || D_bc88.exp > 9999 || D_bc88.hp > 9999 ||
-        D_bc88.maxHp > 9999 || D_bc88.cls > 7)
+    if (D_bc88_u4Member.str > 0x46 || D_bc88_u4Member.dex > 0x46 || D_bc88_u4Member.intel > 0x46 || D_bc88_u4Member.exp > 9999 || D_bc88_u4Member.hp > 9999 ||
+        D_bc88_u4Member.maxHp > 9999 || D_bc88_u4Member.cls > 7)
     {
-        local_4_ab = 1;
+        bad_j = 1;
     }
 
-    for (local_e = 0; local_e < 8; local_e++)
+    for (i_j = 0; i_j < 8; i_j++)
     {
-        if (local_8->name[local_e] != 0 && local_8->name[local_e] < 0x20)
+        if (u4Member->name[i_j] != 0 && u4Member->name[i_j] < 0x20)
         {
-            local_4_ab = 1;
+            bad_j = 1;
             break;
         }
 
         // 92b6
-        if (local_8->name == 0) // bug?
+        if (u4Member->name == 0) // bug?
         {
             break;
         }
     }
 
-    if (local_4_ab)
+    if (bad_j)
     {
         ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
         ULTIMA_16ba_PrintChar(CTRL_CHAR_CENTER_TEXT);
@@ -535,13 +541,13 @@ L_1048:
         return 1;
     }
 
-    local_6 = &D_55a8_party[local_a];
+    member_i = &D_55a8_party[slot];
 
-    for (local_e = 0; local_e < 8; local_e++)
+    for (i_j = 0; i_j < 8; i_j++)
     {
-        if (local_8->name[local_e] != 0)
+        if (u4Member->name[i_j] != 0)
         {
-            local_6->name[local_e] = local_8->name[local_e];
+            member_i->name[i_j] = u4Member->name[i_j];
         }
         else
         {
@@ -549,62 +555,62 @@ L_1048:
         }
     }
 
-    local_6->name[local_e] = 0;
+    member_i->name[i_j] = 0;
 
-    if (local_8->gender == 11)
+    if (u4Member->gender == 11)
     {
-        local_6->gender = 0xb;
+        member_i->gender = 0xb;
     }
     else
     {
-        local_6->gender = 0xc;
+        member_i->gender = 0xc;
     }
 
-    switch (local_8->cls)
+    switch (u4Member->cls)
     {
     case 0:
-        local_6->cls = CLASS_MAGE;
+        member_i->cls = CLASS_MAGE;
         break;
     case 1:
-        local_6->cls = CLASS_BARD;
+        member_i->cls = CLASS_BARD;
         break;
     case 2:
-        local_6->cls = CLASS_FIGHTER;
+        member_i->cls = CLASS_FIGHTER;
         break;
     case 3:
-        local_6->cls = CLASS_DRUID;
+        member_i->cls = CLASS_DRUID;
         break;
     case 4:
-        local_6->cls = CLASS_TINKER;
+        member_i->cls = CLASS_TINKER;
         break;
     case 5:
-        local_6->cls = CLASS_PALADIN;
+        member_i->cls = CLASS_PALADIN;
         break;
     case 6:
-        local_6->cls = CLASS_RANGER;
+        member_i->cls = CLASS_RANGER;
         break;
     case 7:
-        local_6->cls = CLASS_SHEPHERD;
+        member_i->cls = CLASS_SHEPHERD;
     }
 
-    local_6->status = STATUS_GOOD;
-    local_6->str = local_8->str;
-    local_6->dex = local_8->dex;
-    local_6->intel = local_8->intel;
-    local_6->mag = local_8->mag;
-    local_6->hp = local_8->hp;
-    local_6->maxHp = local_8->maxHp;
-    local_6->exp = local_8->exp;
+    member_i->status = STATUS_GOOD;
+    member_i->str = u4Member->str;
+    member_i->dex = u4Member->dex;
+    member_i->intel = u4Member->intel;
+    member_i->mag = u4Member->mag;
+    member_i->hp = u4Member->hp;
+    member_i->maxHp = u4Member->maxHp;
+    member_i->exp = u4Member->exp;
 
-    local_6->level = local_8->maxHp / 100;
+    member_i->level = u4Member->maxHp / 100;
 
-    local_10_ad = 0x140;
-    local_c = &D_bb1c;
+    offset = 0x140;
+    virtues = &D_bb1c_u4Virtues;
 
-    ULTIMA_256e_ReadFileFromDisk(/*0x32f9*/ "party.sav", &D_bb1c, 0xb6, 0x140);
+    ULTIMA_256e_ReadFileFromDisk(/*0x32f9*/ "party.sav", &D_bb1c_u4Virtues, 0xb6, 0x140);
 
-    if (D_bb1c.honesty == 0 && D_bb1c.compassion == 0 && D_bb1c.valor == 0 && D_bb1c.justice == 0 && D_bb1c.sacrifice == 0 && D_bb1c.honor == 0 &&
-        D_bb1c.spirituality == 0 && D_bb1c.humility == 0)
+    if (D_bb1c_u4Virtues.honesty == 0 && D_bb1c_u4Virtues.compassion == 0 && D_bb1c_u4Virtues.valor == 0 && D_bb1c_u4Virtues.justice == 0 && D_bb1c_u4Virtues.sacrifice == 0 && D_bb1c_u4Virtues.honor == 0 &&
+        D_bb1c_u4Virtues.spirituality == 0 && D_bb1c_u4Virtues.humility == 0)
     {
         D_3304 = 1;
     }
@@ -612,6 +618,7 @@ L_1048:
     return 0;
 }
 
+// Prints the name of the first member's class and a newline.
 void INTRO_1278_PrintU4Class(void)
 {
     switch (D_55a8_party[0].cls)
@@ -643,20 +650,22 @@ void INTRO_1278_PrintU4Class(void)
     }
 }
 
-int INTRO_12ea(int param_1)
+// Brings an Ultima IV stat (up to 50) to Ultima V's scale (up to 30): below 10 unchanged, below 30 by
+// halves, above by quarters.
+int INTRO_12ea_ScaleU4Stat(int stat)
 {
-    if (param_1 < 10)
+    if (stat < 10)
     {
-        return param_1;
+        return stat;
     }
 
-    if (param_1 >= 30)
+    if (stat >= 30)
     {
-        return (param_1 - 30) / 4 + 20;
+        return (stat - 30) / 4 + 20;
     }
     else
     {
-        return (param_1 - 9) / 2 + 10;
+        return (stat - 9) / 2 + 10;
     }
 }
 
@@ -665,20 +674,23 @@ int INTRO_12ea(int param_1)
 // the function in place, so its bytes are no compiler's output. This C is compiled for the
 // native build only.
 #if !defined(TARGET_DOS16)
+// Transfer from Ultima IV: asks for the disk and drive, converts the character, shows the old and new values
+// (name, sex, class, experience, level, stats) with questions about the name and sex, and saves SAVED.GAM.
+// Assembly in the DOS build; this C is native-only.
 void INTRO_132a_TransferFromU4(void)
 {
-    int local_14;
-    int local_e;
-    byte cVar4;
-    byte bVar5;
-    byte uVar6;
-    int iVar7;
-    int uVar8;
-    byte local_12;
+    int oldStat;
+    int savedMap;
+    byte key;
+    byte unusedA;
+    byte unusedB;
+    int i;
+    int unusedC;
+    byte drive;
 
 #if defined(GOG_BUILD)
     // GOG patched (1332..134c)
-    local_e = D_5893_mapId == 66 ? 65 : D_5893_mapId;
+    savedMap = D_5893_mapId == 66 ? 65 : D_5893_mapId;
     D_a9cc = D_a9cb = D_a9c8_diskDrives[0];
 #else
     // MATCHING (1.16)
@@ -687,7 +699,7 @@ void INTRO_132a_TransferFromU4(void)
         D_5893_mapId = 65;
     }
 
-    local_e = D_5893_mapId;
+    savedMap = D_5893_mapId;
 
     D_a9cb = D_a9cc = 0xff;
 #endif
@@ -705,7 +717,7 @@ void INTRO_132a_TransferFromU4(void)
 
 #if defined(GOG_BUILD)
     // GOG patched (1392..1399)
-    local_12 = D_a9c8_diskDrives[0];
+    drive = D_a9c8_diskDrives[0];
     goto L_GOG_1402;
 #endif
 
@@ -722,23 +734,23 @@ void INTRO_132a_TransferFromU4(void)
 
     do
     {
-        local_12 = ULTIMA_2032_ToUpper(ULTIMA_1dda_WaitForKeystroke(0));
-        if (local_12 == U5_KEY_ESC)
+        drive = ULTIMA_2032_ToUpper(ULTIMA_1dda_WaitForKeystroke(0));
+        if (drive == U5_KEY_ESC)
         {
-            D_5893_mapId = local_e;
+            D_5893_mapId = savedMap;
             return;
         }
 #if defined(GOG_BUILD)
 L_GOG_1402:
         ;
 #endif
-    } while (ULTIMA_1eac_SetDefaultDrive(local_12) == 0);
+    } while (ULTIMA_1eac_SetDefaultDrive(drive) == 0);
 
     D_5394_diskSwapFn = ULTIMA_2322_DiskSwapMessage;
 
     if (INTRO_1016_ConvertU4Savegame() != 0)
     {
-        D_5893_mapId = local_e;
+        D_5893_mapId = savedMap;
         return;
     }
 
@@ -793,11 +805,11 @@ L_GOG_1402:
     ULTIMA_1dda_WaitForKeystroke(0);
     ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
 
-    INTRO_2024();
+    INTRO_2024_SetUpTransferScreen();
 
-    for (iVar7 = 0; iVar7 < 8; iVar7++)
+    for (i = 0; i < 8; i++)
     {
-        INTRO_1e22(iVar7);
+        INTRO_1e22_PrintFieldLabel(i);
     }
 
     ULTIMA_1b94_SelectTextWindow(0);
@@ -867,14 +879,14 @@ L_GOG_1402:
 
     do // NOT MATCHING
     {
-        cVar4 = ULTIMA_2032_ToUpper(ULTIMA_1dda_WaitForKeystroke(0));
-        if (cVar4 == 'Y')
+        key = ULTIMA_2032_ToUpper(ULTIMA_1dda_WaitForKeystroke(0));
+        if (key == 'Y')
             break;
-    } while (cVar4 != 'N');
+    } while (key != 'N');
 
     ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
 
-    if (cVar4 == 'N')
+    if (key == 'N')
     {
         do
         {
@@ -913,15 +925,15 @@ L_GOG_1402:
 
     do // NOT MATCHING
     {
-        cVar4 = ULTIMA_2032_ToUpper(ULTIMA_1dda_WaitForKeystroke(0));
-        if (cVar4 == 'Y')
+        key = ULTIMA_2032_ToUpper(ULTIMA_1dda_WaitForKeystroke(0));
+        if (key == 'Y')
             break;
-    } while (cVar4 != 'N');
+    } while (key != 'N');
 
     ULTIMA_1b94_SelectTextWindow(1);
     ULTIMA_1bf2_SetTextPosition(10, 5);
 
-    if ((cVar4 == 'Y' && D_55a8_party[0].gender == 11) || (cVar4 == 'N' && D_55a8_party[0].gender == 12))
+    if ((key == 'Y' && D_55a8_party[0].gender == 11) || (key == 'N' && D_55a8_party[0].gender == 12))
     {
         ULTIMA_1850_PrintString(_TEXT(0x34a4, "Male"));
         D_55a8_party[0].gender = 0xb;
@@ -1012,7 +1024,7 @@ L_GOG_1402:
     ULTIMA_16ba_PrintChar(CTRL_CHAR_TOGGLE_INVERSION);
     ULTIMA_1bf2_SetTextPosition(10, 9);
     D_55a8_party[0].level = 1;
-    for (iVar7 = D_55a8_party[0].exp / 100; iVar7 > 0; iVar7 >>= 1)
+    for (i = D_55a8_party[0].exp / 100; i > 0; i >>= 1)
     {
         D_55a8_party[0].level++;
     }
@@ -1043,8 +1055,8 @@ L_GOG_1402:
     ULTIMA_1850_PrintString(_TEXT(0x3576, "STR:"));
     ULTIMA_16ba_PrintChar(CTRL_CHAR_TOGGLE_INVERSION);
     ULTIMA_1bf2_SetTextPosition(10, 0xb);
-    local_14 = D_55a8_party[0].str;
-    D_55a8_party[0].str = INTRO_12ea(local_14);
+    oldStat = D_55a8_party[0].str;
+    D_55a8_party[0].str = INTRO_12ea_ScaleU4Stat(oldStat);
     if (D_55a8_party[0].str < 0x14)
     {
         D_55a8_party[0].str = 0x14;
@@ -1055,7 +1067,7 @@ L_GOG_1402:
     ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
     ULTIMA_1bf2_SetTextPosition(1, 0);
     ULTIMA_1850_PrintString(_TEXT(0x357b, "Strength: was "));
-    ULTIMA_1a3e_PrintNumber(local_14, 1, 0x20);
+    ULTIMA_1a3e_PrintNumber(oldStat, 1, 0x20);
     ULTIMA_1850_PrintString(_TEXT(0x358a, "(50), now "));
     ULTIMA_1a3e_PrintNumber(D_55a8_party[0].str, 1, 0x20);
     ULTIMA_1850_PrintString(_TEXT(0x3595, "(30)"));
@@ -1077,15 +1089,15 @@ L_GOG_1402:
     ULTIMA_1850_PrintString(_TEXT(0x35a9, "DEX:"));
     ULTIMA_16ba_PrintChar(CTRL_CHAR_TOGGLE_INVERSION);
     ULTIMA_1bf2_SetTextPosition(10, 0xc);
-    local_14 = D_55a8_party[0].dex;
-    D_55a8_party[0].dex = INTRO_12ea(local_14);
+    oldStat = D_55a8_party[0].dex;
+    D_55a8_party[0].dex = INTRO_12ea_ScaleU4Stat(oldStat);
     ULTIMA_1a3e_PrintNumber(D_55a8_party[0].dex, 1, 0x20);
 
     ULTIMA_1b94_SelectTextWindow(2);
     ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
     ULTIMA_1bf2_SetTextPosition(1, 0);
     ULTIMA_1850_PrintString(_TEXT(0x35ae, "Dexterity: was "));
-    ULTIMA_1a3e_PrintNumber(local_14, 1, 0x20);
+    ULTIMA_1a3e_PrintNumber(oldStat, 1, 0x20);
     ULTIMA_1850_PrintString(_TEXT(0x35be, "(50), now "));
     ULTIMA_1a3e_PrintNumber(D_55a8_party[0].dex, 1, 0x20);
     ULTIMA_1850_PrintString(_TEXT(0x35c9, "(30)"));
@@ -1108,15 +1120,15 @@ L_GOG_1402:
     ULTIMA_16ba_PrintChar(CTRL_CHAR_TOGGLE_INVERSION);
     ULTIMA_1bf2_SetTextPosition(10, 0xd);
 
-    local_14 = D_55a8_party[0].intel;
-    D_55a8_party[0].mag = D_55a8_party[0].intel = INTRO_12ea(local_14);
+    oldStat = D_55a8_party[0].intel;
+    D_55a8_party[0].mag = D_55a8_party[0].intel = INTRO_12ea_ScaleU4Stat(oldStat);
     ULTIMA_1a3e_PrintNumber(D_55a8_party[0].mag, 1, 0x20);
 
     ULTIMA_1b94_SelectTextWindow(2);
     ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
     ULTIMA_1bf2_SetTextPosition(1, 0);
     ULTIMA_1850_PrintString(_TEXT(0x35e2, "Intellect: was "));
-    ULTIMA_1a3e_PrintNumber(local_14, 1, 0x20);
+    ULTIMA_1a3e_PrintNumber(oldStat, 1, 0x20);
     ULTIMA_1850_PrintString(_TEXT(0x35f2, "(50), now "));
     ULTIMA_1a3e_PrintNumber(D_55a8_party[0].intel, 1, 0x20);
     ULTIMA_1850_PrintString(_TEXT(0x35fd, "(30)"));
@@ -1157,7 +1169,7 @@ L_GOG_1402:
 #endif
     ULTIMA_251e_SwitchDisks(0);
 
-    D_5893_mapId = local_e;
+    D_5893_mapId = savedMap;
     D_a9be = 0;
 }
 #endif

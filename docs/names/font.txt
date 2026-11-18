@@ -1,0 +1,78 @@
+# FONT (font.c): despite its name, the introduction's story scenes ("The Summoning" ...: a four-row strip of map tiles with
+# actors, played from a script in MISCMAPS.DAT), the justified proportional text printer, and the character creation
+# (name, sex, the gypsy's questions that set intelligence, dexterity and strength). One overlay.
+# functions
+FONT_0000 FONT_0000_DrawJustifiedText    # asm in the DOS build (AFONT0.ASM): prints justified text with the proportional font
+FONT_02a2 FONT_02a2_DrawStripCell        # draws the strip's cell (x, y): the map tile or else the actor's tile
+FONT_02fc FONT_02fc_AnimateScene         # runs the scene's animation for so many frames (strip widening, sounds); 1 when a key was pressed
+FONT_0418 FONT_0418_LoadSceneStrip       # a scene's title and its four rows of map from the scratch buffer
+FONT_04a4 FONT_04a4_PlayIntroStory       # "view": the intro's story scenes, run from the script at 0x200 of MISCMAPS.DAT (actors placed, moved, moongates, lightning, loops)
+FONT_0998 FONT_0998_PickVirtue           # a random virtue (0..7) not offered before and not rejected; marks it offered
+FONT_09c8 FONT_09c8_AskVirtueQuestion    # the gypsy's question for two virtues: A or B decides the stat bonuses; the other virtue is out
+FONT_0b0a FONT_0b0a_CreateCharacter      # asks the name and sex, the seven questions, sets the stats and writes the new saved game
+FONT_0e52 FONT_0e52_SaveVideoPage        # asm (AFONT.ASM): saves the video page buffer before the tile set changes
+FONT_0e7b FONT_0e7b_RestoreVideoPage     # asm (AFONT.ASM): and restores it
+# locals and parameters
+font.c:FONT_02a2 param_1 x
+font.c:FONT_02a2 param_2 y
+font.c:FONT_02a2 local_4_ab tile
+font.c:FONT_02fc param_1 frames
+font.c:FONT_02fc local_8 row
+font.c:FONT_02fc local_6 index
+font.c:FONT_02fc local_4_ab actor
+font.c:FONT_0418 param_1 scene
+font.c:FONT_0418 local_6_an row
+font.c:FONT_0418 local_4_ab col
+font.c:FONT_04a4 local_18_ai dir
+font.c:FONT_04a4 local_16_ak repeat
+font.c:FONT_04a4 local_14_am argY
+font.c:FONT_04a4 local_12 argX
+font.c:FONT_04a4 local_10_aa step
+font.c:FONT_04a4 local_e_am pos
+font.c:FONT_04a4 local_c actor
+font.c:FONT_04a4 local_a tile
+font.c:FONT_04a4 local_8 gateY
+font.c:FONT_04a4 local_6 gateX
+font.c:FONT_04a4 local_4_aa loopStart
+font.c:FONT_0998 local_4_ab virtue
+font.c:FONT_09c8 param_1 fontImage
+font.c:FONT_09c8 param_2 cardImage
+font.c:FONT_09c8 local_10_ad_am rightCard
+font.c:FONT_09c8 local_e_am leftCard
+font.c:FONT_09c8 local_a swap
+font.c:FONT_09c8 local_c firstKey
+font.c:FONT_09c8 local_8 virtueB
+font.c:FONT_09c8 local_6 virtueA
+font.c:FONT_09c8 local_4_ab key
+font.c:FONT_0b0a local_a fontImage
+font.c:FONT_0b0a local_8 round
+font.c:FONT_0b0a local_6 gypsyImage
+font.c:FONT_0b0a local_4_ab key
+# globals (used only by font.c; the text-window and cursor globals D_5146..D_5158 are shared with the assembly, intro.c and endgame.c)
+D_514a D_514a_unused             # no code refers to it
+D_515a D_515a_toneStep           # counts 0..7 in scene 3: a tone at 0 and at 4
+D_5164 D_5164_intBonus           # per virtue: intelligence added by choosing it
+D_516c D_516c_dexBonus           # dexterity added
+D_5174 D_5174_strBonus           # strength added
+D_517c D_517c_questionOffset     # offset in QUESTION.DAT of the question for a pair of virtues
+D_51fc D_51fc_cardX              # x of the virtue's card image
+D_5204 D_5204_cardY              # y of the virtue's card image
+D_bd26 D_bd26_stripLeft          # the revealed part of the scene strip: first column
+D_bd27 D_bd27_stripRight         # last column
+D_bd28 D_bd28_stripWiden         # toggles; every other frame the strip widens by a column each side
+D_bd29 D_bd29_sceneNo            # the scene (0..3): 2 has white noise, 3 a tone
+D_bd2a D_bd2a_virtueOffered      # virtues already offered in this round
+D_bd32 D_bd32_virtueRejected     # virtues that lost a question
+D_bd3c D_bd3c_newInt             # the intelligence, dexterity and strength being built from the answers
+D_bd3d D_bd3d_newDex
+D_bd3e D_bd3e_newStr
+font.c:FONT_0000 param_1 glyphs
+font.c:FONT_0000 param_2 text
+font.c:FONT_0000 local_12 region
+font.c:FONT_0000 local_10_aa scan
+font.c:FONT_0000 local_e_am lineStart
+font.c:FONT_0000 local_c lineWidth
+font.c:FONT_0000 local_a spaces
+font.c:FONT_0000 local_8 slack
+font.c:FONT_0000 local_6 lineEnd
+font.c:FONT_0000 local_4_aa used
