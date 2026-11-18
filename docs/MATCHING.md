@@ -192,6 +192,40 @@ identical and every name defined. It opens no game file to link.
   `00 5e a1 07` after its THEADR, as Clipper's objects have. Kept in
   `../tools/plink86plus-2.24` (with tagged test objects and NOTES.txt) and `-2.21`.
 
+### Linking with PLINK86plus 2.24
+
+The original linker links u5d's own objects (`research/plink/plu5.py`, `plcmp.py`; the linker
+is kept outside the repository, see "The link" above). The objects get the Nantucket tag;
+PLMGR, PLTAB and PLSTART stay out (the linker makes the overlay table and stubs, and takes
+its loader from OVERLAY.LIB); each overlay is a `SECTION INTO NAME` in four `BEGIN ... END`
+areas, in the link script's order; the names u5link resolves by address are DEFINEd to that
+address, CMDS_0000's short link names to their long names, `STUB_X` to `X`. What it gives:
+
+- **Every overlay file has the original's length**, and FLAMES.OVL is identical. The others
+  differ in segment values only: the overlay areas start at 85a0 instead of 81d0, because the
+  default loader (0x609 bytes of code and 0x248 of data) goes after the overlay table, where
+  the original has a 0x4a0-byte loader before the table and its start-up code (PLSTART) in
+  the first overlay area. Choosing the loader variant and the start-up's place is open.
+- **The library code goes after ULTIMA.OBJ** only if the other root objects' code segment
+  has another name than `_TEXT` (tried by renaming it to `XTEXT` in their objects): PLINK
+  combines segments by name in the order it first sees them, and the library modules, all
+  `_TEXT`, join ULTIMA.OBJ's. With `LIBRARY` or `SEARCH` and one `_TEXT` they go after the
+  last root object. So the original's root modules (C and assembly) had their own code
+  segment name(s), ULTIMA.OBJ (the main module) the default one.
+- **The library modules interleave** (crt0, crt0dat, LIBH's uldiv, memchr...) as in the
+  original only with one merged library, as MSC's setup builds SLIBCE.LIB (SLIBCR + LIBH,
+  with or without EM and SLIBFP, in any order: PLINK pulls modules in the order it meets
+  the undefined names, breadth first, not in library order). Then the root image is
+  identical at the same offset in 26,397 of its 29,408 bytes (0000-72e0): every module from
+  itoa (0426) on is where the original has it. Left: memchr comes right after crt0 (the
+  original has it after uldiv), whatever the library order, `SEARCH` or `LIBRARY`; the
+  original ULTIMA.OBJ or link order must differ in what references it first.
+- DGROUP stays in the EXE as a pre-loaded section (DATA.OVL is a file of its own in the
+  original: open). The header has the original's form (relocations at 0x1e, the word 1).
+- So the link script's placement facts may follow from PLINK's rules plus a few facts about
+  the original build (segment names, the merged library, the loader variant, Origin's
+  `.LNK`). Not done: getting the overlay bases and DATA.OVL right and comparing byte for byte.
+
 ### The link script: `src/u5d.lnk`
 
 Where everything goes is a fact about the original, and the facts are in one text file,
