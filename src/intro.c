@@ -154,7 +154,7 @@ void INTRO_014e_Introduction(void)
         local_c = ULTIMA_0fae_LoadResourceFile(D_25ea_fileNames[0]);
     } while (local_c == 0);
 
-    FONT_0000(local_c, _TEXT(0x2f30, ""));
+    FONT_0000_DrawJustifiedText(local_c, _TEXT(0x2f30, ""));
     ULTIMA_0c22_GRAP_0f_SelectPage(1);
     ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
     ULTIMA_0c22_GRAP_0f_SelectPage(0);
@@ -228,15 +228,15 @@ void INTRO_014e_Introduction(void)
         if (D_30f0[local_a] == 3)
         {
             ULTIMA_0d4c_GRAP_4b_PutImage(local_6, 3, 0x60, 0x27, 0);
-            FONT_0000(local_c, _TEXT(0x2f31, "Instantly, a shimmering blue door springs up!"));
+            FONT_0000_DrawJustifiedText(local_c, _TEXT(0x2f31, "Instantly, a shimmering blue door springs up!"));
             D_5156 = D_306c[local_a];
             D_5158 = 0xb4;
-            FONT_0000(local_c, _TEXT(0x2f5f, "With heart beating rapidly, you step into it."));
+            FONT_0000_DrawJustifiedText(local_c, _TEXT(0x2f5f, "With heart beating rapidly, you step into it."));
         }
         else
         {
             ULTIMA_256e_ReadFileFromDisk(/*0x2f8d*/ "STORY.DAT", D_b21e_scratch, 2000, D_3016[local_a]);
-            FONT_0000(local_c, D_b21e_scratch);
+            FONT_0000_DrawJustifiedText(local_c, D_b21e_scratch);
         }
 
         if (local_a != 0)

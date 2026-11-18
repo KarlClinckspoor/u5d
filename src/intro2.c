@@ -248,7 +248,7 @@ void INTRO_0986_Main(void)
             AUDIO_PlayBgm(BGM_ID_1);
 #endif
 
-            FONT_04a4();
+            FONT_04a4_PlayIntroStory();
         }
         // 0cc4
         local_a = 1;
@@ -431,7 +431,7 @@ void INTRO_0986_Main(void)
 
         case 0x43: // 'C'
             // 0fa8
-            FONT_0b0a();
+            FONT_0b0a_CreateCharacter();
         L_0fab:
             ULTIMA_1c22_SetTextWindowSize(0, 0, 0, 0x27, 0x18);
             ULTIMA_1b94_SelectTextWindow(0);
@@ -467,7 +467,7 @@ void INTRO_0986_Main(void)
             break;
 
         case 0x52:       // 'R'
-            FONT_04a4(); // thunk
+            FONT_04a4_PlayIntroStory(); // thunk
             break;
         }
     } while (1);

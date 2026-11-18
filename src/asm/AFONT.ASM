@@ -1,5 +1,5 @@
 ; AFONT.ASM: FONT.OVL 0e52-0e97, hand-written assembly in the original.
-; The last two routines of FONT.OVL, linked after font.c. FONT_04a4 ("view") loads a
+; The last two routines of FONT.OVL, linked after font.c. FONT_04A4_PLAYINTROSTORY ("view") loads a
 ; different tile set; around that, these save the first 0x3000 bytes of the video page
 ; buffer (segment D_5354_PAGESEGMENT) into the code segment, and copy them back. The place is overlay
 ; area 2: D_520C is FLAMES_0000's return address there (see AFLAMES.ASM), taken on first use.
@@ -29,8 +29,8 @@ _DATA	ENDS
 _TEXT	SEGMENT
 
 ; save: D_5354_PAGESEGMENT:0000 (0x1800 words) to CS:[D_520C]
-	PUBLIC	FONT_0E52
-FONT_0E52:
+	PUBLIC	FONT_0E52_SAVEVIDEOPAGE
+FONT_0E52_SAVEVIDEOPAGE:
 	push bp
 	mov bp,sp
 	push si
@@ -55,8 +55,8 @@ L_0e65:
 	ret
 
 ; restore: CS:[D_520C] to D_5354_PAGESEGMENT:0000
-	PUBLIC	FONT_0E7B
-FONT_0E7B:
+	PUBLIC	FONT_0E7B_RESTOREVIDEOPAGE
+FONT_0E7B_RESTOREVIDEOPAGE:
 	push bp
 	mov bp,sp
 	push si

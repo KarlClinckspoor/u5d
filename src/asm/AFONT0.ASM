@@ -1,4 +1,4 @@
-; AFONT0.ASM: FONT.OVL 0000-02a2, FONT_0000: MSC 5.0 output in the original (font.c's first
+; AFONT0.ASM: FONT.OVL 0000-02a2, FONT_0000_DRAWJUSTIFIEDTEXT: MSC 5.0 output in the original (font.c's first
 ; function), not yet matched in C. It prints justified text: [bp+4] the glyph image, [bp+6]
 ; the text (see the C version in src/font.c, kept for the native build). The C comes within
 ; 56 bytes (670 against 674), so until it matches, the DOS build takes the function from
@@ -31,8 +31,8 @@ DGROUP	GROUP	CONST, _BSS, _DATA
 
 _TEXT	SEGMENT
 
-	PUBLIC	FONT_0000
-FONT_0000:
+	PUBLIC	FONT_0000_DRAWJUSTIFIEDTEXT
+FONT_0000_DRAWJUSTIFIEDTEXT:
 	push bp
 	mov bp,sp
 	sub sp,1ch

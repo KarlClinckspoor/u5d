@@ -97,7 +97,7 @@ static void ENDGAME_0000_ShowEndScreens(void)
         D_5158 = D_3de8_startY[screen];
 
         ULTIMA_256e_ReadFileFromDisk(_TEXT(0x81fe, "END.DAT"), D_b21e_scratch, 2000, D_3dca_textOffset[screen]);
-        FONT_0000(fontImage, D_b21e_scratch); // 7ce6 -> 1778:0566
+        FONT_0000_DrawJustifiedText(fontImage, D_b21e_scratch); // 7ce6 -> 1778:0566
 
         if (screen != 0)
         {

@@ -1,6 +1,6 @@
 ; AFLAMES.ASM: FLAMES.OVL 0000-0011, hand-written assembly in the original.
 ; All of FLAMES.OVL. FLAMES_0000 returns, in AX, its own return address from FLAMES_000E:
-; an address in overlay area 2, which FONT_0e52 (AFONT.ASM) uses as a scratch buffer.
+; an address in overlay area 2, which FONT_0E52_SAVEVIDEOPAGE (AFONT.ASM) uses as a scratch buffer.
 ; Written by hand from the original bytes; tools/asmbuild.py checks it.
 
 	TITLE	AFLAMES

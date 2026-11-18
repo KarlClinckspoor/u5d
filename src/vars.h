@@ -478,19 +478,19 @@ STUB u16 D_5152; // TODO: int?
 STUB u16 D_5154;
 STUB u16 D_5156;
 STUB u16 D_5158; // TODO: int?
-STUB u16 D_515a; // = 0
+STUB u16 D_515a_toneStep; // = 0
 
 STUB char* D_515c[4];
 
 // 5200
 
-STUB u8 D_5164[8];
-STUB u8 D_516c[8];
-STUB u8 D_5174[8];
-STUB u16 D_517c[8][8];
-STUB u8 D_51fc[8];
-STUB u8 D_5204[8];
-STUB u16 D_520c; // AFONT.ASM's: where FONT_0e52 saves the video page
+STUB u8 D_5164_intBonus[8];
+STUB u8 D_516c_dexBonus[8];
+STUB u8 D_5174_strBonus[8];
+STUB u16 D_517c_questionOffset[8][8];
+STUB u8 D_51fc_cardX[8];
+STUB u8 D_5204_cardY[8];
+STUB u16 D_520c; // AFONT.ASM's: where FONT_0e52_SaveVideoPage saves the video page
 
 // main parameters
 // int D_52a2;     // __argc
@@ -917,8 +917,8 @@ BSS u16 D_bcb0; // no code refers to it
 
 BSS char D_bcb2_lineBuf[0x27 + 1];
 
-BSS u8 D_bd2a[8];
-BSS u8 D_bd32[8];
+BSS u8 D_bd2a_virtueOffered[8];
+BSS u8 D_bd32_virtueRejected[8];
 
 BSS u8 D_bcda_lineLen;
 
@@ -943,16 +943,16 @@ BSS s16 D_bd20_drinksBought; // int?
 BSS s16 D_bd22_thrownOut;
 BSS s16 D_bd24_shipSold;
 
-BSS u8 D_bd26;
-BSS u8 D_bd27;
-BSS u8 D_bd28;
-BSS u8 D_bd29;
+BSS u8 D_bd26_stripLeft;
+BSS u8 D_bd27_stripRight;
+BSS u8 D_bd28_stripWiden;
+BSS u8 D_bd29_sceneNo;
 
 BSS u8 D_bd3a; // no code refers to it
 BSS u8 D_bd3b; // no code refers to it
-BSS u8 D_bd3c;
-BSS u8 D_bd3d;
-BSS u8 D_bd3e;
+BSS u8 D_bd3c_newInt;
+BSS u8 D_bd3d_newDex;
+BSS u8 D_bd3e_newStr;
 
 // ..bd3f]
 
