@@ -33,7 +33,7 @@ int INTRO_094e_Pause(int ticks);
 // defined in introb.c, the part of INTRO.OVL built with MSC 5.0
 void INTRO_2090_AnimateWD(void);
 
-void INTRO_132a_TransferFromU4(void);     // DOS build: src/asm/AINTRO2.ASM
+void INTRO_132a_TransferFromU4(void);     // GOG DOS build: src/asm/AINTRO2.ASM
 void INTRO_1e22_PrintFieldLabel(int field);
 void INTRO_2024_SetUpTransferScreen(void);
 void INTRO_20ae_ShowWD(byte* ptr);
@@ -669,31 +669,37 @@ int INTRO_12ea_ScaleU4Stat(int stat)
     }
 }
 
-// The DOS build takes INTRO_132a from src/asm/AINTRO2.ASM (assembly written from the
-// original's bytes, linked after this object), with its strings (DS:3345-3655): GOG patched
-// the function in place, so its bytes are no compiler's output. This C is compiled for the
-// native build only.
-#if !defined(TARGET_DOS16)
+// The GOG (1992) DOS build takes INTRO_132a from src/asm/AINTRO2.ASM (assembly written from
+// the original's bytes, linked after this object), with its strings (DS:3345-3655): the 1992
+// patch changed the function in place, so its bytes are no compiler's output. This C is
+// compiled for the native build (with the 1992 patch, GOG_BUILD) and for the 1988 build
+// (RELEASE_1988), where it is EXACT against the October 1988 INTRO.OVL (match.py with
+// U5_GAMEDATA=../gamedata-1988; the DOS build has no GOG_BUILD, so the #else parts are 1988's).
+// What matched it (it was 2796 bytes against 2808):
+// - the frame is 12h: the drive letter and the Y/N answers are one variable (key, bp-10h),
+//   and ten bytes nearest BP are never used (unusedBuf; one array or several locals, the
+//   code cannot tell);
+// - the two Y/N loops are `while ((key = ...) != 'Y' && key != 'N');` (jmp to the read, the
+//   'N' test re-reading key from the stack), not a do-while with a break;
+// - the level loop is `i = exp / 100; while (i > 0) { level++; i >>= 1; }`: as a `while` MSC
+//   5.1 keeps i in CX (stored before and after the loop); as a `for` it stays in memory.
+#if !defined(TARGET_DOS16) || defined(RELEASE_1988)
 // Transfer from Ultima IV: asks for the disk and drive, converts the character, shows the old and new values
 // (name, sex, class, experience, level, stats) with questions about the name and sex, and saves SAVED.GAM.
-// Assembly in the DOS build; this C is native-only.
 void INTRO_132a_TransferFromU4(void)
 {
     int oldStat;
     int savedMap;
+    char unusedBuf[10];
     byte key;
-    byte unusedA;
-    byte unusedB;
     int i;
-    int unusedC;
-    byte drive;
 
 #if defined(GOG_BUILD)
-    // GOG patched (1332..134c)
+    // 1992 patch (1332..134c)
     savedMap = D_5893_mapId == 66 ? 65 : D_5893_mapId;
     D_a9cc = D_a9cb = D_a9c8_diskDrives[0];
 #else
-    // MATCHING (1.16)
+    // 1988 (1.16)
     if (D_5893_mapId == 66)
     {
         D_5893_mapId = 65;
@@ -716,8 +722,8 @@ void INTRO_132a_TransferFromU4(void)
     ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
 
 #if defined(GOG_BUILD)
-    // GOG patched (1392..1399)
-    drive = D_a9c8_diskDrives[0];
+    // 1992 patch (1392..1399)
+    key = D_a9c8_diskDrives[0];
     goto L_GOG_1402;
 #endif
 
@@ -734,8 +740,8 @@ void INTRO_132a_TransferFromU4(void)
 
     do
     {
-        drive = ULTIMA_2032_ToUpper(ULTIMA_1dda_WaitForKeystroke(0));
-        if (drive == U5_KEY_ESC)
+        key = ULTIMA_2032_ToUpper(ULTIMA_1dda_WaitForKeystroke(0));
+        if (key == U5_KEY_ESC)
         {
             D_5893_mapId = savedMap;
             return;
@@ -744,7 +750,7 @@ void INTRO_132a_TransferFromU4(void)
 L_GOG_1402:
         ;
 #endif
-    } while (ULTIMA_1eac_SetDefaultDrive(drive) == 0);
+    } while (ULTIMA_1eac_SetDefaultDrive(key) == 0);
 
     D_5394_diskSwapFn = ULTIMA_2322_DiskSwapMessage;
 
@@ -877,12 +883,8 @@ L_GOG_1402:
     ULTIMA_1bf2_SetTextPosition(10, 0);
     ULTIMA_1850_PrintString(_TEXT(0x345e, "Keep this name?"));
 
-    do // NOT MATCHING
-    {
-        key = ULTIMA_2032_ToUpper(ULTIMA_1dda_WaitForKeystroke(0));
-        if (key == 'Y')
-            break;
-    } while (key != 'N');
+    while ((key = ULTIMA_2032_ToUpper(ULTIMA_1dda_WaitForKeystroke(0))) != 'Y' && key != 'N')
+        ;
 
     ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
 
@@ -923,12 +925,8 @@ L_GOG_1402:
     ULTIMA_1850_PrintString(_TEXT(0x3495, "Keep same sex?"));
     ULTIMA_16ba_PrintChar(CTRL_CHAR_UNCENTER_TEXT);
 
-    do // NOT MATCHING
-    {
-        key = ULTIMA_2032_ToUpper(ULTIMA_1dda_WaitForKeystroke(0));
-        if (key == 'Y')
-            break;
-    } while (key != 'N');
+    while ((key = ULTIMA_2032_ToUpper(ULTIMA_1dda_WaitForKeystroke(0))) != 'Y' && key != 'N')
+        ;
 
     ULTIMA_1b94_SelectTextWindow(1);
     ULTIMA_1bf2_SetTextPosition(10, 5);
@@ -1024,9 +1022,11 @@ L_GOG_1402:
     ULTIMA_16ba_PrintChar(CTRL_CHAR_TOGGLE_INVERSION);
     ULTIMA_1bf2_SetTextPosition(10, 9);
     D_55a8_party[0].level = 1;
-    for (i = D_55a8_party[0].exp / 100; i > 0; i >>= 1)
+    i = D_55a8_party[0].exp / 100;
+    while (i > 0)
     {
         D_55a8_party[0].level++;
+        i >>= 1;
     }
 
     D_55a8_party[0].hp = D_55a8_party[0].maxHp = D_55a8_party[0].level * 0x1e;
