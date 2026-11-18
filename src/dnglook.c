@@ -849,12 +849,12 @@ void DNGLOOK_0c6c_BuildWallRing(void)
 
         if (kind_j == 3)
         {
-            D_bb16 = 1;
+            D_bb16_altTileset = 1;
             ULTIMA_6fbc_TilesetMode(0);
         }
         else
         {
-            D_bb16 = 0;
+            D_bb16_altTileset = 0;
         }
     }
 
@@ -1031,7 +1031,7 @@ void DNGLOOK_0fda_StepAfterCombat(void)
     {
     case DIR_UP:
         D_5897_mapY--;
-        D_6602 = D_6603_dungeonFacing = 0;
+        D_6602_dungeonMoveDir = D_6603_dungeonFacing = 0;
         if (7 < D_5897_mapY)
         {
             D_5897_mapY = 7;
@@ -1040,7 +1040,7 @@ void DNGLOOK_0fda_StepAfterCombat(void)
 
     case DIR_RIGHT:
         D_5896_mapX++;
-        D_6602 = D_6603_dungeonFacing = 1;
+        D_6602_dungeonMoveDir = D_6603_dungeonFacing = 1;
         if (7 < D_5896_mapX)
         {
             D_5896_mapX = 0;
@@ -1049,7 +1049,7 @@ void DNGLOOK_0fda_StepAfterCombat(void)
 
     case DIR_DOWN:
         D_5897_mapY++;
-        D_6602 = D_6603_dungeonFacing = 2;
+        D_6602_dungeonMoveDir = D_6603_dungeonFacing = 2;
         if (7 < D_5897_mapY)
         {
             D_5897_mapY = 0;
@@ -1058,7 +1058,7 @@ void DNGLOOK_0fda_StepAfterCombat(void)
 
     case DIR_LEFT:
         D_5896_mapX--;
-        D_6602 = D_6603_dungeonFacing = 3;
+        D_6602_dungeonMoveDir = D_6603_dungeonFacing = 3;
         if (7 < D_5896_mapX)
         {
             D_5896_mapX = 7;
@@ -1074,7 +1074,7 @@ void DNGLOOK_0fda_StepAfterCombat(void)
         else
         {
             D_5895_mapLevel--;
-            D_6602 = 4;
+            D_6602_dungeonMoveDir = 4;
         }
         break;
 
@@ -1087,7 +1087,7 @@ void DNGLOOK_0fda_StepAfterCombat(void)
         else
         {
             D_5895_mapLevel++;
-            D_6602 = 5;
+            D_6602_dungeonMoveDir = 5;
         }
         break;
     }

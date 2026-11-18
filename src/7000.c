@@ -19,7 +19,7 @@ static void ULTIMA_7040_SetBeamCells(int frame, int setCells, int beaconX, int b
     }
 
     frame = (frame % 0x10);
-    cell = &D_1f7e[frame * 0x10];
+    cell = &D_1f7e_beamCells[frame * 0x10];
 
     for (cellIndex_i = 0; cellIndex_i < 0x10; cellIndex_i++)
     {

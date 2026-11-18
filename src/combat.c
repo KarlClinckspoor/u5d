@@ -102,7 +102,7 @@ static int COMBAT_014e_MonsterRanged(int attacker, int target, int warded)
     int missileKind_c;
 
     type_k = D_ba14_combatants[attacker].entityIdx;
-    missileKind_c = D_15cc[type_k];
+    missileKind_c = D_15cc_enemyMissile[type_k];
     if (type_k != 0x1a && ULTIMA_2092_RandomRange(0, 0xff) >= 0x80 || (D_153c_enemyFlags[type_k] & ENEMY_FLAG_MAGIC) != 0 && (D_587a_statusIcon == 'N' ||
         D_587a_statusIcon == 0x1c))
     {
@@ -117,7 +117,7 @@ static int COMBAT_014e_MonsterRanged(int attacker, int target, int warded)
         }
         else
         {
-            onTarget = COMBAT_14d6_RollToHit(target, attacker, -(int)D_588f, 0);
+            onTarget = COMBAT_14d6_RollToHit(target, attacker, -(int)D_588f_castCircle, 0);
         }
 
         struck = COMSUBS_0822_ResolveShot(attacker, D_ba14_combatants[target].x, D_ba14_combatants[target].y, onTarget, missileKind_c);
@@ -182,7 +182,7 @@ static int COMBAT_0226_MonsterAttack(int monster)
         }
 
         // 02df
-        if (COMSUBS_04d4_CombatantDistance(monster, target) <= D_159c[type_m])
+        if (COMSUBS_04d4_CombatantDistance(monster, target) <= D_159c_enemyRange[type_m])
         {
             if (type_m == 0x1a)
             {
@@ -197,8 +197,8 @@ static int COMBAT_0226_MonsterAttack(int monster)
                 }
 
                 ULTIMA_43ae_AudioSweepTone(0x2ee, 400, 5, 0x96);
-                D_58a8[target] = monster;
-                if (COMBAT_14d6_RollToHit(target, monster, -(uint)D_588f, 0) == 0)
+                D_58a8_lastAttacker[target] = monster;
+                if (COMBAT_14d6_RollToHit(target, monster, -(uint)D_588f_castCircle, 0) == 0)
                 {
                     return 1;
                 }
@@ -289,7 +289,7 @@ static void COMBAT_03f4_MonsterTurn(void)
             // 04cb
             if (COMBAT_0ee4_MonsterMove(D_589e_curCombatant) != 0)
             {
-                if ((D_58a2 & 0x10) != 0)
+                if ((D_58a2_combatEvents & 0x10) != 0)
                 {
                     ULTIMA_16ba_PrintChar('\n');
                     ULTIMA_43ae_AudioSweepTone(0x4b0, 2000, 1, 0x28);
@@ -357,7 +357,7 @@ static int COMBAT_0544_RunCommand(char* verb, int command)
 // Adds ", " (after the first) and the name of a readied weapon to the line in D_b21e_scratch; 1 when the weapon exists.
 static int COMBAT_05b6_AppendWeaponName(int weapon, int listed)
 {
-    if (weapon != 0xff && D_15fc[weapon] != 0)
+    if (weapon != 0xff && D_15fc_weaponAttack[weapon] != 0)
     {
         if (listed != 0)
         {
@@ -528,7 +528,7 @@ static void COMBAT_063e_ProcessCommand(void)
                                 if (COMSUBS_09fc_EnemyInterferes(D_589e_curCombatant) == 0)
                                 {
                                     // abab / 091b
-                                    D_588f = D_5890 = 1;
+                                    D_588f_castCircle = D_5890_spellAttack = 1;
                                     askAgain = 0;
                                     if (D_587a_statusIcon == 'N' || (D_57b4_crown == 0 && D_5894_savedMapId == 0x12))
                                     {
@@ -834,11 +834,11 @@ int COMBAT_0b94_MainLoop(void)
                         {
                             // aedb
                             entity->turnTimer = 36 - entity->dex; // reset timer
-                            D_589d_attackWeapon = D_5890 = D_588f = D_58a2 = D_5898_crosshairOn = 0;
-                            D_5882++;
-                            if (D_5882 == 10)
+                            D_589d_attackWeapon = D_5890_spellAttack = D_588f_castCircle = D_58a2_combatEvents = D_5898_crosshairOn = 0;
+                            D_5882_combatTick++;
+                            if (D_5882_combatTick == 10)
                             {
-                                D_5882 = 0;
+                                D_5882_combatTick = 0;
                                 ULTIMA_4f7c_AdvanceTime(1);
                             }
 
@@ -854,7 +854,7 @@ int COMBAT_0b94_MainLoop(void)
                             }
 
                             // af23
-                            D_58a8[D_589e_curCombatant] = 0xff;
+                            D_58a8_lastAttacker[D_589e_curCombatant] = 0xff;
                             COMBAT_1b1e_TerrainEffect(D_589e_curCombatant);
                             SJOG_1b6c_CountCombatants();
 
@@ -1041,7 +1041,7 @@ static int COMBAT_0d30_ChooseTarget(int combatant)
 // CHECKED
 // A monster's move. A teleporter (ENEMY_FLAG_TELEPORT) tries to jump to a free random cell: always when boxed in (SJOG_2148_IsSurrounded), else 3 in 4.
 // The Mimic and the Reaper (0x1a, 0x1b) never move. Otherwise it steps toward its target when it can, else a random side step; leaving
-// the view sets D_58a2 to 0x10. Returns 1 when it moved.
+// the view sets D_58a2_combatEvents to 0x10. Returns 1 when it moved.
 static int COMBAT_0ee4_MonsterMove(int combatant)
 {
     int target;
@@ -1140,7 +1140,7 @@ static int COMBAT_0ee4_MonsterMove(int combatant)
 
                 if (ULTIMA_6d82_IsInView(self_f->x, self_f->y) == 0)
                 {
-                    D_58a2 = 0x10;
+                    D_58a2_combatEvents = 0x10;
                 }
             }
         }
@@ -1287,7 +1287,7 @@ static int COMBAT_12b0_RollDamage(int attacker, int victim)
             break;
 
         default:
-            attack = D_15fc[attack];
+            attack = D_15fc_weaponAttack[attack];
             if (attack > 1 && attack != 99)
             {
                 attack = ULTIMA_2092_RandomRange(1, attack);
@@ -1347,7 +1347,7 @@ static int COMBAT_139a_EffectiveDex(int combatant)
 }
 
 // A stat of a combatant: -1 intelligence, -2 dexterity (COMBAT_139a), -3 strength, -4 defense. A weapon number (> 0) picks strength or
-// dexterity by its kind (D_169c == 8: strength), and 0 does so for a monster by its flags.
+// dexterity by its kind (D_169c_weaponMissile == 8: strength), and 0 does so for a monster by its flags.
 int COMBAT_13e2_QueryStat(int combatant, int stat)
 {
     int value;
@@ -1383,7 +1383,7 @@ int COMBAT_13e2_QueryStat(int combatant, int stat)
             }
             else
 #endif
-            if (D_169c[stat] == 8) // TODO: offset? (+1?)
+            if (D_169c_weaponMissile[stat] == 8) // TODO: offset? (+1?)
             {
                 // -> 1411
                 stat = QUERY_STAT_STR;
@@ -1458,7 +1458,7 @@ int COMBAT_14d6_RollToHit(int target, int attacker, int unused, int weapon)
     attackStat = QUERY_STAT_INTEL;
     hit_n = 0;
 
-    if (D_588f != 0)
+    if (D_588f_castCircle != 0)
     {
         if (weapon > 0x29 && weapon < 0x32 || weapon == 0x33)
         {
@@ -1521,7 +1521,7 @@ int COMBAT_1574_ApplyDamage(int target, int damage)
 
     if (damage < 1)
     {
-        D_58a2 = 0x20;
+        D_58a2_combatEvents = 0x20;
         damage = 0;
     }
 
@@ -1545,7 +1545,7 @@ int COMBAT_1574_ApplyDamage(int target, int damage)
     }
     else
     {
-        if ((((byte)D_153c_enemyFlags[entity->entityIdx]) & ENEMY_FLAG_UNDEAD) != 0 && D_5890 == 0)
+        if ((((byte)D_153c_enemyFlags[entity->entityIdx]) & ENEMY_FLAG_UNDEAD) != 0 && D_5890_spellAttack == 0)
         {
             damage /= 2;
         }
@@ -1612,7 +1612,7 @@ int COMBAT_1574_ApplyDamage(int target, int damage)
             {
                 ULTIMA_1850_PrintString(D_1856_enemyNames[entity->entityIdx]);
                 ULTIMA_1850_PrintString(_TEXT(0x6f36, " vanishes!"));
-                D_58a2 = 2;
+                D_58a2_combatEvents = 2;
                 D_5c5a_actors[entity->actorIdx].tile = D_5c5a_actors[entity->actorIdx].animTile = TILE_ACTOR_CIRCLE;
                 ULTIMA_1068_RevealTile(GetCombatMap(entity->x, entity->y), entity->x, entity->y);
                 COMBAT_1236_RemoveEntity(-(target + 1));
@@ -1660,7 +1660,7 @@ void COMBAT_18ba_Poison(int target, int attacker)
         D_55a8_party[D_ba14_combatants[target].entityIdx].status = STATUS_POISONED;
         ULTIMA_1850_PrintString(D_55a8_party[D_ba14_combatants[target].entityIdx].name);
         ULTIMA_1850_PrintString(_TEXT(0x6f4e, " is poisoned!\n"));
-        D_58a2 = 8;
+        D_58a2_combatEvents = 8;
         D_a9fa_vitalsDirty = 1;
     }
     else
@@ -1674,7 +1674,7 @@ void COMBAT_18ba_Poison(int target, int attacker)
 }
 
 // The effect of a hit: a poisonous monster poisons (3 in 4), the Gazer puts to sleep, a spell of sleep or poison acts as a field would,
-// else the damage is rolled (COMBAT_12b0) and applied; the attacking member earns experience. A miss on a member sets D_58a2 to 0x20.
+// else the damage is rolled (COMBAT_12b0) and applied; the attacking member earns experience. A miss on a member sets D_58a2_combatEvents to 0x20.
 void COMBAT_194a_ResolveHit(int target, int attacker)
 {
     int damage;
@@ -1709,7 +1709,7 @@ void COMBAT_194a_ResolveHit(int target, int attacker)
             return;
         }
 
-        if (D_5890 != 0 && D_589d_attackWeapon == 52)
+        if (D_5890_spellAttack != 0 && D_589d_attackWeapon == 52)
         {
             ULTIMA_68ae_PutToSleep(target);
             // -> 1a54
@@ -1717,13 +1717,13 @@ void COMBAT_194a_ResolveHit(int target, int attacker)
         }
 
         // 19ee
-        if (D_5890 == 0 || D_589d_attackWeapon != 51)
+        if (D_5890_spellAttack == 0 || D_589d_attackWeapon != 51)
         {
             // 19fc
             damage = COMBAT_12b0_RollDamage(attacker, target);
             if (damage < 0 && (D_ba14_combatants[target].flags & COMBAT_FLAGS_PLAYER) != 0)
             {
-                D_58a2 = 0x20;
+                D_58a2_combatEvents = 0x20;
                 return; // -> 1a54
             }
 

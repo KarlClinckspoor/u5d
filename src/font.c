@@ -12,8 +12,8 @@
 #include "intro.h"
 #include "tiles.h"
 
-// glyph widths from ' ' (never read: spaces are D_5154 wide) to 'z'
-u8 D_50ea[0x5b] =
+// glyph widths from ' ' (never read: spaces are D_5154_spaceWidth wide) to 'z'
+u8 D_50ea_glyphWidths[0x5b] =
 {
     0x00,
     0x02, 0x06, 0x07, 0x07, 0x07, 0x07, 0x03, 0x04,
@@ -30,23 +30,23 @@ u8 D_50ea[0x5b] =
     0x05, 0x04
 };
 
-u16 D_5146[2] = {0, 0};
+u16 D_5146_textLeftX[2] = {0, 0};
 u16 D_514a_unused = 0; // no code refers to it
 
-u16 D_514c[2] = {0x0140, 0x0140};
+u16 D_514c_textRightX[2] = {0x0140, 0x0140};
 
-u16 D_5150 = 0x00c8;
+u16 D_5150_regionTop = 0x00c8;
 
-u16 D_5152 = 0x00c8;
+u16 D_5152_regionBottom = 0x00c8;
 
-u16 D_5154 = 5;
+u16 D_5154_spaceWidth = 5;
 
-u16 D_5156 = 0;
+u16 D_5156_penX = 0;
 
-u16 D_5158 = 0x003c;
+u16 D_5158_penY = 0x003c;
 u16 D_515a_toneStep = 0;
 
-char* D_515c[4] =
+char* D_515c_sceneCaptions[4] =
 {
     _STATIC_TEXT(0xa010, "The Summoning"),
     _STATIC_TEXT(0xa01e, "The Journey"),
@@ -81,7 +81,7 @@ u8 D_5204_cardY[8] = {0x05, 0x07, 0x04, 0x0a, 0x08, 0x00, 0x05, 0x06};
 // compiled for the native build only.
 #if !defined(TARGET_DOS16)
 // Prints text justified in the proportional font: the glyph image and the text; the margins and the cursor
-// are the globals D_5146..D_5158 (two regions, so that text can run beside a picture). Assembly in the DOS
+// are the globals D_5146_textLeftX..D_5158_penY (two regions, so that text can run beside a picture). Assembly in the DOS
 // build.
 // CLEAN ROOM (written from the disassembly). Prints justified text: glyphs the glyph
 // image, text the text. Per line: loop A measures up to the line width, loop B backs up
@@ -105,7 +105,7 @@ u8 D_5204_cardY[8] = {0x05, 0x07, 0x04, 0x0a, 0x08, 0x00, 0x05, 0x06};
 // - the frame is 1Ah, the original's 1Ch: at 025f the original keeps region * 2 in BX
 //   with a dead store at bp-1Ch (shl ax,1; mov [bp-1Ch],ax; mov bx,ax), where we get
 //   mov si,ax; shl si,1 as at the top of the function. Tried: the condition written out at
-//   each use, assigned inside the index, D_5146[region] read twice;
+//   each use, assigned inside the index, D_5146_textLeftX[region] read twice;
 // - 0173: the original adds D_50f7's temporary first (mov ax,[bp-14h]; add ax,si), we
 //   mov ax,si; add ax,[bp-14h]. Tried: the operands in every order, the cast on either
 //   side of the comparison.
@@ -121,10 +121,10 @@ void FONT_0000_DrawJustifiedText(byte* glyphs, byte* text)
     int used;
 
     ULTIMA_0c22_GRAP_0f_SelectPage(1);
-    region = (int)D_5158 > (int)D_5150 && (int)D_5158 < (int)D_5152;
-    lineWidth = D_514c[region] - D_5146[region];
+    region = (int)D_5158_penY > (int)D_5150_regionTop && (int)D_5158_penY < (int)D_5152_regionBottom;
+    lineWidth = D_514c_textRightX[region] - D_5146_textLeftX[region];
     lineStart = lineEnd = 0;
-    used = D_5156 - D_5146[region];
+    used = D_5156_penX - D_5146_textLeftX[region];
 
     for (; text[lineStart] != 0; 0)
     {
@@ -133,7 +133,7 @@ void FONT_0000_DrawJustifiedText(byte* glyphs, byte* text)
         {
             if (text[scan] <= ' ')
             {
-                used += D_5154;
+                used += D_5154_spaceWidth;
                 spaces++;
             }
             else if (text[scan] == '{')
@@ -142,7 +142,7 @@ void FONT_0000_DrawJustifiedText(byte* glyphs, byte* text)
             }
             else if (text[scan] != '_')
             {
-                used += D_50ea[text[scan] - 0x20] + 1;
+                used += D_50ea_glyphWidths[text[scan] - 0x20] + 1;
             }
         }
 
@@ -150,7 +150,7 @@ void FONT_0000_DrawJustifiedText(byte* glyphs, byte* text)
         {
             if (text[scan] == ' ')
             {
-                used -= D_5154;
+                used -= D_5154_spaceWidth;
                 spaces--;
                 break;
             }
@@ -161,7 +161,7 @@ void FONT_0000_DrawJustifiedText(byte* glyphs, byte* text)
             }
             if (text[scan] != '_' && text[scan] != '{')
             {
-                used -= D_50ea[text[scan] - 0x20] + 1;
+                used -= D_50ea_glyphWidths[text[scan] - 0x20] + 1;
             }
         }
 
@@ -174,25 +174,25 @@ void FONT_0000_DrawJustifiedText(byte* glyphs, byte* text)
         {
             if (text[scan] <= ' ')
             {
-                D_5156 += D_5154;
+                D_5156_penX += D_5154_spaceWidth;
                 if (spaces != 0 && text[lineEnd] != 0 && text[lineEnd] != '\n')
                 {
-                    D_5156 += slack / spaces;
+                    D_5156_penX += slack / spaces;
                     slack -= slack / spaces;
                     spaces--;
                 }
             }
             else if (text[scan] == '{')
             {
-                D_5156 += 0xf;
+                D_5156_penX += 0xf;
             }
             else if (text[scan] != '_')
             {
-                if ((int)D_5158 < 0xc0)
+                if ((int)D_5158_penY < 0xc0)
                 {
-                    ULTIMA_1044_GRAP_4e_CopyBitImageIntoPage(glyphs, text[scan] - 0x20, D_5156, D_5158);
+                    ULTIMA_1044_GRAP_4e_CopyBitImageIntoPage(glyphs, text[scan] - 0x20, D_5156_penX, D_5158_penY);
                 }
-                D_5156 += D_50ea[text[scan] - 0x20] + 1;
+                D_5156_penX += D_50ea_glyphWidths[text[scan] - 0x20] + 1;
             }
         } while (lineEnd != ++scan);
 
@@ -202,15 +202,15 @@ void FONT_0000_DrawJustifiedText(byte* glyphs, byte* text)
             goto L_next;
         }
         {
-            if (text[lineStart] == '_' && (int)D_5158 < 0xc0)
+            if (text[lineStart] == '_' && (int)D_5158_penY < 0xc0)
             {
-                ULTIMA_1044_GRAP_4e_CopyBitImageIntoPage(glyphs, 0xd, D_5156, D_5158);
+                ULTIMA_1044_GRAP_4e_CopyBitImageIntoPage(glyphs, 0xd, D_5156_penX, D_5158_penY);
             }
             used = 0;
-            D_5158 += 9;
-            region = (int)D_5158 > (int)D_5150 && (int)D_5158 < (int)D_5152;
-            D_5156 = D_5146[region];
-            lineWidth = D_514c[region] - D_5156;
+            D_5158_penY += 9;
+            region = (int)D_5158_penY > (int)D_5150_regionTop && (int)D_5158_penY < (int)D_5152_regionBottom;
+            D_5156_penX = D_5146_textLeftX[region];
+            lineWidth = D_514c_textRightX[region] - D_5156_penX;
             lineStart++;
         }
 L_next:;
@@ -336,7 +336,7 @@ static void FONT_0418_LoadSceneStrip(int scene)
 
     ASSERT(scene < 4);
 
-    INTRO_043e_PrintCaptionBar(D_515c[scene]);
+    INTRO_043e_PrintCaptionBar(D_515c_sceneCaptions[scene]);
 
     for (col_b = 0; col_b < 0x13; col_b++)
     {
@@ -623,8 +623,8 @@ static void FONT_09c8_AskVirtueQuestion(byte* fontImage, byte* cardImage)
     ULTIMA_0d4c_GRAP_4b_PutImage(cardImage, 1, 0x10, 0, 0);
     ULTIMA_0d4c_GRAP_4b_PutImage(cardImage, 1, 200, 0, 0);
 
-    D_5156 = 0;
-    D_5158 = 0x98;
+    D_5156_penX = 0;
+    D_5158_penY = 0x98;
 
     virtueA = FONT_0998_PickVirtue();
     virtueB_o = FONT_0998_PickVirtue();
@@ -734,14 +734,14 @@ void FONT_0b0a_CreateCharacter(void)
             D_55a8_party[0].gender = 0xc;
         }
 
-        D_5156 = 0;
-        D_5158 = 9;
-        D_5146[0] = 0;
-        D_514c[0] = 0x140;
-        D_5146[1] = 0xaf;
-        D_514c[1] = 0x140;
-        D_5150 = 0x59;
-        D_5152 = 200;
+        D_5156_penX = 0;
+        D_5158_penY = 9;
+        D_5146_textLeftX[0] = 0;
+        D_514c_textRightX[0] = 0x140;
+        D_5146_textLeftX[1] = 0xaf;
+        D_514c_textRightX[1] = 0x140;
+        D_5150_regionTop = 0x59;
+        D_5152_regionBottom = 200;
 
 #if defined(ENABLE_BGM)
         AUDIO_StopBgm();
@@ -750,13 +750,13 @@ void FONT_0b0a_CreateCharacter(void)
         ULTIMA_256e_ReadFileFromDisk(_TEXT(0xa0a6, "QUESTION.DAT"), D_b21e_scratch, 2000, 0);
 
         ULTIMA_0c22_GRAP_0f_SelectPage(1);
-        D_a9be = 2;
+        D_a9be_promptMode = 2;
         ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
         ULTIMA_0d4c_GRAP_4b_PutImage(gypsyImage, 0, 0, 0x60, 0);
         FONT_0000_DrawJustifiedText(fontImage, D_b21e_scratch);
         ULTIMA_0f6e_GRAP_1b_TransferFullscreen(1, 0);
 
-        D_5150 = 200;
+        D_5150_regionTop = 200;
 
         while (ULTIMA_1d5e_PollKey() == 0) {}
 
@@ -791,11 +791,11 @@ void FONT_0b0a_CreateCharacter(void)
 
         FONT_09c8_AskVirtueQuestion(fontImage, gypsyImage);
 
-        D_5156 = D_5158 = 0;
-        D_5150 = 0x5a;
-        D_5146[1] = 0;
-        D_514c[1] = 0xa6;
-        D_5154 = 4;
+        D_5156_penX = D_5158_penY = 0;
+        D_5150_regionTop = 0x5a;
+        D_5146_textLeftX[1] = 0;
+        D_514c_textRightX[1] = 0xa6;
+        D_5154_spaceWidth = 4;
 
         ULTIMA_256e_ReadFileFromDisk(_TEXT(0xa0b4, "QUESTION.DAT"), D_b21e_scratch, 2000, 0x322);
         ULTIMA_0c22_GRAP_0f_SelectPage(1);
@@ -803,7 +803,7 @@ void FONT_0b0a_CreateCharacter(void)
         ULTIMA_0d4c_GRAP_4b_PutImage(gypsyImage, 10, 0xa8, 100, 0);
 
         FONT_0000_DrawJustifiedText(fontImage, D_b21e_scratch);
-        D_5154 = 5;
+        D_5154_spaceWidth = 5;
         ULTIMA_0f6e_GRAP_1b_TransferFullscreen(1, 0);
 
         while (ULTIMA_1d5e_PollKey() == 0)
@@ -816,7 +816,7 @@ void FONT_0b0a_CreateCharacter(void)
         ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
         ULTIMA_0c22_GRAP_0f_SelectPage(0);
 
-        D_a9be = 0;
+        D_a9be_promptMode = 0;
         
         D_55a8_party[0].mag = D_55a8_party[0].intel = D_bd3c_newInt;
         D_55a8_party[0].dex = D_bd3d_newDex;

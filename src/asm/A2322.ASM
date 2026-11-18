@@ -4,8 +4,8 @@
 ; drive letter is no longer echoed), so its bytes are no compiler's output. The DOS build
 ; of the GOG target takes it from here. The 1988 target leaves this module out
 ; (tools/u5.py ASM_EXCLUDED; the link script's lines for it say target=gog) and compiles
-; 1.16's C in src/r2320.c (RELEASE_1988) instead, with D_545e and the strings.
-; Its _DATA is the object's: D_545e (the disk last selected) and the strings, DS:545e-54b6.
+; 1.16's C in src/r2320.c (RELEASE_1988) instead, with D_545E_LASTDISK and the strings.
+; Its _DATA is the object's: D_545E_LASTDISK (the disk last selected) and the strings, DS:545e-54b6.
 ; Drafted from the original bytes by tools/asmgen.py and checked by tools/asmbuild.py.
 
 	TITLE	A2322
@@ -34,13 +34,13 @@ DGROUP	GROUP	CONST, _BSS, _DATA
 	EXTRN	D_5394_DISKSWAPFN:WORD
 	EXTRN	ULTIMA_2320_NODISKSWAPMESSAGE:FAR
 	EXTRN	D_A9BD_CURDISK:BYTE
-	EXTRN	D_A9C2:BYTE
+	EXTRN	D_A9C2_FLOPPYCOUNT:BYTE
 	EXTRN	D_A9C8_DISKDRIVES:BYTE
 
 ; this module's own data in DGROUP (DS:545e-54b6)
 _DATA	SEGMENT
-	PUBLIC	D_545E
-D_545E	db	0ffh		; the disk (D_A9BD_CURDISK[0]) last selected, 0ffh: none
+	PUBLIC	D_545E_LASTDISK
+D_545E_LASTDISK	db	0ffh		; the disk (D_A9BD_CURDISK[0]) last selected, 0ffh: none
 D_545F	db	0ah, 'Please insert the Ultima ', 00h	; printed by 1.16 at 2405
 	PUBLIC	D_547A
 D_547A	db	'V ', 00h
@@ -73,7 +73,7 @@ ULTIMA_2322_DISKSWAPMESSAGE:
 	cmp al,0ffh
 	je	L_2374
 	mov al,bl
-	cmp BYTE PTR D_545E,al
+	cmp BYTE PTR D_545E_LASTDISK,al
 	je	L_2374
 	call	ULTIMA_16A6_GETDEFAULTDRIVE
 	mov cl,[bp-4]
@@ -88,7 +88,7 @@ ULTIMA_2322_DISKSWAPMESSAGE:
 	call	ULTIMA_1EAC_SETDEFAULTDRIVE
 	mov al,BYTE PTR D_A9BD_CURDISK
 L_236d:
-	mov BYTE PTR D_545E,al
+	mov BYTE PTR D_545E_LASTDISK,al
 	jmp	NEAR PTR L_250c
 	db	090h
 L_2374:
@@ -98,14 +98,14 @@ L_2374:
 	add si,0a9c8h
 	cmp byte ptr [si],43h
 	jae	L_239d
-	cmp BYTE PTR D_A9C2,1
+	cmp BYTE PTR D_A9C2_FLOPPYCOUNT,1
 	jbe	L_239d
 	xor byte ptr [si],3
 	mov al,[si]
 	push ax
 	call	ULTIMA_1EAC_SETDEFAULTDRIVE
 	mov al,BYTE PTR D_A9BD_CURDISK
-	cmp BYTE PTR D_545E,al
+	cmp BYTE PTR D_545E_LASTDISK,al
 	jne	L_236d
 L_239d:
 	mov al,BYTE PTR D_A9BD_CURDISK
@@ -120,7 +120,7 @@ L_239d:
 	mov ax,41h
 	push ax
 	call	ULTIMA_1EAC_SETDEFAULTDRIVE
-	mov BYTE PTR D_545E,0ffh
+	mov BYTE PTR D_545E_LASTDISK,0ffh
 	jmp	NEAR PTR L_250c
 L_23c4:
 	cmp BYTE PTR D_A9BD_CURDISK+1,2
@@ -152,7 +152,7 @@ L_23c4:
 	push ax
 	call	ULTIMA_0AA6_GRAP_3F_FILLRECT
 L_2400:
-	mov BYTE PTR D_545E,0ffh
+	mov BYTE PTR D_545E_LASTDISK,0ffh
 ; GOG: the drive is the default one, and no key is read (in 1.16: mov ax,OFFSET D_545F;
 ; push ax; call ULTIMA_1850_PRINTSTRING)
 	call	ULTIMA_16A6_GETDEFAULTDRIVE
@@ -239,7 +239,7 @@ L_2497:
 	nop
 	cmp byte ptr [bp-2],42h
 	jne	L_24b8
-	mov BYTE PTR D_A9C2,2
+	mov BYTE PTR D_A9C2_FLOPPYCOUNT,2
 L_24b8:
 	mov bl,BYTE PTR D_A9BD_CURDISK
 	sub bh,bh

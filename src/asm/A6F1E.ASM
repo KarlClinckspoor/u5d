@@ -14,15 +14,15 @@ DGROUP	GROUP	CONST, _BSS, _DATA
 	ASSUME	CS: _TEXT, DS: DGROUP, SS: DGROUP, ES: DGROUP
 
 	EXTRN	D_5350_DRIVERENTRY:WORD
-	EXTRN	D_539C:BYTE
+	EXTRN	D_539C_CHARSETTABLE:BYTE
 
 ; this module's own data, after 5000.c's in DGROUP (DS:6aa4)
 _DATA	SEGMENT
-	PUBLIC	D_6AA4
-D_6AA4	dw	0
+	PUBLIC	D_6AA4_UNUSED
+D_6AA4_UNUSED	dw	0
 D_6AA6	dw	0
-	PUBLIC	D_6AA8
-D_6AA8	db	032h, 029h, 022h, 01Dh, 01Ah, 019h
+	PUBLIC	D_6AA8_VIEWDIST2
+D_6AA8_VIEWDIST2	db	032h, 029h, 022h, 01Dh, 01Ah, 019h
 	db	029h, 020h, 019h, 014h, 011h, 010h
 	db	022h, 019h, 012h, 00Dh, 00Ah, 009h
 	db	01Dh, 014h, 00Dh, 008h, 005h, 004h
@@ -44,16 +44,16 @@ ULTIMA_6F1E_COMPAREWORD:
 	pop es
 	mov di,[bp+6]
 	call	ULTIMA_6F90_STRLENDI
-	mov WORD PTR D_6AA4,di
+	mov WORD PTR D_6AA4_UNUSED,di
 	mov di,[bp+4]
 	call	ULTIMA_6F90_STRLENDI
-	cmp WORD PTR D_6AA4,di
+	cmp WORD PTR D_6AA4_UNUSED,di
 	jg	L_6f84
-	sub di,WORD PTR D_6AA4
+	sub di,WORD PTR D_6AA4_UNUSED
 	mov D_6AA6,di
 	xor bx,bx
 L_6f47:
-	mov cx,WORD PTR D_6AA4
+	mov cx,WORD PTR D_6AA4_UNUSED
 	mov si,[bp+6]
 	mov di,[bp+4]
 	add di,bx
@@ -77,7 +77,7 @@ L_6f6d:
 	loop	L_6f53
 	jmp	SHORT L_6f87
 L_6f75:
-	mov dx,WORD PTR D_6AA4
+	mov dx,WORD PTR D_6AA4_UNUSED
 	sub dx,cx
 	add bx,dx
 	inc bx
@@ -146,7 +146,7 @@ ULTIMA_6FD6_GRAP_ANIMATETILES:
 	push di
 	push ds
 	clc
-	mov ax,WORD PTR D_539C
+	mov ax,WORD PTR D_539C_CHARSETTABLE
 	mov WORD PTR D_5350_DRIVERENTRY,60h
 	call DWORD PTR D_5350_DRIVERENTRY
 	pop ds
@@ -190,7 +190,7 @@ L_7026:
 	add bx,dx
 	shl dx,1
 	add bx,dx
-	mov al,D_6AA8[bx]
+	mov al,D_6AA8_VIEWDIST2[bx]
 	xor ah,ah
 L_7034:
 	pop ds

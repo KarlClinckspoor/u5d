@@ -1,0 +1,72 @@
+# Globals still without a descriptive suffix, batch 2: the DS:52xx-54xx system state, the saved-game block, the tables of 4000.c/5000.c, the BSS.
+D_52f6 D_52f6_clipTempX              # line clipping scratch (0000.c)
+D_52f8 D_52f8_clipTempY
+D_52fa D_52fa_clipX1                 # line clipping: the two end points
+D_52fc D_52fc_clipY1
+D_52fe D_52fe_clipX2
+D_5300 D_5300_clipY2
+D_5304 D_5304_prevVideoMode          # video mode before the game set its own
+D_5306 D_5306_logoFrameWidth         # the Origin logo frames, centred with sar
+D_5314 D_5314_logoFrameHeight
+D_535a D_535a_timerValue             # the timer value while calibrating
+D_538a D_538a_numpadKeys             # set: digits 1-9 are the keypad (arrows)
+D_538e D_538e_cursorAdvance          # cleared while the key cursor is drawn so that it does not advance
+D_5390 D_5390_cursorFirstChar        # first character of the cursor animation
+D_5392 D_5392_cursorFrameCount
+D_53a6 D_53a6_centerText             # set by the centre-text control character
+D_539c D_539c_charsetTable           # the segments of the charsets
+D_53ea D_53ea_glyphBuffer            # character data from the charset file
+D_5402 D_5402_powersOfTen            # 1, 10, 100, 1000, 10000
+D_540c D_540c_cursorFrame            # the key cursor's animation index
+D_540e D_540e_arrowKeyCodes
+D_5416 D_5416_specialKeyTable
+D_541e D_541e_driveNumber
+D_5422 D_5422_delayInner             # ULTIMA_20c8 busy-wait counters
+D_5424 D_5424_delayOuter
+D_5426 D_5426_delayShift
+D_5448 D_5448_timerValue
+D_544a D_544a_ticksToWait
+D_545e D_545e_lastDisk               # the disk the swap message last asked for; 0xff none
+D_54d4 D_54d4_blockedTileBits        # bit per tile: blocked for the normal walk type
+D_54f4 D_54f4_moveType               # by actor tile / 4: the walk type
+D_5534 D_5534_skiffWaterBits         # skiff: the water tiles by direction
+D_5544 D_5544_skiffTileBits
+D_559e D_559e_trapKinds              # the trap kinds (acid, poison, bomb, gas) with their odds
+D_5882 D_5882_combatTick             # counts ten combat moves, then an hour of 1 minute passes
+D_5883 D_5883_sailCounter            # MAINOUT: moves under a wind, reset when the wind helps
+D_5889 D_5889_savedUnused            # in the saved game, no code uses them
+D_588a D_588a_savedUnused
+D_588d D_588d_apparitionMonth        # the month an apparition last appeared (CMDS)
+D_588f D_588f_castCircle             # circle of the spell just cast: a malus to hit
+D_5890 D_5890_spellAttack            # set while a spell is the attack
+D_58a2 D_58a2_combatEvents           # 4 asleep, 0x10 the view moved (COMBAT)
+D_58a8 D_58a8_lastAttacker           # by combatant: who last attacked it (0xff none)
+D_58cb D_58cb_summonedLord           # which shadowlord a spell word summoned
+D_5959 D_5959_fewerEnemies           # probably: halves the count of enemies in a combat; cleared every month
+D_5d5a D_5d5a_unused
+D_5d5c D_5d5c_unused
+D_65be D_65be_npcApproach            # 0x74 an NPC wants to talk, 0x61 it attacks; 0 none
+D_65bf D_65bf_npcApproaching         # the NPC that does
+D_65c0 D_65c0_unused
+D_65c2 D_65c2_npcStuckCount          # by NPC: moves lost to an obstacle
+D_6602 D_6602_dungeonMoveDir         # dungeon movement direction (0-3 facing, 4 and 5 up/down)
+D_6a08 D_6a08_songPos                # the banjo song position
+D_6a14 D_6a14_viewTileFlags          # bit table by tile (CAST, COMSUBS)
+D_6a36 D_6a36_banjoFreq
+D_6a48 D_6a48_banjoSong
+D_6a7e D_6a7e_tileAnimTick
+D_6a80 D_6a80_lightSlope             # the light level on the hour of dawn/dusk
+D_6a86 D_6a86_opaqueTiles            # probably: tiles that block sight
+D_6a9a D_6a9a_lightTiles             # tiles that give light (lamps, fires, moongates)
+D_6aa4 D_6aa4_unused
+D_6aa8 D_6aa8_viewDist2              # squared distance from the centre of the view
+D_a9be D_a9be_promptMode             # 0, or 2 while a full-screen scene is up (the disk prompt then opens a window)
+D_a9c2 D_a9c2_floppyCount
+D_b11c D_b11c_searchGrid             # NPC path search grid
+D_b9ee D_b9ee_itemCounts             # owned counts of the 0x26 items of the Use list
+D_bb16 D_bb16_altTileset             # set while the combat tileset is loaded
+D_bbd2 D_bbd2_unused
+D_bcb0 D_bcb0_unused
+D_bd14 D_bd14_unused
+D_bd3a D_bd3a_unused
+D_bd3b D_bd3b_unused

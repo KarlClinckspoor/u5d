@@ -1,8 +1,8 @@
-// D_306c, D_30c4 and D_30da are const tables (see INTRO_014e), and vars.h's declarations
+// D_306c_pageTextX, D_30c4_pageImageX and D_30da_pageImageY are const tables (see INTRO_014e), and vars.h's declarations
 // are renamed out of the way.
-#define D_306c D_306c_vars_h
-#define D_30c4 D_30c4_vars_h
-#define D_30da D_30da_vars_h
+#define D_306c_pageTextX D_306c_vars_h
+#define D_30c4_pageImageX D_30c4_vars_h
+#define D_30da_pageImageY D_30da_vars_h
 #include "audio/audio.h"
 #include "common/common.h"
 #include "funcs.h"
@@ -10,9 +10,9 @@
 #include "savegame.h"
 #include "vars.h"
 #include "macros.h"
-#undef D_306c
-#undef D_30c4
-#undef D_30da
+#undef D_306c_pageTextX
+#undef D_30c4_pageImageX
+#undef D_30da_pageImageY
 
 #include <stdlib.h>
 
@@ -79,7 +79,7 @@ u8 D_3056_regionBottom[0x16] =
     0x89, 0xc8, 0xc8, 0x92, 0xc8, 0x00
 };
 
-const u8 D_306c[0x16] =
+const u8 D_306c_pageTextX[0x16] =
 {
     0xb4, 0x00, 0x00, 0x00, 0x00, 0xb0, 0x20, 0xbc,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xb8, 0x00,
@@ -107,14 +107,14 @@ u8 D_30ae_imageFile[0x16] =
     0x05, 0x05, 0x05, 0x05, 0x05, 0x00
 };
 
-const u8 D_30c4[0x16] =
+const u8 D_30c4_pageImageX[0x16] =
 {
     0x00, 0x00, 0x88, 0x00, 0x98, 0x00, 0x48, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0xb0, 0x00, 0xb0,
     0x00, 0xb0, 0x00, 0xb0, 0x00, 0x00
 };
 
-const u8 D_30da[0x16] =
+const u8 D_30da_pageImageY[0x16] =
 {
     0x00, 0x4a, 0x00, 0x26, 0x4c, 0x00, 0x26, 0x00,
     0x52, 0x52, 0x52, 0x52, 0x52, 0x00, 0x00, 0x00,
@@ -132,8 +132,8 @@ u8 D_30f0_pageKind[0x15] =
 // picture files with its text from STORY.DAT in the justified font; a key turns the page.
 // CHECKED
 // Exact with two things: INTRO_0010_PutBackdropStrips/0050 in an object of their own (intro0.c; after them
-// the do-while that reloads local_6 is not optimized: pass 2's capacity), and D_30da,
-// D_30c4 and D_306c const. The original keeps their values in SI/DI across the calls
+// the do-while that reloads local_6 is not optimized: pass 2's capacity), and D_30da_pageImageY,
+// D_30c4_pageImageX and D_306c_pageTextX const. The original keeps their values in SI/DI across the calls
 // without any register variable (frame 0Ch): MSC knows a call cannot change a const table.
 // Register variables for them take stack slots (frame 12h), even at function level.
 void INTRO_014e_Introduction(void)
@@ -187,7 +187,7 @@ void INTRO_014e_Introduction(void)
             } while (pageImage == 0);
         }
 
-        D_a9be = 2;
+        D_a9be_promptMode = 2;
         ULTIMA_0c22_GRAP_0f_SelectPage(1);
         ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
         if (D_30f0_pageKind[page_m] == 1)
@@ -209,29 +209,29 @@ void INTRO_014e_Introduction(void)
             }
         }
 
-        ULTIMA_0d4c_GRAP_4b_PutImage(pageImage, D_3098_imageIndex[page_m], D_30c4[page_m], D_30da[page_m], 0);
+        ULTIMA_0d4c_GRAP_4b_PutImage(pageImage, D_3098_imageIndex[page_m], D_30c4_pageImageX[page_m], D_30da_pageImageY[page_m], 0);
         if (D_30f0_pageKind[page_m] >= 4)
         {
-            ULTIMA_0d4c_GRAP_4b_PutImage(pageImage, D_30f0_pageKind[page_m] * 2 - 5, D_30c4[page_m], D_30da[page_m] + 0x37, 0);
+            ULTIMA_0d4c_GRAP_4b_PutImage(pageImage, D_30f0_pageKind[page_m] * 2 - 5, D_30c4_pageImageX[page_m], D_30da_pageImageY[page_m] + 0x37, 0);
         }
 
-        D_5146[0] = D_2f98_textLeft[page_m].x;
-        D_5146[1] = D_2f98_textLeft[page_m].y;
+        D_5146_textLeftX[0] = D_2f98_textLeft[page_m].x;
+        D_5146_textLeftX[1] = D_2f98_textLeft[page_m].y;
 
-        D_514c[0] = D_2fc2_textRight[page_m].x;
-        D_514c[1] = D_2fc2_textRight[page_m].y;
+        D_514c_textRightX[0] = D_2fc2_textRight[page_m].x;
+        D_514c_textRightX[1] = D_2fc2_textRight[page_m].y;
 
-        D_5150 = D_3040_regionTop[page_m];
-        D_5152 = D_3056_regionBottom[page_m];
-        D_5156 = D_306c[page_m];
-        D_5158 = D_3082_startY[page_m];
+        D_5150_regionTop = D_3040_regionTop[page_m];
+        D_5152_regionBottom = D_3056_regionBottom[page_m];
+        D_5156_penX = D_306c_pageTextX[page_m];
+        D_5158_penY = D_3082_startY[page_m];
 
         if (D_30f0_pageKind[page_m] == 3)
         {
             ULTIMA_0d4c_GRAP_4b_PutImage(pageImage, 3, 0x60, 0x27, 0);
             FONT_0000_DrawJustifiedText(fontImage, _TEXT(0x2f31, "Instantly, a shimmering blue door springs up!"));
-            D_5156 = D_306c[page_m];
-            D_5158 = 0xb4;
+            D_5156_penX = D_306c_pageTextX[page_m];
+            D_5158_penY = 0xb4;
             FONT_0000_DrawJustifiedText(fontImage, _TEXT(0x2f5f, "With heart beating rapidly, you step into it."));
         }
         else
@@ -268,7 +268,7 @@ void INTRO_014e_Introduction(void)
     ULTIMA_0c22_GRAP_0f_SelectPage(1);
     ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
     ULTIMA_0c22_GRAP_0f_SelectPage(0);
-    D_a9be = 0;
+    D_a9be_promptMode = 0;
     ULTIMA_251e_SwitchDisks(0);
 }
 
@@ -327,9 +327,9 @@ static void INTRO_04e0_DrawMenuBorders(void)
         ULTIMA_16ba_PrintChar(0x7f);
     }
 
-    D_538e = 0;
+    D_538e_cursorAdvance = 0;
     ULTIMA_16ba_PrintChar(0x7e);
-    D_538e = 1;
+    D_538e_cursorAdvance = 1;
     ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
     ULTIMA_0b10_GRAP_Line(7, 127, 312, 127);
     ULTIMA_0f90_GRAP_LineTo(312, 192);
@@ -345,7 +345,7 @@ void INTRO_05b0_DisplayTitle(int withSound)
     byte* wdImage;
     int local_6_p; // unused
 
-    D_a9be = 2;
+    D_a9be_promptMode = 2;
     if (D_5893_mapId != 0x40)
     {
         ULTIMA_102e_UnloadTileset();
@@ -395,7 +395,7 @@ void INTRO_05b0_DisplayTitle(int withSound)
     }
     ULTIMA_0c22_GRAP_0f_SelectPage(0);
     INTRO_2090_AnimateWD();
-    D_a9be = 0;
+    D_a9be_promptMode = 0;
     INTRO_04e0_DrawMenuBorders();
 }
 

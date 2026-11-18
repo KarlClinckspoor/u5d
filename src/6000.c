@@ -10,9 +10,9 @@
 #include <string.h>
 
 #if !defined(TARGET_DOS16) // the original's are A6F1E.ASM's data (ULTIMA_6ff0_DistanceFromCenter)
-u16 D_6aa4 = 0;
+u16 D_6aa4_unused = 0;
 
-u8 D_6aa8[0x24] =
+u8 D_6aa8_viewDist2[0x24] =
 {
     0x32, 0x29, 0x22, 0x1D, 0x1A, 0x19,
     0x29, 0x20, 0x19, 0x14, 0x11, 0x10,
@@ -106,9 +106,9 @@ L_605c:
 
 L_606c:
     // 606c
-    if (D_bb16 != 0)
+    if (D_bb16_altTileset != 0)
     {
-        D_bb16 = 0;
+        D_bb16_altTileset = 0;
         ULTIMA_6fbc_TilesetMode(1);
     }
 
@@ -585,7 +585,7 @@ void ULTIMA_68ae_PutToSleep(int combatantIndex)
                 D_587b_activePlayer = 0xff;
             }
 
-            D_58a2 = 4;
+            D_58a2_combatEvents = 4;
 
             ULTIMA_2900_UpdateVitalsDisplay();
 
@@ -598,7 +598,7 @@ void ULTIMA_68ae_PutToSleep(int combatantIndex)
     else
     {
         combatant->flags |= COMBAT_FLAGS_ASLEEP;
-        D_58a2 = 4;
+        D_58a2_combatEvents = 4;
         D_5c5a_actors[combatant->actorIdx].animState = 0xff;
 
         ULTIMA_5910_UpdateFrame();
@@ -774,7 +774,7 @@ void ULTIMA_6bc2_SetUpCombat(int flags, int enemy)
     if (count_m != 8 && count_m != 0x10 && count_m != 1)
     {
         count_m = ULTIMA_2092_RandomRange(1, count_m);
-        if (D_5959 != 0)
+        if (D_5959_fewerEnemies != 0)
         {
             count_m = ULTIMA_2092_RandomRange(1, count_m);
         }
@@ -1018,15 +1018,15 @@ void DRV_60_CF0(void* ax);
 void ULTIMA_6fd6_GRAP_AnimateTiles(void)
 {
     // CLC
-    // ax: D_539c
-    DRV_60_CF0(D_539c);
+    // ax: D_539c_charsetTable
+    DRV_60_CF0(D_539c_charsetTable);
     //debug("ULTIMA_6fd6");
 }
 #endif
 
 #if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
-// The squared distance of view cell (x, y) from the centre (5, 5) of the 11x11 view (table D_6aa8); 0 outside.
+// The squared distance of view cell (x, y) from the centre (5, 5) of the 11x11 view (table D_6aa8_viewDist2); 0 outside.
 int ULTIMA_6ff0_DistanceFromCenter(register int viewX, register int viewY)
 {
     if ((viewX < 0xb) && (viewY < 0xb))
@@ -1043,7 +1043,7 @@ int ULTIMA_6ff0_DistanceFromCenter(register int viewX, register int viewY)
             }
         }
 
-        return D_6aa8[viewX + viewY * 6];
+        return D_6aa8_viewDist2[viewX + viewY * 6];
     }
 
     return 0;

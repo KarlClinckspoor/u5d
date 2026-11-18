@@ -2,7 +2,7 @@
 ; The last two routines of FONT.OVL, linked after font.c. FONT_04A4_PLAYINTROSTORY ("view") loads a
 ; different tile set; around that, these save the first 0x3000 bytes of the video page
 ; buffer (segment D_5354_PAGESEGMENT) into the code segment, and copy them back. The place is overlay
-; area 2: D_520C is FLAMES_0000's return address there (see AFLAMES.ASM), taken on first use.
+; area 2: D_520C_SAVEDVIDEOPAGE is FLAMES_0000's return address there (see AFLAMES.ASM), taken on first use.
 ; Written by hand from the original bytes; tools/asmbuild.py checks it.
 
 	TITLE	AFONT
@@ -22,13 +22,13 @@ DGROUP	GROUP	CONST, _BSS, _DATA
 
 ; this module's own data, after font.c's in DGROUP (DS:520c)
 _DATA	SEGMENT
-	PUBLIC	D_520C
-D_520C	dw	0
+	PUBLIC	D_520C_SAVEDVIDEOPAGE
+D_520C_SAVEDVIDEOPAGE	dw	0
 _DATA	ENDS
 
 _TEXT	SEGMENT
 
-; save: D_5354_PAGESEGMENT:0000 (0x1800 words) to CS:[D_520C]
+; save: D_5354_PAGESEGMENT:0000 (0x1800 words) to CS:[D_520C_SAVEDVIDEOPAGE]
 	PUBLIC	FONT_0E52_SAVEVIDEOPAGE
 FONT_0E52_SAVEVIDEOPAGE:
 	push bp
@@ -36,12 +36,12 @@ FONT_0E52_SAVEVIDEOPAGE:
 	push si
 	push di
 	push ds
-	cmp D_520C,0
+	cmp D_520C_SAVEDVIDEOPAGE,0
 	jne L_0e65
 	call FLAMES_0000
-	mov D_520C,ax
+	mov D_520C_SAVEDVIDEOPAGE,ax
 L_0e65:
-	mov di,D_520C
+	mov di,D_520C_SAVEDVIDEOPAGE
 	xor si,si
 	mov ds,D_5354_PAGESEGMENT
 	push cs
@@ -54,7 +54,7 @@ L_0e65:
 	pop bp
 	ret
 
-; restore: CS:[D_520C] to D_5354_PAGESEGMENT:0000
+; restore: CS:[D_520C_SAVEDVIDEOPAGE] to D_5354_PAGESEGMENT:0000
 	PUBLIC	FONT_0E7B_RESTOREVIDEOPAGE
 FONT_0E7B_RESTOREVIDEOPAGE:
 	push bp
@@ -62,7 +62,7 @@ FONT_0E7B_RESTOREVIDEOPAGE:
 	push si
 	push di
 	push ds
-	mov si,D_520C
+	mov si,D_520C_SAVEDVIDEOPAGE
 	xor di,di
 	mov es,D_5354_PAGESEGMENT
 	push cs

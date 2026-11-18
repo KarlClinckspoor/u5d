@@ -12,12 +12,12 @@
 void MAINOUT_0000_SetUpOverworld(void);
 u8 D_6a34_ambientTick = 0;
 
-u16 D_6a36[9] =
+u16 D_6a36_banjoFreq[9] =
 {
     0x0da9, 0x0f56, 0x1136, 0x123c, 0x1478, 0x16fa, 0x1857, 0x19ca, 0x1b53
 };
 
-u8 D_6a48[0x36] = // 53 used
+u8 D_6a48_banjoSong[0x36] = // 53 used
 {
     0x01, 0x04, 0x04, 0x00, 0x00, 0x01, 0x05, 0x05,
     0x00, 0x00, 0x04, 0x09, 0x06, 0x09, 0x07, 0x04,
@@ -28,9 +28,9 @@ u8 D_6a48[0x36] = // 53 used
     0x05, 0x04, 0x03, 0x02, 0x01
 };
 
-u8 D_6a7e = 0;
+u8 D_6a7e_tileAnimTick = 0;
 
-u8 D_6a80[6] = { 0x02, 0x05, 0x0A, 0x14, 0x22, 0x31 };
+u8 D_6a80_lightSlope[6] = { 0x02, 0x05, 0x0A, 0x14, 0x22, 0x31 };
 
 // Each living member who wears a ring of regeneration (0x2c) gains a hit point one time in eight.
 void ULTIMA_400c_RingRegeneration(void)
@@ -186,15 +186,15 @@ void ULTIMA_4102_AudioPlayAmbientSfx(void)
         break;
 
     case 4:
-        if (D_6a48[D_6a08] != 0)
+        if (D_6a48_banjoSong[D_6a08_songPos] != 0)
         {
-            ULTIMA_2192_AudioPulse(D_6a36[D_6a48[D_6a08] - 1], 1, 2000, 20000, -10);
+            ULTIMA_2192_AudioPulse(D_6a36_banjoFreq[D_6a48_banjoSong[D_6a08_songPos] - 1], 1, 2000, 20000, -10);
         }
 
-        D_6a08++;
-        if (D_6a08 >= 0x35)
+        D_6a08_songPos++;
+        if (D_6a08_songPos >= 0x35)
         {
-            D_6a08 = 0;
+            D_6a08_songPos = 0;
         }
         break;
 	}
@@ -330,7 +330,7 @@ static void ULTIMA_44b8_AnimateTiles(void)
 		}
 	}
 
-	if ((D_6a7e & 1) != 0)
+	if ((D_6a7e_tileAnimTick & 1) != 0)
 	{
         for (i = 0x80; i < 0x84; i++)
 		{
@@ -346,7 +346,7 @@ static void ULTIMA_44b8_AnimateTiles(void)
 			}
 		}
 
-		if ((D_6a7e & 2) != 0)
+		if ((D_6a7e_tileAnimTick & 2) != 0)
 		{
             for (i = 0xfa; i < 0xfe; i++)
 			{
@@ -355,7 +355,7 @@ static void ULTIMA_44b8_AnimateTiles(void)
 		}
 	}
 
-	D_6a7e++;
+	D_6a7e_tileAnimTick++;
 }
 
 // CHECKED
@@ -1049,7 +1049,7 @@ void ULTIMA_4f7c_AdvanceTime(int minutes)
 					D_5858_harvestDay[0] = D_5858_harvestDay[1] = D_5858_harvestDay[2] = 0;
 					D_57b2_skullKeysDay = 0;
 					D_587e_day = 1;
-					D_5959 = 0;
+					D_5959_fewerEnemies = 0;
 
 					// 5077
 					// TODO: loop counter
@@ -1092,12 +1092,12 @@ void ULTIMA_4f7c_AdvanceTime(int minutes)
 			// 50d6
 			if (D_587f_hour == 5)
 			{
-				D_58a5_lightLevel = D_6a80[D_5881_minute / 10];
+				D_58a5_lightLevel = D_6a80_lightSlope[D_5881_minute / 10];
 			}
 			// 50f4
 			else if (D_587f_hour == 19)
 			{
-				D_58a5_lightLevel = D_6a80[(-(D_5881_minute - 59)) / 10];
+				D_58a5_lightLevel = D_6a80_lightSlope[(-(D_5881_minute - 59)) / 10];
 			}
 			else
 			{

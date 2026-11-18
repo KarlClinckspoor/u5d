@@ -23,9 +23,9 @@ void ULTIMA_1fa0_Backspace(int char_count)
 
     if ((ULTIMA_1f12_GetCurrentTextX() != 0 || ULTIMA_1cee_GetCurrentTextY() != 0) && char_count != 0)
     {
-        savedFlag_d = D_538e;
+        savedFlag_d = D_538e_cursorAdvance;
         window_i = &D_535e_textWindows[D_5386_textWindowIndex];
-        D_538e = 0;
+        D_538e_cursorAdvance = 0;
 
         for (charIndex = 0; charIndex < char_count; charIndex++)
         {
@@ -41,7 +41,7 @@ void ULTIMA_1fa0_Backspace(int char_count)
             }
         }
 
-        D_538e = savedFlag_d;
+        D_538e_cursorAdvance = savedFlag_d;
     }
 }
 

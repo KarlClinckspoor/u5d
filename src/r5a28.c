@@ -15,13 +15,13 @@
 #include "cmds.h"
 #include "combat.h"
 #include "dnglook.h"
-u8 D_6a86[0x13] = {
+u8 D_6a86_opaqueTiles[0x13] = {
     0x09, 0x0A, 0x0C, 0x0D, 0x4D, 0x4E, 0x4F, 0x5A,
     0x97, 0xB8, 0xB9, 0xBC, 0xD0, 0xD1, 0xD2, 0xD3,
     0xF8, 0xFE, 0xFF
 };
 
-u8 D_6a9a[10] = {
+u8 D_6a9a_lightTiles[10] = {
     0xDC, 0xBD, 0xBE, 0xB2, 0xDE, 0xBF, 0xB0, 0xB1,
     0xB3, 0xBC
 };
@@ -303,7 +303,7 @@ void ULTIMA_5d0a_BuildView(int light, int mapX, int mapY, int size)
     }
 }
 
-// Probably: the tile does not block sight (not in D_6a86); the door-like tiles only when distance is 1.
+// Probably: the tile does not block sight (not in D_6a86_opaqueTiles); the door-like tiles only when distance is 1.
 static bool ULTIMA_5dfe_IsTransparentTile(byte tile, int distance)
 {
     if (tile == TILE_MAP_4B || tile == TILE_MAP_4A || tile == TILE_MAP_DOOR_BA || tile == TILE_MAP_DOOR_BB || tile == TILE_MAP_98)
@@ -315,7 +315,7 @@ static bool ULTIMA_5dfe_IsTransparentTile(byte tile, int distance)
     }
     else
     {
-        if (!memchr(D_6a86, tile, 0x13))
+        if (!memchr(D_6a86_opaqueTiles, tile, 0x13))
             return 1;
         else
             return 0;
@@ -347,7 +347,7 @@ void ULTIMA_5e4a_BuildLightMap(void)
         {
             // 5e78
             tile = *ULTIMA_4402_GetTileAddr(D_589b_mapOriginX + scanX_d, D_589c_mapOriginY + scanY_c);
-            if (memchr(D_6a9a, tile, 10) != 0)
+            if (memchr(D_6a9a_lightTiles, tile, 10) != 0)
             {
                 // 5eb0
                 lights_g[count++] = scanY_c;

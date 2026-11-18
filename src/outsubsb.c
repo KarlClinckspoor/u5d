@@ -12,7 +12,7 @@
 
 // The part of OUTSUBS.OVL built with MSC 5.0 (docs/MATCHING.md, "Two compilers").
 
-u16 D_3a26[6] = { 0x0a3c, 0x0a3c, 0x0a3c, 0x0e74, 0x0f3c, 0x1040 };
+u16 D_3a26_apparitionFreq[6] = { 0x0a3c, 0x0a3c, 0x0a3c, 0x0e74, 0x0f3c, 0x1040 };
 
 // CHECKED
 // "An apparition!": heals the party, raises levels by experience, then speaks a speech chosen by karma
@@ -30,7 +30,7 @@ void OUTSUBS_0658_Apparition(void)
 
     for (member = 0; member < 6; member++)
     {
-        ULTIMA_2192_AudioPulse(D_3a26[member], 1, 5000, 200, 0xd);
+        ULTIMA_2192_AudioPulse(D_3a26_apparitionFreq[member], 1, 5000, 200, 0xd);
     }
 
     memberActor_n = &D_5c5a_actors[10];
@@ -59,7 +59,7 @@ void OUTSUBS_0658_Apparition(void)
             }
 
             classIndex = ULTIMA_4d76_FindIndex(_TEXT(0x7760, CLASS_LIST), D_55a8_party[member].cls);
-            memberActor_n->tile = memberActor_n->animTile = D_1ade[classIndex];
+            memberActor_n->tile = memberActor_n->animTile = D_1ade_classTile[classIndex];
 
             D_5c5a_actors[10].animState = 0;
 

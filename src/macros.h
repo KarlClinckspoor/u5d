@@ -79,7 +79,7 @@
 // 0x100: (unused?)
 // 0x80: query str instead of dex
 // 0x40: can possess/charm?
-// 0x20: is undead? (half damage when D_5890 == 0)
+// 0x20: is undead? (half damage when D_5890_spellAttack == 0)
 // 0x10: can divide?
 // 0x8: never takes damage
 // 0x4: can poison? (from distance?)

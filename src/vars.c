@@ -38,22 +38,22 @@ VideoDriverParams D_52ba_vdp =
     0       // 52d8
 };
 
-int D_5304 = -1;
+int D_5304_prevVideoMode = -1;
 
 u16 D_5358_memorySize = 0xffff;
 
-u16 D_538e = 1;
+u16 D_538e_cursorAdvance = 1;
 
-u16 D_5390 = 5;
+u16 D_5390_cursorFirstChar = 5;
 
-u16 D_5392 = 4; // TODO: int
+u16 D_5392_cursorFrameCount = 4; // TODO: int
 
 TextWindow* D_539a_currentTextWindow = 0;
 
 // arrow key: L, R, D, U, Home, End, PgUp, PgDn
-u8 D_540e[8] = { 0x4b, 0x4d, 0x48, 0x50, 0x47, 0x4f, 0x49, 0x51 };
+u8 D_540e_arrowKeyCodes[8] = { 0x4b, 0x4d, 0x48, 0x50, 0x47, 0x4f, 0x49, 0x51 };
 
-u8 D_5416[8] = { 0x01, 0x02, 0x03, 0x04, 0xd3, 0xd4, 0xd5, 0xd6 };
+u8 D_5416_specialKeyTable[8] = { 0x01, 0x02, 0x03, 0x04, 0xd3, 0xd4, 0xd5, 0xd6 };
 #endif
 
 // D_535e_textWindows: filled with 0

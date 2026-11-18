@@ -36,7 +36,7 @@ static void DUNGEON_0000_EnterRoom(byte cell)
 
     ULTIMA_1850_PrintString(_TEXT(0x2c58, "Entering room...\n"));
 
-    D_6603_dungeonFacing = D_2c76_facingOfDir[D_6602];
+    D_6603_dungeonFacing = D_2c76_facingOfDir[D_6602_dungeonMoveDir];
 
     ULTIMA_1b16_ClearKbdBuffer();
 
@@ -261,7 +261,7 @@ static int DUNGEON_03d6_WaitForKey(void)
     do
     {
         key = ULTIMA_2032_ToUpper(ULTIMA_1b38_PollKeyWithCursor());
-        if (key != 0 && key < 5 && D_538a == 0)
+        if (key != 0 && key < 5 && D_538a_numpadKeys == 0)
         {
             key += 0xfa;
         }
@@ -377,7 +377,7 @@ static int DUNGEON_0502_WalkCmd(int key, byte cell)
         break;
     }
 
-    D_6602 = D_6603_dungeonFacing;
+    D_6602_dungeonMoveDir = D_6603_dungeonFacing;
 
     if (stepDir_f != 0)
     {
@@ -653,7 +653,7 @@ static void DUNGEON_09e6_Poison(void)
 // a pit trap: falls a level at a time while the cell below is a pit too, "splat" damage; a room cell on arrival is entered
 static void DUNGEON_0a4c_FallThroughPit(byte cell)
 {
-    D_6602 = 5;
+    D_6602_dungeonMoveDir = 5;
 
     while ((cell == 0x61 || cell == 0x69) && D_5895_mapLevel < 8)
     {
@@ -712,26 +712,26 @@ static void DUNGEON_0b7e_MonsterAttacks(void)
 
     if (((monster->x - 1) & 7) == D_5896_mapX)
     {
-        D_6602 = 1;
+        D_6602_dungeonMoveDir = 1;
     }
     else if (((monster->x + 1) & 7) == D_5896_mapX)
     {
-        D_6602 = 3;
+        D_6602_dungeonMoveDir = 3;
     }
     else if (((monster->y - 1) & 7) == D_5897_mapY)
     {
-        D_6602 = 2;
+        D_6602_dungeonMoveDir = 2;
     }
     else
     {
-        D_6602 = 0;
+        D_6602_dungeonMoveDir = 0;
     }
 
-    if (D_6602 != D_6603_dungeonFacing)
+    if (D_6602_dungeonMoveDir != D_6603_dungeonFacing)
     {
         ULTIMA_1850_PrintString(_TEXT(0x2d9b, " from the "));
 
-        switch (D_6602)
+        switch (D_6602_dungeonMoveDir)
         {
         case 0:
             ULTIMA_1850_PrintString(_TEXT(0x2da6, "north"));
@@ -747,7 +747,7 @@ static void DUNGEON_0b7e_MonsterAttacks(void)
             break;
         }
 
-        D_6603_dungeonFacing = D_6602;
+        D_6603_dungeonFacing = D_6602_dungeonMoveDir;
     }
 
     ULTIMA_1850_PrintString(_TEXT(0x2dbc, "!\n"));

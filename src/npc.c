@@ -92,7 +92,7 @@ void NPC_00d6_PlaceNpcs(int hour)
 
             D_655e_moveListPos[npc] = -1;
             D_615e_moveLists[npc].data[0] = 0;
-            D_65c2[npc] = 0;
+            D_65c2_npcStuckCount[npc] = 0;
         }
     }
 }
@@ -114,7 +114,7 @@ static int NPC_01a0_FindLadder(int x, int y, int wantUp, int npc)
     return NPC_032c_SearchPath(x, y, 0, 0, mode, npc);
 }
 
-// Build the search grid D_b11c for NPC_032c: 0 for a free tile, 0x90 blocked (also near other actors), 5 at the goal (or at a ladder when mode < 0), 0x46 at the start.
+// Build the search grid D_b11c_searchGrid for NPC_032c: 0 for a free tile, 0x90 blocked (also near other actors), 5 at the goal (or at a ladder when mode < 0), 0x46 at the start.
 // CHECKED (loop)
 static void NPC_01d2_BuildSearchGrid(int startX, int startY, int goalX, int goalY, int mode, int npc)
 {
@@ -142,16 +142,16 @@ static void NPC_01d2_BuildSearchGrid(int startX, int startY, int goalX, int goal
         {
             if (NPC_0adc_CanEnter(x_i, y_h, D_5895_mapLevel, npc, slot) != 0)
             {
-                D_b11c[x_i + y_h * 0x20] = 0;
+                D_b11c_searchGrid[x_i + y_h * 0x20] = 0;
             }
             else
             {
-                D_b11c[x_i + y_h * 0x20] = 0x90;
+                D_b11c_searchGrid[x_i + y_h * 0x20] = 0x90;
             }
 
             if (mode < 0 && GetMap(x_i, y_h) == ladderTile)
             {
-                D_b11c[x_i + y_h * 0x20] = 5;
+                D_b11c_searchGrid[x_i + y_h * 0x20] = 5;
             }
         }
     }
@@ -166,7 +166,7 @@ static void NPC_01d2_BuildSearchGrid(int startX, int startY, int goalX, int goal
         {
             if (NPC_06a0_Distance(actor->x, actor->y, npcRec_e->x, npcRec_e->y) < 4)
             {
-                D_b11c[actor->y * 0x20 + actor->x] = 0x90;
+                D_b11c_searchGrid[actor->y * 0x20 + actor->x] = 0x90;
             }
         }
     }
@@ -174,18 +174,18 @@ static void NPC_01d2_BuildSearchGrid(int startX, int startY, int goalX, int goal
     actor = &D_5c5a_actors[0];
     if (NPC_06a0_Distance(actor->x, actor->y, npcRec_e->x, npcRec_e->y) < 4)
     {
-        D_b11c[actor->y * 0x20 + actor->x] = 0x90;
+        D_b11c_searchGrid[actor->y * 0x20 + actor->x] = 0x90;
     }
 
     if (mode > -1)
     {
-        D_b11c[goalY * 0x20 + goalX] = 5;
+        D_b11c_searchGrid[goalY * 0x20 + goalX] = 5;
     }
 
-    D_b11c[startY * 0x20 + startX] = 0x46;
+    D_b11c_searchGrid[startY * 0x20 + startX] = 0x46;
 }
 
-// Breadth-first path search over the grid D_b11c from (startX, startY), marking the direction taken in the high nibble of each tile. Returns 1 when the goal is reached.
+// Breadth-first path search over the grid D_b11c_searchGrid from (startX, startY), marking the direction taken in the high nibble of each tile. Returns 1 when the goal is reached.
 // CHECKED
 static int NPC_032c_SearchPath(int startX, int startY, int goalX, int goalY, int mode, int npc)
 {
@@ -215,7 +215,7 @@ static int NPC_032c_SearchPath(int startX, int startY, int goalX, int goalY, int
 
         x_i = queueX[head];
         y_h = queueY[head];
-        dir = D_b11c[y_h * 0x20 + x_i] >> 4;
+        dir = D_b11c_searchGrid[y_h * 0x20 + x_i] >> 4;
 
         for (turn_g = 0; turn_g < 4; turn_g++)
         {
@@ -266,10 +266,10 @@ static int NPC_032c_SearchPath(int startX, int startY, int goalX, int goalY, int
 
             if (state != 2)
             {
-                if (D_b11c[y_h * 0x20 + x_i] < 0x10)
+                if (D_b11c_searchGrid[y_h * 0x20 + x_i] < 0x10)
                 {
-                    state = D_b11c[y_h * 0x20 + x_i] & 0xf;
-                    D_b11c[y_h * 0x20 + x_i] = (byte)(dir << 4);
+                    state = D_b11c_searchGrid[y_h * 0x20 + x_i] & 0xf;
+                    D_b11c_searchGrid[y_h * 0x20 + x_i] = (byte)(dir << 4);
                     if (state == 5)
                     {
                         state = 1;
@@ -337,8 +337,8 @@ static int NPC_04ac_BuildMoveList(int npc, int mode, int x, int y)
 
     D_655e_moveListPos[npc] = 0;
 
-    cellState = D_b11c[y * 0x20 + x] & 0xf;
-    dir_a = D_b11c[y * 0x20 + x] >> 4;
+    cellState = D_b11c_searchGrid[y * 0x20 + x] & 0xf;
+    dir_a = D_b11c_searchGrid[y * 0x20 + x] >> 4;
 
     runDir = dir_a;
 
@@ -379,8 +379,8 @@ static int NPC_04ac_BuildMoveList(int npc, int mode, int x, int y)
             run_k = 1;
         }
 
-        dir_a = D_b11c[y * 0x20 + x] >> 4;
-        cellState = D_b11c[y * 0x20 + x] & 0xf;
+        dir_a = D_b11c_searchGrid[y * 0x20 + x] >> 4;
+        cellState = D_b11c_searchGrid[y * 0x20 + x] & 0xf;
     } while (length < 0x20);
 
     run_k = 0;
@@ -475,10 +475,10 @@ static int NPC_06a0_Distance(int fromX, int fromY, int toX, int toY)
     return dx;
 }
 
-// Move an NPC one step closer to the Avatar (away when its schedule type is 3, with a random side step for types 5 and 7); next to him a type 4/5 NPC with something to say asks to talk (D_65be = 't'), the others attack (D_65be = 'a').
+// Move an NPC one step closer to the Avatar (away when its schedule type is 3, with a random side step for types 5 and 7); next to him a type 4/5 NPC with something to say asks to talk (D_65be_npcApproach = 't'), the others attack (D_65be_npcApproach = 'a').
 // CHECKED
 // Both early branches end in "return" and the move code follows the if (no else): the
-// 0x61 branch's tail-merged copy ("D_65be = 0x61; jmp") then lands inside the first move
+// 0x61 branch's tail-merged copy ("D_65be_npcApproach = 0x61; jmp") then lands inside the first move
 // loop, after the then branch's jump, as in the original (as an if/else with the move code
 // in the else, it stays after the 4/5 branch).
 static void NPC_06e4_PursueOrFlee(int npc, int slot)
@@ -507,16 +507,16 @@ static void NPC_06e4_PursueOrFlee(int npc, int slot)
         {
             if (npcRec_e->_a != 0)
             {
-                D_65be = 0x74;
-                D_65bf = npc;
+                D_65be_npcApproach = 0x74;
+                D_65bf_npcApproaching = npc;
                 type_n = 1;
                 return;
             }
         }
         else
         {
-            D_65be = 0x61;
-            D_65bf = npc;
+            D_65be_npcApproach = 0x61;
+            D_65bf_npcApproaching = npc;
             type_n = 1;
             return;
         }
@@ -915,7 +915,7 @@ static void NPC_0d00_ActBySchedule(int npc, int slot)
 // The loop body tests "mode > 1 || NPC_0938_ScheduleDue" first, with the 4/5 and 6/7 cases ahead of the
 // <= 3 case and the "mode <= 1" case last (the original's layout follows this order). The
 // original compares mode signed: *(s16*)& gives the CSE in SI for > 3, == 4, == 5, where an
-// (int) cast compares through AX. The NPC_032c_SearchPath success path (119e) is an if/else, not "D_65c2 = 0; continue;":
+// (int) cast compares through AX. The NPC_032c_SearchPath success path (119e) is an if/else, not "D_65c2_npcStuckCount = 0; continue;":
 // a continue there pulls the loop increment after it and the 10d6 store's tail merge goes
 // the wrong way.
 void NPC_0db4_MoveNpcs(int hour)
@@ -931,8 +931,8 @@ void NPC_0db4_MoveNpcs(int hour)
     NpcFmt* npcRec_k;
 
     pathSearched = 0;
-    D_65be = 0;
-    D_65bf = 0;
+    D_65be_npcApproach = 0;
+    D_65bf_npcApproaching = 0;
 
     for (npc = 1; npc < 0x20; npc++)
     {
@@ -1055,7 +1055,7 @@ void NPC_0db4_MoveNpcs(int hour)
                         D_24e6_viewDirty |= 2;
 
                         D_615e_moveLists[npc].data[D_655e_moveListPos[npc]]--;
-                        D_65c2[npc] = 0;
+                        D_65c2_npcStuckCount[npc] = 0;
                         if (D_615e_moveLists[npc].data[D_655e_moveListPos[npc]] == 0)
                         {
                             // 104a
@@ -1077,14 +1077,14 @@ void NPC_0db4_MoveNpcs(int hour)
                     }
                     else
                     {
-                        D_65c2[npc]++;
+                        D_65c2_npcStuckCount[npc]++;
                         NPC_0c50_Wander(&D_5f5e_npcs[npc], 0, slot_g, npc, &D_5d5e_npcSchedules[npc]);
-                        if (D_65c2[npc] > 3)
+                        if (D_65c2_npcStuckCount[npc] > 3)
                         {
                             // 10d0
                             D_655e_moveListPos[npc] = -1;
                             // 10d6
-                            D_65c2[npc] = 0;
+                            D_65c2_npcStuckCount[npc] = 0;
                         }
                     }
                 }
@@ -1109,7 +1109,7 @@ void NPC_0db4_MoveNpcs(int hour)
                         if (npcRec_k->mode != 1)
                         {
                             // 1138
-                            if (D_65c2[npc] < 200 && (D_65c2[npc] == 0 || ULTIMA_2092_RandomRange(0, 2) == 1))
+                            if (D_65c2_npcStuckCount[npc] < 200 && (D_65c2_npcStuckCount[npc] == 0 || ULTIMA_2092_RandomRange(0, 2) == 1))
                             {
                                 // 1160
                                 if (D_655e_moveListPos[npc] == -1)
@@ -1120,12 +1120,12 @@ void NPC_0db4_MoveNpcs(int hour)
                                     {
                                         result_j = NPC_04ac_BuildMoveList(npc, 0, D_5d5e_npcSchedules[npc].x[slot_g],
                                                                   D_5d5e_npcSchedules[npc].y[slot_g]);
-                                        D_65c2[npc] = 0;
+                                        D_65c2_npcStuckCount[npc] = 0;
                                     }
                                     else
                                     {
                                         // 11ba
-                                        D_65c2[npc] = 200;
+                                        D_65c2_npcStuckCount[npc] = 200;
                                         NPC_0c50_Wander(&D_5f5e_npcs[npc], 0, slot_g, npc, &D_5d5e_npcSchedules[npc]);
                                     }
                                 }
@@ -1138,15 +1138,15 @@ void NPC_0db4_MoveNpcs(int hour)
                             else
                             {
                                 // 11e8
-                                if (D_65c2[npc] >= 200)
+                                if (D_65c2_npcStuckCount[npc] >= 200)
                                 {
-                                    D_65c2[npc]++;
+                                    D_65c2_npcStuckCount[npc]++;
                                 }
 
                                 // 11f9
-                                if (D_65c2[npc] > 204)
+                                if (D_65c2_npcStuckCount[npc] > 204)
                                 {
-                                    D_65c2[npc] = 0;
+                                    D_65c2_npcStuckCount[npc] = 0;
                                 }
                             }
                         }

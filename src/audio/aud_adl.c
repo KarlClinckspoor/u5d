@@ -702,7 +702,7 @@ static void AUDIO_ADLIB_PlaySynthPulse(int freq, int delay, int dur, int pulseWi
 	// cast 1
 	for (int i = 0; i < 9; i++)
 	{
-		if (dur == i * 4000 + 10000 && pulseWidth == D_4b08[i] && pulseInc == D_4b2c[i])
+		if (dur == i * 4000 + 10000 && pulseWidth == D_4b08_castParam4Up[i] && pulseInc == D_4b2c_castStep[i])
 		{
 			dur *= 2;
 			break;
@@ -712,7 +712,7 @@ static void AUDIO_ADLIB_PlaySynthPulse(int freq, int delay, int dur, int pulseWi
 	// cast 2
 	for (int i = 0; i < 9; i++)
 	{
-		if (dur == i * 4000 + 10000 && pulseWidth == D_4b1a[i] && pulseInc == -D_4b2c[i])
+		if (dur == i * 4000 + 10000 && pulseWidth == D_4b1a_castParam4Down[i] && pulseInc == -D_4b2c_castStep[i])
 		{
 			// ignore
 			return;

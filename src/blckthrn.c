@@ -36,13 +36,13 @@ u8 D_370e_scriptRelease[8] = {0x05, 0x0b, 0x13, 0x02, 0x04, 0x10, 0x11, 0x00};
 
 u8 D_3716_scriptBlackthornLeaves[10] = {0x05, 0x04, 0x19, 0x02, 0x05, 0x1a, 0x09, 0x08, 0x07, 0x00};
 
-u16 D_3720[6] = { 0x1130, 0x101d, 0x0e53, 0x0b75, 0x0ce4, 0x0ce4 };
+u16 D_3720_fanfareFreq[6] = { 0x1130, 0x101d, 0x0e53, 0x0b75, 0x0ce4, 0x0ce4 };
 
-u16 D_372c[6] = { 0xc350, 0xc350, 0xc350, 0x7530, 0x9c40, 0x9c40 };
+u16 D_372c_fanfareParam3[6] = { 0xc350, 0xc350, 0xc350, 0x7530, 0x9c40, 0x9c40 };
 
-u16 D_3738[6] = { 0x0bb8, 0x0bb8, 0x0bb8, 0x03e8, 0x0064, 0x9ca4 };
+u16 D_3738_fanfareParam4[6] = { 0x0bb8, 0x0bb8, 0x0bb8, 0x03e8, 0x0064, 0x9ca4 };
 
-s16 D_3744[6] = { 1, 1, 1, 1, 1, -1 };
+s16 D_3744_fanfareParam5[6] = { 1, 1, 1, 1, 1, -1 };
 
 // so many footsteps, two frames each
 static void BLCKTHRN_0000_Footsteps(int count)
@@ -526,7 +526,7 @@ void BLCKTHRN_060e_Capture(void)
             actor_g->y = D_1f48_prisonCellY[D_1f12_prisonCellOf[(aliveCount - 1) * 8 + index]];
 
             classIndex = ULTIMA_4d76_FindIndex(_TEXT(0x701a, CLASS_LIST), D_55a8_party[index].cls);
-            actor_g->tile = actor_g->animTile = D_1ade[classIndex];
+            actor_g->tile = actor_g->animTile = D_1ade_classTile[classIndex];
         }
 
         // aa61
@@ -644,7 +644,7 @@ void BLCKTHRN_0910_Death(void)
     // ac9d: NOT MATCHING
     for (index = 0; index < 6; index++)
     {
-        ULTIMA_2192_AudioPulse(D_3720[index], 1, D_372c[index], D_3738[index], D_3744[index]);
+        ULTIMA_2192_AudioPulse(D_3720_fanfareFreq[index], 1, D_372c_fanfareParam3[index], D_3738_fanfareParam4[index], D_3744_fanfareParam5[index]);
     }
 
     ULTIMA_1850_PrintString(_TEXT(0x7172, "\n\nSomeone shouts\n\n\"FORTIS FORTUNA\nAVENTARI\""));

@@ -19,7 +19,7 @@ void MAINOUT_0354_MoveParty(int stepX, int stepY);
 int MAINOUT_105c_IsMovingActor(int tile);
 
 // CMDS.OVL's MSC 5.1 code is two objects: cmds.c (CMDS_0000_HoleUpRest-CMDS_1030_YellShadowlord) and this one, from
-// CMDS_1202_RestoreShrine (its _DATA starts at DS:4450, an even address, after D_444a). Compiled after
+// CMDS_1202_RestoreShrine (its _DATA starts at DS:4450, an even address, after D_444a_shadowlordNames). Compiled after
 // the first part's functions, MSC 5.1 drops loop optimizations in CMDS_12c8_YellWordOfPower (its loop
 // registers); as an object of its own it gives the original's code.
 
@@ -55,7 +55,7 @@ static void CMDS_1202_RestoreShrine(int virtue, int x, int y)
         }
     }
 
-    if (right && D_1f6e[virtue] == x && D_1f76[virtue] == y)
+    if (right && D_1f6e_shrineX[virtue] == x && D_1f76_shrineY[virtue] == y)
     {
         D_58d8_shrineDestroyed[virtue] &= 0x7f;
         ULTIMA_1850_PrintString(_TEXT(0x4482, "\n\nThe Shrine is\nrestored!\n"));
@@ -69,7 +69,7 @@ static void CMDS_1202_RestoreShrine(int virtue, int x, int y)
     }
 }
 
-char* D_4502[8] =
+char* D_4502_vileWords[8] =
 {
     _STATIC_TEXT(0x449d, "FALLAX"),
     _STATIC_TEXT(0x44a4, "VILIS"),
@@ -98,7 +98,7 @@ static void CMDS_12c8_YellWordOfPower(char* word)
 
     found = 0;
 
-    for (virtue_b = 0, wordPtr_m = D_4502; virtue_b < 8; virtue_b++)
+    for (virtue_b = 0, wordPtr_m = D_4502_vileWords; virtue_b < 8; virtue_b++)
     {
         if (ULTIMA_6f1e_CompareWord((byte*)*wordPtr_m, word) > -1)
         {

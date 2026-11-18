@@ -21,7 +21,7 @@
 
 // 1300
 
-STUB u8 D_13a6[8]; // TODO: size?
+STUB u8 D_13a6_shadowlordStartY[8]; // TODO: size?
 
 STUB u16 D_13ae_redColor;
 STUB u16 D_13b0_brightWhiteColor;
@@ -33,14 +33,14 @@ STUB u16 D_13ba_lightGrayColor;
 
 STUB EnemyStats D_13bc_enemyStats[0x30]; // 0x30 ~153c
 STUB u16 D_153c_enemyFlags[0x30]; // enemy flags
-STUB u8 D_159c[0x30]; // enemy related
-STUB u8 D_15cc[0x30]; // enemy related
+STUB u8 D_159c_enemyRange[0x30]; // enemy related
+STUB u8 D_15cc_enemyMissile[0x30]; // enemy related
 
-STUB u8 D_15fc[0x38]; // ~1634) some equip table
+STUB u8 D_15fc_weaponAttack[0x38]; // ~1634) some equip table
 
 STUB u8 D_1634_equipDefense[0x30]; // ~1664) equip defense table
-STUB u8 D_1664[0x38]; // ~169c) some equip table
-STUB u8 D_169c[0x38]; // ~16d4) some equip table
+STUB u8 D_1664_weaponRange[0x38]; // ~169c) some equip table
+STUB u8 D_169c_weaponMissile[0x38]; // ~16d4) some equip table
 
 STUB u8 D_16d4_enemyCompanion[0x30]; // the other kind of enemy that may come with one (ULTIMA_6bc2)
 STUB u8 D_1704_combatEnemyX[0x10]; // where the enemies start on the combat map
@@ -49,7 +49,7 @@ STUB u8 D_1724_combatPartyX[8]; // where the party starts
 // gap 2
 STUB u8 D_172c_combatPartyY[8]; // six used
 // gap 2
-STUB u8 D_1734[8];
+STUB u8 D_1734_ambushEnemies[8];
 
 STUB u8 D_173c_monsterTypes[8];
 STUB u8 D_1744_monsterAnimStates[8];
@@ -61,7 +61,7 @@ STUB char* D_1856_enemyNames[0x30]; // Job names
 STUB char* D_18b6_enemyNamesPlural[0x30]; // Foe names
 
 // 1900
-STUB char* D_1916[0x26]; // Items
+STUB char* D_1916_itemNames[0x26]; // Items
 STUB char* D_1962_equipShortNames[56]; // Armaments
 STUB char* D_19d2_reagentNames[8]; // reagent names
 STUB char* D_19e2_spellNames[48 + 1]; // spell names
@@ -69,28 +69,28 @@ STUB char* D_19e2_spellNames[48 + 1]; // spell names
 // 1a00
 
 STUB char* D_1a44_classNames[10]; // Class/Jobs (Avatar, Mage, Bard, ...)
-STUB s16 D_1a58[9];
+STUB s16 D_1a58_classNamePad[9];
 STUB char* D_1a6a_statusNames[5]; // Health (Good Health, Poisoned, ...)
 STUB u16 D_1a74_karmaTextOffsets[5]; // karma string offset
-STUB u8 D_1a7e[0x30]; // equipment type?
-STUB u8 D_1aae[0x30];
-STUB u8 D_1ade[9];
+STUB u8 D_1a7e_equipSlotKind[0x30]; // equipment type?
+STUB u8 D_1aae_equipWeight[0x30];
+STUB u8 D_1ade_classTile[9];
 // gap 1
-STUB u8 D_1ae8[0x30];
+STUB u8 D_1ae8_equipMarker[0x30];
 STUB u8 D_1b18_animSequences[0xb0 + 0x33];
 // gap 1
-STUB char* D_1bfc[26];
+STUB char* D_1bfc_mantraWords[26];
 
-STUB char* D_1c30[0x30]; // ~1c90)
+STUB char* D_1c30_spellCodes[0x30]; // ~1c90)
 
-STUB u8 D_1c90[0x30];
+STUB u8 D_1c90_spellUsability[0x30];
 
-STUB u8 D_1cc0[0x30];
-STUB u16 D_1cf0[0x15];
+STUB u8 D_1cc0_spellReagents[0x30];
+STUB u16 D_1cf0_raySlopes[0x15];
 
 STUB u8 D_1d1a_cellPattern[0x100];
 
-STUB u8 D_1e1a[0x20]; // map offset table ~1e3a)
+STUB u8 D_1e1a_townMapOffset[0x20]; // map offset table ~1e3a)
 STUB char* D_1e3a_mapNames[0x28]; // map name table ~1e8a)
 STUB u8 D_1e8a_placeX[0x28]; // where each map's place is in the world
 STUB u8 D_1eb2_placeY[0x28]; // ~1ed9) town position y
@@ -103,9 +103,9 @@ STUB u8 D_1f48_prisonCellY[6];
 
 STUB char* D_1f4e_virtueNames[8];
 STUB char* D_1f5e_mantras[8]; // mantra
-STUB u8 D_1f6e[8];
-STUB u8 D_1f76[8];
-STUB PairS8 D_1f7e[0x100]; // ~217e) (x,y) * 0x100 (TODO: Pair)
+STUB u8 D_1f6e_shrineX[8];
+STUB u8 D_1f76_shrineY[8];
+STUB PairS8 D_1f7e_beamCells[0x100]; // ~217e) (x,y) * 0x100 (TODO: Pair)
 
 STUB s16 D_217e_beaconX; // the lighthouse lamp (tile 0x2a in a town, 0x1b outside); -1 none
 STUB s16 D_2180_beaconY;
@@ -113,9 +113,9 @@ STUB s16 D_2182_beacon2X;
 STUB s16 D_2184_beacon2Y;
 STUB u8 D_2186_beaconStep; // s8?
 
-STUB s8 D_2188[0x32]; // ~21ba) comsubs: some line table
+STUB s8 D_2188_missileShapes[0x32]; // ~21ba) comsubs: some line table
 
-STUB u8 D_21ba[0x10]; // comsubs: some pixel drawing table
+STUB u8 D_21ba_sparkOffsets[0x10]; // comsubs: some pixel drawing table
 
 // shop related
 STUB char* D_21ca_shopNames[8][16]; // shop names, by shop kind and shop index
@@ -147,14 +147,14 @@ STUB char* D_24ea_wordTable[0x80]; // the words that bytes of the .TLK scripts (
 STUB char* D_25ea_fileNames[30]; // ~2626) compressed file name table
 #define D_25f0 (&D_25ea_fileNames[3])
 
-STUB char* D_2652[4]; // town dat names
+STUB char* D_2652_townFileNames[4]; // town dat names
 
 STUB u8 D_2742_drunkDirs[4]; // town
-STUB u16 D_2746[0xa]; // town: harpsichord audio freqs
+STUB u16 D_2746_harpsichordFreq[0xa]; // town: harpsichord audio freqs
 STUB u8 D_275a_secretTune[0xd]; // town:harpsichord notes
 STUB u8 D_2767_tuneStep; // town
 
-STUB char* D_27dc[3]; // town
+STUB char* D_27dc_shadowlordTraits[3]; // town
 
 STUB u32 D_28c6_npcValueMask[0x20]; // ~2946) town
 
@@ -195,7 +195,7 @@ STUB u8 D_2de8_placeNameBase[8];
 STUB u8 D_2df0_placeNameCount[8];
 STUB u8 D_2df8_placeNameX[12];
 STUB u8 D_2e04_placeNameY[12];
-STUB char* D_2e10[11];
+STUB char* D_2e10_dungeonPlaceNames[11];
 
 STUB u8 D_2e26_monsterTurnMirror[4];
 STUB s16 D_2e2a_monsterX[4]; // int
@@ -233,21 +233,21 @@ STUB Pair2 D_2fc2_textRight[0x15];
 STUB u16 D_3016_storyOffset[0x15];
 STUB u8 D_3040_regionTop[0x16]; // 0x15 + gap 1
 STUB u8 D_3056_regionBottom[0x16]; // 0x15 + gap 1
-STUB u8 D_306c[0x16]; // 0x15 + gap 1
+STUB u8 D_306c_pageTextX[0x16]; // 0x15 + gap 1
 STUB u8 D_3082_startY[0x16]; // 0x15 + gap 1
 STUB u8 D_3098_imageIndex[0x16]; // 0x15 + gap 1
 STUB u8 D_30ae_imageFile[0x16]; // 0x15 + gap 1
-STUB u8 D_30c4[0x16]; // 0x15 + gap 1
-STUB u8 D_30da[0x16]; // 0x15 + gap 1
+STUB u8 D_30c4_pageImageX[0x16]; // 0x15 + gap 1
+STUB u8 D_30da_pageImageY[0x16]; // 0x15 + gap 1
 STUB u8 D_30f0_pageKind[0x15];
 // 0x3105: "WD.BIT"
 
 // 3000
 
-STUB u16 D_3304; // u4 save - is avatar?
+STUB u16 D_3304_notAvatar; // u4 save - is avatar?
 
 STUB u16 D_3656_labelRow[8];
-STUB char* D_3666[8];
+STUB char* D_3666_fieldLabels[8];
 // ^intro
 
 // npc
@@ -260,16 +260,16 @@ STUB u8 D_3702_scriptGuardsEnter[12];
 STUB u8 D_370e_scriptRelease[8];
 STUB u8 D_3716_scriptBlackthornLeaves[10];
 
-STUB u16 D_3720[6];
-STUB u16 D_372c[6];
-STUB u16 D_3738[6];
-STUB s16 D_3744[6]; // ~3750)
+STUB u16 D_3720_fanfareFreq[6];
+STUB u16 D_372c_fanfareParam3[6];
+STUB u16 D_3738_fanfareParam4[6];
+STUB s16 D_3744_fanfareParam5[6]; // ~3750)
 
 STUB u8 D_3750_planetStartPos[8];
 STUB u8 D_3758_planetRow[8];
 STUB u8 D_3760_orbitSteps[0xb0]; // ~3810)
 
-STUB char* D_3810[9]; // ~3822)
+STUB char* D_3810_lookPictures[9]; // ~3822)
 STUB u8 D_3822_shoreLandMask[16]; // ~3832)
 
 STUB u8 D_3832_edgeBits[8]; // ~383a; [7] + gap 1?
@@ -291,7 +291,7 @@ STUB u8 D_3a06_shardX[4];
 STUB u8 D_3a0a_shardY[4];
 STUB u8 D_3a0e_shardValue[3];
 
-STUB u16 D_3a26[6];
+STUB u16 D_3a26_apparitionFreq[6];
 STUB u8 D_3a32_reagentPrices[5][8];
 STUB u8 D_3a5a_reagentLots[5][8];
 
@@ -307,30 +307,30 @@ STUB u16 D_3bea_provisionPrices[4][4];
 STUB u16 D_3c0a_provisionTexts[3];
 STUB u16 D_3c10_reagentTexts[8];    // string offset table. type: int (FMT: 4bytes)
 
-STUB char* D_3c20[8];
+STUB char* D_3c20_reagentNames[8];
 
 STUB u16 D_3c30_horsePrices[4];
 STUB s16 D_3c38_stableDx[4]; // 3c38..3c40)
 STUB s16 D_3c40_stableDy[4]; // 3c40..3c48)
 STUB s16 D_3c48_armsTexts[0x2f]; // 3c40..3ca6)? shop item description TODO: size
 
-STUB char* D_3ca6[4];
-STUB char* D_3cae[4];
-STUB char* D_3cb6[4];
+STUB char* D_3ca6_buyOffers[4];
+STUB char* D_3cae_cantPayInsults[4];
+STUB char* D_3cb6_showPrompts[4];
 
 STUB u16 D_3cbe_buybackTexts[8]; // string offset table. type: int (FMT: 4bytes)
 
-STUB char* D_3cce[0x30];
+STUB char* D_3cce_shopItemNames[0x30];
 
-STUB char* D_3d2e[4];
+STUB char* D_3d2e_sellPrompts[4];
 
-STUB char* D_3d36[4];
-STUB char* D_3d3e[4];
-STUB char* D_3d46[2];
-STUB char* D_3d4a[4];
-STUB char* D_3d52[4];
+STUB char* D_3d36_farewells[4];
+STUB char* D_3d3e_sellMorePrompts[4];
+STUB char* D_3d46_buyOrSellGreetings[2];
+STUB char* D_3d4a_goodReplies[4];
+STUB char* D_3d52_stockIntros[4];
 
-STUB char D_3d5a[]; // "\n\n\"Thou hast no need of this art!\"\nsays $."
+STUB char D_3d5a_noNeedOfArt[]; // "\n\n\"Thou hast no need of this art!\"\nsays $."
 
 STUB u8 D_3d86_healPrices[8];
 STUB u8 D_3d8e_curePrices[8];
@@ -350,9 +350,9 @@ STUB u8 D_3dfa_imageX[6]; // endgame_0000 image x
 STUB u8 D_3e00_imageY[6]; // endgame_0000 image y
 STUB u8 D_3e06_hasBanner[6];
 
-STUB char* D_3e0c[19];
-STUB char* D_3e32[8];
-STUB char* D_3e42[12];
+STUB char* D_3e0c_numberNames[19];
+STUB char* D_3e32_tensNames[8];
+STUB char* D_3e42_ordinalNames[12];
 
 STUB u8 D_3e5a_partyDestX[6];
 STUB u8 D_3e60_partyDestY[6];
@@ -360,7 +360,7 @@ STUB u8 D_3e60_partyDestY[6];
 STUB u8 D_3e66_harvestX[4];
 STUB u8 D_3e6a_harvestY[4];
 STUB u8 D_3e6e_harvestReagent[4];
-STUB char* D_3e72[3];
+STUB char* D_3e72_harvestNames[3];
 
 STUB u8 D_3e78_hiddenTile[0x72]; // TODO: size
 STUB u8 D_3eea_hiddenValue[0x72]; // hidden item - value TODO: size
@@ -377,15 +377,15 @@ STUB u8 D_4134_treasureMaxAmount[8];
 STUB u8 D_413c_gearKind[0x30];
 STUB u8 D_416c_gearMinLevel[0x30]; // ~419c)
 
-STUB char* D_419c[8];
-STUB char* D_41ac[8];
+STUB char* D_419c_potionColors[8];
+STUB char* D_41ac_scrollRunes[8];
 STUB u8 D_41bc_dungeonLootOdds[8];
 STUB u8 D_41c4_dungeonLootMax[8];
 STUB u8 D_41cc_dungeonLootKind[8];
 
-STUB char* D_444a[3];
+STUB char* D_444a_shadowlordNames[3];
 
-STUB char* D_4502[8];
+STUB char* D_4502_vileWords[8];
 STUB u8 D_4512_wordTile[8];
 
 STUB u8 D_4592_fieldMissileKinds[4];
@@ -411,12 +411,12 @@ STUB u8 D_4af3_talkTextX; // the text column after the last character printed
 STUB u8 D_4af4_talkLastChar; // the last character processed
 STUB u8 D_4af5_talkAfterWord; // 1 after a word of the word table: a space comes before the next character
 
-STUB u16 D_4af6[9];
-STUB u16 D_4b08[9]; // cast sound freq table 1
-STUB u16 D_4b1a[9]; // cast sound freq table 2
-STUB u16 D_4b2c[9]; // cast sound pulse table
+STUB u16 D_4af6_castFreq[9];
+STUB u16 D_4b08_castParam4Up[9]; // cast sound freq table 1
+STUB u16 D_4b1a_castParam4Down[9]; // cast sound freq table 2
+STUB u16 D_4b2c_castStep[9]; // cast sound pulse table
 
-STUB char* D_4b3e[8]; // virtue keywords
+STUB char* D_4b3e_virtueKeywords[8]; // virtue keywords
 
 STUB u16 D_4b5e_questTextPos[8]; // int
 STUB u16 D_4b6e_codexTextPos[8];
@@ -430,10 +430,10 @@ STUB u8 D_4b9e_urnX[0x24]; // TODO: size
 STUB u8 D_4bc2_urnY[0x24]; // TODO: size
 
 // some sound table
-STUB u16 D_4be6[7];
-STUB u16 D_4bf4[7];
-STUB u16 D_4c02[7];
-STUB u16 D_4c10[7];
+STUB u16 D_4be6_shrineFreq[7];
+STUB u16 D_4bf4_shrineParam3[7];
+STUB u16 D_4c02_shrineParam4[7];
+STUB u16 D_4c10_shrineParam5[7];
 
 STUB char D_4c1e_foodKeys[5];
 STUB char D_4c24_drinkKeys[5];
@@ -445,10 +445,10 @@ STUB u16 D_4c48_winePrices[6]; // TODO: size
 STUB u16 D_4c54_rationPrices[9]; // TODO: size
 STUB u16 D_4c66_rationTexts[7]; // TODO: size
 
-STUB char* D_4c74[26];
-STUB char* D_4ca8[26];
+STUB char* D_4c74_pubTopicWords[26];
+STUB char* D_4ca8_pubPersons[26];
 STUB u8  D_4cdc_gossipPlaceIdx[26];
-STUB char* D_4cf6[13];
+STUB char* D_4cf6_pubPlaces[13];
 
 STUB u16 D_4d10_gossipPrices[0x1a]; // TODO: size
 STUB u16 D_4d44_gossipTexts[4];
@@ -467,20 +467,20 @@ STUB u16 D_4e6e_innOfferTexts[6]; // the offer, an offset in SHOPPE.DAT
 STUB u8 D_4e7a_innBedX[6]; // where the party wakes up
 STUB u8 D_4e80_innBedY[6];
 
-STUB u8 D_50ea[0x5b]; // glyph width table, from ' '
+STUB u8 D_50ea_glyphWidths[0x5b]; // glyph width table, from ' '
 
-#define D_50f7 D_50ea[0xd]
+#define D_50f7 D_50ea_glyphWidths[0xd]
 
-STUB u16 D_5146[2];
-STUB u16 D_514c[2];
-STUB u16 D_5150; // TODO: int?
-STUB u16 D_5152; // TODO: int?
-STUB u16 D_5154;
-STUB u16 D_5156;
-STUB u16 D_5158; // TODO: int?
+STUB u16 D_5146_textLeftX[2];
+STUB u16 D_514c_textRightX[2];
+STUB u16 D_5150_regionTop; // TODO: int?
+STUB u16 D_5152_regionBottom; // TODO: int?
+STUB u16 D_5154_spaceWidth;
+STUB u16 D_5156_penX;
+STUB u16 D_5158_penY; // TODO: int?
 STUB u16 D_515a_toneStep; // = 0
 
-STUB char* D_515c[4];
+STUB char* D_515c_sceneCaptions[4];
 
 // 5200
 
@@ -490,7 +490,7 @@ STUB u8 D_5174_strBonus[8];
 STUB u16 D_517c_questionOffset[8][8];
 STUB u8 D_51fc_cardX[8];
 STUB u8 D_5204_cardY[8];
-STUB u16 D_520c; // AFONT.ASM's: where FONT_0e52_SaveVideoPage saves the video page
+STUB u16 D_520c_savedVideoPage; // AFONT.ASM's: where FONT_0e52_SaveVideoPage saves the video page
 
 // main parameters
 // int D_52a2;     // __argc
@@ -514,20 +514,20 @@ STUB int D_52ef_forceEga; // force ega
 STUB int D_52f1_forceTandy; // force tandy
 STUB int D_52f3_forceHerc; // force herc
 
-STUB int D_52f6; // temp area?
-STUB int D_52f8; // temp area?
+STUB int D_52f6_clipTempX; // temp area?
+STUB int D_52f8_clipTempY; // temp area?
 
 // ?
-STUB int D_52fa; // x1
-STUB int D_52fc; // y1
-STUB int D_52fe; // x2
-STUB int D_5300; // y2
+STUB int D_52fa_clipX1; // x1
+STUB int D_52fc_clipY1; // y1
+STUB int D_52fe_clipX2; // x2
+STUB int D_5300_clipY2; // y2
 
 // 5300
-STUB int D_5304; // previous video mode
+STUB int D_5304_prevVideoMode; // previous video mode
 
-STUB int D_5306[7]; // origin logo frames: widths (signed: centred with sar)
-STUB int D_5314[7]; // and heights
+STUB int D_5306_logoFrameWidth[7]; // origin logo frames: widths (signed: centred with sar)
+STUB int D_5314_logoFrameHeight[7]; // and heights
 
 // 5322..5327: "Tandy"
 // 5328..532f: video driver string table
@@ -539,7 +539,7 @@ STUB void* FAR D_5350_driverEntry; // far pointer into the video driver; the off
 STUB u16 D_5354_pageSegment; // segment of video page buffer (ega: 0xa800, t1k: allocated memory)
 STUB u16 D_5356_timerCalibration; // timer calibration
 STUB u16 D_5358_memorySize; // memory size
-STUB u16 D_535a; // current timer value
+STUB u16 D_535a_timerValue; // current timer value
 STUB u16 D_535c_dosError; // int21 error code
 
 // 535e..537d
@@ -547,19 +547,19 @@ STUB TextWindow D_535e_textWindows[4];
 
 STUB u16 D_5386_textWindowIndex; // charset_id (offset in 539a, data in 53a4..53ab)
 STUB u16 D_5388_charsetIndex; // selected charset idx
-STUB u16 D_538a; // bool: special keystroke
+STUB u16 D_538a_numpadKeys; // bool: special keystroke
 STUB u16 D_538c_keyBufferOff; // Ctrl-B: "Buffer Off/On"
-STUB u16 D_538e; // cursor advance flag
-STUB u16 D_5390; // keystroke cursor begin idx
-STUB u16 D_5392;
+STUB u16 D_538e_cursorAdvance; // cursor advance flag
+STUB u16 D_5390_cursorFirstChar; // keystroke cursor begin idx
+STUB u16 D_5392_cursorFrameCount;
 STUB void (FAR *D_5394_diskSwapFn)(void); // disk swap message function pointer
 //STUB u16 D_5398; // segment of current charset
 STUB u8* FAR D_5398_currentCharset;        // ptr of current charset
 STUB TextWindow* D_539a_currentTextWindow; // address of current text window data
-//STUB u16 D_539c[4]; // charset segment table
-STUB u8* FAR D_539c[4];    // charset table
+//STUB u16 D_539c_charsetTable[4]; // charset segment table
+STUB u8* FAR D_539c_charsetTable[4];    // charset table
 STUB u16 D_53a4_underline; // underline flag (bit 0 of byte 7)
-STUB u16 D_53a6; // ? flag (bit 1 of byte 7)
+STUB u16 D_53a6_centerText; // ? flag (bit 1 of byte 7)
 STUB u16 D_53a8_inverse; // inverse flag (bit 1 of byte 7)
 STUB u8  D_53aa_textFgColor; // text fg color (lo nibble of byte 6)
 STUB u8  D_53ab_textBgColor; // text bg color (hi nibble of byte 6)
@@ -579,39 +579,39 @@ STUB u16 D_53be; // second allocated segment (for lzw)
 
 // 53d6..53e8: "Out of Memory...\n$"
 
-STUB u8 D_53ea[24]; // ~5402) character data from charset file (herc=24, others=8)
-STUB s16 D_5402[5]; // 5402..540c) 1, 10, 100, 1000, 10000
-STUB u16 D_540c; // cursor anim idx // TODO: int
-STUB u8 D_540e[8]; // extended ascii code for arrow keys
-STUB u8 D_5416[8]; // special key table
-STUB u8 D_541e; // drive number
+STUB u8 D_53ea_glyphBuffer[24]; // ~5402) character data from charset file (herc=24, others=8)
+STUB s16 D_5402_powersOfTen[5]; // 5402..540c) 1, 10, 100, 1000, 10000
+STUB u16 D_540c_cursorFrame; // cursor anim idx // TODO: int
+STUB u8 D_540e_arrowKeyCodes[8]; // extended ascii code for arrow keys
+STUB u8 D_5416_specialKeyTable[8]; // special key table
+STUB u8 D_541e_driveNumber; // drive number
 STUB u16 D_5420_randomSeed; // random seed?
-STUB u16 D_5422;
-STUB u16 D_5424;
-STUB u16 D_5426[2]; // timer-related?
+STUB u16 D_5422_delayInner;
+STUB u16 D_5424_delayOuter;
+STUB u16 D_5426_delayShift[2]; // timer-related?
 
-STUB u16 D_5448; // current timer value
-STUB u16 D_544a; // timer tick count to wait
+STUB u16 D_5448_timerValue; // current timer value
+STUB u16 D_544a_ticksToWait; // timer tick count to wait
 // far D_544c; // far addr of original int 1c handler
 
 // The disk last selected. A plain char in the DOS build: with it, 1988's ULTIMA_2322 compares
-// it with the disk wanted as "mov al,bl; cmp D_545e,al" (u8: "mov al,D_545e; cmp bl,al").
+// it with the disk wanted as "mov al,bl; cmp D_545e_lastDisk,al" (u8: "mov al,D_545e_lastDisk; cmp bl,al").
 // The other modules only store 0xff into it, the same code for both types.
 #if defined(TARGET_DOS16)
-STUB char D_545e;
+STUB char D_545e_lastDisk;
 #else
-STUB u8 D_545e;
+STUB u8 D_545e_lastDisk;
 #endif
 
 // ...54d2: strings
 
 // 5500
-STUB u8 D_54d4[32]; // normal walkable tile flag table
-STUB u8 D_54f4[64]; // actor tile -> move type table
-STUB u8 D_5534[16]; // skiff walkable flag table
-STUB u8 D_5544[4];
+STUB u8 D_54d4_blockedTileBits[32]; // normal walkable tile flag table
+STUB u8 D_54f4_moveType[64]; // actor tile -> move type table
+STUB u8 D_5534_skiffWaterBits[16]; // skiff walkable flag table
+STUB u8 D_5544_skiffTileBits[4];
 
-STUB u8 D_559e[8]; // ~55a6)
+STUB u8 D_559e_trapKinds[8]; // ~55a6)
 
 //
 // Savegame / User state
@@ -670,21 +670,21 @@ STUB u8  D_587e_day; // +0x2D8
 STUB u8  D_587f_hour;        // +0x02D9 Current hour
 STUB u8  D_5880_lastHour; // +0x2DA
 STUB u8  D_5881_minute; // +0x2DB
-STUB u8  D_5882;
-STUB u8  D_5883;        // ?
+STUB u8  D_5882_combatTick;
+STUB u8  D_5883_sailCounter;        // ?
 STUB u8  D_5884_clockChimes; // +0x2DE strokes the clock has still to chime
 STUB u8  D_5885_trammelPhase; // +0x2DF
 STUB u8  D_5886_feluccaPhase; // +0x2E0
 STUB u8  D_5887_moongateHeight; // +0x2E1
 STUB u8  D_5888_karma;        // +0x02E2 Karma
-STUB u8  D_5889;
-STUB u8  D_588a;
+STUB u8  D_5889_savedUnused;
+STUB u8  D_588a_savedUnused;
 STUB u8  D_588b_turnCount; // +0x2E5
 STUB u8  D_588c_campHealWait; // +0x2E6 hours until camping heals again (the Codex)
-STUB u8  D_588d;
+STUB u8  D_588d_apparitionMonth;
 STUB u8  D_588e_protectTurns; // +0x2E8
-STUB u8  D_588f;
-STUB u8  D_5890;
+STUB u8  D_588f_castCircle;
+STUB u8  D_5890_spellAttack;
 STUB u8  D_5891_animate; // +0x2EB 0, 1 or 0xff
 STUB u8  D_5892_windDir; // +0x2EC
 STUB u8  D_5893_mapId; // +0x2ED
@@ -702,15 +702,15 @@ STUB u8  D_589e_curCombatant; // +0x2F8 the entry of D_ba14_combatants whose tur
 STUB u8  D_589f_focusBlink; // +0x2F9 toggled each frame: the frame around the combatant
 STUB u8  D_58a0_combatExitDir; // +0x2FA
 STUB u8  D_58a1_combatFlags; // +0x2FB
-STUB u8  D_58a2;
+STUB u8  D_58a2_combatEvents;
 STUB u8  D_58a3_combatOver; // +0x2FD the Codex's "no more enemies"
 STUB u8  D_58a4_viewOn; // +0x2FE the map view is updated and animated
 STUB u8  D_58a5_lightLevel; // +0x2FF
 STUB u8  D_58a6_lightSpellTurns; // +0x300
 STUB u8  D_58a7_torchTurns; // +0x301
-STUB u8  D_58a8[0x20];  // [58a8..58c8)
+STUB u8  D_58a8_lastAttacker[0x20];  // [58a8..58c8)
 STUB u8  D_58c8_shadowlordTowns[3]; // +0x322
-STUB u8  D_58cb;
+STUB u8  D_58cb_summonedLord;
 STUB u16 D_58cc_questsOrdained; // +0x326
 STUB u16 D_58ce_questsDone; // +0x328
 STUB u8  D_58d0_dungeonOpen[8]; // +0x32A 0 sealed, 0x80 open
@@ -731,7 +731,7 @@ STUB u8  D_5955_sailDir; // +0x3AF
 STUB u8  D_5956_newPrompt; // +0x3B0
 STUB u8  D_5957_drunkTurns; // +0x3B1
 STUB u8  D_5958_townShadowlord; // which of the three shadowlords (D_58c8_shadowlordTowns) is in this town, 0xff none (TOWN_02ae_SetupShadowlord)
-STUB u8  D_5959;
+STUB u8  D_5959_fewerEnemies;
 STUB u8 D_595a_dungeonMap[0x200]; // +0x3B4
 // 5b00
 STUB u8 D_5b5a_npcKilled[0x80]; // +0x5B4
@@ -740,8 +740,8 @@ STUB u8 D_5bda_npcMet[0x80]; // +0x634
 STUB ActorFmt D_5c5a_actors[32]; // +0x6B4
 
 // 5d00
-STUB u16 D_5d5a; // unused?
-STUB u16 D_5d5c; // unused?
+STUB u16 D_5d5a_unused; // unused?
+STUB u16 D_5d5c_unused; // unused?
 
 STUB NpcScheduleFmt D_5d5e_npcSchedules[32]; // +0x7B8
 
@@ -754,13 +754,13 @@ STUB MovementFmt D_615e_moveLists[0x20]; // +0xBB8
 
 STUB s16 D_655e_moveListPos[0x20]; // +0xFB8
 STUB u8 D_659e_npcTypes[0x20]; // +0xFF8
-STUB u8 D_65be;
-STUB u8 D_65bf;
-STUB u16 D_65c0; // unused?
-STUB s16 D_65c2[0x20];
+STUB u8 D_65be_npcApproach;
+STUB u8 D_65bf_npcApproaching;
+STUB u16 D_65c0_unused; // unused?
+STUB s16 D_65c2_npcStuckCount[0x20];
 
 // 6600
-STUB u8 D_6602;
+STUB u8 D_6602_dungeonMoveDir;
 STUB u8 D_6603_dungeonFacing; // +0x105D 0 north, 1 east, 2 south, 3 west
 STUB u8 D_6604_dungeonStyle; // +0x105E 1 cave, 2 mine, 3 dungeon
 STUB u8 D_6605_boughtShip; // +0x105F 0x40 a skiff; 0x80 + n a frigate with n skiffs
@@ -788,26 +788,26 @@ STUB S_6608_Map D_6608_overworld;
 #define D_6608_overworld D_6608_map
 #endif
 
-STUB u8 D_6a08; // some audio related
+STUB u8 D_6a08_songPos; // some audio related
 
 STUB u16 D_6a0a_powersOfTen[5];
 
-STUB u8 D_6a14[0x20];
+STUB u8 D_6a14_viewTileFlags[0x20];
 
 STUB u8 D_6a34_ambientTick;
-STUB u16 D_6a36[9]; // banjo freq table
+STUB u16 D_6a36_banjoFreq[9]; // banjo freq table
 
-STUB u8 D_6a48[0x36]; // iolo's banjo song note table
+STUB u8 D_6a48_banjoSong[0x36]; // iolo's banjo song note table
 
-STUB u8 D_6a7e;
+STUB u8 D_6a7e_tileAnimTick;
 
-STUB u8 D_6a80[6]; // light intensity slope?
-STUB u8 D_6a86[0x13]; // ~6a99)
+STUB u8 D_6a80_lightSlope[6]; // light intensity slope?
+STUB u8 D_6a86_opaqueTiles[0x13]; // ~6a99)
 
-STUB u8 D_6a9a[10];
+STUB u8 D_6a9a_lightTiles[10];
 
-STUB u16 D_6aa4;
-STUB u8 D_6aa8[0x24];
+STUB u16 D_6aa4_unused;
+STUB u8 D_6aa8_viewDist2[0x24];
 
 // a300
 
@@ -823,14 +823,14 @@ STUB u8 D_6aa8[0x24];
 
 // From DS:a9bc (where the runtime's empty XOB/XO/XOE segments are) to _end: communal
 // variables, declared with BSS. vars.c defines them; the link allocates them in PLINK86's
-// order, by their sizes (tools/u5.py, COMMUNALS). The few that no code refers to (D_bbd2,
-// D_bcb0, D_bd14, D_bd3a, D_bd3b) are declared so that the others land where they are.
+// order, by their sizes (tools/u5.py, COMMUNALS). The few that no code refers to (D_bbd2_unused,
+// D_bcb0_unused, D_bd14_unused, D_bd3a_unused, D_bd3b_unused) are declared so that the others land where they are.
 
 BSS u8  D_a9bc_townJustEntered;
 BSS u8 D_a9bd_curDisk[1]; // the disk wanted (ULTIMA_251e_SwitchDisks)
-BSS u8 D_a9be; // two bytes on an odd address would have been put on an even one
+BSS u8 D_a9be_promptMode; // two bytes on an odd address would have been put on an even one
 BSS u8* D_a9c0_wallImage; // loaded image pointer
-BSS u8 D_a9c2;
+BSS u8 D_a9c2_floppyCount;
 BSS u8* D_a9c4_itemsImage; // loaded image pointer
 BSS u8* D_a9c6_monsterImage; // loaded image pointer
 
@@ -872,7 +872,7 @@ BSS s16 D_b116_shopKind; // s16 (FMT MOVSX); 0-7, the merchant's dialog number -
 BSS s16 D_b118_shopPrice; // s16 (FMT MOVSX); the % of a shop text
 BSS u16 D_b11a_shopQuantity;
 
-BSS u8* D_b11c;
+BSS u8* D_b11c_searchGrid;
 BSS u8 D_b11e_tileFrames[0x100]; // the tile drawn for each map tile (animation)
 
 #if !defined(MATCHING_BUILD)
@@ -888,39 +888,39 @@ BSS u8 D_b21e_scratch[SCRATCH_SIZE]; // scratch buffer ~b9ee)
 
 // b900
 
-BSS u8  D_b9ee[0x26]; // owned item counts
+BSS u8  D_b9ee_itemCounts[0x26]; // owned item counts
 // [8]
-#define D_b9f6_potionCounts (D_b9ee + 8)
-#define D_b9fe_carpetCount D_b9ee[0x10]
-#define D_b9ff_skullKeyCount D_b9ee[0x11]
-#define D_ba00_amuletOwned D_b9ee[0x12]
-#define D_ba01_crownOwned D_b9ee[0x13]
-#define D_ba02_sceptreOwned D_b9ee[0x14]
+#define D_b9f6_potionCounts (D_b9ee_itemCounts + 8)
+#define D_b9fe_carpetCount D_b9ee_itemCounts[0x10]
+#define D_b9ff_skullKeyCount D_b9ee_itemCounts[0x11]
+#define D_ba00_amuletOwned D_b9ee_itemCounts[0x12]
+#define D_ba01_crownOwned D_b9ee_itemCounts[0x13]
+#define D_ba02_sceptreOwned D_b9ee_itemCounts[0x14]
 // [8]
-#define D_ba03_moonstoneFlags (D_b9ee + 0x15)
+#define D_ba03_moonstoneFlags (D_b9ee_itemCounts + 0x15)
 // [3]
-#define D_ba0b_shardFlags (D_b9ee + 0x1d)
-#define D_ba0e_spyglassCount D_b9ee[0x20]
-#define D_ba0f_capePlansOwned D_b9ee[0x21]
-#define D_ba10_sextantCount D_b9ee[0x22]
-#define D_ba11_pocketWatchOwned D_b9ee[0x23]
-#define D_ba12_blackBadgeOwned D_b9ee[0x24]
-#define D_ba13_sandalwoodBoxOwned D_b9ee[0x25]
+#define D_ba0b_shardFlags (D_b9ee_itemCounts + 0x1d)
+#define D_ba0e_spyglassCount D_b9ee_itemCounts[0x20]
+#define D_ba0f_capePlansOwned D_b9ee_itemCounts[0x21]
+#define D_ba10_sextantCount D_b9ee_itemCounts[0x22]
+#define D_ba11_pocketWatchOwned D_b9ee_itemCounts[0x23]
+#define D_ba12_blackBadgeOwned D_b9ee_itemCounts[0x24]
+#define D_ba13_sandalwoodBoxOwned D_b9ee_itemCounts[0x25]
 
 BSS CombatEntity D_ba14_combatants[32]; // combat entities
 
 BSS u8  D_bb14_wallTile; // pos?
 BSS u8  D_bb15_floorTile; // pos?
-BSS u8  D_bb16;
+BSS u8  D_bb16_altTileset;
 BSS u8  D_bb17_loadFlags;
 BSS u16 D_bb18_pathPos; // "lord british" index
 BSS void* D_bb1a_titleImage; // pointer
 
 BSS S_bb1c D_bb1c_u4Virtues;
-BSS u8 D_bbd2[0xb6]; // no code refers to it; as large as D_bb1c_u4Virtues
+BSS u8 D_bbd2_unused[0xb6]; // no code refers to it; as large as D_bb1c_u4Virtues
 
 BSS S_bc88_U4Party D_bc88_u4Member;
-BSS u16 D_bcb0; // no code refers to it
+BSS u16 D_bcb0_unused; // no code refers to it
 
 BSS char D_bcb2_lineBuf[0x27 + 1];
 
@@ -938,7 +938,7 @@ BSS u16 D_bcf6_talkKeywordIndex; // the NPC's keyword that matched
 BSS char D_bcf8_inputText[16]; // what the player typed
 
 BSS char D_bd08_answer[12];
-BSS u8 D_bd14; // no code refers to it
+BSS u8 D_bd14_unused; // no code refers to it
 
 BSS u8 D_bd15_savedMapId;
 BSS u8 D_bd16_pubKind;
@@ -955,8 +955,8 @@ BSS u8 D_bd27_stripRight;
 BSS u8 D_bd28_stripWiden;
 BSS u8 D_bd29_sceneNo;
 
-BSS u8 D_bd3a; // no code refers to it
-BSS u8 D_bd3b; // no code refers to it
+BSS u8 D_bd3a_unused; // no code refers to it
+BSS u8 D_bd3b_unused; // no code refers to it
 BSS u8 D_bd3c_newInt;
 BSS u8 D_bd3d_newDex;
 BSS u8 D_bd3e_newStr;

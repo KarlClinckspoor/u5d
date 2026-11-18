@@ -70,7 +70,7 @@ static void ZSTATS_0082_ShowPlayerStats(int member)
     classIdx_e = ULTIMA_4d76_FindIndex(_TEXT(0x96c6, CLASS_LIST), player_c->cls);
     statusIdx = ULTIMA_4d76_FindIndex(_TEXT(0x96d0, STATUS_LIST), player_c->status);
 
-    for (pad = 0; pad < D_1a58[classIdx_e]; pad++)
+    for (pad = 0; pad < D_1a58_classNamePad[classIdx_e]; pad++)
     {
         ULTIMA_16ba_PrintChar(' ');
     }
@@ -530,7 +530,7 @@ L_exit:
 #if defined(TARGET_DOS16)
 #pragma loop_opt(on)
 #endif
-// Copy the saved game's scrolls, potions and quest items into the D_b9ee table of owned item counts (the Use list).
+// Copy the saved game's scrolls, potions and quest items into the D_b9ee_itemCounts table of owned item counts (the Use list).
 // 099A
 void ZSTATS_099a_FillItemCounts(void)
 {
@@ -539,7 +539,7 @@ void ZSTATS_099a_FillItemCounts(void)
     i = 0;
     do
     {
-        D_b9ee[i] = D_5820_scrolls[i];
+        D_b9ee_itemCounts[i] = D_5820_scrolls[i];
         D_b9f6_potionCounts[i] = D_5828_potions[i];
         D_ba03_moonstoneFlags[i] = D_5840_moonstoneMap[i] == 0xff ? 0xff : 0;
     } while (++i < 8);
@@ -693,7 +693,7 @@ void ZSTATS_0a3a_ZstatsCmd(void)
                 key = ZSTATS_06e8_BrowseList(_TEXT(0x97b6, "Spells"), 0x30, D_57f0_mixedSpells, D_19e2_spellNames);
                 break;
             case 0xf:
-                key = ZSTATS_06e8_BrowseList(_TEXT(0x97be, "Items"), 0x26, D_b9ee, D_1916);
+                key = ZSTATS_06e8_BrowseList(_TEXT(0x97be, "Items"), 0x26, D_b9ee_itemCounts, D_1916_itemNames);
                 break;
             case 0x10:
                 key = ZSTATS_06e8_BrowseList(_TEXT(0x97c4, "Armaments"), 0x30, D_57c0_equipment, D_1962_equipShortNames);
@@ -731,7 +731,7 @@ static int ZSTATS_0c0a_FreeHandSlot(int member)
     {
         return 0;
     }
-    else if ((player->equips[3] == 0xff) && (D_1a7e[player->equips[2]] != 0x30))
+    else if ((player->equips[3] == 0xff) && (D_1a7e_equipSlotKind[player->equips[2]] != 0x30))
     {
         return 1;
     }
@@ -781,7 +781,7 @@ static int ZSTATS_0c5c_EquipOrRemove(int member, int item)
         if (D_5893_mapId > 0x7f && item == 0x2a)
         {
             classIdx_e = ULTIMA_4d76_FindIndex(_TEXT(0x9812, "AMBFDTPRS"), D_55a8_party[member].cls);
-            actor_g->tile = actor_g->animTile = D_1ade[classIdx_e];
+            actor_g->tile = actor_g->animTile = D_1ade_classTile[classIdx_e];
         }
     }
     else if (((item == 0x1a || item == 0x24) && D_57db_arrows == 0) || (item == 0x1c && D_57dd_quarrels == 0))
@@ -796,14 +796,14 @@ static int ZSTATS_0c5c_EquipOrRemove(int member, int item)
         {
             if (*slot_i != 0xff)
             {
-                load += D_1aae[*slot_i];
+                load += D_1aae_equipWeight[*slot_i];
             }
             slot_i++;
         }
 
-        strongEnough_g = D_1aae[item] + load <= D_55a8_party[member].str;
+        strongEnough_g = D_1aae_equipWeight[item] + load <= D_55a8_party[member].str;
 
-        switch (D_1a7e[item])
+        switch (D_1a7e_equipSlotKind[item])
         {
         case 0x80:
             if (D_55a8_party[member].equips[0] != 0xff)
@@ -924,7 +924,7 @@ int ZSTATS_0f2e_SelectItem(int first, int member, int mode)
     }
     else
     {
-        counts_d = D_b9ee;
+        counts_d = D_b9ee_itemCounts;
         count_g = 0x26;
     }
 
@@ -954,7 +954,7 @@ int ZSTATS_0f2e_SelectItem(int first, int member, int mode)
                 if (ZSTATS_0518_IsEquipped(member, item_a) != 0)
                 {
                     // f244
-                    marker_n = D_1ae8[item_a];
+                    marker_n = D_1ae8_equipMarker[item_a];
                 }
                 else
                 {
@@ -970,7 +970,7 @@ int ZSTATS_0f2e_SelectItem(int first, int member, int mode)
             {
                 // f170..f17e
                 // Scrolls
-                ZSTATS_05e2_PrintItemRow(item_a, counts_d, D_1916, 0x20);
+                ZSTATS_05e2_PrintItemRow(item_a, counts_d, D_1916_itemNames, 0x20);
             }
 
             // f181

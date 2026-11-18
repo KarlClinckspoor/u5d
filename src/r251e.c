@@ -32,7 +32,7 @@ void ULTIMA_251e_SwitchDisks(int diskNumber)
     if (D_a9c8_diskDrives[diskNumber] != 0xff)
     {
         ULTIMA_1eac_SetDefaultDrive(D_a9c8_diskDrives[diskNumber]);
-        D_545e = 0xff;
+        D_545e_lastDisk = 0xff;
     }
 
     D_5394_diskSwapFn = ULTIMA_2322_DiskSwapMessage;

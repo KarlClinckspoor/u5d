@@ -1,0 +1,82 @@
+# Globals still without a descriptive suffix, batch 1: tables DS:13a6-DS:5158 and the font/text state.
+D_13a6 D_13a6_shadowlordStartY       # town.c: y of the shadowlord's start cell, by town (map id - 1)
+D_159c D_159c_enemyRange             # by enemy type: distance at which it attacks (combat, comsubs)
+D_15cc D_15cc_enemyMissile           # by enemy type: the missile kind it fires
+D_15fc D_15fc_weaponAttack           # by weapon: attack value; 0 = no such weapon (readied-weapon list)
+D_1664 D_1664_weaponRange            # by weapon: aiming range (COMSUBS AimCrosshair)
+D_169c D_169c_weaponMissile          # by weapon: missile kind; 8 = strength based
+D_1734 D_1734_ambushEnemies          # random ambush: the 8 enemy types to choose from
+D_1916 D_1916_itemNames              # the 0x26 item names of the Use list
+D_1a58 D_1a58_classNamePad           # by class: spaces printed before the class name in the stats window
+D_1a7e D_1a7e_equipSlotKind          # by equipment piece: which slot it fills (0x80...)
+D_1aae D_1aae_equipWeight            # by equipment piece: weight against the strength
+D_1ade D_1ade_classTile              # by class: the actor tile of a party member
+D_1ae8 D_1ae8_equipMarker            # by equipment piece: the marker printed in the list when equipped
+D_1bfc D_1bfc_mantraWords            # the 26 spell syllables (letters A-Z)
+D_1c30 D_1c30_spellCodes             # the 48 spell codes (letters in alphabetical order)
+D_1c90 D_1c90_spellUsability         # by spell: bit 8 usable here (combat?), bit 1 ...
+D_1cc0 D_1cc0_spellReagents          # by spell: the reagent mask
+D_1cf0 D_1cf0_raySlopes              # CASTB: the 21 rays of a cone spell, each with its own slope
+D_1e1a D_1e1a_townMapOffset          # by town: the map record offset in the town file
+D_1f6e D_1f6e_shrineX                # by virtue: x of the shrine
+D_1f76 D_1f76_shrineY                # by virtue: y of the shrine
+D_1f7e D_1f7e_beamCells              # 16 frames of 16 (x,y) cells: the lighthouse beam
+D_2188 D_2188_missileShapes          # COMSUBS: pixel offsets of the missile shapes
+D_21ba D_21ba_sparkOffsets           # COMSUBS: pixel offsets of the sparks
+D_2652 D_2652_townFileNames          # the four town data files, by (map id - 1) / 8
+D_2746 D_2746_harpsichordFreq        # town: the notes of the harpsichord
+D_27dc D_27dc_shadowlordTraits       # falsehood, hatred, cowardice ("An air of ... doth surround thee")
+D_2e10 D_2e10_dungeonPlaceNames      # the names of the special places of the dungeons
+D_306c D_306c_pageTextX              # intro story: x of the text of each page
+D_30c4 D_30c4_pageImageX             # intro story: x of the picture of each page
+D_30da D_30da_pageImageY             # intro story: y of the picture of each page
+D_3304 D_3304_notAvatar              # intro2: set when the imported U4 virtues are all zero
+D_3666 D_3666_fieldLabels            # intro: "Name:", "Sex:" ... of the transfer screen
+D_3720 D_3720_fanfareFreq            # BLCKTHRN: the six pulses of the fanfare (frequencies ...
+D_372c D_372c_fanfareParam3          # ... and the other parameters of ULTIMA_2192_AudioPulse)
+D_3738 D_3738_fanfareParam4
+D_3744 D_3744_fanfareParam5
+D_3810 D_3810_lookPictures           # LOOKOBJ: the picture rows (tile letters) of the looked-at objects 0x29...
+D_3a26 D_3a26_apparitionFreq         # OUTSUBSB: one note per party member for the apparition
+D_3c20 D_3c20_reagentNames           # SHOPPES: the reagent names
+D_3ca6 D_3ca6_buyOffers              # "Wouldst thou buy one?" ...
+D_3cae D_3cae_cantPayInsults         # "Can't pay?! Out with ye" ...
+D_3cb6 D_3cb6_showPrompts            # "What may I show thee?" ...
+D_3cce D_3cce_shopItemNames          # SHOPPES: item names by item number (0 = none)
+D_3d2e D_3d2e_sellPrompts            # "Which item wouldst thou like to sell?" ...
+D_3d36 D_3d36_farewells              # "Good-bye..." ...
+D_3d3e D_3d3e_sellMorePrompts        # "What else can ye offer me?" ...
+D_3d46 D_3d46_buyOrSellGreetings     # "Hail, friend! Wouldst thou Buy or Sell?"
+D_3d4a D_3d4a_goodReplies            # "Very good!" ...
+D_3d52 D_3d52_stockIntros            # "We have:" ...
+D_3d5a D_3d5a_noNeedOfArt            # "Thou hast no need of this art!"
+D_3e0c D_3e0c_numberNames            # ENDGAME: One .. Nineteen
+D_3e32 D_3e32_tensNames              # ENDGAME: Twenty .. Ninety
+D_3e42 D_3e42_ordinalNames           # ENDGAME: First .. Twelfth
+D_3e72 D_3e72_harvestNames           # SJOG: what a harvest spot gave ("mandrake root!")
+D_419c D_419c_potionColors           # SJOG: the potion colours
+D_41ac D_41ac_scrollRunes            # SJOG: the scroll names (runes)
+D_444a D_444a_shadowlordNames        # CMDS: FAULINEI, ASTAROTH, NOSFENTOR
+D_4502 D_4502_vileWords              # CMDS2: the eight words of the vices (FALLAX, VILIS ...)
+D_4af6 D_4af6_castFreq               # CAST2: the cast sound by spell circle
+D_4b08 D_4b08_castParam4Up
+D_4b1a D_4b1a_castParam4Down
+D_4b2c D_4b2c_castStep
+D_4b3e D_4b3e_virtueKeywords         # hone, comp, valo ...
+D_4be6 D_4be6_shrineFreq             # CAST2: the shrine sound, one pulse per step
+D_4bf4 D_4bf4_shrineParam3
+D_4c02 D_4c02_shrineParam4
+D_4c10 D_4c10_shrineParam5
+D_4c74 D_4c74_pubTopicWords          # SHOPPES2: the topic words of the pub's gossip
+D_4ca8 D_4ca8_pubPersons             # SHOPPES2: the names
+D_4cf6 D_4cf6_pubPlaces              # SHOPPES2: the places
+D_50ea D_50ea_glyphWidths            # FONT: glyph width table from ' '
+D_5146 D_5146_textLeftX              # FONT: left margin of the two text regions
+D_514c D_514c_textRightX             # right margin of the two regions
+D_5150 D_5150_regionTop              # y range of the second region
+D_5152 D_5152_regionBottom
+D_5154 D_5154_spaceWidth
+D_5156 D_5156_penX                   # the text pen of the justified font
+D_5158 D_5158_penY
+D_515c D_515c_sceneCaptions          # The Summoning, The Journey ...
+D_520c D_520c_savedVideoPage         # AFONT: where FONT_0e52_SaveVideoPage saves the page

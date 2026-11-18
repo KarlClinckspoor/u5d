@@ -143,34 +143,34 @@ static bool ULTIMA_0935_ClipLineCoord(int* x1, int* y1, int* x2, int* y2)
 		return -1; // STC
 
 	// 0948
-	D_52fa = *x1;
-	D_52fc = *y1;
-	D_52fe = *x2;
-	D_5300 = *y2;
+	D_52fa_clipX1 = *x1;
+	D_52fc_clipY1 = *y1;
+	D_52fe_clipX2 = *x2;
+	D_5300_clipY2 = *y2;
 
 	if (si != 0)
 	{
 		SWAP(x1, x2);
 		SWAP(y1, y2);
 		ULTIMA_0991_ClipLineBisect(x1, y1, x2, y2);
-		D_52fa = *x1;
-		D_52fc = *y1;
-		*x2 = D_52fe;
-		*y2 = D_5300;
+		D_52fa_clipX1 = *x1;
+		D_52fc_clipY1 = *y1;
+		*x2 = D_52fe_clipX2;
+		*y2 = D_5300_clipY2;
 	}
 
 	// 0971
 	if (di != 0)
 	{
 		ULTIMA_0991_ClipLineBisect(x1, y1, x2, y2);
-		D_52fe = *x1;
-		D_5300 = *y1;
+		D_52fe_clipX2 = *x1;
+		D_5300_clipY2 = *y1;
 	}
 	// 0980
-	*x1 = D_52fa;
-	*y1 = D_52fc;
-	*x2 = D_52fe;
-	*y2 = D_5300;
+	*x1 = D_52fa_clipX1;
+	*y1 = D_52fc_clipY1;
+	*x2 = D_52fe_clipX2;
+	*y2 = D_5300_clipY2;
 	return 0;
 }
 #endif
@@ -208,16 +208,16 @@ static void ULTIMA_0991_ClipLineBisect(int* ax, int* bx, int* cx, int* dx)
 				*bx /= 2;
 			}
 
-			D_52f6 = si - *ax;
-			D_52f8 = di - *bx;
+			D_52f6_clipTempX = si - *ax;
+			D_52f8_clipTempY = di - *bx;
 
 			ULTIMA_0a22_ClipOutcode(*ax, *bx, *cx, *dx, &si, &di);
 			if (si == 0)
 				break;
 			*cx = *ax;
 			*dx = *bx;
-			*ax += D_52f6;
-			*bx += D_52f8;
+			*ax += D_52f6_clipTempX;
+			*bx += D_52f8_clipTempY;
 		}
 
 		// 09e3
@@ -229,8 +229,8 @@ static void ULTIMA_0991_ClipLineBisect(int* ax, int* bx, int* cx, int* dx)
 		}
 
 		// 09fb
-		si = D_52f6;
-		di = D_52f8;
+		si = D_52f6_clipTempX;
+		di = D_52f8_clipTempY;
 		if (si < 0)
 			si = -si;
 

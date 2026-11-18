@@ -336,7 +336,7 @@ u16 D_4c54_rationPrices[9] = {0x000a, 0x000f, 0x0014, 0x0019, 0x001e, 0x0019, 0x
 
 u16 D_4c66_rationTexts[7] = {0x1198, 0x11d7, 0x121f, 0x1271, 0x1299, 0x12e3, 0x130c};
 
-char* D_4c74[26] =
+char* D_4c74_pubTopicWords[26] =
 {
     _STATIC_TEXT(0x9cd4, "hone"),
     _STATIC_TEXT(0x9cda, "comp"),
@@ -366,7 +366,7 @@ char* D_4c74[26] =
     _STATIC_TEXT(0x9d6a, "unde")
 };
 
-char* D_4ca8[26] =
+char* D_4ca8_pubPersons[26] =
 {
     _STATIC_TEXT(0x9d70, "Malik"),
     _STATIC_TEXT(0x9d76, "Greyson"),
@@ -404,7 +404,7 @@ u8 D_4cdc_gossipPlaceIdx[26] =
     0x01, 0x08
 };
 
-char* D_4cf6[13] =
+char* D_4cf6_pubPlaces[13] =
 {
     _STATIC_TEXT(0x9e58, "Moonglow"),
     _STATIC_TEXT(0x9e62, "Britain"),
@@ -437,7 +437,7 @@ u16 D_4d56_pubOrderTexts[4] = {0x0f09, 0x0f5a, 0x0f9e, 0x0fdf};
 
 u16 D_4d5e_pubMoreTexts[4] = {0x1042, 0x109a, 0x10ea, 0x1146};
 
-// Pub: the keeper sells gossip: asks for a topic word (D_4c74), names a person and a place (D_4ca8, D_4cf6) for a price. Returns 1 when the party cannot pay.
+// Pub: the keeper sells gossip: asks for a topic word (D_4c74_pubTopicWords), names a person and a place (D_4ca8_pubPersons, D_4cf6_pubPlaces) for a price. Returns 1 when the party cannot pay.
 // CHECKED
 static int SHOPPES2_0508_BuyGossip(void)
 {
@@ -466,7 +466,7 @@ static int SHOPPES2_0508_BuyGossip(void)
         topic_b = -1;
         for (; index_h < 0x1a; index_h++)
         {
-            matchPos = ULTIMA_6f1e_CompareWord((byte*)D_4c74[index_h], D_bcf8_inputText);
+            matchPos = ULTIMA_6f1e_CompareWord((byte*)D_4c74_pubTopicWords[index_h], D_bcf8_inputText);
             if (matchPos == 0 || (0 < matchPos && D_bcf8_inputText[matchPos - 1] == ' '))
             {
                 // e765
@@ -514,8 +514,8 @@ static int SHOPPES2_0508_BuyGossip(void)
                 D_57aa_gold -= D_b118_shopPrice;
                 ULTIMA_2900_UpdateVitalsDisplay();
 
-                D_ab00_itemName = D_4ca8[topic_b];
-                D_ac62_placeName = D_4cf6[D_4cdc_gossipPlaceIdx[topic_b]];
+                D_ab00_itemName = D_4ca8_pubPersons[topic_b];
+                D_ac62_placeName = D_4cf6_pubPlaces[D_4cdc_gossipPlaceIdx[topic_b]];
 
                 SHOPPES_017a_PrintShopFileText(D_4d44_gossipTexts[ULTIMA_2092_RandomRange(0, 3)]);
 

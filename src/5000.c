@@ -368,7 +368,7 @@ void ULTIMA_5910_UpdateFrame(void)
     int col_b;
     int row;
 
-    D_545e = 0xff;
+    D_545e_lastDisk = 0xff;
     if (D_587a_statusIcon == 'T')
     {
         D_5891_animate = 0;

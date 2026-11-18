@@ -230,7 +230,7 @@ void CMDS_1ad8_MixCmd(void)
                         bit >>= 1;
                     }
 
-                    if (spell >= 0 && D_1cc0[spell] == mask_d)
+                    if (spell >= 0 && D_1cc0_spellReagents[spell] == mask_d)
                     {
                         ULTIMA_1850_PrintString(_TEXT(0x8ffc, "\nDone!\n"));
                         D_57f0_mixedSpells[spell] += amount;

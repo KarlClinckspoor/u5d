@@ -58,7 +58,7 @@ static void ENDGAME_0000_ShowEndScreens(void)
         // a32d
         ULTIMA_0c22_GRAP_0f_SelectPage(1);
 
-        D_a9be = 2;
+        D_a9be_promptMode = 2;
         ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
 
         if (D_3e06_hasBanner[screen] == 1)
@@ -87,14 +87,14 @@ static void ENDGAME_0000_ShowEndScreens(void)
         // a38c
         ULTIMA_0d4c_GRAP_4b_PutImage(endImage_f, D_3dee_imageIndex[screen], D_3dfa_imageX[screen], D_3e00_imageY[screen], 0);
 
-        D_5146[0] = D_3da6_textLeft[screen].x;
-        D_5146[1] = D_3da6_textLeft[screen].y;
-        D_514c[0] = D_3db2_textRight[screen].x;
-        D_514c[1] = D_3db2_textRight[screen].y;
-        D_5150 = D_3dd6_regionTop[screen];
-        D_5152 = D_3ddc_regionBottom[screen];
-        D_5156 = D_3de2_startX[screen];
-        D_5158 = D_3de8_startY[screen];
+        D_5146_textLeftX[0] = D_3da6_textLeft[screen].x;
+        D_5146_textLeftX[1] = D_3da6_textLeft[screen].y;
+        D_514c_textRightX[0] = D_3db2_textRight[screen].x;
+        D_514c_textRightX[1] = D_3db2_textRight[screen].y;
+        D_5150_regionTop = D_3dd6_regionTop[screen];
+        D_5152_regionBottom = D_3ddc_regionBottom[screen];
+        D_5156_penX = D_3de2_startX[screen];
+        D_5158_penY = D_3de8_startY[screen];
 
         ULTIMA_256e_ReadFileFromDisk(_TEXT(0x81fe, "END.DAT"), D_b21e_scratch, 2000, D_3dca_textOffset[screen]);
         FONT_0000_DrawJustifiedText(fontImage, D_b21e_scratch); // 7ce6 -> 1778:0566
@@ -132,7 +132,7 @@ static void ENDGAME_0000_ShowEndScreens(void)
     ULTIMA_0be4_FreeImage(endImage_f);
     ULTIMA_0f6e_GRAP_1b_TransferFullscreen(1, 0);
     ULTIMA_0c22_GRAP_0f_SelectPage(0);
-    D_a9be = 0;
+    D_a9be_promptMode = 0;
 }
 
 // Adds text to the 39-character line buffer; a line that ends in a newline is printed and the buffer starts
@@ -178,7 +178,7 @@ u8 D_3e00_imageY[6] = {0x00, 0x00, 0x34, 0x00, 0x5c, 0x00};
 
 u8 D_3e06_hasBanner[6] = {0x01, 0x00, 0x00, 0x01, 0x00, 0x00};
 
-char* D_3e0c[19] =
+char* D_3e0c_numberNames[19] =
 {
     _STATIC_TEXT(0x8206, "One"),
     _STATIC_TEXT(0x820a, "Two"),
@@ -201,7 +201,7 @@ char* D_3e0c[19] =
     _STATIC_TEXT(0x8282, "Nineteen")
 };
 
-char* D_3e32[8] =
+char* D_3e32_tensNames[8] =
 {
     _STATIC_TEXT(0x828c, "Twenty"),
     _STATIC_TEXT(0x8294, "Thirty"),
@@ -218,20 +218,20 @@ static void ENDGAME_028c_SpellNumber(int number)
 {
     if (number < 0x15)
     {
-        ENDGAME_023a_AppendToLine(D_3e0c[number - 1]);
+        ENDGAME_023a_AppendToLine(D_3e0c_numberNames[number - 1]);
     }
     else
     {
-        ENDGAME_023a_AppendToLine(D_3e32[number / 10 - 2]);
+        ENDGAME_023a_AppendToLine(D_3e32_tensNames[number / 10 - 2]);
 
         if (number % 10)
         {
             ENDGAME_023a_AppendToLine(_TEXT(0x82c6, "-"));
-            ENDGAME_023a_AppendToLine(D_3e0c[(number % 10) - 1]);
+            ENDGAME_023a_AppendToLine(D_3e0c_numberNames[(number % 10) - 1]);
         }
     }
 }
-char* D_3e42[12] =
+char* D_3e42_ordinalNames[12] =
 {
     _STATIC_TEXT(0x82c8, "First"),
     _STATIC_TEXT(0x82ce, "Second"),
@@ -256,7 +256,7 @@ static void ENDGAME_02d6_SpellOrdinal(int number)
 {
     if (number < 13)
     {
-        ENDGAME_023a_AppendToLine(D_3e42[number - 1]);
+        ENDGAME_023a_AppendToLine(D_3e42_ordinalNames[number - 1]);
     }
     else if (number < 20)
     {
@@ -273,7 +273,7 @@ static void ENDGAME_02d6_SpellOrdinal(int number)
         else
         {
             ENDGAME_023a_AppendToLine(_TEXT(0x832e, "y-"));
-            ENDGAME_023a_AppendToLine(D_3e42[number - 0x15]);
+            ENDGAME_023a_AppendToLine(D_3e42_ordinalNames[number - 0x15]);
         }
     }
 }
@@ -564,7 +564,7 @@ void ENDGAME_0648_EndgameMain(void)
         // aa37
         actor_g = &D_5c5a_actors[index];
         
-        actor_g->tile = actor_g->animTile = D_1ade[classIndex];
+        actor_g->tile = actor_g->animTile = D_1ade_classTile[classIndex];
         actor_g->x = 5;
         actor_g->y = 9;
         actor_g->animState = 0;

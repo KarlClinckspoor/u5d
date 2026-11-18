@@ -68,21 +68,21 @@ u8 D_587e_day = 0; // +0x02D8 Current day
 u8 D_587f_hour = 0; // +0x02D9 Current hour
 u8 D_5880_lastHour = 0; // +0x02DA copy of 0x2D9
 u8 D_5881_minute = 0; // +0x02DB Current minute
-u8 D_5882 = 0;
-u8 D_5883 = 0; // ?
+u8 D_5882_combatTick = 0;
+u8 D_5883_sailCounter = 0; // ?
 u8 D_5884_clockChimes = 0;
 u8 D_5885_trammelPhase = 0; // +0x02DF Phase of Trammel
 u8 D_5886_feluccaPhase = 0; // +0x02E0 Phase of Felucca
 u8 D_5887_moongateHeight = 0; // +0x02E1 Current moongate height (in pixels)
 u8 D_5888_karma = 0; // +0x02E2 Karma
-u8 D_5889 = 0;
-u8 D_588a = 0;
+u8 D_5889_savedUnused = 0;
+u8 D_588a_savedUnused = 0;
 u8 D_588b_turnCount = 0; // +0x02E5 Current turn count
 u8 D_588c_campHealWait = 0;
-u8 D_588d = 0;
+u8 D_588d_apparitionMonth = 0;
 u8 D_588e_protectTurns = 0; // +0x02E8 Protective spell duration
-u8 D_588f = 0;
-u8 D_5890 = 0;
+u8 D_588f_castCircle = 0;
+u8 D_5890_spellAttack = 0;
 u8 D_5891_animate = 0; // +0x02EB animate flag
 u8 D_5892_windDir = 0; // +0x02EC wind direction
 u8 D_5893_mapId = 0; // +0x02ED map_id (21h~: dungeon, 40: unloaded)
@@ -100,15 +100,15 @@ u8 D_589e_curCombatant = 0; // +0x02F8 ?
 u8 D_589f_focusBlink = 0; // +0x02F9 show focus rectangle & crosshair?
 u8 D_58a0_combatExitDir = 0; // +0x02FA exit direction from combat map
 u8 D_58a1_combatFlags = 0; // +0x02FB combat type flags
-u8 D_58a2 = 0;
+u8 D_58a2_combatEvents = 0;
 u8 D_58a3_combatOver = 0; // +0x02FD battle successful flag (win?)
 u8 D_58a4_viewOn = 0; // +0x02FE Update/animate 2D map?
 u8 D_58a5_lightLevel = 0; // +0x02FF Current light intensity
 u8 D_58a6_lightSpellTurns = 0;
 u8 D_58a7_torchTurns = 0;
-u8 D_58a8[0x20] = {0}; // [58a8..58c8)
+u8 D_58a8_lastAttacker[0x20] = {0}; // [58a8..58c8)
 u8 D_58c8_shadowlordTowns[3] = {0}; // 58cb)
-u8 D_58cb = 0;
+u8 D_58cb_summonedLord = 0;
 u16 D_58cc_questsOrdained = 0; // shrine quest active flags TODO: u8?
 u16 D_58ce_questsDone = 0; // shrine quest completed flags TODO: u8?
 u8 D_58d0_dungeonOpen[8] = {0};
@@ -128,35 +128,35 @@ u8 D_5955_sailDir = 0;
 u8 D_5956_newPrompt = 0;
 u8 D_5957_drunkTurns = 0; // +0x03B1 remaining drunk turn count (TOWN_0dc4_GetTownKey)
 u8 D_5958_townShadowlord = 0;
-u8 D_5959 = 0;
+u8 D_5959_fewerEnemies = 0;
 u8 D_595a_dungeonMap[0x200] = {0}; // +0x03B4 dungeon map data ..5b5a)
 u8 D_5b5a_npcKilled[0x80] = {0}; // +0x05B4 NPC killed flags (4 bytes / 32 bits per settlement) [..5bda) // TODO: u32
 u8 D_5bda_npcMet[0x80] = {0}; // +0x0634 NPC met flags (4 bytes / 32 bits per settlement) [..5c5a)
 ActorFmt D_5c5a_actors[32] = {0}; // ~5d5a) "Object" struct
-u16 D_5d5a = 0; // unused?
-u16 D_5d5c = 0; // unused?
+u16 D_5d5a_unused = 0; // unused?
+u16 D_5d5c_unused = 0; // unused?
 NpcScheduleFmt D_5d5e_npcSchedules[32] = {0}; // +0x07B8 NPC Schedules [..5f5e) 0x200
 NpcFmt D_5f5e_npcs[32] = {0}; // +0x09B8 Character/monster states (16bytes * 32) [..615e) 0x200
 MovementFmt D_615e_moveLists[0x20] = {0}; // +0x0BB8 Movement list table [..655e)
 s16 D_655e_moveListPos[0x20] = {0}; // +0x0FB8 Movement list pointers [..659e)
 u8 D_659e_npcTypes[0x20] = {0}; // +0x0FF8 NPC types [..65be)
-u8 D_65be = 0;
-u8 D_65bf = 0;
-u16 D_65c0 = 0; // unused?
-s16 D_65c2[0x20] = {0};
-u8 D_6602 = 0;
+u8 D_65be_npcApproach = 0;
+u8 D_65bf_npcApproaching = 0;
+u16 D_65c0_unused = 0; // unused?
+s16 D_65c2_npcStuckCount[0x20] = {0};
+u8 D_6602_dungeonMoveDir = 0;
 u8 D_6603_dungeonFacing = 0; // +0x105D orientation in a dungeon
 u8 D_6604_dungeonStyle = 0; // +0x105E graphics for the current dungeon
 u8 D_6605_boughtShip = 0; // +0x105F purchased ship/skiff
 u16 D_6606_saveEnd = 0; // end
 S_6608_Map D_6608_map = {0}; // ~6a08) map data: layer4 * y16 * x16 / y32 * x32
 // (D_6708_map, DS:6708, is a place inside D_6608_map: vars.h)
-u8 D_6a08 = 0; // some audio related
+u8 D_6a08_songPos = 0; // some audio related
 u8 D_6a09_pad[1] = {0}; // no name in vars.h
 
 u16 D_6a0a_powersOfTen[5] = { 1, 10, 100, 1000, 10000 };
 
-u8 D_6a14[0x20] =
+u8 D_6a14_viewTileFlags[0x20] =
 {
     0xff, 0xf3, 0xc3, 0x8f, 0xff, 0xff, 0xff, 0xc0,
     0xdd, 0xf8, 0x03, 0xdf, 0xff, 0xff, 0x00, 0x00,
@@ -1140,11 +1140,11 @@ void ULTIMA_3f54_DecreaseInt(s16* value, int amount)
     }
 }
 
-// Test the tile in view cell (x, y) against the bit table D_6a14 (CAST and COMSUBS: probably whether a missile passes).
+// Test the tile in view cell (x, y) against the bit table D_6a14_viewTileFlags (CAST and COMSUBS: probably whether a missile passes).
 bool ULTIMA_3f6e_TestViewTileFlag(int viewX, int viewY)
 {
     int tile = GetMapViewport(viewX, viewY);
-    return (0x80 >> (tile & 7) & D_6a14[tile >> 3]) != 0;
+    return (0x80 >> (tile & 7) & D_6a14_viewTileFlags[tile >> 3]) != 0;
 }
 
 // Pixel coordinates to the view cell, in D_5876_tempX and D_5878_tempY; -1 outside the view.

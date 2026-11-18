@@ -46,7 +46,7 @@ int ULTIMA_2092_RandomRange(int minValue, int maxValue)
 #if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 // some busy-wait delay?
-// Busy-wait: `count` loops of the calibrated length shifted by D_5426[shift].
+// Busy-wait: `count` loops of the calibrated length shifted by D_5426_delayShift[shift].
 void ULTIMA_20c8_Delay(int shiftIndex, int loopCount)
 {
     // FMT: empty
@@ -65,7 +65,7 @@ void ULTIMA_20c8_Delay(int shiftIndex, int loopCount)
     register uint ax, cx;
 
     ax = D_5356_timerCalibration; // timer calibration
-    cx = D_5426[shiftIndex];
+    cx = D_5426_delayShift[shiftIndex];
 
     if (cx != 0)
     {
@@ -74,18 +74,18 @@ void ULTIMA_20c8_Delay(int shiftIndex, int loopCount)
     }
 
     // 20dc
-    D_5424 = loopCount;
+    D_5424_delayOuter = loopCount;
 
     do
     {
         // 20e3
-        D_5422 = ax;
+        D_5422_delayInner = ax;
 
         do
         {
             // 20e6
-        } while (--D_5422 != 0);
-    } while (--D_5424 != 0);
+        } while (--D_5422_delayInner != 0);
+    } while (--D_5424_delayOuter != 0);
 #endif
 }
 #endif
@@ -190,7 +190,7 @@ int ULTIMA_266c_GetChar(void)
         }
     } while (key == 0);
 
-    if (D_538a != 0)
+    if (D_538a_numpadKeys != 0)
     {
         // numpad
         switch (key)
@@ -523,7 +523,7 @@ void ULTIMA_2ae8_EndTurn(void)
 }
 
 // IsWalkableTile's tables, in this module's _DATA between its strings (DS:54d4)
-u8 D_54d4[32] =
+u8 D_54d4_blockedTileBits[32] =
 {
     0x70, 0x0c, 0x00, 0x28, 0x01, 0xf3, 0x00, 0xbd,
     0x72, 0x3f, 0xff, 0xff, 0xff, 0xcf, 0xff, 0xff,
@@ -543,7 +543,7 @@ u8 D_54d4[32] =
 // 9: whirlpool
 // 10: sand trap
 // 0xff / -1: invalid
-u8 D_54f4[64] =
+u8 D_54f4_moveType[64] =
 {
     0x00, 0x00, 0x00, 0x00, 0x03, 0x02, 0x00, 0x00,
     0x06, 0x06, 0x05, 0x06, 0x00, 0x00, 0x00, 0x00,
@@ -555,9 +555,9 @@ u8 D_54f4[64] =
     0x0a, 0x00, 0xff, 0x09, 0x02, 0x08, 0x07, 0x04
 };
 
-u8 D_5534[16] = { 0x0a, 0x05, 0x03, 0x09, 0x0c, 0x06, 0x0b, 0x0d, 0x0e, 0x07, 0x0a, 0x05, 0x08, 0x04, 0x02, 0x01 };
+u8 D_5534_skiffWaterBits[16] = { 0x0a, 0x05, 0x03, 0x09, 0x0c, 0x06, 0x0b, 0x0d, 0x0e, 0x07, 0x0a, 0x05, 0x08, 0x04, 0x02, 0x01 };
 
-u8 D_5544[4] = { 0x06, 0x03, 0x09, 0x0c };
+u8 D_5544_skiffTileBits[4] = { 0x06, 0x03, 0x09, 0x0c };
 
 // DS:5548: 12 bytes of zeros that no code refers to
 u8 D_5548[12] = { 0 };
@@ -567,7 +567,7 @@ static bool ULTIMA_2bd4_IsWalkableNormal(byte actorTile, int targetTile)
 {
     bool walkable;
 
-    if ((D_54d4[targetTile >> 3] & (0x80 >> (targetTile & 7))) != 0)
+    if ((D_54d4_blockedTileBits[targetTile >> 3] & (0x80 >> (targetTile & 7))) != 0)
         walkable = 0;
     else
         walkable = 1;
@@ -594,7 +594,7 @@ static int ULTIMA_2c2e_IsWaterTile(int tile)
 // 8-10 join case 7's tail.
 int ULTIMA_2c4c_IsWalkableTile(int actorTile, int targetTile)
 {
-    switch (D_54f4[actorTile >> 2])
+    switch (D_54f4_moveType[actorTile >> 2])
     {
     case 0: // normal
         return ULTIMA_2bd4_IsWalkableNormal(actorTile, targetTile);
@@ -615,7 +615,7 @@ int ULTIMA_2c4c_IsWalkableTile(int actorTile, int targetTile)
     case 5: // skiff
         if (((byte)targetTile & 0xfc) == TILE_MAP_34)
         {
-            return (8 >> (actorTile & 3) & (uint)D_5544[targetTile - TILE_MAP_34]) != 0;
+            return (8 >> (actorTile & 3) & (uint)D_5544_skiffTileBits[targetTile - TILE_MAP_34]) != 0;
         }
         if (ULTIMA_2c2e_IsWaterTile(targetTile) == 0)
         {
@@ -623,7 +623,7 @@ int ULTIMA_2c4c_IsWalkableTile(int actorTile, int targetTile)
         }
         if (targetTile < TILE_MAP_60)
             goto L_ret1;
-        if (!((uint)D_5534[targetTile - TILE_MAP_60] & (8 >> (actorTile & 3))))
+        if (!((uint)D_5534_skiffWaterBits[targetTile - TILE_MAP_60] & (8 >> (actorTile & 3))))
             return 0;
         goto L_ret1;
     case 6: // frigate
@@ -753,7 +753,7 @@ void ULTIMA_2e96_SetWindDirection(int direction)
     if (direction != -1)
     {
         D_5892_windDir = (char)direction;
-        D_5883 = 0;
+        D_5883_sailCounter = 0;
     }
 
     if (D_5893_mapId >= 0x21 || D_5893_mapId == 0x19)
@@ -838,7 +838,7 @@ void ULTIMA_2fd0_SpringTrap(int playerIndex)
     }
     else
     {
-        trapKind = (uint)D_559e[ULTIMA_2092_RandomRange(0, 7)];
+        trapKind = (uint)D_559e_trapKinds[ULTIMA_2092_RandomRange(0, 7)];
     }
 
     switch (trapKind)
@@ -867,4 +867,4 @@ void ULTIMA_2fd0_SpringTrap(int playerIndex)
 }
 
 // after the last string (DS:559e), used by ULTIMA_2fd0_SpringTrap above
-u8 D_559e[8] = { 0x00, 0x00, 0x00, 0x01, 0x01, 0x02, 0x02, 0x03 };
+u8 D_559e_trapKinds[8] = { 0x00, 0x00, 0x00, 0x01, 0x01, 0x02, 0x02, 0x03 };

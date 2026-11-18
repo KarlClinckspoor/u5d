@@ -11,7 +11,7 @@ own, in link order (docs/MATCHING.md, "The resident data"). For an assembly modu
     the module's code refers to by number;
   - removes the module's EXTRNs for those names;
   - turns its numeric references into the labels: ds:[544ch] -> D_544C, [bx+5426h] ->
-    D_5426[bx], mov si,5322h -> mov si,OFFSET DGROUP:D_5322. MASM encodes these the same,
+    D_5426_delayShift[bx], mov si,5322h -> mov si,OFFSET DGROUP:D_5322. MASM encodes these the same,
     with a fixup, so the linker can place the segment and check the references.
 
 tools/asmbuild.py must still report the module identical afterwards.

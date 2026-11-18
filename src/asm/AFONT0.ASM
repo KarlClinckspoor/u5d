@@ -20,14 +20,14 @@ DGROUP	GROUP	CONST, _BSS, _DATA
 
 	EXTRN	ULTIMA_0C22_GRAP_0F_SELECTPAGE:NEAR
 	EXTRN	ULTIMA_1044_GRAP_4E_COPYBITIMAG:NEAR
-	EXTRN	D_50EA:BYTE
-	EXTRN	D_5146:WORD
-	EXTRN	D_514C:WORD
-	EXTRN	D_5150:WORD
-	EXTRN	D_5152:WORD
-	EXTRN	D_5154:WORD
-	EXTRN	D_5156:WORD
-	EXTRN	D_5158:WORD
+	EXTRN	D_50EA_GLYPHWIDTHS:BYTE
+	EXTRN	D_5146_TEXTLEFTX:WORD
+	EXTRN	D_514C_TEXTRIGHTX:WORD
+	EXTRN	D_5150_REGIONTOP:WORD
+	EXTRN	D_5152_REGIONBOTTOM:WORD
+	EXTRN	D_5154_SPACEWIDTH:WORD
+	EXTRN	D_5156_PENX:WORD
+	EXTRN	D_5158_PENY:WORD
 
 _TEXT	SEGMENT
 
@@ -41,11 +41,11 @@ FONT_0000_DRAWJUSTIFIEDTEXT:
 	mov ax,1
 	push ax
 	call	ULTIMA_0C22_GRAP_0F_SELECTPAGE
-	mov ax,WORD PTR D_5150
-	cmp WORD PTR D_5158,ax
+	mov ax,WORD PTR D_5150_REGIONTOP
+	cmp WORD PTR D_5158_PENY,ax
 	jle	L_0026
-	mov ax,WORD PTR D_5152
-	cmp WORD PTR D_5158,ax
+	mov ax,WORD PTR D_5152_REGIONBOTTOM
+	cmp WORD PTR D_5158_PENY,ax
 	jge	L_0026
 	mov ax,1
 	jmp	SHORT L_0028
@@ -55,14 +55,14 @@ L_0028:
 	mov [bp-10h],ax
 	mov si,ax
 	shl si,1
-	mov ax,D_514C[si]
-	sub ax,D_5146[si]
+	mov ax,D_514C_TEXTRIGHTX[si]
+	sub ax,D_5146_TEXTLEFTX[si]
 	mov [bp-0ah],ax
 	sub ax,ax
 	mov [bp-4],ax
 	mov [bp-0ch],ax
-	mov ax,WORD PTR D_5156
-	sub ax,D_5146[si]
+	mov ax,WORD PTR D_5156_PENX
+	sub ax,D_5146_TEXTLEFTX[si]
 	mov [bp-2],ax
 	jmp	NEAR PTR L_027b
 	db	090h		; nop, as the compiler left it after this jmp
@@ -82,7 +82,7 @@ L_005e:
 	add bx,dx
 	mov bl,[bx]
 	sub bh,bh
-	mov al,D_50EA-20h[bx]
+	mov al,D_50EA_GLYPHWIDTHS-20h[bx]
 	sub ah,ah
 	inc ax
 	add si,ax
@@ -103,14 +103,14 @@ L_0079:
 	add bx,dx
 	cmp byte ptr [bx],20h
 	ja	L_0050
-	add si,WORD PTR D_5154
+	add si,WORD PTR D_5154_SPACEWIDTH
 	inc di
 	jmp	SHORT L_0078
 L_00a0:
 	mov [bp-8],di
 	mov [bp-2],si
 	mov [bp-0eh],cx
-	mov al,BYTE PTR D_50EA+0dh	; D_50f7, the width of '-'
+	mov al,BYTE PTR D_50EA_GLYPHWIDTHS+0dh	; D_50f7, the width of '-'
 	sub ah,ah
 	mov [bp-16h],ax
 	inc ax
@@ -140,7 +140,7 @@ L_00ce:
 	je	L_00e9
 	jmp	NEAR PTR L_016a
 L_00e9:
-	sub si,WORD PTR D_5154
+	sub si,WORD PTR D_5154_SPACEWIDTH
 	dec word ptr [bp-8]
 L_00f0:
 	mov [bp-2],si
@@ -170,8 +170,8 @@ L_0123:
 	jbe	L_012f
 	jmp	NEAR PTR L_01b0
 L_012f:
-	mov ax,WORD PTR D_5154
-	add WORD PTR D_5156,ax
+	mov ax,WORD PTR D_5154_SPACEWIDTH
+	add WORD PTR D_5156_PENX,ax
 	cmp word ptr [bp-8],0
 	jne	L_013f
 	jmp	NEAR PTR L_01fe
@@ -189,7 +189,7 @@ L_0151:
 	mov cx,[bp-8]
 	idiv cx
 	mov [bp-1ah],ax
-	add WORD PTR D_5156,ax
+	add WORD PTR D_5156_PENX,ax
 	sub [bp-6],ax
 	dec word ptr [bp-8]
 	jmp	NEAR PTR L_01fe
@@ -223,7 +223,7 @@ L_019c:
 	add bx,dx
 	mov bl,[bx]
 	sub bh,bh
-	mov al,D_50EA-20h[bx]
+	mov al,D_50EA_GLYPHWIDTHS-20h[bx]
 	sub ah,ah
 	inc ax
 	sub si,ax
@@ -233,14 +233,14 @@ L_01b0:
 	add bx,di
 	cmp byte ptr [bx],7bh
 	jne	L_01c0
-	add WORD PTR D_5156,0fh
+	add WORD PTR D_5156_PENX,0fh
 	jmp	SHORT L_01fe
 L_01c0:
 	mov bx,si
 	add bx,di
 	cmp byte ptr [bx],5fh
 	je	L_01fe
-	cmp WORD PTR D_5158,0c0h
+	cmp WORD PTR D_5158_PENY,0c0h
 	jge	L_01eb
 	push word ptr [bp+6]
 	mov bx,si
@@ -249,18 +249,18 @@ L_01c0:
 	sub ah,ah
 	sub ax,20h
 	push ax
-	push WORD PTR D_5156
-	push WORD PTR D_5158
+	push WORD PTR D_5156_PENX
+	push WORD PTR D_5158_PENY
 	call	ULTIMA_1044_GRAP_4E_COPYBITIMAG
 L_01eb:
 	mov bx,si
 	add bx,di
 	mov bl,[bx]
 	sub bh,bh
-	mov al,D_50EA-20h[bx]
+	mov al,D_50EA_GLYPHWIDTHS-20h[bx]
 	sub ah,ah
 	inc ax
-	add WORD PTR D_5156,ax
+	add WORD PTR D_5156_PENX,ax
 L_01fe:
 	inc si
 	cmp [bp-4],si
@@ -277,22 +277,22 @@ L_020a:
 	je	L_027b
 	cmp byte ptr [bx+si],5fh
 	jne	L_0239
-	cmp WORD PTR D_5158,0c0h
+	cmp WORD PTR D_5158_PENY,0c0h
 	jge	L_0239
 	push word ptr [bp+6]
 	mov ax,0dh
 	push ax
-	push WORD PTR D_5156
-	push WORD PTR D_5158
+	push WORD PTR D_5156_PENX
+	push WORD PTR D_5158_PENY
 	call	ULTIMA_1044_GRAP_4E_COPYBITIMAG
 L_0239:
 	mov word ptr [bp-2],0
-	add WORD PTR D_5158,9
-	mov ax,WORD PTR D_5150
-	cmp WORD PTR D_5158,ax
+	add WORD PTR D_5158_PENY,9
+	mov ax,WORD PTR D_5150_REGIONTOP
+	cmp WORD PTR D_5158_PENY,ax
 	jle	L_025a
-	mov ax,WORD PTR D_5152
-	cmp WORD PTR D_5158,ax
+	mov ax,WORD PTR D_5152_REGIONBOTTOM
+	cmp WORD PTR D_5158_PENY,ax
 	jge	L_025a
 	mov ax,1
 	jmp	SHORT L_025c
@@ -303,10 +303,10 @@ L_025c:
 	shl ax,1
 	mov [bp-1ch],ax
 	mov bx,ax
-	mov ax,D_5146[bx]
-	mov WORD PTR D_5156,ax
-	mov ax,D_514C[bx]
-	sub ax,WORD PTR D_5156
+	mov ax,D_5146_TEXTLEFTX[bx]
+	mov WORD PTR D_5156_PENX,ax
+	mov ax,D_514C_TEXTRIGHTX[bx]
+	sub ax,WORD PTR D_5156_PENX
 	mov [bp-0ah],ax
 	inc word ptr [bp-0ch]
 L_027b:

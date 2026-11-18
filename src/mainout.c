@@ -359,7 +359,7 @@ static int MAINOUT_0490_WalkInDirection(int dir, int noMove)
         if (dir != D_5955_sailDir)
         {
             D_5955_sailDir = dir;
-            D_5883 = 0;
+            D_5883_sailCounter = 0;
         }
         D_5956_newPrompt = 0;
     }
@@ -557,9 +557,9 @@ static int MAINOUT_0598_WaitForKey(void)
                     windScore_c++;
                 }
                 // 0640
-                if (windScore_c % 3 <= (uint)D_5883)
+                if (windScore_c % 3 <= (uint)D_5883_sailCounter)
                 {
-                    D_5883 = 0;
+                    D_5883_sailCounter = 0;
                     break;
                 }
             }
@@ -581,7 +581,7 @@ static int MAINOUT_0598_WaitForKey(void)
             }
 
             ULTIMA_3ae6_WaitFrames(1);
-            D_5883 = D_5883 + 1;
+            D_5883_sailCounter = D_5883_sailCounter + 1;
         }
 
         if (D_5955_sailDir == 0)
@@ -691,7 +691,7 @@ static int MAINOUT_0790_LoadDungeon(char* verb)
         {
             D_5895_mapLevel = 7;
             D_6603_dungeonFacing = 3;
-            D_6602 = 4;
+            D_6602_dungeonMoveDir = 4;
             D_5896_mapX = D_5897_mapY = 7;
         }
         else
@@ -699,7 +699,7 @@ static int MAINOUT_0790_LoadDungeon(char* verb)
             D_5895_mapLevel = 0;
             D_5896_mapX = D_5897_mapY = 1;
             D_6603_dungeonFacing = 1;
-            D_6602 = 5;
+            D_6602_dungeonMoveDir = 5;
         }
     }
     else
@@ -728,7 +728,7 @@ int MAINOUT_08de_EnterCmd(void)
         ULTIMA_1850_PrintString(_TEXT(0x2a76, "the shrine of\n"));
         for (shrineIndex = 0; shrineIndex < 8; shrineIndex++)
         {
-            if (D_1f6e[shrineIndex] == D_5896_mapX && D_1f76[shrineIndex] == D_5897_mapY)
+            if (D_1f6e_shrineX[shrineIndex] == D_5896_mapX && D_1f76_shrineY[shrineIndex] == D_5897_mapY)
                 break;
         }
 

@@ -1,6 +1,6 @@
 #include "common/common.h"
 // CMDS_0000_HoleUpRest sits at a limit of pass 2's memory, which the names of the globals this object
-// declares and uses count against: with the readable names of the 24 below (found by taking
+// declares and uses count against: with the readable names of the 27 below (found by taking
 // the new names one at a time) it loses its loop optimization. So this object alone knows
 // them by their short names; the source below uses the readable ones, and the link
 // resolves the short ones by the address they carry. After common.h, which defines
@@ -16,6 +16,9 @@
 #define D_5894_savedMapId D_5894
 #define D_589e_curCombatant D_589e
 #define D_595a_dungeonMap D_595a
+#define D_1734_ambushEnemies D_1734
+#define D_588d_apparitionMonth D_588d
+#define D_6a08_songPos D_6a08
 #define D_5c5a_actors D_5c5a
 #define D_a9ce_soundOn D_a9ce
 #define D_ba14_combatants D_ba14
@@ -152,7 +155,7 @@ int CMDS_0000_HoleUpRest(int mode, int watchIdx, int hours)
         oldAnim_k = bardActor->animTile;
         
         bardActor->tile = bardActor->animTile = TILE_ACTOR_5F;
-        D_6a08 = 1;
+        D_6a08_songPos = 1;
         ULTIMA_3ae6_WaitFrames(0x34);
         bardActor->tile = oldTile_b;
         bardActor->animTile = oldAnim_k;
@@ -195,7 +198,7 @@ int CMDS_0000_HoleUpRest(int mode, int watchIdx, int hours)
             if (ULTIMA_2092_RandomRange(0, 0x3f) == 0)
             {
                 ULTIMA_207e_srand(ULTIMA_2056_GetTime());
-                ambush_o = (uint)D_1734[ULTIMA_2092_RandomRange(0, 7)];
+                ambush_o = (uint)D_1734_ambushEnemies[ULTIMA_2092_RandomRange(0, 7)];
                 ULTIMA_1850_PrintString(_TEXT(0x41e0, "Ambushed!\n\n"));
 
                 if (watchIdx > -1)
@@ -316,7 +319,7 @@ int CMDS_0000_HoleUpRest(int mode, int watchIdx, int hours)
 
         if ((mode & 0x82) == 0 && ULTIMA_2092_RandomRange(0, 99) < 0x19)
         {
-            D_588d = D_587d_month;
+            D_588d_apparitionMonth = D_587d_month;
             OUTSUBS_0658_Apparition();
         }
 
@@ -377,7 +380,7 @@ void CMDS_0552_HoleUpCmd(void)
         {
             NPC_0db4_MoveNpcs(D_587f_hour);
             ULTIMA_5910_UpdateFrame();
-            if (D_65be == 0x61)
+            if (D_65be_npcApproach == 0x61)
             {
                 return;
             }
@@ -1081,7 +1084,7 @@ void CMDS_0eb4_XitCmd(void)
 #endif
 }
 
-char* D_444a[3] =
+char* D_444a_shadowlordNames[3] =
 {
     _STATIC_TEXT(0x43ef, "FAULINEI"),
     _STATIC_TEXT(0x43f8, "ASTAROTH"),
@@ -1106,7 +1109,7 @@ int CMDS_1030_YellShadowlord(char* word)
     {
         for (which_o = 0; which_o < 3; which_o++)
         {
-            if (ULTIMA_6f1e_CompareWord((byte*)D_444a[which_o], word) > -1)
+            if (ULTIMA_6f1e_CompareWord((byte*)D_444a_shadowlordNames[which_o], word) > -1)
                 break;
         }
 
@@ -1127,7 +1130,7 @@ int CMDS_1030_YellShadowlord(char* word)
                 }
             }
 
-            D_58cb = which_o;
+            D_58cb_summonedLord = which_o;
             slot = ULTIMA_38e4_FindActorSlot();
             ULTIMA_3a74_SetActor(TILE_ACTOR_SHADOWLORD, TILE_ACTOR_SHADOWLORD, D_5896_mapX, D_5897_mapY - 2, D_5895_mapLevel, 0, slot);
 

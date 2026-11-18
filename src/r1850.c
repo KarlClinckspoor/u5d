@@ -14,7 +14,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-s16 D_5402[5] = { 1, 10, 100, 1000, 10000 };
+s16 D_5402_powersOfTen[5] = { 1, 10, 100, 1000, 10000 };
 
 // CHECKED
 // The block of comment lines after the declarations is needed for the match. Why:
@@ -361,10 +361,10 @@ void ULTIMA_1a3e_PrintNumber(int value, int minWidth, char fillChar)
         value = -value;
     }
 
-    // 1a6c: MSC walks D_5402 with a pointer (the extra stack slot) and sets index to 5
+    // 1a6c: MSC walks D_5402_powersOfTen with a pointer (the extra stack slot) and sets index to 5
     for (index = 1; index < 5; index++)
     {
-        if (D_5402[index] <= value)
+        if (D_5402_powersOfTen[index] <= value)
         {
             digits_l++;
         }
@@ -401,7 +401,7 @@ void ULTIMA_1a3e_PrintNumber(int value, int minWidth, char fillChar)
     // lets MSC keep index in SI and outPos_f in DI, with negative in memory.
     do
     {
-        index = D_5402[digits_l - 1];
+        index = D_5402_powersOfTen[digits_l - 1];
         buffer_f[outPos_f++] = (char)(negative = value / index) + '0';
         value -= index * negative;
     } while (--digits_l != 0);
