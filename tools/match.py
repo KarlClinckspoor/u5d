@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Compare compiled functions with the original game, function by function.
 
-    python tools/match.py [FILE.c ...] [--compile] [-v] [--dis FUNCTION] [--gamedata DIR] [--obj DIR]
+    python tools/match.py [FILE.c ...] [--compile] [-v] [--dis FUNCTION] [--gamedata DIR] [--obj DIR] [--target T]
 
 Reads build/obj/NAME.OBJ (run tools/dosbuild.py first, or pass --compile) and compares
 every function in its _TEXT segment with the bytes at the same function in the GOG files:
@@ -33,6 +33,11 @@ of the files given is EXACT.
 --obj DIR (or $U5_OBJ) reads the objects from a private folder instead, and --compile writes
 them there. The results then go to DIR/status.tsv, never to the shared file; --no-status
 writes none.
+
+--target 1988 (or $U5_TARGET=1988) compares with the 1988 release instead (gamedata-1988/,
+../gamedata-1988), compiles with /DRELEASE_1988, and uses build/obj-1988 and
+build/match/status-1988.tsv. For the gog target, --compile also compiles the files that
+differ by target for 1988 (into build/obj-1988), for tools/u5link.py's EXE checksum.
 """
 import argparse, glob, os, re, struct, sys
 
@@ -86,7 +91,7 @@ def overlay_starts(ovl, cfile):
                 starts.add(int(m.group(2), 16))
     # and the overlay's assembly parts (src/asm, "NAME.OVL xxxx-yyyy"), by their PUBLIC names
     import asmbuild
-    for p in glob.glob(os.path.join(u5.SRC, 'asm', '*.ASM')):
+    for p in u5.asm_modules():
         place = asmbuild.module_place(p)
         if place and place[0] == ovl:
             starts.add(place[1])
@@ -97,10 +102,11 @@ def overlay_starts(ovl, cfile):
 
 def other_obj(name):
     """The object of another module of the same overlay. A private object folder ($U5_OBJ)
-    may hold only the module being worked on: the other one is then read from build/obj."""
+    may hold only the module being worked on: the other one is then read from the target's
+    shared folder (build/obj, build/obj-1988)."""
     p = os.path.join(u5.OBJ, name)
     if not os.path.exists(p):
-        q = os.path.join(u5.DEFAULT_OBJ, name)
+        q = os.path.join(u5.default_obj(), name)
         if os.path.exists(q):
             return q
     return p
@@ -473,7 +479,9 @@ def main():
     ap.add_argument('--obj', metavar='DIR', help='read (and with --compile, write) the objects here '
                     '(default $U5_OBJ, else build/obj); the results then go to DIR/status.tsv')
     ap.add_argument('--no-status', action='store_true', help='do not write status.tsv')
+    u5.add_target_argument(ap)
     a = ap.parse_args()
+    u5.set_target(a.target)
     u5.set_obj(a.obj)
     gamedata = u5.find_gamedata(a.gamedata)
     files = [os.path.basename(f) for f in a.files] or sorted(f for f, (k, _) in u5.MODULES.items() if k != 'data')
@@ -485,6 +493,7 @@ def main():
     if a.compile:
         import dosbuild
         dosbuild.compile_files(files, a.dosbox, quiet=True)
+        dosbuild.compile_patch_base(files, a.dosbox)      # gog: the 1988 form too, for the EXE checksum
     rtsyms = runtime_symbols()
     allres = []
     for f in files:

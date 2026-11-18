@@ -1,8 +1,17 @@
 #!/usr/bin/env python3
-"""Measure the link script (src/u5d.lnk) from the GOG files and the objects.
+"""Measure the link script (src/u5d.lnk) from the game files and the objects.
 
-    python tools/linkscript.py            write src/u5d.lnk
-    python tools/linkscript.py --check    measure again and compare with src/u5d.lnk
+    python tools/linkscript.py [--target T]            measure T's lines, write src/u5d.lnk
+    python tools/linkscript.py [--target T] --check    measure again and compare
+
+The script holds both targets (tools/u5.py, TARGETS). A line that holds for one target only
+ends in target=gog or target=1988 (the 1992 patch's assembly, A2322 and AINTRO2, is the gog
+target's; the 1988 target's r2320.c and intro2.c hold that code and data themselves); the
+other lines hold for both. A target's lines are measured from its game files (gamedata/,
+gamedata-1988/, ...) and its objects (build/obj, build/obj-1988, or $U5_OBJ); writing
+measures the target given (--target, else $U5_TARGET, else gog), and the other target too when
+its game files and its object folder (build/obj-1988, build/obj) are there, else keeps its
+lines as the script has them. --check compares the target's lines only.
 
 tools/u5link.py links from the script and the objects alone; it opens no game file. This
 tool is where the script's facts come from: it needs the game files (tools/u5.py,
@@ -69,7 +78,7 @@ def gather(gd, notes):
         m.cfile = cfile
         return m
 
-    for p in sorted(glob.glob(os.path.join(u5.SRC, 'asm', '*.ASM'))):
+    for p in u5.asm_modules():
         n = os.path.splitext(os.path.basename(p))[0].upper()
         if n not in have:
             notes.append('%s: no object' % n)
@@ -222,12 +231,13 @@ def text(gd):
     L += ['# exe: ULTIMA.EXE. image is the length of the resident image (the file after its',
           '# header). The other fields are PLINK86\'s own, read from the original\'s header: the',
           '# relocation table starts at fixed (the header\'s length before it), the word at 1c',
-          '# is word1c, SS is stackgap paragraphs past the end of the image and SP is sp (the',
-          '# start-up code\'s stack), and checksum is the word at 12 (not the MZ checksum; what',
-          '# PLINK86 summed is not known). Sizes, relocation count and table, header length,',
-          '# minimum allocation and entry point are the linker\'s rules.',
-          'exe      image=%04x fixed=%02x word1c=%04x stackgap=%04x sp=%04x checksum=%04x' % (
-              image, reloff, w1c, ss - image // 16, sp, csum), '']
+          '# is word1c, and SS is stackgap paragraphs past the end of the image and SP is sp',
+          '# (the stack of Origin\'s wrapper, PLSTART, which took the entry point). Sizes,',
+          '# relocation count and table, header length, minimum allocation, entry point and the',
+          '# checksum (PLINK86\'s MZ checksum of the program without the wrapper) are the',
+          '# linker\'s rules.',
+          'exe      image=%04x fixed=%02x word1c=%04x stackgap=%04x sp=%04x' % (
+              image, reloff, w1c, ss - image // 16, sp), '']
     L += ['# dgroup: DATA.OVL is a header of this length (the far pointers in DGROUP, then zeros)',
           '# and DGROUP, size bytes from DS:0000.',
           'dgroup   size=%04x header=%02x' % (len(u5.ds_image(gd)), u5.DATA_OVL_HEADER), '']
@@ -279,30 +289,79 @@ def text(gd):
     return '\n'.join(L) + '\n', notes
 
 
+def merge(views):
+    """The script from each target's lines ({target: text}): lines all targets have once,
+    the others marked target=T (u5link.script_lines takes a target's lines back out)."""
+    import difflib
+    a, b = (views[t].splitlines() for t in u5.TARGETS)    # two targets
+    ta, tb = u5.TARGETS
+    out = []
+    for op, i1, i2, j1, j2 in difflib.SequenceMatcher(None, a, b, autojunk=False).get_opcodes():
+        if op == 'equal':
+            out += a[i1:i2]
+            continue
+        for t, lines in ((ta, a[i1:i2]), (tb, b[j1:j2])):
+            for line in lines:
+                if not line.split('#')[0].strip():
+                    raise SystemExit('the targets\' scripts differ in a comment or blank line: %r' % line)
+                out.append('%s target=%s' % (line, t))
+    return '\n'.join(out) + '\n'
+
+
+def script_text():
+    p = u5link.script_path()
+    return open(p, encoding='ascii', newline='').read().replace('\r\n', '\n') if os.path.exists(p) else ''
+
+
+def check_text(measured, target=None):
+    """'' when the script's lines for target are measured, else what differs first."""
+    ol, nl = u5link.script_lines(script_text(), target or u5.TARGET), measured.splitlines()
+    for k in range(max(len(ol), len(nl))):
+        o, n = (ol[k] if k < len(ol) else None), (nl[k] if k < len(nl) else None)
+        if o != n:
+            return 'line %d of the %s lines:\n  script:   %s\n  measured: %s' % (k + 1, target or u5.TARGET, o, n)
+    return ''
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('--check', action='store_true', help='compare the measurement with the script; write nothing')
     ap.add_argument('--gamedata')
+    u5.add_target_argument(ap)
     a = ap.parse_args()
+    u5.set_target(a.target)
     new, notes = text(u5.find_gamedata(a.gamedata))
     for n in notes:
         print('note: ' + n)
+    rel = os.path.relpath(u5link.script_path(), u5.ROOT)
     if a.check:
-        old = open(u5link.SCRIPT, encoding='ascii', newline='').read().replace('\r\n', '\n') \
-            if os.path.exists(u5link.SCRIPT) else ''
-        if old != new:
-            ol, nl = old.splitlines(), new.splitlines()
-            for k in range(max(len(ol), len(nl))):
-                o, n = (ol[k] if k < len(ol) else None), (nl[k] if k < len(nl) else None)
-                if o != n:
-                    print('line %d:\n  script:   %s\n  measured: %s' % (k + 1, o, n))
-                    break
-            print('%s differs from the measurement' % os.path.relpath(u5link.SCRIPT, u5.ROOT))
+        diff = check_text(new)
+        if diff:
+            print(diff)
+            print('%s differs from the measurement (%s)' % (rel, u5.TARGET_TITLE[u5.TARGET]))
             sys.exit(1)
-        print('%s is what the original files give (%d lines)' % (os.path.relpath(u5link.SCRIPT, u5.ROOT), len(new.splitlines())))
+        print('%s is what the original files give (%s: %d lines)' % (rel, u5.TARGET_TITLE[u5.TARGET], len(new.splitlines())))
         sys.exit(1 if notes else 0)
-    open(u5link.SCRIPT, 'w', encoding='ascii', newline='\r\n').write(new)
-    print('wrote %s (%d lines)' % (os.path.relpath(u5link.SCRIPT, u5.ROOT), len(new.splitlines())))
+    # the other targets' lines: measured too when their game files and their shared object
+    # folder are there (and this target's objects are in its shared folder), else kept
+    old, views, kept = script_text(), {u5.TARGET: new}, []
+    shared = os.path.normcase(u5.OBJ) == os.path.normcase(os.path.abspath(u5.default_obj()))
+    for t in u5.TARGETS:
+        if t == u5.TARGET:
+            continue
+        gd = u5.find_gamedata(target=t, required=False) if not a.gamedata else None
+        if gd and shared and os.path.isdir(u5.default_obj(t)):
+            with u5.building(t, u5.default_obj(t)):
+                views[t], tnotes = text(gd)
+            for n in tnotes:
+                print('note (%s): %s' % (t, n))
+        else:
+            views[t] = '\n'.join(u5link.script_lines(old, t)) + '\n' if old else new
+            kept.append(t)
+    out = merge(views)
+    open(u5link.script_path(), 'w', encoding='ascii', newline='\r\n').write(out)
+    print('wrote %s (%d lines; %s)' % (rel, len(out.splitlines()), 'the %s lines kept as they were' % ', '.join(kept)
+                                       if kept else 'every target measured'))
 
 
 if __name__ == '__main__':

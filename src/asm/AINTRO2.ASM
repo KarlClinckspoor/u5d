@@ -1,8 +1,10 @@
 ; AINTRO2.ASM: INTRO.OVL 132a-1e22, INTRO_132a_TransferFromU4 as the GOG release has it.
 ; In 1.16 this was MSC 5.1 output, the last function of intro2.c's object; GOG patched it in
 ; place (1332-134d: the map id and the drives; 1392-1399: the disk prompt is skipped), so its
-; bytes are no compiler's output. The DOS build takes it from here, linked after intro2.c and
-; before introb.c; the C in src/intro2.c is kept for the native build.
+; bytes are no compiler's output. The DOS build of the GOG target takes it from here, linked
+; after intro2.c and before introb.c. The 1988 target leaves this module out (tools/u5.py
+; ASM_EXCLUDED; the link script's lines for it say target=gog) and compiles 1.16's C in
+; src/intro2.c (RELEASE_1988) instead, with its strings.
 ; Its strings stay where the object had them, after the rest of intro2.c's (DS:3345-3655):
 ; this module's _DATA is BYTE-aligned so that it follows intro2.c's packed strings directly.
 ; The two words that hold the code segment (13e3, 1419) are INTRO.OVL's relocations: the

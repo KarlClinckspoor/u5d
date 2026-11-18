@@ -452,6 +452,10 @@ L_75cc:
 	pop ax
 	popf
 	db	0cbh	; retf
+; PLINK86's start-up (072e:0322): the linked program's entry point, before Origin's wrapper
+; (src/asm/PLSTART.ASM) took it. tools/u5link.py computes the EXE checksum with it.
+	PUBLIC	PLINK_START
+PLINK_START:
 L_7602:
 	cli
 	mov di,es

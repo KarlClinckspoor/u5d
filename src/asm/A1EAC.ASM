@@ -1,5 +1,7 @@
 ; A1EAC.ASM: ULTIMA.EXE CS:1eac-1fa0, hand-written assembly in the original.
 ; Drafted from the original bytes by tools/asmgen.py and checked by tools/asmbuild.py.
+; The two releases differ in one byte (1f0b, IFDEF RELEASE_1988 below): the highest drive
+; letter ULTIMA_1EF7 accepts is E in 1988 and Z in the January 1992 patch (the GOG release).
 
 	TITLE	A1EAC
 _TEXT	SEGMENT  BYTE PUBLIC 'CODE'
@@ -73,7 +75,11 @@ L_1f01:
 	sub dl,41h
 	cmp al,41h
 	jl	L_1f10
-	cmp al,5ah
+IFDEF RELEASE_1988
+	cmp al,45h	; 'E'
+ELSE
+	cmp al,5ah	; 'Z' (1992 patch)
+ENDIF
 	jg	L_1f10
 	clc
 	ret
