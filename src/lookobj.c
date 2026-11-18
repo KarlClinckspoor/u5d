@@ -611,21 +611,11 @@ static void LOOKOBJ_07e4_ReadSign(byte signLevel, byte signX, byte signY)
                 else
                 {
                     signPos += 4;
-#if !defined(MATCHING_BUILD)
-                    for (; signPos < SCRATCH_SIZE; )
-                    {
-                        if (D_b21e_scratch[signPos++] == 0)
-                            break;
-                    }
-
-                    done_j = signPos == SCRATCH_SIZE;
-#else
                     while (D_b21e_scratch[signPos++] != 0)
                     {
                     }
 
                     done_j = D_b21e_scratch[signPos] == 0xff ? 1 : 0;
-#endif
 
                     if (done_j)
                     {

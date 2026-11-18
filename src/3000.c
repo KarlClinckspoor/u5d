@@ -173,73 +173,35 @@ void ULTIMA_3072_ShakeScreen(void)
     ULTIMA_0f6e_GRAP_1b_TransferFullscreen(0, 1);
     ULTIMA_0c22_GRAP_0f_SelectPage(1);
 
-#if defined(TARGET_SDL)
-    ULTIMA_223c_AudioWhiteNoise(0x13, 16000, 0x96);
-#endif
-
     for (shakeRound = 0; shakeRound < 8; shakeRound++)
     {
         for (i = 8; i <= 0xb3; i += 3)
         {
             ULTIMA_71ca_DRV_27_ScrollTextWindow1(8, i, 0xb7, i + 4, 2);
-#if defined(MATCHING_BUILD)
             ULTIMA_22e2_PcspkOn(ULTIMA_2092_RandomRange(0x13, 0x96));
-#endif
         }
-
-#if defined(TARGET_DOS32)
-        ULTIMA_223c_AudioWhiteNoise(0x13, 700, 0x96);
-#elif defined(ENABLE_SPEED_FIX)
-        TIME_SleepMs(70);
-#endif
 
         for (i = 8; i <= 0xb3; i += 3)
         {
             ULTIMA_0ace_GRAP_18_TransferArea(1, 0, 8, i, 0xb7, i + 4);
-#if defined(MATCHING_BUILD)
             ULTIMA_22e2_PcspkOn(ULTIMA_2092_RandomRange(0x13, 0x96));
-#endif
         }
-
-#if defined(TARGET_DOS32)
-        ULTIMA_223c_AudioWhiteNoise(0x13, 300, 0x96);
-#elif defined(ENABLE_SPEED_FIX)
-        TIME_SleepMs(30);
-#endif
 
         for (i = 0xb3; i >= 8; i -= 3)
         {
             ULTIMA_7200_DRV_27_ScrollTextWindow2(8, i, 0xb7, i + 4, 2);
-#if defined(MATCHING_BUILD)
             ULTIMA_22e2_PcspkOn(ULTIMA_2092_RandomRange(0x13, 0x96));
-#endif
         }
-
-#if defined(TARGET_DOS32)
-        ULTIMA_223c_AudioWhiteNoise(0x13, 700, 0x96);
-#elif defined(ENABLE_SPEED_FIX)
-        TIME_SleepMs(70);
-#endif
 
         for (i = 0xb3; i >= 8; i -= 3)
         {
             ULTIMA_0ace_GRAP_18_TransferArea(1, 0, 8, i, 0xb7, i + 4);
-#if defined(MATCHING_BUILD)
             ULTIMA_22e2_PcspkOn(ULTIMA_2092_RandomRange(0x13, 0x96));
-#endif
         }
-
-#if defined(TARGET_DOS32)
-        ULTIMA_223c_AudioWhiteNoise(0x13, 300, 0x96);
-#elif defined(ENABLE_SPEED_FIX)
-        TIME_SleepMs(30);
-#endif
     }
 
     ULTIMA_0c22_GRAP_0f_SelectPage(0);
-#if defined(MATCHING_BUILD)
     ULTIMA_230e_PcspkOff();
-#endif
 }
 
 static void ULTIMA_3c9a_HoleUpCmd(void);
@@ -533,11 +495,6 @@ void ULTIMA_3564_HitEffectOnActor(int index)
 {
     CombatEntity* combatant;
 
-#if !defined(MATCHING_BUILD)
-    combatant = 0;
-    ASSERT(D_5893_mapId > 0x7f);
-#endif
-
     if (D_5893_mapId > 0x7f)
     {
         combatant = &D_ba14_combatants[index];
@@ -596,10 +553,6 @@ int ULTIMA_35ec_SelectDirection(void)
         D_5876_tempX++;
         return 1;
     }
-
-#if !defined(MATCHING_BUILD)
-    return key;
-#endif
 }
 
 // CHECKED
@@ -906,13 +859,6 @@ int ULTIMA_3b9e_GetNumber(int maxLen)
             }
         }
     } while (key != U5_KEY_ENTER);
-
-#if !defined(MATCHING_BUILD)
-    if (charCount == 0)
-    {
-        return 0;
-    }
-#endif
 
     while (--charCount > 0)
     {

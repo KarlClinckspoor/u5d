@@ -1078,10 +1078,6 @@ void CAST2_0e76_Shrine(void)
         D_5c5a_actors[row].tile = 0;
     }
 
-#if defined(ENABLE_BGM)
-    AUDIO_StopBgm();
-#endif
-
     if (placeTile != TILE_MAP_CODEX)
     {
         ULTIMA_256e_ReadFileFromDisk(_TEXT(0x95fc, "MISCMAPS.DAT"), D_ac64_viewActors, 0xb0, 0xb0);
@@ -1101,10 +1097,6 @@ void CAST2_0e76_Shrine(void)
             GetCombatMap(column, row) = D_ac64_viewActors[row * 0x10 + column];
         }
     }
-
-#if defined(ENABLE_BGM)
-    AUDIO_PlayBgmForShrine();
-#endif
 
     ULTIMA_5910_UpdateFrame();
 
@@ -1223,10 +1215,6 @@ void CAST2_0e76_Shrine(void)
     D_5893_mapId = D_bd15_savedMapId;
     ULTIMA_4f7c_AdvanceTime(0x10);
     ULTIMA_5e4a_BuildLightMap();
-
-#if defined(ENABLE_BGM)
-    AUDIO_PlayBgmPerMap();
-#endif
 }
 
 //
@@ -1235,11 +1223,7 @@ void CAST2_0e76_Shrine(void)
 
 // NOTE: IBM version (the original); not compatible with modern platforms
 // The Save game question: with Y the world is written to SAVED.GAM and SAVED.OOL, and UNDER.OOL on the saved disk.
-#if defined(TARGET_DOS16)
 void CAST2_10fe_SaveGame(void)
-#else
-static void CAST2_10fe_SaveGameIBM(void)
-#endif
 {
     byte local_4;
     byte local_6_an;
@@ -1281,57 +1265,3 @@ static void CAST2_10fe_SaveGameIBM(void)
     }
 }
 
-#if !defined(TARGET_DOS16)
-// based on FMT
-static void CAST2_10fe_SaveGameFMT(void)
-{
-    void* local_c;
-    byte local_6;
-    byte local_4_ab;
-
-    ULTIMA_1850_PrintString(_TEXT(0x4c114, "\nSave game? "));
-
-    while ((local_6 = ULTIMA_266c_GetChar()) != 'Y')
-    {
-        if (local_6 == 'N')
-            break;
-    }
-
-    if (local_6 == 'N')
-    {
-        ULTIMA_1850_PrintString(_TEXT(0x4c124, "No\n"));
-    }
-    else
-    {
-        ULTIMA_1850_PrintString(_TEXT(0x4c128, "Yes\nSaving...\n"));
-        local_4_ab = D_a9bd_curDisk[0];
-        if (D_a9bd_curDisk[0] != 5)
-        {
-            ULTIMA_251e_SwitchDisks(1);
-        }
-
-        ULTIMA_256e_ReadFileFromDisk(/*0x4c138*/ "UNDER.OOL", D_b21e_scratch + 0x100, 0x100, 0);
-        ULTIMA_251e_SwitchDisks(1);
-        ULTIMA_256e_ReadFileFromDisk(/*0x4c144*/ "BRIT.OOL", D_b21e_scratch, 0x100, 0);
-        if (local_4_ab != 1)
-        {
-            ULTIMA_251e_SwitchDisks(3);
-            ULTIMA_25d8_WriteFileToDisk(/*0x4c150*/ "UNDER.OOL", D_b21e_scratch + 0x100, 0x100);
-        }
-
-        // DAT_0003ddb0_55a6 = (byte)DAT_00065334_CurrentBgm;
-        // DAT_0003ee18_6606 = (byte)DAT_00065338; // ?
-
-        ULTIMA_251e_SwitchDisks(3);
-        FILE_WriteSavegameFile(/*0x4c15c*/ "SAVED.GAM" /*, local_c*/);
-        ULTIMA_25d8_WriteFileToDisk(/*0x4c168*/ "SAVED.OOL", D_b21e_scratch, 0x200);
-        ULTIMA_251e_SwitchDisks(local_4_ab);
-        ULTIMA_1850_PrintString(_TEXT(0x4c174, "Done.\n"));
-    }
-}
-
-void CAST2_10fe_SaveGame(void)
-{
-    CAST2_10fe_SaveGameFMT();
-}
-#endif

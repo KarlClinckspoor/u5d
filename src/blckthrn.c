@@ -586,10 +586,6 @@ void BLCKTHRN_0910_Death(void)
     int col;
     int karmaIndex;
 
-#if defined(ENABLE_BGM)
-    AUDIO_StopBgm();
-#endif
-
     ULTIMA_251e_SwitchDisks(1);
 
     while (ULTIMA_1674_TestOpenFile(_TEXT(0x70d8, "BRIT.DAT")) == 0) {}

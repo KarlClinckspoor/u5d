@@ -7,27 +7,11 @@
 #include "tiles.h"
 #include "macros.h"
 
-#if !defined(TARGET_DOS16)
-#include "common/file.h"
-#endif
-
-#if defined(ENABLE_TRANSLATION)
-#include "translate.h"
-#endif
-
 #include "dungeon.h"
 #include "intro.h"
 #include "mainout.h"
 #include "outsubs.h"
 #include "town.h"
-
-#if !defined(TARGET_DOS16)
-extern int g_enableDebugOverlay;
-#endif
-
-#if defined(TARGET_SDL)
-#include <SDL3/SDL_main.h>
-#endif
 
 u8 D_13a6_shadowlordStartY[8] =
 {
@@ -1592,23 +1576,6 @@ int CDECL main(int argc, char** argv/*, char** envp*/)
 
     local_4 = 0x20;
 
-#if !defined(TARGET_DOS16)
-    if (!FILE_CheckGameFiles())
-    {
-        DEBUG_ShowError("Required Ultima V game data could not be found.");
-        return 1;
-    }
-#endif
-
-#if defined(ENABLE_TRANSLATION)
-    TRS_Initialize();
-#endif
-
-#if !defined(TARGET_DOS16)
-    BACKEND_Initialize();
-    atexit(BACKEND_Cleanup);
-#endif
-
     if (argc > 1)
     {
         local_4 = ULTIMA_2032_ToUpper((unsigned char)argv[1][0]);
@@ -1643,10 +1610,6 @@ int CDECL main(int argc, char** argv/*, char** envp*/)
 
     INTRO_0986_Main(); // 00ad
     ULTIMA_2900_UpdateVitalsDisplay();
-
-#if !defined(TARGET_DOS16)
-    g_enableDebugOverlay = 1;
-#endif
 
     local_8_al = 0;
 

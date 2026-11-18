@@ -140,17 +140,3 @@ void INTRO_2024_SetUpTransferScreen(void)
     ULTIMA_16ba_PrintChar(' ');
 }
 
-#if !defined(TARGET_DOS16) // assembly in the original: src/asm/AINTRO.ASM
-// animate "warriors of destiny"
-void INTRO_2090_AnimateWD(void)
-{
-    ULTIMA_20fa_WaitTicks(1);
-    DRV_69(0, 0); // ax: undefined, cf: 0
-}
-
-// show "warriors of destiny"
-void INTRO_20ae_ShowWD(byte* ptr)
-{
-    DRV_69(ptr, 1); // ax: a, cf: 1
-}
-#endif

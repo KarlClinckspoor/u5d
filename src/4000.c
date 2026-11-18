@@ -231,11 +231,6 @@ void ULTIMA_4368_AudioVictoryTune(void)
 
 void ULTIMA_43ae_AudioSweepTone(int startFreq, int endFreq, int stepTime, int duration)
 {
-#if !defined(TARGET_DOS16)
-	AUDIO_DispatchSweepTone(startFreq, endFreq, stepTime, duration);
-	return;
-#endif
-
 	int elapsed_l;
 	int freqStep;
 	int stepCount_h;
@@ -266,11 +261,6 @@ byte* ULTIMA_4402_GetTileAddr(int x, int y)
 	{
 		// 440f
         // There are cases where y < 0. original bug
-#if !defined(MATCHING_BUILD)
-		ASSERT(x >= 0 && x < 0xb && y < 0xb);
-		if (y < 0)
-			return &D_6a07_dummyCell; // return unused byte
-#endif
 
 		addr_e = &GetCombatMap(x, y);
 	}
@@ -586,16 +576,8 @@ int ULTIMA_47f4_GoToMoonstone(int stoneIndex)
     {
         if (D_5893_mapId == 0 && oldMapId == 0)
         {
-#if defined(ENABLE_BGM)
-			AUDIO_StopBgm();
-#endif
-
             ULTIMA_256e_ReadFileFromDisk(OUTSUBS_0368_GetWorldSavefile(), &D_5c5a_actors[0].tile, 0x100, 0);
             MAINOUT_0000_SetUpOverworld();
-
-#if defined(ENABLE_BGM)
-			AUDIO_PlayBgmPerMap();
-#endif
         }
     }
 

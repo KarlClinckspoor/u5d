@@ -356,10 +356,6 @@ void OUTSUBS_0458_Falls(void)
     {
         ULTIMA_1850_PrintString(_TEXT(0x39c3, "Falling into underworld!!\n"));
 
-#if defined(ENABLE_BGM)
-        AUDIO_StopBgm();
-#endif
-
         D_5895_mapLevel = 0xff;
 
         ULTIMA_25d8_WriteFileToDisk(/*0x39de*/ "BRIT.OOL", D_5c5a_actors, 0x100);
@@ -371,10 +367,6 @@ void OUTSUBS_0458_Falls(void)
 
         ULTIMA_25d8_WriteFileToDisk(/*0x39fb*/ "UNDER.OOL", D_5c5a_actors, 0x100);
         MAINOUT_0000_SetUpOverworld(); // THUNK 7b7e
-
-#if defined(ENABLE_BGM)
-        AUDIO_PlayBgmPerMap();
-#endif
     }
 }
 

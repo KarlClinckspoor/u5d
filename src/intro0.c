@@ -48,15 +48,9 @@ int INTRO_0050_LordBritishAnim(int x, int y)
     byte* path;
     int savedCalibration;
 
-#if !defined(MATCHING_BUILD)
-    path = D_b21e_scratch;
-    ASSERT(SCRATCH_SIZE >= 2783); // BRITISH.PTH file size
-#define MEM_SIZE SCRATCH_SIZE
-#else
     // DOS: uses savegame area
     path = &D_55a6_saveStart;
 #define MEM_SIZE ((byte*)&D_6606_saveEnd - (byte*)&D_55a6_saveStart) /*0x1060*/
-#endif
 
     penColor_n = D_13b0_brightWhiteColor;
 

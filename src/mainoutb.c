@@ -182,18 +182,10 @@ static void MAINOUT_1248_ActorTouchesParty(int actor)
             D_587c_partyTile = savedTile;
             MAINOUT_109e_DamageVehicle();
 
-#if defined(ENABLE_BGM)
-            AUDIO_StopBgm();
-#endif
-
             D_5895_mapLevel = 0xff;
             D_5896_mapX = 0x22;
             D_5897_mapY = 0x12;
             MAINOUT_0000_SetUpOverworld();
-
-#if defined(ENABLE_BGM)
-            AUDIO_PlayBgmPerMap();
-#endif
         }
     }
     else if ((D_5c5a_actors[actor].tile & 0xfc) != TILE_ACTOR_E0)
@@ -465,11 +457,7 @@ static void MAINOUT_16fc_MoveRandomly(int actor)
 
 // The original stores the constants to mode through AX ("mov ax,1; mov [bp+4],ax"), MSC's
 // form for a chained assignment (see SHOPPES2_00ac_PrintHonorific): mode = mode = 1 gives it.
-#if defined(TARGET_DOS16)
 #define P2_SET(v) mode = mode = (v) // two stores between sequence points: DOS build only
-#else
-#define P2_SET(v) mode = (v)
-#endif
 
 // CHECKED
 // MSC places a block that nothing falls into after the first unconditional jump that follows

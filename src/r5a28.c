@@ -111,32 +111,6 @@ static void ULTIMA_5a28_BuildVisibilityMap(int lightLevel, int originY, int orig
                     valid = 0;
                 }
 
-#if !defined(MATCHING_BUILD)
-                // TODO: temporary!
-                if (map == D_ad14_combatMap)
-                {
-                    if (rowOffset + nextY < 0 || colOffset + nextX < 0 || rowOffset + nextY >= 0x20 || colOffset + nextX >= 0x20)
-                    {
-                        dir--;
-                        valid = 1;
-                        continue;
-                    }
-                }
-                else if (map == D_ab02_viewTiles)
-                {
-                    if (rowOffset + nextY < 0 || colOffset + nextX < 0 || rowOffset + nextY >= 0xb || colOffset + nextX >= 0x20)
-                    {
-                        dir--;
-                        valid = 1;
-                        continue;
-                    }
-                }
-                else
-                {
-                    ASSERT(0);
-                }
-#endif
-
                 // 5b48
                 cell = map + (rowOffset + nextY) * 0x20 + (colOffset + nextX);
 
@@ -158,9 +132,6 @@ static void ULTIMA_5a28_BuildVisibilityMap(int lightLevel, int originY, int orig
                     }
                 }
                 else
-#if !defined(MATCHING_BUILD)
-                    if (valid != 0)
-#endif
                 {
                     // 5b90
                     if (*cell != 0xff)
@@ -184,10 +155,6 @@ static void ULTIMA_5a28_BuildVisibilityMap(int lightLevel, int originY, int orig
                             {
                                 // 5c05
                                 if (
-#if !defined(MATCHING_BUILD)
-                                    originY + fromY_d >= 0x20 || originX + fromX_e >= 0x20 ||
-                                    originY + nextY < 0 || originX + fromX_e < 0 ||
-#endif
                                     map[fromY_d * 0x20 + fromX_e] == 0 ||
                                     D_ad14_combatMap[(originY + fromY_d) * 0x20 + originX + fromX_e] == 0 ||
                                     D_ad14_combatMap[(originY + nextY) * 0x20 + originX + nextX] == 0)

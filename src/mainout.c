@@ -378,18 +378,10 @@ static int MAINOUT_0490_WalkInDirection(int dir, int noMove)
     case DIR_UP:
         // 04f0
         stepY--;
-#if !defined(MATCHING_BUILD)
-        result_b = MAINOUT_00da_TurnVehicle(0);
-        if (result_b != 0)
-        {
-            return result_b;
-        }
-#else
         if (MAINOUT_00da_TurnVehicle(0))
         {
             return;
         }
-#endif
 
         // 0500
         if (D_5955_sailDir == 0)
@@ -401,18 +393,10 @@ static int MAINOUT_0490_WalkInDirection(int dir, int noMove)
     case DIR_DOWN:
         // 054e
         stepY++;
-#if !defined(MATCHING_BUILD)
-        result_b = MAINOUT_00da_TurnVehicle(2);
-        if (result_b != 0)
-        {
-            return result_b;
-        }
-#else
         if (MAINOUT_00da_TurnVehicle(2))
         {
             return;
         }
-#endif
         if (D_5955_sailDir == 0)
         {
             ULTIMA_1850_PrintString(_TEXT(0x29e2, "South\n"));
@@ -422,18 +406,10 @@ static int MAINOUT_0490_WalkInDirection(int dir, int noMove)
     case DIR_RIGHT:
         // 055c
         stepX++;
-#if !defined(MATCHING_BUILD)
-        result_b = MAINOUT_00da_TurnVehicle(1);
-        if (result_b != 0)
-        {
-            return result_b;
-        }
-#else
         if (MAINOUT_00da_TurnVehicle(1))
         {
             return;
         }
-#endif
         if (D_5955_sailDir == 0)
         {
             ULTIMA_1850_PrintString(_TEXT(0x29e9, "East\n"));
@@ -443,18 +419,10 @@ static int MAINOUT_0490_WalkInDirection(int dir, int noMove)
     case DIR_LEFT:
         // 0576
         stepX--;
-#if !defined(MATCHING_BUILD)
-        result_b = MAINOUT_00da_TurnVehicle(3);
-        if (result_b != 0)
-        {
-            return result_b;
-        }
-#else
         if (MAINOUT_00da_TurnVehicle(3))
         {
             return;
         }
-#endif
         if (D_5955_sailDir == 0)
         {
             ULTIMA_1850_PrintString(_TEXT(0x29ef, "West\n"));
@@ -646,11 +614,7 @@ static int MAINOUT_0790_LoadDungeon(char* verb)
         if (D_587c_partyTile != TILE_ACTOR_AVATAR)
         {
             ULTIMA_1850_PrintString(_TEXT(0x2a24, "\nOn foot!\n"));
-#if !defined(MATCHING_BUILD)
-            return 0; // TODO: validate return value
-#else
             return; // sic
-#endif
         }
 
         if (dungeonIndex_i == 0x27)
@@ -661,11 +625,7 @@ static int MAINOUT_0790_LoadDungeon(char* verb)
                 slot = ULTIMA_38e4_FindActorSlot();
                 D_5c5a_actors[slot].tile = TILE_ACTOR_SHADOWLORD;
                 ULTIMA_6150_Combat(slot);
-#if !defined(MATCHING_BUILD)
-                return 0; // TODO: validate return value
-#else
                 return; // sic
-#endif
             }
         }
         else
@@ -1037,10 +997,6 @@ void MAINOUT_0d22_Entry(void)
     int slot;
     ActorFmt* ship_m;
 
-#if defined(ENABLE_BGM)
-    AUDIO_StopBgm();
-#endif
-
     MAINOUT_0000_SetUpOverworld();
 
     if (D_6605_boughtShip >= 0x40)
@@ -1065,10 +1021,6 @@ void MAINOUT_0d22_Entry(void)
         ship_m->value = 99;
         D_6605_boughtShip = 0;
     }
-
-#if defined(ENABLE_BGM)
-    AUDIO_PlayBgmPerMap();
-#endif
 
     MAINOUT_0a84_MainLoop();
 }
@@ -1111,11 +1063,7 @@ int MAINOUT_0d8c_SpawnChance(void)
 
 // The original adds the index and the pointer as integers (mov bx,cx / add bx,si),
 // not with the [bx][si] addressing mode that param_1[i] gives.
-#if defined(TARGET_DOS16)
 #define MAINOUT_0E04_AT(i) (*(byte*)((uint)(i) + (uint)weights))
-#else
-#define MAINOUT_0E04_AT(i) (weights[i])
-#endif
 
 // an index picked by weights that add up to 256 (a roll of 0-255 minus each weight)
 static int MAINOUT_0e04_PickWeighted(byte* weights)

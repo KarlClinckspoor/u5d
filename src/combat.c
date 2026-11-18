@@ -388,10 +388,6 @@ static void COMBAT_063e_ProcessCommand(void)
     int keyDone;
     int askAgain;
 
-#if !defined(MATCHING_BUILD)
-    key = 0xff;
-#endif
-
     D_5896_mapX = D_ba14_combatants[D_589e_curCombatant].x;
     D_5897_mapY = D_ba14_combatants[D_589e_curCombatant].y;
     member = D_ba14_combatants[D_589e_curCombatant].entityIdx;
@@ -800,10 +796,6 @@ int COMBAT_0b94_MainLoop(void)
         D_58a3_combatOver = 0;
     }
 
-#if defined(ENABLE_BGM)
-    AUDIO_PlayBgmForCombat();
-#endif
-
     finished_c = 0;
     do
     {
@@ -895,9 +887,6 @@ int COMBAT_0b94_MainLoop(void)
                                 ULTIMA_1850_PrintString(_TEXT(0x6f00, "\nVICTORY!\n"));
                                 D_58a3_combatOver = 1;
 
-#if defined(ENABLE_BGM)
-                                AUDIO_PlayBgmForCombatVictory();
-#endif
                                 // BGM/NOTE: no jingle when bgm is activated
                                 ULTIMA_4368_AudioVictoryTune();
                                 ULTIMA_1b16_ClearKbdBuffer();
@@ -913,10 +902,6 @@ int COMBAT_0b94_MainLoop(void)
     // afaf
     ULTIMA_1b16_ClearKbdBuffer();
     D_2186_beaconStep = 0xff;
-
-#if defined(ENABLE_BGM)
-    AUDIO_StopBgm();
-#endif
 
     return result;
 }
@@ -1309,10 +1294,6 @@ static int COMBAT_12b0_RollDamage(int attacker, int victim)
         else
         {
             defense_e = D_55a8_party[D_ba14_combatants[victim].entityIdx].defense;
-#if defined(ENABLE_BUG_FIX)
-            // BUGFIX: apply armour values
-            defense_e += ULTIMA_6da8_PlayerDefense(D_ba14_combatants[victim].entityIdx);
-#endif
         }
 
         damage = attack;
@@ -1375,14 +1356,6 @@ int COMBAT_13e2_QueryStat(int combatant, int stat)
         // 1418
         if (stat > 0)
         {
-#if !defined(MATCHING_BUILD)
-            // fix OOB when stat == 0xff (bare hands)
-            if (stat == 0xff)
-            {
-                stat = QUERY_STAT_DEX;
-            }
-            else
-#endif
             if (D_169c_weaponMissile[stat] == 8) // TODO: offset? (+1?)
             {
                 // -> 1411
@@ -1760,11 +1733,7 @@ int COMBAT_1a5c_WoundLevel(int combatant)
     if ((entity_c->flags & COMBAT_FLAGS_PLAYER) != 0)
     {
         // 1a81
-#if !defined(MATCHING_BUILD)
-        return level_h; // TODO: validate return value
-#else
         return; // sic (IBM: returns &D_ba14_combatants[combatant], FMT: returns D_ba14_combatants[combatant]._2)
-#endif
     }
     // 1a84
     quarter = D_13bc_enemyStats[entity_c->entityIdx].maxHp / 4; // max hp / 4 (25%)

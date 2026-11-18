@@ -38,12 +38,7 @@ u16 ULTIMA_1b38_PollKeyWithCursor(void)
     }
     else
     {
-#if defined(TARGET_DOS32)
-        // Temporary
-        ULTIMA_20c8_Delay(1, 21);
-#else
         ULTIMA_20fa_WaitTicks(1);
-#endif
     }
 
     D_538e_cursorAdvance = savedFlag_d;

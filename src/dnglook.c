@@ -1134,10 +1134,6 @@ void DNGLOOK_109e_LoadDungeonImages(int clearEncounter)
 // on leaving: frees the pictures, loads TILES.16 again and the tileset mode
 void DNGLOOK_1130_FreeDungeonImages(void)
 {
-#if defined(ENABLE_BGM)
-    AUDIO_StopBgm();
-#endif
-
     if ((D_bb17_loadFlags & 1) != 0)
     {
         if (D_5c5a_actors[1].value != 0xff)

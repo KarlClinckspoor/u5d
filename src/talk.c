@@ -326,11 +326,7 @@ L_join:
         // c34c
         if (dialogNumber_f == 0xfe)
         {
-#if !defined(MATCHING_BUILD)
-            TOWN_10da_ShoutBegone(npcIndex); // TODO: validate param (reference apple?)
-#else
             TOWN_10da_ShoutBegone(); // BUG: TOWN_10da_ShoutBegone(unaff_SI)
-#endif
             return 0;
         }
 

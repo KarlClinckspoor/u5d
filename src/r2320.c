@@ -20,9 +20,7 @@
 
 #include <stdlib.h>
 #include <time.h>
-#if !defined(TARGET_DOS16)
-u8 D_545e_lastDisk = 0xff;
-#elif defined(RELEASE_1988) // GOG DOS build: src/asm/A2322.ASM
+#if defined(RELEASE_1988) // GOG DOS build: src/asm/A2322.ASM
 char D_545e_lastDisk = 0xff; // char, not u8: see vars.h
 #endif
 
@@ -32,22 +30,7 @@ void FAR ULTIMA_2320_NoDiskSwapMessage(void)
     // nop
 }
 
-#if !defined(TARGET_DOS16)
-void FAR ULTIMA_2322_DiskSwapMessage(void)
-{
-    D_5394_diskSwapFn = ULTIMA_2320_NoDiskSwapMessage;
-
-    if (D_a9bd_curDisk[0] == 4)
-    {
-        ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
-        ULTIMA_1850_PrintString(_TEXT(0x11400, "Please place the Ultima IV 'party.sav' file into the 'U4SAVE' directory."));
-        ULTIMA_2032_ToUpper(ULTIMA_1dda_WaitForKeystroke(0));
-        ULTIMA_16ba_PrintChar('\n');
-    }
-
-    D_5394_diskSwapFn = ULTIMA_2322_DiskSwapMessage;
-}
-#elif defined(RELEASE_1988)
+#if defined(RELEASE_1988)
 // The 1988 release's function, EXACT against the 1988 ULTIMA.EXE. The GOG DOS build does not
 // compile it: it has ULTIMA_2322 from src/asm/A2322.ASM (above). The GOG_BUILD parts are the
 // 1992 patch written as gotos, kept for reference (never compiled: the DOS build has no
@@ -105,12 +88,6 @@ void FAR ULTIMA_2322_DiskSwapMessage(void)
             // 2400
             D_545e_lastDisk = 0xff;
 
-#if defined(GOG_BUILD)
-            // 2405 GOG: PATCHED (different instructions)
-            currentDrive_d = ULTIMA_16a6_GetDefaultDrive();
-            goto L_GOG_247d;
-#endif
-
             // 2405
             ULTIMA_1850_PrintString(_TEXT(0x545f, "\nPlease insert the Ultima "));
             if (D_a9bd_curDisk[0] == 4)
@@ -153,9 +130,6 @@ void FAR ULTIMA_2322_DiskSwapMessage(void)
                 // 2473
                 currentDrive_d = ULTIMA_2032_ToUpper(ULTIMA_1dda_WaitForKeystroke(0));
 
-#if defined(GOG_BUILD)
-L_GOG_247d:
-#endif
                 // 247d
                 if (D_a9c8_diskDrives[D_a9bd_curDisk[0]] != 0xff)
                     break;
@@ -166,10 +140,8 @@ L_GOG_247d:
             if (D_a9c8_diskDrives[D_a9bd_curDisk[0]] == 0xff)
             {
                 // 24aa
-#if !defined(GOG_BUILD)
                 // GOG: PATCHED (3 nops)
                 ULTIMA_16ba_PrintChar(currentDrive_d);
-#endif
 
                 if (currentDrive_d == 'B')
                 {

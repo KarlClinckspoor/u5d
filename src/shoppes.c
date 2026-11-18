@@ -34,14 +34,6 @@ void SHOPPES_0026_PrintShopText(char* text)
     char* scan;
     char* out_h;
 
-#if !defined(TARGET_DOS16)
-    // prevents direct modification of protected memory
-    char buf[256];
-    //strcpy_s(buf, sizeof(buf), text);
-    strcpy(buf, text);
-    text = buf;
-#endif
-
     scan = text;
     out_h = D_b7fa_shopTextOut;
 

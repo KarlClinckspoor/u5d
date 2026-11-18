@@ -272,9 +272,7 @@ void INTRO_014e_Introduction(void)
     ULTIMA_251e_SwitchDisks(0);
 }
 
-#if defined(TARGET_DOS16)
 #define const
-#endif
 
 // Draws a bar at the bottom of the strip and prints the text centred in it between two caps (the title of a
 // story scene, the copyright line).
@@ -361,15 +359,8 @@ void INTRO_05b0_DisplayTitle(int withSound)
     ULTIMA_0d4c_GRAP_4b_PutImage(D_bb1a_titleImage, 0, 0, 0, 0);
     if (withSound != 0)
     {
-#if !defined(TARGET_DOS16)
-        // "ULTIMA" with sound
-        AUDIO_PlayTitle1Sfx();
-#endif
         ULTIMA_0f46_GRAP_66_Reveal(0, 0, 319, 100);
         withSound = ULTIMA_1d5e_PollKey() == 0;
-#if !defined(TARGET_DOS16)
-        AUDIO_StopSfx();
-#endif
     }
     if (withSound == 0)
     {
@@ -383,14 +374,7 @@ void INTRO_05b0_DisplayTitle(int withSound)
         {
             wdImage = ULTIMA_0fae_LoadResourceFile(/*0x3105*/ "WD.BIT");
         } while (wdImage == 0);
-#if !defined(TARGET_DOS16)
-        // "warriors of destiny" with sound
-        AUDIO_PlayTitle2Sfx();
-#endif
         INTRO_20ae_ShowWD(wdImage);
-#if !defined(TARGET_DOS16)
-        AUDIO_StopSfx();
-#endif
         ULTIMA_0fdc_FreeBitImage(wdImage);
     }
     ULTIMA_0c22_GRAP_0f_SelectPage(0);
@@ -449,10 +433,6 @@ void INTRO_072e_Acknowledgements(void)
     {
         ULTIMA_0d4c_GRAP_4b_PutImage(scrollImage, 0, 0x90, pos, 0); // (image_buffer, image_idx, x, y, ?)
         ULTIMA_0d4c_GRAP_4b_PutImage(scrollImage, 2, 0xa0, pos, 0);
-
-#if defined(ENABLE_SPEED_FIX)
-        TIME_SleepMs((199 - pos) / 16);
-#endif
     }
 
     for (pos = 0; pos < 0x90; pos += 8)
@@ -498,10 +478,6 @@ void INTRO_072e_Acknowledgements(void)
         ULTIMA_0d4c_GRAP_4b_PutImage(scrollImage, 0, 0x90, pos + 1, 0);
         ULTIMA_0d4c_GRAP_4b_PutImage(scrollImage, 2, 0xa0, pos + 1, 0);
         ULTIMA_0ace_GRAP_18_TransferArea(1, 0, 0x90, pos, 0xaf, pos);
-
-#if defined(ENABLE_SPEED_FIX)
-        TIME_SleepMs((199 - pos) / 16);
-#endif
     }
 
     ULTIMA_0ace_GRAP_18_TransferArea(1, 0, 0x90, 199, 0xaf, 199);

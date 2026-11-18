@@ -988,7 +988,6 @@ int TOWN_0e34_NumberKey(int key)
 // the window, unless town.c itself uses that global: then the length of the names town.c
 // references changes (tools/rename.py reports it per module), and the same number of
 // characters must come off (or go onto) these names. Do not rename them otherwise.
-#if defined(TARGET_DOS16)
 extern u16 F_13ae_redColor;
 extern u16 F_13b0_brightWhiteColor;
 extern u16 F_13b2_blueColor;
@@ -1240,7 +1239,6 @@ extern int F_52f6;
 extern int F_52f8;
 extern int F_5306[7];
 extern int F_5314[7];
-#endif
 
 // Effects of the tile the party stands on each turn: sleepers may wake, a trapdoor (0x8c) drops the party a level (killing it on map 0x1d), swamp poison, fire (0xbc, 0x8f); then the turn ends.
 // CLEAN ROOM (written from the disassembly). Party status effects of the tile stood on:
@@ -1265,7 +1263,6 @@ void TOWN_0f02_TileEffects(void)
     int i;
     int again;
 
-#if defined(TARGET_DOS16)
     // pass 2 memory fill: see the note above the function
     if (0)
     {
@@ -1332,7 +1329,6 @@ void TOWN_0f02_TileEffects(void)
         F_520c = 0; F_52c4 = 0; F_52c8 = 0; F_52da_pen_color = 0;
         F_52ef_forceEga = 0;
     }
-#endif
     for (i = 0; i < (uint)D_585b_partyCount; i++)
     {
         if (D_55a8_party[i].status == 'S' && ULTIMA_2092_RandomRange(0, 0xf) == 0xf)

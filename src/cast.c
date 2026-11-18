@@ -916,9 +916,7 @@ static int CAST_0d4c_AnTym(void)
 // defined in castb.c, the part of CAST.OVL built with MSC 5.0
 void CAST_1f60_ConeSpell(int caster, int kind, int color);
 
-#if defined(TARGET_DOS16)
 static char S_0x466a[] = "Scroll\n\n";
-#endif
 
 // The Cast command. Asks the acting player, reads the spell (CAST2_00de_SelectSpell), checks that it can be cast here (D_1c90_spellUsability: bit 8 on
 // the overworld, 4 in a town, 2 in a dungeon, 1 in combat; Absorbed! in Lord British's castle without the crown and at Stonegate),
@@ -946,21 +944,13 @@ int CAST_0dba_CastSpellCmd(void)
     if (spell == -1)
     {
         ULTIMA_1850_PrintString(_TEXT(0x4611, "None!\n"));
-#if !defined(MATCHING_BUILD)
-        return passTurn; // TODO: validate return value
-#else
         return; // sic
-#endif
     }
 
     if (spell == -2)
     {
         ULTIMA_1850_PrintString(_TEXT(0x4618, "No effect!\n"));
-#if !defined(MATCHING_BUILD)
-        return passTurn; // TODO: validate return value
-#else
         return; // sic
-#endif
     }
 
     D_588f_castCircle = circle = spell / 6 + 1;
@@ -985,11 +975,7 @@ int CAST_0dba_CastSpellCmd(void)
         {
             ULTIMA_1850_PrintString(_TEXT(0x4624, "Absorbed!\n"));
             ULTIMA_2192_AudioPulse(0x2648, 1, 28000, 1000, 2);
-#if !defined(MATCHING_BUILD)
-            return passTurn; // TODO: validate return value
-#else
             return; // sic
-#endif
         }
 
         if (D_5893_mapId < 0x21)
@@ -1012,21 +998,13 @@ int CAST_0dba_CastSpellCmd(void)
     {
         ULTIMA_1850_PrintString(_TEXT(0x462f, "Not here!\n"));
         ULTIMA_43ae_AudioSweepTone(800, 2000, 1, 0x32);
-#if !defined(MATCHING_BUILD)
-        return passTurn; // TODO: validate return value
-#else
         return; // sic
-#endif
     }
 
     if (D_57f0_mixedSpells[spell] == 0)
     {
         ULTIMA_1850_PrintString(_TEXT(0x463a, "None mixed!\n"));
-#if !defined(MATCHING_BUILD)
-        return passTurn; // TODO: validate return value
-#else
         return; // sic
-#endif
     }
 
     D_57f0_mixedSpells[spell]--;
@@ -1347,9 +1325,7 @@ static int CAST_11de_UseScroll(int scroll)
     return result_b;
 }
 
-#if defined(TARGET_DOS16)
 static char S_0x474c[] = "\nNo noticeable effect now!\n";
-#endif
 
 // CHECKED
 // The Use command on a potion: asks on whom (in combat the user); 1 in 16 it is a sleeping draught instead and 1 in 16 a random other.
@@ -1667,9 +1643,7 @@ static bool CAST_1764_RemoveWornItem(int icon)
     return 1;
 }
 
-#if defined(TARGET_DOS16)
 static char S_0x4a84[] = " of Lord British...\n";
-#endif
 
 // The Use command: lists the usable items (ZSTATS) and uses the one chosen: scrolls, potions, moonstones, the carpet, skull key,
 // amulet, crown, sceptre, gem shards, spyglass, plans, sextant, watch, badge.

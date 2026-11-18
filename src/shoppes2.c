@@ -65,11 +65,7 @@ static void SHOPPES2_00ac_PrintHonorific(void)
 {
     int member;
 
-#if defined(TARGET_DOS16)
     D_587b_activePlayer = D_587b_activePlayer = 0xff; // two stores to one byte between sequence points: DOS build only
-#else
-    D_587b_activePlayer = 0xff;
-#endif
     member = 0;
 L_e297:
     if (D_55a8_party[member].gender == 0xb)

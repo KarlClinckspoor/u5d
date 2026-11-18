@@ -753,19 +753,7 @@ void COMSUBS_0c52_AttackWith(int attacker, int weapon)
             range = 0;
         }
 
-#if !defined(MATCHING_BUILD)
-        // fix OOB when weapon == 0xff (bare hands)
-        if (weapon != 0xff)
-        {
-            missileKind_c = D_169c_weaponMissile[weapon];
-        }
-        else
-        {
-            missileKind_c = 0;
-        }
-#else
         missileKind_c = D_169c_weaponMissile[weapon];
-#endif
     }
 
     if (range == 0)
@@ -956,11 +944,6 @@ static void COMSUBS_0f4a_DrawMissile(byte pixelX, byte pixelY, int heading, int 
     signX_b = 1;
     signY = 1;
     sparkColor = -1;
-
-#if !defined(MATCHING_BUILD)
-    shapeY = NULL;
-    shapeX = NULL;
-#endif
 
     if (missileKind == 2)
     {
@@ -1169,17 +1152,10 @@ int COMSUBS_12de_FlyMissile(int fromX, int fromY, int toX, int toY, int missileK
         ptrXs += pathStep_h;
         ptrYs += pathStep_h;
 
-#if defined(MATCHING_BUILD)
         if (D_a872_pathYs < ptrXs) // the end of D_a728_pathXs (as D_a728_pathXs + sizeof(D_a728_pathXs) the code is 2 bytes shorter)
         {
             break;
         }
-#else
-        if (D_a728_pathXs + sizeof(D_a728_pathXs) < ptrXs)
-        {
-            break;
-        }
-#endif
 
         if (*ptrXs == 0xff)
         {

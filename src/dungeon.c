@@ -895,10 +895,6 @@ void DUNGEON_0e2e_MainLoop(int fresh)
     int quickToggle_b;
     u8 cell;
 
-#if !defined(MATCHING_BUILD)
-    turnTaken_n = 0;
-#endif
-
     running_i = 1;
     awake = 0;
     quickToggle_b = 0;
@@ -947,10 +943,6 @@ void DUNGEON_0e2e_MainLoop(int fresh)
         DUNGEON_0134_SetUpMonster(fresh);
         DUNGEON_1be0_Redraw();
     }
-
-#if defined(ENABLE_BGM)
-    AUDIO_PlayBgmPerMap();
-#endif
 
     // 0f15
     while (running_i != 0 && D_5893_mapId > 0x20) // 0f93

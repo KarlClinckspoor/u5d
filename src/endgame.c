@@ -382,9 +382,6 @@ static void ENDGAME_0326_PrintCertificate(void)
     do
     {
         // infinite loop
-#if !defined(TARGET_DOS16)
-        ULTIMA_20fa_WaitTicks(1);
-#endif
         days++;
     } while (1);
 }
@@ -623,10 +620,6 @@ void ENDGAME_0648_EndgameMain(void)
     // ab49
     if (key_g == 0x59 && D_57bf_sandalwoodBox != 0)
     {
-#if defined(ENABLE_BGM)
-        AUDIO_PlayBgmForEnding();
-#endif
-
         ULTIMA_3ae6_WaitFrames(8);
 
         while (ENDGAME_0510_StepActorToward(0, 5, 4) != 0)

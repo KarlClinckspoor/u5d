@@ -184,21 +184,13 @@ int CMDS_1418_YellCmd(void)
         {
             ULTIMA_1850_PrintString(_TEXT(0x451a, "FURL!\n"));
             D_587c_partyTile += 4;
-#if !defined(MATCHING_BUILD)
-            return result; // TODO: validate return value
-#else
             return; // sic
-#endif
         }
         else
         {
             ULTIMA_1850_PrintString(_TEXT(0x4521, "HOIST!\n"));
             D_587c_partyTile -= 4;
-#if !defined(MATCHING_BUILD)
-            return result; // TODO: validate return value
-#else
             return; // sic
-#endif
         }
     }
     else
@@ -208,11 +200,7 @@ int CMDS_1418_YellCmd(void)
         if (word[0] == 0)
         {
             ULTIMA_1850_PrintString(_TEXT(0x4531, "Nothing\n"));
-#if !defined(MATCHING_BUILD)
-            return result; // TODO: validate return value
-#else
             return; // sic
-#endif
         }
         else
         {

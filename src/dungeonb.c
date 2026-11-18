@@ -340,13 +340,6 @@ static int DUNGEON_150a_DrawAhead(int x, int y, int dist)
     {
         phase = cell & 7;
 
-#if !defined(TARGET_DOS16)
-        if (phase >= 5)
-        {
-            debug("WARNING: local_8 >= 5");
-        }
-#endif
-
         phase = DUNGEON_145c_DrawDrip(0x5f, D_2e90_aheadDripY[phase + (dist - 1) * 5] + 0xe, phase, dist);
 
         GetDungeonMap(x & 7, y & 7, D_5895_mapLevel) &= 0xf8;
@@ -418,13 +411,6 @@ static void DUNGEON_1682_DrawSideCell(int x, int y, int side, int dist)
             {
                 dropX_c = 0xbe - dropX_c;
             }
-
-#if !defined(TARGET_DOS16)
-            if (phase >= 5)
-            {
-                debug("WARNING: local_a >= 5");
-            }
-#endif
 
             phase = DUNGEON_145c_DrawDrip(dropX_c, D_2e9a_sideDripY[phase + dist * 5] + 0xe, phase, dist);
 
@@ -562,7 +548,6 @@ static void DUNGEON_1952_DrawCell(int cellX, int cellY, int dist)
     static u8 D_2f1e_plainPiece[8] = {0x00, 0x00, 0x1f, 0x1f, 0x37, 0x27, 0x2f, 0x3f};
     static u8 D_2f26_dotFrame = 0;
     int kind_j;
-#if defined(TARGET_DOS16)
 
     if (1)
     {
@@ -629,56 +614,6 @@ L_wall:
         }
         goto L_field;
     }
-#else
-    int cell_b;
-
-    cell_b = DUNGEON_10dc_CellAt(cellX, cellY);
-    kind_j = cell_b >> 4;
-
-    if (kind_j > 0 && kind_j < 8 && (kind_j != 6 || (cell_b & 7) == 0))
-    {
-        if (D_2f16_mirroredPiece[kind_j] != 0)
-        {
-            DUNGEON_134a_DrawPiece(D_2f16_mirroredPiece[kind_j] + dist * 2, 1, 0);
-            DUNGEON_134a_DrawPiece(D_2f16_mirroredPiece[kind_j] + dist * 2, 1, 1);
-        }
-
-        if (D_2f1e_plainPiece[kind_j] != 0)
-        {
-            DUNGEON_134a_DrawPiece(D_2f1e_plainPiece[kind_j] + dist * 2, 0, 0);
-            DUNGEON_134a_DrawPiece(D_2f1e_plainPiece[kind_j] + dist * 2, 0, 1);
-        }
-
-        if (kind_j == 5)
-        {
-            DUNGEON_1786_DrawWallDots(dist, D_2f26_dotFrame);
-        }
-    }
-    else if (kind_j == 8)
-    {
-        DUNGEON_127e_DrawField(dist, cell_b & 7);
-    }
-
-    if (kind_j < 9 && (GetDungeonMap(cellX & 7, cellY & 7, D_5895_mapLevel) & 8) != 0)
-    {
-        DUNGEON_134a_DrawPiece(dist * 2 + D_2f1e_plainPiece[6], 1, 0);
-        DUNGEON_134a_DrawPiece(dist * 2 + D_2f1e_plainPiece[6], 1, 1);
-    }
-
-    if (dist != 0 && (u8)(cellX & 7) == D_5c5a_actors[1].x && (u8)(cellY & 7) == D_5c5a_actors[1].y)
-    {
-        DUNGEON_111e_DrawMonster(dist);
-    }
-
-    if (dist == 0)
-    {
-        D_2f26_dotFrame++;
-        if (D_2f26_dotFrame > 2)
-        {
-            D_2f26_dotFrame = 0;
-        }
-    }
-#endif
 }
 
 // renders the first-person view into page 1: the cells in front (up to four, in light), then back to front; dark without a torch or light

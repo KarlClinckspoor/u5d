@@ -40,10 +40,6 @@ static bool SHOPPES2_080e_FinishSale(int newShip, int charge, int member)
 {
     byte key;
 
-#if !defined(MATCHING_BUILD)
-    key = 0;
-#endif
-
     if (newShip != 0)
     {
         SHOPPES_017a_PrintShopFileText(0x19ab);

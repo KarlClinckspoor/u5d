@@ -79,146 +79,6 @@ u8 D_5204_cardY[8] = {0x05, 0x07, 0x04, 0x0a, 0x08, 0x00, 0x05, 0x06};
 // The DOS build takes FONT_0000_DrawJustifiedText from src/asm/AFONT0.ASM (assembly written from the
 // original's bytes, linked before this object): the C below does not match yet, so it is
 // compiled for the native build only.
-#if !defined(TARGET_DOS16)
-// Prints text justified in the proportional font: the glyph image and the text; the margins and the cursor
-// are the globals D_5146_textLeftX..D_5158_penY (two regions, so that text can run beside a picture). Assembly in the DOS
-// build.
-// CLEAN ROOM (written from the disassembly). Prints justified text: glyphs the glyph
-// image, text the text. Per line: loop A measures up to the line width, loop B backs up
-// to the last space (or a "_" hyphenation point), loop C draws, spreading the slack over
-// the spaces; then the next line's margins.
-// NOT MATCHING: 56 bytes differ, length 670 against 674 (before: 513 bytes, 676/674).
-// What gives the original's code so far:
-// - the outer loop is a for with an increment expression. With "while" or "for (; c; )"
-//   the three inner loops get no registers; "for (;;) { if (!c) break; ..." gives them but
-//   leaves loop A's register loads at the top of the body. With an increment the test sits
-//   at the bottom with loop A's loads right after it, as in the original. The increment
-//   here is "0" (no code); the original's is not known ("lineStart++" would be the natural
-//   one, but the original's test at the end of a line jumps past the increment to the
-//   loop test, which no continue or break does: hence the goto to L_next);
-// - loop B's "--i" is in its condition (the first break is then the space case, and the
-//   code after the loop follows it);
-// - loop C is "if (i < n) do ... while (n != ++i)";
-// - "if (text[start] == 0) goto L_next;" and not an if around the rest (that one keeps
-//   text[start] in AL for the "_" test).
-// Still different:
-// - the frame is 1Ah, the original's 1Ch: at 025f the original keeps region * 2 in BX
-//   with a dead store at bp-1Ch (shl ax,1; mov [bp-1Ch],ax; mov bx,ax), where we get
-//   mov si,ax; shl si,1 as at the top of the function. Tried: the condition written out at
-//   each use, assigned inside the index, D_5146_textLeftX[region] read twice;
-// - 0173: the original adds D_50f7_hyphenWidth's temporary first (mov ax,[bp-14h]; add ax,si), we
-//   mov ax,si; add ax,[bp-14h]. Tried: the operands in every order, the cast on either
-//   side of the comparison.
-void FONT_0000_DrawJustifiedText(byte* glyphs, byte* text)
-{
-    int region;
-    int scan;
-    int lineStart;
-    int lineWidth;
-    int spaces;
-    int slack;
-    int lineEnd;
-    int used;
-
-    ULTIMA_0c22_GRAP_0f_SelectPage(1);
-    region = (int)D_5158_penY > (int)D_5150_regionTop && (int)D_5158_penY < (int)D_5152_regionBottom;
-    lineWidth = D_514c_textRightX[region] - D_5146_textLeftX[region];
-    lineStart = lineEnd = 0;
-    used = D_5156_penX - D_5146_textLeftX[region];
-
-    for (; text[lineStart] != 0; 0)
-    {
-        spaces = 0;
-        for (scan = lineStart; text[scan] != 0 && lineWidth > used && text[scan] != '\n'; scan++)
-        {
-            if (text[scan] <= ' ')
-            {
-                used += D_5154_spaceWidth;
-                spaces++;
-            }
-            else if (text[scan] == '{')
-            {
-                used += 0xf;
-            }
-            else if (text[scan] != '_')
-            {
-                used += D_50ea_glyphWidths[text[scan] - 0x20] + 1;
-            }
-        }
-
-        while ((text[scan] != 0 || used >= lineWidth) && text[scan] != '\n' && lineStart < --scan)
-        {
-            if (text[scan] == ' ')
-            {
-                used -= D_5154_spaceWidth;
-                spaces--;
-                break;
-            }
-            if (text[scan] == '_' && (uint)(used + D_50f7_hyphenWidth + 1) < lineWidth)
-            {
-                used += D_50f7_hyphenWidth + 1;
-                break;
-            }
-            if (text[scan] != '_' && text[scan] != '{')
-            {
-                used -= D_50ea_glyphWidths[text[scan] - 0x20] + 1;
-            }
-        }
-
-        slack = lineWidth - used;
-        lineEnd = scan;
-
-        scan = lineStart;
-        if (scan < lineEnd)
-        do
-        {
-            if (text[scan] <= ' ')
-            {
-                D_5156_penX += D_5154_spaceWidth;
-                if (spaces != 0 && text[lineEnd] != 0 && text[lineEnd] != '\n')
-                {
-                    D_5156_penX += slack / spaces;
-                    slack -= slack / spaces;
-                    spaces--;
-                }
-            }
-            else if (text[scan] == '{')
-            {
-                D_5156_penX += 0xf;
-            }
-            else if (text[scan] != '_')
-            {
-                if ((int)D_5158_penY < 0xc0)
-                {
-                    ULTIMA_1044_GRAP_4e_CopyBitImageIntoPage(glyphs, text[scan] - 0x20, D_5156_penX, D_5158_penY);
-                }
-                D_5156_penX += D_50ea_glyphWidths[text[scan] - 0x20] + 1;
-            }
-        } while (lineEnd != ++scan);
-
-        lineStart = lineEnd;
-        if (text[lineStart] == 0)
-        {
-            goto L_next;
-        }
-        {
-            if (text[lineStart] == '_' && (int)D_5158_penY < 0xc0)
-            {
-                ULTIMA_1044_GRAP_4e_CopyBitImageIntoPage(glyphs, 0xd, D_5156_penX, D_5158_penY);
-            }
-            used = 0;
-            D_5158_penY += 9;
-            region = (int)D_5158_penY > (int)D_5150_regionTop && (int)D_5158_penY < (int)D_5152_regionBottom;
-            D_5156_penX = D_5146_textLeftX[region];
-            lineWidth = D_514c_textRightX[region] - D_5156_penX;
-            lineStart++;
-        }
-L_next:;
-    }
-
-    ULTIMA_0c22_GRAP_0f_SelectPage(0);
-}
-#endif
 
 // Draws one cell of the scene strip: the map tile, or else the actor's tile that FONT_02fc_AnimateScene left
 // under it.
@@ -694,11 +554,7 @@ void FONT_0b0a_CreateCharacter(void)
         gypsyImage = ULTIMA_0bae_LoadImageFile(D_25ea_fileNames[0x10]);
     } while (gypsyImage == 0);
 
-#if !defined(TARGET_DOS16)
-    FILE_ReadSavegameFile(_TEXT(0xa060, "INIT.GAM"));
-#else
     ULTIMA_256e_ReadFileFromDisk(_TEXT(0xa060, "INIT.GAM"), &D_55a6_saveStart, (int)&D_6606_saveEnd - (int)&D_55a6_saveStart, 0);
-#endif
     ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b2_blueColor);
     ULTIMA_0aa6_GRAP_3f_FillRect(0x78, 0x78, 200, 0x7e);
     ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
@@ -742,10 +598,6 @@ void FONT_0b0a_CreateCharacter(void)
         D_514c_textRightX[1] = 0x140;
         D_5150_regionTop = 0x59;
         D_5152_regionBottom = 200;
-
-#if defined(ENABLE_BGM)
-        AUDIO_StopBgm();
-#endif
 
         ULTIMA_256e_ReadFileFromDisk(_TEXT(0xa0a6, "QUESTION.DAT"), D_b21e_scratch, 2000, 0);
 
@@ -831,23 +683,10 @@ void FONT_0b0a_CreateCharacter(void)
         memset(D_b21e_scratch, 0, 0x100);
 
         ULTIMA_25d8_WriteFileToDisk(_TEXT(0xa0cc, "SAVED.OOL"), D_b21e_scratch, 0x200);
-#if !defined(TARGET_DOS16)
-        FILE_WriteSavegameFile(_TEXT(0xa0d6, "SAVED.GAM"));
-#else
         ULTIMA_25d8_WriteFileToDisk(_TEXT(0xa0d6, "SAVED.GAM"), &D_55a6_saveStart, (int)&D_6606_saveEnd - (int)&D_55a6_saveStart);
-#endif
     }
 
     ULTIMA_251e_SwitchDisks(0);
     D_5893_mapId = 0x40;
 }
 
-#if !defined(TARGET_DOS16) // assembly in the original: src/asm/AFONT.ASM
-// Assembly (AFONT.ASM): saves the video page buffer before the tile set is changed.
-// The original saves the first 0x3000 bytes of the video page buffer (segment D_5354_pageSegment) into
-// overlay area 2 before the tile set is changed, and restores them after; nothing to do here.
-void FONT_0e52_SaveVideoPage(void) {}
-
-// Assembly (AFONT.ASM): puts it back.
-void FONT_0e7b_RestoreVideoPage(void) {}
-#endif

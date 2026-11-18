@@ -21,18 +21,6 @@ void ULTIMA_256e_ReadFileFromDisk(char* fileName, void* addr, u16 size, u16 offs
 {
     int done = 0;
 
-#if !defined(TARGET_DOS16)
-    while (done == 0)
-    {
-        done = ULTIMA_7234_ReadFile(fileName, addr, size, offset);
-        if (done == 0)
-        {
-            EVT_Yield();
-        }
-    }
-    return;
-#endif
-
     if (D_a9bd_curDisk[0] == 3 && D_a9c8_diskDrives[D_a9bd_curDisk[0]] == 0xff)
     {
         ULTIMA_2322_DiskSwapMessage(); // in another object: a far call
@@ -56,11 +44,6 @@ static void FAR ULTIMA_25ca_WriteError(void)
 // in SI (a common subexpression), besides storing it in savedDisk.
 void ULTIMA_25d8_WriteFileToDisk(char* fileName, void* addr, u16 size)
 {
-#if !defined(TARGET_DOS16)
-    ULTIMA_7296_WriteFile(fileName, addr, size);
-    return;
-#endif
-
     int savedDisk;
     int done_j;
 

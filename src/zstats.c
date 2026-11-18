@@ -343,9 +343,7 @@ void ZSTATS_05e2_PrintItemRow(int index, byte* counts, char** names, uint marker
     ULTIMA_16ba_PrintChar('\n');
 }
 
-#if defined(TARGET_DOS16)
 #pragma loop_opt(off)
-#endif
 // Scrolling list of the Z command (reagents, spells, items, armaments); arrows scroll, Esc/space/1-6/0 leave. Returns the key that ended it.
 // CHECKED: the selection loop is written with gotos. The original places the loop test
 // (with the window setup that starts the next pass) right after the END case, which falls
@@ -527,9 +525,7 @@ L_exit:
     return key;
 }
 
-#if defined(TARGET_DOS16)
 #pragma loop_opt(on)
-#endif
 // Copy the saved game's scrolls, potions and quest items into the D_b9ee_itemCounts table of owned item counts (the Use list).
 // 099A
 void ZSTATS_099a_FillItemCounts(void)
@@ -908,10 +904,6 @@ int ZSTATS_0f2e_SelectItem(int first, int member, int mode)
     int leave_c;
     int steps;
     int rows_e;
-
-#if !defined(MATCHING_BUILD)
-    selected_f = 0;
-#endif
 
     // f10e
     leave_c = 0;

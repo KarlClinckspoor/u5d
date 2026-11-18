@@ -109,10 +109,6 @@ void TOWN_11f0_Entry(int fresh)
 {
     int i;
 
-#if defined(ENABLE_BGM)
-    AUDIO_StopBgm();
-#endif
-
     D_a9bc_townJustEntered = D_24e6_viewDirty = 1;
     if (fresh != 0)
     {
@@ -159,10 +155,6 @@ void TOWN_11f0_Entry(int fresh)
             TOWN_1156_ShadowlordEffect();
         }
     }
-
-#if defined(ENABLE_BGM)
-    AUDIO_PlayBgmPerMap();
-#endif
 }
 
 // "Thou art under arrest!": in the jail map (0x12) the party is captured; elsewhere answer to come quietly (wake in the jail map at 8 o'clock) or fight. Returns 1 when the party fights.

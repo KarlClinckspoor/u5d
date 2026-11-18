@@ -9,20 +9,6 @@
 
 #include <string.h>
 
-#if !defined(TARGET_DOS16) // the original's are A6F1E.ASM's data (ULTIMA_6ff0_DistanceFromCenter)
-u16 D_6aa4_unused = 0;
-
-u8 D_6aa8_viewDist2[0x24] =
-{
-    0x32, 0x29, 0x22, 0x1D, 0x1A, 0x19,
-    0x29, 0x20, 0x19, 0x14, 0x11, 0x10,
-    0x22, 0x19, 0x12, 0x0D, 0x0A, 0x09,
-    0x1D, 0x14, 0x0D, 0x08, 0x05, 0x04,
-    0x1A, 0x11, 0x0A, 0x05, 0x02, 0x01,
-    0x19, 0x10, 0x09, 0x04, 0x01, 0x00
-};
-#endif
-
 // In the original, ULTIMA_5f86 is the first function of this object (MSC 5.0): it is
 // the right length only when compiled with 5.0, and the object before ends at 5f86.
 // CHECKED
@@ -117,10 +103,6 @@ L_606c:
     D_5895_mapLevel = savedLevel;
     D_5893_mapId = D_5894_savedMapId;
     D_24e6_viewDirty = 1;
-
-#if defined(ENABLE_BGM)
-    AUDIO_PlayBgmPerMap();
-#endif
 
     ULTIMA_2900_UpdateVitalsDisplay();
 
@@ -362,10 +344,6 @@ int ULTIMA_6506_PlaceCombatant(int entity, int kind, int cellX, int cellY, int m
     int result;
     int slot_n;
     CombatEntity* combatant_f;
-
-#if !defined(MATCHING_BUILD)
-    combatant_f = NULL;
-#endif
 
     firstSlot = 0;
     slot_n = 0;
@@ -832,12 +810,8 @@ int ULTIMA_6da8_PlayerDefense(int playerIndex)
     }
     else
     {
-#if defined(MATCHING_BUILD)
         // BUG: the comparison is always false on DOS16, and always true on FMT
 #define CMP(a) ((a) > -1)
-#else
-#define CMP(a) (((s8)(a)) > -1)
-#endif
         if (CMP(player_c->equips[0]))
         {
             // 6dd6
@@ -942,110 +916,5 @@ u8 DAT_000738d8[] = {0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x28,
                      0x10, 0x42, 0x42, 0x42, 0x42, 0x42, 0x42, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
                      0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x10, 0x10, 0x10, 0x10, 0x20};
 
-#if !defined(TARGET_DOS16) // assembly in the original: src/asm
-// ASM
-// from FMT (27c98)
-// Compare a word of a table (up to 9 characters, taken as upper case) with the start of `text`: 0 equal, -1 not.
-int ULTIMA_6f1e_CompareWord(byte* word, char* text)
-{
-    byte bVar1;
-    int iVar2;
-    int iVar3;
-    int result;
-    char upperWord_g[10];
-
-    result = -1;
-    memset(upperWord_g, 0, 10);
-
-    for (iVar2 = 0; iVar2 < 9 && (iVar3 = iVar2, word[iVar2] != 0); iVar2++)
-    {
-        bVar1 = word[iVar2] & 0x7f;
-        if ((DAT_000738d8[bVar1] & 2) != 0)
-        {
-            bVar1 = (word[iVar2] & 0x7fU) - 0x20;
-        }
-        upperWord_g[iVar2] = (char)bVar1;
-    }
-
-    iVar2 = strncmp(upperWord_g, text, iVar3);
-    if (iVar2 == 0)
-    {
-        result = 0;
-    }
-
-    return result;
-}
-#endif
-
-#if !defined(TARGET_DOS16) // assembly in the original: src/asm
-// ASM
-static int ULTIMA_6f90_StrLenDI(char* di)
-{
-    // repne scasb
-    return strlen(di);
-}
-#endif
-
-#if !defined(TARGET_DOS16) // assembly in the original: src/asm
-// ASM
-// Driver function 6c with mode + 3 (DNGLOOK, ENDGAME); what the modes do is the driver's business.
-void ULTIMA_6f9e_TilesetModePlus3(int mode)
-{
-    // bx: not initialized
-    byte bl = 0;
-    byte bh = 0;
-    int ax = mode + 3;
-    DRV_6c(ax, bl, bh);
-}
-#endif
-
-#if !defined(TARGET_DOS16) // assembly in the original: src/asm
-// ASM
-// Driver function 6c with the mode (0, 1); what the modes do is the driver's business.
-void ULTIMA_6fbc_TilesetMode(int mode)
-{
-    // bx: not initialized
-    byte bl = 0;
-    byte bh = 0;
-    DRV_6c(mode, bl, bh);
-}
-#endif
-
 void DRV_60_CF0(void* ax);
 
-#if !defined(TARGET_DOS16) // assembly in the original: src/asm
-// ASM
-void ULTIMA_6fd6_GRAP_AnimateTiles(void)
-{
-    // CLC
-    // ax: D_539c_charsetTable
-    DRV_60_CF0(D_539c_charsetTable);
-    //debug("ULTIMA_6fd6");
-}
-#endif
-
-#if !defined(TARGET_DOS16) // assembly in the original: src/asm
-// ASM
-// The squared distance of view cell (x, y) from the centre (5, 5) of the 11x11 view (table D_6aa8_viewDist2); 0 outside.
-int ULTIMA_6ff0_DistanceFromCenter(register int viewX, register int viewY)
-{
-    if ((viewX < 0xb) && (viewY < 0xb))
-    {
-        if ((viewX > 5) || (viewY > 5))
-        {
-            if (viewX > 5)
-            {
-                viewX = 10 - viewX;
-            }
-            if (viewY > 5)
-            {
-                viewY = 10 - viewY;
-            }
-        }
-
-        return D_6aa8_viewDist2[viewX + viewY * 6];
-    }
-
-    return 0;
-}
-#endif

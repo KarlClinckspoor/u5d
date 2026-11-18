@@ -40,9 +40,7 @@ void INTRO_20ae_ShowWD(byte* ptr);
 
 // The menu keys are a char array in the original: it follows the strings of the next
 // function, on an even address.
-#if defined(TARGET_DOS16)
 static char S_0x3270[8] = "JCTUAR";
-#endif
 
 // The start of the program: detects and starts the video, sound and timer, loads the character sets, plays
 // the title sequence (Origin logo, "presents", Lord British, production, title, story), and loops over the
@@ -182,11 +180,7 @@ void INTRO_0986_Main(void)
             britishImage = ULTIMA_0fae_LoadResourceFile(D_25ea_fileNames[1]); // "BRITISH.BIT"
         } while (britishImage == 0);
 
-#if !defined(MATCHING_BUILD)
-        ULTIMA_256e_ReadFileFromDisk(/*0x31b5*/ "BRITISH.PTH", D_b21e_scratch, SCRATCH_SIZE, 0);
-#else
         ULTIMA_256e_ReadFileFromDisk(/*0x31b5*/ "BRITISH.PTH", &D_55a6_saveStart, ((int)&D_6606_saveEnd - (int)&D_55a6_saveStart) /*0x1060*/, 0);
-#endif
         // "origin systems inc."
         if (state != 0)
             state = ULTIMA_0d72_AnimateOriginLogo(titleImage) == 0;
@@ -247,10 +241,6 @@ void INTRO_0986_Main(void)
         INTRO_05b0_DisplayTitle(state);
         if (state != 0)
         {
-#if defined(ENABLE_BGM)
-            AUDIO_PlayBgm(BGM_ID_1);
-#endif
-
             FONT_04a4_PlayIntroStory();
         }
         // 0cc4
@@ -262,10 +252,6 @@ void INTRO_0986_Main(void)
     // 0cd0
     do
     {
-#if defined(ENABLE_BGM)
-        AUDIO_PlayBgm(BGM_ID_1);
-#endif
-
         ULTIMA_1c22_SetTextWindowSize(0, 1, 0x10, 0x26, 0x17);
         ULTIMA_1b94_SelectTextWindow(0);
         ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
@@ -362,9 +348,6 @@ void INTRO_0986_Main(void)
         switch ((int)key_i)
         {
         case 0x4a: // 'J'
-#if defined(ENABLE_BGM)
-            AUDIO_StopBgm();
-#endif
 
             // 0e7c
             ULTIMA_637e_DrawFrame();
@@ -380,11 +363,7 @@ void INTRO_0986_Main(void)
             }
             // 0ead
             ULTIMA_251e_SwitchDisks(3);
-#if !defined(TARGET_DOS16)
-            FILE_ReadSavegameFile(/*0x31e6*/ "SAVED.GAM");
-#else
             ULTIMA_256e_ReadFileFromDisk(/*0x31e6*/ "SAVED.GAM", &D_55a6_saveStart, ((int)&D_6606_saveEnd - (int)&D_55a6_saveStart) /*0x1060*/, 0);
-#endif
             if (D_55a8_party[0].name[0] == '\0')
             {
                 ULTIMA_1850_PrintString(_TEXT(0x31f0, "\n\nNo active game. "));
@@ -423,9 +402,6 @@ void INTRO_0986_Main(void)
             break;
 
         case 0x54: // 'T'
-#if defined(ENABLE_BGM)
-            AUDIO_StopBgm();
-#endif
 
             ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
             INTRO_132a_TransferFromU4();
@@ -447,18 +423,12 @@ void INTRO_0986_Main(void)
             break;
 
         case 0x55: // 'U'
-#if defined(ENABLE_BGM)
-            AUDIO_StopBgm();
-#endif
 
             INTRO_014e_Introduction();
             INTRO_05b0_DisplayTitle(0);
             break;
 
         case 0x41: // 'A'
-#if defined(ENABLE_BGM)
-            AUDIO_StopBgm();
-#endif
 
             // 0ff4
             if (D_5893_mapId != 0x40)
@@ -683,7 +653,7 @@ int INTRO_12ea_ScaleU4Stat(int stat)
 //   'N' test re-reading key from the stack), not a do-while with a break;
 // - the level loop is `i = exp / 100; while (i > 0) { level++; i >>= 1; }`: as a `while` MSC
 //   5.1 keeps i in CX (stored before and after the loop); as a `for` it stays in memory.
-#if !defined(TARGET_DOS16) || defined(RELEASE_1988)
+#if defined(RELEASE_1988)
 // Transfer from Ultima IV: asks for the disk and drive, converts the character, shows the old and new values
 // (name, sex, class, experience, level, stats) with questions about the name and sex, and saves SAVED.GAM.
 void INTRO_132a_TransferFromU4(void)
@@ -694,11 +664,6 @@ void INTRO_132a_TransferFromU4(void)
     byte key;
     int i;
 
-#if defined(GOG_BUILD)
-    // 1992 patch (1332..134c)
-    savedMap = D_5893_mapId == 66 ? 65 : D_5893_mapId;
-    D_a9cc = D_a9cb = D_a9c8_diskDrives[0];
-#else
     // 1988 (1.16)
     if (D_5893_mapId == 66)
     {
@@ -708,24 +673,13 @@ void INTRO_132a_TransferFromU4(void)
     savedMap = D_5893_mapId;
 
     D_a9cb = D_a9cc = 0xff;
-#endif
 
-#if !defined(TARGET_DOS16)
-    FILE_ReadSavegameFile(/*0x3345*/ "INIT.GAM");
-#else
     ULTIMA_256e_ReadFileFromDisk(/*0x3345*/ "INIT.GAM", &D_55a6_saveStart, ((byte*)&D_6606_saveEnd - (byte*)&D_55a6_saveStart), 0);
-#endif
     ULTIMA_256e_ReadFileFromDisk(/*0x334e*/ "INIT.OOL", D_b31e, 0x100, 0);
     ULTIMA_1c22_SetTextWindowSize(0, 0, 0, 0x27, 0x18);
 
     ULTIMA_1b94_SelectTextWindow(0);
     ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
-
-#if defined(GOG_BUILD)
-    // 1992 patch (1392..1399)
-    key = D_a9c8_diskDrives[0];
-    goto L_GOG_1402;
-#endif
 
     ULTIMA_1bf2_SetTextPosition(4, 0xc);
     ULTIMA_1850_PrintString(_TEXT(0x3357, "Transfer Character from Ultima IV"));
@@ -746,10 +700,6 @@ void INTRO_132a_TransferFromU4(void)
             D_5893_mapId = savedMap;
             return;
         }
-#if defined(GOG_BUILD)
-L_GOG_1402:
-        ;
-#endif
     } while (ULTIMA_1eac_SetDefaultDrive(key) == 0);
 
     D_5394_diskSwapFn = ULTIMA_2322_DiskSwapMessage;
@@ -1162,11 +1112,7 @@ L_GOG_1402:
     memset(D_b21e_scratch, 0, 0x100);
 
     ULTIMA_25d8_WriteFileToDisk(/*0x3641*/ "SAVED.OOL", D_b21e_scratch, 0x200);
-#if !defined(TARGET_DOS16)
-    FILE_WriteSavegameFile(/*0x364b*/ "SAVED.GAM");
-#else
     ULTIMA_25d8_WriteFileToDisk(/*0x364b*/ "SAVED.GAM", &D_55a6_saveStart, ((byte*)&D_6606_saveEnd - (byte*)&D_55a6_saveStart));
-#endif
     ULTIMA_251e_SwitchDisks(0);
 
     D_5893_mapId = savedMap;

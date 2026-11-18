@@ -106,10 +106,6 @@ static int CAST_1c36_SprayRays(s16* outXs, s16* outYs, int color, int caster, in
                 // dcb3
                 pixelsThisTurn_h = ULTIMA_3aae_Random(0xf);
 
-#if defined(ENABLE_SPEED_FIX)
-                TIME_SleepMs(3);
-#endif
-
                 for (pixelStep_f = 0; pixelStep_f < pixelsThisTurn_h; pixelStep_f++)
                 {
                     if (CAST_1bb0_PlotSprayPixel(rayX[ray_i], rayY[ray_i], color) != 0)
@@ -223,14 +219,7 @@ void CAST_1f60_ConeSpell(int caster, int kind, int color)
 
     cellIdx = 1;
     member_j = &D_55a8_party[D_ba14_combatants[caster].entityIdx];
-#if !defined(MATCHING_BUILD)
-    dirOrCount = CAST2_0306_AskDirection();
-#else
     dirOrCount = CAST2_0306_AskDirection(caster); // NOTE: original code error?
-#endif
-#if !defined(MATCHING_BUILD) // added in FMT
-    if (dirOrCount != 0)
-#endif
     {
         switch (kind)
         {
