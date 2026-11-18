@@ -198,12 +198,12 @@ static int COMBAT_0226(int param_1)
                     return 1;
                 }
 
-                if ((D_153c_enemyFlags[local_a] & ENEMY_FLAG_STEAL) != 0 && ULTIMA_2092_RandomRange(0, 3) != 0 && D_57a8 != 0)
+                if ((D_153c_enemyFlags[local_a] & ENEMY_FLAG_STEAL) != 0 && ULTIMA_2092_RandomRange(0, 3) != 0 && D_57a8_food != 0)
                 {
                     ULTIMA_1850_PrintString(_TEXT(0x6d74, "\nA "));
                     COMSUBS_0094_PrintName(param_1);
                     ULTIMA_1850_PrintString(_TEXT(0x6d78, " stole some food!\n"));
-                    ULTIMA_3f54_DecreaseInt(&D_57a8, 5);
+                    ULTIMA_3f54_DecreaseInt(&D_57a8_food, 5);
                     ULTIMA_43ae_AudioSweepTone(800, 2000, 1, 0x32);
                     ULTIMA_2900_UpdateVitalsDisplay();
                     return 1;
@@ -382,7 +382,7 @@ static void COMBAT_063e_ProcessCommand(void)
     D_5897_map_y = D_ba14[D_589e].y;
     local_a = D_ba14[D_589e].entityIdx;
 
-    if (D_587b != 0xff && ((D_ba14[D_589e].flags & COMBAT_FLAGS_PLAYER) == 0 || D_587b != local_a))
+    if (D_587b_activePlayer != 0xff && ((D_ba14[D_589e].flags & COMBAT_FLAGS_PLAYER) == 0 || D_587b_activePlayer != local_a))
     {
         SJOG_2012();
     }
@@ -392,7 +392,7 @@ static void COMBAT_063e_ProcessCommand(void)
         {
             // a938
             D_ba14[D_589e].flags |= COMBAT_FLAGS_CHARMED;
-            D_587b = 0xff;
+            D_587b_activePlayer = 0xff;
             D_a9fa = 1;
             COMBAT_03f4();
             // -> ae09
@@ -612,7 +612,7 @@ static void COMBAT_063e_ProcessCommand(void)
                         case 0x30: // ok
                             /* '0' */
                             // ac7c
-                            D_587b = 0xff;
+                            D_587b_activePlayer = 0xff;
                             ULTIMA_1850_PrintString(_TEXT(0x6e66, "Set active plr:\nNone!\n"));
                             ULTIMA_2900_UpdateVitalsDisplay();
                             break;
@@ -1504,9 +1504,9 @@ int COMBAT_1574(int param_1, int param_2)
             D_55a8_party[local_a->entityIdx].status = STATUS_DEAD;
 
             D_5c5a[local_a->actorIdx]._0_tile = D_5c5a[local_a->actorIdx]._1_animTile = TILE_ACTOR_SLEEP;
-            if (local_a->entityIdx == D_587b)
+            if (local_a->entityIdx == D_587b_activePlayer)
             {
-                D_587b = 0xff;
+                D_587b_activePlayer = 0xff;
             }
         }
 

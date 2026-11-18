@@ -59,7 +59,7 @@ static void TOWN_1156(void)
 {
     int local_4;
 
-    switch (D_5958)
+    switch (D_5958_townShadowlord)
     {
     case 1:
         for (local_4 = 0; local_4 < 0x20; local_4++)
@@ -118,9 +118,9 @@ void TOWN_11f0_Entry(int param_1)
         D_5957 = 0;
         D_58a4 = 1;
         NPC_0000_LoadNpcFile();
-        NPC_00d6(D_587f);
+        NPC_00d6(D_587f_hour);
     }
-    D_5958 = 0xff;
+    D_5958_townShadowlord = 0xff;
     TOWN_0408(param_1);
     TOWN_02ae();
 
@@ -148,9 +148,9 @@ void TOWN_11f0_Entry(int param_1)
                 }
             }
         }
-        else if (D_5958 != (byte)-1)
+        else if (D_5958_townShadowlord != (byte)-1)
         {
-            TOWN_11b8(D_5958);
+            TOWN_11b8(D_5958_townShadowlord);
             TOWN_1156();
         }
     }
@@ -194,7 +194,7 @@ static int TOWN_12ae(void)
             D_5897_map_y = 4;
             D_24e6 = 1;
 
-            while (D_587f != 8)
+            while (D_587f_hour != 8)
             {
                 ULTIMA_4f7c(0x14);
             }
@@ -328,7 +328,7 @@ void TOWN_141e_MainLoop(void)
                     switch (local_8)
                     {
                     case U5_KEY_CTRL_K: // 14b8 (9688)
-                        ULTIMA_1a3e_PrintNumber(D_5888, 1, 0x20);
+                        ULTIMA_1a3e_PrintNumber(D_5888_karma, 1, 0x20);
                         // 14ff
                         ULTIMA_16ba_PrintChar('\n');   // 94ea
                         // 154b
@@ -403,9 +403,9 @@ void TOWN_141e_MainLoop(void)
         }
         else if (local_c != 0 && ULTIMA_39fc_GetFirstActivePartyMember() != -1)
         {
-            local_12_ab = D_587f;
+            local_12_ab = D_587f_hour;
             ULTIMA_4f7c(1);
-            if ((D_587f != local_12_ab) && (D_587f == 20 || D_587f == 5))
+            if ((D_587f_hour != local_12_ab) && (D_587f_hour == 20 || D_587f_hour == 5))
             {
                 TOWN_0170();
             }
@@ -427,7 +427,7 @@ void TOWN_141e_MainLoop(void)
                 TOWN_0c78();
                 if ((int)local_c < 2)
                 {
-                    NPC_0db4(D_587f);
+                    NPC_0db4(D_587f_hour);
                 }
                 // 1671
                 if (D_65bf != 0 || local_c == 2)
@@ -458,7 +458,7 @@ void TOWN_1694(void)
     {
         if (D_659e[local_4] != 0)
         {
-            local_6_an = NPC_12e0(local_4, D_587f);
+            local_6_an = NPC_12e0(local_4, D_587f_hour);
             TOWN_1726(local_4, D_5d5e[local_4].x[local_6_an], D_5d5e[local_4].y[local_6_an], D_5d5e[local_4].z[local_6_an]);
             D_5f5e[local_4]._0 = 1;
             D_5f5e[local_4]._e = local_6_an;

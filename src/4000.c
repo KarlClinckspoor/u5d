@@ -35,7 +35,7 @@ u8 D_6a80[6] = { 0x02, 0x05, 0x0A, 0x14, 0x22, 0x31 };
 void ULTIMA_400c(void)
 {
     int local_4;
-    for (local_4 = 0; local_4 < D_585b; local_4++)
+    for (local_4 = 0; local_4 < D_585b_partyCount; local_4++)
 	{
 		if (D_55a8_party[local_4].status != STATUS_DEAD && D_55a8_party[local_4].equips[4] == 0x2c)
 		{
@@ -61,16 +61,16 @@ int ULTIMA_4080(int param_1)
     if (param_1 == 0x30)
     {
         ULTIMA_1850_PrintString(_TEXT(0xa3a8, "None!\n"));
-        D_587b = 0xff;
+        D_587b_activePlayer = 0xff;
 
 		ULTIMA_2900_UpdateVitalsDisplay();
 		local_4 = 0;
     }
     else
     {
-        if (D_585b > local_6_an && D_55a8_party[local_6_an].status != STATUS_DEAD && D_55a8_party[local_6_an].status != STATUS_SLEEP)
+        if (D_585b_partyCount > local_6_an && D_55a8_party[local_6_an].status != STATUS_DEAD && D_55a8_party[local_6_an].status != STATUS_SLEEP)
         {
-            D_587b = local_6_an;
+            D_587b_activePlayer = local_6_an;
 
             ULTIMA_1850_PrintString(D_55a8_party[local_6_an].name);
             ULTIMA_16ba_PrintChar('\n');
@@ -520,7 +520,7 @@ void ULTIMA_475a(void)
 	byte* local_4_ab;
 
 	local_a = 0xdc;
-	if (D_587f >= 0x14 || D_587f < 5)
+	if (D_587f_hour >= 0x14 || D_587f_hour < 5)
 	{
         ULTIMA_3ef0_IncreaseByte(&D_5887, 1, 0x10);
     }
@@ -625,13 +625,13 @@ int ULTIMA_48a8(void)
 		D_24e6 |= 2;
 
 		ULTIMA_10e0_GRAP_51_PutTile(5, 5, 5);
-		if (D_587f == 0 && D_5881 < 10)
+		if (D_587f_hour == 0 && D_5881 < 10)
 		{
 			local_8 = 1;
 		}
 		else
 		{
-			ULTIMA_47f4((D_587f < 0xc ? D_5885 : D_5886) - 0x30);
+			ULTIMA_47f4((D_587f_hour < 0xc ? D_5885 : D_5886) - 0x30);
 		}
 
 		D_587c_partyTile = local_4_ab;
@@ -652,14 +652,14 @@ int ULTIMA_4988(void)
     {
         local_a = D_ba14[D_589e].entityIdx;
     }
-    else if (D_587b != 0xff)
+    else if (D_587b_activePlayer != 0xff)
     {
-        local_a = D_587b;
+        local_a = D_587b_activePlayer;
     }
     else
     {
         local_8 = 0;
-        for (local_6 = 0; local_6 != D_585b; local_6++)
+        for (local_6 = 0; local_6 != D_585b_partyCount; local_6++)
         {
             if (D_55a8_party[local_6].status == STATUS_GOOD || D_55a8_party[local_6].status == STATUS_POISONED)
             {
@@ -734,7 +734,7 @@ void ULTIMA_4a84(void)
 		ULTIMA_1c9e_SelectCharset(1);
 
 		// 4ac3
-		local_4_aa = -((int)D_587f - 17);
+		local_4_aa = -((int)D_587f_hour - 17);
 		if (local_4_aa < 12 && local_4_aa >= 0)
 		{
 			local_12_aa[local_4_aa] = 0x2a;
@@ -742,7 +742,7 @@ void ULTIMA_4a84(void)
 
 		// 4adf
 		D_5885 = D_1eda[(D_587e - 1) * 2];
-		local_4_aa = -(D_587f - 8);
+		local_4_aa = -(D_587f_hour - 8);
 		if (local_4_aa < -12)
 		{
 			local_4_aa += 24;
@@ -756,7 +756,7 @@ void ULTIMA_4a84(void)
 
 		// 4b19
 		D_5886 = D_1eda[(D_587e - 1) * 2 + 1];
-		local_4_aa = -(D_587f - 2);
+		local_4_aa = -(D_587f_hour - 2);
 		if (local_4_aa < -12)
 		{
 			local_4_aa += 24;
@@ -977,7 +977,7 @@ void ULTIMA_4f7c(int param_1)
 		}
 
 		// 4fa0
-		D_5880 = D_587f;
+		D_5880 = D_587f_hour;
 		if (D_587a != 'T')
 		{
 			D_5881 += param_1;
@@ -990,11 +990,11 @@ void ULTIMA_4f7c(int param_1)
 			// 4fd2
 			D_5881 -= 60;
 			ULTIMA_3f36_DecreaseByte(&D_588c, 1);
-			D_587f++;
-			if (D_587f > 23)
+			D_587f_hour++;
+			if (D_587f_hour > 23)
 			{
 				// 4ff0
-				D_587f = 0;
+				D_587f_hour = 0;
 				for (local_6 = 0; local_6 < 3; local_6++)
 				{
 					// 4ffa
@@ -1064,7 +1064,7 @@ void ULTIMA_4f7c(int param_1)
 	{
 		// 50ab
 		local_a = D_58a5;
-		if (D_5893_map_id == 0x19 || D_5895_map_level > 0x7f || D_587f < 5 || D_587f > 0x13)
+		if (D_5893_map_id == 0x19 || D_5895_map_level > 0x7f || D_587f_hour < 5 || D_587f_hour > 0x13)
 		{
 			// 50cf
 			D_58a5 = 2;
@@ -1072,12 +1072,12 @@ void ULTIMA_4f7c(int param_1)
 		else
 		{
 			// 50d6
-			if (D_587f == 5)
+			if (D_587f_hour == 5)
 			{
 				D_58a5 = D_6a80[D_5881 / 10];
 			}
 			// 50f4
-			else if (D_587f == 19)
+			else if (D_587f_hour == 19)
 			{
 				D_58a5 = D_6a80[(-(D_5881 - 59)) / 10];
 			}
@@ -1105,7 +1105,7 @@ void ULTIMA_4f7c(int param_1)
 	}
 
 	// 514a
-	if (D_587f != D_5880)
+	if (D_587f_hour != D_5880)
 	{
 		if (D_5893_map_id < 0x21 && D_5895_map_level < 0x80)
 		{
@@ -1113,20 +1113,20 @@ void ULTIMA_4f7c(int param_1)
 		}
 
 		// 5164
-		if (D_587f == 0)
+		if (D_587f_hour == 0)
 		{
 			D_5884 = 0xc;
 		}
 		else
 		{
 			// 5172
-			if (D_587f > 0xc)
+			if (D_587f_hour > 0xc)
 			{
-				D_5884 = D_587f - 0xc;
+				D_5884 = D_587f_hour - 0xc;
 			}
 			else
 			{
-				D_5884 = D_587f;
+				D_5884 = D_587f_hour;
 			}
 		}
 	}

@@ -23,6 +23,7 @@ static int TALK_0f32_ProcessChar(byte code);
 static void TALK_127e_StartTalk(int a);
 
 // CHECKED
+// 1 when the two strings are the same, ignoring case and the high bit.
 static int TALK_0000_CompareStringNoCase(char* first, char* second)
 {
     while (1)
@@ -39,7 +40,9 @@ static int TALK_0000_CompareStringNoCase(char* first, char* second)
     }
 }
 
-static int TALK_0054(int x, int y)
+// 1 when the tile at (x, y) is a table, a desk, a counter or a door: the Talk command then
+// reaches one tile further (TALK_041c_TalkCmd).
+static int TALK_0054_CanTalkAcrossTile(int x, int y)
 {
     switch (*ULTIMA_4402_GetTileAddr(x, y))
     {
@@ -67,6 +70,7 @@ static int TALK_0054(int x, int y)
 }
 
 // ask pay
+// Returns 0 for Yes, 1 for No.
 static int TALK_00ac_AskPay(void)
 {
     char ch;
@@ -89,6 +93,10 @@ static int TALK_00ac_AskPay(void)
 
 // CHECKED
 // talk to merchant (shoppe)
+// merchantCode is the NPC's dialog number, 0x81-0x88: the shop kind + 0x81. Finds this
+// town in the kind's row of D_23ca_shopMapIds (the shop index) and runs the shop.
+// Which kind is which: 2 the stables, 6 the healer, 7 the inn (their texts); the others
+// are not named yet.
 static void TALK_00e6_TalkToMerchant(int merchantCode)
 {
     int playerIndex;
@@ -99,9 +107,9 @@ static void TALK_00e6_TalkToMerchant(int merchantCode)
     }
     else
     {
-        if (D_587b != 0xff)
+        if (D_587b_activePlayer != 0xff)
         {
-            playerIndex = D_587b;
+            playerIndex = D_587b_activePlayer;
         }
         else
         {
@@ -109,16 +117,16 @@ static void TALK_00e6_TalkToMerchant(int merchantCode)
             playerIndex = D_5876;
         }
 
-        D_b116 = merchantCode - 0x81;
+        D_b116_shopKind = merchantCode - 0x81;
 
-        for (D_b114 = 0; (&D_23ca[0][0])[D_b114 + D_b116 * 16] != D_5893_map_id && D_b114 < 0x10; D_b114++)
+        for (D_b114_shopIndex = 0; (&D_23ca_shopMapIds[0][0])[D_b114_shopIndex + D_b116_shopKind * 16] != D_5893_map_id && D_b114_shopIndex < 0x10; D_b114_shopIndex++)
         {
         }
 
-        D_aafc = D_21ca[D_b116][D_b114];
-        D_aafe = D_22ca[D_b116][D_b114];
+        D_aafc_shopName = D_21ca_shopNames[D_b116_shopKind][D_b114_shopIndex];
+        D_aafe_shopOwner = D_22ca_shopOwners[D_b116_shopKind][D_b114_shopIndex];
 
-        switch (D_b116)
+        switch (D_b116_shopKind)
         {
         case 0:
             SHOPPES_12b2(playerIndex);
@@ -127,7 +135,7 @@ static void TALK_00e6_TalkToMerchant(int merchantCode)
             SHOPPES2_066c(playerIndex);
             break;
         case 2:
-            SHOPPES_07be(playerIndex);
+            SHOPPES_07be_Stables(playerIndex);
             break;
         case 3:
             SHOPPES2_0abc(playerIndex);
@@ -139,19 +147,23 @@ static void TALK_00e6_TalkToMerchant(int merchantCode)
             SHOPPES_04a2(playerIndex);
             break;
         case 6:
-            SHOPPES_14f8(playerIndex);
+            SHOPPES_14f8_Healer(playerIndex);
             break;
         case 7:
-            SHOPPES3_08b4(playerIndex);
+            SHOPPES3_08b4_Inn(playerIndex);
         }
     }
 }
 
 // the password TALK_0000_CompareStringNoCase checks: an array, so in _DATA (DS:4a9a)
-char D_4a9a[] = "IMPE";
+char D_4a9a_password[] = "IMPE";
 
 // CHECKED
-static int TALK_01e2(void)
+// Dialog number 0xff: someone who lets the party pass for a price. On map 5 half the
+// gold "to charity"; on map 0x12 the password (only when D_587a is 0x1d; the text says
+// "bearer of the Badge", so probably the Black Badge is worn); elsewhere a guard's
+// tribute of 10 gp for each living member. Returns 0 when paid or passed, 1 when not.
+static int TALK_01e2_GuardDemandsTribute(void)
 {
     int tribute_i;
     uint member;
@@ -173,7 +185,7 @@ static int TALK_01e2(void)
             }
 
             // 021c
-            D_57aa /= 2;
+            D_57aa_gold /= 2;
 
             // 0228
             ULTIMA_2900_UpdateVitalsDisplay();
@@ -188,7 +200,7 @@ static int TALK_01e2(void)
             // 0243 With an unsigned index MSC keeps the count in one more temporary (bp-1Ch),
             // as the original; the (int) cast makes it an end-pointer loop (cmp si,dx) and !=
             // gives the je for an empty party.
-            for (member = 0; member != (int)D_585b; member++)
+            for (member = 0; member != (int)D_585b_partyCount; member++)
             {
                 // 025a
                 if (D_55a8_party[member].status != STATUS_DEAD)
@@ -209,10 +221,10 @@ static int TALK_01e2(void)
             }
 
             // 028f
-            if (D_57aa >= (uint)tribute_i) // jbe: an unsigned compare
+            if (D_57aa_gold >= (uint)tribute_i) // jbe: an unsigned compare
             {
                 // 029a
-                D_57aa -= tribute_i;
+                D_57aa_gold -= tribute_i;
 
                 ULTIMA_2900_UpdateVitalsDisplay();
                 return 0;
@@ -236,7 +248,7 @@ static int TALK_01e2(void)
             ULTIMA_16ba_PrintChar('\n');
             answer[4] = 0;
 
-            if (TALK_0000_CompareStringNoCase(D_4a9a, answer) != 0)
+            if (TALK_0000_CompareStringNoCase(D_4a9a_password, answer) != 0)
             {
                 // 02f2
                 ULTIMA_16ba_PrintChar('\n');
@@ -256,6 +268,9 @@ static int TALK_01e2(void)
 
 // CHECKED
 // talk to npc
+// Talk to the NPC in slot npcIndex. Its dialog number (NpcFmt._a): 0 no response,
+// 1-0x7f an entry of the map's .TLK file, 0x81-0x88 a merchant, 0xfd, 0xfe and 0xff
+// special cases (below).
 int TALK_031e_TalkToNpc(int npcIndex)
 {
     int dialogNumber_f;
@@ -264,7 +279,7 @@ int TALK_031e_TalkToNpc(int npcIndex)
 
     ULTIMA_16ba_PrintChar('\n');
 
-    D_bcdc = npcIndex;
+    D_bcdc_talkNpcIndex = npcIndex;
     npc = &D_5f5e[npcIndex];
     schedule = &D_5d5e[npcIndex];
 
@@ -321,10 +336,10 @@ L_join:
 
         if (dialogNumber_f == 0xff)
         {
-            return TALK_01e2();
+            return TALK_01e2_GuardDemandsTribute();
         }
 
-        if ((npc->_e & 1) != 0 && (NPC_12e0(D_bcdc, D_587f) & 1) != 0)
+        if ((npc->_e & 1) != 0 && (NPC_12e0(D_bcdc_talkNpcIndex, D_587f_hour) & 1) != 0)
         {
             TALK_00e6_TalkToMerchant(dialogNumber_f);
             return 0;
@@ -356,7 +371,7 @@ int TALK_041c_TalkCmd(void)
     x_i = dirX + D_5896_map_x;
     y_o = dirY + D_5897_map_y;
 
-    if (ULTIMA_368e_FindActorTileAtPos(x_i, y_o, D_5895_map_level) == 0 && TALK_0054(x_i, y_o) != 0)
+    if (ULTIMA_368e_FindActorTileAtPos(x_i, y_o, D_5895_map_level) == 0 && TALK_0054_CanTalkAcrossTile(x_i, y_o) != 0)
     {
         x_i += dirX;
         y_o += dirY;
@@ -390,6 +405,9 @@ static void TALK_04d2_PrintCr(void) { TALK_0f32_ProcessChar(0x80 | 0xd); }
 static void TALK_04da_PrintQuoteMark(void) { TALK_0f32_ProcessChar(0x80 | 0x22); }
 
 // CHECKED
+// Print the word in D_bce4_talkWord. A character with the high bit set is printed in
+// charset 0, one without it in charset 1 (the runes: script code 0x8e flips
+// D_4af0_talkCharMask). A line is not started with a space.
 static void TALK_04e2_PrintWord(void)
 {
     byte ch;
@@ -398,27 +416,27 @@ static void TALK_04e2_PrintWord(void)
     pos = 0;
 
     // c469
-    if (D_4af1 != 0)
+    if (D_4af1_talkWordLength != 0)
     {
-        while (pos < D_4af1) // c4c9
+        while (pos < D_4af1_talkWordLength) // c4c9
         {
             // c4d5 -> c47c
-            if (D_bce4[pos] & 0x80)
+            if (D_bce4_talkWord[pos] & 0x80)
                 ULTIMA_1c9e_SelectCharset(0);
             else
                 ULTIMA_1c9e_SelectCharset(1);
-            ch = D_bce4[pos] & 0x7f;
+            ch = D_bce4_talkWord[pos] & 0x7f;
             pos++;
 
             if (ULTIMA_1f12_GetCurrentTextX() != 0 || ch != 0x20)
             {
                 // c49a
-                if (D_4af3 < 0xf || ch != 10)
+                if (D_4af3_talkTextX < 0xf || ch != 10)
                 {
                     // c4a7
                     if (ch != 10)
                     {
-                        D_4af3 = ULTIMA_1f12_GetCurrentTextX();
+                        D_4af3_talkTextX = ULTIMA_1f12_GetCurrentTextX();
                     }
 
                     // c4b3
@@ -426,29 +444,31 @@ static void TALK_04e2_PrintWord(void)
                 }
                 else if (ch == 10) // c4be
                 {
-                    D_4af3 = 0;
+                    D_4af3_talkTextX = 0;
                 }
             }
         }
 
         // c4e0
-        D_4af1 = 0;
+        D_4af1_talkWordLength = 0;
         ULTIMA_1c9e_SelectCharset(0);
     }
 }
 
+// Add ch to the word; at a space or a newline (or when the buffer is full) print it,
+// on a new line when it would pass column 18.
 static void TALK_0574_BuildOrPrintWord(byte ch)
 {
-    if (D_4af1 != 0x10)
+    if (D_4af1_talkWordLength != 0x10)
     {
-        D_bce4[D_4af1++] = ch;
+        D_bce4_talkWord[D_4af1_talkWordLength++] = ch;
 
         if (ch != 0x8a && ch != 0xa0) // 0xa / 0x20
         {
             return;
         }
 
-        if (ULTIMA_1f12_GetCurrentTextX() + (uint)D_4af1 >= 0x12)
+        if (ULTIMA_1f12_GetCurrentTextX() + (uint)D_4af1_talkWordLength >= 0x12)
         {
             ULTIMA_16ba_PrintChar('\n');
         }
@@ -457,8 +477,8 @@ static void TALK_0574_BuildOrPrintWord(byte ch)
     TALK_04e2_PrintWord();
 }
 
-static int TALK_0b04(void);
-char* D_4aa0[4] =
+static int TALK_0b04_AskInterest(void);
+char* D_4aa0_talkFileNames[4] =
 {
     /*0x9206*/ "TOWNE.TLK",
     /*0x9210*/ "DWELLING.TLK",
@@ -466,7 +486,7 @@ char* D_4aa0[4] =
     /*0x922a*/ "KEEP.TLK"
 };
 
-char* D_4aa8[0x22 + 1] =
+char* D_4aa8_standardWords[0x22 + 1] =
 {
     _STATIC_TEXT(0x9234, "NAME"),
     _STATIC_TEXT(0x923a, "JOB"),
@@ -505,38 +525,40 @@ char* D_4aa8[0x22 + 1] =
     _STATIC_TEXT(0x9318, "ELECTRONIC ARTS") // hidden string
 };
 
-u8 D_4aee = 0;
+u8 D_4aee_talkPendingCode = 0;
 
-u8 D_4aef = 0;
+u8 D_4aef_talkCodeArgCount = 0;
 
-u8 D_4af0 = 0xff;
+u8 D_4af0_talkCharMask = 0xff;
 
-u8 D_4af1 = 0;
+u8 D_4af1_talkWordLength = 0;
 
-u8 D_4af2 = 0;
+u8 D_4af2_talkInLabel = 0;
 
-u8 D_4af3 = 0;
+u8 D_4af3_talkTextX = 0;
 
-u8 D_4af4 = 0;
+u8 D_4af4_talkLastChar = 0;
 
-u8 D_4af5 = 0;
+u8 D_4af5_talkAfterWord = 0;
 
-static int TALK_05b6(void)
+// Script code 0x85 (gold): the three digits after it are the price. Pays it (to a beggar:
+// karma, once in 100 turns), or says the party cannot and goes back to "Your interest?".
+static int TALK_05b6_PayGold(void)
 {
     int amount;
 
-    amount = (D_bce0[0] & 0x7f) * 100 + (D_bce0[1] & 0x7f) * 10 + (D_bce0[2] & 0x7f) - 0x14d0; // 0x14d0 == 5328
-    if (D_57aa >= amount)
+    amount = (D_bce0_talkCodeArgs[0] & 0x7f) * 100 + (D_bce0_talkCodeArgs[1] & 0x7f) * 10 + (D_bce0_talkCodeArgs[2] & 0x7f) - 0x14d0; // 0x14d0 == 5328
+    if (D_57aa_gold >= amount)
     {
-        D_57aa -= amount;
+        D_57aa_gold -= amount;
         ULTIMA_2900_UpdateVitalsDisplay();
-        if ((D_5c5a[D_5f5e[D_bcdc]._c]._0_tile & 0xfc) == TILE_ACTOR_BEGGAR && D_588b >= 100)
+        if ((D_5c5a[D_5f5e[D_bcdc_talkNpcIndex]._c]._0_tile & 0xfc) == TILE_ACTOR_BEGGAR && D_588b >= 100)
         {
             D_588b = 0;
-            ULTIMA_3ef0_IncreaseByte(&D_5888, 1, 99);
-            if (D_57aa == 0)
+            ULTIMA_3ef0_IncreaseByte(&D_5888_karma, 1, 99);
+            if (D_57aa_gold == 0)
             {
-                ULTIMA_3ef0_IncreaseByte(&D_5888, 2, 99);
+                ULTIMA_3ef0_IncreaseByte(&D_5888_karma, 2, 99);
             }
         }
 
@@ -544,19 +566,22 @@ static int TALK_05b6(void)
     }
     else
     {
-        D_4af1 = 0;
+        D_4af1_talkWordLength = 0;
         ULTIMA_16ba_PrintChar('\"');
         ULTIMA_1850_PrintString(_TEXT(0x9328, "Thou hast not enough gold!"));
         ULTIMA_16ba_PrintChar('\"');
         ULTIMA_1850_PrintString(_TEXT(0x9344, "\n\n"));
 
-        D_4aef = D_4aee = 0;
+        D_4aef_talkCodeArgCount = D_4aee_talkPendingCode = 0;
 
-        return TALK_0b04();
+        return TALK_0b04_AskInterest();
     }
 }
 
-static void TALK_0682(byte itemCode)
+// Script code 0x86 (the NPC gives something): below 0x40 an equipment number, 0x41 food,
+// 0x42 gold, 0x43 keys, 0x44 gems, 0x45 torches, 0x46 grapple, 0x47 magic carpets,
+// 0x48 sextant, 0x49 spyglass, 0x4a black badge, 0x4b skull keys (vars.h's savegame names).
+static void TALK_0682_ReceiveItem(byte itemCode)
 {
     if (itemCode < 0x40)
     {
@@ -567,11 +592,11 @@ static void TALK_0682(byte itemCode)
     switch (itemCode)
     {
     case 0x41:
-        ULTIMA_3f14_IncreaseInt(&D_57a8, 1, 9999);
+        ULTIMA_3f14_IncreaseInt(&D_57a8_food, 1, 9999);
         ULTIMA_2900_UpdateVitalsDisplay();
         break;
     case 0x42:
-        ULTIMA_3f14_IncreaseInt(&D_57aa, 1, 9999);
+        ULTIMA_3f14_IncreaseInt(&D_57aa_gold, 1, 9999);
         ULTIMA_2900_UpdateVitalsDisplay();
         break;
     case 0x43:
@@ -605,13 +630,14 @@ static void TALK_0682(byte itemCode)
 }
 
 // skip one talk string
+// Move D_bcde_talkPtr past the next terminator byte (returns 1) or endMarker byte (0).
 static int TALK_0728_SkipOneTalkString(byte terminator, byte endMarker)
 {
     byte value;
 
     do
     {
-        value = *D_bcde++;
+        value = *D_bcde_talkPtr++;
         if (value == terminator)
         {
             return 1;
@@ -626,9 +652,11 @@ static int TALK_0728_SkipOneTalkString(byte terminator, byte endMarker)
 
 // CHECKED
 // select nth talk string
+// Point D_bcde_talkPtr at string n of the NPC's script in D_b21e. The strings end in 0:
+// 0 name, 1 description, 2 greeting, 3 job, 4 bye, then keyword and answer pairs (Ultima Codex, "Ultima V internal formats").
 static void TALK_075a_SelectNthTalkString(int n)
 {
-    D_bcde = D_b21e;
+    D_bcde_talkPtr = D_b21e;
 
     if (n != 0)
     {
@@ -642,11 +670,12 @@ static void TALK_075a_SelectNthTalkString(int n)
 static int TALK_0f32_ProcessChar(byte code);
 
 // process talk string
+// Process the string at D_bcde_talkPtr. 1 when the conversation is over.
 static int TALK_0788_ProcessTalkString(void)
 {
-    while (*D_bcde != 0)
+    while (*D_bcde_talkPtr != 0)
     {
-        if (TALK_0f32_ProcessChar(*D_bcde++) != 0)
+        if (TALK_0f32_ProcessChar(*D_bcde_talkPtr++) != 0)
         {
             return 1;
         }
@@ -661,16 +690,18 @@ static int TALK_07aa_ProcessNthTalkString(byte n)
     return TALK_0788_ProcessTalkString();
 }
 
-static int TALK_07be(void)
+// Script code 0x87 (or): the keyword before it shares the answer of the keyword after it.
+// Skips that keyword and processes what follows (probably: the layout is from the Codex page).
+static int TALK_07be_ProcessOrAnswer(void)
 {
-    D_bcde++;
+    D_bcde_talkPtr++;
 
-    while (*D_bcde == 0)
+    while (*D_bcde_talkPtr == 0)
     {
-        D_bcde++;
+        D_bcde_talkPtr++;
     }
 
-    while (*D_bcde++ != 0)
+    while (*D_bcde_talkPtr++ != 0)
     {
         // empty
     }
@@ -690,6 +721,8 @@ static void TALK_07e4_PrintAvatarName(void)
 }
 
 // CHECKED
+// Script code 0x84 (join). The NPC's roster entry is found by the first three letters of
+// its name, from the end of the roster down, and swapped into the first free party place.
 static int TALK_080a_Join(void)
 {
     int i; // 30..2f
@@ -699,10 +732,10 @@ static int TALK_080a_Join(void)
     char npcName[4];  // 08..05
     int rosterIndex_h;      // 04..03
 
-    savedPtr_o = D_bcde;
+    savedPtr_o = D_bcde_talkPtr;
     rosterIndex_h = 0xf;
 
-    if (D_585b == 6)
+    if (D_585b_partyCount == 6)
     {
         ULTIMA_266c_GetChar();
         ULTIMA_1850_PrintString(_TEXT(0x9348, "\"Thou hast no room for me in thy party! "));
@@ -716,8 +749,8 @@ static int TALK_080a_Join(void)
     // byte-copy loops, which MSC 5.0 turns into mov cx,1; repne movsw; movsb (memcpy gives
     // shr cx,1 / adc cx,cx); the (char*) cast is needed for this one to become a block move
     for (i = 0; i < 3; i++)
-        npcName[i] = ((char*)D_bcde)[i];
-    D_bcde += 3;
+        npcName[i] = ((char*)D_bcde_talkPtr)[i];
+    D_bcde_talkPtr += 3;
 
     npcName[3] = 0;
     rosterName_h[3] = 0;
@@ -742,7 +775,7 @@ static int TALK_080a_Join(void)
             TALK_0574_BuildOrPrintWord(0x22);
             TALK_0574_BuildOrPrintWord(10);
             ULTIMA_1850_PrintString(_TEXT(0x93a8, "\nSystem Error -\nNo Match!"));
-            D_bcde = savedPtr_o;
+            D_bcde_talkPtr = savedPtr_o;
             // i = DI;
 
             // -> c8b3
@@ -754,43 +787,47 @@ static int TALK_080a_Join(void)
     D_55a8_party[rosterIndex_h].mapId = 0;
 
     member = D_55a8_party[rosterIndex_h];
-    D_55a8_party[rosterIndex_h] = D_55a8_party[D_585b];
-    D_55a8_party[D_585b] = member;
+    D_55a8_party[rosterIndex_h] = D_55a8_party[D_585b_partyCount];
+    D_55a8_party[D_585b_partyCount] = member;
 
-    D_585b++;
+    D_585b_partyCount++;
 
-    TOWN_0052_SetNpcKilled(D_bcdc);
-    TOWN_00b0_DespawnNpc(D_bcdc);
+    TOWN_0052_SetNpcKilled(D_bcdc_talkNpcIndex);
+    TOWN_00b0_DespawnNpc(D_bcdc_talkNpcIndex);
 
     ULTIMA_2900_UpdateVitalsDisplay();
     TALK_04e2_PrintWord();
 
-    D_bcde = savedPtr_o;
+    D_bcde_talkPtr = savedPtr_o;
 
     return 1;
 }
 
-static int TALK_093a(void)
+// Find label D_bcf4_talkLabel (a 0x90 byte, then the label's code) and process its text,
+// the question.
+static int TALK_093a_ProcessLabelQuestion(void)
 {
-    D_bcde = D_b21e;
-    while (*D_bcde != D_bcf4)
+    D_bcde_talkPtr = D_b21e;
+    while (*D_bcde_talkPtr != D_bcf4_talkLabel)
     {
         TALK_0728_SkipOneTalkString(0x90, 0x9f);
     }
-    D_bcde++;
+    D_bcde_talkPtr++;
     return TALK_0788_ProcessTalkString();
 }
 
-static int TALK_0960(void)
+// Process the string after the one the talk pointer is in.
+static int TALK_0960_ProcessNextString(void)
 {
     TALK_0728_SkipOneTalkString(0, 0x90);
     return TALK_0788_ProcessTalkString();
 }
 
-static int TALK_096e(void)
+// The label's default answer: the string after its question.
+static int TALK_096e_ProcessLabelDefault(void)
 {
-    D_bcde = D_b21e;
-    while (*D_bcde != D_bcf4)
+    D_bcde_talkPtr = D_b21e;
+    while (*D_bcde_talkPtr != D_bcf4_talkLabel)
     {
         TALK_0728_SkipOneTalkString(0x90, 0x9f);
     }
@@ -798,9 +835,11 @@ static int TALK_096e(void)
     return TALK_0788_ProcessTalkString();
 }
 
-static int TALK_099a(int keyword)
+// Point the talk pointer at keyword number `keyword`: string 2 * keyword + 5 (its answer
+// is the next). 0 when the keywords end first (a 0x90 byte).
+static int TALK_099a_SelectKeyword(int keyword)
 {
-    D_bcde = D_b21e;
+    D_bcde_talkPtr = D_b21e;
     keyword = keyword * 2 + 5;
 
     while (keyword != 0)
@@ -814,26 +853,28 @@ static int TALK_099a(int keyword)
     return 1;
 }
 
-static int TALK_09d8(void)
+// Look for one of the NPC's keywords in the typed text, at its start or after a space.
+// D_bcf6_talkKeywordIndex is the keyword found. ULTIMA_6f1e gives the place, or -1.
+static int TALK_09d8_FindKeyword(void)
 {
     int matchPos;
 
-    D_bcf6 = 0;
+    D_bcf6_talkKeywordIndex = 0;
     while (1)
     {
-        if (TALK_099a(D_bcf6) == 0)
+        if (TALK_099a_SelectKeyword(D_bcf6_talkKeywordIndex) == 0)
         {
             return 0;
         }
 
-        matchPos = ULTIMA_6f1e(D_bcde, D_bcf8);
-        if (matchPos != -1 && (matchPos == 0 || D_bcf8[matchPos - 1] == ' '))
+        matchPos = ULTIMA_6f1e(D_bcde_talkPtr, D_bcf8_inputText);
+        if (matchPos != -1 && (matchPos == 0 || D_bcf8_inputText[matchPos - 1] == ' '))
         {
             return 1;
         }
 
-        D_bcde++;
-        D_bcf6++;
+        D_bcde_talkPtr++;
+        D_bcf6_talkKeywordIndex++;
     }
 
     return 1;
@@ -842,10 +883,11 @@ static int TALK_09d8(void)
 static void TALK_0a2c_GetString(void)
 {
     TALK_04e2_PrintWord();
-    ULTIMA_3b1c_GetString(D_bcf8, 0xf);
+    ULTIMA_3b1c_GetString(D_bcf8_inputText, 0xf);
 }
 
-static int TALK_0a3c(void)
+// Print the NPC's farewell (string 4). Returns 1: the conversation is over.
+static int TALK_0a3c_SayBye(void)
 {
     TALK_04da_PrintQuoteMark();
     if (TALK_07aa_ProcessNthTalkString(TALK_KEY_4) == 0)
@@ -856,7 +898,10 @@ static int TALK_0a3c(void)
     return 1;
 }
 
-static int TALK_0a54(byte wordIndex)
+// Answer a standard word (an index into D_4aa8_standardWords): NAME, JOB or WORK, BYE or
+// THANK; the others get a rebuke. 0 answered, 1 the conversation is over, 2 not
+// answered here (while a label's question is open, D_4af2_talkInLabel).
+static int TALK_0a54_AnswerStandardWord(byte wordIndex)
 {
     int tick;
 
@@ -864,7 +909,7 @@ static int TALK_0a54(byte wordIndex)
     {
     case 0:
         // ca1c
-        if (D_4af2 != 0)
+        if (D_4af2_talkInLabel != 0)
         {
             return 2;
         }
@@ -883,7 +928,7 @@ static int TALK_0a54(byte wordIndex)
     case 1:
     case 2:
         // ca3e
-        if (D_4af2 != 0)
+        if (D_4af2_talkInLabel != 0)
         {
             return 2;
         }
@@ -902,12 +947,12 @@ static int TALK_0a54(byte wordIndex)
     case 3:
     case 4:
         // ca60
-        if (D_4af2 != 0)
+        if (D_4af2_talkInLabel != 0)
         {
             return 2;
         }
 
-        return TALK_0a3c();
+        return TALK_0a3c_SayBye();
 
     default:
         // c9f8
@@ -930,7 +975,8 @@ static int TALK_0a54(byte wordIndex)
     }
 }
 
-static int TALK_0b04(void)
+// "Your interest?", until the conversation is over. An empty line is BYE.
+static int TALK_0b04_AskInterest(void)
 {
     int matchPos;
     int result;
@@ -938,22 +984,22 @@ static int TALK_0b04(void)
 
     while (1)
     {
-        D_4af2 = 0;
+        D_4af2_talkInLabel = 0;
         ULTIMA_1850_PrintString(_TEXT(0x9408, "Your interest?\n:"));
         TALK_0a2c_GetString();
-        if (D_bcf8[0] == 0)
+        if (D_bcf8_inputText[0] == 0)
         {
             ULTIMA_1850_PrintString(_TEXT(0x941a, "BYE\n\n"));
-            return TALK_0a3c();
+            return TALK_0a3c_SayBye();
         }
         TALK_04d2_PrintCr();
         TALK_04d2_PrintCr();
         for (wordIndex_k = 0, result = -1; wordIndex_k < 0x22; wordIndex_k++)
         {
-            matchPos = ULTIMA_6f1e((byte*)D_4aa8[wordIndex_k], D_bcf8);
-            if (matchPos != -1 && (matchPos == 0 || D_bcf8[matchPos - 1] == ' '))
+            matchPos = ULTIMA_6f1e((byte*)D_4aa8_standardWords[wordIndex_k], D_bcf8_inputText);
+            if (matchPos != -1 && (matchPos == 0 || D_bcf8_inputText[matchPos - 1] == ' '))
             {
-                result = TALK_0a54(wordIndex_k);
+                result = TALK_0a54_AnswerStandardWord(wordIndex_k);
                 if (result == 0)
                 {
                     break;
@@ -968,7 +1014,7 @@ static int TALK_0b04(void)
 
         if (result != 0)
         {
-            if (TALK_09d8() == 0)
+            if (TALK_09d8_FindKeyword() == 0)
             {
                 ULTIMA_1850_PrintString(_TEXT(0x9420, "\"I cannot help thee with that."));
                 TALK_04da_PrintQuoteMark();
@@ -978,7 +1024,7 @@ static int TALK_0b04(void)
             else
             {
                 TALK_04da_PrintQuoteMark();
-                if (TALK_07aa_ProcessNthTalkString(D_bcf6 * 2 + 6) != 0)
+                if (TALK_07aa_ProcessNthTalkString(D_bcf6_talkKeywordIndex * 2 + 6) != 0)
                 {
                     return 1;
                 }
@@ -990,12 +1036,14 @@ static int TALK_0b04(void)
     }
 }
 
-static int TALK_0bd4(void)
+// Look for the typed text among the answers of label D_bcf4_talkLabel (keyword and
+// reply pairs after its question and its default answer). 1 when found: the reply follows.
+static int TALK_0bd4_FindLabelAnswer(void)
 {
     int matchPos;
 
-    D_bcde = D_b21e;
-    while (*D_bcde != D_bcf4)
+    D_bcde_talkPtr = D_b21e;
+    while (*D_bcde_talkPtr != D_bcf4_talkLabel)
     {
         TALK_0728_SkipOneTalkString(0x90, 0x9f);
     }
@@ -1005,8 +1053,8 @@ static int TALK_0bd4(void)
 
     while (1)
     {
-        matchPos = ULTIMA_6f1e(D_bcde, D_bcf8);
-        if (matchPos != -1 && (matchPos == 0 || D_bcf8[matchPos - 1] == ' '))
+        matchPos = ULTIMA_6f1e(D_bcde_talkPtr, D_bcf8_inputText);
+        if (matchPos != -1 && (matchPos == 0 || D_bcf8_inputText[matchPos - 1] == ' '))
         {
             return 1;
         }
@@ -1025,7 +1073,9 @@ static int TALK_0bd4(void)
 
 // CHECKED
 // process label?
-static int TALK_0c5c(void)
+// A label: print its question, read the reply, print the matching answer or the default,
+// then back to "Your interest?".
+static int TALK_0c5c_AskLabelQuestion(void)
 {
     int result;
     int matchPos_a;
@@ -1034,7 +1084,7 @@ static int TALK_0c5c(void)
     while (1)
     {
         TALK_04da_PrintQuoteMark();
-        if (TALK_093a() != 0)
+        if (TALK_093a_ProcessLabelQuestion() != 0)
         {
             return 1;
         }
@@ -1045,23 +1095,23 @@ static int TALK_0c5c(void)
         {
             TALK_04d2_PrintCr();
             TALK_04d2_PrintCr();
-            D_4af2 = 0xff;
+            D_4af2_talkInLabel = 0xff;
             ULTIMA_1850_PrintString(_TEXT(0x9440, "You respond-\n:"));
             TALK_0a2c_GetString();
-            if (D_bcf8[0] == 0)
+            if (D_bcf8_inputText[0] == 0)
             {
                 ULTIMA_1850_PrintString(_TEXT(0x9450, "\n\n\"What didst thou say?"));
             }
-        } while (D_bcf8[0] == 0);
+        } while (D_bcf8_inputText[0] == 0);
 
         TALK_04d2_PrintCr();
         TALK_04d2_PrintCr();
         for (wordIndex_k = 0, result = -1; wordIndex_k < 0x22; wordIndex_k++)
         {
-            matchPos_a = ULTIMA_6f1e(D_4aa8[wordIndex_k], D_bcf8);
-            if (matchPos_a != -1 && (matchPos_a == 0 || D_bcf8[matchPos_a - 1] == ' '))
+            matchPos_a = ULTIMA_6f1e(D_4aa8_standardWords[wordIndex_k], D_bcf8_inputText);
+            if (matchPos_a != -1 && (matchPos_a == 0 || D_bcf8_inputText[matchPos_a - 1] == ' '))
             {
-                result = TALK_0a54(wordIndex_k);
+                result = TALK_0a54_AnswerStandardWord(wordIndex_k);
                 if (result == 0)
                 {
                     break;
@@ -1080,36 +1130,36 @@ static int TALK_0c5c(void)
         // The PrintCr tail is written in both branches: MSC merges the two copies (the
         // original's shared "or ax,ax; je" and PrintCr block placed before the else). One
         // copy after the if/else gives a test per branch.
-        if (TALK_0bd4() == 0)
+        if (TALK_0bd4_FindLabelAnswer() == 0)
         {
             TALK_04da_PrintQuoteMark();
-            if (TALK_096e() != 0)
+            if (TALK_096e_ProcessLabelDefault() != 0)
             {
                 return 1;
             }
             TALK_04da_PrintQuoteMark();
             TALK_04d2_PrintCr();
             TALK_04d2_PrintCr();
-            return TALK_0b04();
+            return TALK_0b04_AskInterest();
         }
         else
         {
             TALK_04da_PrintQuoteMark();
-            if (TALK_0960() != 0)
+            if (TALK_0960_ProcessNextString() != 0)
             {
                 return 1;
             }
             TALK_04da_PrintQuoteMark();
             TALK_04d2_PrintCr();
             TALK_04d2_PrintCr();
-            return TALK_0b04();
+            return TALK_0b04_AskInterest();
         }
     }
 }
 
 // NOT MATCHING (u32 operation)
 // set npc met flag
-static int TALK_0d42(int npcIndex)
+static int TALK_0d42_SetNpcMet(int npcIndex)
 {
     u32 mask;
 
@@ -1120,7 +1170,7 @@ static int TALK_0d42(int npcIndex)
 
 // NOT MATCHING (u32 operation)
 // check npc met flag
-static int TALK_0d7a(int npcIndex)
+static int TALK_0d7a_IsNpcMet(int npcIndex)
 {
     u32 mask;
 
@@ -1129,50 +1179,53 @@ static int TALK_0d7a(int npcIndex)
     return (*(u32*)&D_5bda[(D_5893_map_id - 1) * 4] & mask) != 0;
 }
 
-static int TALK_0dbe(byte value)
+// The bytes after a script code that takes arguments (D_4aee_talkPendingCode): 0x85 gold,
+// three digits; 0x86 an item; 0x8c a label to go to when the NPC knows the Avatar's name
+// (0xff: just go on); 0xfe a karma value and a label to go to when the karma is at least that.
+static int TALK_0dbe_ProcessCodeArgument(byte value)
 {
-    switch (D_4aee)
+    switch (D_4aee_talkPendingCode)
     {
     default:
         // 0dda
-        D_4aef = D_4aee = 0;
+        D_4aef_talkCodeArgCount = D_4aee_talkPendingCode = 0;
         // 0dfc ->
         // 0e74
         break;
 
     case 0x85:
         // 0de4
-        D_bce0[D_4aef++] = value;
-        if (D_4aef != 3)
+        D_bce0_talkCodeArgs[D_4aef_talkCodeArgCount++] = value;
+        if (D_4aef_talkCodeArgCount != 3)
         {
             // 0dfc
             return 0;
         }
 
         // 0e02
-        if (TALK_05b6() != 0)
+        if (TALK_05b6_PayGold() != 0)
         {
             // -> 0e74
             return 1;
         }
 
         // 0dda
-        D_4aef = D_4aee = 0;
+        D_4aef_talkCodeArgCount = D_4aee_talkPendingCode = 0;
         break;
 
     case 0x86:
         // 0e0e
-        TALK_0682(value & 0x7f);
+        TALK_0682_ReceiveItem(value & 0x7f);
 
         // 0dda
-        D_4aef = D_4aee = 0;
+        D_4aef_talkCodeArgCount = D_4aee_talkPendingCode = 0;
         break;
 
     case 0x8c:
         // 0e1c
-        D_4aef = D_4aee = 0;
+        D_4aef_talkCodeArgCount = D_4aee_talkPendingCode = 0;
 
-        if (TALK_0d7a(D_bcdc) == 0)
+        if (TALK_0d7a_IsNpcMet(D_bcdc_talkNpcIndex) == 0)
         {
             // 0dfc
             return 0;
@@ -1180,36 +1233,36 @@ static int TALK_0dbe(byte value)
 
         if (value == 0xff)
         {
-            return TALK_0b04();
+            return TALK_0b04_AskInterest();
         }
 
         // 0e3a
-        D_bcf4 = value;
+        D_bcf4_talkLabel = value;
 
         // 0e3d
-        return TALK_0c5c();
+        return TALK_0c5c_AskLabelQuestion();
 
     case 0xfe:
         // 0e46
-        D_bce0[D_4aef++] = value;
-        if (D_4aef != 2)
+        D_bce0_talkCodeArgs[D_4aef_talkCodeArgCount++] = value;
+        if (D_4aef_talkCodeArgCount != 2)
         {
             // 0dfc
             return 0;
         }
 
-        D_4aef = D_4aee = 0;
+        D_4aef_talkCodeArgCount = D_4aee_talkPendingCode = 0;
 
-        if (D_5888 < D_bce0[0])
+        if (D_5888_karma < D_bce0_talkCodeArgs[0])
         {
             // 0dfc
             return 0;
         }
 
-        D_bcf4 = D_bce0[1];
+        D_bcf4_talkLabel = D_bce0_talkCodeArgs[1];
 
         // 0e3d
-        return TALK_0c5c();
+        return TALK_0c5c_AskLabelQuestion();
     }
 
     return 0;
@@ -1230,15 +1283,15 @@ static void TALK_0e78_AskName(void)
     ULTIMA_1850_PrintString(_TEXT(0x947c, "\nYou respond-\n:"));
     TALK_0a2c_GetString();
 
-    D_4aee = D_4aef = 0;
+    D_4aee_talkPendingCode = D_4aef_talkCodeArgCount = 0;
 
-    if (D_bcf8[0] == 0)
+    if (D_bcf8_inputText[0] == 0)
     {
         ULTIMA_1850_PrintString(_TEXT(0x948c, "\n\n\"If you say so..."));
     }
     else
     {
-        for (; member < D_585b; member++)
+        for (; member < D_585b_partyCount; member++)
         {
             for (i = 0; i < 4; i++)
             {
@@ -1247,10 +1300,10 @@ static void TALK_0e78_AskName(void)
 
             name[4] = 0;
 
-            matchPos_i = ULTIMA_6f1e(name, D_bcf8);
-            if (matchPos_i != -1 && (matchPos_i == 0 || (D_bcf8[matchPos_i - 1] == ' ')))
+            matchPos_i = ULTIMA_6f1e(name, D_bcf8_inputText);
+            if (matchPos_i != -1 && (matchPos_i == 0 || (D_bcf8_inputText[matchPos_i - 1] == ' ')))
             {
-                TALK_0d42(D_bcdc);
+                TALK_0d42_SetNpcMet(D_bcdc_talkNpcIndex);
                 ULTIMA_1850_PrintString(_TEXT(0x94a0, "\n\n\"A pleasure!"));
                 return;
             }
@@ -1260,20 +1313,25 @@ static void TALK_0e78_AskName(void)
     }
 }
 
+// Process one byte of an NPC's script: a script code (0x81-0x9f, 0xfe, 0xff), a word of
+// the word table (below 0x81, D_24ea_wordTable) or a character. Returns 1 when the
+// conversation is over. The .TLK format and the codes 0x81, 0x83, 0x87, 0x88, 0x8c, 0x8d,
+// 0x8f and 0x91-0x9b are on the Ultima Codex, "Ultima V internal formats"; the other
+// codes' meanings are read from this code.
 static int TALK_0f32_ProcessChar(byte code)
 {
     char* word;
     int tick;
     byte* savedPtr;
 
-    if (D_4aee != 0)
+    if (D_4aee_talkPendingCode != 0)
     {
-        return TALK_0dbe(code);
+        return TALK_0dbe_ProcessCodeArgument(code);
     }
 
     // 0f4c
-    D_4aef = 0;
-    if ((code == 0xa2) && (D_4af4 == 0xa2))
+    D_4aef_talkCodeArgCount = 0;
+    if ((code == 0xa2) && (D_4af4_talkLastChar == 0xa2))
     {
         // 0f5e
         return 0;
@@ -1305,12 +1363,12 @@ static int TALK_0f32_ProcessChar(byte code)
         return TALK_080a_Join(); // -> 1114
     case 0x87:                // key_or
         // 0fbc
-        savedPtr = D_bcde;
-        if (TALK_07be() != 0)
+        savedPtr = D_bcde_talkPtr;
+        if (TALK_07be_ProcessOrAnswer() != 0)
         {
             return 1;
         }
-        D_bcde = savedPtr;
+        D_bcde_talkPtr = savedPtr;
         return 0; // -> 0f5e
     case 0x88:    // ask name
         // 0fd2
@@ -1318,11 +1376,11 @@ static int TALK_0f32_ProcessChar(byte code)
         return 0; // -> 0f5e
     case 0x89:    // karma +1
         // 0fd8
-        ULTIMA_3ef0_IncreaseByte(&D_5888, 1, 99);
+        ULTIMA_3ef0_IncreaseByte(&D_5888_karma, 1, 99);
         return 0; // -> 0f5e
     case 0x8a:    // karma -1
         // 0fea
-        ULTIMA_3f36_DecreaseByte(&D_5888, 1);
+        ULTIMA_3f36_DecreaseByte(&D_5888_karma, 1);
         return 0; // -> 0f5e
     case 0x8b:    // call guards
         // 0ff8
@@ -1330,12 +1388,12 @@ static int TALK_0f32_ProcessChar(byte code)
         return 0; // -> 0f5e
     case 0x8e:    // rune
         // 0ffe
-        D_4af0 ^= 0x80;
+        D_4af0_talkCharMask ^= 0x80;
         return 0; // -> 0f5e
     case 0xff:    // no selection
         // 1006
         TALK_04e2_PrintWord();
-        return TALK_0b04(); // -> 1114
+        return TALK_0b04_AskInterest(); // -> 1114
     case 0x8f:                // wait
         // 1010
         ULTIMA_266c_GetChar();
@@ -1345,7 +1403,7 @@ static int TALK_0f32_ProcessChar(byte code)
     case 0x86: // change item 65
     case 0x8c: // if else name
         // 1016
-        D_4aee = code;
+        D_4aee_talkPendingCode = code;
         return 0;
     case 0x91: // label_0
     case 0x92: // label_1
@@ -1363,8 +1421,8 @@ static int TALK_0f32_ProcessChar(byte code)
     case 0x9e: // label?
     case 0x9f: // label?
         // 1020
-        D_bcf4 = code;
-        return TALK_0c5c(); // -> 1114
+        D_bcf4_talkLabel = code;
+        return TALK_0c5c_AskLabelQuestion(); // -> 1114
         // ----------
     default:
         // 10ce
@@ -1372,19 +1430,19 @@ static int TALK_0f32_ProcessChar(byte code)
         {
             TALK_0574_BuildOrPrintWord(0xa0); // 0x20
 
-            word = D_24ea[code - 1];
+            word = D_24ea_wordTable[code - 1];
             while (*word != 0)
             {
                 TALK_0574_BuildOrPrintWord((byte)*word++ | 0x80);
             }
 
-            if (*D_24ea[code - 1] == 0)
+            if (*D_24ea_wordTable[code - 1] == 0)
             {
                 TALK_0574_BuildOrPrintWord(code);
                 return 0; // -> 0f5e
             }
 
-            D_4af5 = 1;
+            D_4af5_talkAfterWord = 1;
         }
         else
         {
@@ -1395,15 +1453,15 @@ static int TALK_0f32_ProcessChar(byte code)
                 code = 0x8a;
             }
 
-            D_4af4 = code &= D_4af0;
+            D_4af4_talkLastChar = code &= D_4af0_talkCharMask;
 
-            if (D_4af5 != 0)
+            if (D_4af5_talkAfterWord != 0)
             {
                 TALK_0574_BuildOrPrintWord(0xa0); // 0x20
             }
 
             TALK_0574_BuildOrPrintWord(code);
-            D_4af5 = 0;
+            D_4af5_talkAfterWord = 0;
         }
         break;
     }
@@ -1411,7 +1469,9 @@ static int TALK_0f32_ProcessChar(byte code)
     return 0;
 }
 
-static int TALK_111c(void)
+// The start of a conversation: "You see" and the description, then the greeting when the
+// NPC knows the Avatar's name, else (one time in two) "I am called" and the name.
+static int TALK_111c_Introduce(void)
 {
     ULTIMA_1850_PrintString(_TEXT(0x94c4, "You see "));
 
@@ -1423,7 +1483,7 @@ static int TALK_111c(void)
     {
         TALK_04d2_PrintCr();
         TALK_04d2_PrintCr();
-        if (TALK_0d7a(D_bcdc) == 0)
+        if (TALK_0d7a_IsNpcMet(D_bcdc_talkNpcIndex) == 0)
         {
             ULTIMA_207e_srand(ULTIMA_2056_GetTime());
             if (ULTIMA_2092_RandomRange(0, 1) != 0)
@@ -1461,11 +1521,14 @@ static int TALK_111c(void)
     }
 }
 
-static void TALK_1180(void)
+// After a conversation in a town where shadowlord 0 is (D_5958_townShadowlord; Falsehood,
+// if the Codex's order of the three is right): something is stolen. A key, a gem or a
+// torch; when there are none a piece of equipment, a potion, a scroll, else gold.
+static void TALK_1180_FalsehoodSteals(void)
 {
     int item;
 
-    if (D_5958 == 0)
+    if (D_5958_townShadowlord == 0)
     {
         ULTIMA_1850_PrintString(_TEXT(0x94dc, "\nSomething was stolen!\n"));
         ULTIMA_43ae_AudioSweepTone(800, 2000, 1, 0x32);
@@ -1539,12 +1602,14 @@ static void TALK_1180(void)
                 }
             }
 
-            ULTIMA_3f54_DecreaseInt(&D_57aa, ULTIMA_2092_RandomRange(1, 0xf));
+            ULTIMA_3f54_DecreaseInt(&D_57aa_gold, ULTIMA_2092_RandomRange(1, 0xf));
             ULTIMA_2900_UpdateVitalsDisplay();
         }
     }
 }
 
+// Read the NPC's script from the map's .TLK file into D_b21e and hold the conversation.
+// The file starts with a count and that many (dialog number, offset) pairs (Ultima Codex, "Ultima V internal formats").
 static void TALK_127e_StartTalk(int dialogNumber)
 {
     s16 count;
@@ -1554,7 +1619,7 @@ static void TALK_127e_StartTalk(int dialogNumber)
     uint fileIndex;
 
     fileIndex = (D_5893_map_id - 1) >> 3;
-    ULTIMA_256e_ReadFileFromDisk(D_4aa0[fileIndex], D_b21e, 0x200, 0);
+    ULTIMA_256e_ReadFileFromDisk(D_4aa0_talkFileNames[fileIndex], D_b21e, 0x200, 0);
 
     // 12a9
     index = (s16*)D_b21e;
@@ -1567,15 +1632,15 @@ static void TALK_127e_StartTalk(int dialogNumber)
 
     // 12d6
     offset_b = *index;
-    ULTIMA_256e_ReadFileFromDisk(D_4aa0[fileIndex], D_b21e, 0x400, offset_b);
+    ULTIMA_256e_ReadFileFromDisk(D_4aa0_talkFileNames[fileIndex], D_b21e, 0x400, offset_b);
 
-    if (TALK_111c() == 0)
+    if (TALK_111c_Introduce() == 0)
     {
-        if (TALK_0b04() == 0)
+        if (TALK_0b04_AskInterest() == 0)
         {
-            TALK_0a3c();
+            TALK_0a3c_SayBye();
         }
     }
 
-    TALK_1180();
+    TALK_1180_FalsehoodSteals();
 }

@@ -235,7 +235,7 @@ static void ULTIMA_2726(int param_1)
 
     ULTIMA_1bf2_SetTextPosition(0, param_1);
 
-    if (D_585b <= param_1)
+    if (D_585b_partyCount <= param_1)
     {
         for (local1_6 = 0; local1_6 < 0xf; local1_6++)
         {
@@ -262,7 +262,7 @@ static void ULTIMA_2726(int param_1)
     }
 
     // 27c2
-    if (param_1 == D_587b)
+    if (param_1 == D_587b_activePlayer)
     {
         if (D_55a8_party[param_1].status != STATUS_DEAD && D_55a8_party[param_1].status != STATUS_SLEEP)
         {
@@ -271,7 +271,7 @@ static void ULTIMA_2726(int param_1)
         else
         {
             ULTIMA_16ba_PrintChar(' ');
-            D_587b = 0xff;
+            D_587b_activePlayer = 0xff;
         }
     }
     else
@@ -321,20 +321,20 @@ void ULTIMA_2884_UpdateGoldDisplay(void)
     local_2 = D_5386_current_text_window_idx;
     ULTIMA_1b94_SelectTextWindow(1);
     ULTIMA_1bf2_SetTextPosition(8, 7);
-    if (D_57aa < 1000)
+    if (D_57aa_gold < 1000)
     {
         ULTIMA_16ba_PrintChar(' ');
     }
-    if (D_57aa < 100)
+    if (D_57aa_gold < 100)
     {
         ULTIMA_16ba_PrintChar(' ');
     }
-    if (D_57aa < 10)
+    if (D_57aa_gold < 10)
     {
         ULTIMA_16ba_PrintChar(' ');
     }
     ULTIMA_1850_PrintString(_TEXT(0x54b6, " G:"));
-    ULTIMA_1a3e_PrintNumber(D_57aa, 1, ' ');
+    ULTIMA_1a3e_PrintNumber(D_57aa_gold, 1, ' ');
     while (0xf > ULTIMA_1f12_GetCurrentTextX())
     {
         ULTIMA_16ba_PrintChar(' ');
@@ -360,7 +360,7 @@ void ULTIMA_2900_UpdateVitalsDisplay(void)
 
     // food
     ULTIMA_1850_PrintString(_TEXT(0x54ba, "F:"));
-    ULTIMA_1a3e_PrintNumber(D_57a8, 1, ' ');
+    ULTIMA_1a3e_PrintNumber(D_57a8_food, 1, ' ');
 
     while (ULTIMA_1f12_GetCurrentTextX() < 8)
     {
@@ -436,9 +436,9 @@ void ULTIMA_2a52(int param_1, uint param_2)
     {
         D_55a8_party[param_1].hp = 0;
         D_55a8_party[param_1].status = STATUS_DEAD;
-        if (param_1 == D_587b)
+        if (param_1 == D_587b_activePlayer)
         {
-            D_587b = 0xff;
+            D_587b_activePlayer = 0xff;
         }
     }
 
@@ -451,7 +451,7 @@ void ULTIMA_2aa8(void)
     int i;
     for (i = 0; i < 6; i++)
     {
-        if (i < D_585b && D_55a8_party[i].status != STATUS_DEAD)
+        if (i < D_585b_partyCount && D_55a8_party[i].status != STATUS_DEAD)
         {
             ULTIMA_2a52(i, ULTIMA_2092_RandomRange(1, 8));
         }
@@ -469,12 +469,12 @@ void ULTIMA_2ae8(void)
 
     local_4_ab = 0;
 
-    for (local_6 = 0; local_6 < D_585b; local_6++)
+    for (local_6 = 0; local_6 < D_585b_partyCount; local_6++)
     {
         local_8 = D_55a8_party[local_6].status;
-        if ((uint)local_8 == STATUS_DEAD && local_6 == D_587b)
+        if ((uint)local_8 == STATUS_DEAD && local_6 == D_587b_activePlayer)
         {
-            D_587b = 0xff;
+            D_587b_activePlayer = 0xff;
         }
 
         if ((uint)local_8 != STATUS_DEAD && (uint)local_8 != STATUS_SLEEP)
@@ -488,18 +488,18 @@ void ULTIMA_2ae8(void)
         }
     }
 
-    if (D_587f != D_5880)
+    if (D_587f_hour != D_5880)
     {
-        if (D_57a8 == 0)
+        if (D_57a8_food == 0)
         {
             ULTIMA_1850_PrintString(_TEXT(0x54c8, "Starving!\n"));
             ULTIMA_2aa8();
         }
-        else if (D_587f == 6 || D_587f == 12 || D_587f == 18)
+        else if (D_587f_hour == 6 || D_587f_hour == 12 || D_587f_hour == 18)
         {
-            ULTIMA_3f54_DecreaseInt(&D_57a8, local_4_ab);
+            ULTIMA_3f54_DecreaseInt(&D_57a8_food, local_4_ab);
         }
-        D_5880 = D_587f;
+        D_5880 = D_587f_hour;
     }
 
     ULTIMA_3ef0_IncreaseByte(&D_588b, 1, 0xff);
@@ -682,7 +682,7 @@ int ULTIMA_2d7a(int param_1)
             local_8 = ULTIMA_266c_GetChar();
         } while ((uint)local_8 > '7');
 
-        if ((uint)local_8 > '0' && (uint)local_8 < '7' && (uint)local_8 - '1' < D_585b)
+        if ((uint)local_8 > '0' && (uint)local_8 < '7' && (uint)local_8 - '1' < D_585b_partyCount)
         {
             local_4_ab = (uint)local_8 - '1';
         }
@@ -697,7 +697,7 @@ int ULTIMA_2d7a(int param_1)
 
             case U5_KEY_RIGHT:
             case U5_KEY_DOWN:
-                ULTIMA_3f14_IncreaseInt(&local_4_ab, 1, D_585b - 1);
+                ULTIMA_3f14_IncreaseInt(&local_4_ab, 1, D_585b_partyCount - 1);
                 break;
 
             case 0x30:
@@ -808,7 +808,7 @@ void ULTIMA_2f62_UpdateWindDirectionRandomly(void)
 
 static void ULTIMA_2fa6(int param_1)
 {
-    if (param_1 < D_585b && D_55a8_party[param_1].status != STATUS_DEAD)
+    if (param_1 < D_585b_partyCount && D_55a8_party[param_1].status != STATUS_DEAD)
     {
         D_55a8_party[param_1].status = STATUS_POISONED;
         ULTIMA_2900_UpdateVitalsDisplay();

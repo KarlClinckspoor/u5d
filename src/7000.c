@@ -79,7 +79,7 @@ void ULTIMA_70a6(void)
 void ULTIMA_71aa(void)
 {
     int ax = 2;
-    byte bl = D_587f;
+    byte bl = D_587f_hour;
     byte bh = D_5881;
     DRV_6c(ax, bl, bh);
 }

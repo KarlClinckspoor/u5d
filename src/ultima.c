@@ -1072,7 +1072,7 @@ u8 D_21ba[0x10] =
     0x02, 0x04, 0x01, 0x05, 0x00, 0x03, 0x00, 0x00
 };
 
-char* D_21ca[8][16] =
+char* D_21ca_shopNames[8][16] =
 {
     _STATIC_TEXT(0x0bee, "Iolo's Bows"),
     _STATIC_TEXT(0x0bfa, "Naughty Nomaan's"),
@@ -1204,7 +1204,7 @@ char* D_21ca[8][16] =
     0
 };
 
-char* D_22ca[8][16] =
+char* D_22ca_shopOwners[8][16] =
 {
     _STATIC_TEXT(0x0eea, "Gwenneth"),
     _STATIC_TEXT(0x0ef3, "Nomaan"),
@@ -1336,7 +1336,7 @@ char* D_22ca[8][16] =
     0
 };
 
-u8 D_23ca[8][16] =
+u8 D_23ca_shopMapIds[8][16] =
 {
     0x02, 0x03, 0x04, 0x05, 0x06, 0x11, 0x18, 0x1a,
     0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -1416,7 +1416,7 @@ u8 D_24e7 = 0;
 
 u16 D_24e8 = 0; // no code refers to it
 
-char* D_24ea[0x80] =
+char* D_24ea_wordTable[0x80] =
 {
     _STATIC_TEXT(0x103c, "the"),
     _STATIC_TEXT(0x1040, "thou"),

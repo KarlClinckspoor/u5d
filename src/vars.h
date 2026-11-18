@@ -116,9 +116,9 @@ STUB s8 D_2188[0x32]; // ~21ba) comsubs: some line table
 STUB u8 D_21ba[0x10]; // comsubs: some pixel drawing table
 
 // shop related
-STUB char* D_21ca[8][16]; // shop name
-STUB char* D_22ca[8][16]; // shop owner
-STUB u8 D_23ca[8][16];
+STUB char* D_21ca_shopNames[8][16]; // shop names, by shop kind and shop index
+STUB char* D_22ca_shopOwners[8][16]; // shop owners, likewise
+STUB u8 D_23ca_shopMapIds[8][16]; // the map of each shop: a kind's row is searched for the current map (TALK_00e6_TalkToMerchant)
 
 // dnglook
 STUB u8 D_244a[8];
@@ -141,7 +141,7 @@ STUB s16 D_24de[4]; // direction offset
 STUB u8 D_24e6; // need to update map viewport?
 STUB u8 D_24e7; // footstep sfx related flag in dungeon
 
-STUB char* D_24ea[0x80]; // word table
+STUB char* D_24ea_wordTable[0x80]; // the words that bytes of the .TLK scripts (below 0x81) and of SHOPPE.DAT (from 0x80) stand for
 STUB char* D_25ea[30]; // ~2626) compressed file name table
 #define D_25f0 (&D_25ea[3])
 
@@ -395,19 +395,19 @@ STUB u8 D_488a[4]; // map id
 STUB u8 D_488e[4]; // map level
 STUB u8 D_4892[3];
 
-STUB char* D_4aa0[4];
-STUB char* D_4aa8[0x22+1];
+STUB char* D_4aa0_talkFileNames[4]; // the .TLK file of each group of eight maps
+STUB char* D_4aa8_standardWords[0x22+1]; // NAME, JOB, WORK, BYE, THANK, then words that get a rebuke
 // 4aec: "ELECTRONIC ARTS"
 
 // talk related
-STUB u8 D_4aee;
-STUB u8 D_4aef;
-STUB u8 D_4af0;
-STUB u8 D_4af1; // talk current word (D_bce4[]) length
-STUB u8 D_4af2;
-STUB u8 D_4af3; // talk current text x
-STUB u8 D_4af4;
-STUB u8 D_4af5;
+STUB u8 D_4aee_talkPendingCode; // the script code whose argument bytes are being read; 0 none
+STUB u8 D_4aef_talkCodeArgCount; // how many of them are in D_bce0_talkCodeArgs
+STUB u8 D_4af0_talkCharMask; // 0xff; without the high bit while runes are on (script code 0x8e)
+STUB u8 D_4af1_talkWordLength; // the length of the word in D_bce4_talkWord
+STUB u8 D_4af2_talkInLabel; // 0xff while a label's question waits for its answer
+STUB u8 D_4af3_talkTextX; // the text column after the last character printed
+STUB u8 D_4af4_talkLastChar; // the last character processed
+STUB u8 D_4af5_talkAfterWord; // 1 after a word of the word table: a space comes before the next character
 
 STUB u16 D_4af6[9];
 STUB u16 D_4b08[9]; // cast sound freq table 1
@@ -457,13 +457,13 @@ STUB u16 D_4d66[4];
 STUB u16 D_4d6e[4];
 STUB u8  D_4d76[4];
 STUB u8  D_4d7a[4];
-STUB u8  D_4d7e[6]; // TODO: size
+STUB u8  D_4d7e_innRates[6]; // the inn's rate (per person and night; times 10 per month)
 
-STUB u8 D_4dc4[6];
+STUB u8 D_4dc4_innRooms[6]; // how many companions the inn can keep
 
-STUB u16 D_4e6e[6];
-STUB u8 D_4e7a[6];
-STUB u8 D_4e80[6];
+STUB u16 D_4e6e_innOfferTexts[6]; // the offer, an offset in SHOPPE.DAT
+STUB u8 D_4e7a_innBedX[6]; // where the party wakes up
+STUB u8 D_4e80_innBedY[6];
 
 STUB u8 D_50ea[0x5b]; // glyph width table, from ' '
 
@@ -614,8 +614,8 @@ STUB u16 D_55a6;    // +0x0
 STUB S_55a8 D_55a8_party[0x10]; // ~57a8)
 
 // 5700
-STUB s16 D_57a8;        // +0x0202 Food // int (TALK_0682, MOVSX)
-STUB s16 D_57aa;        // +0x0204 Gold // int (MAINOUT_1b3e, MOVSX)
+STUB s16 D_57a8_food;        // +0x0202 Food // int (TALK_0682_ReceiveItem, MOVSX)
+STUB s16 D_57aa_gold;        // +0x0204 Gold // int (MAINOUT_1b3e, MOVSX)
 STUB u8  D_57ac;        // +0x0206 #Keys
 STUB u8  D_57ad;        // +0x0207 #Gems
 STUB u8  D_57ae;        // +0x0208 #Torches
@@ -648,17 +648,17 @@ STUB u8  D_5840[8];     // +0x029A 0=buried,0xFF=Inventory moonstone flags
 STUB u8  D_5848[8];     // +0x02A2 0=Britannia,0xFF=Underworld moonstone Z-coordinates (valid only if buried)
 STUB u8  D_5850[8];     // +0x02AA Reagents (A..H)
 STUB u8  D_5858[3];     // +0x02B2 Day each of the three nightshade/mandrake spots was last harvested [5858..585b)
-STUB u8  D_585b;        // +0x02B5 party member count
+STUB u8  D_585b_partyCount;        // +0x02B5 party member count
 STUB u8  D_585c[0x18];  // [585c..5874)
 STUB u16 D_5874;        // +0x02CE Current year (TODO: int?)
 STUB s16 D_5876;        // selected x direction? // +0x02D0 first party member that is not dead or sleeping? # of active monsters & charmed PCs[2]?
 STUB s16 D_5878;        // selected y direction? // +0x02D2 # of active PCs and charmed monsters[2]?
 STUB u8  D_587a;        // +0x02D4 Icon
-STUB u8  D_587b;        // +0x02D5 Active character
+STUB u8  D_587b_activePlayer;        // +0x02D5 Active character
 STUB u8  D_587c_partyTile; // +0x02D6 party tile
 STUB u8  D_587d;        // +0x02D7 Current month
 STUB u8  D_587e;        // +0x02D8 Current day
-STUB u8  D_587f;        // +0x02D9 Current hour
+STUB u8  D_587f_hour;        // +0x02D9 Current hour
 STUB u8  D_5880;        // +0x02DA copy of 0x2D9
 STUB u8  D_5881;        // +0x02DB Current minute
 STUB u8  D_5882;
@@ -667,7 +667,7 @@ STUB u8  D_5884;
 STUB u8  D_5885;        // +0x02DF Phase of Trammel
 STUB u8  D_5886;        // +0x02E0 Phase of Felucca
 STUB u8  D_5887;        // +0x02E1 Current moongate height (in pixels)
-STUB u8  D_5888;        // +0x02E2 Karma
+STUB u8  D_5888_karma;        // +0x02E2 Karma
 STUB u8  D_5889;
 STUB u8  D_588a;
 STUB u8  D_588b;        // +0x02E5 Current turn count
@@ -721,7 +721,7 @@ STUB u8  D_5954;        // +0x03AE ship_y
 STUB u8  D_5955;
 STUB u8  D_5956;
 STUB u8  D_5957;        // +0x03B1 remaining drunk turn count (TOWN_0dc4)
-STUB u8  D_5958;
+STUB u8  D_5958_townShadowlord; // which of the three shadowlords (D_58c8) is in this town, 0xff none (TOWN_02ae)
 STUB u8  D_5959;
 STUB u8 D_595a[0x200];  // +0x03B4 dungeon map data ..5b5a)
 // 5b00
@@ -845,8 +845,8 @@ BSS u8 D_a9fb; // footstep sfx duration in dungeon
 // combat?
 BSS ActorFmt D_a9fc[0x20];
 
-BSS char* D_aafc; // current shop name
-BSS char* D_aafe; // current shop owner
+BSS char* D_aafc_shopName; // current shop name
+BSS char* D_aafe_shopOwner; // current shop owner
 
 BSS char* D_ab00;
 BSS u8 D_ab02[0x160]; // current visible map viewport [b * b], stride 0x20. 0: actor overlay, 0xff: hidden [ab02..ac62)
@@ -858,9 +858,9 @@ BSS u8 D_ad14[32 * 32]; // combat map data / misc [ad14..b114)
 
 // b100
 
-BSS s16 D_b114; // s16 (FMT MOVSX) max: 0x10?
-BSS s16 D_b116; // s16 (FMT MOVSX)
-BSS s16 D_b118; // s16 (FMT MOVSX)
+BSS s16 D_b114_shopIndex; // s16 (FMT MOVSX); the shop's column in D_21ca_shopNames..., 0-15
+BSS s16 D_b116_shopKind; // s16 (FMT MOVSX); 0-7, the merchant's dialog number - 0x81
+BSS s16 D_b118_shopPrice; // s16 (FMT MOVSX); the % of a shop text
 BSS u16 D_b11a;
 
 BSS u8* D_b11c;
@@ -920,13 +920,13 @@ BSS u8 D_bd32[8];
 
 BSS u8 D_bcda;
 
-BSS u16 D_bcdc;
-BSS u8* D_bcde; // pointer
-BSS u8 D_bce0[4]; // ?
-BSS char D_bce4[0x10];
-BSS u8 D_bcf4;
-BSS u16 D_bcf6;
-BSS char D_bcf8[16];
+BSS u16 D_bcdc_talkNpcIndex; // the slot of the NPC talked to
+BSS u8* D_bcde_talkPtr; // the place in the NPC's script
+BSS u8 D_bce0_talkCodeArgs[4]; // the bytes after a script code (TALK_0dbe_ProcessCodeArgument)
+BSS char D_bce4_talkWord[0x10]; // the word being collected, printed at its end (word wrap)
+BSS u8 D_bcf4_talkLabel; // the label being asked, 0x91-0x9f
+BSS u16 D_bcf6_talkKeywordIndex; // the NPC's keyword that matched
+BSS char D_bcf8_inputText[16]; // what the player typed
 
 BSS char D_bd08[12];
 BSS u8 D_bd14; // no code refers to it

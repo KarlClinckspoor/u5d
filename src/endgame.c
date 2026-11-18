@@ -529,7 +529,7 @@ void ENDGAME_0648_EndgameMain(void)
 
     // a9ad
     // the party loop
-    for (local_c = 0; local_c < D_585b; local_c++)
+    for (local_c = 0; local_c < D_585b_partyCount; local_c++)
     {
         if (D_55a8_party[local_c].status == STATUS_DEAD)
         {
@@ -669,7 +669,7 @@ void ENDGAME_0648_EndgameMain(void)
         // ac64
         ULTIMA_3ae6(1);
 
-        for (local_c = 0; local_c < D_585b; local_c++)
+        for (local_c = 0; local_c < D_585b_partyCount; local_c++)
         {
             while (ENDGAME_0510(local_c, 5, 4) != 0)
                 ;

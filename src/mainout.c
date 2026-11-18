@@ -882,7 +882,7 @@ static void MAINOUT_0a84_MainLoop(void)
                 switch (local_6 & 0xff)
                 {
                 case U5_KEY_CTRL_K: // 0b34
-                    ULTIMA_1a3e_PrintNumber(D_5888, 1, 0x20);
+                    ULTIMA_1a3e_PrintNumber(D_5888_karma, 1, 0x20);
                     // -> 0b75
                     ULTIMA_16ba_PrintChar('\n');
                     // -> 0af8
@@ -1089,7 +1089,7 @@ int MAINOUT_0d8c(void)
         }
     }
 
-    if (D_587f >= 0x20 || D_587f < 5)
+    if (D_587f_hour >= 0x20 || D_587f_hour < 5)
     {
         return local_4 + 3;
     }

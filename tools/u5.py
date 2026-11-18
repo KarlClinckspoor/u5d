@@ -156,11 +156,11 @@ LINK_DEFINES = {'D_6608_OVERWORLD': 'D_6608_MAP'}
 # it first met it; within an object that is MSC's symbol-table order, which depends on names
 # the original's source had and u5d does not (docs/MATCHING.md, "The resident data").
 COMMUNALS = [n.upper() for n in (
-    'D_a9bc D_a9bd D_a9be D_a9c0 D_a9c2 D_a9c4 D_a9c6 D_a9c8 D_a9ce D_a9d0 D_a9fa D_a9fb D_a9fc D_aafc D_aafe D_ab00 D_ab02 D_ac62 D_ac64 D_ad14 '
-    'D_b114 D_b116 D_b118 D_b11a D_b11c D_b11e D_b21e D_b9ee D_ba14 D_bb14 D_bb15 D_bb16 D_bb17 '
+    'D_a9bc D_a9bd D_a9be D_a9c0 D_a9c2 D_a9c4 D_a9c6 D_a9c8 D_a9ce D_a9d0 D_a9fa D_a9fb D_a9fc D_aafc_shopName D_aafe_shopOwner D_ab00 D_ab02 D_ac62 D_ac64 D_ad14 '
+    'D_b114_shopIndex D_b116_shopKind D_b118_shopPrice D_b11a D_b11c D_b11e D_b21e D_b9ee D_ba14 D_bb14 D_bb15 D_bb16 D_bb17 '
     'D_bb18 D_bb1a D_bb1c D_bbd2 D_bc88 D_bcb0 '
     'D_bcb2 D_bcda '
-    'D_bcdc D_bcde D_bce0 D_bce4 D_bcf4 D_bcf6 D_bcf8 '
+    'D_bcdc_talkNpcIndex D_bcde_talkPtr D_bce0_talkCodeArgs D_bce4_talkWord D_bcf4_talkLabel D_bcf6_talkKeywordIndex D_bcf8_inputText '
     'D_bd08 D_bd14 D_bd15 '
     'D_bd16 D_bd18 D_bd1a D_bd1c D_bd1e D_bd20 D_bd22 D_bd24 '
     'D_bd26 D_bd27 D_bd28 D_bd29 D_bd2a D_bd32 D_bd3a D_bd3b D_bd3c D_bd3d D_bd3e '

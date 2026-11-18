@@ -72,9 +72,9 @@ void TRS_Initialize(void)
     TRS_PatchTable(D_1e3a, ARRAYSIZE(D_1e3a));
     TRS_PatchTable(D_1f4e, ARRAYSIZE(D_1f4e));
     TRS_PatchTable(D_1f5e, ARRAYSIZE(D_1f5e));
-    TRS_PatchTable((char**)D_21ca, 8 * 16);
-    TRS_PatchTable((char**)D_22ca, 8 * 16);
-    TRS_PatchTable(D_24ea, ARRAYSIZE(D_24ea));
+    TRS_PatchTable((char**)D_21ca_shopNames, 8 * 16);
+    TRS_PatchTable((char**)D_22ca_shopOwners, 8 * 16);
+    TRS_PatchTable(D_24ea_wordTable, ARRAYSIZE(D_24ea_wordTable));
     //TRS_PatchTable(D_25ea, ARRAYSIZE(D_25ea));
     //TRS_PatchTable(D_2652, ARRAYSIZE(D_2652));
     TRS_PatchTable(D_27dc, ARRAYSIZE(D_27dc));
@@ -103,8 +103,8 @@ void TRS_Initialize(void)
     TRS_PatchTable(D_41ac, ARRAYSIZE(D_41ac));
     TRS_PatchTable(D_444a, ARRAYSIZE(D_444a));
     TRS_PatchTable(D_4502, ARRAYSIZE(D_4502));
-    //TRS_PatchTable(D_4aa0, ARRAYSIZE(D_4aa0));
-    TRS_PatchTable(D_4aa8, ARRAYSIZE(D_4aa8));
+    //TRS_PatchTable(D_4aa0_talkFileNames, ARRAYSIZE(D_4aa0_talkFileNames));
+    TRS_PatchTable(D_4aa8_standardWords, ARRAYSIZE(D_4aa8_standardWords));
     TRS_PatchTable(D_4b3e, ARRAYSIZE(D_4b3e));
     TRS_PatchTable(D_4c74, ARRAYSIZE(D_4c74));
     TRS_PatchTable(D_4ca8, ARRAYSIZE(D_4ca8));

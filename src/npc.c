@@ -131,7 +131,7 @@ static void NPC_01d2(int param_1, int param_2, int param_3, int param_4, int par
         local_e_ak = 0xc9;
     }
 
-    local_a = NPC_12e0(param_6, D_587f);
+    local_a = NPC_12e0(param_6, D_587f_hour);
     for (local_6 = 0; local_6 < 0x20; local_6 = local_6 + 1)
     {
         for (local_8 = 0; local_8 < 0x20; local_8 = local_8 + 1)

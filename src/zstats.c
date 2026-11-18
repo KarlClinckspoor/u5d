@@ -159,9 +159,9 @@ static void ZSTATS_039c(void)
     ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
     ULTIMA_1c22_SetTextWindowSize(1, 0x18, 1, 0x27, 9);
     ULTIMA_1850_PrintString(_TEXT(0x972e, "\n Food: "));
-    ULTIMA_1a3e_PrintNumber(D_57a8, 4, 0x20); // Food
+    ULTIMA_1a3e_PrintNumber(D_57a8_food, 4, 0x20); // Food
     ULTIMA_1850_PrintString(_TEXT(0x9738, "\n Gold: "));
-    ULTIMA_1a3e_PrintNumber(D_57aa, 4, 0x20); // Gold
+    ULTIMA_1a3e_PrintNumber(D_57aa_gold, 4, 0x20); // Gold
     ULTIMA_1850_PrintString(_TEXT(0x9742, "\n\n Keys......."));
     ULTIMA_1a3e_PrintNumber(D_57ac, 2, 0x20); // Keys
     ULTIMA_1850_PrintString(_TEXT(0x9752, "\n Gems......."));
@@ -591,7 +591,7 @@ void ZSTATS_0a3a_ZstatsCmd(void)
             // 0aa6
             if (local_4_ab == 0xc)
             {
-                local_4_ab = D_585b * 2 - 1;
+                local_4_ab = D_585b_partyCount * 2 - 1;
             }
             else if (local_4_ab > 0)
             {
@@ -606,7 +606,7 @@ void ZSTATS_0a3a_ZstatsCmd(void)
         case U5_KEY_RIGHT:
         case U5_KEY_DOWN:
             // 0aea
-            if (D_585b * 2 - 1 == local_4_ab)
+            if (D_585b_partyCount * 2 - 1 == local_4_ab)
             {
                 local_4_ab = 0xc;
             }
@@ -635,7 +635,7 @@ void ZSTATS_0a3a_ZstatsCmd(void)
         case 0x35:
         case 0x36:
             // 0b12 (NOT MATCHING)
-            if (local_6 - 0x31 < D_585b)
+            if (local_6 - 0x31 < D_585b_partyCount)
             {
                 local_4_ab = local_6 * 2 - 0x62;
             }

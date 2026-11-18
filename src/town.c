@@ -100,7 +100,7 @@ void TOWN_0170(void)
     {
         for (local_4 = 0; local_4 < D_594e; local_4++)
         {
-            if (D_587f == 5)
+            if (D_587f_hour == 5)
             {
                 *ULTIMA_4402_GetTileAddr(D_58ee[local_4], D_590e[local_4]) = D_592e[local_4];
             }
@@ -119,7 +119,7 @@ static void TOWN_0212(void)
     int local_6_an;
     int local_4;
 
-    if (D_5958 != 0xff)
+    if (D_5958_townShadowlord != 0xff)
     {
         ULTIMA_207e_srand(D_587e);
 
@@ -159,20 +159,20 @@ void TOWN_02ae(void)
     ActorFmt* local_6;
     int local_4_ab;
 
-    D_5958 = 0xff;
+    D_5958_townShadowlord = 0xff;
     if (D_5897_map_y != 4)
     {
         for (local_8 = 0; local_8 < 3; local_8++)
         {
             if (D_58c8[local_8] == D_5893_map_id)
             {
-                D_5958 = local_8;
+                D_5958_townShadowlord = local_8;
                 break;
             }
         }
     }
 
-    if (D_5958 != 0xff)
+    if (D_5958_townShadowlord != 0xff)
     {
         // Setup shadow lord
         TOWN_0212();
@@ -280,7 +280,7 @@ void TOWN_0408(int param_1)
         }
     }
 
-    if (D_587f < 5 || D_587f > 0x13)
+    if (D_587f_hour < 5 || D_587f_hour > 0x13)
     {
         TOWN_0170();
     }
@@ -671,7 +671,7 @@ int TOWN_09e6_AttackCmd(void)
             {
                 if (local_12_ab < 0x80)
                 {
-                    ULTIMA_3f36_DecreaseByte(&D_5888, 5);
+                    ULTIMA_3f36_DecreaseByte(&D_5888_karma, 5);
                     TOWN_0958();
                 }
                 else if ((local_12_ab & 0xfc) == TILE_ACTOR_D8)
@@ -692,7 +692,7 @@ int TOWN_09e6_AttackCmd(void)
                     else
                     {
                         ULTIMA_1850_PrintString(_TEXT(0x2718, "Murdered!\n"));
-                        ULTIMA_3f36_DecreaseByte(&D_5888, 5);
+                        ULTIMA_3f36_DecreaseByte(&D_5888_karma, 5);
                         ULTIMA_3522(local_a, local_c);
 
                         if (local_4_ab >= 0)
@@ -1525,7 +1525,7 @@ void TOWN_0f02(void)
         F_538e = 0;
     }
 #endif
-    for (local_6 = 0; local_6 < (uint)D_585b; local_6++)
+    for (local_6 = 0; local_6 < (uint)D_585b_partyCount; local_6++)
     {
         if (D_55a8_party[local_6].status == 'S' && ULTIMA_2092_RandomRange(0, 0xf) == 0xf)
         {
@@ -1558,7 +1558,7 @@ void TOWN_0f02(void)
                 memset(D_6608, 0x8f, 0x400);
                 D_24e6 = 1;
                 memset(D_5c5a, 0, 0x100);
-                for (local_6 = 0; local_6 < (uint)D_585b; local_6++)
+                for (local_6 = 0; local_6 < (uint)D_585b_partyCount; local_6++)
                 {
                     D_55a8_party[local_6].hp = 0;
                     D_55a8_party[local_6].status = 'D';
@@ -1575,7 +1575,7 @@ void TOWN_0f02(void)
         }
         else if (local_a == 4 && D_587c_partyTile == 0x1c)
         {
-            for (local_6 = 0; local_6 < (uint)D_585b; local_6++)
+            for (local_6 = 0; local_6 < (uint)D_585b_partyCount; local_6++)
             {
                 if (D_55a8_party[local_6].status != 'D' && D_55a8_party[local_6].status != 'P' &&
                     D_55a8_party[local_6].dex < (uint)ULTIMA_2092_RandomRange(0, 0x1d))

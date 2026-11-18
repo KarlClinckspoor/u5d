@@ -741,14 +741,14 @@ static void MAINOUT_1b3e(void)
     ULTIMA_16ba_PrintChar('\n');
     if (local_4_ab == 'Y')
     {
-        D_57aa -= local_8;
+        D_57aa_gold -= local_8;
         D_a9fa = 1;
-        if (D_57aa >= 0)
+        if (D_57aa_gold >= 0)
         {
             return;
         }
 
-        D_57aa += local_8;
+        D_57aa_gold += local_8;
     }
 
     local_6 = ULTIMA_38e4();
@@ -767,7 +767,7 @@ void MAINOUT_1be8(void)
         ULTIMA_1850_PrintString(_TEXT(0x6b64, "\nThou spieth trolls under the bridge!\n\n"));
         ULTIMA_3ae6(10);
 
-        for (local_4 = 0; local_4 < D_585b; local_4++)
+        for (local_4 = 0; local_4 < D_585b_partyCount; local_4++)
         {
             if (D_55a8_party[local_4].status != STATUS_DEAD && D_55a8_party[local_4].status != STATUS_SLEEP)
             {

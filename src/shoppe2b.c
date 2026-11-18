@@ -23,10 +23,10 @@ u8 D_4d7a[4] = {0xdd, 0x15, 0x6d, 0x9f};
 
 static bool SHOPPES2_07e2(int param_1)
 {
-    if (param_1 > D_57aa)
+    if (param_1 > D_57aa_gold)
     {
-        SHOPPES_017a(0x198e);
-        SHOPPES_0026(_TEXT(0x9fc2, "yells $.\n"));
+        SHOPPES_017a_PrintShopFileText(0x198e);
+        SHOPPES_0026_PrintShopText(_TEXT(0x9fc2, "yells $.\n"));
         D_bd22 = 1;
         return 0;
     }
@@ -44,20 +44,20 @@ static bool SHOPPES2_080e(int param_1, int param_2, int param_3)
 
     if (param_1 != 0)
     {
-        SHOPPES_017a(0x19ab);
-        D_5953 = D_4d76[D_b114];
-        D_5954 = D_4d7a[D_b114];
+        SHOPPES_017a_PrintShopFileText(0x19ab);
+        D_5953 = D_4d76[D_b114_shopIndex];
+        D_5954 = D_4d7a[D_b114_shopIndex];
     }
 
     if (param_2 != 0)
     {
-        D_57aa -= D_b118;
+        D_57aa_gold -= D_b118_shopPrice;
         D_bd24 = 1;
-        SHOPPES_019a();
+        SHOPPES_019a_FalsehoodSurcharge();
     }
 
     ULTIMA_2900_UpdateVitalsDisplay();
-    SHOPPES_017a(0x19da);
+    SHOPPES_017a_PrintShopFileText(0x19da);
 
     if (D_55a8_party[param_3].gender == 'F') // BUG
     {
@@ -101,7 +101,7 @@ static void SHOPPES2_08a8(int param_1)
 
     do
     {
-        SHOPPES_017a(0x18eb);
+        SHOPPES_017a_PrintShopFileText(0x18eb);
         switch (ULTIMA_266c_GetChar())
         {
         case 0x46:
@@ -109,7 +109,7 @@ static void SHOPPES2_08a8(int param_1)
             local_4_ab = 1;
             if ((D_6605 & 0xc0) != 0)
             {
-                SHOPPES_017a(0x19f2);
+                SHOPPES_017a_PrintShopFileText(0x19f2);
 
                 while ((local_6 = ULTIMA_266c_GetChar()) != 'Y' && local_6 != 'N')
                 {
@@ -128,11 +128,11 @@ static void SHOPPES2_08a8(int param_1)
             }
             else
             {
-                D_b118 = D_4d66[D_b114];
-                D_b118 += D_b118 * -((s32)(D_55a8_party[param_1].intel * 3) - 100) / (u32)100;
+                D_b118_shopPrice = D_4d66[D_b114_shopIndex];
+                D_b118_shopPrice += D_b118_shopPrice * -((s32)(D_55a8_party[param_1].intel * 3) - 100) / (u32)100;
 
-                SHOPPES_017a(0x183e);
-                SHOPPES_017a(0x1a50);
+                SHOPPES_017a_PrintShopFileText(0x183e);
+                SHOPPES_017a_PrintShopFileText(0x1a50);
 
                 while ((local_6 = ULTIMA_266c_GetChar()) != 'Y' && local_6 != 'N')
                 {
@@ -142,7 +142,7 @@ static void SHOPPES2_08a8(int param_1)
                 {
                     ULTIMA_1850_PrintString(_TEXT(0x9ff0, "Yes\n\n"));
 
-                    if (SHOPPES2_07e2(D_b118) == 0)
+                    if (SHOPPES2_07e2(D_b118_shopPrice) == 0)
                     {
                         goto L_end;
                     }
@@ -161,11 +161,11 @@ static void SHOPPES2_08a8(int param_1)
         case 0x53:
             ULTIMA_1850_PrintString(_TEXT(0x9ffa, "S\n\n"));
 
-            D_b118 = D_4d6e[D_b114];
-            D_b118 += D_b118 * -((s32)(D_55a8_party[param_1].intel * 3) - 100) / (u32)100;
+            D_b118_shopPrice = D_4d6e[D_b114_shopIndex];
+            D_b118_shopPrice += D_b118_shopPrice * -((s32)(D_55a8_party[param_1].intel * 3) - 100) / (u32)100;
 
-            SHOPPES_017a(0x188c);
-            SHOPPES_017a(0x1a50);
+            SHOPPES_017a_PrintShopFileText(0x188c);
+            SHOPPES_017a_PrintShopFileText(0x1a50);
 
             while ((local_6 = ULTIMA_266c_GetChar()) != 'Y' && local_6 != 'N')
             {
@@ -176,7 +176,7 @@ static void SHOPPES2_08a8(int param_1)
             if (local_6 == 'Y')
             {
                 ULTIMA_1850_PrintString(_TEXT(0x9ffe, "Yes\n\n"));
-                if (SHOPPES2_07e2(D_b118) == 0)
+                if (SHOPPES2_07e2(D_b118_shopPrice) == 0)
                 {
                     goto L_end;
                 }
@@ -188,13 +188,13 @@ static void SHOPPES2_08a8(int param_1)
                 }
                 else if ((D_6605 & 0x80) != 0)
                 {
-                    SHOPPES_017a(0x193b);
+                    SHOPPES_017a_PrintShopFileText(0x193b);
                     D_6605++;
                     local_4_ab = SHOPPES2_080e(0, 1, param_1);
                 }
                 else if ((D_6605 & 0x40) != 0)
                 {
-                    SHOPPES_017a(0x195f);
+                    SHOPPES_017a_PrintShopFileText(0x195f);
                     local_4_ab = SHOPPES2_080e(0, 0, param_1);
                 }
             }
@@ -222,7 +222,7 @@ void SHOPPES2_0abc(int param_1)
     D_bd22 = 0;
     D_bd24 = 0;
 
-    SHOPPES_01b6();
+    SHOPPES_01b6_Greet();
 
     do
     {
@@ -245,6 +245,6 @@ void SHOPPES2_0abc(int param_1)
 
     if (D_bd22 == 0)
     {
-        SHOPPES_0202(D_bd24);
+        SHOPPES_0202_Farewell(D_bd24);
     }
 }

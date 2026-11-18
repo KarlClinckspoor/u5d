@@ -46,7 +46,7 @@ void ULTIMA_5f86_SpecialMapHandler(int param_1, int param_2, int param_3)
     local_a = D_5895_map_level;
 
     D_5894 = D_5893_map_id;
-    local_4_ab = D_587b;
+    local_4_ab = D_587b_activePlayer;
     D_5893_map_id = 0xff;
 
     // copy actors
@@ -99,7 +99,7 @@ void ULTIMA_5f86_SpecialMapHandler(int param_1, int param_2, int param_3)
 
     // 605c
 L_605c:
-    D_589e = D_587b = 0xff;
+    D_589e = D_587b_activePlayer = 0xff;
     D_58a3 = 0;
 
     COMBAT_0b94_MainLoop(); // COMBAT.0b94
@@ -126,11 +126,11 @@ L_606c:
 
     if (D_55a8_party[local_4_ab].status != STATUS_DEAD && D_55a8_party[local_4_ab].status != STATUS_SLEEP)
     {
-        D_587b = local_4_ab;
+        D_587b_activePlayer = local_4_ab;
     }
     else
     {
-        D_587b = 0xff;
+        D_587b_activePlayer = 0xff;
     }
 
     for (local_e_am = 0; local_e_am < 0x20; local_e_am++)
@@ -575,9 +575,9 @@ void ULTIMA_68ae(int param_1)
             local_4->flags |= COMBAT_FLAGS_ASLEEP;
             D_5c5a[local_4->actorIdx]._1_animTile = TILE_ACTOR_SLEEP;
 
-            if (param_1 == D_587b)
+            if (param_1 == D_587b_activePlayer)
             {
-                D_587b = 0xff;
+                D_587b_activePlayer = 0xff;
             }
 
             D_58a2 = 4;
@@ -628,7 +628,7 @@ void ULTIMA_6936(void)
     }
 
     // place player party
-    for (local_6 = 0; local_6 < D_585b; local_6++)
+    for (local_6 = 0; local_6 < D_585b_partyCount; local_6++)
     {
         if (D_55a8_party[local_6].status != STATUS_DEAD)
         {

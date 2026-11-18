@@ -327,7 +327,7 @@ static int SJOG_045a(int param_1, int param_2)
     local_a = D_3e72;
     do
     {
-        if (D_3e66[local_8] == param_1 && D_3e6a[local_8] == param_2 && D_587f == 0 && D_5858[local_8] != D_587e)
+        if (D_3e66[local_8] == param_1 && D_3e6a[local_8] == param_2 && D_587f_hour == 0 && D_5858[local_8] != D_587e)
         {
             D_5858[local_8] = D_587e;
 
@@ -992,7 +992,7 @@ void SJOG_0d4a_JimmyCmd(void)
                 D_5d5e[local_4_ab].type[1] = 5;
                 D_5d5e[local_4_ab].type[2] = 5;
                 ULTIMA_1850_PrintString(_TEXT(0x8b36, "\n\"I thank thee!\"\n"));
-                ULTIMA_3ef0_IncreaseByte(&D_5888, 2, 99);
+                ULTIMA_3ef0_IncreaseByte(&D_5888_karma, 2, 99);
             }
 
             // ce5a
@@ -1167,13 +1167,13 @@ static void SJOG_112c_OpenChest(int param_1, int param_2, int param_3)
     D_24e6 = D_24e6 | 2;
     if (D_5893_map_id >= 1 && D_5893_map_id <= 0x20)
     {
-        if (D_5888 > 2)
+        if (D_5888_karma > 2)
         {
-            D_5888 -= 2;
+            D_5888_karma -= 2;
         }
         else
         {
-            D_5888 = 0;
+            D_5888_karma = 0;
         }
     }
 
@@ -1196,9 +1196,9 @@ static void SJOG_112c_OpenChest(int param_1, int param_2, int param_3)
                 }
             }
 
-            if (local_c == D_587b)
+            if (local_c == D_587b_activePlayer)
             {
-                D_587b = 0xff;
+                D_587b_activePlayer = 0xff;
             }
             ULTIMA_5910_UpdateFrame();
         }
@@ -1507,7 +1507,7 @@ static void SJOG_1458_GetObject(int param_1, int param_2, int param_3)
     case TILE_ACTOR_FOOD:
         ULTIMA_1a3e_PrintNumber(param_2, 1, 0x20);
         ULTIMA_1850_PrintString(_TEXT(0x8c6e, " food!\n"));
-        ULTIMA_3f14_IncreaseInt(&D_57a8, param_2, 9999);
+        ULTIMA_3f14_IncreaseInt(&D_57a8_food, param_2, 9999);
         break;
 
     case TILE_ACTOR_SANDALWOOD_BOX:
@@ -1594,7 +1594,7 @@ static void SJOG_1458_GetObject(int param_1, int param_2, int param_3)
     case TILE_ACTOR_GOLD:
         ULTIMA_1a3e_PrintNumber(param_2, 1, 0x20);
         ULTIMA_1850_PrintString(_TEXT(0x8cf0, " gold!\n"));
-        ULTIMA_3f14_IncreaseInt(&D_57aa, param_2, 9999);
+        ULTIMA_3f14_IncreaseInt(&D_57aa_gold, param_2, 9999);
         break;
 
     case TILE_ACTOR_POTION:
@@ -1811,13 +1811,13 @@ void SJOG_18ce_GetCmd(void)
         D_24e6 |= 2;
         ULTIMA_1850_PrintString(_TEXT(0x8df4, "Crops picked!\n"));
 
-        ULTIMA_3f14_IncreaseInt(&D_57a8, 1, 9999);
+        ULTIMA_3f14_IncreaseInt(&D_57a8_food, 1, 9999);
 
         D_a9fa = 1;
 
-        if (D_5888 != 0)
+        if (D_5888_karma != 0)
         {
-            D_5888--;
+            D_5888_karma--;
         }
         break;
 
@@ -1829,13 +1829,13 @@ void SJOG_18ce_GetCmd(void)
             D_24e6 |= 2;
             ULTIMA_1850_PrintString(_TEXT(0x8e04, "Mmmmm...!\n"));
 
-            ULTIMA_3f14_IncreaseInt(&D_57a8, 1, 9999);
+            ULTIMA_3f14_IncreaseInt(&D_57a8_food, 1, 9999);
 
             D_a9fa = 1;
 
-            if (D_5888 != 0)
+            if (D_5888_karma != 0)
             {
-                D_5888--;
+                D_5888_karma--;
             }
         }
         else
@@ -1853,10 +1853,10 @@ void SJOG_18ce_GetCmd(void)
             D_24e6 |= 2;
             ULTIMA_1850_PrintString(_TEXT(0x8e24, "Mmmmm...!\n"));
 
-            ULTIMA_3f14_IncreaseInt(&D_57a8, 1, 9999);
-            if (D_5888 != 0)
+            ULTIMA_3f14_IncreaseInt(&D_57a8_food, 1, 9999);
+            if (D_5888_karma != 0)
             {
-                D_5888--;
+                D_5888_karma--;
             }
         }
         else
@@ -1887,10 +1887,10 @@ void SJOG_18ce_GetCmd(void)
         D_24e6 |= 2;
         ULTIMA_1850_PrintString(_TEXT(0x8e58, "Mmmmm...!\n"));
 
-        ULTIMA_3f14_IncreaseInt(&D_57a8, 1, 9999);
-        if (D_5888 != 0)
+        ULTIMA_3f14_IncreaseInt(&D_57a8_food, 1, 9999);
+        if (D_5888_karma != 0)
         {
-            D_5888--;
+            D_5888_karma--;
         }
 
         break;
@@ -1909,7 +1909,7 @@ int SJOG_1b34(int param_1)
 
     local_6_an = 0;
 
-    for (local_4 = 0; local_4 < D_585b; local_4++)
+    for (local_4 = 0; local_4 < D_585b_partyCount; local_4++)
     {
         if (ULTIMA_6e60(local_4, param_1) != 0)
         {
@@ -1979,7 +1979,7 @@ static int SJOG_1bb2_CombatExit(int param_1, int param_2)
     }
 
     ULTIMA_43ae_AudioSweepTone(0x4b0, 2000, 1, 0x28);
-    D_587b = 0xff;
+    D_587b_activePlayer = 0xff;
     COMBAT_1236(-param_1 - 1);
     ULTIMA_2900_UpdateVitalsDisplay();
     ULTIMA_5910_UpdateFrame();
@@ -2141,7 +2141,7 @@ void SJOG_1ea4_CheckMirror(void)
         COMSUBS_0094_PrintName(D_589e);
         ULTIMA_1850_PrintString(_TEXT(0x8f02, " is absorbed!\n"));
         ULTIMA_43ae_AudioSweepTone(0x4b0, 2000, 1, 0x28);
-        D_587b = 0xff;
+        D_587b_activePlayer = 0xff;
         ULTIMA_2900_UpdateVitalsDisplay();
         COMBAT_1236(-D_589e - 1);
         ULTIMA_5910_UpdateFrame();
@@ -2206,7 +2206,7 @@ int SJOG_1f7a_CombatSetActivePlayer(int param_1)
 
     if (local_8 != 0)
     {
-        D_587b = param_1;
+        D_587b_activePlayer = param_1;
         COMSUBS_0094_PrintName(local_6);
         ULTIMA_16ba_PrintChar('\n');
         ULTIMA_2900_UpdateVitalsDisplay();

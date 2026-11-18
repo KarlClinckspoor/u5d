@@ -336,7 +336,7 @@ void OUTSUBS_0458_Falls(void)
 
     ULTIMA_3ae6(1);
 
-    for (local_4 = 0; local_4 < D_585b; local_4++)
+    for (local_4 = 0; local_4 < D_585b_partyCount; local_4++)
     {
         if (D_55a8_party[local_4].status != STATUS_DEAD && D_55a8_party[local_4].dex <= ULTIMA_3abe())
         {
@@ -421,7 +421,7 @@ void OUTSUBS_05fc_StepOnPoisonTile(void)
 {
     int local_4;
 
-    for (local_4 = 0; local_4 < D_585b; local_4++)
+    for (local_4 = 0; local_4 < D_585b_partyCount; local_4++)
     {
         if (D_55a8_party[local_4].status != STATUS_DEAD && D_55a8_party[local_4].status != STATUS_POISONED)
         {
