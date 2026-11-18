@@ -257,7 +257,9 @@ from a rule or from source, each named where it lives:
   (1983, archive.org) writes the plain MZ checksum of the EXE when the overlays go to
   files of their own. Ultima V's linker was PLINK86plus 2.24 (its loader has 2.24's bytes
   wherever 2.21's and 2.24's differ), which also writes the plain MZ checksum of the EXE:
-  so ULTIMA.EXE was changed after the link in more than GOG's eight bytes (MATCHING.md,
+  so ULTIMA.EXE was changed after the link in more than GOG's eight bytes; the change is
+  dated January 1992 (ULTIMA.EXE 1992-01-09, INTRO.OVL 1992-01-20, the other overlays
+  1988-10-19), not GOG's (MATCHING.md,
   "The link"). 2.24 itself is now at hand (`../tools/plink86plus-2.24`): linking u5d's
   objects with it could test the link script's placement facts and the communal order.
 - **Stand-in devices** in the source, each explained in its note: ULTIMA_1850's comment-line

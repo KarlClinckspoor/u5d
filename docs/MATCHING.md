@@ -192,6 +192,18 @@ identical and every name defined. It opens no game file to link.
   `00 5e a1 07` after its THEADR, as Clipper's objects have. Kept in
   `../tools/plink86plus-2.24` (with tagged test objects and NOTES.txt) and `-2.21`.
 
+- **The "GOG patch" is from 1992.** A copy of the game from an old archive (a WinAce 1.0
+  self-extractor of 2000, read through its ACE file headers, nothing run or unpacked) has
+  128 files; every game file has the GOG file's size and CRC32, ULTIMA.EXE and INTRO.OVL
+  too. Their dates: ULTIMA.EXE 1992-01-09, INTRO.OVL 1992-01-20; the other 22 overlays
+  1988-10-19 09:32 and DATA.OVL 09:33 (the link); the data files 1988. So the patched
+  ULTIMA_2322 and INTRO_132a (the disk-swap message and INTRO.OVL's U4 transfer) were
+  changed in January 1992, not by GOG: probably for a hard-disk re-release of that time
+  (Ultima Trilogy II, 1992, is a candidate; not checked). ULTIMA.EXE's checksum field is
+  then still the October 1988 link's, and the 1992 change touched more than the eight
+  bytes known (the sums above). A copy of the 1988 files (ULTIMA.EXE and INTRO.OVL of
+  October 1988) would make both functions compiler output again and test the checksum.
+
 ### Linking with PLINK86plus 2.24
 
 The original linker links u5d's own objects (`research/plink/plu5.py`, `plcmp.py`; the linker
