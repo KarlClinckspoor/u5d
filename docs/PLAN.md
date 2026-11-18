@@ -33,6 +33,7 @@ passes only when they are identical.
 | 2026-11-17, the gate: EXE header and relocation table, DATA.OVL's header, communal variables; all 25 files identical (`tools/check.py`) | 594 | 0 | 0 | 0 | 0 | 594 |
 | 2026-11-18, two targets: GOG (1992) and the 1988 release v1.16 720K, 25/25 each; ULTIMA_2322 and INTRO_132a compiler output in 1988; the EXE checksum by rule | 596 | 0 | 0 | 0 | 0 | 596 |
 | 2026-11-18, the native port removed (only the DOS code and RELEASE_1988 remain); the resident C files named after what they hold (MATCHING.md, "The resident C files") | 596 | 0 | 0 | 0 | 0 | 596 |
+| 2026-11-18, the link by PLINK86plus's rules: src/u5d.lnk a command file (processing order, areas, sections, library), every placement computed by u5link, the overlay table and stubs too | 596 | 0 | 0 | 0 | 0 | 596 |
 
 The early `SIZE` verdicts in `0000.c` and `1000.c` were routines that were hand-written
 assembly in the original and C in u5d (step 5); both files went with the native port.
@@ -74,7 +75,8 @@ assembly in the original and C in u5d (step 5); both files went with the native 
 7. **Link** *(done)*.
    - PLINK86 is not available, and MS LINK's overlays are a different scheme. So:
    - `tools/u5link.py`, a small OMF linker, places every module at its measured address
-     (resident code, the four overlay areas, DGROUP), which it reads from the link script.
+     (resident code, the four overlay areas, DGROUP), which it reads from the link script
+     (since step 8 of "Where it stands": computed by PLINK's rules).
    - It writes the overlay stubs and an MZ header like the original's, with relocations in
      the original order.
    - It produces `ULTIMA.EXE`, the 23 raw overlays, `FLAMES.OVL` and `DATA.OVL`.
@@ -87,7 +89,7 @@ assembly in the original and C in u5d (step 5); both files went with the native 
 Done, each checked by a tool:
 
 - **Assembly:** all of the resident image's hand-written assembly (`src/asm/A*.ASM`, nine
-  modules) and PLINK86's parts (`PLMGR`, `PLSTART`, `PLTAB`) assemble to the original bytes
+  modules) and PLINK86's parts (`PLMGR`, `PLSTART`; `PLTAB` until u5link made the table) assemble to the original bytes
   with MASM 4.0 (`tools/asmbuild.py`). Every relocated word has its segment fixup.
   Four overlays hold assembly too: all of FLAMES.OVL (`AFLAMES.ASM`), NPC.OVL's last routine
   (`ANPC.ASM`), FONT.OVL's first function and last two routines (`AFONT0.ASM`, `AFONT.ASM`),
@@ -177,14 +179,15 @@ Next, in order:
    - DATA.OVL's header: the three far pointers in DGROUP, as 0f68:<DS-0x40> (the paragraph
      where `_DATA` starts).
    - No reference is resolved by the address in its name: the communal variables are
-     allocated by size in PLINK86's order (`u5.COMMUNALS`), the statics are in `_BSS`, and
-     `D_6608_overworld` is a linker definition (`u5.LINK_DEFINES`).
+     allocated by size in PLINK86's order (now the command file's `communals`), the statics
+     are in `_BSS`, and `D_6608_overworld` is a linker definition (now a `define` line).
 5. **The gate** *(done)*. `tools/check.py`; `make check`.
 6. **The link script** *(done)*. `src/u5d.lnk` holds every placement (each module's code
    address and data segment offsets, the 17 library modules, the overlays' sizes, DGROUP's
    size, `_edata`/`_end`, PLINK86's EXE header fields); `tools/linkscript.py` measures it
    from the game files and `--check`s it. `u5link.py` links from the script and the objects
    alone, and `check.py` builds without the game files (MATCHING.md, "The link script").
+   Since step 8: a command file, from which u5link computes every placement.
 
 7. **Readable names** *(done: every module, the shared vocabulary and the resident code)*. Names change the compiled code here (a local's name its
    stack slot, the length of global names pass 2's memory), so renames go through
@@ -230,10 +233,10 @@ Next, in order:
    - Done (resident code; `docs/names/resident-*.txt`): the last 18 functions, about 540
      locals and parameters, 160 globals, the struct fields; then the stand-in step
      (CMDS_0000's dead references, TOWN_0f02's fill four to a line).
-8. **Re-derive the link facts** *(planned)*. `src/u5d.lnk` still states where everything
+8. **Re-derive the link facts** *(done: A and B)*. Before it, `src/u5d.lnk` stated where everything
    goes (71 `object` and 17 `library` lines with addresses, 23 `overlay` lines, the `exe`,
    `dgroup` and `define` lines), `u5.COMMUNALS` the order of the communals, `u5.LINK_DEFINES`
-   D_6608's second name, and PLMGR/PLTAB are written from the original's bytes. The
+   D_6608's second name, and PLMGR/PLTAB were written from the original's bytes. The
    original linker, PLINK86plus 2.24, is at hand (`../tools/plink86plus-2.24`, not in the
    repository), and linking u5d's objects with it already gives every overlay file the
    original's length and 26,397 of the root's 29,408 bytes in place (MATCHING.md, "Linking
@@ -257,40 +260,50 @@ Next, in order:
         with step 4's objects, check the order it gives against `u5.COMMUNALS`.
      6. Then byte for byte: the linked EXE (with Origin's wrapper appended as a separate
         step, as Origin did) and all overlays and DATA.OVL against both targets.
-   - **B. Make u5d's own build follow the rules** (no Phoenix file needed to build):
-     1. u5link takes PLINK's rules instead of addresses: segment order by first
-        appearance, breadth-first library search, overlay areas as large as their largest
-        section, alignment, communals in record order, the overlay table and stubs.
-     2. `src/u5d.lnk` becomes a PLINK-style command file (file order, sections, areas,
-        libraries, DEFINEs) plus whatever stays a fact; `linkscript.py --check` compares
-        the addresses u5link computes with the original's.
-     3. `u5.COMMUNALS` becomes a check (the order follows from the declarations, as
-        research/RULES.md describes), D_6608's second name a DEFINE in the command file.
-     4. PLTAB generated by u5link from the sections (as PLINK does); PLMGR stays assembly
-        (it is OVERLAY.LIB's code, as SLIBCR's modules are the library's), PLSTART stays
-        (Origin's wrapper, not the linker's).
+   - **B. Make u5d's own build follow the rules** (no Phoenix file needed to build). *Done*
+     (MATCHING.md, "The link: u5link.py" and "The link script"):
+     1. u5link places by PLINK's rules from the command file's processing order: the
+        libraries searched as one, breadth first; segments by class and name as first met,
+        DGROUP in DOSSEG order; the areas one after the other, each as large as its largest
+        section; DGROUP after them (DATA.OVL); the communals by the rule in the stated order;
+        `_edata`/`_end`; the overlay table, the stubs, the overlays' and DATA.OVL's headers.
+     2. `src/u5d.lnk` is a command file (output, define, file, begin/end, section, library,
+        loader, table, wrapper) plus the facts: the processing order, the wrapper's stack, the
+        communal order, the stub order. Of the old script's 269 values 267 are computed; the
+        2 left are the wrapper's stack. `linkscript.py` compares every placement (304 gog,
+        301 1988) with the original files and reports the facts.
+     3. The processing order (ULTIMA, the overlays, the library, the other resident objects)
+        gives every code address, every DGROUP offset, the library order and the stubs' set
+        and turns. Not the communal order (VARS.OBJ's slot walk) nor the stubs' order inside
+        a turn (the original objects' record order): both stay facts.
+     4. The table and stubs are made by u5link (PLTAB.ASM and plinkgen.py removed); PLMGR
+        stays assembly, one module for DUMMY, OVLYV and OVUSERM (its data paragraph,
+        `SEG_076C`, a number inside it), with `$OVLYV` public for the stubs; PLSTART stays.
+     Still open: how Origin's command file put the resident objects after the library and
+     in the root.
    Gate: `check.py` for both targets throughout; A changes no source byte, B none either.
 
 ## What is left
 
 The 25 files are identical, and building them needs only the repository, the compilers,
 MASM and DOSBox-X: the game files are needed to compare (or the SHA-1 table is used) and to
-measure the link script again. What the build still takes from the original rather than
+check u5link's placement against the original. What the build still takes from the original rather than
 from a rule or from source, each named where it lives:
 
-- **Placement** is the link script's (`src/u5d.lnk`): 154 lines of facts, measured by
-  `tools/linkscript.py`. Much of it could become rule: a module's code follows the one
-  before it (with the alignment of its segment), and the data segments follow in link order
-  per class; the script would then shrink to the link order. Not tried.
-- **The order of the communal variables** (`u5.COMMUNALS`, 70 names) is a fact, and no rule
+- **Placement** is computed by u5link from the link command file (`src/u5d.lnk`) by
+  PLINK86plus's rules (step 8). Its facts: the processing order (the order the evidence
+  gives; how Origin's command file achieved it is not known), the stack of Origin's wrapper,
+  the order of the call stubs inside each turn (the original objects' record order) and the
+  order of the communals.
+- **The order of the communal variables** (the command file's `communals`, 70 names) is a fact, and no rule
   was found (MATCHING.md, "The uninitialised data"). At the level of objects the part from
   DS:bb18 is first-seen in link order (INTRO0, INTRO2, ENDGAME, TALK, CAST2, SHOPPES2,
   SHOPPE2B, FONT); inside an object the order is neither the order of first reference nor
   u5d's EXTDEF order, and the 33 shared ones are in the symbol-table order of one object
   that declared them all. Both depend on the original's names. Five (D_bbd2, D_bcb0,
   D_bd14, D_bd3a, D_bd3b) are referenced by no code and declared only to fill the layout.
-- **`D_6608_overworld`** is a linker definition; which object defined the second name is
-  not known.
+- **`D_6608_overworld`** is a linker definition (a `define` line); which object defined the
+  second name is not known.
 - **The EXE checksum** is computed (u5link: PLINK86's MZ checksum of the program without
   PLSTART, Origin's copy-protection wrapper; for gog, of the 1988 link, since the 1992
   patch left the field alone).
