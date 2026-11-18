@@ -22,6 +22,10 @@ name the array, elsewhere they stay literals. The block goes right after the #in
 lines, and holds every _TEXT string of the module (one array per address), together
 with the module's tables (D_xxxx definitions from the file, moved into the block) in
 address order. The block is generated: edit the strings in the code, then rerun.
+
+Written for the native port's macros (_TEXT, _XTEXT, TARGET_DOS16), which src/ no longer
+has: its strings are plain literals with the address in a comment (/*0x96b4*/ "Player: "),
+and no module needs a block any more. To use the tool again, adapt its output to that form.
 """
 import argparse, os, re, sys
 

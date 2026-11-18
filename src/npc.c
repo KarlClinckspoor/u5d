@@ -27,26 +27,22 @@ void NPC_0000_LoadNpcFile(void)
     char* fileName;
     int kind_j;
 
-#if !defined(MATCHING_BUILD)
-    fileName = NULL;
-#endif
-
     D_5893_mapId--;
 
     kind_j = (uint)D_5893_mapId >> 3;
     switch (kind_j)
     {
     case 0:
-        fileName = _TEXT(0x6d46, "towne.npc");
+        fileName = /*0x6d46*/ "towne.npc";
         break;
     case 1:
-        fileName = _TEXT(0x6d50, "dwelling.npc");
+        fileName = /*0x6d50*/ "dwelling.npc";
         break;
     case 2:
-        fileName = _TEXT(0x6d5e, "castle.npc");
+        fileName = /*0x6d5e*/ "castle.npc";
         break;
     case 3:
-        fileName = _TEXT(0x6d6a, "keep.npc");
+        fileName = /*0x6d6a*/ "keep.npc";
         break;
     }
 
@@ -256,13 +252,6 @@ static int NPC_032c_SearchPath(int startX, int startY, int goalX, int goalY, int
             default:
                 break;
             }
-
-#if !defined(MATCHING_BUILD)
-            if (x_i >= 0x20 || y_h >= 0x20)
-            {
-                state = 2;
-            }
-#endif
 
             if (state != 2)
             {
@@ -494,8 +483,6 @@ static void NPC_06e4_PursueOrFlee(int npc, int slot)
     int distance_e;
     int type_n;
 
-    CHECK_PARAM_RANGE(npc, 0, 32);
-    CHECK_PARAM_RANGE(slot, 0, 3);
 
     avatar_d = &D_5c5a_actors[0];
     npcRec_e = &D_5f5e_npcs[npc];
@@ -574,12 +561,8 @@ static void NPC_06e4_PursueOrFlee(int npc, int slot)
             }
         }
 
-#if defined(MATCHING_BUILD)
         // aae4 (OK)
         if (dir_d > 4 && distances[dir_d - 1] != 99) // BUG? (OOB, invalid index)
-#else
-        if (dir_d > 4 && distances[dir_d - 5] != 99) // BUGFIX?
-#endif
         {
             if (distances[dir_d - 5] == distance_e)
             {
@@ -1180,37 +1163,3 @@ void NPC_0db4_MoveNpcs(int hour)
     }
 }
 
-#if !defined(TARGET_DOS16) // assembly in the original: src/asm/ANPC.ASM
-// Which of the three schedule entries is in force at the hour: the entry whose time came most recently (assembly in the DOS build, ANPC.ASM).
-int NPC_12e0_ScheduleSlot(int npc, char hour)
-{
-    int i;
-    int ret;
-    byte local_8[4];
-
-    for (i = 0; i < 4; i++)
-    {
-        local_8[i] = hour - D_5d5e_npcSchedules[npc].time[i];
-    }
-
-    ret = 0;
-    if (local_8[1] < local_8[0])
-    {
-        local_8[0] = local_8[1];
-        ret = 1;
-    }
-
-    if (local_8[2] < local_8[0])
-    {
-        local_8[0] = local_8[2];
-        ret = 2;
-    }
-
-    if (local_8[3] < local_8[0])
-    {
-        ret = 1;
-    }
-
-    return ret;
-}
-#endif

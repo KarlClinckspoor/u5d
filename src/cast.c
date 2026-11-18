@@ -13,14 +13,12 @@
 #include "lookobj.h"
 #include "town.h"
 #include "zstats.h"
-#include "time/time.h"
 
 void MAINOUT_0000_SetUpOverworld(void);
 
 u8 D_4592_fieldMissileKinds[4] = {0x35, 0x33, 0x34, 0x36};
 
 u8 D_4596_dungeonFieldCells[4] = {0x82, 0x81, 0x80, 0x83};
-
 
 
 // 1 for the three who no spell touches: Blackthorn, Lord British and the Shadow Lord.
@@ -208,7 +206,7 @@ static int CAST_0230_AnYlem(void)
     case TILE_MAP_AE:
     case TILE_MAP_TRUNK:
         *tilePtr = TILE_MAP_44;
-        ULTIMA_1850_PrintString(_TEXT(0x459a, "POOF!\n"));
+        ULTIMA_1850_PrintString(/*0x459a*/ "POOF!\n");
         D_24e6_viewDirty |= 2;
         ULTIMA_5910_UpdateFrame();
         ULTIMA_43ae_AudioSweepTone(0x4b0, 2000, 1, 0x28);
@@ -253,12 +251,12 @@ static int CAST_02d2_AnSanct(void)
         {
             if ((*cellPtr & 1) != 0)
             {
-                ULTIMA_1850_PrintString(_TEXT(0x45a1, "Disarmed!\n"));
+                ULTIMA_1850_PrintString(/*0x45a1*/ "Disarmed!\n");
             }
 
             *cellPtr = (*cellPtr & 8) | 0x70;
 
-            ULTIMA_1850_PrintString(_TEXT(0x45ac, "Chest opened!\n"));
+            ULTIMA_1850_PrintString(/*0x45ac*/ "Chest opened!\n");
 
             result_l = -1;
         }
@@ -677,7 +675,7 @@ static int CAST_09a0_AnExXen(void)
 {
     int target;
 
-    ULTIMA_1850_PrintString(_TEXT(0x45bb, "Creature: "));
+    ULTIMA_1850_PrintString(/*0x45bb*/ "Creature: ");
     if (COMSUBS_0504_AimCrosshair(D_589e_curCombatant, 0xf) == 0)
     {
         return -1;
@@ -703,7 +701,7 @@ static int CAST_09a0_AnExXen(void)
             }
 
             COMSUBS_0094_PrintName(target);
-            ULTIMA_1850_PrintString(_TEXT(0x45c6, " charmed!\n"));
+            ULTIMA_1850_PrintString(/*0x45c6*/ " charmed!\n");
 
             return -1;
         }
@@ -719,7 +717,7 @@ static int CAST_0a5c_BetRelXen(void)
     int targetX;
     int target;
 
-    ULTIMA_1850_PrintString(_TEXT(0x45d1, "Creature: "));
+    ULTIMA_1850_PrintString(/*0x45d1*/ "Creature: ");
     if (COMSUBS_0504_AimCrosshair(D_589e_curCombatant, 0xf) == 0)
     {
         return -1;
@@ -763,7 +761,7 @@ static int CAST_0b28_InQuasXen(void)
     int target;
     int freeCombatant_f;
 
-    ULTIMA_1850_PrintString(_TEXT(0x45dc, "Creature: "));
+    ULTIMA_1850_PrintString(/*0x45dc*/ "Creature: ");
     if (COMSUBS_0504_AimCrosshair(D_589e_curCombatant, 0xf) == 0)
     {
         return -1;
@@ -860,7 +858,7 @@ static int CAST_0cf0_PorRelVas(void)
 
     if ((D_587c_partyTile & 0xf0) != TILE_ACTOR_FRIGATE_20)
     {
-        ULTIMA_1850_PrintString(_TEXT(0x45e7, "To phase: "));
+        ULTIMA_1850_PrintString(/*0x45e7*/ "To phase: ");
         key = ULTIMA_266c_GetChar();
         if (key >= 0x20)
         {
@@ -896,7 +894,7 @@ static int CAST_0d4c_AnTym(void)
     {
         if (D_5c5a_actors[actorIdx].tile == TILE_ACTOR_SHADOWLORD)
         {
-            ULTIMA_1850_PrintString(_TEXT(0x45f2, "Magic absorbed!\n"));
+            ULTIMA_1850_PrintString(/*0x45f2*/ "Magic absorbed!\n");
             ULTIMA_2192_AudioPulse(0x2648, 1, 28000, 1000, 2);
             result = 0;
             break;
@@ -916,9 +914,7 @@ static int CAST_0d4c_AnTym(void)
 // defined in castb.c, the part of CAST.OVL built with MSC 5.0
 void CAST_1f60_ConeSpell(int caster, int kind, int color);
 
-#if defined(TARGET_DOS16)
 static char S_0x466a[] = "Scroll\n\n";
-#endif
 
 // The Cast command. Asks the acting player, reads the spell (CAST2_00de_SelectSpell), checks that it can be cast here (D_1c90_spellUsability: bit 8 on
 // the overworld, 4 in a town, 2 in a dungeon, 1 in combat; Absorbed! in Lord British's castle without the crown and at Stonegate),
@@ -941,26 +937,18 @@ int CAST_0dba_CastSpellCmd(void)
         return caster_o;
     }
 
-    ULTIMA_1850_PrintString(_TEXT(0x4603, "Spell name:\n:"));
+    ULTIMA_1850_PrintString(/*0x4603*/ "Spell name:\n:");
     spell = CAST2_00de_SelectSpell();
     if (spell == -1)
     {
-        ULTIMA_1850_PrintString(_TEXT(0x4611, "None!\n"));
-#if !defined(MATCHING_BUILD)
-        return passTurn; // TODO: validate return value
-#else
+        ULTIMA_1850_PrintString(/*0x4611*/ "None!\n");
         return; // sic
-#endif
     }
 
     if (spell == -2)
     {
-        ULTIMA_1850_PrintString(_TEXT(0x4618, "No effect!\n"));
-#if !defined(MATCHING_BUILD)
-        return passTurn; // TODO: validate return value
-#else
+        ULTIMA_1850_PrintString(/*0x4618*/ "No effect!\n");
         return; // sic
-#endif
     }
 
     D_588f_castCircle = circle = spell / 6 + 1;
@@ -983,13 +971,9 @@ int CAST_0dba_CastSpellCmd(void)
     {
         if (((D_5893_mapId == 0x12) && (D_57b4_crown == 0)) || (D_5893_mapId == 0x1d)) // LB crown / at STONEGATE
         {
-            ULTIMA_1850_PrintString(_TEXT(0x4624, "Absorbed!\n"));
+            ULTIMA_1850_PrintString(/*0x4624*/ "Absorbed!\n");
             ULTIMA_2192_AudioPulse(0x2648, 1, 28000, 1000, 2);
-#if !defined(MATCHING_BUILD)
-            return passTurn; // TODO: validate return value
-#else
             return; // sic
-#endif
         }
 
         if (D_5893_mapId < 0x21)
@@ -1010,29 +994,21 @@ int CAST_0dba_CastSpellCmd(void)
 
     if (allowedHere == 0)
     {
-        ULTIMA_1850_PrintString(_TEXT(0x462f, "Not here!\n"));
+        ULTIMA_1850_PrintString(/*0x462f*/ "Not here!\n");
         ULTIMA_43ae_AudioSweepTone(800, 2000, 1, 0x32);
-#if !defined(MATCHING_BUILD)
-        return passTurn; // TODO: validate return value
-#else
         return; // sic
-#endif
     }
 
     if (D_57f0_mixedSpells[spell] == 0)
     {
-        ULTIMA_1850_PrintString(_TEXT(0x463a, "None mixed!\n"));
-#if !defined(MATCHING_BUILD)
-        return passTurn; // TODO: validate return value
-#else
+        ULTIMA_1850_PrintString(/*0x463a*/ "None mixed!\n");
         return; // sic
-#endif
     }
 
     D_57f0_mixedSpells[spell]--;
     if (D_55a8_party[caster_o].mag < circle)
     {
-        ULTIMA_1850_PrintString(_TEXT(0x4647, "M.P. too low!\n"));
+        ULTIMA_1850_PrintString(/*0x4647*/ "M.P. too low!\n");
         result_d = 0;
     }
     else
@@ -1237,11 +1213,11 @@ int CAST_0dba_CastSpellCmd(void)
 
     if (result_d == 1)
     {
-        ULTIMA_1850_PrintString(_TEXT(0x4656, "Success!\n"));
+        ULTIMA_1850_PrintString(/*0x4656*/ "Success!\n");
     }
     else if (result_d == 0)
     {
-        ULTIMA_1850_PrintString(_TEXT(0x4660, "Failed!\n"));
+        ULTIMA_1850_PrintString(/*0x4660*/ "Failed!\n");
         ULTIMA_43ae_AudioSweepTone(800, 2000, 1, 0x32);
     }
 
@@ -1255,17 +1231,17 @@ static int CAST_11de_UseScroll(int scroll)
     int result_b = 1;
 
     D_5820_scrolls[scroll]--;
-    ULTIMA_1850_PrintString(_XTEXT(0x466a, "Scroll\n\n"));
+    ULTIMA_1850_PrintString(S_0x466a);
     switch (scroll)
     {
     case 0:
         CAST2_08ea_SetLightTurns(0xf0);
-        ULTIMA_1850_PrintString(_TEXT(0x4673, "Light!\n"));
+        ULTIMA_1850_PrintString(/*0x4673*/ "Light!\n");
         CAST2_0000_CastEffect(0);
         break;
 
     case 1:
-        ULTIMA_1850_PrintString(_TEXT(0x467b, "Wind change!\n"));
+        ULTIMA_1850_PrintString(/*0x467b*/ "Wind change!\n");
         direction = CAST2_0306_AskDirection();
         if (D_5893_mapId < 0x21)
         {
@@ -1276,21 +1252,21 @@ static int CAST_11de_UseScroll(int scroll)
         break;
 
     case 2:
-        ULTIMA_1850_PrintString(_TEXT(0x4689, "Protection!\n"));
+        ULTIMA_1850_PrintString(/*0x4689*/ "Protection!\n");
         CAST2_08f8_SetSpellStatus(0x50, 100, 2);
         break;
 
     case 3:
-        ULTIMA_1850_PrintString(_TEXT(0x4696, "Negate magic!\n"));
+        ULTIMA_1850_PrintString(/*0x4696*/ "Negate magic!\n");
         CAST2_08f8_SetSpellStatus(0x4e, 0x14, 3);
         break;
 
     case 4:
         // 1278
-        ULTIMA_1850_PrintString(_TEXT(0x46a5, "View!\n"));
+        ULTIMA_1850_PrintString(/*0x46a5*/ "View!\n");
         if (D_5893_mapId > 0x7f)
         {
-            ULTIMA_1850_PrintString(_TEXT(0x46ac, "Not here!\n"));
+            ULTIMA_1850_PrintString(/*0x46ac*/ "Not here!\n");
             break;
         }
         else
@@ -1308,7 +1284,7 @@ static int CAST_11de_UseScroll(int scroll)
 
     case 5:
         // 12b4
-        ULTIMA_1850_PrintString(_TEXT(0x46b7, "Summon Daemon!\n"));
+        ULTIMA_1850_PrintString(/*0x46b7*/ "Summon Daemon!\n");
         if (D_5893_mapId > 0x7f)
         {
             result_b = CAST2_04c2_KalXenCorp(1);
@@ -1316,30 +1292,30 @@ static int CAST_11de_UseScroll(int scroll)
         }
         else
         {
-            ULTIMA_1850_PrintString(_TEXT(0x46c7, "Not here!\n"));
+            ULTIMA_1850_PrintString(/*0x46c7*/ "Not here!\n");
             break;
         }
 
     case 6:
         // 12d2
-        ULTIMA_1850_PrintString(_TEXT(0x46d2, "Resurrection!\n"));
+        ULTIMA_1850_PrintString(/*0x46d2*/ "Resurrection!\n");
         if (D_5893_mapId < 0x80)
         {
             result_b = CAST2_05e0_Resurrect(CAST2_009e_OnWho(), 1);
             ULTIMA_2900_UpdateVitalsDisplay();
             break;
         }
-        ULTIMA_1850_PrintString(_TEXT(0x46e1, "Not here!\n"));
+        ULTIMA_1850_PrintString(/*0x46e1*/ "Not here!\n");
         break;
 
     case 7:
         if ((D_5893_mapId == 0x1d) || (D_5893_mapId == 0x28))
         {
-            ULTIMA_1850_PrintString(_TEXT(0x46ec, "No effect!\n"));
+            ULTIMA_1850_PrintString(/*0x46ec*/ "No effect!\n");
             ULTIMA_43ae_AudioSweepTone(800, 2000, 1, 0x32);
             break;
         }
-        ULTIMA_1850_PrintString(_TEXT(0x46f8, "Negate time!\n"));
+        ULTIMA_1850_PrintString(/*0x46f8*/ "Negate time!\n");
         CAST2_08f8_SetSpellStatus(0x54, 0x14, 7);
         break;
     }
@@ -1347,9 +1323,7 @@ static int CAST_11de_UseScroll(int scroll)
     return result_b;
 }
 
-#if defined(TARGET_DOS16)
 static char S_0x474c[] = "\nNo noticeable effect now!\n";
-#endif
 
 // CHECKED
 // The Use command on a potion: asks on whom (in combat the user); 1 in 16 it is a sleeping draught instead and 1 in 16 a random other.
@@ -1363,7 +1337,7 @@ static int CAST_135a_UsePotion(int potion)
 
     result_l = 1;
     D_5828_potions[potion]--;
-    ULTIMA_1850_PrintString(_TEXT(0x4706, "Potion\n"));
+    ULTIMA_1850_PrintString(/*0x4706*/ "Potion\n");
     if (D_5893_mapId > 0x7f)
     {
         member_d = D_ba14_combatants[D_589e_curCombatant].entityIdx;
@@ -1430,7 +1404,7 @@ static int CAST_135a_UsePotion(int potion)
         result_l = CAST2_03c2_HealMember(member_d);
         if (result_l != 0)
         {
-            ULTIMA_1850_PrintString(_TEXT(0x470e, "Healed!\n"));
+            ULTIMA_1850_PrintString(/*0x470e*/ "Healed!\n");
             ULTIMA_2900_UpdateVitalsDisplay();
         }
         break;
@@ -1440,7 +1414,7 @@ static int CAST_135a_UsePotion(int potion)
         {
             D_55a8_party[member_d].status = STATUS_GOOD;
 
-            ULTIMA_1850_PrintString(_TEXT(0x4717, "Poison cured!\n"));
+            ULTIMA_1850_PrintString(/*0x4717*/ "Poison cured!\n");
             ULTIMA_2900_UpdateVitalsDisplay();
         }
         else
@@ -1454,7 +1428,7 @@ static int CAST_135a_UsePotion(int potion)
         {
             D_55a8_party[member_d].status = STATUS_POISONED;
 
-            ULTIMA_1850_PrintString(_TEXT(0x4726, "POISONED!\n"));
+            ULTIMA_1850_PrintString(/*0x4726*/ "POISONED!\n");
             ULTIMA_2900_UpdateVitalsDisplay();
         }
         else
@@ -1475,7 +1449,7 @@ static int CAST_135a_UsePotion(int potion)
                 ULTIMA_68ae_PutToSleep(member_d);
             }
 
-            ULTIMA_1850_PrintString(_TEXT(0x4731, "Slept!\n"));
+            ULTIMA_1850_PrintString(/*0x4731*/ "Slept!\n");
             ULTIMA_2900_UpdateVitalsDisplay();
         }
         else
@@ -1487,13 +1461,13 @@ static int CAST_135a_UsePotion(int potion)
     case 5:
         if (D_5893_mapId > 0x7f)
         {
-            ULTIMA_1850_PrintString(_TEXT(0x4739, "Poof!\n"));
+            ULTIMA_1850_PrintString(/*0x4739*/ "Poof!\n");
             actor = &D_5c5a_actors[D_ba14_combatants[D_589e_curCombatant].actorIdx];
             actor->tile = actor->animTile = TILE_ACTOR_90;
         }
         else
         {
-            ULTIMA_1850_PrintString(_XTEXT(0x474c, "\nNo noticeable effect now!\n"));
+            ULTIMA_1850_PrintString(S_0x474c);
         }
         break;
 
@@ -1502,12 +1476,12 @@ static int CAST_135a_UsePotion(int potion)
         {
             D_ba14_combatants[D_589e_curCombatant].flags |= COMBAT_FLAGS_INVISIBLE;
             actor = &D_5c5a_actors[D_ba14_combatants[D_589e_curCombatant].actorIdx];
-            ULTIMA_1850_PrintString(_TEXT(0x4740, "Invisible!\n"));
+            ULTIMA_1850_PrintString(/*0x4740*/ "Invisible!\n");
             actor->tile = actor->animTile = TILE_ACTOR_1D;
         }
         else
         {
-            ULTIMA_1850_PrintString(_XTEXT(0x474c, "\nNo noticeable effect now!\n"));
+            ULTIMA_1850_PrintString(S_0x474c);
         }
         break;
 
@@ -1518,7 +1492,7 @@ static int CAST_135a_UsePotion(int potion)
         }
         else
         {
-            ULTIMA_1850_PrintString(_XTEXT(0x474c, "\nNo noticeable effect now!\n"));
+            ULTIMA_1850_PrintString(S_0x474c);
         }
         break;
     }
@@ -1532,10 +1506,10 @@ static void CAST_153c_UseMoonstone(int stone)
     int tile;
 
     tile = *ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY);
-    ULTIMA_1850_PrintString(_TEXT(0x4768, "Moonstone "));
+    ULTIMA_1850_PrintString(/*0x4768*/ "Moonstone ");
     if (D_5893_mapId < 0x21 && (tile == TILE_MAP_CROPS_PICKED || tile == TILE_MAP_CROPS || (tile > TILE_MAP_WATER_3 && tile < TILE_MAP_B)))
     {
-        ULTIMA_1850_PrintString(_TEXT(0x4773, "buried!\n"));
+        ULTIMA_1850_PrintString(/*0x4773*/ "buried!\n");
         D_5830_moonstoneX[stone] = D_5896_mapX;
         D_5838_moonstoneY[stone] = D_5897_mapY;
         D_5840_moonstoneMap[stone] = D_5893_mapId;
@@ -1543,10 +1517,9 @@ static void CAST_153c_UseMoonstone(int stone)
     }
     else
     {
-        ULTIMA_1850_PrintString(_TEXT(0x477c, "cannot be buried here!\n"));
+        ULTIMA_1850_PrintString(/*0x477c*/ "cannot be buried here!\n");
     }
 }
-
 
 u8 D_4882_shardX[4] = {0x0f, 0x0f, 0x0f};
 
@@ -1565,17 +1538,17 @@ static void CAST_15b4_UseGemShard(int shard)
 {
     int index;
 
-    ULTIMA_1850_PrintString(_TEXT(0x4794, "Gem Shard\n\nThou dost hold above thee the evil Shard of "));
+    ULTIMA_1850_PrintString(/*0x4794*/ "Gem Shard\n\nThou dost hold above thee the evil Shard of ");
     switch (shard)
     {
     case 0:
-        ULTIMA_1850_PrintString(_TEXT(0x47cc, "Falsehood..."));
+        ULTIMA_1850_PrintString(/*0x47cc*/ "Falsehood...");
         break;
     case 1:
-        ULTIMA_1850_PrintString(_TEXT(0x47d9, "Hatred..."));
+        ULTIMA_1850_PrintString(/*0x47d9*/ "Hatred...");
         break;
     case 2:
-        ULTIMA_1850_PrintString(_TEXT(0x47e3, "Cowardice..."));
+        ULTIMA_1850_PrintString(/*0x47e3*/ "Cowardice...");
         break;
     }
 
@@ -1592,23 +1565,23 @@ static void CAST_15b4_UseGemShard(int shard)
     if (D_4882_shardX[shard] != D_5896_mapX || D_4886_shardY[shard] != D_5897_mapY || D_488a_shardMap[shard] != D_5893_mapId ||
         D_488e_shardLevel[shard] != D_5895_mapLevel)
     {
-        ULTIMA_1850_PrintString(_TEXT(0x47f0, "\n\nNo effect!\n"));
+        ULTIMA_1850_PrintString(/*0x47f0*/ "\n\nNo effect!\n");
         ULTIMA_43ae_AudioSweepTone(800, 2000, 1, 0x32);
         return;
     }
 
     ULTIMA_3ae6_WaitFrames(7);
-    ULTIMA_1850_PrintString(_TEXT(0x47fe, "\n\n...and cast it into the Flame of "));
+    ULTIMA_1850_PrintString(/*0x47fe*/ "\n\n...and cast it into the Flame of ");
     switch (shard)
     {
     case 0:
-        ULTIMA_1850_PrintString(_TEXT(0x4822, "Truth!\n"));
+        ULTIMA_1850_PrintString(/*0x4822*/ "Truth!\n");
         break;
     case 1:
-        ULTIMA_1850_PrintString(_TEXT(0x482a, "Love!\n"));
+        ULTIMA_1850_PrintString(/*0x482a*/ "Love!\n");
         break;
     case 2:
-        ULTIMA_1850_PrintString(_TEXT(0x4831, "Courage!\n"));
+        ULTIMA_1850_PrintString(/*0x4831*/ "Courage!\n");
         break;
     }
 
@@ -1632,21 +1605,21 @@ static void CAST_15b4_UseGemShard(int shard)
 
         *(u32*)&D_5b5a_npcKilled[0x70] |= D_4892_shardKilledBit[shard];
 
-        ULTIMA_1850_PrintString(_TEXT(0x483b, "\nThe doom of the Shadowlord "));
+        ULTIMA_1850_PrintString(/*0x483b*/ "\nThe doom of the Shadowlord ");
         switch (shard)
         {
         case 0:
-            ULTIMA_1850_PrintString(_TEXT(0x4858, "Faulinei"));
+            ULTIMA_1850_PrintString(/*0x4858*/ "Faulinei");
             break;
         case 1:
-            ULTIMA_1850_PrintString(_TEXT(0x4861, "Astaroth"));
+            ULTIMA_1850_PrintString(/*0x4861*/ "Astaroth");
             break;
         case 2:
-            ULTIMA_1850_PrintString(_TEXT(0x486a, "Nosfentor"));
+            ULTIMA_1850_PrintString(/*0x486a*/ "Nosfentor");
             break;
         }
 
-        ULTIMA_1850_PrintString(_TEXT(0x4874, " is wrought!\n"));
+        ULTIMA_1850_PrintString(/*0x4874*/ " is wrought!\n");
         ULTIMA_4368_AudioVictoryTune();
     }
 }
@@ -1656,7 +1629,7 @@ static bool CAST_1764_RemoveWornItem(int icon)
 {
     if (icon == D_587a_statusIcon)
     {
-        ULTIMA_1850_PrintString(_TEXT(0x4895, "Removed!\n"));
+        ULTIMA_1850_PrintString(/*0x4895*/ "Removed!\n");
 
         D_587a_statusIcon = D_588e_protectTurns = 0;
         D_a9fa_vitalsDirty = 1;
@@ -1667,9 +1640,7 @@ static bool CAST_1764_RemoveWornItem(int icon)
     return 1;
 }
 
-#if defined(TARGET_DOS16)
 static char S_0x4a84[] = " of Lord British...\n";
-#endif
 
 // The Use command: lists the usable items (ZSTATS) and uses the one chosen: scrolls, potions, moonstones, the carpet, skull key,
 // amulet, crown, sceptre, gem shards, spyglass, plans, sextant, watch, badge.
@@ -1691,14 +1662,14 @@ void CAST_1792_UseCmd(void)
     firstItem_j = ZSTATS_05a4_NextItem(-1, 0x26, D_b9ee_itemCounts, 0xff);
     if (firstItem_j == -1)
     {
-        ULTIMA_1850_PrintString(_TEXT(0x489f, "No usable items!\n"));
+        ULTIMA_1850_PrintString(/*0x489f*/ "No usable items!\n");
         return;
     }
 
-    ULTIMA_1850_PrintString(_TEXT(0x48b1, "Item: "));
+    ULTIMA_1850_PrintString(/*0x48b1*/ "Item: ");
     ULTIMA_4efc_OpenStatsDivider();
     ULTIMA_1b94_SelectTextWindow(1);
-    ULTIMA_4e50_ShowStatsTitle(_TEXT(0x48b8, "Items:"));
+    ULTIMA_4e50_ShowStatsTitle(/*0x48b8*/ "Items:");
     ZSTATS_045e_DrawListFrame(8);
 
     item = ZSTATS_0f2e_SelectItem(firstItem_j, 0xff, 0x55);
@@ -1728,33 +1699,33 @@ void CAST_1792_UseCmd(void)
         switch (item)
         {
         case 0x10:
-            ULTIMA_1850_PrintString(_TEXT(0x48bf, "Carpet\n\n"));
+            ULTIMA_1850_PrintString(/*0x48bf*/ "Carpet\n\n");
             if (D_5893_mapId < 0x21 && *ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY) != TILE_MAP_C)
             {
                 if (D_587c_partyTile == TILE_ACTOR_AVATAR)
                 {
-                    ULTIMA_1850_PrintString(_TEXT(0x48c8, "Boarded!\n"));
+                    ULTIMA_1850_PrintString(/*0x48c8*/ "Boarded!\n");
                     D_587c_partyTile = ULTIMA_2092_RandomRange(0, 1) + TILE_ACTOR_FLYING_CARPET;
                     D_57b0_carpets--;
                 }
                 else if ((D_587c_partyTile & 0xf8) == TILE_ACTOR_FRIGATE_20)
                 {
-                    ULTIMA_1850_PrintString(_TEXT(0x48d2, "X-it ship first!\n"));
+                    ULTIMA_1850_PrintString(/*0x48d2*/ "X-it ship first!\n");
                 }
                 else
                 {
-                    ULTIMA_1850_PrintString(_TEXT(0x48e4, "Only on foot!\n"));
+                    ULTIMA_1850_PrintString(/*0x48e4*/ "Only on foot!\n");
                 }
             }
             else
             {
-                ULTIMA_1850_PrintString(_TEXT(0x48f3, "Not here!\n"));
+                ULTIMA_1850_PrintString(/*0x48f3*/ "Not here!\n");
             }
             break;
 
         case 0x11:
             D_57b1_skullKeys--;
-            ULTIMA_1850_PrintString(_TEXT(0x48fe, "Skull Key\n"));
+            ULTIMA_1850_PrintString(/*0x48fe*/ "Skull Key\n");
             if (D_5893_mapId < 0x21 || 0x7f < D_5893_mapId)
             {
                 result_e = CAST2_0768_InExPor();
@@ -1765,33 +1736,33 @@ void CAST_1792_UseCmd(void)
                 break;
             }
 
-            ULTIMA_1850_PrintString(_TEXT(0x4909, "Not here!\n"));
+            ULTIMA_1850_PrintString(/*0x4909*/ "Not here!\n");
             break;
 
         case 0x12:
-            ULTIMA_1850_PrintString(_TEXT(0x4914, "Amulet\n\n"));
+            ULTIMA_1850_PrintString(/*0x4914*/ "Amulet\n\n");
             if (CAST_1764_RemoveWornItem(0xe) == 0)
                 break;
 
-            ULTIMA_1850_PrintString(_TEXT(0x491d, "Wearing the Amulet"));
-            ULTIMA_1850_PrintString(_XTEXT(0x4a84, " of Lord British...\n"));
+            ULTIMA_1850_PrintString(/*0x491d*/ "Wearing the Amulet");
+            ULTIMA_1850_PrintString(S_0x4a84);
             CAST2_08f8_SetSpellStatus(0xe, 0xff, 9);
             break;
 
         case 0x13:
-            ULTIMA_1850_PrintString(_TEXT(0x4930, "Crown\n\n"));
+            ULTIMA_1850_PrintString(/*0x4930*/ "Crown\n\n");
             if (CAST_1764_RemoveWornItem(0x1c) == 0)
                 break;
 
-            ULTIMA_1850_PrintString(_TEXT(0x4938, "Thou dost don the Crown"));
-            ULTIMA_1850_PrintString(_XTEXT(0x4a84, " of Lord British...\n"));
+            ULTIMA_1850_PrintString(/*0x4938*/ "Thou dost don the Crown");
+            ULTIMA_1850_PrintString(S_0x4a84);
             CAST2_08f8_SetSpellStatus(0x1c, 0xff, 9);
             break;
 
         case 0x14:
-            ULTIMA_1850_PrintString(_TEXT(0x4950, "Sceptre\n\n"));
-            ULTIMA_1850_PrintString(_TEXT(0x495a, "Wielding the Sceptre"));
-            ULTIMA_1850_PrintString(_XTEXT(0x4a84, " of Lord British...\n"));
+            ULTIMA_1850_PrintString(/*0x4950*/ "Sceptre\n\n");
+            ULTIMA_1850_PrintString(/*0x495a*/ "Wielding the Sceptre");
+            ULTIMA_1850_PrintString(S_0x4a84);
             ULTIMA_2192_AudioPulse(0x1450, 1, 50000, 5000, 1);
 
             cleared = 0;
@@ -1819,11 +1790,11 @@ void CAST_1792_UseCmd(void)
             fieldResult = CAST2_07bc_AnGrav(0);
             if (fieldResult == 1)
             {
-                ULTIMA_1850_PrintString(_TEXT(0x496f, "Field dissolved!\n"));
+                ULTIMA_1850_PrintString(/*0x496f*/ "Field dissolved!\n");
             }
             else if (fieldResult == 0)
             {
-                ULTIMA_1850_PrintString(_TEXT(0x4981, "No effect!\n"));
+                ULTIMA_1850_PrintString(/*0x4981*/ "No effect!\n");
             }
             break;
 
@@ -1834,59 +1805,59 @@ void CAST_1792_UseCmd(void)
             break;
 
         case 0x20:
-            ULTIMA_1850_PrintString(_TEXT(0x498d, "Spyglass\n\n"));
+            ULTIMA_1850_PrintString(/*0x498d*/ "Spyglass\n\n");
             if (D_5893_mapId < 0x21 && D_5895_mapLevel < 0x80)
             {
                 if (D_587f_hour < 6 || 0x12 < D_587f_hour)
                 {
-                    ULTIMA_1850_PrintString(_TEXT(0x4998, "Looking...\n"));
+                    ULTIMA_1850_PrintString(/*0x4998*/ "Looking...\n");
                     LOOKOBJ_0366_LookSky();
                     break;
                 }
 
-                ULTIMA_1850_PrintString(_TEXT(0x49a4, "No stars!\n"));
+                ULTIMA_1850_PrintString(/*0x49a4*/ "No stars!\n");
             }
             else
             {
-                ULTIMA_1850_PrintString(_TEXT(0x49af, "Not here!\n"));
+                ULTIMA_1850_PrintString(/*0x49af*/ "Not here!\n");
             }
             break;
 
         case 0x21:
-            ULTIMA_1850_PrintString(_TEXT(0x49ba, "Plans\n\n"));
+            ULTIMA_1850_PrintString(/*0x49ba*/ "Plans\n\n");
             if ((D_587c_partyTile & 0xf8) == TILE_ACTOR_FRIGATE_20)
             {
                 D_57bb_hmsCapePlans |= 0x80;
-                ULTIMA_1850_PrintString(_TEXT(0x49c2, "Ship rigged for double speed!\n"));
+                ULTIMA_1850_PrintString(/*0x49c2*/ "Ship rigged for double speed!\n");
             }
             else
             {
-                ULTIMA_1850_PrintString(_TEXT(0x49e1, "Only usable on shipboard!\n"));
+                ULTIMA_1850_PrintString(/*0x49e1*/ "Only usable on shipboard!\n");
             }
             break;
 
         case 0x22:
-            ULTIMA_1850_PrintString(_TEXT(0x49fc, "Sextant\n\n"));
+            ULTIMA_1850_PrintString(/*0x49fc*/ "Sextant\n\n");
             if (D_5895_mapLevel > 0x7f || D_5893_mapId != 0)
             {
-                ULTIMA_1850_PrintString(_TEXT(0x4a06, "Only outdoors!\n"));
+                ULTIMA_1850_PrintString(/*0x4a06*/ "Only outdoors!\n");
             }
             else
             {
                 if (D_587f_hour > 5 && D_587f_hour < 0x13)
                 {
-                    ULTIMA_1850_PrintString(_TEXT(0x4a16, "Only at night!\n"));
+                    ULTIMA_1850_PrintString(/*0x4a16*/ "Only at night!\n");
                 }
                 else
                 {
-                    ULTIMA_1850_PrintString(_TEXT(0x4a26, "Position:"));
+                    ULTIMA_1850_PrintString(/*0x4a26*/ "Position:");
                     CAST2_06ec_PrintPosition();
                 }
             }
             break;
 
         case 0x23:
-            ULTIMA_1850_PrintString(_TEXT(0x4a30, "Watch\n\nThe pocket watch reads "));
+            ULTIMA_1850_PrintString(/*0x4a30*/ "Watch\n\nThe pocket watch reads ");
             hour12_l = (byte)(D_587f_hour % 0xc);
             if (hour12_l == 0)
             {
@@ -1898,19 +1869,19 @@ void CAST_1792_UseCmd(void)
             ULTIMA_1a3e_PrintNumber(D_5881_minute, 2, 0x30);
             if (D_587f_hour > 0xb)
             {
-                ULTIMA_1850_PrintString(_TEXT(0x4a4f, " PM.\n"));
+                ULTIMA_1850_PrintString(/*0x4a4f*/ " PM.\n");
             }
             else
             {
-                ULTIMA_1850_PrintString(_TEXT(0x4a55, " AM.\n"));
+                ULTIMA_1850_PrintString(/*0x4a55*/ " AM.\n");
             }
             break;
 
         case 0x24:
-            ULTIMA_1850_PrintString(_TEXT(0x4a5b, "Badge\n\n"));
+            ULTIMA_1850_PrintString(/*0x4a5b*/ "Badge\n\n");
             if (CAST_1764_RemoveWornItem(0x1d) != 0)
             {
-                ULTIMA_1850_PrintString(_TEXT(0x4a63, "Badge worn!\n"));
+                ULTIMA_1850_PrintString(/*0x4a63*/ "Badge worn!\n");
                 D_587a_statusIcon = 0x1d;
                 D_588e_protectTurns = 0xff;
                 D_a9fa_vitalsDirty = 1;
@@ -1918,14 +1889,14 @@ void CAST_1792_UseCmd(void)
             break;
 
         case 0x25:
-            ULTIMA_1850_PrintString(_TEXT(0x4a70, "Box\n\nHow?\n"));
+            ULTIMA_1850_PrintString(/*0x4a70*/ "Box\n\nHow?\n");
             break;
         }
     }
 
     if (result_e == 0)
     {
-        ULTIMA_1850_PrintString(_TEXT(0x4a7b, "Failed!\n"));
+        ULTIMA_1850_PrintString(/*0x4a7b*/ "Failed!\n");
         ULTIMA_43ae_AudioSweepTone(800, 2000, 1, 0x32);
     }
 }

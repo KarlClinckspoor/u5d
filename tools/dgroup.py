@@ -7,10 +7,10 @@
 
 In the original, every module's initialised data (its tables and string literals) sits in
 DGROUP at a fixed place, in the order the module defines it. u5d keeps the tables as
-global D_xxxx variables in vars.c, and the strings in the functions that use them
-(_TEXT(addr, "...")). This tool puts both on one map:
+global D_xxxx variables in vars.c, and the strings in the functions that use them, each
+with its address in a comment before it (/*0x96b4*/ "..."). This tool puts both on one map:
 
-  - a string's address is the one its _TEXT() gives, and it belongs to the file it is in;
+  - a string's address is the one its comment gives, and it belongs to the file it is in;
   - a variable's address is in its name, its extent runs to the next known item, and the
     modules that use it are found by name;
   - a module's extent runs from its first string to the start of the next module's.
@@ -24,7 +24,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import u5  # noqa: E402
 
 LIT = r'(?:(?:"(?:[^"\\]|\\.)*"\s*)+|[A-Z_][A-Z0-9_]*\b)'
-# _TEXT(0x96b4, "...") or _STATIC_TEXT(0x2626, "...") or _TEXT(0x96c6, CLASS_LIST)
+# the native port's form, which src/ no longer has: _TEXT(0x96b4, "..."), _STATIC_TEXT(0x2626, "...")
 STR_RE = re.compile(r'_(?:STATIC_)?TEXT\(\s*0x([0-9a-fA-F]{1,4})\s*,\s*(' + LIT + r')\s*\)')
 # a string whose address u5d wrote in a comment: /*0x2626*/ "TOWNE.DAT", /*0x96c6*/ CLASS_LIST
 ANNOT_RE = re.compile(r'/\*\s*0x([0-9a-fA-F]{4})\s*\*/\s*(' + LIT + r')')

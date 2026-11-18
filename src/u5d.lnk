@@ -79,31 +79,31 @@ library  SLIBCR.LIB xtoa.asm         __cltoasub  code=07ca
 library  LIBH.LIB   lshl.asm         __aNlshl    code=082a
 library  SLIBCR.LIB dos\stdalloc.asm __myalloc   code=0836
 object   A0878    code=0878 _DATA=52ba
-object   R0D72    code=0d72 _DATA=5306
+object   LOGO     code=0d72 _DATA=5306
 object   A0DE0    code=0de0 _DATA=5322
-object   R1850    code=1850 _DATA=5402
+object   PRINT    code=1850 _DATA=5402
 object   A1B16    code=1b16
-object   R1B38    code=1b38 _DATA=540c
+object   POLLKEY  code=1b38 _DATA=540c
 object   A1B94    code=1b94 _DATA=540e
-object   R1DDA    code=1dda
+object   WAITKEY  code=1dda
 object   A1EAC    code=1eac _DATA=541e
-object   R1FA0    code=1fa0
+object   BACKSPC  code=1fa0
 object   A2056    code=2056 _DATA=5420
-object   R216C    code=216c
+object   USTRLEN  code=216c
 object   A2192    code=2192 _DATA=5450
-object   R2320    code=2320 target=gog
+object   DISKSWAP code=2320 target=gog
 object   A2322    code=2322 _DATA=545e target=gog
-object   R2320    code=2320 _DATA=545e target=1988
-object   R251E    code=251e
-object   R256E    code=256e CONST=a0e0
-object   2000     code=266c _DATA=54b6
-object   3000     code=3072 _DATA=55a6 CONST=a110
-object   4000     code=400c _DATA=6a34 CONST=a396
-object   5000     code=51a0
-object   R5A28    code=5a28 _DATA=6a86
-object   6000     code=5f86 CONST=a3f0
+object   DISKSWAP code=2320 _DATA=545e target=1988
+object   SWDISKS  code=251e
+object   FILEIO   code=256e CONST=a0e0
+object   PARTY    code=266c _DATA=54b6
+object   COMMANDS code=3072 _DATA=55a6 CONST=a110
+object   WORLD    code=400c _DATA=6a34 CONST=a396
+object   VIEW     code=51a0
+object   VISIBLE  code=5a28 _DATA=6a86
+object   BATTLE   code=5f86 CONST=a3f0
 object   A6F1E    code=6f1e _DATA=6aa4
-object   7000     code=7040
+object   LIGHTHSE code=7040
 object   A71AA    code=71aa
 object   PLMGR    code=72e0
 object   PLTAB    code=7780

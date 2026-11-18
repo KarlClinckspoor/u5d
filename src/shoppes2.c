@@ -34,23 +34,23 @@ static void SHOPPES2_006a_PrintDinerCount(void)
     switch (D_bd1c_dinerCount)
     {
     case 2:
-        ULTIMA_1850_PrintString(_TEXT(0x9aa8, "two"));
+        ULTIMA_1850_PrintString(/*0x9aa8*/ "two");
         break;
 
     case 3:
-        ULTIMA_1850_PrintString(_TEXT(0x9aac, "three"));
+        ULTIMA_1850_PrintString(/*0x9aac*/ "three");
         break;
 
     case 4:
-        ULTIMA_1850_PrintString(_TEXT(0x9ab2, "four"));
+        ULTIMA_1850_PrintString(/*0x9ab2*/ "four");
         break;
 
     case 5:
-        ULTIMA_1850_PrintString(_TEXT(0x9ab8, "five"));
+        ULTIMA_1850_PrintString(/*0x9ab8*/ "five");
         break;
 
     case 6:
-        ULTIMA_1850_PrintString(_TEXT(0x9abe, "six"));
+        ULTIMA_1850_PrintString(/*0x9abe*/ "six");
         break;
     }
 }
@@ -65,20 +65,16 @@ static void SHOPPES2_00ac_PrintHonorific(void)
 {
     int member;
 
-#if defined(TARGET_DOS16)
     D_587b_activePlayer = D_587b_activePlayer = 0xff; // two stores to one byte between sequence points: DOS build only
-#else
-    D_587b_activePlayer = 0xff;
-#endif
     member = 0;
 L_e297:
     if (D_55a8_party[member].gender == 0xb)
     {
-        ULTIMA_1850_PrintString(_TEXT(0x9ac2, "sir"));
+        ULTIMA_1850_PrintString(/*0x9ac2*/ "sir");
     }
     else
     {
-        ULTIMA_1850_PrintString(_TEXT(0x9ac6, "milady"));
+        ULTIMA_1850_PrintString(/*0x9ac6*/ "milady");
     }
 }
 
@@ -86,17 +82,17 @@ L_e297:
 static int SHOPPES2_00dc_ChargeForMeal(void)
 {
     ULTIMA_16ba_PrintChar('\"');
-    ULTIMA_1850_PrintString(_TEXT(0x9ace, "That will be "));
+    ULTIMA_1850_PrintString(/*0x9ace*/ "That will be ");
     ULTIMA_1a3e_PrintNumber(D_b118_shopPrice, 1, 0x20);
-    ULTIMA_1850_PrintString(_TEXT(0x9adc, " gold for the "));
+    ULTIMA_1850_PrintString(/*0x9adc*/ " gold for the ");
     SHOPPES2_006a_PrintDinerCount();
-    ULTIMA_1850_PrintString(_TEXT(0x9aec, " of ye,\n"));
+    ULTIMA_1850_PrintString(/*0x9aec*/ " of ye,\n");
     SHOPPES2_00ac_PrintHonorific();
     ULTIMA_16ba_PrintChar('.');
 
     if (D_b118_shopPrice > D_57aa_gold)
     {
-        ULTIMA_1850_PrintString(_TEXT(0x9af6, "\"\n\n\"CAN'T PAY?\nBeat it!\"\nyells "));
+        ULTIMA_1850_PrintString(/*0x9af6*/ "\"\n\n\"CAN'T PAY?\nBeat it!\"\nyells ");
         ULTIMA_1850_PrintString(D_aafe_shopOwner);
         ULTIMA_16ba_PrintChar('.');
         ULTIMA_16ba_PrintChar('\n');
@@ -130,7 +126,7 @@ static int SHOPPES2_00dc_ChargeForMeal(void)
         D_bd20_drinksBought++;
     }
 
-    ULTIMA_1850_PrintString(_TEXT(0x9b16, "\nEnjoy!\"\n\n"));
+    ULTIMA_1850_PrintString(/*0x9b16*/ "\nEnjoy!\"\n\n");
     return 0;
 }
 
@@ -150,22 +146,22 @@ static int SHOPPES2_01f4_OrderDrink(void)
     ULTIMA_16ba_PrintChar((byte)D_4c24_drinkKeys[D_bd16_pubKind]);
     if (D_bd20_drinksBought == 3)
     {
-        ULTIMA_1850_PrintString(_TEXT(0x9b22, "\n\n\"I beg thy\npardon, "));
+        ULTIMA_1850_PrintString(/*0x9b22*/ "\n\n\"I beg thy\npardon, ");
         SHOPPES2_00ac_PrintHonorific();
-        ULTIMA_1850_PrintString(_TEXT(0x9b38, ",\"\nsays "));
+        ULTIMA_1850_PrintString(/*0x9b38*/ ",\"\nsays ");
         ULTIMA_1850_PrintString(D_aafe_shopOwner);
-        ULTIMA_1850_PrintString(_TEXT(0x9b42, ".\n\"But haven't\nye had enough\nto drink?\" "));
+        ULTIMA_1850_PrintString(/*0x9b42*/ ".\n\"But haven't\nye had enough\nto drink?\" ");
         do
         {
             key = ULTIMA_266c_GetChar();
             if (key == 'Y')
             {
-                ULTIMA_1850_PrintString(_TEXT(0x9b6c, "Yes\n\n"));
+                ULTIMA_1850_PrintString(/*0x9b6c*/ "Yes\n\n");
                 return 0;
             }
             if (key == 'N')
             {
-                ULTIMA_1850_PrintString(_TEXT(0x9b72, "No!"));
+                ULTIMA_1850_PrintString(/*0x9b72*/ "No!");
                 D_5957_drunkTurns = 0x19;
                 ULTIMA_3f36_DecreaseByte(&D_5888_karma, 1);
             }
@@ -175,16 +171,16 @@ static int SHOPPES2_01f4_OrderDrink(void)
     SHOPPES2_0000_CountDiners(1);
     if (D_4c24_drinkKeys[D_bd16_pubKind] == 'W')
     {
-        ULTIMA_1850_PrintString(_TEXT(0x9b76, "\"Our wine list,\n"));
+        ULTIMA_1850_PrintString(/*0x9b76*/ "\"Our wine list,\n");
         SHOPPES2_00ac_PrintHonorific();
-        ULTIMA_1850_PrintString(_TEXT(0x9b88, ".\n\n"));
-        ULTIMA_1850_PrintString(_TEXT(0x9b8c, "a) Rose.......18\n"));
-        ULTIMA_1850_PrintString(_TEXT(0x9b9e, "b) Claret....192\n"));
-        ULTIMA_1850_PrintString(_TEXT(0x9bb0, "c) Sauterne...79\n"));
-        ULTIMA_1850_PrintString(_TEXT(0x9bc2, "d) Muscatel...30\n"));
-        ULTIMA_1850_PrintString(_TEXT(0x9bd4, "e) Moselle...275\n"));
-        ULTIMA_1850_PrintString(_TEXT(0x9be6, "f) Chablis....98\n\n"));
-        ULTIMA_1850_PrintString(_TEXT(0x9bfa, "Thy choice?\" "));
+        ULTIMA_1850_PrintString(/*0x9b88*/ ".\n\n");
+        ULTIMA_1850_PrintString(/*0x9b8c*/ "a) Rose.......18\n");
+        ULTIMA_1850_PrintString(/*0x9b9e*/ "b) Claret....192\n");
+        ULTIMA_1850_PrintString(/*0x9bb0*/ "c) Sauterne...79\n");
+        ULTIMA_1850_PrintString(/*0x9bc2*/ "d) Muscatel...30\n");
+        ULTIMA_1850_PrintString(/*0x9bd4*/ "e) Moselle...275\n");
+        ULTIMA_1850_PrintString(/*0x9be6*/ "f) Chablis....98\n\n");
+        ULTIMA_1850_PrintString(/*0x9bfa*/ "Thy choice?\" ");
 
         do
         {
@@ -206,7 +202,7 @@ static int SHOPPES2_01f4_OrderDrink(void)
         } while (key < 0x41 || 0x46 < key);
 
         ULTIMA_16ba_PrintChar((byte)(char)key); // TODO: ???
-        ULTIMA_1850_PrintString(_TEXT(0x9c08, "\n\n\"Ah, a fine\nchoice, "));
+        ULTIMA_1850_PrintString(/*0x9c08*/ "\n\n\"Ah, a fine\nchoice, ");
         SHOPPES2_00ac_PrintHonorific();
         ULTIMA_16ba_PrintChar('.');
 
@@ -214,7 +210,7 @@ static int SHOPPES2_01f4_OrderDrink(void)
 
         if (D_57aa_gold < (s16)D_4c48_winePrices[key])
         {
-            ULTIMA_1850_PrintString(_TEXT(0x9c20, "\"\n\n\"CAN'T PAY?\nBeat it!\"\nyells "));
+            ULTIMA_1850_PrintString(/*0x9c20*/ "\"\n\n\"CAN'T PAY?\nBeat it!\"\nyells ");
             ULTIMA_1850_PrintString(D_aafe_shopOwner);
             ULTIMA_16ba_PrintChar('.');
             ULTIMA_16ba_PrintChar('\n');
@@ -226,7 +222,7 @@ static int SHOPPES2_01f4_OrderDrink(void)
             SHOPPES_019a_FalsehoodSurcharge();
             D_bd20_drinksBought++;
             //key = 0x40;
-            ULTIMA_1850_PrintString(_TEXT(0x9c40, "\nEnjoy!\""));
+            ULTIMA_1850_PrintString(/*0x9c40*/ "\nEnjoy!\"");
             ULTIMA_16ba_PrintChar('\n');
             ULTIMA_16ba_PrintChar('\n');
             if (key == 0x20)
@@ -262,11 +258,11 @@ static int SHOPPES2_0380_BuyRations(int member)
 
     ULTIMA_16ba_PrintChar('\"');
     SHOPPES_017a_PrintShopFileText(D_4c66_rationTexts[ULTIMA_2092_RandomRange(0, 6)]);
-    ULTIMA_1850_PrintString(_TEXT(0x9c4a, "\n\nHow many wouldst\nthou like?\" "));
+    ULTIMA_1850_PrintString(/*0x9c4a*/ "\n\nHow many wouldst\nthou like?\" ");
     wanted = remaining = ULTIMA_3b9e_GetNumber(2);
     if (remaining == 0)
     {
-        ULTIMA_1850_PrintString(_TEXT(0x9c6a, "\n\n\"Hrumph.\""));
+        ULTIMA_1850_PrintString(/*0x9c6a*/ "\n\n\"Hrumph.\"");
         return 2;
     }
 
@@ -285,7 +281,7 @@ static int SHOPPES2_0380_BuyRations(int member)
         {
             wanted -= remaining;
             // e654
-            ULTIMA_1850_PrintString(_TEXT(0x9c76, "\n\n"));
+            ULTIMA_1850_PrintString(/*0x9c76*/ "\n\n");
             if (wanted == 0)
             {
                 if (D_57a8_food < 3)
@@ -296,26 +292,26 @@ static int SHOPPES2_0380_BuyRations(int member)
                 }
                 else
                 {
-                    ULTIMA_1850_PrintString(_TEXT(0x9c7a, "\"Thou hast\nneither gold nor\nneed! Out!\"\n"));
-                    ULTIMA_1850_PrintString(_TEXT(0x9ca4, "yells "));
+                    ULTIMA_1850_PrintString(/*0x9c7a*/ "\"Thou hast\nneither gold nor\nneed! Out!\"\n");
+                    ULTIMA_1850_PrintString(/*0x9ca4*/ "yells ");
                     ULTIMA_1850_PrintString(D_aafe_shopOwner);
-                    ULTIMA_1850_PrintString(_TEXT(0x9cac, ".\n"));
+                    ULTIMA_1850_PrintString(/*0x9cac*/ ".\n");
                     return 1;
                 }
             }
             else
             {
                 // e6b6
-                ULTIMA_1850_PrintString(_TEXT(0x9cb0, "\"Thou canst\nafford only "));
+                ULTIMA_1850_PrintString(/*0x9cb0*/ "\"Thou canst\nafford only ");
                 ULTIMA_1a3e_PrintNumber(wanted, 1, 0x20);
-                ULTIMA_1850_PrintString(_TEXT(0x9cca, "!\"\n\n"));
+                ULTIMA_1850_PrintString(/*0x9cca*/ "!\"\n\n");
                 return 0; // -> e689
             }
         }
     }
 
     // e6d4
-    ULTIMA_1850_PrintString(_TEXT(0x9cd0, "\n\n"));
+    ULTIMA_1850_PrintString(/*0x9cd0*/ "\n\n");
     SHOPPES_019a_FalsehoodSurcharge();
     return 0;
 }
@@ -338,62 +334,62 @@ u16 D_4c66_rationTexts[7] = {0x1198, 0x11d7, 0x121f, 0x1271, 0x1299, 0x12e3, 0x1
 
 char* D_4c74_pubTopicWords[26] =
 {
-    _STATIC_TEXT(0x9cd4, "hone"),
-    _STATIC_TEXT(0x9cda, "comp"),
-    _STATIC_TEXT(0x9ce0, "valo"),
-    _STATIC_TEXT(0x9ce6, "just"),
-    _STATIC_TEXT(0x9cec, "sacr"),
-    _STATIC_TEXT(0x9cf2, "hono"),
-    _STATIC_TEXT(0x9cf8, "spir"),
-    _STATIC_TEXT(0x9cfe, "humi"),
-    _STATIC_TEXT(0x9d04, "dece"),
-    _STATIC_TEXT(0x9d0a, "desp"),
-    _STATIC_TEXT(0x9d10, "dest"),
-    _STATIC_TEXT(0x9d16, "wron"),
-    _STATIC_TEXT(0x9d1c, "cove"),
-    _STATIC_TEXT(0x9d22, "sham"),
-    _STATIC_TEXT(0x9d28, "hyth"),
-    _STATIC_TEXT(0x9d2e, "crow"),
-    _STATIC_TEXT(0x9d34, "scep"),
-    _STATIC_TEXT(0x9d3a, "amul"),
-    _STATIC_TEXT(0x9d40, "fals"),
-    _STATIC_TEXT(0x9d46, "hatr"),
-    _STATIC_TEXT(0x9d4c, "cowa"),
-    _STATIC_TEXT(0x9d52, "astr"),
-    _STATIC_TEXT(0x9d58, "oppr"),
-    _STATIC_TEXT(0x9d5e, "brit"),
-    _STATIC_TEXT(0x9d64, "resi"),
-    _STATIC_TEXT(0x9d6a, "unde")
+    /*0x9cd4*/ "hone",
+    /*0x9cda*/ "comp",
+    /*0x9ce0*/ "valo",
+    /*0x9ce6*/ "just",
+    /*0x9cec*/ "sacr",
+    /*0x9cf2*/ "hono",
+    /*0x9cf8*/ "spir",
+    /*0x9cfe*/ "humi",
+    /*0x9d04*/ "dece",
+    /*0x9d0a*/ "desp",
+    /*0x9d10*/ "dest",
+    /*0x9d16*/ "wron",
+    /*0x9d1c*/ "cove",
+    /*0x9d22*/ "sham",
+    /*0x9d28*/ "hyth",
+    /*0x9d2e*/ "crow",
+    /*0x9d34*/ "scep",
+    /*0x9d3a*/ "amul",
+    /*0x9d40*/ "fals",
+    /*0x9d46*/ "hatr",
+    /*0x9d4c*/ "cowa",
+    /*0x9d52*/ "astr",
+    /*0x9d58*/ "oppr",
+    /*0x9d5e*/ "brit",
+    /*0x9d64*/ "resi",
+    /*0x9d6a*/ "unde"
 };
 
 char* D_4ca8_pubPersons[26] =
 {
-    _STATIC_TEXT(0x9d70, "Malik"),
-    _STATIC_TEXT(0x9d76, "Greyson"),
-    _STATIC_TEXT(0x9d7e, "Trian"),
-    _STATIC_TEXT(0x9d84, "Jeremy"),
-    _STATIC_TEXT(0x9d8c, "Rew"),
-    _STATIC_TEXT(0x9d90, "Gruman"),
-    _STATIC_TEXT(0x9d98, "Saul"),
-    _STATIC_TEXT(0x9d9e, "Shirita"),
-    _STATIC_TEXT(0x9da6, "Malifora"),
-    _STATIC_TEXT(0x9db0, "Annon"),
-    _STATIC_TEXT(0x9db6, "Trian"),
-    _STATIC_TEXT(0x9dbc, "Felespar"),
-    _STATIC_TEXT(0x9dc6, "the mother of Rew"),
-    _STATIC_TEXT(0x9dd8, "Sindar"),
-    _STATIC_TEXT(0x9de0, "Kaiko"),
-    _STATIC_TEXT(0x9de6, "Terrance"),
-    _STATIC_TEXT(0x9df0, "Greymarch"),
-    _STATIC_TEXT(0x9dfa, "Simon and Tessa"),
-    _STATIC_TEXT(0x9e0a, "Shalineth"),
-    _STATIC_TEXT(0x9e14, "a daemon"),
-    _STATIC_TEXT(0x9e1e, "Lord Malone"),
-    _STATIC_TEXT(0x9e2a, "Zachariah"),
-    _STATIC_TEXT(0x9e34, "Tactus"),
-    _STATIC_TEXT(0x9e3c, "a daemon"),
-    _STATIC_TEXT(0x9e46, "Terrance"),
-    _STATIC_TEXT(0x9e50, "Jotham")
+    /*0x9d70*/ "Malik",
+    /*0x9d76*/ "Greyson",
+    /*0x9d7e*/ "Trian",
+    /*0x9d84*/ "Jeremy",
+    /*0x9d8c*/ "Rew",
+    /*0x9d90*/ "Gruman",
+    /*0x9d98*/ "Saul",
+    /*0x9d9e*/ "Shirita",
+    /*0x9da6*/ "Malifora",
+    /*0x9db0*/ "Annon",
+    /*0x9db6*/ "Trian",
+    /*0x9dbc*/ "Felespar",
+    /*0x9dc6*/ "the mother of Rew",
+    /*0x9dd8*/ "Sindar",
+    /*0x9de0*/ "Kaiko",
+    /*0x9de6*/ "Terrance",
+    /*0x9df0*/ "Greymarch",
+    /*0x9dfa*/ "Simon and Tessa",
+    /*0x9e0a*/ "Shalineth",
+    /*0x9e14*/ "a daemon",
+    /*0x9e1e*/ "Lord Malone",
+    /*0x9e2a*/ "Zachariah",
+    /*0x9e34*/ "Tactus",
+    /*0x9e3c*/ "a daemon",
+    /*0x9e46*/ "Terrance",
+    /*0x9e50*/ "Jotham"
 };
 
 u8 D_4cdc_gossipPlaceIdx[26] =
@@ -406,19 +402,19 @@ u8 D_4cdc_gossipPlaceIdx[26] =
 
 char* D_4cf6_pubPlaces[13] =
 {
-    _STATIC_TEXT(0x9e58, "Moonglow"),
-    _STATIC_TEXT(0x9e62, "Britain"),
-    _STATIC_TEXT(0x9e6a, "Jhelom"),
-    _STATIC_TEXT(0x9e72, "Yew"),
-    _STATIC_TEXT(0x9e76, "Minoc"),
-    _STATIC_TEXT(0x9e7c, "Trinsic"),
-    _STATIC_TEXT(0x9e84, "Skara Brae"),
-    _STATIC_TEXT(0x9e90, "New Magincia"),
-    _STATIC_TEXT(0x9e9e, "a lighthouse south of Britain"),
-    _STATIC_TEXT(0x9ebc, "a hidden mountain keep"),
-    _STATIC_TEXT(0x9ed4, "the desert"),
-    _STATIC_TEXT(0x9ee0, "the Lycaeum"),
-    _STATIC_TEXT(0x9eec, "Serpent's Hold")
+    /*0x9e58*/ "Moonglow",
+    /*0x9e62*/ "Britain",
+    /*0x9e6a*/ "Jhelom",
+    /*0x9e72*/ "Yew",
+    /*0x9e76*/ "Minoc",
+    /*0x9e7c*/ "Trinsic",
+    /*0x9e84*/ "Skara Brae",
+    /*0x9e90*/ "New Magincia",
+    /*0x9e9e*/ "a lighthouse south of Britain",
+    /*0x9ebc*/ "a hidden mountain keep",
+    /*0x9ed4*/ "the desert",
+    /*0x9ee0*/ "the Lycaeum",
+    /*0x9eec*/ "Serpent's Hold"
 };
 
 u16 D_4d10_gossipPrices[0x1a] =
@@ -446,16 +442,16 @@ static int SHOPPES2_0508_BuyGossip(void)
     int topic_b;
 
     ULTIMA_16ba_PrintChar((byte)D_4c30_gossipKeys[D_bd16_pubKind]);
-    ULTIMA_1850_PrintString(_TEXT(0x9efc, "\n\n\""));
+    ULTIMA_1850_PrintString(/*0x9efc*/ "\n\n\"");
 
     while (1)
     {
         // e70a
-        ULTIMA_1850_PrintString(_TEXT(0x9f00, "Of what wouldst\nthou hear my\nlore, "));
+        ULTIMA_1850_PrintString(/*0x9f00*/ "Of what wouldst\nthou hear my\nlore, ");
         SHOPPES2_00ac_PrintHonorific();
-        ULTIMA_1850_PrintString(_TEXT(0x9f24, "?\"\n\nYou respond:\n"));
+        ULTIMA_1850_PrintString(/*0x9f24*/ "?\"\n\nYou respond:\n");
         ULTIMA_3b1c_GetString(D_bcf8_inputText, 0xf);
-        ULTIMA_1850_PrintString(_TEXT(0x9f36, "\n\n"));
+        ULTIMA_1850_PrintString(/*0x9f36*/ "\n\n");
         if (D_bcf8_inputText[0] == '\0')
         {
             // e734 -> e736 -> e83e
@@ -479,14 +475,14 @@ static int SHOPPES2_0508_BuyGossip(void)
         if (topic_b == -1)
         {
             // e771
-            ULTIMA_1850_PrintString(_TEXT(0x9f3a, "\"That, I cannot help thee with.\n\n"));
+            ULTIMA_1850_PrintString(/*0x9f3a*/ "\"That, I cannot help thee with.\n\n");
         }
         else
         {
             // e786
             D_b118_shopPrice = D_4d10_gossipPrices[topic_b];
             SHOPPES_017a_PrintShopFileText(0x134e);
-            ULTIMA_1850_PrintString(_TEXT(0x9f5c, "\n\nFair 'nuff?\" "));
+            ULTIMA_1850_PrintString(/*0x9f5c*/ "\n\nFair 'nuff?\" ");
             index_h = 0;
             do
             {
@@ -496,16 +492,16 @@ static int SHOPPES2_0508_BuyGossip(void)
             } while ((uint)index_h != 'Y');
             if ((uint)index_h == 'N')
             {
-                ULTIMA_1850_PrintString(_TEXT(0x9f6c, "No\n\n"));
+                ULTIMA_1850_PrintString(/*0x9f6c*/ "No\n\n");
                 return 0;
             }
             else
             {
-                ULTIMA_1850_PrintString(_TEXT(0x9f72, "Yes\n\n"));
+                ULTIMA_1850_PrintString(/*0x9f72*/ "Yes\n\n");
 
                 if (D_b118_shopPrice > D_57aa_gold)
                 {
-                    ULTIMA_1850_PrintString(_TEXT(0x9f78, "\"Sorry, "));
+                    ULTIMA_1850_PrintString(/*0x9f78*/ "\"Sorry, ");
                     SHOPPES2_00ac_PrintHonorific();
                     SHOPPES_017a_PrintShopFileText(0x146a);
                     return 1;
@@ -519,9 +515,9 @@ static int SHOPPES2_0508_BuyGossip(void)
 
                 SHOPPES_017a_PrintShopFileText(D_4d44_gossipTexts[ULTIMA_2092_RandomRange(0, 3)]);
 
-                ULTIMA_1850_PrintString(_TEXT(0x9f82, "\nsays "));
+                ULTIMA_1850_PrintString(/*0x9f82*/ "\nsays ");
                 ULTIMA_1850_PrintString(D_aafe_shopOwner);
-                ULTIMA_1850_PrintString(_TEXT(0x9f8a, ".\n\n"));
+                ULTIMA_1850_PrintString(/*0x9f8a*/ ".\n\n");
                 return 0;
             }
         }
@@ -546,13 +542,13 @@ void SHOPPES2_066c_Pub(int member)
         key_g = ULTIMA_266c_GetChar();
         if (key_g == 'N' || key_g == U5_KEY_SPACE)
         {
-            ULTIMA_1850_PrintString(_TEXT(0x9f8e, "No"));
+            ULTIMA_1850_PrintString(/*0x9f8e*/ "No");
             SHOPPES2_0664_Farewell();
             return;
         }
     } while (key_g != 'Y');
 
-    ULTIMA_1850_PrintString(_TEXT(0x9f92, "Yes\n\n\""));
+    ULTIMA_1850_PrintString(/*0x9f92*/ "Yes\n\n\"");
     SHOPPES_017a_PrintShopFileText(D_4d56_pubOrderTexts[D_bd16_pubKind]);
     ULTIMA_16ba_PrintChar('\"');
     ULTIMA_16ba_PrintChar(' ');
@@ -629,20 +625,20 @@ void SHOPPES2_066c_Pub(int member)
 
         // e977
         ULTIMA_2900_UpdateVitalsDisplay();
-        ULTIMA_1850_PrintString(_TEXT(0x9f9a, "\"Anything else\nfor thee?\" "));
+        ULTIMA_1850_PrintString(/*0x9f9a*/ "\"Anything else\nfor thee?\" ");
 
         do
         {
             key_g = ULTIMA_266c_GetChar();
             if (key_g == 'N')
             {
-                ULTIMA_1850_PrintString(_TEXT(0x9fb6, "No"));
+                ULTIMA_1850_PrintString(/*0x9fb6*/ "No");
                 SHOPPES2_0664_Farewell();
                 return;
             }
         } while (key_g != 'Y');
 
-        ULTIMA_1850_PrintString(_TEXT(0x9fba, "Yes\n\n\""));
+        ULTIMA_1850_PrintString(/*0x9fba*/ "Yes\n\n\"");
         SHOPPES_017a_PrintShopFileText(D_4d5e_pubMoreTexts[D_bd16_pubKind]);
         ULTIMA_16ba_PrintChar('\"');
         ULTIMA_16ba_PrintChar(' ');

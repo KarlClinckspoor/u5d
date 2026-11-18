@@ -7,8 +7,6 @@
 
 #include <stdlib.h>
 
-#include "audio/aud_mus.h"
-
 #include "blckthrn.h"
 #include "cast2.h"
 #include "comsubs.h"
@@ -80,11 +78,11 @@ void MAINOUT_109e_DamageVehicle(void)
         }
         else
         {
-            ULTIMA_1850_PrintString(_TEXT(0x6ada, "Ship sunk!\n"));
+            ULTIMA_1850_PrintString(/*0x6ada*/ "Ship sunk!\n");
             skiffs = D_5c5a_actors[0].extra;
             if (skiffs > 0 || D_57b0_carpets != 0)
             {
-                ULTIMA_1850_PrintString(_TEXT(0x6ae6, "Abandon ship!\n"));
+                ULTIMA_1850_PrintString(/*0x6ae6*/ "Abandon ship!\n");
                 if (skiffs > 0)
                 {
                     D_587c_partyTile = (D_587c_partyTile & 3) + TILE_ACTOR_SKIFF;
@@ -103,7 +101,7 @@ void MAINOUT_109e_DamageVehicle(void)
                 ULTIMA_2900_UpdateVitalsDisplay();
                 ULTIMA_5910_UpdateFrame();
                 ULTIMA_43ae_AudioSweepTone(0x294, 0x96, 0x28, 0x1e78);
-                ULTIMA_1850_PrintString(_TEXT(0x6af6, "DROWNING!!!\n"));
+                ULTIMA_1850_PrintString(/*0x6af6*/ "DROWNING!!!\n");
 
                 while (ULTIMA_39fc_GetFirstActivePartyMember() != -1)
                 {
@@ -172,7 +170,7 @@ static void MAINOUT_1248_ActorTouchesParty(int actor)
         else
         {
             D_5c5a_actors[actor].tile = D_5c5a_actors[actor].animTile = 0;
-            ULTIMA_1850_PrintString(_TEXT(0x6b04, "\nWHIRLPOOL!\n"));
+            ULTIMA_1850_PrintString(/*0x6b04*/ "\nWHIRLPOOL!\n");
 
             savedTile = D_587c_partyTile;
             D_587c_partyTile = TILE_ACTOR_WHIRLPOOL;
@@ -182,24 +180,16 @@ static void MAINOUT_1248_ActorTouchesParty(int actor)
             D_587c_partyTile = savedTile;
             MAINOUT_109e_DamageVehicle();
 
-#if defined(ENABLE_BGM)
-            AUDIO_StopBgm();
-#endif
-
             D_5895_mapLevel = 0xff;
             D_5896_mapX = 0x22;
             D_5897_mapY = 0x12;
             MAINOUT_0000_SetUpOverworld();
-
-#if defined(ENABLE_BGM)
-            AUDIO_PlayBgmPerMap();
-#endif
         }
     }
     else if ((D_5c5a_actors[actor].tile & 0xfc) != TILE_ACTOR_E0)
     {
         ULTIMA_5910_UpdateFrame();
-        ULTIMA_1850_PrintString(_TEXT(0x6b12, "\nAttacked!\n"));
+        ULTIMA_1850_PrintString(/*0x6b12*/ "\nAttacked!\n");
 
         if (*ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY) < TILE_MAP_POISON &&
             ((D_587c_partyTile & 0xfe) == TILE_ACTOR_FLYING_CARPET || (D_587c_partyTile & 0xfc) == TILE_ACTOR_SKIFF))
@@ -270,7 +260,7 @@ static int MAINOUT_131a_ActorAttack(int actor)
     }
     else if ((tile & 0xfc) == TILE_ACTOR_PIRATE && ((distX == 0 && distY < 4) || (distY == 0 && distX < 4)))
     {
-        ULTIMA_1850_PrintString(_TEXT(0x6b1e, "* BOOOM! *\n\n"));
+        ULTIMA_1850_PrintString(/*0x6b1e*/ "* BOOOM! *\n\n");
         MAINOUT_1168_PirateFire(actor, distX, distY);
         return 1;
     }
@@ -465,11 +455,7 @@ static void MAINOUT_16fc_MoveRandomly(int actor)
 
 // The original stores the constants to mode through AX ("mov ax,1; mov [bp+4],ax"), MSC's
 // form for a chained assignment (see SHOPPES2_00ac_PrintHonorific): mode = mode = 1 gives it.
-#if defined(TARGET_DOS16)
 #define P2_SET(v) mode = mode = (v) // two stores between sequence points: DOS build only
-#else
-#define P2_SET(v) mode = (v)
-#endif
 
 // CHECKED
 // MSC places a block that nothing falls into after the first unconditional jump that follows
@@ -740,11 +726,11 @@ static void MAINOUT_1b3e_TrollToll(void)
     int slot;
     byte answer;
 
-    ULTIMA_1850_PrintString(_TEXT(0x6b2c, "Caught!\n\nThe trolls demand a "));
+    ULTIMA_1850_PrintString(/*0x6b2c*/ "Caught!\n\nThe trolls demand a ");
     ULTIMA_39fc_GetFirstActivePartyMember();
     toll = -(D_55a8_party[D_5876_tempX].str * 3 - 99);
     ULTIMA_1a3e_PrintNumber(toll, 2, 0x20);
-    ULTIMA_1850_PrintString(_TEXT(0x6b4a, " gp toll!\n\nDost thou pay?"));
+    ULTIMA_1850_PrintString(/*0x6b4a*/ " gp toll!\n\nDost thou pay?");
 
     while ((answer = ULTIMA_266c_GetChar()) != 'Y' && answer != 'N')
     {
@@ -778,7 +764,7 @@ void MAINOUT_1be8_BridgeTrolls(void)
     if (ULTIMA_2092_RandomRange(0, 7) == 0 && D_587c_partyTile == TILE_ACTOR_AVATAR)
     {
         ULTIMA_5910_UpdateFrame();
-        ULTIMA_1850_PrintString(_TEXT(0x6b64, "\nThou spieth trolls under the bridge!\n\n"));
+        ULTIMA_1850_PrintString(/*0x6b64*/ "\nThou spieth trolls under the bridge!\n\n");
         ULTIMA_3ae6_WaitFrames(10);
 
         for (member_h = 0; member_h < D_585b_partyCount; member_h++)
@@ -786,7 +772,7 @@ void MAINOUT_1be8_BridgeTrolls(void)
             if (D_55a8_party[member_h].status != STATUS_DEAD && D_55a8_party[member_h].status != STATUS_SLEEP)
             {
                 ULTIMA_1850_PrintString(D_55a8_party[member_h].name);
-                ULTIMA_1850_PrintString(_TEXT(0x6b8c, " sneaks across"));
+                ULTIMA_1850_PrintString(/*0x6b8c*/ " sneaks across");
 
                 for (dot = 0; dot < 3; dot++)
                 {
@@ -794,7 +780,7 @@ void MAINOUT_1be8_BridgeTrolls(void)
                     ULTIMA_16ba_PrintChar('.');
                 }
 
-                ULTIMA_1850_PrintString(_TEXT(0x6b9c, "\n\n"));
+                ULTIMA_1850_PrintString(/*0x6b9c*/ "\n\n");
 
                 if (D_55a8_party[member_h].dex < ULTIMA_2092_RandomRange(1, 0x1e))
                 {
@@ -804,6 +790,6 @@ void MAINOUT_1be8_BridgeTrolls(void)
             }
         }
 
-        ULTIMA_1850_PrintString(_TEXT(0x6ba0, "Trolls evaded!\n"));
+        ULTIMA_1850_PrintString(/*0x6ba0*/ "Trolls evaded!\n");
     }
 }

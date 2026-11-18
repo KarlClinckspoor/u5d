@@ -498,15 +498,10 @@ STUB u16 D_520c_savedVideoPage; // AFONT.ASM's: where FONT_0e52_SaveVideoPage sa
 // char** D_52a6;  // environ
 
 STUB VideoDriverParams D_52ba_vdp;
-#if defined(TARGET_DOS16)
 // A0878.ASM's own names for two fields: the C modules read them as plain globals, which MSC
 // optimizes differently from a struct field (LOOKOBJ_0cf4_DrawShore)
 STUB int D_52c4_clipEnabled;
 STUB int D_52c8_videoDriver;
-#else
-#define D_52c4_clipEnabled D_52ba_vdp.clipEnabled
-#define D_52c8_videoDriver D_52ba_vdp.videoDriver
-#endif
 
 STUB int D_52da_penColor;
 
@@ -535,7 +530,7 @@ STUB int D_5314_logoFrameHeight[7]; // and heights
 // 5338..533f: "EGA.DRV"
 // 5340..5347: "T1K.DRV"
 // 5348..534f: "HER.DRV"
-STUB void* FAR D_5350_driverEntry; // far pointer into the video driver; the offset is the function number
+STUB void* far D_5350_driverEntry; // far pointer into the video driver; the offset is the function number
 STUB u16 D_5354_pageSegment; // segment of video page buffer (ega: 0xa800, t1k: allocated memory)
 STUB u16 D_5356_timerCalibration; // timer calibration
 STUB u16 D_5358_memorySize; // memory size
@@ -552,12 +547,12 @@ STUB u16 D_538c_keyBufferOff; // Ctrl-B: "Buffer Off/On"
 STUB u16 D_538e_cursorAdvance; // cursor advance flag
 STUB u16 D_5390_cursorFirstChar; // keystroke cursor begin idx
 STUB u16 D_5392_cursorFrameCount;
-STUB void (FAR *D_5394_diskSwapFn)(void); // disk swap message function pointer
+STUB void (far *D_5394_diskSwapFn)(void); // disk swap message function pointer
 //STUB u16 D_5398; // segment of current charset
-STUB u8* FAR D_5398_currentCharset;        // ptr of current charset
+STUB u8* far D_5398_currentCharset;        // ptr of current charset
 STUB TextWindow* D_539a_currentTextWindow; // address of current text window data
 //STUB u16 D_539c_charsetTable[4]; // charset segment table
-STUB u8* FAR D_539c_charsetTable[4];    // charset table
+STUB u8* far D_539c_charsetTable[4];    // charset table
 STUB u16 D_53a4_underline; // underline flag (bit 0 of byte 7)
 STUB u16 D_53a6_centerText; // ? flag (bit 1 of byte 7)
 STUB u16 D_53a8_inverse; // inverse flag (bit 1 of byte 7)
@@ -597,11 +592,7 @@ STUB u16 D_544a_ticksToWait; // timer tick count to wait
 // The disk last selected. A plain char in the DOS build: with it, 1988's ULTIMA_2322 compares
 // it with the disk wanted as "mov al,bl; cmp D_545e_lastDisk,al" (u8: "mov al,D_545e_lastDisk; cmp bl,al").
 // The other modules only store 0xff into it, the same code for both types.
-#if defined(TARGET_DOS16)
 STUB char D_545e_lastDisk;
-#else
-STUB u8 D_545e_lastDisk;
-#endif
 
 // ...54d2: strings
 
@@ -770,23 +761,15 @@ STUB S_6608_Map D_6608_map; // ~6a08) map data: layer4 * y16 * x16 / y32 * x32
 #define D_6608 D_6608_map.raw
 #define D_6a07_dummyCell (D_6608[1023])
 
-#if defined(TARGET_DOS16)
 // in the original, DS:6708 is a place inside D_6608_map, not a variable of its own
 #define D_6708_map (*(S_6608_Map*)(D_6608_map.raw + 0x100))
-#else
-STUB S_6608_Map D_6708_map; // copy of 6608
-#endif
 #define D_6708 D_6708_map.raw
 
-#if defined(TARGET_DOS16)
 // The original reaches the overworld map through a name of its own for DS:6608: in
 // ULTIMA_4402 MSC merges the town and overworld paths only up to the store, which it
 // does when their final `add ax,OFFSET ...` name different symbols. Which object defined
 // it is not known; the link defines it as D_6608_map's place (tools/u5.py, LINK_DEFINES).
 STUB S_6608_Map D_6608_overworld;
-#else
-#define D_6608_overworld D_6608_map
-#endif
 
 STUB u8 D_6a08_songPos; // some audio related
 
@@ -875,11 +858,7 @@ BSS u16 D_b11a_shopQuantity;
 BSS u8* D_b11c_searchGrid;
 BSS u8 D_b11e_tileFrames[0x100]; // the tile drawn for each map tile (animation)
 
-#if !defined(MATCHING_BUILD)
-#define SCRATCH_SIZE 3000
-#else
 #define SCRATCH_SIZE 2000
-#endif
 
 BSS u8 D_b21e_scratch[SCRATCH_SIZE]; // scratch buffer ~b9ee)
 

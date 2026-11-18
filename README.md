@@ -29,9 +29,6 @@ carries it to an exact rebuild.
 `docs/MATCHING.md` explains the tools, the method and what was learned about the binary;
 `docs/PLAN.md` has the state and what is left.
 
-The game also runs on modern platforms through a native port (Windows/SDL, DJGPP), built from
-the same sources. The port is not part of the byte-matching work.
-
 ## Building the original files
 
 You need the game files to compare with (they are never committed), Microsoft C 5.1 and 5.0
@@ -49,18 +46,6 @@ python tools/setup_msc51.py "path/to/Microsoft C Compiler 5.0 (1987) (5.25-360k)
 Game files are looked for in `gamedata/` (GOG) and `gamedata-1988/` (1988), in this
 repository or beside it, or where `--gamedata`, `$U5_GAMEDATA_GOG`, `$U5_GAMEDATA_1988` or
 `$U5_GAMEDATA` say. Every tool takes `--target gog|1988` (or `$U5_TARGET`).
-
-## Building the native port
-
-### Windows Target
-
-Open `u5win/u5win.slnx` with Visual Studio 2026 and build the solution.
-
-### MS-DOS Target (DJGPP)
-
-Run `make` on a machine with DJGPP installed.
-
-Depending on the environment, you may need to adjust the `CROSS_CC_PREFIX` value in the `Makefile`.
 
 ## Credits
 

@@ -7,8 +7,6 @@
 
 #include <stdlib.h>
 
-#include "audio/aud_mus.h"
-
 #include "blckthrn.h"
 #include "cast2.h"
 #include "comsubs.h"
@@ -96,7 +94,7 @@ static int MAINOUT_00da_TurnVehicle(int dir)
     {
     case TILE_ACTOR_HORSE:
         // 010a
-        ULTIMA_1850_PrintString(_TEXT(0x2946, "Ride "));
+        ULTIMA_1850_PrintString(/*0x2946*/ "Ride ");
         if (dir == 1)
         {
             D_587c_partyTile = TILE_ACTOR_RIDING_HORSE;
@@ -109,7 +107,7 @@ static int MAINOUT_00da_TurnVehicle(int dir)
 
     case TILE_ACTOR_FLYING_CARPET:
         // 0130
-        ULTIMA_1850_PrintString(_TEXT(0x294c, "Fly "));
+        ULTIMA_1850_PrintString(/*0x294c*/ "Fly ");
         if (dir == 1)
         {
             D_587c_partyTile = TILE_ACTOR_FLYING_CARPET;
@@ -122,7 +120,7 @@ static int MAINOUT_00da_TurnVehicle(int dir)
 
     case TILE_ACTOR_SKIFF:
         // 0152
-        ULTIMA_1850_PrintString(_TEXT(0x2951, "Row "));
+        ULTIMA_1850_PrintString(/*0x2951*/ "Row ");
         D_587c_partyTile = (char)dir + (D_587c_partyTile & 0xfc);
         break;
 
@@ -133,21 +131,21 @@ static int MAINOUT_00da_TurnVehicle(int dir)
         D_587c_partyTile = (char)dir + (D_587c_partyTile & 0xfc);
         if (oldTile != D_587c_partyTile)
         {
-            ULTIMA_1850_PrintString(_TEXT(0x2956, "Head "));
+            ULTIMA_1850_PrintString(/*0x2956*/ "Head ");
 
             switch (dir)
             {
             case 0:
-                ULTIMA_1850_PrintString(_TEXT(0x295c, "North\n"));
+                ULTIMA_1850_PrintString(/*0x295c*/ "North\n");
                 break;
             case 2:
-                ULTIMA_1850_PrintString(_TEXT(0x2963, "South\n"));
+                ULTIMA_1850_PrintString(/*0x2963*/ "South\n");
                 break;
             case 1:
-                ULTIMA_1850_PrintString(_TEXT(0x296a, "East\n"));
+                ULTIMA_1850_PrintString(/*0x296a*/ "East\n");
                 break;
             case 3:
-                ULTIMA_1850_PrintString(_TEXT(0x2970, "West\n"));
+                ULTIMA_1850_PrintString(/*0x2970*/ "West\n");
                 break;
             }
 
@@ -155,7 +153,7 @@ static int MAINOUT_00da_TurnVehicle(int dir)
             D_5956_newPrompt = turned = 1;
             if (D_5c5a_actors[0].value < 0x32)
             {
-                ULTIMA_1850_PrintString(_TEXT(0x2976, "Hull weak!\n"));
+                ULTIMA_1850_PrintString(/*0x2976*/ "Hull weak!\n");
             }
         }
         // 01dc
@@ -180,7 +178,7 @@ static int MAINOUT_01fe_CanStepTo(int stepX, int stepY)
 
     if ((D_587c_partyTile & 0xfc) == TILE_ACTOR_FRIGATE_24)
     {
-        ULTIMA_1850_PrintString(_TEXT(0x2982, "Rowing!\n"));
+        ULTIMA_1850_PrintString(/*0x2982*/ "Rowing!\n");
     }
 
     canStep_c = 1;
@@ -213,16 +211,16 @@ static int MAINOUT_01fe_CanStepTo(int stepX, int stepY)
         {
             if (destTile == TILE_MAP_WATER_3)
             {
-                ULTIMA_1850_PrintString(_TEXT(0x298b, "BREAKING UP!\n"));
+                ULTIMA_1850_PrintString(/*0x298b*/ "BREAKING UP!\n");
             }
             else if (destTile != TILE_MAP_47)
             {
-                ULTIMA_1850_PrintString(_TEXT(0x2999, "COLLISION!\n"));
+                ULTIMA_1850_PrintString(/*0x2999*/ "COLLISION!\n");
             }
 
             if (destTile == TILE_MAP_47)
             {
-                ULTIMA_1850_PrintString(_TEXT(0x29a5, "Docked!\n"));
+                ULTIMA_1850_PrintString(/*0x29a5*/ "Docked!\n");
                 D_587c_partyTile += 4;
             }
             else
@@ -236,10 +234,10 @@ static int MAINOUT_01fe_CanStepTo(int stepX, int stepY)
         }
         else if (D_587c_partyTile < TILE_ACTOR_FRIGATE_20 || (blockerTile & 0xfc) != TILE_ACTOR_WHIRLPOOL)
         {
-            ULTIMA_1850_PrintString(_TEXT(0x29ae, "Blocked!\n"));
+            ULTIMA_1850_PrintString(/*0x29ae*/ "Blocked!\n");
             if (destTile == TILE_MAP_2F)
             {
-                ULTIMA_1850_PrintString(_TEXT(0x29b8, "OUCH!\n"));
+                ULTIMA_1850_PrintString(/*0x29b8*/ "OUCH!\n");
                 ULTIMA_2aa8_DamageParty();
             }
             else
@@ -319,7 +317,7 @@ static void MAINOUT_03e0_SlowTerrain(void)
 
         if (moved == 0)
         {
-            ULTIMA_1850_PrintString(_TEXT(0x29bf, "Slow progress!\n"));
+            ULTIMA_1850_PrintString(/*0x29bf*/ "Slow progress!\n");
         }
 
         ULTIMA_4f7c_AdvanceTime(2);
@@ -335,7 +333,7 @@ static void MAINOUT_03e0_SlowTerrain(void)
 
         if (moved == 0)
         {
-            ULTIMA_1850_PrintString(_TEXT(0x29cf, "Very slow!\n"));
+            ULTIMA_1850_PrintString(/*0x29cf*/ "Very slow!\n");
         }
 
         ULTIMA_4f7c_AdvanceTime(4);
@@ -378,86 +376,54 @@ static int MAINOUT_0490_WalkInDirection(int dir, int noMove)
     case DIR_UP:
         // 04f0
         stepY--;
-#if !defined(MATCHING_BUILD)
-        result_b = MAINOUT_00da_TurnVehicle(0);
-        if (result_b != 0)
-        {
-            return result_b;
-        }
-#else
         if (MAINOUT_00da_TurnVehicle(0))
         {
             return;
         }
-#endif
 
         // 0500
         if (D_5955_sailDir == 0)
         {
-            ULTIMA_1850_PrintString(_TEXT(0x29db, "North\n"));
+            ULTIMA_1850_PrintString(/*0x29db*/ "North\n");
         }
         break;
 
     case DIR_DOWN:
         // 054e
         stepY++;
-#if !defined(MATCHING_BUILD)
-        result_b = MAINOUT_00da_TurnVehicle(2);
-        if (result_b != 0)
-        {
-            return result_b;
-        }
-#else
         if (MAINOUT_00da_TurnVehicle(2))
         {
             return;
         }
-#endif
         if (D_5955_sailDir == 0)
         {
-            ULTIMA_1850_PrintString(_TEXT(0x29e2, "South\n"));
+            ULTIMA_1850_PrintString(/*0x29e2*/ "South\n");
         }
         break;
 
     case DIR_RIGHT:
         // 055c
         stepX++;
-#if !defined(MATCHING_BUILD)
-        result_b = MAINOUT_00da_TurnVehicle(1);
-        if (result_b != 0)
-        {
-            return result_b;
-        }
-#else
         if (MAINOUT_00da_TurnVehicle(1))
         {
             return;
         }
-#endif
         if (D_5955_sailDir == 0)
         {
-            ULTIMA_1850_PrintString(_TEXT(0x29e9, "East\n"));
+            ULTIMA_1850_PrintString(/*0x29e9*/ "East\n");
         }
         break;
 
     case DIR_LEFT:
         // 0576
         stepX--;
-#if !defined(MATCHING_BUILD)
-        result_b = MAINOUT_00da_TurnVehicle(3);
-        if (result_b != 0)
-        {
-            return result_b;
-        }
-#else
         if (MAINOUT_00da_TurnVehicle(3))
         {
             return;
         }
-#endif
         if (D_5955_sailDir == 0)
         {
-            ULTIMA_1850_PrintString(_TEXT(0x29ef, "West\n"));
+            ULTIMA_1850_PrintString(/*0x29ef*/ "West\n");
         }
         break;
     }
@@ -601,11 +567,11 @@ int MAINOUT_06ec_AttackCmd(void)
     int result_b = 0;
     int targetTile;
 
-    ULTIMA_1850_PrintString(_TEXT(0x29fe, "Attack-"));
+    ULTIMA_1850_PrintString(/*0x29fe*/ "Attack-");
     if ((*ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY) < TILE_MAP_POISON) &&
         ((D_587c_partyTile & 0xfc) == TILE_ACTOR_SKIFF || (D_587c_partyTile & 0xfe) == TILE_ACTOR_FLYING_CARPET))
     {
-        ULTIMA_1850_PrintString(_TEXT(0x2a06, "On foot!\n"));
+        ULTIMA_1850_PrintString(/*0x2a06*/ "On foot!\n");
         result_b = 0;
     }
     else
@@ -621,7 +587,7 @@ int MAINOUT_06ec_AttackCmd(void)
             }
             else
             {
-                ULTIMA_1850_PrintString(_TEXT(0x2a10, "Nothing to attack!\n"));
+                ULTIMA_1850_PrintString(/*0x2a10*/ "Nothing to attack!\n");
             }
         }
     }
@@ -645,32 +611,24 @@ static int MAINOUT_0790_LoadDungeon(char* verb)
     {
         if (D_587c_partyTile != TILE_ACTOR_AVATAR)
         {
-            ULTIMA_1850_PrintString(_TEXT(0x2a24, "\nOn foot!\n"));
-#if !defined(MATCHING_BUILD)
-            return 0; // TODO: validate return value
-#else
+            ULTIMA_1850_PrintString(/*0x2a24*/ "\nOn foot!\n");
             return; // sic
-#endif
         }
 
         if (dungeonIndex_i == 0x27)
         {
             if ((D_58c8_shadowlordTowns[0] & D_58c8_shadowlordTowns[1] & D_58c8_shadowlordTowns[2]) < 0x80)
             {
-                ULTIMA_1850_PrintString(_TEXT(0x2a2f, "\nAttacked at entrance!\n"));
+                ULTIMA_1850_PrintString(/*0x2a2f*/ "\nAttacked at entrance!\n");
                 slot = ULTIMA_38e4_FindActorSlot();
                 D_5c5a_actors[slot].tile = TILE_ACTOR_SHADOWLORD;
                 ULTIMA_6150_Combat(slot);
-#if !defined(MATCHING_BUILD)
-                return 0; // TODO: validate return value
-#else
                 return; // sic
-#endif
             }
         }
         else
         {
-            ULTIMA_1850_PrintString(_TEXT(0x2a47, "\n\n"));
+            ULTIMA_1850_PrintString(/*0x2a47*/ "\n\n");
             ULTIMA_16ba_PrintChar(CTRL_CHAR_CENTER_TEXT);
             ULTIMA_1850_PrintString(D_1e3a_mapNames[dungeonIndex_i]);
             ULTIMA_16ba_PrintChar(CTRL_CHAR_UNCENTER_TEXT);
@@ -704,7 +662,7 @@ static int MAINOUT_0790_LoadDungeon(char* verb)
     }
     else
     {
-        ULTIMA_1850_PrintString(_TEXT(0x2a5f, "\nWhat dungeon?\n"));
+        ULTIMA_1850_PrintString(/*0x2a5f*/ "\nWhat dungeon?\n");
     }
 
     return 1;
@@ -719,13 +677,13 @@ int MAINOUT_08de_EnterCmd(void)
 
     result_b = 1;
 
-    ULTIMA_1850_PrintString(_TEXT(0x2a6f, "Enter "));
+    ULTIMA_1850_PrintString(/*0x2a6f*/ "Enter ");
 
     tile = *ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY);
     switch (tile)
     {
     case TILE_MAP_SHRINE:
-        ULTIMA_1850_PrintString(_TEXT(0x2a76, "the shrine of\n"));
+        ULTIMA_1850_PrintString(/*0x2a76*/ "the shrine of\n");
         for (shrineIndex = 0; shrineIndex < 8; shrineIndex++)
         {
             if (D_1f6e_shrineX[shrineIndex] == D_5896_mapX && D_1f76_shrineY[shrineIndex] == D_5897_mapY)
@@ -738,60 +696,60 @@ int MAINOUT_08de_EnterCmd(void)
         break;
 
     case TILE_MAP_HUT:
-        result_b = OUTSUBS_0388_EnterTown(_TEXT(0x2a85, "hut"));
+        result_b = OUTSUBS_0388_EnterTown(/*0x2a85*/ "hut");
         break;
 
     case TILE_MAP_CODEX:
-        ULTIMA_1850_PrintString(_TEXT(0x2a89, "the Shrine of the Codex!\n"));
+        ULTIMA_1850_PrintString(/*0x2a89*/ "the Shrine of the Codex!\n");
         CAST2_0e76_Shrine();
         break;
 
     case TILE_MAP_KEEP:
-        result_b = OUTSUBS_0388_EnterTown(_TEXT(0x2aa3, "keep"));
+        result_b = OUTSUBS_0388_EnterTown(/*0x2aa3*/ "keep");
         break;
 
     case TILE_MAP_VILLAGE:
-        result_b = OUTSUBS_0388_EnterTown(_TEXT(0x2aa8, "village"));
+        result_b = OUTSUBS_0388_EnterTown(/*0x2aa8*/ "village");
         break;
 
     case TILE_MAP_TOWNE:
-        result_b = OUTSUBS_0388_EnterTown(_TEXT(0x2ab0, "towne"));
+        result_b = OUTSUBS_0388_EnterTown(/*0x2ab0*/ "towne");
         break;
 
     case TILE_MAP_CASTLE:
-        result_b = OUTSUBS_0388_EnterTown(_TEXT(0x2ab6, "castle"));
+        result_b = OUTSUBS_0388_EnterTown(/*0x2ab6*/ "castle");
         break;
 
     case TILE_MAP_CAVE:
-        result_b = MAINOUT_0790_LoadDungeon(_TEXT(0x2abd, "cave"));
+        result_b = MAINOUT_0790_LoadDungeon(/*0x2abd*/ "cave");
         break;
 
     case TILE_MAP_MINE:
-        result_b = MAINOUT_0790_LoadDungeon(_TEXT(0x2ac2, "mine"));
+        result_b = MAINOUT_0790_LoadDungeon(/*0x2ac2*/ "mine");
         break;
 
     case TILE_MAP_DUNGEON:
-        result_b = MAINOUT_0790_LoadDungeon(_TEXT(0x2ac7, "dungeon"));
+        result_b = MAINOUT_0790_LoadDungeon(/*0x2ac7*/ "dungeon");
         break;
 
     case TILE_MAP_RUINS:
-        ULTIMA_1850_PrintString(_TEXT(0x2acf, "ruins"));
+        ULTIMA_1850_PrintString(/*0x2acf*/ "ruins");
         break;
 
     case TILE_MAP_LIGHTHOUSE:
-        result_b = OUTSUBS_0388_EnterTown(_TEXT(0x2ad5, "lighthouse"));
+        result_b = OUTSUBS_0388_EnterTown(/*0x2ad5*/ "lighthouse");
         break;
 
     case TILE_MAP_PALACEBT:
-        result_b = OUTSUBS_0388_EnterTown(_TEXT(0x2ae0, "the palace of Blackthorn!"));
+        result_b = OUTSUBS_0388_EnterTown(/*0x2ae0*/ "the palace of Blackthorn!");
         break;
 
     case TILE_MAP_CASTLELB:
-        result_b = OUTSUBS_0388_EnterTown(_TEXT(0x2afa, "the Castle of Lord British!"));
+        result_b = OUTSUBS_0388_EnterTown(/*0x2afa*/ "the Castle of Lord British!");
         break;
 
     default:
-        ULTIMA_1850_PrintString(_TEXT(0x2b16, "What?\n"));
+        ULTIMA_1850_PrintString(/*0x2b16*/ "What?\n");
         result_b = 0;
         break;
     }
@@ -827,7 +785,7 @@ static void MAINOUT_0a60_CheckEarthquake(void)
     {
         if (ULTIMA_2092_RandomRange(0, 0xff) == 0x69)
         {
-            ULTIMA_1850_PrintString(_TEXT(0x2b1d, "EARTHQUAKE!\n"));
+            ULTIMA_1850_PrintString(/*0x2b1d*/ "EARTHQUAKE!\n");
             ULTIMA_3072_ShakeScreen();
             ULTIMA_2aa8_DamageParty();
         }
@@ -857,7 +815,7 @@ static void MAINOUT_0a84_MainLoop(void)
             ULTIMA_16ba_PrintChar('\n');
             ULTIMA_4c2a_PrintLeftCap();
             // 0aba
-            ULTIMA_1850_PrintString(_TEXT(0x2b2a, "Zzzzzz...\n"));
+            ULTIMA_1850_PrintString(/*0x2b2a*/ "Zzzzzz...\n");
         }
         else if (awake == -1) // 0ac2
         {
@@ -900,7 +858,7 @@ static void MAINOUT_0a84_MainLoop(void)
                     break; // -> 0c12
 
                 case U5_KEY_CTRL_E: // 0b48
-                    ULTIMA_1850_PrintString(_TEXT(0x2b3e, "Exit to DOS? "));
+                    ULTIMA_1850_PrintString(/*0x2b3e*/ "Exit to DOS? ");
                     key = ULTIMA_266c_GetChar();
                     if (key == 'Y')
                     {
@@ -909,26 +867,26 @@ static void MAINOUT_0a84_MainLoop(void)
                     }
                     else
                     {
-                        ULTIMA_1850_PrintString(_TEXT(0x2b4c, "N\n"));
+                        ULTIMA_1850_PrintString(/*0x2b4c*/ "N\n");
                     }
                     break;
 
                 case U5_KEY_CTRL_V: // 0b6e
-                    ULTIMA_1850_PrintString(_TEXT(0x2b4f, U5_VERSION));
+                    ULTIMA_1850_PrintString(/*0x2b4f*/ "1.16");
                     // 0b75
                     ULTIMA_16ba_PrintChar('\n');
                     turnTaken = 0;
                     break;
 
                 case U5_KEY_CTRL_S: // 0b80
-                    ULTIMA_1850_PrintString(_TEXT(0x2b54, "Sound "));
+                    ULTIMA_1850_PrintString(/*0x2b54*/ "Sound ");
                     if (D_a9ce_soundOn != 0)
                     {
-                        ULTIMA_1850_PrintString(_TEXT(0x2b5b, "Off\n"));
+                        ULTIMA_1850_PrintString(/*0x2b5b*/ "Off\n");
                     }
                     else
                     {
-                        ULTIMA_1850_PrintString(_TEXT(0x2b60, "On\n"));
+                        ULTIMA_1850_PrintString(/*0x2b60*/ "On\n");
                     }
                     // ?
                     D_a9ce_soundOn = !D_a9ce_soundOn;
@@ -946,7 +904,7 @@ static void MAINOUT_0a84_MainLoop(void)
                     break;
 
                 default: // 0bb8
-                    ULTIMA_1850_PrintString(_TEXT(0x2b64, "What?\n"));
+                    ULTIMA_1850_PrintString(/*0x2b64*/ "What?\n");
                     break;
                 }
             }
@@ -998,15 +956,15 @@ static void MAINOUT_0a84_MainLoop(void)
                 }
                 else if (D_5896_mapX == 0xe9 && D_5897_mapY == 0xeb && D_5895_mapLevel == 0 && D_5893_mapId == 0)
                 {
-                    ULTIMA_1850_PrintString(_TEXT(0x2b6b, "\n\""));
+                    ULTIMA_1850_PrintString(/*0x2b6b*/ "\n\"");
                     if ((byte)D_58cc_questsOrdained != 0)
                     {
-                        ULTIMA_1850_PrintString(_TEXT(0x2b6e, "Pass, Seeker!\"\n"));
+                        ULTIMA_1850_PrintString(/*0x2b6e*/ "Pass, Seeker!\"\n");
                     }
                     else
                     {
-                        ULTIMA_1850_PrintString(_TEXT(0x2b7e, "Thou art not upon a Sacred Quest!\n"));
-                        ULTIMA_1850_PrintString(_TEXT(0x2ba1, "Passage denied!\"\n"));
+                        ULTIMA_1850_PrintString(/*0x2b7e*/ "Thou art not upon a Sacred Quest!\n");
+                        ULTIMA_1850_PrintString(/*0x2ba1*/ "Passage denied!\"\n");
                         D_5897_mapY++;
                     }
                 }
@@ -1016,7 +974,7 @@ static void MAINOUT_0a84_MainLoop(void)
                 ULTIMA_2ae8_EndTurn();
                 if (tileUnder == 1 && ((D_587c_partyTile & 0xfc) == TILE_ACTOR_SKIFF || (D_587c_partyTile & 0xfe) == TILE_ACTOR_FLYING_CARPET))
                 {
-                    ULTIMA_1850_PrintString(_TEXT(0x2bb3, "Rough seas!\n"));
+                    ULTIMA_1850_PrintString(/*0x2bb3*/ "Rough seas!\n");
                     ULTIMA_3522_HitEffectAt(D_5896_mapX, D_5897_mapY);
                     MAINOUT_109e_DamageVehicle();
                 }
@@ -1036,10 +994,6 @@ void MAINOUT_0d22_Entry(void)
     int shipTile;
     int slot;
     ActorFmt* ship_m;
-
-#if defined(ENABLE_BGM)
-    AUDIO_StopBgm();
-#endif
 
     MAINOUT_0000_SetUpOverworld();
 
@@ -1065,10 +1019,6 @@ void MAINOUT_0d22_Entry(void)
         ship_m->value = 99;
         D_6605_boughtShip = 0;
     }
-
-#if defined(ENABLE_BGM)
-    AUDIO_PlayBgmPerMap();
-#endif
 
     MAINOUT_0a84_MainLoop();
 }
@@ -1111,11 +1061,7 @@ int MAINOUT_0d8c_SpawnChance(void)
 
 // The original adds the index and the pointer as integers (mov bx,cx / add bx,si),
 // not with the [bx][si] addressing mode that param_1[i] gives.
-#if defined(TARGET_DOS16)
 #define MAINOUT_0E04_AT(i) (*(byte*)((uint)(i) + (uint)weights))
-#else
-#define MAINOUT_0E04_AT(i) (weights[i])
-#endif
 
 // an index picked by weights that add up to 256 (a roll of 0-255 minus each weight)
 static int MAINOUT_0e04_PickWeighted(byte* weights)
