@@ -203,6 +203,9 @@ identical and every name defined. It opens no game file to link.
   then still the October 1988 link's, and the 1992 change touched more than the eight
   bytes known (the sums above). A copy of the 1988 files (ULTIMA.EXE and INTRO.OVL of
   October 1988) would make both functions compiler output again and test the checksum.
+  A second copy (a zip of 1996 with the 2001 "Exodus Project" MIDI upgrade beside it) has
+  the same bytes again: its main folder is GOG's, and the upgrade's changed EXE and overlays
+  are the fans' patches of those.
 
 ### Linking with PLINK86plus 2.24
 
