@@ -315,8 +315,8 @@ int OUTSUBS_0388_EnterTown(char* verb)
     return failed;
 }
 
-void MAINOUT_0000(void);
-void MAINOUT_0354(int param_1, int param_2);
+void MAINOUT_0000_SetUpOverworld(void);
+void MAINOUT_0354_MoveParty(int stepX, int stepY);
 
 u8 D_3a06_shardX[4] = { 0xC0, 0x82, 0xB0 };
 
@@ -331,9 +331,9 @@ void OUTSUBS_0458_Falls(void)
     int member_i;
 
     ULTIMA_1850_PrintString(_TEXT(0x39b5, "F-A-L-L-S!!!\n"));
-    MAINOUT_0354(0, 1);
+    MAINOUT_0354_MoveParty(0, 1);
     ULTIMA_3ae6_WaitFrames(1);
-    MAINOUT_0354(0, 1);
+    MAINOUT_0354_MoveParty(0, 1);
     ULTIMA_43ae_AudioSweepTone(0x9c4, 800, 1, 300);
 
     savedTile = D_587c_partyTile;
@@ -370,7 +370,7 @@ void OUTSUBS_0458_Falls(void)
             ;
 
         ULTIMA_25d8_WriteFileToDisk(/*0x39fb*/ "UNDER.OOL", D_5c5a_actors, 0x100);
-        MAINOUT_0000(); // THUNK 7b7e
+        MAINOUT_0000_SetUpOverworld(); // THUNK 7b7e
 
 #if defined(ENABLE_BGM)
         AUDIO_PlayBgmPerMap();

@@ -27,7 +27,7 @@ int MAINOUT_08de_EnterCmd(void);
 u16 D_55a6_saveStart = 0; // +0x0
 S_55a8 D_55a8_party[0x10] = {0}; // ~57a8)
 s16 D_57a8_food = 0; // +0x0202 Food // int (TALK_0682_ReceiveItem, MOVSX)
-s16 D_57aa_gold = 0; // +0x0204 Gold // int (MAINOUT_1b3e, MOVSX)
+s16 D_57aa_gold = 0; // +0x0204 Gold // int (MAINOUT_1b3e_TrollToll, MOVSX)
 u8 D_57ac_keys = 0; // +0x0206 #Keys
 u8 D_57ad_gems = 0; // +0x0207 #Gems
 u8 D_57ae_torches = 0; // +0x0208 #Torches
@@ -931,8 +931,8 @@ int ULTIMA_3b9e_GetNumber(int param_1_maxLen)
 }
 
 void DNGLOOK_109e_LoadDungeonImages(void); // NOTE: SIC
-void MAINOUT_007a(void);
-int MAINOUT_1a60(void);
+void MAINOUT_007a_WaitIfActorNear(void);
+int MAINOUT_1a60_MonstersTurn(void);
 
 // hole up from outside
 static void ULTIMA_3c9a_HoleUpCmd(void)
@@ -963,8 +963,8 @@ static void ULTIMA_3c9a_HoleUpCmd(void)
         {
             for (local_c = 0; local_c < 5; local_c++)
             {
-                MAINOUT_007a();
-                MAINOUT_1a60();
+                MAINOUT_007a_WaitIfActorNear();
+                MAINOUT_1a60_MonstersTurn();
                 if ((D_587c_partyTile & 0xfc) != TILE_ACTOR_FRIGATE_24)
                 {
                     return;

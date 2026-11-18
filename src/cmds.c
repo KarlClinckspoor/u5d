@@ -48,8 +48,8 @@
 #include "outsubs.h"
 #include "town.h"
 
-void MAINOUT_0354(int param_1, int param_2);
-int MAINOUT_105c(int param_1);
+void MAINOUT_0354_MoveParty(int stepX, int stepY);
+int MAINOUT_105c_IsMovingActor(int tile);
 
 // CHECKED
 // hole up (impl)
@@ -674,7 +674,7 @@ static void CMDS_0962(void)
 
                 local_c = ULTIMA_368e_FindActorTileAtPos(local_12_ab, local_16_an, D_5895_mapLevel);
 
-                if (MAINOUT_105c(local_c) != 0 && (local_c & 0xfc) != 0xec)
+                if (MAINOUT_105c_IsMovingActor(local_c) != 0 && (local_c & 0xfc) != 0xec)
                 {
                     // 0a10
                     local_6 = D_5876_tempX;

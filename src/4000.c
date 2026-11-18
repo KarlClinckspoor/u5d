@@ -9,7 +9,7 @@
 #include "outsubs.h"
 #include "town.h"
 
-void MAINOUT_0000(void);
+void MAINOUT_0000_SetUpOverworld(void);
 u8 D_6a34_ambientTick = 0;
 
 u16 D_6a36[9] =
@@ -590,7 +590,7 @@ int ULTIMA_47f4_GoToMoonstone(int param_1)
 #endif
 
             ULTIMA_256e_ReadFileFromDisk(OUTSUBS_0368_GetWorldSavefile(), &D_5c5a_actors[0].tile, 0x100, 0);
-            MAINOUT_0000();
+            MAINOUT_0000_SetUpOverworld();
 
 #if defined(ENABLE_BGM)
 			AUDIO_PlayBgmPerMap();

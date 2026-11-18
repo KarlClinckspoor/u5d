@@ -15,7 +15,7 @@
 #include "zstats.h"
 #include "time/time.h"
 
-void MAINOUT_0000(void);
+void MAINOUT_0000_SetUpOverworld(void);
 
 u8 D_4592_fieldMissileKinds[4] = {0x35, 0x33, 0x34, 0x36};
 
@@ -509,7 +509,7 @@ static int CAST_05dc_InPor(void)
 
             if (result != 0)
             {
-                MAINOUT_0000();
+                MAINOUT_0000_SetUpOverworld();
             }
         }
     }

@@ -308,6 +308,6 @@ void CMDS_1c20_KlimbCmd(void)
             }
         }
 
-        MAINOUT_0354(local_6, local_a);
+        MAINOUT_0354_MoveParty(local_6, local_a);
     }
 }

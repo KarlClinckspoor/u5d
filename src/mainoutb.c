@@ -15,37 +15,37 @@
 #include "mainout.h"
 #include "outsubs.h"
 
-static u8 D_a526; // this object's _BSS (DS:a526)
-static u8 D_a527;
+static u8 D_a526_lastX; // this object's _BSS (DS:a526)
+static u8 D_a527_lastY;
 
 // The part of MAINOUT.OVL built with MSC 5.0 (docs/MATCHING.md, "Two compilers").
-// Where this part starts is not certain: MAINOUT_0e4e to 105c use no strings and compile
+// Where this part starts is not certain: MAINOUT_0e4e_MonsterForTile to 105c use no strings and compile
 // the same with both compilers, so the original boundary may be anywhere from 0e4e to 109e.
 
-int MAINOUT_0d8c(void);
-int MAINOUT_105c(int param_1);
-void MAINOUT_0000(void);
-void MAINOUT_0fc4(void);
+int MAINOUT_0d8c_SpawnChance(void);
+int MAINOUT_105c_IsMovingActor(int tile);
+void MAINOUT_0000_SetUpOverworld(void);
+void MAINOUT_0fc4_SpawnMonster(void);
 
-u8 D_2bc0[0xc] = { 0xc0, 0xc8, 0x90, 0x98, 0xbc, 0xc4, 0xd0, 0xe4, 0xcc, 0xd4, 0xdc, 0xd8 };
+u8 D_2bc0_landMonsters[0xc] = { 0xc0, 0xc8, 0x90, 0x98, 0xbc, 0xc4, 0xd0, 0xe4, 0xcc, 0xd4, 0xdc, 0xd8 };
 
-u8 D_2bcc[0x8] = { 0x94, 0x90, 0x98, 0xf0, 0xf4, 0xd8, 0xdc, 0x00 };
+u8 D_2bcc_deepLandMonsters[0x8] = { 0x94, 0x90, 0x98, 0xf0, 0xf4, 0xd8, 0xdc, 0x00 };
 
-u8 D_2bd4[0x6] = { 0x8c, 0x84, 0x88, 0x80, 0x2c, 0x00 };
+u8 D_2bd4_seaMonsters[0x6] = { 0x8c, 0x84, 0x88, 0x80, 0x2c, 0x00 };
 
-u8 D_2bda[0x2] = { 0x84, 0x88 };
+u8 D_2bda_deepSeaMonsters[0x2] = { 0x84, 0x88 };
 
-u8 D_2bdc[0xc] = { 0x3c, 0x32, 0x28, 0x1e, 0x14, 0x0f, 0x0f, 0x0a, 0x0a, 0x03, 0x02, 0x01 };
+u8 D_2bdc_landWeights[0xc] = { 0x3c, 0x32, 0x28, 0x1e, 0x14, 0x0f, 0x0f, 0x0a, 0x0a, 0x03, 0x02, 0x01 };
 
-u8 D_2be8[0x8] = { 0x40, 0x38, 0x38, 0x20, 0x20, 0x08, 0x08, 0x00 };
+u8 D_2be8_deepLandWeights[0x8] = { 0x40, 0x38, 0x38, 0x20, 0x20, 0x08, 0x08, 0x00 };
 
-u8 D_2bf0[0x6] = { 0x48, 0x48, 0x28, 0x26, 0x22, 0x00 };
+u8 D_2bf0_seaWeights[0x6] = { 0x48, 0x48, 0x28, 0x26, 0x22, 0x00 };
 
-u8 D_2bf6[0x2] = { 0x80, 0x80 };
+u8 D_2bf6_deepSeaWeights[0x2] = { 0x80, 0x80 };
 
-u16 D_2bf8[4][4] = { 2, 3, 4, 4, 4, 4, 2, 3, 3, 2, 4, 4, 4, 4, 3, 2 };
+u16 D_2bf8_sailDelay[4][4] = { 2, 3, 4, 4, 4, 4, 2, 3, 3, 2, 4, 4, 4, 4, 3, 2 };
 
-u8 D_2c18[0x3d] =
+u8 D_2c18_chaseRange[0x3d] =
 {
     0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x01,
     0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01,
@@ -58,33 +58,34 @@ u8 D_2c18[0x3d] =
 };
 
 // u8 2c54 = 0;
-u8 D_2c55 = 0;
+u8 D_2c55_quickToggle = 0;
 
 static u8 D_2c56 = 0; // unused
-u8 D_2c57 = 0;
+u8 D_2c57_mountToggle = 0;
 
 // CHECKED
-void MAINOUT_109e(void)
+// a blow to the party's vehicle: a ship loses 1 to 30 hull points and sinks (abandon ship, or drowning); on foot the party is hurt
+void MAINOUT_109e_DamageVehicle(void)
 {
-    int local_6_an;
-    int local_4;
+    int skiffs;
+    int damage;
 
     if ((D_587c_partyTile & 0xf8) == TILE_ACTOR_FRIGATE_20)
     {
-        local_4 = ULTIMA_2092_RandomRange(1, 0x1e);
-        if (local_4 < D_5c5a_actors[0].value)
+        damage = ULTIMA_2092_RandomRange(1, 0x1e);
+        if (damage < D_5c5a_actors[0].value)
         {
-            D_5c5a_actors[0].value -= local_4;
+            D_5c5a_actors[0].value -= damage;
             ULTIMA_2900_UpdateVitalsDisplay();
         }
         else
         {
             ULTIMA_1850_PrintString(_TEXT(0x6ada, "Ship sunk!\n"));
-            local_6_an = D_5c5a_actors[0].extra;
-            if (local_6_an > 0 || D_57b0_carpets != 0)
+            skiffs = D_5c5a_actors[0].extra;
+            if (skiffs > 0 || D_57b0_carpets != 0)
             {
                 ULTIMA_1850_PrintString(_TEXT(0x6ae6, "Abandon ship!\n"));
-                if (local_6_an > 0)
+                if (skiffs > 0)
                 {
                     D_587c_partyTile = (D_587c_partyTile & 3) + TILE_ACTOR_SKIFF;
                 }
@@ -119,65 +120,67 @@ void MAINOUT_109e(void)
     }
 }
 
-static void MAINOUT_1168(int param_1, int param_2, int param_3)
+// a pirate ship fires (cannon sound, a missile to the party); a hit hurts the vehicle
+static void MAINOUT_1168_PirateFire(int actor, int distX, int distY)
 {
-    byte local_8;
-    byte local_6;
-    int local_4_ab;
+    byte shotY;
+    byte shotX;
+    int hit;
 
-    if (param_2 == 0)
+    if (distX == 0)
     {
-        if (D_5c5a_actors[param_1].animTile == TILE_ACTOR_PIRATE || D_5c5a_actors[param_1].animTile == TILE_ACTOR_2E)
+        if (D_5c5a_actors[actor].animTile == TILE_ACTOR_PIRATE || D_5c5a_actors[actor].animTile == TILE_ACTOR_2E)
         {
-            D_5c5a_actors[param_1].animTile = (ULTIMA_2092_RandomRange(0, 3) & 2) + TILE_ACTOR_2D;
+            D_5c5a_actors[actor].animTile = (ULTIMA_2092_RandomRange(0, 3) & 2) + TILE_ACTOR_2D;
         }
     }
 
-    if (param_3 == 0)
+    if (distY == 0)
     {
-        if (D_5c5a_actors[param_1].animTile == TILE_ACTOR_2D || D_5c5a_actors[param_1].animTile == TILE_ACTOR_2F)
+        if (D_5c5a_actors[actor].animTile == TILE_ACTOR_2D || D_5c5a_actors[actor].animTile == TILE_ACTOR_2F)
         {
-            D_5c5a_actors[param_1].animTile = (ULTIMA_2092_RandomRange(0, 3) & 2) + TILE_ACTOR_PIRATE;
+            D_5c5a_actors[actor].animTile = (ULTIMA_2092_RandomRange(0, 3) & 2) + TILE_ACTOR_PIRATE;
         }
     }
 
     ULTIMA_5910_UpdateFrame();
     ULTIMA_43ae_AudioSweepTone(0x514, 300, 5, 100);
 
-    local_6 = D_5c5a_actors[param_1].x - D_5896_mapX + 5;
-    local_8 = D_5c5a_actors[param_1].y - D_5897_mapY + 5;
-    local_4_ab = COMSUBS_12de_FlyMissile(local_6, local_8, 5, 5, 1);
-    if (local_4_ab != 0)
+    shotX = D_5c5a_actors[actor].x - D_5896_mapX + 5;
+    shotY = D_5c5a_actors[actor].y - D_5897_mapY + 5;
+    hit = COMSUBS_12de_FlyMissile(shotX, shotY, 5, 5, 1);
+    if (hit != 0)
     {
         ULTIMA_5910_UpdateFrame();
         ULTIMA_3522_HitEffectAt(D_5896_mapX, D_5897_mapY);
-        MAINOUT_109e();
+        MAINOUT_109e_DamageVehicle();
     }
 }
 
-static void MAINOUT_1248(int param_1)
+// an actor next to the party: a whirlpool pulls the ship into the underworld, else "Attacked!" and combat (not on a skiff or carpet over water)
+static void MAINOUT_1248_ActorTouchesParty(int actor)
 {
-    int local_4;
+    int savedTile;
 
-    if ((D_5c5a_actors[param_1].tile & 0xfc) == TILE_ACTOR_WHIRLPOOL)
+    if ((D_5c5a_actors[actor].tile & 0xfc) == TILE_ACTOR_WHIRLPOOL)
     {
         if (D_587c_partyTile == TILE_ACTOR_AVATAR)
         {
-            MAINOUT_109e();
+            MAINOUT_109e_DamageVehicle();
             return;
         }
         else
         {
-            D_5c5a_actors[param_1].tile = D_5c5a_actors[param_1].animTile = 0;
+            D_5c5a_actors[actor].tile = D_5c5a_actors[actor].animTile = 0;
             ULTIMA_1850_PrintString(_TEXT(0x6b04, "\nWHIRLPOOL!\n"));
 
-            local_4 = D_587c_partyTile;
+            savedTile = D_587c_partyTile;
             D_587c_partyTile = TILE_ACTOR_WHIRLPOOL;
             ULTIMA_5910_UpdateFrame();
             ULTIMA_43ae_AudioSweepTone(0x294, 0x96, 0x28, 0x1e78);
 
-            D_587c_partyTile = local_4;
-            MAINOUT_109e();
+            D_587c_partyTile = savedTile;
+            MAINOUT_109e_DamageVehicle();
 
 #if defined(ENABLE_BGM)
             AUDIO_StopBgm();
@@ -186,14 +189,14 @@ static void MAINOUT_1248(int param_1)
             D_5895_mapLevel = 0xff;
             D_5896_mapX = 0x22;
             D_5897_mapY = 0x12;
-            MAINOUT_0000();
+            MAINOUT_0000_SetUpOverworld();
 
 #if defined(ENABLE_BGM)
             AUDIO_PlayBgmPerMap();
 #endif
         }
     }
-    else if ((D_5c5a_actors[param_1].tile & 0xfc) != TILE_ACTOR_E0)
+    else if ((D_5c5a_actors[actor].tile & 0xfc) != TILE_ACTOR_E0)
     {
         ULTIMA_5910_UpdateFrame();
         ULTIMA_1850_PrintString(_TEXT(0x6b12, "\nAttacked!\n"));
@@ -201,93 +204,96 @@ static void MAINOUT_1248(int param_1)
         if (*ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY) < TILE_MAP_POISON &&
             ((D_587c_partyTile & 0xfe) == TILE_ACTOR_FLYING_CARPET || (D_587c_partyTile & 0xfc) == TILE_ACTOR_SKIFF))
         {
-            MAINOUT_109e();
+            MAINOUT_109e_DamageVehicle();
             return;
         }
         else
         {
-            ULTIMA_6150_Combat(param_1);
+            ULTIMA_6150_Combat(actor);
         }
     }
     else
     {
-        MAINOUT_109e();
+        MAINOUT_109e_DamageVehicle();
         return;
     }
 }
 
-static int MAINOUT_131a(int param_1)
+// next to the party: touches it; sea monsters fire from three cells at 1 in 8; a pirate ship in line says "BOOOM!"; 1 when it acted
+static int MAINOUT_131a_ActorAttack(int actor)
 {
-    byte local_e_am;
-    int local_c;
-    byte local_a;
-    int local_8;
-    int local_6;
-    int local_4_ab;
+    byte shotY_g;
+    int tile;
+    byte shotX_h;
+    int distY;
+    int distX;
+    int hit;
 
-    local_c = D_5c5a_actors[param_1].tile;
-    local_6 = abs(D_5c5a_actors[param_1].x - D_5896_mapX);
-    if (local_6 > 0x7f)
+    tile = D_5c5a_actors[actor].tile;
+    distX = abs(D_5c5a_actors[actor].x - D_5896_mapX);
+    if (distX > 0x7f)
     {
-        local_6 = 0x100 - local_6;
+        distX = 0x100 - distX;
     }
 
-    local_8 = abs(D_5c5a_actors[param_1].y - D_5897_mapY);
-    if (local_8 > 0x7f)
+    distY = abs(D_5c5a_actors[actor].y - D_5897_mapY);
+    if (distY > 0x7f)
     {
-        local_8 = 0x100 - local_8;
+        distY = 0x100 - distY;
     }
 
-    if ((local_6 == 1 && local_8 == 0) || (local_6 == 0 && local_8 == 1))
+    if ((distX == 1 && distY == 0) || (distX == 0 && distY == 1))
     {
-        MAINOUT_1248(param_1);
+        MAINOUT_1248_ActorTouchesParty(actor);
         return 1;
     }
 
-    if (local_c == TILE_ACTOR_88 || local_c == TILE_ACTOR_DC)
+    if (tile == TILE_ACTOR_88 || tile == TILE_ACTOR_DC)
     {
-        if (local_6 <= 3 && local_8 <= 3 && ULTIMA_2092_RandomRange(0, 7) == 0)
+        if (distX <= 3 && distY <= 3 && ULTIMA_2092_RandomRange(0, 7) == 0)
         {
             ULTIMA_5910_UpdateFrame();
             ULTIMA_43ae_AudioSweepTone(0x514, 300, 5, 100);
 
-            local_a = D_5c5a_actors[param_1].x - D_5896_mapX + 5;
-            local_e_am = D_5c5a_actors[param_1].y - D_5897_mapY + 5;
+            shotX_h = D_5c5a_actors[actor].x - D_5896_mapX + 5;
+            shotY_g = D_5c5a_actors[actor].y - D_5897_mapY + 5;
 
-            local_4_ab = COMSUBS_12de_FlyMissile(local_a, local_e_am, 5, 5, 3);
-            if (local_4_ab != 0)
+            hit = COMSUBS_12de_FlyMissile(shotX_h, shotY_g, 5, 5, 3);
+            if (hit != 0)
             {
                 ULTIMA_3522_HitEffectAt(D_5896_mapX, D_5897_mapY);
-                MAINOUT_109e();
+                MAINOUT_109e_DamageVehicle();
             }
 
             return 1;
         }
     }
-    else if ((local_c & 0xfc) == TILE_ACTOR_PIRATE && ((local_6 == 0 && local_8 < 4) || (local_8 == 0 && local_6 < 4)))
+    else if ((tile & 0xfc) == TILE_ACTOR_PIRATE && ((distX == 0 && distY < 4) || (distY == 0 && distX < 4)))
     {
         ULTIMA_1850_PrintString(_TEXT(0x6b1e, "* BOOOM! *\n\n"));
-        MAINOUT_1168(param_1, local_6, local_8);
+        MAINOUT_1168_PirateFire(actor, distX, distY);
         return 1;
     }
 
     return 0;
 }
 
-static int MAINOUT_1482(int param_1, int param_2, int param_3)
+// the cell is walkable for the actor and holds no other actor
+static int MAINOUT_1482_CanActorEnter(int actor, int destX, int destY)
 {
-    if (ULTIMA_2c4c_IsWalkableTile(D_5c5a_actors[param_1].tile, *ULTIMA_4402_GetTileAddr(param_2, param_3)) == 0)
+    if (ULTIMA_2c4c_IsWalkableTile(D_5c5a_actors[actor].tile, *ULTIMA_4402_GetTileAddr(destX, destY)) == 0)
         return 0;
 
-    if (ULTIMA_3702_FindLastActorTileAt(param_2, param_3, D_5895_mapLevel) != 0)
+    if (ULTIMA_3702_FindLastActorTileAt(destX, destY, D_5895_mapLevel) != 0)
         return 0;
 
     return 1;
 }
 
-static int MAINOUT_14c8(int param_1, int param_2)
+// 0 for the cell the last moved actor came from (D_a526/D_a527)
+static int MAINOUT_14c8_NotLastCell(int destX, int destY)
 {
-    if (param_1 == D_a526 && param_2 == D_a527)
+    if (destX == D_a526_lastX && destY == D_a527_lastY)
     {
         return 0;
     }
@@ -295,67 +301,69 @@ static int MAINOUT_14c8(int param_1, int param_2)
     return 1;
 }
 
-static int MAINOUT_14ea(int param_1)
+// the actor is within six cells and in the pattern D_2c18
+static int MAINOUT_14ea_InChaseRange(int actor)
 {
-    int local_6_an;
-    int local_4;
+    int distY;
+    int distX;
 
-    local_4 = abs(D_5c5a_actors[param_1].x - D_5896_mapX);
-    if (local_4 > 0x7f)
+    distX = abs(D_5c5a_actors[actor].x - D_5896_mapX);
+    if (distX > 0x7f)
     {
-        local_4 = 0x100 - local_4;
+        distX = 0x100 - distX;
     }
 
-    local_6_an = abs(D_5c5a_actors[param_1].y - D_5897_mapY);
-    if (local_6_an > 0x7f)
+    distY = abs(D_5c5a_actors[actor].y - D_5897_mapY);
+    if (distY > 0x7f)
     {
-        local_6_an = 0x100 - local_6_an;
+        distY = 0x100 - distY;
     }
 
-    if (local_4 < 6 && local_6_an < 6)
+    if (distX < 6 && distY < 6)
     {
-        return D_2c18[local_4 + local_6_an * 0xb];
+        return D_2c18_chaseRange[distX + distY * 0xb];
     }
 
     return 0;
 }
 
-static void MAINOUT_1578(int param_1, int param_2, int param_3)
+// moves an actor by (x, y): a pirate ship turns to face it; rough terrain may stop it; it leaves a moongate's cell empty
+static void MAINOUT_1578_MoveActor(int actor, int stepX, int stepY)
 {
-    int local_6;
-    int local_c;
-    int local_a;
-    int local_8;
-    int local_4_ab;
+    int tile_b;
+    int destTile;
+    int destY;
+    int destX;
+    int facing_h;
 
-    local_6 = D_5c5a_actors[param_1].tile;
-    local_8 = D_5c5a_actors[param_1].x + param_2;
-    local_a = D_5c5a_actors[param_1].y + param_3;
-    local_c = *ULTIMA_4402_GetTileAddr(local_8, local_a);
-    if ((local_6 & 0xfc) == TILE_ACTOR_PIRATE)
+    tile_b = D_5c5a_actors[actor].tile;
+    destX = D_5c5a_actors[actor].x + stepX;
+    destY = D_5c5a_actors[actor].y + stepY;
+    destTile = *ULTIMA_4402_GetTileAddr(destX, destY);
+    if ((tile_b & 0xfc) == TILE_ACTOR_PIRATE)
     {
-        if (param_2 == 0 && param_3 == -1)
+        if (stepX == 0 && stepY == -1)
         {
-            local_4_ab = 0;
+            facing_h = 0;
         }
-        else if (param_2 == 1 && param_3 == 0)
+        else if (stepX == 1 && stepY == 0)
         {
-            local_4_ab = 1;
+            facing_h = 1;
         }
-        else if (param_2 == 0 && param_3 == 1)
+        else if (stepX == 0 && stepY == 1)
         {
-            local_4_ab = 2;
+            facing_h = 2;
         }
-        else if (param_2 == -1 && param_3 == 0)
+        else if (stepX == -1 && stepY == 0)
         {
-            local_4_ab = 3;
+            facing_h = 3;
         }
 
-        D_5c5a_actors[param_1].tile = D_5c5a_actors[param_1].animTile = local_4_ab + TILE_ACTOR_PIRATE;
+        D_5c5a_actors[actor].tile = D_5c5a_actors[actor].animTile = facing_h + TILE_ACTOR_PIRATE;
     }
-    else if (local_6 != TILE_ACTOR_DC && local_6 != TILE_ACTOR_94 && local_6 != TILE_ACTOR_D8 && local_6 != TILE_ACTOR_F0)
+    else if (tile_b != TILE_ACTOR_DC && tile_b != TILE_ACTOR_94 && tile_b != TILE_ACTOR_D8 && tile_b != TILE_ACTOR_F0)
     {
-        switch (local_c)
+        switch (destTile)
         {
         case TILE_MAP_POISON:
         case TILE_MAP_6:
@@ -382,139 +390,141 @@ static void MAINOUT_1578(int param_1, int param_2, int param_3)
         }
     }
 
-    D_a526 = D_5c5a_actors[param_1].x;
-    D_a527 = D_5c5a_actors[param_1].y;
+    D_a526_lastX = D_5c5a_actors[actor].x;
+    D_a527_lastY = D_5c5a_actors[actor].y;
 
-    D_5c5a_actors[param_1].x = local_8;
-    D_5c5a_actors[param_1].y = local_a;
+    D_5c5a_actors[actor].x = destX;
+    D_5c5a_actors[actor].y = destY;
     D_24e6_viewDirty |= 2;
 
-    if (*ULTIMA_4402_GetTileAddr(local_8, local_a) == TILE_MAP_MOONGATE)
+    if (*ULTIMA_4402_GetTileAddr(destX, destY) == TILE_MAP_MOONGATE)
     {
-        D_5c5a_actors[param_1].tile = D_5c5a_actors[param_1].animTile = 0;
+        D_5c5a_actors[actor].tile = D_5c5a_actors[actor].animTile = 0;
     }
 }
 
-static void MAINOUT_16fc(int param_1)
+// tries random directions, up to three times, and takes the first free cell
+static void MAINOUT_16fc_MoveRandomly(int actor)
 {
-    int local_10_aa;
-    int local_e_am;
-    int local_c;
-    int local_a;
-    int local_8;
-    int local_6;
-    int local_4_ab;
+    int northY_i;
+    int eastX_h;
+    int southY;
+    int westX;
+    int y;
+    int x;
+    int tries;
 
-    local_6 = D_5c5a_actors[param_1].x;
-    local_8 = D_5c5a_actors[param_1].y;
+    x = D_5c5a_actors[actor].x;
+    y = D_5c5a_actors[actor].y;
 
-    local_4_ab = 0;
-    local_a = local_6 - 1;
-    local_c = local_8 + 1;
-    local_e_am = local_6 + 1;
-    local_10_aa = local_8 - 1;
+    tries = 0;
+    westX = x - 1;
+    southY = y + 1;
+    eastX_h = x + 1;
+    northY_i = y - 1;
 
     // bug?
-    for (; local_4_ab < 3; local_4_ab++)
+    for (; tries < 3; tries++)
     {
         switch (ULTIMA_2092_RandomRange(0, 3))
         {
         case 0:
             // 1760
-            if (MAINOUT_1482(param_1, local_6, local_10_aa) != 0)
+            if (MAINOUT_1482_CanActorEnter(actor, x, northY_i) != 0)
             {
-                MAINOUT_1578(param_1, 0, -1);
+                MAINOUT_1578_MoveActor(actor, 0, -1);
             }
             return;
 
         case 1:
             // 177c
-            if (MAINOUT_1482(param_1, local_e_am, local_8) != 0)
+            if (MAINOUT_1482_CanActorEnter(actor, eastX_h, y) != 0)
             {
-                MAINOUT_1578(param_1, 1, 0);
+                MAINOUT_1578_MoveActor(actor, 1, 0);
             }
             return;
 
         case 2:
             // 1790
-            if (MAINOUT_1482(param_1, local_6, local_c) != 0)
+            if (MAINOUT_1482_CanActorEnter(actor, x, southY) != 0)
             {
-                MAINOUT_1578(param_1, 0, 1);
+                MAINOUT_1578_MoveActor(actor, 0, 1);
             }
             return;
 
         case 3:
             // 17a8
-            if (MAINOUT_1482(param_1, local_a, local_8) != 0)
+            if (MAINOUT_1482_CanActorEnter(actor, westX, y) != 0)
             {
-                MAINOUT_1578(param_1, -1, 0);
+                MAINOUT_1578_MoveActor(actor, -1, 0);
             }
             return;
         }
     }
 }
 
-// The original stores the constants to param_2 through AX ("mov ax,1; mov [bp+4],ax"), MSC's
-// form for a chained assignment (see SHOPPES2_00ac_PrintHonorific): param_2 = param_2 = 1 gives it.
+// The original stores the constants to mode through AX ("mov ax,1; mov [bp+4],ax"), MSC's
+// form for a chained assignment (see SHOPPES2_00ac_PrintHonorific): mode = mode = 1 gives it.
 #if defined(TARGET_DOS16)
-#define P2_SET(v) param_2 = param_2 = (v) // two stores between sequence points: DOS build only
+#define P2_SET(v) mode = mode = (v) // two stores between sequence points: DOS build only
 #else
-#define P2_SET(v) param_2 = (v)
+#define P2_SET(v) mode = (v)
 #endif
 
 // CHECKED
 // MSC places a block that nothing falls into after the first unconditional jump that follows
-// it in the source. The original has the two "if (x > 0) param_2 = 0;" blocks after the
-// local_e_am == 0 branch's jump and after the first MAINOUT_1578 call's, jumping back to the
+// it in the source. The original has the two "if (x > 0) mode = 0;" blocks after the
+// local_e_am == 0 branch's jump and after the first MAINOUT_1578_MoveActor call's, jumping back to the
 // next test: they were reached only by a goto from the else, and sat (here in an if (0)) in
 // the source after the code that ends with those jumps. Written in place, as an else-if, MSC
 // keeps them inline and the "x < 0" blocks jump over them. The end is an if/else chain with
-// MAINOUT_16fc in each last else, not early returns: the second MAINOUT_1578 call ends a
+// MAINOUT_16fc_MoveRandomly in each last else, not early returns: the second MAINOUT_1578_MoveActor call ends a
 // then-branch, so tail merging keeps its copy and the first one jumps forward into it.
-static void MAINOUT_17d4(int param_1, int param_2)
+// one step toward the party, along x or y by chance; otherwise at random (the second parameter is only written)
+static void MAINOUT_17d4_MoveTowardParty(int actor, int mode)
 {
-    int local_e_am;
-    int local_c;
-    int local_a;
-    int local_8;
-    int local_6;
-    int local_4_ab;
+    int relY;
+    int y;
+    int relX_m;
+    int x;
+    int stepY;
+    int stepX;
 
-    local_8 = D_5c5a_actors[param_1].x;
-    local_c = D_5c5a_actors[param_1].y;
-    local_a = (D_5c5a_actors[param_1].x - D_5896_mapX) & 0xff;
-    if (local_a > 0x7f)
+    x = D_5c5a_actors[actor].x;
+    y = D_5c5a_actors[actor].y;
+    relX_m = (D_5c5a_actors[actor].x - D_5896_mapX) & 0xff;
+    if (relX_m > 0x7f)
     {
-        local_a -= 0x100;
+        relX_m -= 0x100;
     }
 
-    local_e_am = (D_5c5a_actors[param_1].y - D_5897_mapY) & 0xff;
-    if (local_e_am > 0x7f)
+    relY = (D_5c5a_actors[actor].y - D_5897_mapY) & 0xff;
+    if (relY > 0x7f)
     {
-        local_e_am -= 0x100;
+        relY -= 0x100;
     }
 
     // 1828
-    if (local_a == 0)
+    if (relX_m == 0)
     {
-        local_4_ab = 0;
+        stepX = 0;
     }
-    else if (local_a > 0) // 1836
+    else if (relX_m > 0) // 1836
     {
         P2_SET(1);
-        local_4_ab = -1;
+        stepX = -1;
         // -> 1864
     }
     else
     {
-        if (local_a < 0) // 184a
+        if (relX_m < 0) // 184a
         {
             P2_SET(0);
         }
 
-        if (local_a < 0) // 1855
+        if (relX_m < 0) // 1855
         {
-            local_4_ab = param_2 = 1;
+            stepX = mode = 1;
         }
         else
         {
@@ -523,35 +533,35 @@ static void MAINOUT_17d4(int param_1, int param_2)
     }
 
 L_1864:
-    if (local_e_am == 0) // 1864
+    if (relY == 0) // 1864
     {
-        local_6 = 0;
+        stepY = 0;
 
         if (0)
         {
 L_1872:
-            if (local_a > 0)
+            if (relX_m > 0)
             {
                 P2_SET(0);
             }
             goto L_1864;
         }
     }
-    else if (local_e_am > 0) // 1880
+    else if (relY > 0) // 1880
     {
         P2_SET(1);
-        local_6 = -1;
+        stepY = -1;
     }
     else
     {
-        if (local_e_am < 0) // 1894
+        if (relY < 0) // 1894
         {
             P2_SET(0);
         }
 
-        if (local_e_am < 0) // 189f
+        if (relY < 0) // 189f
         {
-            local_6 = param_2 = 1;
+            stepY = mode = 1;
         }
         else
         {
@@ -562,7 +572,7 @@ L_1872:
     if (0)
     {
 L_18ee:
-        if (local_e_am > 0)
+        if (relY > 0)
         {
             P2_SET(0);
         }
@@ -573,102 +583,104 @@ L_18ae:
     if (ULTIMA_2092_RandomRange(0, 1) == 1)
     {
         // 18bd
-        if (local_4_ab != 0 && MAINOUT_1482(param_1, local_8 + local_4_ab, local_c) != 0 &&
-            MAINOUT_14c8(local_8 + local_4_ab, local_c) != 0)
+        if (stepX != 0 && MAINOUT_1482_CanActorEnter(actor, x + stepX, y) != 0 &&
+            MAINOUT_14c8_NotLastCell(x + stepX, y) != 0)
         {
             // 18e2: -> 192a
-            MAINOUT_1578(param_1, local_4_ab, 0);
+            MAINOUT_1578_MoveActor(actor, stepX, 0);
         }
-        else if (local_6 != 0 && MAINOUT_1482(param_1, local_8, local_c + local_6) != 0 &&
-                 MAINOUT_14c8(local_8, local_c + local_6) != 0)
+        else if (stepY != 0 && MAINOUT_1482_CanActorEnter(actor, x, y + stepY) != 0 &&
+                 MAINOUT_14c8_NotLastCell(x, y + stepY) != 0)
         {
             // 1921
-            MAINOUT_1578(param_1, 0, local_6);
+            MAINOUT_1578_MoveActor(actor, 0, stepY);
         }
         else
         {
-            MAINOUT_16fc(param_1);
+            MAINOUT_16fc_MoveRandomly(actor);
         }
     }
     else
     {
         // 1930
-        if (local_6 != 0 && MAINOUT_1482(param_1, local_8, local_c + local_6) != 0 &&
-            MAINOUT_14c8(local_8, local_c + local_6) != 0)
+        if (stepY != 0 && MAINOUT_1482_CanActorEnter(actor, x, y + stepY) != 0 &&
+            MAINOUT_14c8_NotLastCell(x, y + stepY) != 0)
         {
             // -> 1921
-            MAINOUT_1578(param_1, 0, local_6);
+            MAINOUT_1578_MoveActor(actor, 0, stepY);
         }
-        else if (local_4_ab != 0 && MAINOUT_1482(param_1, local_8 + local_4_ab, local_c) != 0 &&
-                 MAINOUT_14c8(local_8 + local_4_ab, local_c) != 0)
+        else if (stepX != 0 && MAINOUT_1482_CanActorEnter(actor, x + stepX, y) != 0 &&
+                 MAINOUT_14c8_NotLastCell(x + stepX, y) != 0)
         {
             // -> 18e2
-            MAINOUT_1578(param_1, local_4_ab, 0);
+            MAINOUT_1578_MoveActor(actor, stepX, 0);
         }
         else
         {
             // 197d
-            MAINOUT_16fc(param_1);
+            MAINOUT_16fc_MoveRandomly(actor);
         }
     }
 }
 #undef P2_SET
 
-static void MAINOUT_198c(int param_1)
+// one actor's move by kind: a whirlpool every other turn, the Shadowlord after the party (20 moves), a ship by the wind, else toward the party
+static void MAINOUT_198c_ActorTurn(int actor)
 {
-    int local_8;
-    int local_6;
-    uint local_4_ab;
+    int tile;
+    int facing;
+    uint delay;
 
-    local_8 = D_5c5a_actors[param_1].tile;
-    if ((local_8 & 0xfc) == TILE_ACTOR_WHIRLPOOL)
+    tile = D_5c5a_actors[actor].tile;
+    if ((tile & 0xfc) == TILE_ACTOR_WHIRLPOOL)
     {
-        D_5c5a_actors[param_1].value ^= 1;
-        if (D_5c5a_actors[param_1].value == 0)
+        D_5c5a_actors[actor].value ^= 1;
+        if (D_5c5a_actors[actor].value == 0)
         {
             return;
         }
 
         if (ULTIMA_2092_RandomRange(0, 1) == 0)
         {
-            MAINOUT_16fc(param_1);
+            MAINOUT_16fc_MoveRandomly(actor);
             return;
         }
     }
-    else if (local_8 == TILE_ACTOR_SHADOWLORD)
+    else if (tile == TILE_ACTOR_SHADOWLORD)
     {
-        if (MAINOUT_14ea(param_1) != 0 && D_5c5a_actors[param_1].value++ < 0x14)
+        if (MAINOUT_14ea_InChaseRange(actor) != 0 && D_5c5a_actors[actor].value++ < 0x14)
         {
-            MAINOUT_17d4(param_1, 0);
+            MAINOUT_17d4_MoveTowardParty(actor, 0);
             return;
         }
     }
-    else if ((local_8 & 0xfc) == TILE_ACTOR_PIRATE)
+    else if ((tile & 0xfc) == TILE_ACTOR_PIRATE)
     {
         if (D_5892_windDir == 0)
         {
             return;
         }
 
-        local_6 = D_5c5a_actors[param_1].tile - TILE_ACTOR_PIRATE;
+        facing = D_5c5a_actors[actor].tile - TILE_ACTOR_PIRATE;
 
-        local_4_ab = D_2bf8[local_6][D_5892_windDir - 1];
-        if (local_4_ab != 4 && local_4_ab < ++D_5c5a_actors[param_1].extra)
+        delay = D_2bf8_sailDelay[facing][D_5892_windDir - 1];
+        if (delay != 4 && delay < ++D_5c5a_actors[actor].extra)
         {
-            D_5c5a_actors[param_1].extra = 0;
+            D_5c5a_actors[actor].extra = 0;
             return;
         }
     }
 
-    MAINOUT_17d4(param_1, 1);
+    MAINOUT_17d4_MoveTowardParty(actor, 1);
 }
 
-int MAINOUT_1a60(void)
+// the monsters' turn after a step: may spawn one, each moving actor attacks or moves, those out of the view vanish; the number that attacked
+int MAINOUT_1a60_MonstersTurn(void)
 {
-    int local_6_an;
-    int local_4;
+    int index;
+    int acted;
 
-    local_4 = 0;
+    acted = 0;
     if (D_587a_statusIcon == 'T')
     {
         return 0;
@@ -676,8 +688,8 @@ int MAINOUT_1a60(void)
 
     if (D_587a_statusIcon == 'Q')
     {
-        D_2c55 = D_2c55 ^ 1;
-        if (D_2c55 != 0)
+        D_2c55_quickToggle = D_2c55_quickToggle ^ 1;
+        if (D_2c55_quickToggle != 0)
         {
             return 0;
         }
@@ -685,81 +697,83 @@ int MAINOUT_1a60(void)
 
     if ((D_587c_partyTile & 0xfe) == TILE_ACTOR_RIDING_HORSE || (D_587c_partyTile & 0xfe) == TILE_ACTOR_FLYING_CARPET)
     {
-        D_2c57 = D_2c57 ^ 1;
-        if (D_2c57 != 0)
+        D_2c57_mountToggle = D_2c57_mountToggle ^ 1;
+        if (D_2c57_mountToggle != 0)
         {
             return 0;
         }
     }
 
-    if (MAINOUT_0d8c() > ULTIMA_2092_RandomRange(1, 0x1e))
+    if (MAINOUT_0d8c_SpawnChance() > ULTIMA_2092_RandomRange(1, 0x1e))
     {
-        MAINOUT_0fc4();
+        MAINOUT_0fc4_SpawnMonster();
     }
 
-    for (local_6_an = 0x1f; 0 < local_6_an; local_6_an--)
+    for (index = 0x1f; 0 < index; index--)
     {
-        if (MAINOUT_105c(D_5c5a_actors[local_6_an].tile) != 0)
+        if (MAINOUT_105c_IsMovingActor(D_5c5a_actors[index].tile) != 0)
         {
-            local_4 += MAINOUT_131a(local_6_an);
-            if (local_4 == 0)
+            acted += MAINOUT_131a_ActorAttack(index);
+            if (acted == 0)
             {
-                MAINOUT_198c(local_6_an);
+                MAINOUT_198c_ActorTurn(index);
             }
         }
     }
 
-    for (local_6_an = 0x1f; 0 < local_6_an; local_6_an--)
+    for (index = 0x1f; 0 < index; index--)
     {
-        if (MAINOUT_105c(D_5c5a_actors[local_6_an].tile) != 0 &&
-            ((byte)(D_5c5a_actors[local_6_an].x - D_589b_mapOriginX) > 0x1f || (byte)(D_5c5a_actors[local_6_an].y - D_589c_mapOriginY) > 0x1f))
+        if (MAINOUT_105c_IsMovingActor(D_5c5a_actors[index].tile) != 0 &&
+            ((byte)(D_5c5a_actors[index].x - D_589b_mapOriginX) > 0x1f || (byte)(D_5c5a_actors[index].y - D_589c_mapOriginY) > 0x1f))
         {
-            ULTIMA_3a74_SetActor(0, 0, 0, 0, 0, 0, local_6_an);
+            ULTIMA_3a74_SetActor(0, 0, 0, 0, 0, 0, index);
         }
     }
 
-    return local_4;
+    return acted;
 }
 
-static void MAINOUT_1b3e(void)
+// the trolls ask for a toll (99 - 3 x strength of the first, gold); not paid, they fight
+static void MAINOUT_1b3e_TrollToll(void)
 {
-    int local_8;
-    int local_6;
-    byte local_4_ab;
+    int toll;
+    int slot;
+    byte answer;
 
     ULTIMA_1850_PrintString(_TEXT(0x6b2c, "Caught!\n\nThe trolls demand a "));
     ULTIMA_39fc_GetFirstActivePartyMember();
-    local_8 = -(D_55a8_party[D_5876_tempX].str * 3 - 99);
-    ULTIMA_1a3e_PrintNumber(local_8, 2, 0x20);
+    toll = -(D_55a8_party[D_5876_tempX].str * 3 - 99);
+    ULTIMA_1a3e_PrintNumber(toll, 2, 0x20);
     ULTIMA_1850_PrintString(_TEXT(0x6b4a, " gp toll!\n\nDost thou pay?"));
 
-    while ((local_4_ab = ULTIMA_266c_GetChar()) != 'Y' && local_4_ab != 'N')
+    while ((answer = ULTIMA_266c_GetChar()) != 'Y' && answer != 'N')
     {
     }
 
-    ULTIMA_16ba_PrintChar(local_4_ab);
+    ULTIMA_16ba_PrintChar(answer);
     ULTIMA_16ba_PrintChar('\n');
-    if (local_4_ab == 'Y')
+    if (answer == 'Y')
     {
-        D_57aa_gold -= local_8;
+        D_57aa_gold -= toll;
         D_a9fa_vitalsDirty = 1;
         if (D_57aa_gold >= 0)
         {
             return;
         }
 
-        D_57aa_gold += local_8;
+        D_57aa_gold += toll;
     }
 
-    local_6 = ULTIMA_38e4_FindActorSlot();
-    ULTIMA_3a74_SetActor(TILE_ACTOR_E4, 0, D_5896_mapX, D_5897_mapY, 0, 0, local_6);
-    ULTIMA_6150_Combat(local_6);
+    slot = ULTIMA_38e4_FindActorSlot();
+    ULTIMA_3a74_SetActor(TILE_ACTOR_E4, 0, D_5896_mapX, D_5897_mapY, 0, 0, slot);
+    ULTIMA_6150_Combat(slot);
 }
 
-void MAINOUT_1be8(void)
+// crossing a bridge: one in eight, each party member's dexterity tests whether the trolls under it see them
+void MAINOUT_1be8_BridgeTrolls(void)
 {
-    int local_6_an;
-    int local_4;
+    int dot;
+    int member_h;
 
     if (ULTIMA_2092_RandomRange(0, 7) == 0 && D_587c_partyTile == TILE_ACTOR_AVATAR)
     {
@@ -767,14 +781,14 @@ void MAINOUT_1be8(void)
         ULTIMA_1850_PrintString(_TEXT(0x6b64, "\nThou spieth trolls under the bridge!\n\n"));
         ULTIMA_3ae6_WaitFrames(10);
 
-        for (local_4 = 0; local_4 < D_585b_partyCount; local_4++)
+        for (member_h = 0; member_h < D_585b_partyCount; member_h++)
         {
-            if (D_55a8_party[local_4].status != STATUS_DEAD && D_55a8_party[local_4].status != STATUS_SLEEP)
+            if (D_55a8_party[member_h].status != STATUS_DEAD && D_55a8_party[member_h].status != STATUS_SLEEP)
             {
-                ULTIMA_1850_PrintString(D_55a8_party[local_4].name);
+                ULTIMA_1850_PrintString(D_55a8_party[member_h].name);
                 ULTIMA_1850_PrintString(_TEXT(0x6b8c, " sneaks across"));
 
-                for (local_6_an = 0; local_6_an < 3; local_6_an++)
+                for (dot = 0; dot < 3; dot++)
                 {
                     ULTIMA_3ae6_WaitFrames(5);
                     ULTIMA_16ba_PrintChar('.');
@@ -782,9 +796,9 @@ void MAINOUT_1be8(void)
 
                 ULTIMA_1850_PrintString(_TEXT(0x6b9c, "\n\n"));
 
-                if (D_55a8_party[local_4].dex < ULTIMA_2092_RandomRange(1, 0x1e))
+                if (D_55a8_party[member_h].dex < ULTIMA_2092_RandomRange(1, 0x1e))
                 {
-                    MAINOUT_1b3e();
+                    MAINOUT_1b3e_TrollToll();
                     return;
                 }
             }

@@ -161,31 +161,31 @@ STUB u32 D_28c6_npcValueMask[0x20]; // ~2946) town
 // 2946~: code strings
 
 // 2900
-STUB u8 D_29f6[4]; // mainout: wind-releated
-STUB u8 D_29fa[4]; // mainout: wind-releated
+STUB u8 D_29f6_windDx[4]; // mainout: wind-releated
+STUB u8 D_29fa_windDy[4]; // mainout: wind-releated
 
 // ...code strings...
 
 // mainout
-STUB u8 D_2bc0[0xc];
-STUB u8 D_2bcc[0x8];
-STUB u8 D_2bd4[0x6];
-STUB u8 D_2bda[0x2];
+STUB u8 D_2bc0_landMonsters[0xc];
+STUB u8 D_2bcc_deepLandMonsters[0x8];
+STUB u8 D_2bd4_seaMonsters[0x6];
+STUB u8 D_2bda_deepSeaMonsters[0x2];
 
-STUB u8 D_2bdc[0xc];
-STUB u8 D_2be8[0x8];
-STUB u8 D_2bf0[0x6];
-STUB u8 D_2bf6[0x2];
+STUB u8 D_2bdc_landWeights[0xc];
+STUB u8 D_2be8_deepLandWeights[0x8];
+STUB u8 D_2bf0_seaWeights[0x6];
+STUB u8 D_2bf6_deepSeaWeights[0x2];
 
-STUB u16 D_2bf8[4][4];
-STUB u8 D_2c18[0x3d];
+STUB u16 D_2bf8_sailDelay[4][4];
+STUB u8 D_2c18_chaseRange[0x3d];
 
 // 2c58~: Entering room...
 
 // u8 2c54
-STUB u8 D_2c55;
+STUB u8 D_2c55_quickToggle;
 // u8 2c56
-STUB u8 D_2c57;
+STUB u8 D_2c57_mountToggle;
 // ^ mainout
 
 // dungeon
@@ -617,7 +617,7 @@ STUB S_55a8 D_55a8_party[0x10]; // ~57a8)
 
 // 5700
 STUB s16 D_57a8_food;        // +0x0202 Food // int (TALK_0682_ReceiveItem, MOVSX)
-STUB s16 D_57aa_gold;        // +0x0204 Gold // int (MAINOUT_1b3e, MOVSX)
+STUB s16 D_57aa_gold;        // +0x0204 Gold // int (MAINOUT_1b3e_TrollToll, MOVSX)
 STUB u8  D_57ac_keys; // +0x206
 STUB u8  D_57ad_gems; // +0x207
 STUB u8  D_57ae_torches; // +0x208
@@ -809,8 +809,8 @@ STUB u8 D_6aa8[0x24];
 
 // a500
 
-// DS:a524-a9bc is the modules' _BSS, their static variables, in link order: D_a524 (mainout.c),
-// D_a526 and D_a527 (mainoutb.c), D_a528_viewQueueX and D_a628_viewQueueY (dnglook.c), D_a728_pathXs and D_a872_pathYs (comsubs.c).
+// DS:a524-a9bc is the modules' _BSS, their static variables, in link order: D_a524_capeToggle (mainout.c),
+// D_a526_lastX and D_a527_lastY (mainoutb.c), D_a528_viewQueueX and D_a628_viewQueueY (dnglook.c), D_a728_pathXs and D_a872_pathYs (comsubs.c).
 
 // a900
 
