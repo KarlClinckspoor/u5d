@@ -514,6 +514,42 @@ with all of it applied at once; two did not, and both are pass 2's memory.
   says "no object", which a script easily reads as "nothing differs".
 - Git Bash's `sed -i` rewrites a CRLF file with LF; restore from a copy or use the tool.
 
+### What the module groups cost
+
+Four workers, one after another, named every overlay module in four groups (shops and
+town; magic and combat; world; commands, intro, endgame, font): about 390 functions, each
+with a comment above it, about 2,000 locals and parameters (40% with a slot suffix, none
+needing a hand fix), and about 300 globals used by one group only (`docs/names/*.txt`, one
+batch per module). Each module took one batch, one compile of its files and the gate
+(about two minutes here, not six); four sessions of 20 to 40 minutes.
+
+- **What moved.** TOWN_0f02 once more (6 more fill references out for 257 characters; 245
+  left), and CMDS_0000 three times, each time because a function it **calls** got a longer
+  name (COMBAT_0000, OUTSUBS_0658, DNGLOOK_117e): cmds.c's short link names are now 24.
+  For an overlay function the alias needs a second `LINK_DEFINES` entry, the call stub
+  (`STUB_COMBAT_0000` for `STUB_` and 26 characters of the long name); without it the call
+  links straight to the function and the gate fails. Nothing else moved: INTRO_014e and
+  INTRO_0986, near pass-2 limits too, kept matching.
+- **A function's own locals count toward the limit.** CMDS_0000's locals and parameters
+  with names of 163 characters in all lost the loop optimization (2 bytes); with 138
+  characters (the decompiler's names had 152) it matches. At a limit, shorten the
+  function's own names before reaching for the short link names.
+- **What rename.py does not see.** A macro defined outside a body that names a parameter
+  or local (`#define P2_SET ... param_2 ...`; fix by hand, then grep for the old names); a
+  function header with comments inside the parameter list or after it on the same line
+  (move the comment above first); a function header split by `#if`, and one-line
+  functions (left as they are). For C that only the native build compiles (FONT_0000,
+  INTRO_132a, whose DOS code is assembly) the slot solver finds no order; rename those
+  locals with `--exact`, since their slots do not matter, and run `nativecheck.py`.
+  A batch line that only adds a comment for a function already named is `#= NAME # text`.
+- **Globals left unnamed on purpose**: those `translate.c`, `aud_sfx.c`, the assembly or
+  another group also use, and the savegame bytes of the shared block. They go with the
+  resident code.
+- **Plain one-line descriptions** above functions (`// use scroll`) were replaced; the
+  matching notes, `// CHECKED` and the compiler notes were kept, with the new names in them.
+- After a merge, run the gate on the merged tree: every group lengthens names other
+  modules use (cmds.c gained 9 to 90 characters from each group).
+
 ### How to go on
 
 One worker per module group in a worktree (`worktree.py`), each with a batch file per
@@ -529,7 +565,7 @@ every module that mentions the global change. So:
    state), the struct fields of `structs.h` (free: fields are not in the object), and the
    resident functions every overlay calls (`ULTIMA_xxxx` without a suffix in 2000.c-7000.c
    and the `r*.c` files). Merge it before the others start.
-2. **Then in parallel, at most four** (DOSBox-X instances share the machine), each group
+2. **Then the module groups** *(done, one after another; above)*. At most four in parallel (DOSBox-X instances share the machine), each group
    owning its modules' functions, locals and private globals:
    - shops and talk: SHOPPES, SHOPPES2 (+ shoppe2b), ZSTATS, the rest of TOWN (+ town2), NPC;
    - magic and combat: CAST (+ castb), CAST2, COMBAT, COMSUBS;

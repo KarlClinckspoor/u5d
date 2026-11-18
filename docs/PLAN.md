@@ -214,9 +214,18 @@ Next, in order:
      `D_6602`), the fields `_18`, `_8`, `_a` and `_52c0`-`_52c6`, the parameters of the
      resident functions (free: any name), the static resident functions and the assembly's
      private labels (the resident code comes last), and the tables only one group uses.
-   - To continue: up to four workers on module groups in worktrees, the resident code
-     last (the order and the groups are in MATCHING.md). A worker applies a batch without
-     `--match`, compiles its modules, and gates before each commit.
+   - Done (module groups; one batch per module in `docs/names/`): every overlay module.
+     Shops and town (ZSTATS, SHOPPES2, SHOPPES, NPC, TOWN), magic and combat (COMSUBS,
+     CAST2, CAST, COMBAT), world (OUTSUBS, BLCKTHRN, LOOKOBJ, DNGLOOK, MAINOUT, DUNGEON,
+     SJOG), commands and the rest (ENDGAME, FONT, INTRO, CMDS): about 390 functions with a
+     comment above each, 2,000 locals and parameters, 300 globals of one group. TOWN_0f02
+     lost 6 more fill references (245 left); cmds.c's short link names are 24 (COMBAT_0000,
+     OUTSUBS_0658 and DNGLOOK_117e, which CMDS_0000 calls). MATCHING.md, "What the module
+     groups cost".
+   - To continue: the resident code (2000.c-7000.c, the `r*.c` files, ultima.c,
+     translate.c, savegame.c, grap_drv.c, the assembly's private names), with the shared
+     globals the groups left (used by translate.c, aud_sfx.c, the assembly or several
+     groups). Small batches: ULTIMA_1850, town.c and cmds.c are at limits.
 
 ## What is left
 
