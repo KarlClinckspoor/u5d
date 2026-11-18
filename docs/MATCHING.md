@@ -261,7 +261,7 @@ address, CMDS_0000's short link names to their long names, `STUB_X` to `X`. What
   differ in segment values only: the overlay areas start at 85a0 instead of 81d0, because the
   default loader (0x609 bytes of code and 0x248 of data) goes after the overlay table, where
   the original has a 0x4a0-byte loader before the table and its start-up code (PLSTART) in
-  the first overlay area. Choosing the loader variant and the start-up's place is open.
+  the first overlay area (solved since: "Origin's link, reproduced" below).
 - **The library code goes after ULTIMA.OBJ** only if the other root objects' code segment
   has another name than `_TEXT` (tried by renaming it to `XTEXT` in their objects): PLINK
   combines segments by name in the order it first sees them, and the library modules, all
@@ -276,11 +276,58 @@ address, CMDS_0000's short link names to their long names, `STUB_X` to `X`. What
   itoa (0426) on is where the original has it. Left: memchr comes right after crt0 (the
   original has it after uldiv), whatever the library order, `SEARCH` or `LIBRARY`; the
   original ULTIMA.OBJ or link order must differ in what references it first.
-- DGROUP stays in the EXE as a pre-loaded section (DATA.OVL is a file of its own in the
-  original: open). The header has the original's form (relocations at 0x1e, the word 1).
-- So the link script's placement facts may follow from PLINK's rules plus a few facts about
-  the original build (segment names, the merged library, the loader variant, Origin's
-  `.LNK`). Not done: getting the overlay bases and DATA.OVL right and comparing byte for byte.
+- DGROUP stays in the EXE as a pre-loaded section here (solved since, below). The header has
+  the original's form (relocations at 0x1e, the word 1).
+
+#### Origin's link, reproduced
+
+`research/plink/U5-A.LNK` (driven by `research/plink/pl.py`, which reads the object names
+from `src/u5d.lnk`; `plcmp2.py` compares the files, `plmap.py` the map, `plcomm.py` the
+communals) gives every section of the original in both targets: the root 0000-81d0, the
+loader at 72e0, the overlay table at 7780-81c6, the areas at 81d0, a290, bf80 and e1e0,
+DGROUP as DATA.OVL at f640, and the PLINK header's SS:SP 1b38:0800 and minimum allocation
+139b.
+
+- **The loader** is PLINK's default, OVLYV, preceded by OVERLAY.LIB's DUMMY (`stc; ret`,
+  72e0-72f0) and followed by Origin's own OVUSERM (code at 7690, its data at 7752: the
+  overlay-file-missing handler that calls D_5394 and the message "Error...Call OSI$").
+  Origin rebuilt OVERLAY.LIB with its OVUSERM, as Phoenix's notes describe;
+  `research/plink/OVUSER.ASM` is that module written from the original's bytes, and
+  `plasm.py` builds the library with it. CS:72e0-7780 comes out identical but for the two
+  bytes of D_5394's DGROUP offset (769b). PLINK orders segments by class in the order it
+  first meets each class: OVCODE/OVDATA (class OVLOADER) come before `$OVTB$` (class LOADER)
+  only when something refers to `$$DUMMY` first (a DEFINE or an object reference; nothing in
+  the image refers to 72e0, so the name used is not known), and DUMMY lands in the root only
+  when OVERLAY.LIB is not named (PLINK searches it by itself). OVLYM/OVLYS are ruled out
+  (they come in beside OVLYV); the Nantucket edition refuses the full version's options
+  (RELOAD, TRACK, NOVECTOR, ALLOCATE...).
+- **DATA.OVL**: a level-0 `SECTION INTO DATA FILE ...` after the last area's END writes
+  DGROUP to DATA.OVL, pre-loaded (table flags 3, as the original's record), with the
+  original's header (three offset:segment far pointers, segment 0f68, a zero dword, zeros to
+  0x10), and DATA.OVL's name joins the table (a46 bytes, as the original's). Which object
+  Origin put in that section is not known. PLINK's EXE then says image 81d0 and its
+  checksum is that file's MZ checksum, as reconstructed before.
+- **The processing order** is the one open question. The DGROUP layout (ULTIMA's `_DATA` at
+  0042, the overlays' 2626-520c in order, crt0 at 520e ... stdargv at 52b8, then A0878 at
+  52ba) and the library order (memchr after uldiv: uldiv is used only by overlays, memchr by
+  OUTSUBS and VISIBLE) both say PLINK read ULTIMA, the 23 overlays, the library, and then
+  the other resident objects in address order. In that order no segment renaming is needed
+  (the `XTEXT` rename only stood in for it). How Origin's file got that order with the
+  resident code in the root is open: files after the last END go to a new level-0 section,
+  `SEARCH` still reads the libraries last, `FILE x.LIB` loads the whole library, the
+  resident objects as a library come in PLINK's pull order, `CLASS` moves whole classes.
+- **The communals** come in COMDEF record order (research/RULES.md): with all 70 in
+  VARS.OBJ the 64-slot wrap puts none at its original address (C_COMMON 1385 bytes against
+  1384); the original's order needs the declarations spread over the objects as Origin had
+  them.
+- **Byte for byte** (both targets): the root code 26,145 (gog) / 26,127 (1988) of 29,408
+  bytes in place, the loader 1,182 of 1,184, the table and stubs 2,168 of 2,640 (the 164
+  stubs are the original's set in another order: PLINK makes them in the order it meets the
+  calls), FLAMES.OVL identical, the other overlays and DATA.OVL the right length with
+  262-1,060 bytes different each: all from the DGROUP layout, that is the processing order
+  and the communal order.
+- A dead 0x80-byte table in battle.c (`DAT_000738d8`, read only by the removed native
+  port; u5link never placed it, PLINK did) was removed: no byte of the build changed.
 
 ### Two targets
 

@@ -239,7 +239,10 @@ Next, in order:
    original's length and 26,397 of the root's 29,408 bytes in place (MATCHING.md, "Linking
    with PLINK86plus 2.24"). Two phases:
    - **A. Reproduce the original link with the original linker** (PLINK86plus as the
-     oracle; `research/plink/`): find Origin's link command file.
+     oracle; `research/plink/`): find Origin's link command file. *Points 1 and 2 done, 3
+     and 4 reduced to one question (the processing order), 5 confirmed, 6 measured:
+     MATCHING.md, "Origin's link, reproduced"; the command file is
+     `research/plink/U5-A.LNK`.*
      1. The loader: which OVERLAY.LIB variant (`DEFINE $OVLYVD=...`) and segment order give
         PLMGR (0x4a0 bytes, CS:72e0) before the overlay table (PLTAB, CS:7780) and the
         overlay areas at 81d0; then the areas' bases follow (INTRO's 81c0 with its header).
