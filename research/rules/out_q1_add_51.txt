@@ -1,0 +1,11 @@
+NO PASS 1 OUTPUT ext12x100 
+base       base 199:50acba   edge 349
+A_ext12    base 199:50acba   edge 291
+B_sta4     base 199:50acba   edge 304
+C_str      base 199:50acba   edge 303
+ABC        base 199:50acba   edge 203
+str1       base 199:50acba   edge 303
+str60      base 199:50acba   edge 303
+strSame    base 199:50acba   edge 303
+arr12      base 199:50acba   edge 284
+st12       base 199:50acba   edge 291
