@@ -1,0 +1,69 @@
+# SHOPPES2 (shoppes2.c: the pub; shoppe2b.c: the shipwright; one overlay).
+# functions
+SHOPPES2_0000 SHOPPES2_0000_CountDiners           # counts the living party members; price = per head * that; D_bd1a, D_bd1c, D_b118
+SHOPPES2_006a SHOPPES2_006a_PrintDinerCount       # "two" .. "six"
+SHOPPES2_00ac SHOPPES2_00ac_PrintHonorific        # "sir" or "milady" by the gender of party member 0
+SHOPPES2_00dc SHOPPES2_00dc_ChargeForMeal         # "That will be N gold for the .. of ye"; the table gets its food
+SHOPPES2_01d2 SHOPPES2_01d2_OrderFood
+SHOPPES2_01f4 SHOPPES2_01f4_OrderDrink            # ale, or the wine list in a wine house
+SHOPPES2_0380 SHOPPES2_0380_BuyRations            # 25 food a piece; the talker's intelligence lowers the price
+SHOPPES2_0508 SHOPPES2_0508_BuyGossip             # asks for a topic (D_4c74 keywords), sells the answer (D_4d10 price)
+SHOPPES2_0664 SHOPPES2_0664_Farewell
+SHOPPES2_066c SHOPPES2_066c_Pub
+SHOPPES2_07e2 SHOPPES2_07e2_CanAfford             # gold >= price, else the shipwright yells and D_bd22 is set
+SHOPPES2_080e SHOPPES2_080e_FinishSale            # places the ship, takes the gold, asks "anything else"; 1 when done
+SHOPPES2_08a8 SHOPPES2_08a8_ShipMenu              # frigate or skiff: buy, repair or sell
+SHOPPES2_0abc SHOPPES2_0abc_Shipwright
+# locals and parameters
+shoppes2.c:SHOPPES2_0000 param_1 pricePerHead
+shoppes2.c:SHOPPES2_0000 local_4 member
+shoppes2.c:SHOPPES2_00ac local_4 member
+shoppes2.c:SHOPPES2_01f4 local_4 key
+shoppes2.c:SHOPPES2_0380 param_1 member
+shoppes2.c:SHOPPES2_0380 local_6_an remaining
+shoppes2.c:SHOPPES2_0380 local_4 wanted
+shoppes2.c:SHOPPES2_0508 local_6 matchPos
+shoppes2.c:SHOPPES2_0508 local_4_ab index
+shoppes2.c:SHOPPES2_0508 local_8 topic
+shoppes2.c:SHOPPES2_066c param_1 member
+shoppes2.c:SHOPPES2_066c local_6_an ordered
+shoppes2.c:SHOPPES2_066c local_4 key
+shoppe2b.c:SHOPPES2_07e2 param_1 price
+shoppe2b.c:SHOPPES2_080e param_1 newShip
+shoppe2b.c:SHOPPES2_080e param_2 charge
+shoppe2b.c:SHOPPES2_080e param_3 member
+shoppe2b.c:SHOPPES2_080e local_4 key
+shoppe2b.c:SHOPPES2_08a8 param_1 member
+shoppe2b.c:SHOPPES2_08a8 local_6 key
+shoppe2b.c:SHOPPES2_08a8 local_4_ab done
+shoppe2b.c:SHOPPES2_0abc param_1 member
+shoppe2b.c:SHOPPES2_0abc local_4 done
+# globals (used only by the shops group)
+D_4c1e D_4c1e_foodKeys                 # the key that orders food, by kind of pub
+D_4c24 D_4c24_drinkKeys                # drink: A ale, W wine list, R, S
+D_4c2a D_4c2a_rationKeys               # rations (' ' where the pub sells none)
+D_4c30 D_4c30_gossipKeys               # gossip
+D_4c36 D_4c36_mealPrices               # per head, by shop
+D_4c48 D_4c48_winePrices               # the wine list a..f
+D_4c54 D_4c54_rationPrices             # base price of a ration, by shop
+D_4c66 D_4c66_rationTexts              # SHOPPE.DAT offsets of the sales talk
+D_4cdc D_4cdc_gossipPlaceIdx           # the place (D_4cf6) each topic's answer names
+D_4d10 D_4d10_gossipPrices
+D_4d44 D_4d44_gossipTexts              # SHOPPE.DAT offsets of the answer
+D_4d4c D_4d4c_pubKindByShop
+D_4d56 D_4d56_pubOrderTexts            # SHOPPE.DAT offsets, by kind
+D_4d5e D_4d5e_pubMoreTexts
+D_4d66 D_4d66_frigatePrices            # by shop
+D_4d6e D_4d6e_skiffPrices
+D_4d76 D_4d76_shipX                    # where a bought ship waits
+D_4d7a D_4d7a_shipY
+D_ab00 D_ab00_itemName                 # the '&' of the shop texts
+D_ac62 D_ac62_placeName                # the '*' of the shop texts
+D_bd16 D_bd16_pubKind
+D_bd18 D_bd18_boughtSomething
+D_bd1a D_bd1a_dinersFed
+D_bd1c D_bd1c_dinerCount
+D_bd1e D_bd1e_tableTile
+D_bd20 D_bd20_drinksBought
+D_bd22 D_bd22_thrownOut
+D_bd24 D_bd24_shipSold

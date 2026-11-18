@@ -435,30 +435,30 @@ STUB u16 D_4bf4[7];
 STUB u16 D_4c02[7];
 STUB u16 D_4c10[7];
 
-STUB char D_4c1e[5];
-STUB char D_4c24[5];
-STUB char D_4c2a[5];
-STUB char D_4c30[5];
+STUB char D_4c1e_foodKeys[5];
+STUB char D_4c24_drinkKeys[5];
+STUB char D_4c2a_rationKeys[5];
+STUB char D_4c30_gossipKeys[5];
 
-STUB u16 D_4c36[9]; // TODO: size
-STUB u16 D_4c48[6]; // TODO: size
-STUB u16 D_4c54[9]; // TODO: size
-STUB u16 D_4c66[7]; // TODO: size
+STUB u16 D_4c36_mealPrices[9]; // TODO: size
+STUB u16 D_4c48_winePrices[6]; // TODO: size
+STUB u16 D_4c54_rationPrices[9]; // TODO: size
+STUB u16 D_4c66_rationTexts[7]; // TODO: size
 
 STUB char* D_4c74[26];
 STUB char* D_4ca8[26];
-STUB u8  D_4cdc[26];
+STUB u8  D_4cdc_gossipPlaceIdx[26];
 STUB char* D_4cf6[13];
 
-STUB u16 D_4d10[0x1a]; // TODO: size
-STUB u16 D_4d44[4];
-STUB u8  D_4d4c[0xa]; // TODO: size
-STUB u16 D_4d56[4];
-STUB u16 D_4d5e[4];
-STUB u16 D_4d66[4];
-STUB u16 D_4d6e[4];
-STUB u8  D_4d76[4];
-STUB u8  D_4d7a[4];
+STUB u16 D_4d10_gossipPrices[0x1a]; // TODO: size
+STUB u16 D_4d44_gossipTexts[4];
+STUB u8  D_4d4c_pubKindByShop[0xa]; // TODO: size
+STUB u16 D_4d56_pubOrderTexts[4];
+STUB u16 D_4d5e_pubMoreTexts[4];
+STUB u16 D_4d66_frigatePrices[4];
+STUB u16 D_4d6e_skiffPrices[4];
+STUB u8  D_4d76_shipX[4];
+STUB u8  D_4d7a_shipY[4];
 STUB u8  D_4d7e_innRates[6]; // the inn's rate (per person and night; times 10 per month)
 
 STUB u8 D_4dc4_innRooms[6]; // how many companions the inn can keep
@@ -850,9 +850,9 @@ BSS ActorFmt D_a9fc_savedActors[0x20]; // D_5c5a_actors during combat
 BSS char* D_aafc_shopName; // current shop name
 BSS char* D_aafe_shopOwner; // current shop owner
 
-BSS char* D_ab00;
+BSS char* D_ab00_itemName;
 BSS u8 D_ab02_viewTiles[0x160]; // the 11x11 view, 0x20 bytes a row: 0 an actor (in D_ac64_viewActors), 0xff hidden
-BSS char* D_ac62;
+BSS char* D_ac62_placeName;
 
 BSS u8 D_ac64_viewActors[0xb0]; // actor map / misc map [0x10 * b] (from 51b8)
 
@@ -934,14 +934,14 @@ BSS char D_bd08[12];
 BSS u8 D_bd14; // no code refers to it
 
 BSS u8 D_bd15;
-BSS u8 D_bd16;
-BSS s16 D_bd18; // int?
-BSS int D_bd1a; // int
-BSS int D_bd1c; // int
-BSS int D_bd1e; // int
-BSS s16 D_bd20; // int?
-BSS s16 D_bd22;
-BSS s16 D_bd24;
+BSS u8 D_bd16_pubKind;
+BSS s16 D_bd18_boughtSomething; // int?
+BSS int D_bd1a_dinersFed; // int
+BSS int D_bd1c_dinerCount; // int
+BSS int D_bd1e_tableTile; // int
+BSS s16 D_bd20_drinksBought; // int?
+BSS s16 D_bd22_thrownOut;
+BSS s16 D_bd24_shipSold;
 
 BSS u8 D_bd26;
 BSS u8 D_bd27;

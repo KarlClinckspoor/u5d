@@ -132,13 +132,13 @@ static void TALK_00e6_TalkToMerchant(int merchantCode)
             SHOPPES_12b2(playerIndex);
             break;
         case 1:
-            SHOPPES2_066c(playerIndex);
+            SHOPPES2_066c_Pub(playerIndex);
             break;
         case 2:
             SHOPPES_07be_Stables(playerIndex);
             break;
         case 3:
-            SHOPPES2_0abc(playerIndex);
+            SHOPPES2_0abc_Shipwright(playerIndex);
             break;
         case 4:
             SHOPPES_075e(playerIndex);

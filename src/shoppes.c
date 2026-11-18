@@ -24,7 +24,7 @@ static char* SHOPPES_0000_AppendString(char* dest, char* source)
 
 // Print a shop text. Bytes from 0x80 are words of the word table (D_24ea_wordTable);
 // # the shop's name, $ the owner's, % the price (D_b118_shopPrice), ^ D_b11a (a
-// quantity), & D_ab00 (an item), * D_ac62 (a place): the placeholders of SHOPPE.DAT on the
+// quantity), & D_ab00_itemName (an item), * D_ac62_placeName (a place): the placeholders of SHOPPE.DAT on the
 // Ultima Codex, "Ultima V internal formats". @ is the time of day here
 // (morning, afternoon, evening).
 void SHOPPES_0026_PrintShopText(char* text)
@@ -117,12 +117,12 @@ void SHOPPES_0026_PrintShopText(char* text)
 
             case 0x26: // '&'
                 // 0122
-                out_h = SHOPPES_0000_AppendString(out_h, D_ab00);
+                out_h = SHOPPES_0000_AppendString(out_h, D_ab00_itemName);
                 break;
 
             case 0x2a: // '*'
                 // 012a
-                out_h = SHOPPES_0000_AppendString(out_h, D_ac62);
+                out_h = SHOPPES_0000_AppendString(out_h, D_ac62_placeName);
                 break;
             }
         }
@@ -1131,10 +1131,10 @@ static int SHOPPES_0e76(int param_1, int param_2)
         {
             D_b118_shopPrice = (D_55a8_party[param_1].intel * D_3a82[param_2] * (u32)3) / (u32)100 + 1;
 
-            D_ab00 = D_3cce[param_2];
+            D_ab00_itemName = D_3cce[param_2];
             if (D_3cce[param_2] == 0)
             {
-                D_ab00 = D_17f6_equipNames[param_2];
+                D_ab00_itemName = D_17f6_equipNames[param_2];
             }
 
             //SHOPPES_0026_PrintShopText(D_3cbe[iVar5] + 0xa65e);
