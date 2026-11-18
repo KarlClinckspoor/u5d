@@ -638,7 +638,7 @@ char* D_1a6a_statusNames[5] =
     _STATIC_TEXT(0x0929, "Charmed"),
 };
 
-u16 D_1a74[5] = { 0, 0x84, 0x10d, 0x19a, 0x222 };
+u16 D_1a74_karmaTextOffsets[5] = { 0, 0x84, 0x10d, 0x19a, 0x222 };
 
 u8 D_1a7e[0x30] =
 {

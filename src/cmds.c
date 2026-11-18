@@ -1,6 +1,6 @@
 #include "common/common.h"
 // CMDS_0000 sits at a limit of pass 2's memory, which the names of the globals this object
-// declares and uses count against: with the readable names of the 22 below (found by taking
+// declares and uses count against: with the readable names of the 23 below (found by taking
 // the new names one at a time) it loses its loop optimization. So this object alone knows
 // them by their short names; the source below uses the readable ones, and the link
 // resolves the short ones by the address they carry. After common.h, which defines
@@ -20,6 +20,7 @@
 #define D_a9ce_soundOn D_a9ce
 #define D_ba14_combatants D_ba14
 #define COMBAT_0000_IsCellFree COMBAT_0000
+#define OUTSUBS_0658_Apparition OUTSUBS_0658
 #define ULTIMA_3ae6_WaitFrames ULTIMA_3ae6
 #define ULTIMA_400c_RingRegeneration ULTIMA_400c
 #define ULTIMA_4a84_DrawSunAndMoons ULTIMA_4a84
@@ -313,7 +314,7 @@ int CMDS_0000(int param_1, int param_2, int param_3)
         if ((param_1 & 0x82) == 0 && ULTIMA_2092_RandomRange(0, 99) < 0x19)
         {
             D_588d = D_587d_month;
-            OUTSUBS_0658();
+            OUTSUBS_0658_Apparition();
         }
 
         D_588c_campHealWait = 0xe;

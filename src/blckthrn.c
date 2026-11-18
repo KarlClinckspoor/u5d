@@ -672,7 +672,7 @@ void BLCKTHRN_0910_Death(void)
     // ad93
     local_4_ab = D_5888_karma / 0x14;
     ULTIMA_1850_PrintString(_TEXT(0x71be, "\n\""));
-    ULTIMA_256e_ReadFileFromDisk(_TEXT(0x71c2, "KARMA.DAT"), D_b21e_scratch, 2000, D_1a74[local_4_ab]);
+    ULTIMA_256e_ReadFileFromDisk(_TEXT(0x71c2, "KARMA.DAT"), D_b21e_scratch, 2000, D_1a74_karmaTextOffsets[local_4_ab]);
     ULTIMA_1850_PrintString((char*)D_b21e_scratch);
     ULTIMA_16ba_PrintChar('\"');
     ULTIMA_266c_GetChar();

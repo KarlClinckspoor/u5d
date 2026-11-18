@@ -15,24 +15,25 @@
 u16 D_3a26[6] = { 0x0a3c, 0x0a3c, 0x0a3c, 0x0e74, 0x0f3c, 0x1040 };
 
 // CHECKED
-void OUTSUBS_0658(void)
+// "An apparition!": heals the party, raises levels by experience, then speaks a speech chosen by karma
+void OUTSUBS_0658_Apparition(void)
 {
-    int local_e_am;
-    int local_c;
-    int local_a;
-    int local_8;
-    int local_6_aa;
-    ActorFmt* local_ptr;
+    int newLevel_i;
+    int karmaIndex_g;
+    int step;
+    int member;
+    int classIndex;
+    ActorFmt* memberActor_n;
 
     ULTIMA_1850_PrintString(_TEXT(0x7750, "An apparition!\n"));
     ULTIMA_2192_AudioPulse(0x0a3c, 1, 10000, 0x9c4, 6);
 
-    for (local_8 = 0; local_8 < 6; local_8++)
+    for (member = 0; member < 6; member++)
     {
-        ULTIMA_2192_AudioPulse(D_3a26[local_8], 1, 5000, 200, 0xd);
+        ULTIMA_2192_AudioPulse(D_3a26[member], 1, 5000, 200, 0xd);
     }
 
-    local_ptr = &D_5c5a_actors[10];
+    memberActor_n = &D_5c5a_actors[10];
     
     D_5c5a_actors[10].x = D_5c5a_actors[10].y = 5;
     D_5c5a_actors[10].tile = D_5c5a_actors[10].animTile = TILE_ACTOR_CIRCLE;
@@ -41,24 +42,24 @@ void OUTSUBS_0658(void)
 
     D_5c5a_actors[10].tile = D_5c5a_actors[10].animTile = TILE_ACTOR_74;
 
-    for (local_8 = 0; local_8 < D_585b_partyCount; local_8++)
+    for (member = 0; member < D_585b_partyCount; member++)
     {
-        if (D_55a8_party[local_8].status != STATUS_DEAD)
+        if (D_55a8_party[member].status != STATUS_DEAD)
         {
-            D_55a8_party[local_8].hp = D_55a8_party[local_8].maxHp;
-            D_55a8_party[local_8].status = STATUS_GOOD;
+            D_55a8_party[member].hp = D_55a8_party[member].maxHp;
+            D_55a8_party[member].status = STATUS_GOOD;
 
-            for (local_a = 0; local_a < 32; local_a++)
+            for (step = 0; step < 32; step++)
             {
-                if (D_ba14_combatants[local_a].entityIdx == local_8)
+                if (D_ba14_combatants[step].entityIdx == member)
                 {
-                    local_ptr = &D_5c5a_actors[D_ba14_combatants[local_a].actorIdx];
+                    memberActor_n = &D_5c5a_actors[D_ba14_combatants[step].actorIdx];
                     break;
                 }
             }
 
-            local_6_aa = ULTIMA_4d76_FindIndex(_TEXT(0x7760, CLASS_LIST), D_55a8_party[local_8].cls);
-            local_ptr->tile = local_ptr->animTile = D_1ade[local_6_aa];
+            classIndex = ULTIMA_4d76_FindIndex(_TEXT(0x7760, CLASS_LIST), D_55a8_party[member].cls);
+            memberActor_n->tile = memberActor_n->animTile = D_1ade[classIndex];
 
             D_5c5a_actors[10].animState = 0;
 
@@ -68,44 +69,44 @@ void OUTSUBS_0658(void)
             ULTIMA_0b86_GRAP_XorFillRect(8, 8, 0xb7, 0xb7);
             ULTIMA_2192_AudioPulse(5500, 1, 60000, 2500, 1);
 
-            for (local_a = 0; local_a < 3; local_a++)
+            for (step = 0; step < 3; step++)
             {
                 D_5c5a_actors[10].animState = 1;
                 ULTIMA_3ae6_WaitFrames(1);
             }
 
-            local_e_am = 1;
-            for (local_a = D_55a8_party[local_8].exp / 100; local_a > 0; local_a >>= 1)
+            newLevel_i = 1;
+            for (step = D_55a8_party[member].exp / 100; step > 0; step >>= 1)
             {
-                local_e_am++;
+                newLevel_i++;
             }
 
             // 070b
-            if (D_55a8_party[local_8].level != local_e_am)
+            if (D_55a8_party[member].level != newLevel_i)
             {
-                D_55a8_party[local_8].level = local_e_am;
-                D_55a8_party[local_8].hp = D_55a8_party[local_8].maxHp = local_e_am * 0x1e;
+                D_55a8_party[member].level = newLevel_i;
+                D_55a8_party[member].hp = D_55a8_party[member].maxHp = newLevel_i * 0x1e;
 
                 ULTIMA_1850_PrintString(_TEXT(0x776a, "\n\"Hail, "));
-                ULTIMA_1850_PrintString(D_55a8_party[local_8].name);
+                ULTIMA_1850_PrintString(D_55a8_party[member].name);
                 ULTIMA_1850_PrintString(_TEXT(0x7774, "!\nFor thy valiant deeds, I shall reward thee!\n"));
                 ULTIMA_1850_PrintString(_TEXT(0x77a4, "Thou art now level "));
-                ULTIMA_1a3e_PrintNumber(local_e_am, 1, 0x20);
+                ULTIMA_1a3e_PrintNumber(newLevel_i, 1, 0x20);
                 ULTIMA_1850_PrintString(_TEXT(0x77b8, ", and\n"));
 
                 switch (ULTIMA_2092_RandomRange(1, 3))
                 {
                 case 1:
                     ULTIMA_1850_PrintString(_TEXT(0x77c0, "stronger!"));
-                    ULTIMA_3ef0_IncreaseByte(&D_55a8_party[local_8].str, 1, 0x1e);
+                    ULTIMA_3ef0_IncreaseByte(&D_55a8_party[member].str, 1, 0x1e);
                     break;
                 case 2:
                     ULTIMA_1850_PrintString(_TEXT(0x77ca, "quicker!"));
-                    ULTIMA_3ef0_IncreaseByte(&D_55a8_party[local_8].dex, 1, 0x1e);
+                    ULTIMA_3ef0_IncreaseByte(&D_55a8_party[member].dex, 1, 0x1e);
                     break;
                 case 3:
                     ULTIMA_1850_PrintString(_TEXT(0x77d4, "wiser!"));
-                    ULTIMA_3ef0_IncreaseByte(&D_55a8_party[local_8].intel, 1, 0x1e);
+                    ULTIMA_3ef0_IncreaseByte(&D_55a8_party[member].intel, 1, 0x1e);
                     break;
                 }
 
@@ -115,14 +116,14 @@ void OUTSUBS_0658(void)
             }
         }
         
-        switch (D_55a8_party[local_8].cls)
+        switch (D_55a8_party[member].cls)
         {
         case CLASS_AVATAR:
         case CLASS_MAGE:
-            D_55a8_party[local_8].mag = D_55a8_party[local_8].intel;
+            D_55a8_party[member].mag = D_55a8_party[member].intel;
             break;
         case CLASS_BARD:
-            D_55a8_party[local_8].mag = D_55a8_party[local_8].intel >> 1;
+            D_55a8_party[member].mag = D_55a8_party[member].intel >> 1;
             break;
         }
 
@@ -131,10 +132,10 @@ void OUTSUBS_0658(void)
 
     ULTIMA_1850_PrintString(_TEXT(0x77e0, "\n\""));
 
-    local_c = D_5888_karma / 20;
-    if (local_c < 4)
+    karmaIndex_g = D_5888_karma / 20;
+    if (karmaIndex_g < 4)
     {
-        ULTIMA_256e_ReadFileFromDisk(_TEXT(0x77e4, "KARMA.DAT"), D_b21e_scratch, 2000, D_1a74[local_c]);
+        ULTIMA_256e_ReadFileFromDisk(_TEXT(0x77e4, "KARMA.DAT"), D_b21e_scratch, 2000, D_1a74_karmaTextOffsets[karmaIndex_g]);
     }
     else
     {

@@ -51,13 +51,13 @@ void MAINOUT_0000(void)
     }
 
     // 004f
-    OUTSUBS_01b4(0, 1);
-    OUTSUBS_01b4(0, -1);
+    OUTSUBS_01b4_LoadViewChunks(0, 1);
+    OUTSUBS_01b4_LoadViewChunks(0, -1);
     ULTIMA_4f7c_AdvanceTime(0);
     ULTIMA_5e4a_BuildLightMap();
     ULTIMA_2e96_SetWindDirection(-1);
     ULTIMA_4a84_DrawSunAndMoons();
-    OUTSUBS_0566();
+    OUTSUBS_0566_PlaceAmuletShards();
 }
 
 void MAINOUT_007a(void)
@@ -264,10 +264,10 @@ void MAINOUT_0354(int param_1, int param_2)
 
     if (local_4 < 5 || local_4 > 0x1a || local_6_an < 5 || local_6_an > 0x1a)
     {
-        OUTSUBS_02c8(param_1, param_2); // 7bd2
+        OUTSUBS_02c8_ShiftChunks(param_1, param_2); // 7bd2
         D_589b_mapOriginX = (char)param_1 * 16 + D_589b_mapOriginX & 0xf0; // wrap x?
         D_589c_mapOriginY = (char)param_2 * 16 + D_589c_mapOriginY & 0xf0; // wrap y?
-        OUTSUBS_01b4(param_1, param_2); // 7b8a
+        OUTSUBS_01b4_LoadViewChunks(param_1, param_2); // 7b8a
         ULTIMA_5e4a_BuildLightMap();
     }
 }

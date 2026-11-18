@@ -147,7 +147,7 @@ OBJECT_PARTS = [('R2320', 'A2322', 'R251E'), ('INTRO2', 'AINTRO2'), ('AFONT0', '
 # original reaches the overworld map through a name of its own for DS:6608 (vars.h); which
 # object defined it is not known.
 LINK_DEFINES = {'D_6608_OVERWORLD': 'D_6608_MAP'}
-# cmds.c knows 22 names by their short forms (the note at its top: CMDS_0000's pass-2 memory)
+# cmds.c knows 23 names by their short forms (the note at its top: CMDS_0000's pass-2 memory)
 LINK_DEFINES.update({
     'D_5876': 'D_5876_TEMPX',
     'D_5878': 'D_5878_TEMPY',
@@ -163,6 +163,8 @@ LINK_DEFINES.update({
     'D_BA14': 'D_BA14_COMBATANTS',
     'COMBAT_0000': 'COMBAT_0000_ISCELLFREE',
     'STUB_COMBAT_0000': 'STUB_COMBAT_0000_ISCELLFREE',    # the overlay call stub (PLTAB) has the long name
+    'OUTSUBS_0658': 'OUTSUBS_0658_APPARITION',
+    'STUB_OUTSUBS_0658': 'STUB_OUTSUBS_0658_APPARITION',
     'ULTIMA_3AE6': 'ULTIMA_3AE6_WAITFRAMES',
     'ULTIMA_400C': 'ULTIMA_400C_RINGREGENERATION',
     'ULTIMA_4A84': 'ULTIMA_4A84_DRAWSUNANDMOONS',

@@ -71,7 +71,7 @@ STUB char* D_19e2_spellNames[48 + 1]; // spell names
 STUB char* D_1a44_classNames[10]; // Class/Jobs (Avatar, Mage, Bard, ...)
 STUB s16 D_1a58[9];
 STUB char* D_1a6a_statusNames[5]; // Health (Good Health, Poisoned, ...)
-STUB u16 D_1a74[5]; // karma string offset
+STUB u16 D_1a74_karmaTextOffsets[5]; // karma string offset
 STUB u8 D_1a7e[0x30]; // equipment type?
 STUB u8 D_1aae[0x30];
 STUB u8 D_1ade[9];
@@ -283,13 +283,13 @@ STUB u8 D_3850[0xd]; // ~385d)? TODO: size, offset
                      // D_383f, D_384d
 
 STUB u8 D_385e[8]; // ~3866)
-STUB u8 D_3866[8]; // ~386e)
-STUB u8 D_386e[8]; // ~3876)
-STUB u8 D_3876[0x100]; // ~3976) TODO: size?
+STUB u8 D_3866_dungeonChunks[8]; // ~386e)
+STUB u8 D_386e_shrineChunks[8]; // ~3876)
+STUB u8 D_3876_chunkFileIndex[0x100]; // ~3976) TODO: size?
 
-STUB u8 D_3a06[4];
-STUB u8 D_3a0a[4];
-STUB u8 D_3a0e[3];
+STUB u8 D_3a06_shardX[4];
+STUB u8 D_3a0a_shardY[4];
+STUB u8 D_3a0e_shardValue[3];
 
 STUB u16 D_3a26[6];
 STUB u8 D_3a32_reagentPrices[5][8];
