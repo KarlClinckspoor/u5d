@@ -125,8 +125,8 @@ int ULTIMA_08e6_ClipRectCoord(int *x1, int *y1, int *x2, int *y2)
 }
 #endif
 
-static void ULTIMA_0991(int* ax, int* bx, int* cx, int* dx);
-static void ULTIMA_0a22(int ax, int bx, int cx, int dx, int* si, int* di);
+static void ULTIMA_0991_ClipLineBisect(int* ax, int* bx, int* cx, int* dx);
+static void ULTIMA_0a22_ClipOutcode(int ax, int bx, int cx, int dx, int* si, int* di);
 
 #if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
@@ -134,7 +134,7 @@ static bool ULTIMA_0935_ClipLineCoord(int* x1, int* y1, int* x2, int* y2)
 {
 	int si = 0;
 	int di = 0;
-	ULTIMA_0a22(*x1, *y1, *x2, *y2, &si, &di);
+	ULTIMA_0a22_ClipOutcode(*x1, *y1, *x2, *y2, &si, &di);
 
 	if (si == 0 || di == 0)
 		return 0; // CLC
@@ -143,41 +143,41 @@ static bool ULTIMA_0935_ClipLineCoord(int* x1, int* y1, int* x2, int* y2)
 		return -1; // STC
 
 	// 0948
-	D_52fa = *x1;
-	D_52fc = *y1;
-	D_52fe = *x2;
-	D_5300 = *y2;
+	D_52fa_clipX1 = *x1;
+	D_52fc_clipY1 = *y1;
+	D_52fe_clipX2 = *x2;
+	D_5300_clipY2 = *y2;
 
 	if (si != 0)
 	{
 		SWAP(x1, x2);
 		SWAP(y1, y2);
-		ULTIMA_0991(x1, y1, x2, y2);
-		D_52fa = *x1;
-		D_52fc = *y1;
-		*x2 = D_52fe;
-		*y2 = D_5300;
+		ULTIMA_0991_ClipLineBisect(x1, y1, x2, y2);
+		D_52fa_clipX1 = *x1;
+		D_52fc_clipY1 = *y1;
+		*x2 = D_52fe_clipX2;
+		*y2 = D_5300_clipY2;
 	}
 
 	// 0971
 	if (di != 0)
 	{
-		ULTIMA_0991(x1, y1, x2, y2);
-		D_52fe = *x1;
-		D_5300 = *y1;
+		ULTIMA_0991_ClipLineBisect(x1, y1, x2, y2);
+		D_52fe_clipX2 = *x1;
+		D_5300_clipY2 = *y1;
 	}
 	// 0980
-	*x1 = D_52fa;
-	*y1 = D_52fc;
-	*x2 = D_52fe;
-	*y2 = D_5300;
+	*x1 = D_52fa_clipX1;
+	*y1 = D_52fc_clipY1;
+	*x2 = D_52fe_clipX2;
+	*y2 = D_5300_clipY2;
 	return 0;
 }
 #endif
 
 #if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
-static void ULTIMA_0991(int* ax, int* bx, int* cx, int* dx)
+static void ULTIMA_0991_ClipLineBisect(int* ax, int* bx, int* cx, int* dx)
 {
 	int si;
 	int di;
@@ -208,16 +208,16 @@ static void ULTIMA_0991(int* ax, int* bx, int* cx, int* dx)
 				*bx /= 2;
 			}
 
-			D_52f6 = si - *ax;
-			D_52f8 = di - *bx;
+			D_52f6_clipTempX = si - *ax;
+			D_52f8_clipTempY = di - *bx;
 
-			ULTIMA_0a22(*ax, *bx, *cx, *dx, &si, &di);
+			ULTIMA_0a22_ClipOutcode(*ax, *bx, *cx, *dx, &si, &di);
 			if (si == 0)
 				break;
 			*cx = *ax;
 			*dx = *bx;
-			*ax += D_52f6;
-			*bx += D_52f8;
+			*ax += D_52f6_clipTempX;
+			*bx += D_52f8_clipTempY;
 		}
 
 		// 09e3
@@ -229,8 +229,8 @@ static void ULTIMA_0991(int* ax, int* bx, int* cx, int* dx)
 		}
 
 		// 09fb
-		si = D_52f6;
-		di = D_52f8;
+		si = D_52f6_clipTempX;
+		di = D_52f8_clipTempY;
 		if (si < 0)
 			si = -si;
 
@@ -251,7 +251,7 @@ static void ULTIMA_0991(int* ax, int* bx, int* cx, int* dx)
 
 #if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
-static void ULTIMA_0a22(int ax, int bx, int cx, int dx, int *si, int *di)
+static void ULTIMA_0a22_ClipOutcode(int ax, int bx, int cx, int dx, int *si, int *di)
 {
 	int x1 = ax;
 	int y1 = bx;
@@ -503,7 +503,7 @@ void ULTIMA_0c64_GRAP_30_Pset(int param_1, int param_2)
 }
 #endif
 
-static bool ULTIMA_0ccd(int* pAX, int* pCX);
+static bool ULTIMA_0ccd_HLineOutsideClip(int* pAX, int* pCX);
 
 #if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
@@ -517,7 +517,7 @@ void ULTIMA_0c9c_GRAP_39_HorizLine(int x1, int y, int x2)
 
 	if (D_52ba_vdp.clipEnabled != 0)
 	{
-		if (ULTIMA_0ccd(&ax, &cx))	// JC end
+		if (ULTIMA_0ccd_HLineOutsideClip(&ax, &cx))	// JC end
 			return;
 	}
 
@@ -527,7 +527,7 @@ void ULTIMA_0c9c_GRAP_39_HorizLine(int x1, int y, int x2)
 
 #if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
-static bool ULTIMA_0ccd(int *pAX, int *pCX)
+static bool ULTIMA_0ccd_HLineOutsideClip(int *pAX, int *pCX)
 {
 	if (*pAX < *pCX)
 	{
@@ -544,7 +544,7 @@ static bool ULTIMA_0ccd(int *pAX, int *pCX)
 }
 #endif
 
-static int ULTIMA_0d2b(int bx, int dx);
+static int ULTIMA_0d2b_VLineOutsideClip(int bx, int dx);
 
 #if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
@@ -565,7 +565,7 @@ void ULTIMA_0cf2_GRAP_3c_VertLine(int param_1, int param_2, int param_3)
         dx ^= bx;
         bx ^= dx;
 	}
-    if (D_52ba_vdp.clipEnabled == 0 || !ULTIMA_0d2b(bx, dx))
+    if (D_52ba_vdp.clipEnabled == 0 || !ULTIMA_0d2b_VLineOutsideClip(bx, dx))
     {
         // 0d19
         DRV_3c(ax, bx, dx);
@@ -575,7 +575,7 @@ void ULTIMA_0cf2_GRAP_3c_VertLine(int param_1, int param_2, int param_3)
 
 #if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
-static int ULTIMA_0d2b(int bx, int dx)
+static int ULTIMA_0d2b_VLineOutsideClip(int bx, int dx)
 {
     if (D_52ba_vdp.clipY1 <= bx && dx <= D_52ba_vdp.clipY2 && 0 <= bx && bx < 200 && dx < 200)
     {

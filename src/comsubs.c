@@ -72,7 +72,7 @@ void COMSUBS_0094_PrintName(int combatant)
 // Prints that an attack found nothing: "Failed!" for a spell, otherwise "<name> missed!".
 static void COMSUBS_00d2_PrintMiss(int combatant)
 {
-    if (D_588f != 0)
+    if (D_588f_castCircle != 0)
     {
         ULTIMA_1850_PrintString(_TEXT(0x99a0, "Failed!\n"));
     }
@@ -184,7 +184,7 @@ int COMSUBS_00f4_MonsterSpecial(int combatant)
     return 0;
 }
 
-// Says what a blow did to the target, by the result bits in D_58a2: grazed, killed, slept, dragged under (by the
+// Says what a blow did to the target, by the result bits in D_58a2_combatEvents: grazed, killed, slept, dragged under (by the
 // Corpser, 0x2d), hit or how wounded a monster is (COMBAT_1a5c_WoundLevel).
 void COMSUBS_0312_ReportHit(int target, int attacker)
 {
@@ -193,28 +193,28 @@ void COMSUBS_0312_ReportHit(int target, int attacker)
     int targetFlags_k;
     
     targetFlags_k = D_ba14_combatants[target].flags;
-    D_58a2 &= 0xfe;
-    if ((D_58a2 & 0x20) != 0)
+    D_58a2_combatEvents &= 0xfe;
+    if ((D_58a2_combatEvents & 0x20) != 0)
     {
         COMSUBS_0094_PrintName(target);
         ULTIMA_1850_PrintString(_TEXT(0x99f2, " grazed!\n"));
         ULTIMA_43ae_AudioSweepTone(0x4b0, 2000, 1, 0x28);
     }
 
-    if ((D_58a2 & 0x22) == 0)
+    if ((D_58a2_combatEvents & 0x22) == 0)
     {
         if (targetFlags_k == 0 || (targetFlags_k & COMBAT_FLAGS_DEAD) != 0)
         {
             COMSUBS_0094_PrintName(target);
             ULTIMA_1850_PrintString(_TEXT(0x99fc, " killed!\n"));
-            D_58a2 |= 1;
+            D_58a2_combatEvents |= 1;
         }
-        else if ((D_58a2 & 4) != 0)
+        else if ((D_58a2_combatEvents & 4) != 0)
         {
             COMSUBS_0094_PrintName(target);
             ULTIMA_1850_PrintString(_TEXT(0x9a06, " slept!\n"));
         }
-        else if ((D_58a2 & 8) == 0)
+        else if ((D_58a2_combatEvents & 8) == 0)
         {
             COMSUBS_0094_PrintName(target);
             if ((targetFlags_k & COMBAT_FLAGS_PLAYER) != 0)
@@ -259,11 +259,11 @@ void COMSUBS_0312_ReportHit(int target, int attacker)
             ULTIMA_5910_UpdateFrame();
         }
 
-        D_58a2 &= 0xf3;
+        D_58a2_combatEvents &= 0xf3;
     }
     else
     {
-        D_58a2 &= 0xdd;
+        D_58a2_combatEvents &= 0xdd;
     }
 }
 
@@ -395,9 +395,9 @@ int COMSUBS_0504_AimCrosshair(int shooter, int maxRange)
             if (D_ba14_combatants[shooter].x != D_5899_crosshairX || D_ba14_combatants[shooter].y != D_589a_crosshairY)
             {
                 ULTIMA_16ba_PrintChar('\n');
-                if (D_588f != 0)
+                if (D_588f_castCircle != 0)
                 {
-                    ULTIMA_223c_AudioWhiteNoise(800, (uint)D_588f * 0x640 + 8000, 700);
+                    ULTIMA_223c_AudioWhiteNoise(800, (uint)D_588f_castCircle * 0x640 + 8000, 700);
                 }
                 confirmed_l = 1;
             }
@@ -554,7 +554,7 @@ int COMSUBS_0822_ResolveShot(int shooter, int aimX, int aimY, int onTarget, int 
             break;
         }
 
-        if ((D_588f == 0 || onTarget != 0) && victim_k >= 0 && victim_k != D_589e_curCombatant)
+        if ((D_588f_castCircle == 0 || onTarget != 0) && victim_k >= 0 && victim_k != D_589e_curCombatant)
         {
             D_5876_tempX = endX_h;
             D_5878_tempY = endY_h;
@@ -571,7 +571,7 @@ int COMSUBS_0822_ResolveShot(int shooter, int aimX, int aimY, int onTarget, int 
 // the members who still hold some, SJOG_1b34_UnequipAll), a thrown weapon is taken from the stack or unequipped. Nothing is spent for a spell.
 static void COMSUBS_097c_SpendAmmo(int weapon, int range)
 {
-    if (D_588f != 0)
+    if (D_588f_castCircle != 0)
     {
         return;
     }
@@ -612,12 +612,12 @@ static void COMSUBS_097c_SpendAmmo(int weapon, int range)
     }
 }
 
-// 1 when an adjacent enemy that last attacked this combatant (D_58a8) interferes and spoils the attack.
+// 1 when an adjacent enemy that last attacked this combatant (D_58a8_lastAttacker) interferes and spoils the attack.
 int COMSUBS_09fc_EnemyInterferes(int combatant)
 {
     int attacker;
 
-    attacker = D_58a8[combatant];
+    attacker = D_58a8_lastAttacker[combatant];
     if (attacker != 0xff && D_ba14_combatants[attacker].flags != 0 && ULTIMA_5646_IsEnemy(attacker) != 0 && (D_ba14_combatants[attacker].flags & (COMBAT_FLAGS_ASLEEP | COMBAT_FLAGS_4)) == 0 &&
         D_587a_statusIcon != 'T' && COMSUBS_04d4_CombatantDistance(combatant, attacker) == 1)
     {
@@ -647,7 +647,7 @@ static void COMSUBS_0a68_FireMissile(int shooter, int weapon, int missileKind)
     {
         ULTIMA_1850_PrintString(_TEXT(0x9a7e, "Aim! "));
 
-        range_b = COMSUBS_0504_AimCrosshair(shooter, D_1664[weapon]);
+        range_b = COMSUBS_0504_AimCrosshair(shooter, D_1664_weaponRange[weapon]);
         if (range_b != 0)
         {
             ULTIMA_43ae_AudioSweepTone(0x514, 300, 5, 100);
@@ -670,7 +670,7 @@ static void COMSUBS_0a68_FireMissile(int shooter, int weapon, int missileKind)
             {
                 shooterActor->extra = victim_c;
                 COMSUBS_097c_SpendAmmo(weapon, range_b);
-                onTarget = COMBAT_14d6_RollToHit(victim_c, shooter, -D_588f, weapon);
+                onTarget = COMBAT_14d6_RollToHit(victim_c, shooter, -D_588f_castCircle, weapon);
                 victim_c = COMSUBS_0822_ResolveShot(shooter, D_5899_crosshairX, D_589a_crosshairY, onTarget, missileKind);
             }
             else
@@ -706,7 +706,7 @@ void COMSUBS_0bf8_MeleeBlow(int attacker, int victim, int weapon)
 {
     ULTIMA_43ae_AudioSweepTone(400, 0x2ee, 5, 0x96);
     ULTIMA_16ba_PrintChar('\n');
-    if (COMBAT_14d6_RollToHit(victim, attacker, -D_588f, weapon) != 0)
+    if (COMBAT_14d6_RollToHit(victim, attacker, -D_588f_castCircle, weapon) != 0)
     {
         ULTIMA_3564_HitEffectOnActor(victim);
         COMBAT_194a_ResolveHit(victim, attacker);
@@ -729,24 +729,24 @@ void COMSUBS_0c52_AttackWith(int attacker, int weapon)
 
     if (weapon >= 0x23)
     {
-        D_5890 = 1;
+        D_5890_spellAttack = 1;
     }
 
     if ((D_ba14_combatants[attacker].flags & COMBAT_FLAGS_PLAYER) == 0)
     {
-        range = D_159c[D_ba14_combatants[attacker].entityIdx];
+        range = D_159c_enemyRange[D_ba14_combatants[attacker].entityIdx];
         if (range == 1)
         {
             range = 0;
         }
 
-        missileKind_c = D_15cc[D_ba14_combatants[attacker].entityIdx];
+        missileKind_c = D_15cc_enemyMissile[D_ba14_combatants[attacker].entityIdx];
     }
     else
     {
         if (weapon != 0xff)
         {
-            range = D_1664[weapon];
+            range = D_1664_weaponRange[weapon];
         }
         else
         {
@@ -757,14 +757,14 @@ void COMSUBS_0c52_AttackWith(int attacker, int weapon)
         // fix OOB when weapon == 0xff (bare hands)
         if (weapon != 0xff)
         {
-            missileKind_c = D_169c[weapon];
+            missileKind_c = D_169c_weaponMissile[weapon];
         }
         else
         {
             missileKind_c = 0;
         }
 #else
-        missileKind_c = D_169c[weapon];
+        missileKind_c = D_169c_weaponMissile[weapon];
 #endif
     }
 
@@ -792,11 +792,11 @@ void COMSUBS_0c52_AttackWith(int attacker, int weapon)
 // The attack with one readied weapon (0xff: none); when the member holds several, the weapon is named first.
 static void COMSUBS_0d3c_AttackWithWeapon(int weapon, int weaponCount)
 {
-    if (weapon != 0xff && D_15fc[weapon] != 0)
+    if (weapon != 0xff && D_15fc_weaponAttack[weapon] != 0)
     {
         if (weaponCount > 1)
         {
-            D_5890 = D_588f = 0;
+            D_5890_spellAttack = D_588f_castCircle = 0;
             ULTIMA_16ba_PrintChar('\n');
             ULTIMA_1850_PrintString(D_17f6_equipNames[weapon]);
             ULTIMA_1850_PrintString(_TEXT(0x9a94, ":\n"));
@@ -964,12 +964,12 @@ static void COMSUBS_0f4a_DrawMissile(byte pixelX, byte pixelY, int heading, int 
 
     if (missileKind == 2)
     {
-        shapeX = shapeY = D_2188;
+        shapeX = shapeY = D_2188_missileShapes;
     }
 
     if (missileKind > 2)
     {
-        shapeX = shapeY = D_2188 + 0x10;
+        shapeX = shapeY = D_2188_missileShapes + 0x10;
     }
 
     switch (heading)
@@ -1081,7 +1081,7 @@ static void COMSUBS_0f4a_DrawMissile(byte pixelX, byte pixelY, int heading, int 
         for (index_c = 0; index_c < 0x30; index_c++)
         {
             // f42b
-            ptrXs_j = ptrYs_i = D_21ba;
+            ptrXs_j = ptrYs_i = D_21ba_sparkOffsets;
 
             ptrXs_j += ULTIMA_2092_RandomRange(0, 0xf);
             ptrYs_i += ULTIMA_2092_RandomRange(0, 0xf);

@@ -15,7 +15,7 @@
 #include "town.h"
 
 
-char* D_2652[4] =
+char* D_2652_townFileNames[4] =
 {
     /*0x2626*/ "TOWNE.DAT",
     /*0x2630*/ "DWELLING.DAT",
@@ -60,7 +60,7 @@ void TOWN_00b0_DespawnNpc(int npc)
     ActorFmt* actor = &D_5c5a_actors[D_5f5e_npcs[npc].actorIdx];
 
     actor->tile = actor->animTile = actor->x = actor->y = actor->z = actor->animState = actor->extra = D_5f5e_npcs[npc].mode =
-        D_5f5e_npcs[npc].x = D_5f5e_npcs[npc].y = D_5f5e_npcs[npc].z = D_5f5e_npcs[npc]._a = 0;
+        D_5f5e_npcs[npc].x = D_5f5e_npcs[npc].y = D_5f5e_npcs[npc].z = D_5f5e_npcs[npc].dialogNumber = 0;
     D_5d5e_npcSchedules[npc].type[0] = D_5d5e_npcSchedules[npc].type[1] = D_5d5e_npcSchedules[npc].type[2] = 0;
     D_659e_npcTypes[npc] = 0;
     D_24e6_viewDirty |= 2;
@@ -211,7 +211,7 @@ void TOWN_02ae_SetupShadowlord(void)
         D_5f5e_npcs[npcSlot].actorIdx = actorSlot;
         
         D_5f5e_npcs[npcSlot].x = actor->x = 0xf;
-        D_5f5e_npcs[npcSlot].y = actor->y = D_13a6[D_5893_mapId - 1];
+        D_5f5e_npcs[npcSlot].y = actor->y = D_13a6_shadowlordStartY[D_5893_mapId - 1];
         D_5f5e_npcs[npcSlot].z = actor->animState = actor->value = actor->z = actor->extra = 0;
         actor->tile = actor->animTile = TILE_ACTOR_SHADOWLORD;
 
@@ -249,8 +249,8 @@ void TOWN_0408_LoadTownMap(int placeNpcs)
     D_594f_openDoorTile = 0;
     D_589b_mapOriginX = D_589c_mapOriginY = 0;
 
-    fileName = D_2652[(D_5893_mapId - 1) >> 3];
-    mapRecord_l = (uint)D_1e1a[D_5893_mapId - 1] + (uint)D_5895_mapLevel;
+    fileName = D_2652_townFileNames[(D_5893_mapId - 1) >> 3];
+    mapRecord_l = (uint)D_1e1a_townMapOffset[D_5893_mapId - 1] + (uint)D_5895_mapLevel;
     if (D_5895_mapLevel > 0x7f)
     {
         mapRecord_l -= 0x100;
@@ -579,9 +579,9 @@ void TOWN_08d4_SetFlee(int npc)
         }
     }
 
-    if (D_659e_npcTypes[npc] < 0x74 && D_659e_npcTypes[npc] >= 0x40 && (D_5f5e_npcs[npc]._a == 0xfe || hasTimes_c))
+    if (D_659e_npcTypes[npc] < 0x74 && D_659e_npcTypes[npc] >= 0x40 && (D_5f5e_npcs[npc].dialogNumber == 0xfe || hasTimes_c))
     {
-        D_5f5e_npcs[npc]._a = 0xfd;
+        D_5f5e_npcs[npc].dialogNumber = 0xfd;
 
         for (i = 0; i < 3; i++)
         {
@@ -879,7 +879,7 @@ void TOWN_0c78_WanderHorses(void)
 
 u8 D_2742_drunkDirs[4] = { 0x03, 0x04, 0x02, 0x01 };
 
-u16 D_2746[0xa] = {
+u16 D_2746_harpsichordFreq[0xa] = {
     0x1eab, 0x0c2c, 0x0da9, 0x0f56,
     0x103f, 0x123c, 0x1478, 0x16fa,
     0x1857, 0x1b53
@@ -940,7 +940,7 @@ int TOWN_0e34_NumberKey(int key)
         key -= 0x30;
         if (D_a9ce_soundOn != 0)
         {
-            ULTIMA_2192_AudioPulse(D_2746[key], 1, 4000, 20000, -4);
+            ULTIMA_2192_AudioPulse(D_2746_harpsichordFreq[key], 1, 4000, 20000, -4);
         }
         if (D_275a_secretTune[D_2767_tuneStep] == key)
         {

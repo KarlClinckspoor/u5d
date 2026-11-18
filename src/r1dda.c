@@ -14,68 +14,68 @@
 #include <string.h>
 
 
-int ULTIMA_1dda_WaitForKeystroke(int param_1)
+int ULTIMA_1dda_WaitForKeystroke(int maxPolls)
 {
-    int local_8;
-    int local_6;
-    int local_4_ab;
+    int key_c;
+    int savedCalibration;
+    int polls;
 
-    local_4_ab = -1;
-    if (param_1 != 0)
+    polls = -1;
+    if (maxPolls != 0)
     {
-        local_4_ab++;
+        polls++;
     }
 
-    if (param_1 > 1)
+    if (maxPolls > 1)
     {
-        local_6 = D_5356_timerCalibration;
+        savedCalibration = D_5356_timerCalibration;
         D_5356_timerCalibration = 500;
     }
 
     do
     {
-        local_8 = ULTIMA_1b38_PollKeyWithCursor();
-        if (param_1 != 0)
+        key_c = ULTIMA_1b38_PollKeyWithCursor();
+        if (maxPolls != 0)
         {
-            local_4_ab++;
+            polls++;
         }
-    } while (local_4_ab < param_1 && local_8 == 0);
+    } while (polls < maxPolls && key_c == 0);
 
-    if (param_1 > 1)
+    if (maxPolls > 1)
     {
-        D_5356_timerCalibration = local_6;
+        D_5356_timerCalibration = savedCalibration;
     }
 
-    return local_8;
+    return key_c;
 }
 
 
-void ULTIMA_1e38_IntroGetString(char* param_1, int param_2)
+void ULTIMA_1e38_IntroGetString(char* buffer, int maxLength)
 {
-    int local_6_an;
-    int local_4;
+    int key;
+    int length;
 
-    local_4 = 0;
+    length = 0;
     do
     {
-        local_6_an = ULTIMA_1dda_WaitForKeystroke(0);
-        if ((local_6_an == U5_KEY_BACKSPACE || local_6_an == U5_KEY_LEFT) && local_4 != 0)
+        key = ULTIMA_1dda_WaitForKeystroke(0);
+        if ((key == U5_KEY_BACKSPACE || key == U5_KEY_LEFT) && length != 0)
         {
             ULTIMA_1fa0_Backspace(1);
-            local_4--;
+            length--;
         }
-        else if (local_6_an == U5_KEY_ESC && local_4 != 0)
+        else if (key == U5_KEY_ESC && length != 0)
         {
-            ULTIMA_1fa0_Backspace(local_4);
-            local_4 = 0;
+            ULTIMA_1fa0_Backspace(length);
+            length = 0;
         }
-        else if (local_6_an > 0x1f && local_6_an < 0x80 && local_4 < param_2)
+        else if (key > 0x1f && key < 0x80 && length < maxLength)
         {
-            param_1[local_4] = local_6_an;
-            local_4++;
-            ULTIMA_16ba_PrintChar(local_6_an);
+            buffer[length] = key;
+            length++;
+            ULTIMA_16ba_PrintChar(key);
         }
-    } while (local_6_an != U5_KEY_ENTER);
+    } while (key != U5_KEY_ENTER);
 
-    param_1[local_4] = 0;
+    buffer[length] = 0;
 }

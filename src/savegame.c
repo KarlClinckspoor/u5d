@@ -78,21 +78,21 @@ int FILE_ReadSavegameFile(char* fileName)
     READ_8(D_587f_hour); // 3e08f
     READ_8(D_5880_lastHour); // 3e090
     READ_8(D_5881_minute); // 3e091
-    READ_8(D_5882); // 3e092
-    READ_8(D_5883); // 3e093
+    READ_8(D_5882_combatTick); // 3e092
+    READ_8(D_5883_sailCounter); // 3e093
     READ_8(D_5884_clockChimes); // 3e094
     READ_8(D_5885_trammelPhase); // 3e095
     READ_8(D_5886_feluccaPhase); // 3e096
     READ_8(D_5887_moongateHeight); // 3e097
     READ_8(D_5888_karma); // 3e098
-    READ_8(D_5889); // 3e099
-    READ_8(D_588a); // 3e09a
+    READ_8(D_5889_savedUnused); // 3e099
+    READ_8(D_588a_savedUnused); // 3e09a
     READ_8(D_588b_turnCount); // 3e09b
     READ_8(D_588c_campHealWait); // 3e09c
-    READ_8(D_588d); // 3e09d
+    READ_8(D_588d_apparitionMonth); // 3e09d
     READ_8(D_588e_protectTurns); // 3e09e
-    READ_8(D_588f); // 3e09f
-    READ_8(D_5890); // 3e0a0
+    READ_8(D_588f_castCircle); // 3e09f
+    READ_8(D_5890_spellAttack); // 3e0a0
     READ_8(D_5891_animate); // 3e0a1
     READ_8(D_5892_windDir); // 0003e0a2
     READ_8(D_5893_mapId); // 3e0a3_5893_map_id
@@ -110,15 +110,15 @@ int FILE_ReadSavegameFile(char* fileName)
     READ_8(D_589f_focusBlink); // 3e0af
     READ_8(D_58a0_combatExitDir); // 3e0b0
     READ_8(D_58a1_combatFlags); // 3e0b1
-    READ_8(D_58a2); // 3e0b2
+    READ_8(D_58a2_combatEvents); // 3e0b2
     READ_8(D_58a3_combatOver); // 3e0b3_58a3_battle_finish_flg
     READ_8(D_58a4_viewOn); // 3e0b4
     READ_8(D_58a5_lightLevel); // 3e0b5
     READ_8(D_58a6_lightSpellTurns); // 3e0b6
     READ_8(D_58a7_torchTurns); // 3e0b7
-    fread(&D_58a8, 0x20, 1, stream); // 3e0b8
+    fread(&D_58a8_lastAttacker, 0x20, 1, stream); // 3e0b8
     fread(&D_58c8_shadowlordTowns, 3, 1, stream); // 3e0d8
-    READ_8(D_58cb); // 3e0db
+    READ_8(D_58cb_summonedLord); // 3e0db
     READ_16(D_58cc_questsOrdained); // 3e0dc
     READ_16(D_58ce_questsDone); // 3e0de
     fread(D_58d0_dungeonOpen, 8, 1, stream); // 3e0e0
@@ -139,24 +139,24 @@ int FILE_ReadSavegameFile(char* fileName)
     READ_8(D_5956_newPrompt); // 3e168
     READ_8(D_5957_drunkTurns); // 3e169
     READ_8(D_5958_townShadowlord); // 3e16a
-    READ_8(D_5959); // 3e16b
+    READ_8(D_5959_fewerEnemies); // 3e16b
     fread(D_595a_dungeonMap, 0x200, 1, stream); // 3e16c; map data
     fread(D_5b5a_npcKilled, 0x80, 1, stream); // 3e36c
     fread(D_5bda_npcMet, 0x80, 1, stream); // 3e3ec
     fread(D_5c5a_actors, 0x100, 1, stream); // 3e46c
-    READ_16(D_5d5a); // 3e56c
-    READ_16(D_5d5c); // 3e56e
+    READ_16(D_5d5a_unused); // 3e56c
+    READ_16(D_5d5c_unused); // 3e56e
     fread(D_5d5e_npcSchedules, 0x200, 1, stream); // 3e570
     fread(D_5f5e_npcs, 0x200, 1, stream); // 3e770
     fread(D_615e_moveLists, 0x400, 1, stream); // 3e970
     fread(D_655e_moveListPos, 0x40, 1, stream); // 3ed70
     fread(D_659e_npcTypes, 0x20, 1, stream); // 3edb0
     // fread(D_659e_npcTypes, 0x20, 1, stream); // 3edb0 ; FMT sic
-    READ_8(D_65be); // 3edd0
-    READ_8(D_65bf); // 3edd1
-    READ_16(D_65c0); // 3edd2
-    fread(D_65c2, 0x40, 1, stream); // 3edd4
-    READ_8(D_6602);// 3ee14
+    READ_8(D_65be_npcApproach); // 3edd0
+    READ_8(D_65bf_npcApproaching); // 3edd1
+    READ_16(D_65c0_unused); // 3edd2
+    fread(D_65c2_npcStuckCount, 0x40, 1, stream); // 3edd4
+    READ_8(D_6602_dungeonMoveDir);// 3ee14
     READ_8(D_6603_dungeonFacing);// 3ee15
     READ_8(D_6604_dungeonStyle);// 3ee16
     READ_8(D_6605_boughtShip);// 3ee17
@@ -236,21 +236,21 @@ int FILE_WriteSavegameFile(char* fileName)
     WRITE_8(D_587f_hour);                  // 3e08f
     WRITE_8(D_5880_lastHour);                  // 3e090
     WRITE_8(D_5881_minute);                  // 3e091
-    WRITE_8(D_5882);                  // 3e092
-    WRITE_8(D_5883);                  // 3e093
+    WRITE_8(D_5882_combatTick);                  // 3e092
+    WRITE_8(D_5883_sailCounter);                  // 3e093
     WRITE_8(D_5884_clockChimes);                  // 3e094
     WRITE_8(D_5885_trammelPhase);                  // 3e095
     WRITE_8(D_5886_feluccaPhase);                  // 3e096
     WRITE_8(D_5887_moongateHeight);                  // 3e097
     WRITE_8(D_5888_karma);                  // 3e098
-    WRITE_8(D_5889);                  // 3e099
-    WRITE_8(D_588a);                  // 3e09a
+    WRITE_8(D_5889_savedUnused);                  // 3e099
+    WRITE_8(D_588a_savedUnused);                  // 3e09a
     WRITE_8(D_588b_turnCount);                  // 3e09b
     WRITE_8(D_588c_campHealWait);                  // 3e09c
-    WRITE_8(D_588d);                  // 3e09d
+    WRITE_8(D_588d_apparitionMonth);                  // 3e09d
     WRITE_8(D_588e_protectTurns);                  // 3e09e
-    WRITE_8(D_588f);                  // 3e09f
-    WRITE_8(D_5890);                  // 3e0a0
+    WRITE_8(D_588f_castCircle);                  // 3e09f
+    WRITE_8(D_5890_spellAttack);                  // 3e0a0
     WRITE_8(D_5891_animate);                  // 3e0a1
     WRITE_8(D_5892_windDir);         // 0003e0a2
     WRITE_8(D_5893_mapId);           // 3e0a3_5893_map_id
@@ -268,15 +268,15 @@ int FILE_WriteSavegameFile(char* fileName)
     WRITE_8(D_589f_focusBlink);                  // 3e0af
     WRITE_8(D_58a0_combatExitDir);                  // 3e0b0
     WRITE_8(D_58a1_combatFlags);                  // 3e0b1
-    WRITE_8(D_58a2);                  // 3e0b2
+    WRITE_8(D_58a2_combatEvents);                  // 3e0b2
     WRITE_8(D_58a3_combatOver);                  // 3e0b3_58a3_battle_finish_flg
     WRITE_8(D_58a4_viewOn);                  // 3e0b4
     WRITE_8(D_58a5_lightLevel);                  // 3e0b5
     WRITE_8(D_58a6_lightSpellTurns);                  // 3e0b6
     WRITE_8(D_58a7_torchTurns);                  // 3e0b7
-    fwrite(&D_58a8, 0x20, 1, stream); // 3e0b8
+    fwrite(&D_58a8_lastAttacker, 0x20, 1, stream); // 3e0b8
     fwrite(&D_58c8_shadowlordTowns, 3, 1, stream);    // 3e0d8
-    WRITE_8(D_58cb);                  // 3e0db
+    WRITE_8(D_58cb_summonedLord);                  // 3e0db
     WRITE_16(D_58cc_questsOrdained);                 // 3e0dc
     WRITE_16(D_58ce_questsDone);                 // 3e0de
     fwrite(D_58d0_dungeonOpen, 8, 1, stream);    // 3e0e0
@@ -297,24 +297,24 @@ int FILE_WriteSavegameFile(char* fileName)
     WRITE_8(D_5956_newPrompt);                  // 3e168
     WRITE_8(D_5957_drunkTurns);                  // 3e169
     WRITE_8(D_5958_townShadowlord);                  // 3e16a
-    WRITE_8(D_5959);                  // 3e16b
+    WRITE_8(D_5959_fewerEnemies);                  // 3e16b
     fwrite(D_595a_dungeonMap, 0x200, 1, stream); // 3e16c; map data
     fwrite(D_5b5a_npcKilled, 0x80, 1, stream);  // 3e36c
     fwrite(D_5bda_npcMet, 0x80, 1, stream);  // 3e3ec
     fwrite(D_5c5a_actors, 0x100, 1, stream); // 3e46c
-    WRITE_16(D_5d5a);                 // 3e56c
-    WRITE_16(D_5d5c);                 // 3e56e
+    WRITE_16(D_5d5a_unused);                 // 3e56c
+    WRITE_16(D_5d5c_unused);                 // 3e56e
     fwrite(D_5d5e_npcSchedules, 0x200, 1, stream); // 3e570
     fwrite(D_5f5e_npcs, 0x200, 1, stream); // 3e770
     fwrite(D_615e_moveLists, 0x400, 1, stream); // 3e970
     fwrite(D_655e_moveListPos, 0x40, 1, stream);  // 3ed70
     fwrite(D_659e_npcTypes, 0x20, 1, stream);  // 3edb0
     // fwrite(D_659e_npcTypes, 0x20, 1, stream); // 3edb0 ; FMT sic
-    WRITE_8(D_65be);                 // 3edd0
-    WRITE_8(D_65bf);                 // 3edd1
-    WRITE_16(D_65c0);                // 3edd2
-    fwrite(D_65c2, 0x40, 1, stream); // 3edd4
-    WRITE_8(D_6602);                 // 3ee14
+    WRITE_8(D_65be_npcApproach);                 // 3edd0
+    WRITE_8(D_65bf_npcApproaching);                 // 3edd1
+    WRITE_16(D_65c0_unused);                // 3edd2
+    fwrite(D_65c2_npcStuckCount, 0x40, 1, stream); // 3edd4
+    WRITE_8(D_6602_dungeonMoveDir);                 // 3ee14
     WRITE_8(D_6603_dungeonFacing);                 // 3ee15
     WRITE_8(D_6604_dungeonStyle);                 // 3ee16
     WRITE_8(D_6605_boughtShip);                 // 3ee17

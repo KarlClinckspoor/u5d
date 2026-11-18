@@ -12,7 +12,7 @@
 
 #include "town.h"
 
-void ULTIMA_6794_ApplyRing(int param_1);
+void ULTIMA_6794_ApplyRing(int combatantIndex);
 
 // the last free actor slot (tile 0), counting down from 31; 0 when none
 static int SJOG_0000_FindFreeActor(void)
@@ -314,7 +314,7 @@ u8 D_3e6a_harvestY[4] = {0x36, 0xa5, 0x89, 0x00};
 
 u8 D_3e6e_harvestReagent[4] = {0x07, 0x07, 0x06, 0x00};
 
-char* D_3e72[3] =
+char* D_3e72_harvestNames[3] =
 {
     _STATIC_TEXT(0x8692, "mandrake root!"),
     _STATIC_TEXT(0x86a2, "mandrake root!"),
@@ -330,7 +330,7 @@ static int SJOG_045a_HarvestReagent(int x, int y)
     char** nameList;
 
     spot = 0;
-    nameList = D_3e72;
+    nameList = D_3e72_harvestNames;
     do
     {
         if (D_3e66_harvestX[spot] == x && D_3e6a_harvestY[spot] == y && D_587f_hour == 0 && D_5858_harvestDay[spot] != D_587e_day)
@@ -992,9 +992,9 @@ void SJOG_0d4a_JimmyCmd(void)
                 break;
             }
 
-            if (D_5f5e_npcs[npcIndex_f]._a != 0)
+            if (D_5f5e_npcs[npcIndex_f].dialogNumber != 0)
             {
-                D_5f5e_npcs[npcIndex_f]._a = 0;
+                D_5f5e_npcs[npcIndex_f].dialogNumber = 0;
             }
 
             // ce24
@@ -1463,7 +1463,7 @@ u8 D_416c_gearMinLevel[0x30] =
     0xff, 0xff, 0x17, 0x17, 0x17, 0x17, 0x0f, 0xff
 };
 
-char* D_419c[8] =
+char* D_419c_potionColors[8] =
 {
     _STATIC_TEXT(0x8bea, "blue"),
     _STATIC_TEXT(0x8bf0, "yellow"),
@@ -1475,7 +1475,7 @@ char* D_419c[8] =
     _STATIC_TEXT(0x8c18, "white")
 };
 
-char* D_41ac[8] =
+char* D_41ac_scrollRunes[8] =
 {
     _STATIC_TEXT(0x8c1e, "VL"),
     _STATIC_TEXT(0x8c22, "RH"),
@@ -1598,7 +1598,7 @@ static void SJOG_1458_GetObject(int kind, int amount, int slot)
         {
             ULTIMA_1850_PrintString(_TEXT(0x8ce0, "A scroll: "));
             ULTIMA_1c9e_SelectCharset(1);
-            ULTIMA_1850_PrintString(D_41ac[amount & 7]);
+            ULTIMA_1850_PrintString(D_41ac_scrollRunes[amount & 7]);
             ULTIMA_1c9e_SelectCharset(0);
             ULTIMA_1850_PrintString(_TEXT(0x8cec, "!\n"));
             D_5820_scrolls[amount]++;
@@ -1617,7 +1617,7 @@ static void SJOG_1458_GetObject(int kind, int amount, int slot)
 
     case TILE_ACTOR_POTION:
         ULTIMA_1850_PrintString(_TEXT(0x8cf8, "A "));
-        ULTIMA_1850_PrintString(D_419c[amount]);
+        ULTIMA_1850_PrintString(D_419c_potionColors[amount]);
         ULTIMA_1850_PrintString(_TEXT(0x8cfc, " potion!\n"));
         D_5828_potions[amount]++;
         if (D_5828_potions[amount] == 100)
@@ -2087,7 +2087,7 @@ int SJOG_1d6a_CombatKlimb(void)
 
     tile_b = *ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY);
 
-    if ((D_58a1_combatFlags & 2) != 0 && tile_b == TILE_MAP_LADDER_UP && D_bb16 != 0)
+    if ((D_58a1_combatFlags & 2) != 0 && tile_b == TILE_MAP_LADDER_UP && D_bb16_altTileset != 0)
     {
         ULTIMA_1850_PrintString(_TEXT(0x8ee6, "U/D-"));
         do

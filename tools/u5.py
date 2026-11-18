@@ -41,7 +41,7 @@ GAMEDATA_DIR = {'gog': 'gamedata', '1988': 'gamedata-1988'}
 # GOG target's build also builds the 1988 form of the modules that differ, for it.
 PATCH_OF = {'gog': '1988'}
 # Assembly modules a target leaves out, because C stands for them there: the 1988 target
-# compiles ULTIMA_2322 (with D_545e and r2320.c's strings) from src/r2320.c and INTRO_132a
+# compiles ULTIMA_2322 (with D_545e_lastDisk and r2320.c's strings) from src/r2320.c and INTRO_132a
 # (with its strings) from src/intro2.c; A2322.ASM and AINTRO2.ASM are the 1992 patch's bytes.
 # The link script's lines for them carry target=gog (tools/linkscript.py).
 ASM_EXCLUDED = {'gog': (), '1988': ('A2322', 'AINTRO2')}
@@ -239,7 +239,7 @@ MODULES['ultima.c'] = ('root', None)
 # the small C modules between the resident assembly modules (named by their CS address)
 MODULES.update({n + '.c': ('root', None) for n in ('r0d72', 'r1850', 'r1b38', 'r1dda', 'r1fa0', 'r216c',
                                                    'r2320', 'r251e', 'r256e')})
-# 5000.c (MSC 5.0, ULTIMA_51a0 to 5910) is followed by an MSC 5.1 object from 5a28 to 5f86.
+# 5000.c (MSC 5.0, ULTIMA_51a0_RandomFrame to 5910) is followed by an MSC 5.1 object from 5a28 to 5f86.
 MODULES['r5a28.c'] = ('root', None)
 MODULES['vars.c'] = ('data', None)
 # INTRO.OVL's MSC 5.1 code is three objects: intro0.c (INTRO_0010_PutBackdropStrips, INTRO_0050), intro.c (to
@@ -287,7 +287,7 @@ def object_parts(target=None):
 # original reaches the overworld map through a name of its own for DS:6608 (vars.h); which
 # object defined it is not known.
 LINK_DEFINES = {'D_6608_OVERWORLD': 'D_6608_MAP'}
-# cmds.c knows 24 names by their short forms (the note at its top: CMDS_0000_HoleUpRest's pass-2 memory)
+# cmds.c knows 27 names by their short forms (the note at its top: CMDS_0000_HoleUpRest's pass-2 memory)
 LINK_DEFINES.update({
     'D_5876': 'D_5876_TEMPX',
     'D_5878': 'D_5878_TEMPY',
@@ -297,6 +297,9 @@ LINK_DEFINES.update({
     'D_588E': 'D_588E_PROTECTTURNS',
     'D_5894': 'D_5894_SAVEDMAPID',
     'D_589E': 'D_589E_CURCOMBATANT',
+    'D_1734': 'D_1734_AMBUSHENEMIES',
+    'D_588D': 'D_588D_APPARITIONMONTH',
+    'D_6A08': 'D_6A08_SONGPOS',
     'D_595A': 'D_595A_DUNGEONMAP',
     'D_5C5A': 'D_5C5A_ACTORS',
     'D_A9CE': 'D_A9CE_SOUNDON',
@@ -326,14 +329,14 @@ LINK_DEFINES.update({
 # it first met it; within an object that is MSC's symbol-table order, which depends on names
 # the original's source had and u5d does not (docs/MATCHING.md, "The resident data").
 COMMUNALS = [n.upper() for n in (
-    'D_a9bc_townJustEntered D_a9bd_curDisk D_a9be D_a9c0_wallImage D_a9c2 D_a9c4_itemsImage D_a9c6_monsterImage D_a9c8_diskDrives D_a9ce_soundOn D_a9d0_rayBalance D_a9fa_vitalsDirty D_a9fb_stepVolume D_a9fc_savedActors D_aafc_shopName D_aafe_shopOwner D_ab00_itemName D_ab02_viewTiles D_ac62_placeName D_ac64_viewActors D_ad14_combatMap '
-    'D_b114_shopIndex D_b116_shopKind D_b118_shopPrice D_b11a_shopQuantity D_b11c D_b11e_tileFrames D_b21e_scratch D_b9ee D_ba14_combatants D_bb14_wallTile D_bb15_floorTile D_bb16 D_bb17_loadFlags '
-    'D_bb18_pathPos D_bb1a_titleImage D_bb1c_u4Virtues D_bbd2 D_bc88_u4Member D_bcb0 '
+    'D_a9bc_townJustEntered D_a9bd_curDisk D_a9be_promptMode D_a9c0_wallImage D_a9c2_floppyCount D_a9c4_itemsImage D_a9c6_monsterImage D_a9c8_diskDrives D_a9ce_soundOn D_a9d0_rayBalance D_a9fa_vitalsDirty D_a9fb_stepVolume D_a9fc_savedActors D_aafc_shopName D_aafe_shopOwner D_ab00_itemName D_ab02_viewTiles D_ac62_placeName D_ac64_viewActors D_ad14_combatMap '
+    'D_b114_shopIndex D_b116_shopKind D_b118_shopPrice D_b11a_shopQuantity D_b11c_searchGrid D_b11e_tileFrames D_b21e_scratch D_b9ee_itemCounts D_ba14_combatants D_bb14_wallTile D_bb15_floorTile D_bb16_altTileset D_bb17_loadFlags '
+    'D_bb18_pathPos D_bb1a_titleImage D_bb1c_u4Virtues D_bbd2_unused D_bc88_u4Member D_bcb0_unused '
     'D_bcb2_lineBuf D_bcda_lineLen '
     'D_bcdc_talkNpcIndex D_bcde_talkPtr D_bce0_talkCodeArgs D_bce4_talkWord D_bcf4_talkLabel D_bcf6_talkKeywordIndex D_bcf8_inputText '
-    'D_bd08_answer D_bd14 D_bd15_savedMapId '
+    'D_bd08_answer D_bd14_unused D_bd15_savedMapId '
     'D_bd16_pubKind D_bd18_boughtSomething D_bd1a_dinersFed D_bd1c_dinerCount D_bd1e_tableTile D_bd20_drinksBought D_bd22_thrownOut D_bd24_shipSold '
-    'D_bd26_stripLeft D_bd27_stripRight D_bd28_stripWiden D_bd29_sceneNo D_bd2a_virtueOffered D_bd32_virtueRejected D_bd3a D_bd3b D_bd3c_newInt D_bd3d_newDex D_bd3e_newStr '
+    'D_bd26_stripLeft D_bd27_stripRight D_bd28_stripWiden D_bd29_sceneNo D_bd2a_virtueOffered D_bd32_virtueRejected D_bd3a_unused D_bd3b_unused D_bd3c_newInt D_bd3d_newDex D_bd3e_newStr '
 ).split()]
 
 EXE_HEADER = 0x800  # 0x80 paragraphs

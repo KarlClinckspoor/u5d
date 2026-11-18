@@ -460,7 +460,7 @@ u8 D_3760_orbitSteps[0xb0] =
     0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01
 };
 
-char* D_3810[9] =
+char* D_3810_lookPictures[9] =
 {
     _STATIC_TEXT(0x7388, "g              g"),
     _STATIC_TEXT(0x739a, "jlllllllnllllllk"),
@@ -519,7 +519,7 @@ static void LOOKOBJ_06f8_PrintSignText(int signPos)
             else if (code >= 0x29 && code <= 0x31)
             {
                 ULTIMA_1c9e_SelectCharset(1);
-                for (picture_c = D_3810[code - 0x29]; *picture_c != '\0';)
+                for (picture_c = D_3810_lookPictures[code - 0x29]; *picture_c != '\0';)
                 {
                     ULTIMA_16ba_PrintChar((byte)*picture_c++);
                 }

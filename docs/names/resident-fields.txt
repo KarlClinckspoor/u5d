@@ -1,0 +1,6 @@
+# Struct fields still unnamed
+field _18 defense                    # party record +0x18: read once in COMBAT as the defense of the victim
+field _a dialogNumber                # NpcFmt +0xa: the NPC's dialog number (0 none; 0xfe/0xfd town states)
+field _52c0 tileWidth                # driver block +6: 0x10, passed to the put-tile driver call (probably the tile width)
+field _52c2 tileHeight               # driver block +8: 0x10 (probably the tile height)
+field _52c6 spare52c6                # driver block +0xc: 0, never read by C

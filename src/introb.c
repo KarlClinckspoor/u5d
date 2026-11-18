@@ -2,9 +2,9 @@
 // them in registers across calls (INTRO_014e). vars.h declares them without const, so its
 // declarations are renamed out of the way here.
 // TODO: declare them const in vars.h and drop this.
-#define D_306c D_306c_vars_h
-#define D_30c4 D_30c4_vars_h
-#define D_30da D_30da_vars_h
+#define D_306c_pageTextX D_306c_vars_h
+#define D_30c4_pageImageX D_30c4_vars_h
+#define D_30da_pageImageY D_30da_vars_h
 #include "audio/audio.h"
 #include "common/common.h"
 #include "funcs.h"
@@ -12,9 +12,9 @@
 #include "savegame.h"
 #include "vars.h"
 #include "macros.h"
-#undef D_306c
-#undef D_30c4
-#undef D_30da
+#undef D_306c_pageTextX
+#undef D_30c4_pageImageX
+#undef D_30da_pageImageY
 
 #include <stdlib.h>
 
@@ -32,7 +32,7 @@ u16 D_3656_labelRow[8] =
     0x0002, 0x0005, 0x0006, 0x0008, 0x0009, 0x000b, 0x000c, 0x000d
 };
 
-char* D_3666[8] =
+char* D_3666_fieldLabels[8] =
 {
     _STATIC_TEXT(0x6cf8, "    Name:"),
     _STATIC_TEXT(0x6d02, "  Sex:"),
@@ -54,10 +54,10 @@ void INTRO_1e22_PrintFieldLabel(int field)
 {
     ULTIMA_1b94_SelectTextWindow(0);
     ULTIMA_1bf2_SetTextPosition(3, D_3656_labelRow[field]);
-    ULTIMA_1850_PrintString(D_3666[field]);
+    ULTIMA_1850_PrintString(D_3666_fieldLabels[field]);
     ULTIMA_1b94_SelectTextWindow(1);
     ULTIMA_1bf2_SetTextPosition(3, D_3656_labelRow[field]);
-    ULTIMA_1850_PrintString(D_3666[field]);
+    ULTIMA_1850_PrintString(D_3666_fieldLabels[field]);
 }
 
 // Draws the framed box at the bottom of the transfer screen (rows 19 to 22).

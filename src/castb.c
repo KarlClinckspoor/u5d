@@ -26,7 +26,7 @@
 int CAST_0000_IsImmuneToSpells(int combatant);
 int CAST_1bb0_PlotSprayPixel(int x, int y, int penColor);
 
-// The spray of a cone spell: 21 rays of pixels leave the caster's side in a direction, each wavering by its own slope (D_1cf0),
+// The spray of a cone spell: 21 rays of pixels leave the caster's side in a direction, each wavering by its own slope (D_1cf0_raySlopes),
 // a random number of pixels a turn; the cells they cross are collected (once each, up to 63) into the two lists. Returns how many.
 // CHECKED
 // MSC 5.0: the inverted CAST_1bb0_PlotSprayPixel test, the switches' cases in the order UP, DOWN, RIGHT,
@@ -83,7 +83,7 @@ static int CAST_1c36_SprayRays(s16* outXs, s16* outYs, int color, int caster, in
     for (ray_i = 0; ray_i < 0x15; ray_i++)
     {
         ended_h[ray_i] = 0; // dc1d
-        D_a9d0_rayBalance[ray_i] = D_1cf0[ray_i]; // dc2a
+        D_a9d0_rayBalance[ray_i] = D_1cf0_raySlopes[ray_i]; // dc2a
 
         rayX[ray_i] = startX; // dc44
         rayY[ray_i] = startY; // dc49
@@ -183,7 +183,7 @@ static int CAST_1c36_SprayRays(s16* outXs, s16* outYs, int color, int caster, in
                                 break;
                             }
 
-                            D_a9d0_rayBalance[ray_i] += D_1cf0[ray_i];
+                            D_a9d0_rayBalance[ray_i] += D_1cf0_raySlopes[ray_i];
                         }
                     }
 

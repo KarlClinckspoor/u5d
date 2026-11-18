@@ -161,7 +161,7 @@ void INTRO_0986_Main(void)
         ULTIMA_1850_PrintString(_TEXT(0x31a4, "Journey Onward\n\n"));
         ULTIMA_16ba_PrintChar(CTRL_CHAR_UNCENTER_TEXT);
         // 0af2
-        while (ULTIMA_0ff4_LoadTileset(D_25f0[0]) == 0)
+        while (ULTIMA_0ff4_LoadTileset(D_25f0_tilesFileName[0]) == 0)
         {
         }
         D_5893_mapId = 0x41;
@@ -373,7 +373,7 @@ void INTRO_0986_Main(void)
             ULTIMA_1bf2_SetTextPosition(0, 0xc);
             if (D_5893_mapId == 0x40)
             {
-                while (ULTIMA_0ff4_LoadTileset(D_25f0[0]) == 0)
+                while (ULTIMA_0ff4_LoadTileset(D_25f0_tilesFileName[0]) == 0)
                 {
                 }
                 D_5893_mapId = 0x41;
@@ -476,10 +476,10 @@ void INTRO_0986_Main(void)
     } while (1);
 }
 
-u16 D_3304 = 0;
+u16 D_3304_notAvatar = 0;
 
 // Reads the Ultima IV party file (PARTY.SAV): refuses bad data, copies name, sex, class, stats and
-// experience into the first party member, and sets D_3304 when the virtues are all zero (not an Avatar); 1
+// experience into the first party member, and sets D_3304_notAvatar when the virtues are all zero (not an Avatar); 1
 // on bad data.
 // CHECKED
 // Not static: in the DOS build INTRO_132a (src/asm/AINTRO2.ASM) calls this one,
@@ -499,7 +499,7 @@ int INTRO_1016_ConvertU4Savegame(void)
     slot = 0;
     offset = 8;
 
-    D_a9be = 1;
+    D_a9be_promptMode = 1;
     D_a9bd_curDisk[0] = 4;
 
     D_a9c8_diskDrives[D_a9bd_curDisk[0]] = ULTIMA_16a6_GetDefaultDrive();
@@ -612,7 +612,7 @@ L_1048:
     if (D_bb1c_u4Virtues.honesty == 0 && D_bb1c_u4Virtues.compassion == 0 && D_bb1c_u4Virtues.valor == 0 && D_bb1c_u4Virtues.justice == 0 && D_bb1c_u4Virtues.sacrifice == 0 && D_bb1c_u4Virtues.honor == 0 &&
         D_bb1c_u4Virtues.spirituality == 0 && D_bb1c_u4Virtues.humility == 0)
     {
-        D_3304 = 1;
+        D_3304_notAvatar = 1;
     }
 
     return 0;
@@ -760,7 +760,7 @@ L_GOG_1402:
         return;
     }
 
-    if (D_3304 != 0)
+    if (D_3304_notAvatar != 0)
     {
         D_55a8_party[0].cls = CLASS_AVATAR;
     }
@@ -799,7 +799,7 @@ L_GOG_1402:
 
     ULTIMA_1850_PrintString(D_55a8_party[0].name);
     ULTIMA_1850_PrintString(_TEXT(0x340f, " is "));
-    if (D_3304 != 0)
+    if (D_3304_notAvatar != 0)
     {
         ULTIMA_1850_PrintString(_TEXT(0x3414, "an Avatar."));
     }
@@ -836,7 +836,7 @@ L_GOG_1402:
 
     ULTIMA_1bf2_SetTextPosition(10, 6);
 
-    if (D_3304 != 0)
+    if (D_3304_notAvatar != 0)
     {
         ULTIMA_1850_PrintString(_TEXT(0x3439, "Avatar"));
     }
@@ -858,7 +858,7 @@ L_GOG_1402:
     ULTIMA_1bf2_SetTextPosition(0, 0xf);
     ULTIMA_16ba_PrintChar(CTRL_CHAR_CENTER_TEXT);
 
-    if (D_3304 != 0)
+    if (D_3304_notAvatar != 0)
     {
         ULTIMA_1850_PrintString(_TEXT(0x3440, "Avatar"));
     }
@@ -949,7 +949,7 @@ L_GOG_1402:
     ULTIMA_1850_PrintString(_TEXT(0x34b5, "Class:"));
     ULTIMA_16ba_PrintChar(CTRL_CHAR_TOGGLE_INVERSION);
     ULTIMA_1bf2_SetTextPosition(10, 6);
-    if (D_3304 != 0)
+    if (D_3304_notAvatar != 0)
     {
         ULTIMA_1850_PrintString(_TEXT(0x34bc, "Avatar"));
     }
@@ -969,7 +969,7 @@ L_GOG_1402:
     ULTIMA_1b94_SelectTextWindow(2);
     ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
     ULTIMA_1bf2_SetTextPosition(2, 0);
-    if (D_3304 != 0)
+    if (D_3304_notAvatar != 0)
     {
         ULTIMA_1850_PrintString(_TEXT(0x34cf, "Thou art now an Avatar:"));
     }
@@ -1143,7 +1143,7 @@ L_GOG_1402:
     ULTIMA_1850_PrintString(_TEXT(0x3607, "INT:"));
     ULTIMA_1bf2_SetTextPosition(0, 0xf);
     ULTIMA_16ba_PrintChar(CTRL_CHAR_CENTER_TEXT);
-    if (D_3304 != 0)
+    if (D_3304_notAvatar != 0)
     {
         ULTIMA_1850_PrintString(_TEXT(0x360c, "Avatar"));
     }
@@ -1170,6 +1170,6 @@ L_GOG_1402:
     ULTIMA_251e_SwitchDisks(0);
 
     D_5893_mapId = savedMap;
-    D_a9be = 0;
+    D_a9be_promptMode = 0;
 }
 #endif

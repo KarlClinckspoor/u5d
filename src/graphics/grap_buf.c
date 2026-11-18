@@ -232,7 +232,7 @@ static void DisplayDebugMessages(void)
             }
 
             PrintDebugOverlayStringFmt("%2x: %d X%d Y%d %d %d %d %d %d", i, D_5f5e_npcs[i].mode, D_5f5e_npcs[i].x, D_5f5e_npcs[i].y,
-                                       D_5f5e_npcs[i].z, D_5f5e_npcs[i].npcType, D_5f5e_npcs[i]._a, D_5f5e_npcs[i].actorIdx, D_5f5e_npcs[i].scheduleIdx);
+                                       D_5f5e_npcs[i].z, D_5f5e_npcs[i].npcType, D_5f5e_npcs[i].dialogNumber, D_5f5e_npcs[i].actorIdx, D_5f5e_npcs[i].scheduleIdx);
         }
     }
     else

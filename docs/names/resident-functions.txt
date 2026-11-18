@@ -1,0 +1,19 @@
+# Resident functions still without a descriptive suffix (last naming pass).
+ULTIMA_0991 ULTIMA_0991_ClipLineBisect        # asm: binary subdivision of a line toward the clip border (midpoints)
+ULTIMA_0a22 ULTIMA_0a22_ClipOutcode           # asm: Cohen-Sutherland style outcode of a point against the clip window
+ULTIMA_0ccd ULTIMA_0ccd_HLineOutsideClip      # asm: carry set when a horizontal span is outside the clip window
+ULTIMA_0d2b ULTIMA_0d2b_VLineOutsideClip      # asm: carry set when a vertical span is outside the clip window
+ULTIMA_1f4e ULTIMA_1f4e_Drv27Offset           # asm stub: driver function 27 with -(param * 8)
+ULTIMA_2726 ULTIMA_2726_PrintPartyRow         # one row of the party list: name, active marker, hp
+ULTIMA_2bd4 ULTIMA_2bd4_IsWalkableNormal      # tile walkable for the normal walk type
+ULTIMA_2c2e ULTIMA_2c2e_IsWaterTile           # tile is water (sea, 0x60 range)
+ULTIMA_2fa6 ULTIMA_2fa6_PoisonPlayer          # poison a living party member
+ULTIMA_3776 ULTIMA_3776_FindFarActorSlot      # UNUSED: a free actor slot, or a far actor of the given tile
+ULTIMA_3868 ULTIMA_3868_FindActorInRange      # an actor slot with tile in a range (optionally only out of view)
+ULTIMA_4702 ULTIMA_4702_IsMoonstoneInView     # moonstone buried on this map, level and (outdoors) in view
+ULTIMA_51a0 ULTIMA_51a0_RandomFrame           # random 0-3 animation phase (0 when the status icon is T)
+ULTIMA_51b8 ULTIMA_51b8_PutViewActor          # put an actor shape on a view cell, adjusted for furniture under it
+ULTIMA_5a28 ULTIMA_5a28_BuildVisibilityMap    # breadth-first visibility map of the view
+ULTIMA_5dfe ULTIMA_5dfe_IsTransparentTile     # probably: tile does not block sight (not in D_6a86; doors by flag)
+ULTIMA_6f90 ULTIMA_6f90_StrLenDI              # asm: repne scasb string length of DI
+ULTIMA_7040 ULTIMA_7040_SetBeamCells          # write one lamp-beam frame of 16 cells to the combat map

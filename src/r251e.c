@@ -18,21 +18,21 @@
 #include <stdlib.h>
 #include <time.h>
 
-void ULTIMA_251e_SwitchDisks(int param_1)
+void ULTIMA_251e_SwitchDisks(int diskNumber)
 {
     D_5394_diskSwapFn = ULTIMA_2320_NoDiskSwapMessage;
 
-    if (param_1 == 2 || param_1 == 5)
+    if (diskNumber == 2 || diskNumber == 5)
     {
-        param_1 = 1;
+        diskNumber = 1;
     }
 
-    D_a9bd_curDisk[0] = param_1;
+    D_a9bd_curDisk[0] = diskNumber;
 
-    if (D_a9c8_diskDrives[param_1] != 0xff)
+    if (D_a9c8_diskDrives[diskNumber] != 0xff)
     {
-        ULTIMA_1eac_SetDefaultDrive(D_a9c8_diskDrives[param_1]);
-        D_545e = 0xff;
+        ULTIMA_1eac_SetDefaultDrive(D_a9c8_diskDrives[diskNumber]);
+        D_545e_lastDisk = 0xff;
     }
 
     D_5394_diskSwapFn = ULTIMA_2322_DiskSwapMessage;

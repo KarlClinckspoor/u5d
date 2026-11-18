@@ -7,9 +7,9 @@ extern u16 ULTIMA_2032_ToUpper(u8 x);
 extern uint ULTIMA_2056_GetTime(void);
 extern void ULTIMA_207e_srand(uint a);
 extern int ULTIMA_2092_RandomRange(int a, int b);
-extern void ULTIMA_20c8_Delay(int param_1, int param_2);
+extern void ULTIMA_20c8_Delay(int shiftIndex, int loopCount);
 extern void ULTIMA_20fa_WaitTicks(int a);
-extern int ULTIMA_216c_strlen(char* param_1);
+extern int ULTIMA_216c_strlen(char* str);
 
 // Audio
 
@@ -36,8 +36,8 @@ extern int ULTIMA_266c_GetChar(void);
 
 extern void ULTIMA_2884_UpdateGoldDisplay(void);
 extern void ULTIMA_2900_UpdateVitalsDisplay(void);
-extern void ULTIMA_2a28_InvertPlayerRow(int param_1);
-extern void ULTIMA_2a52_DamagePlayer(int param_1, uint param_2);
+extern void ULTIMA_2a28_InvertPlayerRow(int playerIndex);
+extern void ULTIMA_2a52_DamagePlayer(int playerIndex, uint damage);
 extern void ULTIMA_2aa8_DamageParty(void);
 extern void ULTIMA_2ae8_EndTurn(void);
 extern int ULTIMA_2c4c_IsWalkableTile(int actorTile, int targetTile);
@@ -45,6 +45,6 @@ extern int ULTIMA_2d7a_SelectPlayerOrNone(int a);
 extern int ULTIMA_2e8e_SelectPlayer(void);
 extern void ULTIMA_2e96_SetWindDirection(int a);
 extern void ULTIMA_2f62_UpdateWindDirectionRandomly(void);
-extern void ULTIMA_2fd0_SpringTrap(int param_1);
+extern void ULTIMA_2fd0_SpringTrap(int playerIndex);
 
 #endif

@@ -14,7 +14,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-s16 D_5402[5] = { 1, 10, 100, 1000, 10000 };
+s16 D_5402_powersOfTen[5] = { 1, 10, 100, 1000, 10000 };
 
 // CHECKED
 // The block of comment lines after the declarations is needed for the match. Why:
@@ -23,7 +23,7 @@ s16 D_5402[5] = { 1, 10, 100, 1000, 10000 };
 // with an empty pool (its output file grows while the function is still being read). A loop
 // gets registers only if the pool has room left when it comes. Compiled in one piece this
 // function fills about 505 of the pool's 612 units (a line record is one unit), and its
-// last two loops (1a03: local_14_am in CX; 1a14: local_e_am in SI, the bound in DI) are not
+// last two loops (1a03: skip in CX; 1a14: printIndex in SI, the bound in DI) are not
 // optimized: 64 bytes differ. The original has them optimized, so there the pool was emptied
 // inside the function, before 19ca.
 // Pass 1 writes a line record for every source line inside a function that is not blank
@@ -42,22 +42,22 @@ s16 D_5402[5] = { 1, 10, 100, 1000, 10000 };
 // about 240 KB left for pass 2. Which, cannot be told from the code; the build cannot limit
 // pass 2's memory, so the comment lines stand in for either.
 // 0000:1850
-void ULTIMA_1850_PrintString(char* param_1)
+void ULTIMA_1850_PrintString(char* text)
 {
-    int local_44_aj;
-    char local_42_al[40];
-    uint local_1a_ap;
-    int local_18_ai;
-    int local_16_ak;
-    int local_14_am;
-    TextWindow* local_12;
-    int local_10_aa;
-    int local_e_am;
-    int local_c;
-    int local_a;
-    int local_8;
-    int local_6;
-    int local_4_aa;
+    int windowWidth_d;
+    char line_e[40];
+    uint centered_c;
+    int savedLength_g;
+    int savedPos_g;
+    int skip_f;
+    TextWindow* window_e;
+    int room;
+    int printIndex_f;
+    int lineLength;
+    int finished_a;
+    int pos_j;
+    int wrapped_h;
+    int breakPending;
 
     // Padding: each of these lines is one more unit in pass 2's pool (see above).
     //
@@ -201,133 +201,133 @@ void ULTIMA_1850_PrintString(char* param_1)
     //
     //
 
-    // debug("GRAP_PrintString(%s)", param_1);
+    // debug("GRAP_PrintString(%s)", text);
 
-    local_8 = 0;
-    local_a = 0;
-    local_4_aa = 0;
-    if (*param_1 != '\0')
+    pos_j = 0;
+    finished_a = 0;
+    breakPending = 0;
+    if (*text != '\0')
     {
         // 1872
-        local_12 = &D_535e_textWindows[D_5386_textWindowIndex];
-        local_1a_ap = local_12->flags & 2;
-        local_44_aj = (uint)local_12->right - (uint)local_12->left; // text_window_width = r - l;
+        window_e = &D_535e_textWindows[D_5386_textWindowIndex];
+        centered_c = window_e->flags & 2;
+        windowWidth_d = (uint)window_e->right - (uint)window_e->left; // text_window_width = r - l;
 
         // 189a
         while (1)
         {
-            if (local_4_aa != 0)
+            if (breakPending != 0)
             {
                 ULTIMA_16ba_PrintChar('\n');
             }
 
             // 18a7
-            local_c = local_4_aa = local_6 = local_14_am = 0;
-            local_10_aa =
-                local_44_aj - ULTIMA_1f12_GetCurrentTextX(); // remaining_length = text_window_length - column
+            lineLength = breakPending = wrapped_h = skip_f = 0;
+            room =
+                windowWidth_d - ULTIMA_1f12_GetCurrentTextX(); // remaining_length = text_window_length - column
 
-            for (; param_1[local_8] != '\n' && param_1[local_8] != '\r' && param_1[local_8] != '\0' &&
-                              local_c <= local_10_aa;
-                 local_8++, local_c++)
+            for (; text[pos_j] != '\n' && text[pos_j] != '\r' && text[pos_j] != '\0' &&
+                              lineLength <= room;
+                 pos_j++, lineLength++)
             {
-                local_42_al[local_c] = param_1[local_8];
+                line_e[lineLength] = text[pos_j];
             }
 
             // 18f4 (after loop)
-            if (local_c == 0)
+            if (lineLength == 0)
             {
-                if (param_1[local_8] != '\0')
+                if (text[pos_j] != '\0')
                 {
-                    ULTIMA_16ba_PrintChar((byte)param_1[local_8++]);
+                    ULTIMA_16ba_PrintChar((byte)text[pos_j++]);
                 }
                 else
                 {
-                    local_a++;
+                    finished_a++;
                 }
             }
             else
             {
                 // 191c
-                if (local_c > local_10_aa)
+                if (lineLength > room)
                 {
                     // 1927
-                    local_18_ai = local_c;
-                    local_16_ak = local_8;
+                    savedLength_g = lineLength;
+                    savedPos_g = pos_j;
 
-                    // 1939 (MSC 5.0 recomputes param_1 + local_8 for each test; 5.1 would not)
-                    for (; param_1[local_8] != ' ' && local_c != 0 && param_1[local_8] != '\n' &&
-                           param_1[local_8] != '\0' && param_1[local_8] != '\r';
-                         local_c--, local_8--)
+                    // 1939 (MSC 5.0 recomputes text + pos_j for each test; 5.1 would not)
+                    for (; text[pos_j] != ' ' && lineLength != 0 && text[pos_j] != '\n' &&
+                           text[pos_j] != '\0' && text[pos_j] != '\r';
+                         lineLength--, pos_j--)
                     {
                     }
 
                     // 1968
-                    if (local_c == 0)
+                    if (lineLength == 0)
                     {
-                        local_c = local_18_ai;
-                        local_8 = local_16_ak;
+                        lineLength = savedLength_g;
+                        pos_j = savedPos_g;
 
-                        if (local_12->currentX != 0)
+                        if (window_e->currentX != 0)
                         {
                             ULTIMA_16ba_PrintChar('\n');
-                            local_6 = 1;
+                            wrapped_h = 1;
                         }
                     }
                     else
                     {
-                        // 1996: local_c in CX, stored after the loop
+                        // 1996: lineLength in CX, stored after the loop
                         do
                         {
-                            local_c--;
-                        } while (local_42_al[local_c] == ' ' || local_42_al[local_c] == '\r' || local_42_al[local_c] == '\n');
+                            lineLength--;
+                        } while (line_e[lineLength] == ' ' || line_e[lineLength] == '\r' || line_e[lineLength] == '\n');
 
-                        if (param_1[local_8] != '\0')
-                            local_8++;
+                        if (text[pos_j] != '\0')
+                            pos_j++;
 
                         // 19bf
-                        if (local_c < local_10_aa)
-                            local_4_aa++;
+                        if (lineLength < room)
+                            breakPending++;
                     }
 
                     // 19ca
-                    if (local_c > local_10_aa)
-                        local_c--;
+                    if (lineLength > room)
+                        lineLength--;
                 }
                 else
                 {
-                    local_c--;
+                    lineLength--;
                 }
 
                 // 19d5
-                if (local_1a_ap != 0)
+                if (centered_c != 0)
                 {
-                    if (local_c > local_44_aj)
+                    if (lineLength > windowWidth_d)
                     {
                         ULTIMA_16ba_PrintChar('\n');
                     }
 
                     // 19ea
-                    ULTIMA_1bf2_SetTextPosition((local_10_aa - local_c) / 2, ULTIMA_1cee_GetCurrentTextY());
+                    ULTIMA_1bf2_SetTextPosition((room - lineLength) / 2, ULTIMA_1cee_GetCurrentTextY());
                 }
 
-                // 19fd; 1a03: local_14_am in CX
-                if (local_6 != 0)
+                // 19fd; 1a03: skip_f in CX
+                if (wrapped_h != 0)
                 {
                     // 1a03
-                    for (; local_42_al[local_14_am] == ' '; local_14_am++)
+                    for (; line_e[skip_f] == ' '; skip_f++)
                     {
                     }
                 }
 
-                // 1a14: local_e_am in SI, the bound local_c in DI; the counter is stored in
-                // local_e_am ([bp-0Ch]) after this loop, so the loop is over local_e_am.
-                for (local_e_am = local_14_am; local_e_am <= local_c; local_e_am++)
+                // 1a14: printIndex_f in SI, the bound lineLength in DI; the counter is stored in
+                // printIndex_f ([bp-0Ch]) after this loop, so the loop is over printIndex_f.
+                for (printIndex_f = skip_f; printIndex_f <= lineLength; printIndex_f++)
                 {
                     // 1a1c
-                    ULTIMA_16ba_PrintChar((byte)local_42_al[local_e_am]);
+                    ULTIMA_16ba_PrintChar((byte)line_e[printIndex_f]);
                 }
             }
-            if (local_a != 0)
+            if (finished_a != 0)
                 break;
         }
     }
@@ -336,78 +336,78 @@ void ULTIMA_1850_PrintString(char* param_1)
 
 // CHECKED
 // print_integer(val, min_len, filler)
-// param_3 is a char: as an int, MSC 5.0 turns the fill loop into "rep stosb" and needs a
+// fillChar is a char: as an int, MSC 5.0 turns the fill loop into "rep stosb" and needs a
 // temporary (frame 0x34); the original's loop stores AL each time.
-void ULTIMA_1a3e_PrintNumber(int param_1, int param_2, char param_3)
+void ULTIMA_1a3e_PrintNumber(int value, int minWidth, char fillChar)
 {
-    int local_32_am;
-    int local_30; // is_negative
-    int local_2e; // space
-    int local_2c; // required_length
-    char local_2a_aa[40];
+    int index;
+    int negative; // is_negative
+    int outPos_f; // space
+    int digits_l; // required_length
+    char buffer_f[40];
 
-    local_2c = 1;
-    local_30 = 0;
+    digits_l = 1;
+    negative = 0;
 
-    if (param_2 > 39)
+    if (minWidth > 39)
     {
-        param_2 = 39;
+        minWidth = 39;
     }
 
     // 1a5b
-    if (param_1 < 0) // is negative?
+    if (value < 0) // is negative?
     {
-        local_30++; // is_negative = true
-        param_1 = -param_1;
+        negative++; // is_negative = true
+        value = -value;
     }
 
-    // 1a6c: MSC walks D_5402 with a pointer (the extra stack slot) and sets local_32 to 5
-    for (local_32_am = 1; local_32_am < 5; local_32_am++)
+    // 1a6c: MSC walks D_5402_powersOfTen with a pointer (the extra stack slot) and sets index to 5
+    for (index = 1; index < 5; index++)
     {
-        if (D_5402[local_32_am] <= param_1)
+        if (D_5402_powersOfTen[index] <= value)
         {
-            local_2c++;
+            digits_l++;
         }
     }
 
-    if (local_30)
+    if (negative)
     {
-        local_2c++;
+        digits_l++;
     }
 
     // 1a94
-    local_2e = param_2 - local_2c;
-    if (local_2e <= 0)
+    outPos_f = minWidth - digits_l;
+    if (outPos_f <= 0)
     {
-        local_2e = 0;
+        outPos_f = 0;
     }
     else
     {
         // 1aa8
-        for (local_32_am = 0; local_32_am != local_2e; local_32_am++)
+        for (index = 0; index != outPos_f; index++)
         {
-            local_2a_aa[local_32_am] = param_3;
+            buffer_f[index] = fillChar;
         }
     }
 
     // 1ac0
-    if (local_30)
+    if (negative)
     {
-        local_2a_aa[local_2e++] = '-';
-        local_2c--;
+        buffer_f[outPos_f++] = '-';
+        digits_l--;
     }
 
-    // 1ad3: the quotient assigned inside the digit expression (local_30 read once less)
-    // lets MSC keep local_32 in SI and local_2e in DI, with local_30 in memory.
+    // 1ad3: the quotient assigned inside the digit expression (negative read once less)
+    // lets MSC keep index in SI and outPos_f in DI, with negative in memory.
     do
     {
-        local_32_am = D_5402[local_2c - 1];
-        local_2a_aa[local_2e++] = (char)(local_30 = param_1 / local_32_am) + '0';
-        param_1 -= local_32_am * local_30;
-    } while (--local_2c != 0);
+        index = D_5402_powersOfTen[digits_l - 1];
+        buffer_f[outPos_f++] = (char)(negative = value / index) + '0';
+        value -= index * negative;
+    } while (--digits_l != 0);
 
     // 1afb
-    local_2a_aa[local_2e] = '\0';
+    buffer_f[outPos_f] = '\0';
 
-    ULTIMA_1850_PrintString(local_2a_aa);
+    ULTIMA_1850_PrintString(buffer_f);
 }

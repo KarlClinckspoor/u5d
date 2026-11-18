@@ -47,7 +47,7 @@ extern int ULTIMA_1dda_WaitForKeystroke(int a);
 
 // Input
 
-extern void ULTIMA_1e38_IntroGetString(char* param_1, int param_2);
+extern void ULTIMA_1e38_IntroGetString(char* buffer, int maxLength);
 
 // File cont.
 

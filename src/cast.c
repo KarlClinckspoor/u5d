@@ -920,7 +920,7 @@ void CAST_1f60_ConeSpell(int caster, int kind, int color);
 static char S_0x466a[] = "Scroll\n\n";
 #endif
 
-// The Cast command. Asks the acting player, reads the spell (CAST2_00de_SelectSpell), checks that it can be cast here (D_1c90: bit 8 on
+// The Cast command. Asks the acting player, reads the spell (CAST2_00de_SelectSpell), checks that it can be cast here (D_1c90_spellUsability: bit 8 on
 // the overworld, 4 in a town, 2 in a dungeon, 1 in combat; Absorbed! in Lord British's castle without the crown and at Stonegate),
 // that it is mixed, and that the caster has the magic points and the level for its circle, then calls the spell by its index.
 // Prints Success! or Failed!.
@@ -933,7 +933,7 @@ int CAST_0dba_CastSpellCmd(void)
     int caster_o;
     int spell;
 
-    result_d = allowedHere = D_5890 = D_588f = passTurn = 1;
+    result_d = allowedHere = D_5890_spellAttack = D_588f_castCircle = passTurn = 1;
 
     caster_o = ULTIMA_4988_GetActingPlayer();
     if (caster_o < 0)
@@ -963,18 +963,18 @@ int CAST_0dba_CastSpellCmd(void)
 #endif
     }
 
-    D_588f = circle = spell / 6 + 1;
+    D_588f_castCircle = circle = spell / 6 + 1;
 
     if (D_5893_mapId == 0)
     {
-        if ((D_1c90[spell] & 8) == 0)
+        if ((D_1c90_spellUsability[spell] & 8) == 0)
         {
             allowedHere = 0;
         }
     }
     else if (D_5893_mapId > 0x7f)
     {
-        if ((D_1c90[spell] & 1) == 0)
+        if ((D_1c90_spellUsability[spell] & 1) == 0)
         {
             allowedHere = 0;
         }
@@ -994,14 +994,14 @@ int CAST_0dba_CastSpellCmd(void)
 
         if (D_5893_mapId < 0x21)
         {
-            if ((D_1c90[spell] & 4) == 0)
+            if ((D_1c90_spellUsability[spell] & 4) == 0)
             {
                 allowedHere = 0;
             }
         }
         else
         {
-            if ((D_1c90[spell] & 2) == 0)
+            if ((D_1c90_spellUsability[spell] & 2) == 0)
             {
                 allowedHere = 0;
             }
@@ -1045,7 +1045,7 @@ int CAST_0dba_CastSpellCmd(void)
         }
         else
         {
-            // D_1c30 idx
+            // D_1c30_spellCodes idx
             switch (spell)
             {
             case 0: // IL
@@ -1618,7 +1618,7 @@ static void CAST_15b4_UseGemShard(int shard)
     ULTIMA_3ae6_WaitFrames(3);
 
     if (ULTIMA_368e_FindActorTileAtPos(D_5896_mapX, D_5897_mapY - 1, D_5895_mapLevel) == TILE_ACTOR_SHADOWLORD &&
-        shard == D_58cb)
+        shard == D_58cb_summonedLord)
     {
         TOWN_00b0_DespawnNpc(TOWN_011e_FindNpcByActor(D_5876_tempX));
 
@@ -1688,7 +1688,7 @@ void CAST_1792_UseCmd(void)
     result_e = 1;
     ZSTATS_099a_FillItemCounts();
 
-    firstItem_j = ZSTATS_05a4_NextItem(-1, 0x26, D_b9ee, 0xff);
+    firstItem_j = ZSTATS_05a4_NextItem(-1, 0x26, D_b9ee_itemCounts, 0xff);
     if (firstItem_j == -1)
     {
         ULTIMA_1850_PrintString(_TEXT(0x489f, "No usable items!\n"));

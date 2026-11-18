@@ -36,7 +36,7 @@ typedef struct S_55a8
 	s16 exp;		// 14 / 55bc; exp
 	u8 level;		// 16 / 55be; level
 	u8 monthsAtInn;	// 17 / 55bf; counted up each month, to 25 (ULTIMA_4f7c_AdvanceTime); the inn bills for it (SHOPPES3)
-	u8 _18;			// 18 / 55c0; def? (read once, in COMBAT)
+	u8 defense;			// 18 / 55c0; def? (read once, in COMBAT)
 	u8 equips[6];	// 19 / 55c1 ; equips ([0]: helmet, [1]: armour, [2], [3]: weapon and shield (the hands), [4]: magic_ring, [5]: amulet); 0xff none
 	u8 innMapId;		// 1f / 55c7; 0: in the party; 0x7f: gone (probably); else the map of the inn where the member waits
 } S_55a8;
@@ -68,10 +68,10 @@ typedef struct VideoDriverParams
 	int forceCga;         // 52ba 0
 	int tileXOffset;      // 52bc 2
 	int tileYOffset;      // 52be 4
-	int _52c0;                  // 52c0
-	int _52c2;                  // 52c2
+	int tileWidth;                  // 52c0
+	int tileHeight;                  // 52c2
 	int clipEnabled;                  // 52c4
-	int _52c6;                  // 52c6
+	int spare52c6;                  // 52c6
 	int videoDriver; // 52c8: video driver selection (0=cga, 1=ega, 2=tandy, 3=herc, ffff=none)
 	int machineType;      // 52ca: machine type (0=pcjr, 2=ibm, 3=tandy, 6=other)
 	int penX;             // 52cc
@@ -118,7 +118,7 @@ typedef struct NpcFmt
 	s16 y; // 4 / 5f62 y
 	u16 z; // 6 / 5f64 z
 	u16 npcType;   // 8 / 5f66
-	u16 _a;   // a / 5f68
+	u16 dialogNumber;   // a / 5f68
 	u16 actorIdx;   // c / 5f6a; the NPC's slot in D_5c5a_actors   // TODO: s16?
 	u16 scheduleIdx;   // e / 5f6c; which entry of the NPC's schedule is in force
 } NpcFmt;

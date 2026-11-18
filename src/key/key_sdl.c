@@ -125,7 +125,7 @@ static u16 KeyboardEventToUltimaKeycode(SDL_KeyboardEvent ev)
     int i;
     for (i = 0; i < 8; i++)
     {
-        if (extendedKeycode == D_540e[i])
+        if (extendedKeycode == D_540e_arrowKeyCodes[i])
             break;
     }
 
@@ -134,7 +134,7 @@ static u16 KeyboardEventToUltimaKeycode(SDL_KeyboardEvent ev)
         return 0;
     }
 
-    u16 key = D_5416[i];
+    u16 key = D_5416_specialKeyTable[i];
     key |= 0x100; // special keystroke
     return key;
 }
@@ -150,7 +150,7 @@ int KEY_PollKey(void)
 {
 	int ret;
 
-	D_538a = 0;
+	D_538a_numpadKeys = 0;
 
 	EVT_Yield();
 
@@ -158,7 +158,7 @@ int KEY_PollKey(void)
     if (s_lastDownKeycode & 0x100)
     {
         s_lastDownKeycode &= 0xff;
-        D_538a = 1;
+        D_538a_numpadKeys = 1;
     }
 
     ret = s_lastDownKeycode;

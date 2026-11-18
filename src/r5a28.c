@@ -1,5 +1,5 @@
 // Resident code from CS:5a28 to 5f86: an object of its own, compiled with MSC 5.1, after the
-// MSC 5.0 object 5000.c (ULTIMA_51a0 to ULTIMA_5910) and before 6000.c. Its data is the two
+// MSC 5.0 object 5000.c (ULTIMA_51a0_RandomFrame to ULTIMA_5910) and before 6000.c. Its data is the two
 // tables at DS:6a86.
 
 #include "common/common.h"
@@ -15,119 +15,119 @@
 #include "cmds.h"
 #include "combat.h"
 #include "dnglook.h"
-u8 D_6a86[0x13] = {
+u8 D_6a86_opaqueTiles[0x13] = {
     0x09, 0x0A, 0x0C, 0x0D, 0x4D, 0x4E, 0x4F, 0x5A,
     0x97, 0xB8, 0xB9, 0xBC, 0xD0, 0xD1, 0xD2, 0xD3,
     0xF8, 0xFE, 0xFF
 };
 
-u8 D_6a9a[10] = {
+u8 D_6a9a_lightTiles[10] = {
     0xDC, 0xBD, 0xBE, 0xB2, 0xDE, 0xBF, 0xB0, 0xB1,
     0xB3, 0xBC
 };
 
-static bool ULTIMA_5dfe(byte param_1, int param_2);
+static bool ULTIMA_5dfe_IsTransparentTile(byte tile, int distance);
 
 // CHECKED
-// The locals are named for the original's slots (slots.py, after renaming them local_N).
+// The locals' suffixes (_aj, _ab ...) keep the original's slot order (rename.py).
 // Two unused labels (L_s before the GetMapViewport store at 5b83, L_c before the 5dfe test)
-// stop MSC keeping an address or param_2_y + local_214_an in DI across them, which gives the
+// stop MSC keeping an address or originY + nextY in DI across them, which gives the
 // original's [bx+di+table] addressing; the gotos to L_5c93 put that block before 5c9c.
 // The queue is 256 ints, not 257: `register byte* cell` (SI) at function level reserves the
-// unused slot at -4 between local_4_ab and the queue (cell hashes to bucket 0, declared before
-// local_4_ab). As a block variable its slot came after the locals and moved the temporary.
+// unused slot at -4 between tail and the queue (cell hashes to bucket 0, declared before
+// tail). As a block variable its slot came after the locals and moved the temporary.
 // generate visibility map (BFS)
-static void ULTIMA_5a28(int param_1, int param_2_y, int param_3_x, int param_4, int param_5, uint param_6, byte* param_7_map)
+static void ULTIMA_5a28_BuildVisibilityMap(int lightLevel, int originY, int originX, int rowOffset, int colOffset, uint stride, byte* map)
 {
-    int local_218_aj; // -0x216
-    byte local_216_al;
-    int local_214_an; // -0x212; y
-    int local_212; // -0x210; x
-    int local_210_ab; // -0x20e
-    int local_20e_an; // -0x20c
-    int local_20c; // -0x20a
-    int local_20a; // -0x208
-    int local_208; // -0x206
-    int local_206[256]; // -0x204
+    int dir; // -0x216
+    byte tile;
+    int nextY; // -0x212; y
+    int nextX; // -0x210; x
+    int combatMode_h; // -0x20e
+    int head; // -0x20c
+    int valid; // -0x20a
+    int fromY_d; // -0x208
+    int fromX_e; // -0x206
+    int queue_l[256]; // -0x204
     register byte* cell;
-    int local_4_ab;
+    int tail_g;
 
-    local_20e_an = 0;
-    local_4_ab = 0;
-    local_218_aj = 7;
-    local_20c = 1;
-    local_210_ab = 0;
+    head = 0;
+    tail_g = 0;
+    dir = 7;
+    valid = 1;
+    combatMode_h = 0;
 
-    if (param_1 > 0)
+    if (lightLevel > 0)
     {
         // 5a57
-        if (param_4 == -0x6f)
+        if (rowOffset == -0x6f)
         {
-            param_4 = 0;
-            local_210_ab++;
+            rowOffset = 0;
+            combatMode_h++;
         }
 
         // 5a66 (si vs di)
-        param_1++;
-        local_206[local_4_ab] = 5;
-        local_206[++local_4_ab] = 5;
-        ++local_4_ab;
-        param_7_map[param_4 * 0x20 + param_5 + 0xa5] =
-            *ULTIMA_4402_GetTileAddr(param_3_x + (uint)D_589b_mapOriginX + 5, param_2_y + (uint)D_589c_mapOriginY + 5);
+        lightLevel++;
+        queue_l[tail_g] = 5;
+        queue_l[++tail_g] = 5;
+        ++tail_g;
+        map[rowOffset * 0x20 + colOffset + 0xa5] =
+            *ULTIMA_4402_GetTileAddr(originX + (uint)D_589b_mapOriginX + 5, originY + (uint)D_589c_mapOriginY + 5);
 
-        while (local_20e_an != local_4_ab)
+        while (head != tail_g)
         {
             // 5abc
-            local_20a = local_214_an = local_206[local_20e_an];
-            local_208 = local_212 = local_206[++local_20e_an];
-            ++local_20e_an;
+            fromY_d = nextY = queue_l[head];
+            fromX_e = nextX = queue_l[++head];
+            ++head;
 
-            while (local_218_aj > -1) // 5ce5
+            while (dir > -1) // 5ce5
             {
                 // 5aec
-                switch (local_218_aj)
+                switch (dir)
                 {
                 case 0:
                 case 1:
                 case 7:
-                    local_212--;
+                    nextX--;
                     break;
                 case 4:
                 case 5:
-                    local_212++;
+                    nextX++;
                     break;
                 case 2:
                 case 3:
-                    local_214_an--;
+                    nextY--;
                     break;
                 case 6:
-                    local_214_an++;
+                    nextY++;
                     break;
                 }
 
-                if (local_212 < 0 || 10 < local_212 || local_214_an < 0 || 10 < local_214_an)
+                if (nextX < 0 || 10 < nextX || nextY < 0 || 10 < nextY)
                 {
                     // 5b42
-                    local_20c = 0;
+                    valid = 0;
                 }
 
 #if !defined(MATCHING_BUILD)
                 // TODO: temporary!
-                if (param_7_map == D_ad14_combatMap)
+                if (map == D_ad14_combatMap)
                 {
-                    if (param_4 + local_214_an < 0 || param_5 + local_212 < 0 || param_4 + local_214_an >= 0x20 || param_5 + local_212 >= 0x20)
+                    if (rowOffset + nextY < 0 || colOffset + nextX < 0 || rowOffset + nextY >= 0x20 || colOffset + nextX >= 0x20)
                     {
-                        local_218_aj--;
-                        local_20c = 1;
+                        dir--;
+                        valid = 1;
                         continue;
                     }
                 }
-                else if (param_7_map == D_ab02_viewTiles)
+                else if (map == D_ab02_viewTiles)
                 {
-                    if (param_4 + local_214_an < 0 || param_5 + local_212 < 0 || param_4 + local_214_an >= 0xb || param_5 + local_212 >= 0x20)
+                    if (rowOffset + nextY < 0 || colOffset + nextX < 0 || rowOffset + nextY >= 0xb || colOffset + nextX >= 0x20)
                     {
-                        local_218_aj--;
-                        local_20c = 1;
+                        dir--;
+                        valid = 1;
                         continue;
                     }
                 }
@@ -138,76 +138,76 @@ static void ULTIMA_5a28(int param_1, int param_2_y, int param_3_x, int param_4, 
 #endif
 
                 // 5b48
-                cell = param_7_map + (param_4 + local_214_an) * 0x20 + (param_5 + local_212);
+                cell = map + (rowOffset + nextY) * 0x20 + (colOffset + nextX);
 
                 // 5b5f
-                if (local_210_ab == 0)
+                if (combatMode_h == 0)
                 {
                     // 5b66
-                    if ((GetMapViewport(local_212, local_214_an) != 0) && (0x1f >= param_4 + local_214_an))
+                    if ((GetMapViewport(nextX, nextY) != 0) && (0x1f >= rowOffset + nextY))
                     {
                     L_s:
-                        GetMapViewport(local_212, local_214_an) = 0;
+                        GetMapViewport(nextX, nextY) = 0;
 
                         // -> 5b9b
                     }
                     else
                     {
                         // 5b95
-                        local_20c = 0;
+                        valid = 0;
                     }
                 }
                 else
 #if !defined(MATCHING_BUILD)
-                    if (local_20c != 0)
+                    if (valid != 0)
 #endif
                 {
                     // 5b90
                     if (*cell != 0xff)
                     {
                         // 5b95
-                        local_20c = 0;
+                        valid = 0;
                     }
                 }
 
                 // 5b9b
-                if (local_20c != 0)
+                if (valid != 0)
                 {
                     // 5ba5
-                    local_216_al = *ULTIMA_4402_GetTileAddr(param_3_x + local_212 + (uint)D_589b_mapOriginX, param_2_y + local_214_an + (uint)D_589c_mapOriginY);
-                    if (ULTIMA_6ff0_DistanceFromCenter(local_212, local_214_an) >= param_1)
+                    tile = *ULTIMA_4402_GetTileAddr(originX + nextX + (uint)D_589b_mapOriginX, originY + nextY + (uint)D_589c_mapOriginY);
+                    if (ULTIMA_6ff0_DistanceFromCenter(nextX, nextY) >= lightLevel)
                     {
-                        if (local_210_ab)
+                        if (combatMode_h)
                         {
                         L_c:
-                            if (ULTIMA_5dfe(local_216_al, ULTIMA_6ff0_DistanceFromCenter(local_212, local_214_an)) == 0)
+                            if (ULTIMA_5dfe_IsTransparentTile(tile, ULTIMA_6ff0_DistanceFromCenter(nextX, nextY)) == 0)
                             {
                                 // 5c05
                                 if (
 #if !defined(MATCHING_BUILD)
-                                    param_2_y + local_20a >= 0x20 || param_3_x + local_208 >= 0x20 ||
-                                    param_2_y + local_214_an < 0 || param_3_x + local_208 < 0 ||
+                                    originY + fromY_d >= 0x20 || originX + fromX_e >= 0x20 ||
+                                    originY + nextY < 0 || originX + fromX_e < 0 ||
 #endif
-                                    param_7_map[local_20a * 0x20 + local_208] == 0 ||
-                                    D_ad14_combatMap[(param_2_y + local_20a) * 0x20 + param_3_x + local_208] == 0 ||
-                                    D_ad14_combatMap[(param_2_y + local_214_an) * 0x20 + param_3_x + local_212] == 0)
+                                    map[fromY_d * 0x20 + fromX_e] == 0 ||
+                                    D_ad14_combatMap[(originY + fromY_d) * 0x20 + originX + fromX_e] == 0 ||
+                                    D_ad14_combatMap[(originY + nextY) * 0x20 + originX + nextX] == 0)
                                 {
-                                    local_216_al = *cell = 0xff;
+                                    tile = *cell = 0xff;
                                 }
                                 else
                                     goto L_5c93;
                             }
                             else
                             {
-                                if (param_2_y + local_214_an < 0 || param_3_x + local_212 < 0 ||
-                                    param_3_x + local_212 > 0x1f || param_2_y + local_214_an > 0x1f)
+                                if (originY + nextY < 0 || originX + nextX < 0 ||
+                                    originX + nextX > 0x1f || originY + nextY > 0x1f)
                                 {
                                     *cell = 0;
                                 }
-                                else if (D_ad14_combatMap[(param_2_y + local_214_an) * 0x20 + param_3_x + local_212] != 0)
+                                else if (D_ad14_combatMap[(originY + nextY) * 0x20 + originX + nextX] != 0)
                                 {
                                 L_5c93:
-                                    *cell = local_216_al;
+                                    *cell = tile;
                                 }
                                 else
                                 {
@@ -217,29 +217,29 @@ static void ULTIMA_5a28(int param_1, int param_2_y, int param_3_x, int param_4, 
                         }
                         else
                         {
-                            local_216_al = 0xff;
+                            tile = 0xff;
                         }
                     }
                     else
                         goto L_5c93;
 
                     // 5ca1
-                    if (ULTIMA_5dfe(local_216_al, ULTIMA_6ff0_DistanceFromCenter(local_212, local_214_an)) != 0)
+                    if (ULTIMA_5dfe_IsTransparentTile(tile, ULTIMA_6ff0_DistanceFromCenter(nextX, nextY)) != 0)
                     {
-                        local_206[local_4_ab] = local_214_an;
-                        local_4_ab++;
-                        local_206[local_4_ab] = local_212;
-                        local_4_ab++;
+                        queue_l[tail_g] = nextY;
+                        tail_g++;
+                        queue_l[tail_g] = nextX;
+                        tail_g++;
                     }
                 }
 
                 // 5cdb
-                local_218_aj--;
-                local_20c = 1;
+                dir--;
+                valid = 1;
             }
 
             // 5cef
-            local_218_aj = 7;
+            dir = 7;
         }
     }
 
@@ -247,74 +247,75 @@ static void ULTIMA_5a28(int param_1, int param_2_y, int param_3_x, int param_4, 
 }
 
 // update map data?
-// param_1: light intensity
+// light: light intensity
 // Build the 11x11 view around map cell (x, y) for the light level: what the party can see.
-void ULTIMA_5d0a_BuildView(int param_1_light, int param_2_x, int param_3_y, int param_4)
+void ULTIMA_5d0a_BuildView(int light, int mapX, int mapY, int size)
 {
-    int local5_4;
-    int local4_6;
-    byte* local3_8;
-    int local2_a;
-    int local1_c;
+    int originX;
+    int originY;
+    byte* cell_c;
+    int col_f;
+    int row;
 
-    for (local2_a = 0; local2_a < 0xb; local2_a++)
+    for (col_f = 0; col_f < 0xb; col_f++)
     {
-        memset(&GetMapViewport(0, local2_a), 0xff, 0xb);
+        memset(&GetMapViewport(0, col_f), 0xff, 0xb);
     }
 
-    local2_a = param_2_x - 5;
-    local1_c = param_3_y - 5;
+    col_f = mapX - 5;
+    row = mapY - 5;
 
-    if (param_1_light > 0)
+    if (light > 0)
     {
-        ULTIMA_5a28(param_1_light, local1_c, local2_a, -111, 0, 0x20, D_ab02_viewTiles);
-        local3_8 = D_ab02_viewTiles;
+        ULTIMA_5a28_BuildVisibilityMap(light, row, col_f, -111, 0, 0x20, D_ab02_viewTiles);
+        cell_c = D_ab02_viewTiles;
 
-        for (local1_c = 0; local1_c < 0xb; local1_c++)
+        for (row = 0; row < 0xb; row++)
         {
-            for (local2_a = 0; local2_a < 0xb; local2_a++)
+            for (col_f = 0; col_f < 0xb; col_f++)
             {
-                if (*local3_8 == 0)
+                if (*cell_c == 0)
                 {
-                    (*local3_8)--;
+                    (*cell_c)--;
                 }
 
-                local3_8++;
+                cell_c++;
             }
 
-            local3_8 += 0x15;
+            cell_c += 0x15;
         }
     }
 
-    if (param_1_light < 0)
+    if (light < 0)
     {
-        local5_4 = param_2_x - 5;
-        local4_6 = param_3_y - 5;
+        originX = mapX - 5;
+        originY = mapY - 5;
 
-        for (local1_c = 0; local1_c < 0xb; local1_c++)
+        for (row = 0; row < 0xb; row++)
         {
-            for (local2_a = 0; local2_a < 0xb; local2_a++)
+            for (col_f = 0; col_f < 0xb; col_f++)
             {
-                GetMapViewport(local2_a, local1_c) = *ULTIMA_4402_GetTileAddr(
-                    local5_4 + local2_a + (uint)D_589b_mapOriginX,
-                    local4_6 + local1_c + (uint)D_589c_mapOriginY);
+                GetMapViewport(col_f, row) = *ULTIMA_4402_GetTileAddr(
+                    originX + col_f + (uint)D_589b_mapOriginX,
+                    originY + row + (uint)D_589c_mapOriginY);
             }
         }
     }
 }
 
-static bool ULTIMA_5dfe(byte param_1, int param_2)
+// Probably: the tile does not block sight (not in D_6a86_opaqueTiles); the door-like tiles only when distance is 1.
+static bool ULTIMA_5dfe_IsTransparentTile(byte tile, int distance)
 {
-    if (param_1 == TILE_MAP_4B || param_1 == TILE_MAP_4A || param_1 == TILE_MAP_DOOR_BA || param_1 == TILE_MAP_DOOR_BB || param_1 == TILE_MAP_98)
+    if (tile == TILE_MAP_4B || tile == TILE_MAP_4A || tile == TILE_MAP_DOOR_BA || tile == TILE_MAP_DOOR_BB || tile == TILE_MAP_98)
     {
-        if (param_2 == 1)
+        if (distance == 1)
             return 1;
         else
             return 0;
     }
     else
     {
-        if (!memchr(D_6a86, param_1, 0x13))
+        if (!memchr(D_6a86_opaqueTiles, tile, 0x13))
             return 1;
         else
             return 0;
@@ -324,79 +325,79 @@ static bool ULTIMA_5dfe(byte param_1, int param_2)
 // Build the 32x32 light map: the cells lit by the lamps, fires and moongates of the map buffer.
 void ULTIMA_5e4a_BuildLightMap(void)
 {
-    byte local_92_aj;
-    int local_90_al;
-    int local_8e_ah[64];
-    int local_e;
-    int local_c;
-    int local_a;
-    int local_8;
-    int local_6;
-    u8* local_4_ab;
+    byte tile;
+    int count;
+    int lights_g[64];
+    int lightY;
+    int lightX;
+    int row_i;
+    int scanY_c;
+    int scanX_d;
+    u8* cell;
 
-    local_90_al = 0;
-    local_4_ab = D_ad14_combatMap;
+    count = 0;
+    cell = D_ad14_combatMap;
 
     memset(D_ad14_combatMap, 0xff, 0x400);
 
     // 5e72
-    for (local_8 = 0; local_8 < 0x20; local_8++)
+    for (scanY_c = 0; scanY_c < 0x20; scanY_c++)
     {
-        for (local_6 = 0; local_6 < 0x20; local_6++)
+        for (scanX_d = 0; scanX_d < 0x20; scanX_d++)
         {
             // 5e78
-            local_92_aj = *ULTIMA_4402_GetTileAddr(D_589b_mapOriginX + local_6, D_589c_mapOriginY + local_8);
-            if (memchr(D_6a9a, local_92_aj, 10) != 0)
+            tile = *ULTIMA_4402_GetTileAddr(D_589b_mapOriginX + scanX_d, D_589c_mapOriginY + scanY_c);
+            if (memchr(D_6a9a_lightTiles, tile, 10) != 0)
             {
                 // 5eb0
-                local_8e_ah[local_90_al++] = local_8;
-                local_8e_ah[local_90_al++] = local_6;
-                *local_4_ab = local_92_aj;
+                lights_g[count++] = scanY_c;
+                lights_g[count++] = scanX_d;
+                *cell = tile;
             }
 
             // 5ed2
-            local_4_ab++;
+            cell++;
         }
     }
 
-    local_6 = local_90_al;
-    local_8 = 0;
+    scanX_d = count;
+    scanY_c = 0;
 
     // 5ef5
-    if (local_90_al > 0)
+    if (count > 0)
     {
         do
         {
             // 5efe
-            local_e = local_8e_ah[local_8++] - 5;
-            local_c = local_8e_ah[local_8] - 5;
+            lightY = lights_g[scanY_c++] - 5;
+            lightX = lights_g[scanY_c] - 5;
 
             // 5f23
-            for (local_a = 0; local_a < 0xb; local_a++)
+            for (row_i = 0; row_i < 0xb; row_i++)
             {
                 // 5f29
-                memset(&GetMapViewport(0, local_a), 0xff, 0xb);
+                memset(&GetMapViewport(0, row_i), 0xff, 0xb);
             }
 
             // 5f3f
-            ULTIMA_5a28(10, local_e, local_c, local_e, local_c, 0x20, D_ad14_combatMap);
-            local_8++;
-        } while (local_8 < local_6);
+            ULTIMA_5a28_BuildVisibilityMap(10, lightY, lightX, lightY, lightX, 0x20, D_ad14_combatMap);
+            scanY_c++;
+        } while (scanY_c < scanX_d);
     }
 
     // 5f65
-    local_4_ab = D_ad14_combatMap;
+    cell = D_ad14_combatMap;
 
-    for (local_6 = 0; local_6 < 0x400; local_6++)
+    for (scanX_d = 0; scanX_d < 0x400; scanX_d++)
     {
-        if (*local_4_ab == 0xff)
+        if (*cell == 0xff)
         {
-            (*local_4_ab)++;
+            (*cell)++;
         }
-        local_4_ab++;
+        cell++;
     }
 }
 
-void ULTIMA_6fbc_TilesetMode(int param_1);
+void ULTIMA_6fbc_TilesetMode(int mode);
 
-void ULTIMA_6bc2_SetUpCombat(int param_1, int param_2);
+void ULTIMA_6bc2_SetUpCombat(int flags, int enemy);

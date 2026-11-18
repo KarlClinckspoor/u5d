@@ -97,7 +97,7 @@ void ULTIMA_10e0_GRAP_51_PutTile(uint tile, int x, int y)
     // cx: x offset
     // dx: y offset
     // si = 52c0, di = 52c2
-    DRV_51_PutTile(x, y, tile, D_52ba_vdp.tileXOffset, D_52ba_vdp.tileYOffset, D_52ba_vdp._52c0, D_52ba_vdp._52c2);
+    DRV_51_PutTile(x, y, tile, D_52ba_vdp.tileXOffset, D_52ba_vdp.tileYOffset, D_52ba_vdp.tileWidth, D_52ba_vdp.tileHeight);
 }
 #endif
 
@@ -174,7 +174,7 @@ static void ULTIMA_11b4_CalibrateTimer(void)
 {
     debug("ULTIMA_11b4_CalibrateTimer");
 
-    // calibrates D_5356_timerCalibration, D_535a
+    // calibrates D_5356_timerCalibration, D_535a_timerValue
 }
 #endif
 
@@ -182,7 +182,7 @@ static void ULTIMA_11b4_CalibrateTimer(void)
 // ASM
 static void ULTIMA_1226_InitTextVars(void)
 {
-    D_53a8_inverse = D_53a6 = D_53a4_underline = 0;
+    D_53a8_inverse = D_53a6_centerText = D_53a4_underline = 0;
 }
 #endif
 
@@ -363,13 +363,13 @@ void ULTIMA_16ba_PrintChar(uint ch)
         }
         if (ch == CTRL_CHAR_CENTER_TEXT) // center text
         {
-            D_53a6 = 1;
+            D_53a6_centerText = 1;
             text_window->flags |= 2;
             return;
         }
         if (ch == CTRL_CHAR_UNCENTER_TEXT) // uncenter text
         {
-            D_53a6 = 0;
+            D_53a6_centerText = 0;
             text_window->flags &= 0xfd;
             return;
         }
@@ -408,10 +408,10 @@ void ULTIMA_16ba_PrintChar(uint ch)
             iVar4 = 12;
         }
 
-        memcpy(D_5398_currentCharset + uVar7, D_53ea, iVar4 * 2);
+        memcpy(D_5398_currentCharset + uVar7, D_53ea_glyphBuffer, iVar4 * 2);
 
         text_window = D_539a_currentTextWindow;
-        if (D_538e == 0)
+        if (D_538e_cursorAdvance == 0)
         {
             return;
         }
@@ -457,7 +457,7 @@ static void ULTIMA_17f4_ApplyCharEffects(byte* es, int di)
         size = 12;
     }
 
-    memcpy(D_53ea, ptr, size * 2);
+    memcpy(D_53ea_glyphBuffer, ptr, size * 2);
 
     if (D_53a4_underline != 0)
     {
@@ -545,7 +545,7 @@ void ULTIMA_1b94_SelectTextWindow(int id)
 
         b = D_539a_currentTextWindow->flags;
         D_53a4_underline = b & 1;
-        D_53a6 = (b & 2) >> 1;
+        D_53a6_centerText = (b & 2) >> 1;
         D_53a8_inverse = (b & 4) >> 2;
     }
 }
@@ -646,9 +646,9 @@ void ULTIMA_1c9e_SelectCharset(int param_1)
     debug("ULTIMA_1c9e_SelectCharset(%d)", a);
 #endif
 
-    if (param_1 < 4 && D_539c[param_1] != 0)
+    if (param_1 < 4 && D_539c_charsetTable[param_1] != 0)
     {
-        D_5398_currentCharset = D_539c[param_1];
+        D_5398_currentCharset = D_539c_charsetTable[param_1];
         D_5388_charsetIndex = param_1;
     }
 }
@@ -678,7 +678,7 @@ int ULTIMA_1d02_LoadCharset(char* a, int b)
 {
     debug("ULTIMA_1d02_LoadCharset(%s,%d)", a, b);
 
-    D_539c[b] = ULTIMA_0fae_LoadResourceFile(a);
+    D_539c_charsetTable[b] = ULTIMA_0fae_LoadResourceFile(a);
 
     // FMT
     return 1;
@@ -708,13 +708,13 @@ int ULTIMA_1eac_SetDefaultDrive(int param_1)
 
     if (ULTIMA_1ef7_ConvertDriveLetterToNumber(&al, &dl) == 0)
     {
-        D_541e = dl;
+        D_541e_driveNumber = dl;
 
         // int 21,0e; // Select Disk
         //if (D_535c_dosError == 0) // success
         //{
         //    // int 21,19; // Get Current Default Drive
-        //    if (D_541e == ret)
+        //    if (D_541e_driveNumber == ret)
         //    {
         //        D_535c_dosError = 0;
         //        return 1;
@@ -773,7 +773,7 @@ void ULTIMA_1f26_SetTextBackgroundColor(int a)
 
 #if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // STUB (asm)
-static void ULTIMA_1f4e(int param_1)
+static void ULTIMA_1f4e_Drv27Offset(int param_1)
 {
     // call ULTIMA_1f77_ConvertCharCoordToPixel
     // far call DRV_27(-(param_1 * 8)

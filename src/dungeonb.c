@@ -30,7 +30,7 @@ u8 D_2de8_placeNameBase[8] = {0x00, 0x01, 0x02, 0x02, 0x03, 0x07, 0x0a, 0x0b};
 u8 D_2df0_placeNameCount[8] = {0x01, 0x01, 0x00, 0x01, 0x04, 0x03, 0x01, 0x00};
 u8 D_2df8_placeNameX[12] = {0x07, 0x08, 0x08, 0x08, 0x09, 0x09, 0x09, 0x0a, 0x09, 0x09, 0x07, 0x00};
 u8 D_2e04_placeNameY[12] = {0x0a, 0x09, 0x0a, 0x0b, 0x0a, 0x0a, 0x0a, 0x0b, 0x0b, 0x0b, 0x0a, 0x00};
-char* D_2e10[11] =
+char* D_2e10_dungeonPlaceNames[11] =
 {
     _STATIC_TEXT(0x6bb0, "BOTTOMLESS\n   PIT    "),
     _STATIC_TEXT(0x6bc6, "[E MAZE\n OF LO_\n SOULS "),
@@ -48,7 +48,7 @@ char* D_2e10[11] =
 // CHECKED
 // An early return, not if { ... }: MSC then keeps the map id in BX, where the if
 // form makes it a register temporary in SI.
-// the name of a special place of this dungeon (D_2e10) in a small window on the view
+// the name of a special place of this dungeon (D_2e10_dungeonPlaceNames) in a small window on the view
 static void DUNGEON_104c_ShowPlaceName(int number)
 {
     int nameIndex;
@@ -65,7 +65,7 @@ static void DUNGEON_104c_ShowPlaceName(int number)
     ULTIMA_1c9e_SelectCharset(1);
     ULTIMA_1bf2_SetTextPosition(0, 0);
     ULTIMA_16ba_PrintChar(CTRL_CHAR_TOGGLE_INVERSION);
-    ULTIMA_1850_PrintString(D_2e10[nameIndex]);
+    ULTIMA_1850_PrintString(D_2e10_dungeonPlaceNames[nameIndex]);
     ULTIMA_16ba_PrintChar(CTRL_CHAR_TOGGLE_INVERSION);
     ULTIMA_1c9e_SelectCharset(0);
     ULTIMA_1b94_SelectTextWindow(2);
@@ -692,7 +692,7 @@ void DUNGEON_1a90_DrawView(int fullView)
     int cellX;
     int cellY;
 
-    D_545e = 0xff;
+    D_545e_lastDisk = 0xff;
     ULTIMA_0c22_GRAP_0f_SelectPage(1);
     ULTIMA_0a70_GRAP_2d_SetPenColor(0);
     ULTIMA_0aa6_GRAP_3f_FillRect(0x60, 0xe, 0xaf, 0xb2);
@@ -798,11 +798,11 @@ int DUNGEON_1c6a_Klimb(int dir, int mustBeEmpty)
             D_5895_mapLevel += dir;
             if (dir > 0)
             {
-                D_6602 = 5;
+                D_6602_dungeonMoveDir = 5;
             }
             else
             {
-                D_6602 = 4;
+                D_6602_dungeonMoveDir = 4;
             }
 
             DUNGEON_0134_SetUpMonster(1);

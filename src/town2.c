@@ -70,7 +70,7 @@ static void TOWN_1156_ShadowlordEffect(void)
             if (TOWN_10f2_PickNpcForAlarm(npc) != 0)
             {
                 TOWN_085e_SetPursue(npc);
-                D_5f5e_npcs[npc]._a = 0xfe;
+                D_5f5e_npcs[npc].dialogNumber = 0xfe;
             }
         }
         break;
@@ -81,14 +81,14 @@ static void TOWN_1156_ShadowlordEffect(void)
             if (TOWN_10f2_PickNpcForAlarm(npc) != 0)
             {
                 TOWN_08d4_SetFlee(npc);
-                D_5f5e_npcs[npc]._a = 0xfd;
+                D_5f5e_npcs[npc].dialogNumber = 0xfd;
             }
         }
         break;
     }
 }
 
-char* D_27dc[3] = {
+char* D_27dc_shadowlordTraits[3] = {
     _STATIC_TEXT(0x279d, "falsehood"),
     _STATIC_TEXT(0x27a7, "hatred"),
     _STATIC_TEXT(0x27ae, "cowardice")
@@ -99,7 +99,7 @@ char* D_27dc[3] = {
 static void TOWN_11b8_PrintAirOf(int shadowlord)
 {
     ULTIMA_1850_PrintString(_TEXT(0x27b8, "\nAn air of\n"));
-    ULTIMA_1850_PrintString(D_27dc[shadowlord]);
+    ULTIMA_1850_PrintString(D_27dc_shadowlordTraits[shadowlord]);
     ULTIMA_1850_PrintString(_TEXT(0x27c4, " doth surround thee...\n"));
     ULTIMA_2192_AudioPulse(0x19c8, 1, 60000, 2000, 1);
 }
@@ -220,23 +220,23 @@ static int TOWN_12ae_Arrest(void)
     return fight;
 }
 
-// An NPC next to the Avatar acts: attack (D_65be == 'a'), talk (TALK_031e) or arrest by a guard; the NPC may be killed or removed.
+// An NPC next to the Avatar acts: attack (D_65be_npcApproach == 'a'), talk (TALK_031e) or arrest by a guard; the NPC may be killed or removed.
 static void TOWN_1352_NpcApproaches(int forced)
 {
     ActorFmt* actor;
     int attacked;
 
     attacked = 0;
-    actor = &D_5c5a_actors[D_5f5e_npcs[D_65bf].actorIdx];
+    actor = &D_5c5a_actors[D_5f5e_npcs[D_65bf_npcApproaching].actorIdx];
 
     ULTIMA_5910_UpdateFrame();
 
-    if (D_65be == 0x61)
+    if (D_65be_npcApproach == 0x61)
     {
-        if (D_5f5e_npcs[D_65bf]._a == 0xfe)
+        if (D_5f5e_npcs[D_65bf_npcApproaching].dialogNumber == 0xfe)
         {
             ULTIMA_16ba_PrintChar('\n');
-            TOWN_10da_ShoutBegone(D_65bf);
+            TOWN_10da_ShoutBegone(D_65bf_npcApproaching);
         }
         else if (actor->tile != TILE_ACTOR_GUARD)
         {
@@ -249,7 +249,7 @@ static void TOWN_1352_NpcApproaches(int forced)
     }
     else if (forced == 0)
     {
-        if (D_5f5e_npcs[D_65bf]._a != 0 && TALK_031e_TalkToNpc(D_65bf) != 0)
+        if (D_5f5e_npcs[D_65bf_npcApproaching].dialogNumber != 0 && TALK_031e_TalkToNpc(D_65bf_npcApproaching) != 0)
         {
             attacked = TOWN_12ae_Arrest();
         }
@@ -261,14 +261,14 @@ static void TOWN_1352_NpcApproaches(int forced)
 
     if (attacked != 0)
     {
-        if (D_5c5a_actors[D_5f5e_npcs[D_65bf].actorIdx].tile >= TILE_ACTOR_WIZARD)
+        if (D_5c5a_actors[D_5f5e_npcs[D_65bf_npcApproaching].actorIdx].tile >= TILE_ACTOR_WIZARD)
         {
             ULTIMA_1850_PrintString(_TEXT(0x2881, "\nAttacked!\n"));
-            TOWN_09bc_FightNpc(D_65bf);
+            TOWN_09bc_FightNpc(D_65bf_npcApproaching);
         }
         else
         {
-            TOWN_00b0_DespawnNpc(D_65bf);
+            TOWN_00b0_DespawnNpc(D_65bf_npcApproaching);
         }
     }
 }
@@ -438,7 +438,7 @@ void TOWN_141e_MainLoop(void)
                     NPC_0db4_MoveNpcs(D_587f_hour);
                 }
                 // 1671
-                if (D_65bf != 0 || turn == 2)
+                if (D_65bf_npcApproaching != 0 || turn == 2)
                 {
                     // 167e
                     TOWN_1352_NpcApproaches(turn - 1);

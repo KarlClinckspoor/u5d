@@ -1,0 +1,10 @@
+D_53b4 D_53b4_fileSizeLo             # loaded file size (lsb); no code refers to it
+D_53b6 D_53b6_fileSizeHi
+D_53b8 D_53b8_fileHandle
+D_53ba D_53ba_firstSegment           # first allocated segment
+D_53bc D_53bc_returnSegment          # first allocated segment (for return)
+D_53be D_53be_lzwSegment             # second allocated segment (for lzw)
+D_25f0 D_25f0_tilesFileName          # &D_25ea_fileNames[3]: "TILES.16" and the files after it
+D_2f24 D_2f24_plainPiece6
+D_50f7 D_50f7_hyphenWidth            # D_50ea_glyphWidths for '-'
+D_6a07 D_6a07_dummyCell              # a cell outside the map: reads and writes go here

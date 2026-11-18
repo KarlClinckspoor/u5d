@@ -60,7 +60,7 @@ static void FlushBiosKeyBuffer()
 
 int KEY_PollKey()
 {
-    D_538a = 0;
+    D_538a_numpadKeys = 0;
 
     EVT_Yield();
 
@@ -80,25 +80,25 @@ int KEY_PollKey()
         else if ((chr & 0x7f) == KEY_LEFT)
         {
             FlushBiosKeyBuffer();
-            D_538a = 1;
+            D_538a_numpadKeys = 1;
             return U5_KEY_LEFT;
         }
         else if ((chr & 0x7f) == KEY_UP)
         {
             FlushBiosKeyBuffer();
-            D_538a = 1;
+            D_538a_numpadKeys = 1;
             return U5_KEY_UP;
         }
         else if ((chr & 0x7f) == KEY_RIGHT)
         {
             FlushBiosKeyBuffer();
-            D_538a = 1;
+            D_538a_numpadKeys = 1;
             return U5_KEY_RIGHT;
         }
         else if ((chr & 0x7f) == KEY_DOWN)
         {
             FlushBiosKeyBuffer();
-            D_538a = 1;
+            D_538a_numpadKeys = 1;
             return U5_KEY_DOWN;
         }
 
@@ -141,7 +141,7 @@ int ULTIMA_1d5e_PeekKey(void)
     int iVar4;
 
     // 1d64
-    D_538a = 0;
+    D_538a_numpadKeys = 0;
     bool hasKey = HasKey();
     if (!hasKey)
     {
@@ -181,7 +181,7 @@ int ULTIMA_1d5e_PeekKey(void)
             // 1da8
             for (iVar4 = 0; iVar4 < 8; iVar4++)
             {
-                if (key == D_540e[iVar4])
+                if (key == D_540e_arrowKeyCodes[iVar4])
                     break;
             }
 
@@ -191,8 +191,8 @@ int ULTIMA_1d5e_PeekKey(void)
             }
 
             // 1db8
-            ret = D_5416[iVar4];
-            D_538a = 1;
+            ret = D_5416_specialKeyTable[iVar4];
+            D_538a_numpadKeys = 1;
         }
     }
     else if (key >= 0x31 && key <= 0x39) // 1dc2 '1'~'9'
@@ -201,7 +201,7 @@ int ULTIMA_1d5e_PeekKey(void)
         flags = GetKeyboardFlags();
         if ((flags & 0x23) != 0) // lshift | rshift | numlock
         {
-            D_538a = 1;
+            D_538a_numpadKeys = 1;
         }
     }
 

@@ -20,8 +20,8 @@ void CAST2_0000_CastEffect(int level)
         ULTIMA_223c_AudioWhiteNoise(800, level * 0x640 + 8000, 700);
         ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
         ULTIMA_0b86_GRAP_XorFillRect(8, 8, 0xb7, 0xb7);
-        ULTIMA_2192_AudioPulse(D_4af6[level], 1, level * 4000 + 10000, D_4b08[level], D_4b2c[level]);
-        ULTIMA_2192_AudioPulse(D_4af6[level], 1, level * 4000 + 10000, D_4b1a[level], -D_4b2c[level]);
+        ULTIMA_2192_AudioPulse(D_4af6_castFreq[level], 1, level * 4000 + 10000, D_4b08_castParam4Up[level], D_4b2c_castStep[level]);
+        ULTIMA_2192_AudioPulse(D_4af6_castFreq[level], 1, level * 4000 + 10000, D_4b1a_castParam4Down[level], -D_4b2c_castStep[level]);
         ULTIMA_0b86_GRAP_XorFillRect(8, 8, 0xb7, 0xb7);
     }
     else
@@ -57,7 +57,7 @@ int CAST2_009e_OnWho(void)
 
 // CHECKED
 // Reads a spell name as syllable keys (a letter prints its syllable, J and O are ignored, Backspace takes one back, Esc cancels).
-// The letters are sorted and compared with the 48 spell codes (D_1c30). Returns the spell, -1 for no entry, -2 for no such spell.
+// The letters are sorted and compared with the 48 spell codes (D_1c30_spellCodes). Returns the spell, -1 for no entry, -2 for no such spell.
 int CAST2_00de_SelectSpell(void)
 {
     int nameLength;
@@ -85,13 +85,13 @@ int CAST2_00de_SelectSpell(void)
         {
             letters[count_i] = letter_d;
 
-            if (ULTIMA_1f12_GetCurrentTextX() + ULTIMA_216c_strlen(D_1bfc[letter_d - 'A']) > 0xd)
+            if (ULTIMA_1f12_GetCurrentTextX() + ULTIMA_216c_strlen(D_1bfc_mantraWords[letter_d - 'A']) > 0xd)
             {
                 ULTIMA_16ba_PrintChar('\n');
             }
 
             columns[count_i] = ULTIMA_1f12_GetCurrentTextX();
-            ULTIMA_1850_PrintString(D_1bfc[letter_d - 'A']);
+            ULTIMA_1850_PrintString(D_1bfc_mantraWords[letter_d - 'A']);
             ULTIMA_16ba_PrintChar(' ');
             count_i++;
         }
@@ -115,7 +115,7 @@ int CAST2_00de_SelectSpell(void)
                         ULTIMA_1bf2_SetTextPosition(columns[count_i], ULTIMA_1cee_GetCurrentTextY());
                     }
 
-                    nameLength = ULTIMA_216c_strlen(D_1bfc[letters[count_i] - 'A']);
+                    nameLength = ULTIMA_216c_strlen(D_1bfc_mantraWords[letters[count_i] - 'A']);
 
                     for (index_l = 0; index_l < nameLength; index_l++)
                     {
@@ -169,7 +169,7 @@ int CAST2_00de_SelectSpell(void)
 
         for (letterPos = codePos_g = 0; letterPos < count_i; letterPos++, codePos_g++)
         {
-            if (D_1c30[index_l][codePos_g] != letters[letterPos])
+            if (D_1c30_spellCodes[index_l][codePos_g] != letters[letterPos])
             {
                 matches_n = 0;
                 break;
@@ -182,7 +182,7 @@ int CAST2_00de_SelectSpell(void)
         }
 
         // e460
-        if (matches_n != 0 && D_1c30[index_l][codePos_g] != '\0')
+        if (matches_n != 0 && D_1c30_spellCodes[index_l][codePos_g] != '\0')
         {
             matches_n = 0;
         }
@@ -656,15 +656,15 @@ static void CAST2_0914_PlaceUrns(int count)
     }
 }
 
-u16 D_4af6[9] = {0x226a, 0x1e96, 0x1b94, 0x1996, 0x173e, 0x15c2, 0x143c, 0x12d4, 0x1180};
+u16 D_4af6_castFreq[9] = {0x226a, 0x1e96, 0x1b94, 0x1996, 0x173e, 0x15c2, 0x143c, 0x12d4, 0x1180};
 
-u16 D_4b08[9] = {0x0a8c, 0x0bb8, 0x03e8, 0x0064, 0x1388, 0x0fa0, 0x09c4, 0x03e8, 0x0001};
+u16 D_4b08_castParam4Up[9] = {0x0a8c, 0x0bb8, 0x03e8, 0x0064, 0x1388, 0x0fa0, 0x09c4, 0x03e8, 0x0001};
 
-u16 D_4b1a[9] = {0x7fbc, 0x7918, 0x9088, 0xafc8, 0x7918, 0x84d0, 0x8e94, 0x9858, 0xa410};
+u16 D_4b1a_castParam4Down[9] = {0x7fbc, 0x7918, 0x9088, 0xafc8, 0x7918, 0x84d0, 0x8e94, 0x9858, 0xa410};
 
-u16 D_4b2c[9] = {0x0003, 0x0002, 0x0002, 0x0002, 0x0001, 0x0001, 0x0001, 0x0001, 0x0001};
+u16 D_4b2c_castStep[9] = {0x0003, 0x0002, 0x0002, 0x0002, 0x0001, 0x0001, 0x0001, 0x0001, 0x0001};
 
-char* D_4b3e[8] =
+char* D_4b3e_virtueKeywords[8] =
 {
     _STATIC_TEXT(0x955e, "hone"),
     _STATIC_TEXT(0x9564, "comp"),
@@ -709,16 +709,16 @@ u8 D_4bc2_urnY[0x24] =
     0x02, 0x03, 0x04, 0x05
 };
 
-u16 D_4be6[7] = {0x0ce4, 0x0f55, 0x0f55, 0x0f55, 0x0f55, 0x0e74, 0x0f55};
+u16 D_4be6_shrineFreq[7] = {0x0ce4, 0x0f55, 0x0f55, 0x0f55, 0x0f55, 0x0e74, 0x0f55};
 
-u16 D_4bf4[7] = {0x1b58, 0x1770, 0x0bb8, 0x0bb8, 0x0bb8, 0x0bb8, 0x1f40};
+u16 D_4bf4_shrineParam3[7] = {0x1b58, 0x1770, 0x0bb8, 0x0bb8, 0x0bb8, 0x0bb8, 0x1f40};
 
-u16 D_4c02[7] = {0x03e8, 0x03e8, 0x03e8, 0x03e8, 0x03e8, 0x03e8, 0x01f4};
+u16 D_4c02_shrineParam4[7] = {0x03e8, 0x03e8, 0x03e8, 0x03e8, 0x03e8, 0x03e8, 0x01f4};
 
-u16 D_4c10[7] = {0x0009, 0x000a, 0x0015, 0x0015, 0x0015, 0x0015, 0x0008};
+u16 D_4c10_shrineParam5[7] = {0x0009, 0x000a, 0x0015, 0x0015, 0x0015, 0x0015, 0x0008};
 
 // CHECKED (code structure)
-// The shrine of a virtue: the party kneels, the altar asks for the virtue (D_4b3e) and three mantras (D_1f5e_mantras).
+// The shrine of a virtue: the party kneels, the altar asks for the virtue (D_4b3e_virtueKeywords) and three mantras (D_1f5e_mantras).
 // Wrong answers: "Thine thoughts are unfocused". Right ones: with no quest yet a quest is ordained (to be answered at the
 // Codex); with the quest done at the Codex, the reward (karma, a point of strength, dexterity or intelligence by the
 // virtue); after that the altar takes an offer of gold in hundredweights for karma.
@@ -735,7 +735,7 @@ static void CAST2_0966_ShrineOfVirtue(void)
     for (virtue_c = 0; virtue_c < 8; virtue_c++) // 0a2e -> 0a37 -> 0982, 0994
     {
         // 0982
-        if (D_5896_mapX == D_1f6e[virtue_c] && D_5897_mapY == D_1f76[virtue_c])
+        if (D_5896_mapX == D_1f6e_shrineX[virtue_c] && D_5897_mapY == D_1f76_shrineY[virtue_c])
             break; // -> 0a2e ??
     }
 
@@ -763,7 +763,7 @@ static void CAST2_0966_ShrineOfVirtue(void)
     }
 
     // 09d6
-    if (ULTIMA_6f1e_CompareWord(D_4b3e[virtue_c], D_bd08_answer) == -1)
+    if (ULTIMA_6f1e_CompareWord(D_4b3e_virtueKeywords[virtue_c], D_bd08_answer) == -1)
     {
         allRight = 0;
     }
@@ -825,7 +825,7 @@ static void CAST2_0966_ShrineOfVirtue(void)
             step_e = 0;
             do
             {
-                ULTIMA_2192_AudioPulse(D_4be6[step_e], 1, D_4bf4[step_e], D_4c02[step_e], D_4c10[step_e]);
+                ULTIMA_2192_AudioPulse(D_4be6_shrineFreq[step_e], 1, D_4bf4_shrineParam3[step_e], D_4c02_shrineParam4[step_e], D_4c10_shrineParam5[step_e]);
                 step_e++;
             } while (step_e < 7);
         }

@@ -12,14 +12,14 @@
 #include <time.h>
 
 
-int ULTIMA_216c_strlen(char* param_1)
+int ULTIMA_216c_strlen(char* str)
 {
-    int local_4;
+    int length;
 
-    local_4 = 0;
-    while (*param_1++ != '\0')
+    length = 0;
+    while (*str++ != '\0')
     {
-        local_4++;
+        length++;
     }
-    return local_4;
+    return length;
 }
