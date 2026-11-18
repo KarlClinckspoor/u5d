@@ -33,7 +33,6 @@ static void ULTIMA_51b8_PutViewActor(int viewX, int viewY, int mapX, int mapY, i
 {
     int tileUnder;
 
-    ASSERT(viewX >= 0 && viewX < 32 && viewY >= 0 && viewY < 0xb);
 
     if (shape == 0x1c || shape >= 0x12 && shape < 0x16 || shape >= 0x40 || shape >= 0x28 && shape < 0x2c)
     {

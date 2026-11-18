@@ -25,7 +25,7 @@ void OUTSUBS_0658_Apparition(void)
     int classIndex;
     ActorFmt* memberActor_n;
 
-    ULTIMA_1850_PrintString(_TEXT(0x7750, "An apparition!\n"));
+    ULTIMA_1850_PrintString(/*0x7750*/ "An apparition!\n");
     ULTIMA_2192_AudioPulse(0x0a3c, 1, 10000, 0x9c4, 6);
 
     for (member = 0; member < 6; member++)
@@ -58,7 +58,7 @@ void OUTSUBS_0658_Apparition(void)
                 }
             }
 
-            classIndex = ULTIMA_4d76_FindIndex(_TEXT(0x7760, CLASS_LIST), D_55a8_party[member].cls);
+            classIndex = ULTIMA_4d76_FindIndex(/*0x7760*/ CLASS_LIST, D_55a8_party[member].cls);
             memberActor_n->tile = memberActor_n->animTile = D_1ade_classTile[classIndex];
 
             D_5c5a_actors[10].animState = 0;
@@ -87,30 +87,30 @@ void OUTSUBS_0658_Apparition(void)
                 D_55a8_party[member].level = newLevel_i;
                 D_55a8_party[member].hp = D_55a8_party[member].maxHp = newLevel_i * 0x1e;
 
-                ULTIMA_1850_PrintString(_TEXT(0x776a, "\n\"Hail, "));
+                ULTIMA_1850_PrintString(/*0x776a*/ "\n\"Hail, ");
                 ULTIMA_1850_PrintString(D_55a8_party[member].name);
-                ULTIMA_1850_PrintString(_TEXT(0x7774, "!\nFor thy valiant deeds, I shall reward thee!\n"));
-                ULTIMA_1850_PrintString(_TEXT(0x77a4, "Thou art now level "));
+                ULTIMA_1850_PrintString(/*0x7774*/ "!\nFor thy valiant deeds, I shall reward thee!\n");
+                ULTIMA_1850_PrintString(/*0x77a4*/ "Thou art now level ");
                 ULTIMA_1a3e_PrintNumber(newLevel_i, 1, 0x20);
-                ULTIMA_1850_PrintString(_TEXT(0x77b8, ", and\n"));
+                ULTIMA_1850_PrintString(/*0x77b8*/ ", and\n");
 
                 switch (ULTIMA_2092_RandomRange(1, 3))
                 {
                 case 1:
-                    ULTIMA_1850_PrintString(_TEXT(0x77c0, "stronger!"));
+                    ULTIMA_1850_PrintString(/*0x77c0*/ "stronger!");
                     ULTIMA_3ef0_IncreaseByte(&D_55a8_party[member].str, 1, 0x1e);
                     break;
                 case 2:
-                    ULTIMA_1850_PrintString(_TEXT(0x77ca, "quicker!"));
+                    ULTIMA_1850_PrintString(/*0x77ca*/ "quicker!");
                     ULTIMA_3ef0_IncreaseByte(&D_55a8_party[member].dex, 1, 0x1e);
                     break;
                 case 3:
-                    ULTIMA_1850_PrintString(_TEXT(0x77d4, "wiser!"));
+                    ULTIMA_1850_PrintString(/*0x77d4*/ "wiser!");
                     ULTIMA_3ef0_IncreaseByte(&D_55a8_party[member].intel, 1, 0x1e);
                     break;
                 }
 
-                ULTIMA_1850_PrintString(_TEXT(0x77dc, "\" "));
+                ULTIMA_1850_PrintString(/*0x77dc*/ "\" ");
                 ULTIMA_266c_GetChar();
                 ULTIMA_16ba_PrintChar('\n');
             }
@@ -130,22 +130,22 @@ void OUTSUBS_0658_Apparition(void)
         ULTIMA_2900_UpdateVitalsDisplay();
     }
 
-    ULTIMA_1850_PrintString(_TEXT(0x77e0, "\n\""));
+    ULTIMA_1850_PrintString(/*0x77e0*/ "\n\"");
 
     karmaIndex_g = D_5888_karma / 20;
     if (karmaIndex_g < 4)
     {
-        ULTIMA_256e_ReadFileFromDisk(_TEXT(0x77e4, "KARMA.DAT"), D_b21e_scratch, 2000, D_1a74_karmaTextOffsets[karmaIndex_g]);
+        ULTIMA_256e_ReadFileFromDisk(/*0x77e4*/ "KARMA.DAT", D_b21e_scratch, 2000, D_1a74_karmaTextOffsets[karmaIndex_g]);
     }
     else
     {
-        ULTIMA_256e_ReadFileFromDisk(_TEXT(0x77ee, "KARMA.DAT"), D_b21e_scratch, 2000, 0x29f);
+        ULTIMA_256e_ReadFileFromDisk(/*0x77ee*/ "KARMA.DAT", D_b21e_scratch, 2000, 0x29f);
     }
 
     ULTIMA_1850_PrintString(D_b21e_scratch);
     ULTIMA_16ba_PrintChar('\"');
     ULTIMA_266c_GetChar();
-    ULTIMA_1850_PrintString(_TEXT(0x77f8, "\n\nThe strangely familiar old man vanishes...\n"));
+    ULTIMA_1850_PrintString(/*0x77f8*/ "\n\nThe strangely familiar old man vanishes...\n");
 
     D_5c5a_actors[10].tile = D_5c5a_actors[10].animTile = TILE_ACTOR_CIRCLE;
 

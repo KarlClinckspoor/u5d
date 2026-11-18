@@ -34,14 +34,14 @@ u16 D_3656_labelRow[8] =
 
 char* D_3666_fieldLabels[8] =
 {
-    _STATIC_TEXT(0x6cf8, "    Name:"),
-    _STATIC_TEXT(0x6d02, "  Sex:"),
-    _STATIC_TEXT(0x6d0a, "Class:"),
-    _STATIC_TEXT(0x6d12, "  Exp:"),
-    _STATIC_TEXT(0x6d1a, "Level:"),
-    _STATIC_TEXT(0x6d22, "  STR:"),
-    _STATIC_TEXT(0x6d2a, "  DEX:"),
-    _STATIC_TEXT(0x6d32, "  INT:")
+    /*0x6cf8*/ "    Name:",
+    /*0x6d02*/ "  Sex:",
+    /*0x6d0a*/ "Class:",
+    /*0x6d12*/ "  Exp:",
+    /*0x6d1a*/ "Level:",
+    /*0x6d22*/ "  STR:",
+    /*0x6d2a*/ "  DEX:",
+    /*0x6d32*/ "  INT:"
 };
 
 // INTRO_1f26_DrawCharacterBox's box ends are initialised arrays (MSC 5.0 would put literals in CONST)
@@ -107,7 +107,7 @@ static void INTRO_1f26_DrawCharacterBox(int left)
     ULTIMA_1850_PrintString(D_3676_boxTopLeft);
     ULTIMA_4c2a_PrintLeftCap();
     ULTIMA_1cca_SetTextForegroundColor(D_13b0_brightWhiteColor);
-    ULTIMA_1850_PrintString(_TEXT(0x6d3a, " Ultima IV "));
+    ULTIMA_1850_PrintString(/*0x6d3a*/ " Ultima IV ");
     ULTIMA_1cca_SetTextForegroundColor(D_13b2_blueColor);
     ULTIMA_4cce_PrintRightCap();
     ULTIMA_1850_PrintString(D_367a_boxTopRight);

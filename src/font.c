@@ -48,10 +48,10 @@ u16 D_515a_toneStep = 0;
 
 char* D_515c_sceneCaptions[4] =
 {
-    _STATIC_TEXT(0xa010, "The Summoning"),
-    _STATIC_TEXT(0xa01e, "The Journey"),
-    _STATIC_TEXT(0xa02a, "The Arrival"),
-    _STATIC_TEXT(0xa036, "The Welcoming")
+    /*0xa010*/ "The Summoning",
+    /*0xa01e*/ "The Journey",
+    /*0xa02a*/ "The Arrival",
+    /*0xa036*/ "The Welcoming"
 };
 
 u8 D_5164_intBonus[8] = {0x02, 0x00, 0x00, 0x01, 0x00, 0x01, 0x01, 0x00};
@@ -194,7 +194,6 @@ static void FONT_0418_LoadSceneStrip(int scene)
     int row;
     int col_b;
 
-    ASSERT(scene < 4);
 
     INTRO_043e_PrintCaptionBar(D_515c_sceneCaptions[scene]);
 
@@ -248,7 +247,7 @@ void FONT_04a4_PlayIntroStory(void)
 
     if (D_5893_mapId != 0x42)
     {
-        ULTIMA_256e_ReadFileFromDisk(_TEXT(0xa044, "MISCMAPS.DAT"), D_b21e_scratch, 2000, 0x2c0);
+        ULTIMA_256e_ReadFileFromDisk(/*0xa044*/ "MISCMAPS.DAT", D_b21e_scratch, 2000, 0x2c0);
         if (D_5893_mapId == 0x40)
         {
             FONT_0e52_SaveVideoPage();
@@ -503,7 +502,7 @@ static void FONT_09c8_AskVirtueQuestion(byte* fontImage, byte* cardImage)
 
     ULTIMA_0d4c_GRAP_4b_PutImage(cardImage, leftCard + 2, D_51fc_cardX[leftCard], D_5204_cardY[leftCard], 0);
     ULTIMA_0d4c_GRAP_4b_PutImage(cardImage, rightCard + 2, D_51fc_cardX[rightCard] + 0xb8, D_5204_cardY[rightCard], 0);
-    ULTIMA_256e_ReadFileFromDisk(_TEXT(0xa052, "QUESTION.DAT"), D_b21e_scratch, 2000, D_517c_questionOffset[virtueA][virtueB_o]);
+    ULTIMA_256e_ReadFileFromDisk(/*0xa052*/ "QUESTION.DAT", D_b21e_scratch, 2000, D_517c_questionOffset[virtueA][virtueB_o]);
     FONT_0000_DrawJustifiedText(fontImage, (char*)D_b21e_scratch);
     ULTIMA_0f6e_GRAP_1b_TransferFullscreen(1, 0);
 
@@ -554,7 +553,7 @@ void FONT_0b0a_CreateCharacter(void)
         gypsyImage = ULTIMA_0bae_LoadImageFile(D_25ea_fileNames[0x10]);
     } while (gypsyImage == 0);
 
-    ULTIMA_256e_ReadFileFromDisk(_TEXT(0xa060, "INIT.GAM"), &D_55a6_saveStart, (int)&D_6606_saveEnd - (int)&D_55a6_saveStart, 0);
+    ULTIMA_256e_ReadFileFromDisk(/*0xa060*/ "INIT.GAM", &D_55a6_saveStart, (int)&D_6606_saveEnd - (int)&D_55a6_saveStart, 0);
     ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b2_blueColor);
     ULTIMA_0aa6_GRAP_3f_FillRect(0x78, 0x78, 200, 0x7e);
     ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
@@ -563,7 +562,7 @@ void FONT_0b0a_CreateCharacter(void)
     ULTIMA_0aa6_GRAP_3f_FillRect(8, 0x80, 0x137, 0xbf);
     ULTIMA_1bf2_SetTextPosition(3, 0x11);
 
-    ULTIMA_1850_PrintString(_TEXT(0xa06a, "By what name shalt thou be known?"));
+    ULTIMA_1850_PrintString(/*0xa06a*/ "By what name shalt thou be known?");
     ULTIMA_1bf2_SetTextPosition(0xe, 0x13);
     ULTIMA_16ba_PrintChar(':');
     ULTIMA_1e38_IntroGetString(D_55a8_party[0].name, 8);
@@ -571,7 +570,7 @@ void FONT_0b0a_CreateCharacter(void)
     if (D_55a8_party[0].name[0] != 0)
     {
         ULTIMA_1bf2_SetTextPosition(8, 0x15);
-        ULTIMA_1850_PrintString(_TEXT(0xa08c, "Art thou Male or Female? "));
+        ULTIMA_1850_PrintString(/*0xa08c*/ "Art thou Male or Female? ");
 
         do
         {
@@ -599,7 +598,7 @@ void FONT_0b0a_CreateCharacter(void)
         D_5150_regionTop = 0x59;
         D_5152_regionBottom = 200;
 
-        ULTIMA_256e_ReadFileFromDisk(_TEXT(0xa0a6, "QUESTION.DAT"), D_b21e_scratch, 2000, 0);
+        ULTIMA_256e_ReadFileFromDisk(/*0xa0a6*/ "QUESTION.DAT", D_b21e_scratch, 2000, 0);
 
         ULTIMA_0c22_GRAP_0f_SelectPage(1);
         D_a9be_promptMode = 2;
@@ -649,7 +648,7 @@ void FONT_0b0a_CreateCharacter(void)
         D_514c_textRightX[1] = 0xa6;
         D_5154_spaceWidth = 4;
 
-        ULTIMA_256e_ReadFileFromDisk(_TEXT(0xa0b4, "QUESTION.DAT"), D_b21e_scratch, 2000, 0x322);
+        ULTIMA_256e_ReadFileFromDisk(/*0xa0b4*/ "QUESTION.DAT", D_b21e_scratch, 2000, 0x322);
         ULTIMA_0c22_GRAP_0f_SelectPage(1);
         ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
         ULTIMA_0d4c_GRAP_4b_PutImage(gypsyImage, 10, 0xa8, 100, 0);
@@ -674,7 +673,7 @@ void FONT_0b0a_CreateCharacter(void)
         D_55a8_party[0].dex = D_bd3d_newDex;
         //D_55a8_party[0].actorIdx = (D_bd3e_newStr - 0x14 & ~-(D_bd3e_newStr < 0x14)) + 0x14;
         D_55a8_party[0].str = D_bd3e_newStr <= 0x14 ? 0x14 : D_bd3e_newStr;
-        ULTIMA_256e_ReadFileFromDisk(_TEXT(0xa0c2, "INIT.OOL"), D_b31e, 0x100, 0);
+        ULTIMA_256e_ReadFileFromDisk(/*0xa0c2*/ "INIT.OOL", D_b31e, 0x100, 0);
         ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
         ULTIMA_1bf2_SetTextPosition(0, 10);
         ULTIMA_251e_SwitchDisks(3);
@@ -682,8 +681,8 @@ void FONT_0b0a_CreateCharacter(void)
         // NOT MATCHING: sub al, al vs sub ax, ax
         memset(D_b21e_scratch, 0, 0x100);
 
-        ULTIMA_25d8_WriteFileToDisk(_TEXT(0xa0cc, "SAVED.OOL"), D_b21e_scratch, 0x200);
-        ULTIMA_25d8_WriteFileToDisk(_TEXT(0xa0d6, "SAVED.GAM"), &D_55a6_saveStart, (int)&D_6606_saveEnd - (int)&D_55a6_saveStart);
+        ULTIMA_25d8_WriteFileToDisk(/*0xa0cc*/ "SAVED.OOL", D_b21e_scratch, 0x200);
+        ULTIMA_25d8_WriteFileToDisk(/*0xa0d6*/ "SAVED.GAM", &D_55a6_saveStart, (int)&D_6606_saveEnd - (int)&D_55a6_saveStart);
     }
 
     ULTIMA_251e_SwitchDisks(0);

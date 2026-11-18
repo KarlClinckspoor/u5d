@@ -174,7 +174,7 @@ void ULTIMA_2884_UpdateGoldDisplay(void)
     {
         ULTIMA_16ba_PrintChar(' ');
     }
-    ULTIMA_1850_PrintString(_TEXT(0x54b6, " G:"));
+    ULTIMA_1850_PrintString(/*0x54b6*/ " G:");
     ULTIMA_1a3e_PrintNumber(D_57aa_gold, 1, ' ');
     while (0xf > ULTIMA_1f12_GetCurrentTextX())
     {
@@ -200,7 +200,7 @@ void ULTIMA_2900_UpdateVitalsDisplay(void)
     ULTIMA_1bf2_SetTextPosition(0, 7);
 
     // food
-    ULTIMA_1850_PrintString(_TEXT(0x54ba, "F:"));
+    ULTIMA_1850_PrintString(/*0x54ba*/ "F:");
     ULTIMA_1a3e_PrintNumber(D_57a8_food, 1, ' ');
 
     while (ULTIMA_1f12_GetCurrentTextX() < 8)
@@ -211,7 +211,7 @@ void ULTIMA_2900_UpdateVitalsDisplay(void)
     if ((D_5893_mapId < 0x80) && ((D_587c_partyTile & 0xf8) == TILE_ACTOR_FRIGATE_20))
     {
         // ship
-        ULTIMA_1850_PrintString(_TEXT(0x54bd, "Ship:"));
+        ULTIMA_1850_PrintString(/*0x54bd*/ "Ship:");
         ULTIMA_1a3e_PrintNumber(D_5c5a_actors[0].value, 1, ' ');
         if (D_5c5a_actors[0].value < 10)
         {
@@ -223,7 +223,7 @@ void ULTIMA_2900_UpdateVitalsDisplay(void)
         ULTIMA_2884_UpdateGoldDisplay();
     }
 
-    ULTIMA_1850_PrintString(_TEXT(0x54c3, "\n   "));
+    ULTIMA_1850_PrintString(/*0x54c3*/ "\n   ");
 
     if ((D_587d_month < 10) && (D_587e_day < 10))
     {
@@ -337,7 +337,7 @@ void ULTIMA_2ae8_EndTurn(void)
     {
         if (D_57a8_food == 0)
         {
-            ULTIMA_1850_PrintString(_TEXT(0x54c8, "Starving!\n"));
+            ULTIMA_1850_PrintString(/*0x54c8*/ "Starving!\n");
             ULTIMA_2aa8_DamageParty();
         }
         else if (D_587f_hour == 6 || D_587f_hour == 12 || D_587f_hour == 18)
@@ -511,7 +511,7 @@ int ULTIMA_2d7a_SelectPlayerOrNone(int allowNone)
     }
 
     // 2db2
-    ULTIMA_4e50_ShowStatsTitle(_TEXT(0x5554, "Select:"));
+    ULTIMA_4e50_ShowStatsTitle(/*0x5554*/ "Select:");
     // ^OK
 
     do
@@ -607,23 +607,23 @@ void ULTIMA_2e96_SetWindDirection(int direction)
         switch (D_5892_windDir)
         {
         case 0:
-            ULTIMA_1850_PrintString(_TEXT(0x555c, "Calm "));
+            ULTIMA_1850_PrintString(/*0x555c*/ "Calm ");
             break;
         case 1:
-            ULTIMA_1850_PrintString(_TEXT(0x5562, "North"));
+            ULTIMA_1850_PrintString(/*0x5562*/ "North");
             break;
         case 2:
-            ULTIMA_1850_PrintString(_TEXT(0x5568, "South"));
+            ULTIMA_1850_PrintString(/*0x5568*/ "South");
             break;
         case 3:
-            ULTIMA_1850_PrintString(_TEXT(0x556e, "East "));
+            ULTIMA_1850_PrintString(/*0x556e*/ "East ");
             break;
         case 4:
-            ULTIMA_1850_PrintString(_TEXT(0x5574, "West "));
+            ULTIMA_1850_PrintString(/*0x5574*/ "West ");
             break;
         }
 
-        ULTIMA_1850_PrintString(_TEXT(0x557a, " Winds"));
+        ULTIMA_1850_PrintString(/*0x557a*/ " Winds");
         ULTIMA_4cce_PrintRightCap();
         ULTIMA_1b94_SelectTextWindow(2);
     }
@@ -683,19 +683,19 @@ void ULTIMA_2fd0_SpringTrap(int playerIndex)
     switch (trapKind)
     {
     case 0:
-        ULTIMA_1850_PrintString(_TEXT(0x5581, "ACID!\n"));
+        ULTIMA_1850_PrintString(/*0x5581*/ "ACID!\n");
         ULTIMA_2a52_DamagePlayer(playerIndex, ULTIMA_3abe_Random1To30());
         break;
     case 1:
-        ULTIMA_1850_PrintString(_TEXT(0x5588, "POISON!\n"));
+        ULTIMA_1850_PrintString(/*0x5588*/ "POISON!\n");
         ULTIMA_2fa6_PoisonPlayer(playerIndex);
         break;
     case 2:
-        ULTIMA_1850_PrintString(_TEXT(0x5591, "BOMB!\n"));
+        ULTIMA_1850_PrintString(/*0x5591*/ "BOMB!\n");
         ULTIMA_2aa8_DamageParty();
         break;
     case 3:
-        ULTIMA_1850_PrintString(_TEXT(0x5598, "GAS!\n"));
+        ULTIMA_1850_PrintString(/*0x5598*/ "GAS!\n");
         playerIndex_j = 0;
         do
         {

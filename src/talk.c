@@ -75,19 +75,19 @@ static int TALK_00ac_AskPay(void)
 {
     char ch;
 
-    ULTIMA_1850_PrintString(_TEXT(0x9052, "\n\nDost thou pay?\n\n:"));
+    ULTIMA_1850_PrintString(/*0x9052*/ "\n\nDost thou pay?\n\n:");
 
     do
     {
         ch = ULTIMA_2032_ToUpper(ULTIMA_266c_GetChar());
         if (ch == 'Y')
         {
-            ULTIMA_1850_PrintString(_TEXT(0x9066, "Yes\n"));
+            ULTIMA_1850_PrintString(/*0x9066*/ "Yes\n");
             return 0;
         }
     } while (ch != 'N');
 
-    ULTIMA_1850_PrintString(_TEXT(0x906c, "No!\n"));
+    ULTIMA_1850_PrintString(/*0x906c*/ "No!\n");
     return 1;
 }
 
@@ -103,7 +103,7 @@ static void TALK_00e6_TalkToMerchant(int merchantCode)
 
     if ((D_587c_partyTile & 0xfe) == TILE_ACTOR_RIDING_HORSE && merchantCode != 0x83)
     {
-        ULTIMA_1850_PrintString(_TEXT(0x9072, "A merchant says:\n\"GET THAT HORSE OUT OF HERE!\"\n"));
+        ULTIMA_1850_PrintString(/*0x9072*/ "A merchant says:\n\"GET THAT HORSE OUT OF HERE!\"\n");
     }
     else
     {
@@ -175,7 +175,7 @@ static int TALK_01e2_GuardDemandsTribute(void)
         if (D_5893_mapId == 5)
         {
             ULTIMA_16ba_PrintChar('\"');
-            ULTIMA_1850_PrintString(_TEXT(0x90a2, "Thou wilt give\nhalf thy gold to\ncharity!"));
+            ULTIMA_1850_PrintString(/*0x90a2*/ "Thou wilt give\nhalf thy gold to\ncharity!");
             ULTIMA_16ba_PrintChar('\"');
 
             if (TALK_00ac_AskPay() != 0)
@@ -210,9 +210,9 @@ static int TALK_01e2_GuardDemandsTribute(void)
             }
 
             // 026c
-            ULTIMA_1850_PrintString(_TEXT(0x90cc, "A guard demands\na "));
+            ULTIMA_1850_PrintString(/*0x90cc*/ "A guard demands\na ");
             ULTIMA_1a3e_PrintNumber(tribute_i, 2, 0x20);
-            ULTIMA_1850_PrintString(_TEXT(0x90e0, " gp tribute\nto Blackthorn!"));
+            ULTIMA_1850_PrintString(/*0x90e0*/ " gp tribute\nto Blackthorn!");
 
             if (TALK_00ac_AskPay() != 0)
             {
@@ -241,9 +241,9 @@ static int TALK_01e2_GuardDemandsTribute(void)
         {
             // 02ae
             ULTIMA_16ba_PrintChar('\"');
-            ULTIMA_1850_PrintString(_TEXT(0x90fc, "Give now the\npassword, bearer\nof the Badge!"));
+            ULTIMA_1850_PrintString(/*0x90fc*/ "Give now the\npassword, bearer\nof the Badge!");
             ULTIMA_16ba_PrintChar('\"');
-            ULTIMA_1850_PrintString(_TEXT(0x9128, "\n\nYour response?\n"));
+            ULTIMA_1850_PrintString(/*0x9128*/ "\n\nYour response?\n");
             ULTIMA_3b1c_GetString(answer, 0xe);
             ULTIMA_16ba_PrintChar('\n');
             answer[4] = 0;
@@ -253,7 +253,7 @@ static int TALK_01e2_GuardDemandsTribute(void)
                 // 02f2
                 ULTIMA_16ba_PrintChar('\n');
                 ULTIMA_16ba_PrintChar('\"');
-                ULTIMA_1850_PrintString(_TEXT(0x913a, "Pass, friend!"));
+                ULTIMA_1850_PrintString(/*0x913a*/ "Pass, friend!");
                 ULTIMA_16ba_PrintChar('\"');
                 ULTIMA_16ba_PrintChar('\n');
                 // 0315 -> 022b
@@ -295,14 +295,14 @@ int TALK_031e_TalkToNpc(int npcIndex)
     {
         if (D_5c5a_actors[npc->actorIdx].tile != TILE_ACTOR_GUARD || ((npc->scheduleIdx & 1) != 0 && (npc->dialogNumber) != 0))
             goto L_join;
-        ULTIMA_1850_PrintString(_TEXT(0x9148, "The guard offers\nno response!\n"));
+        ULTIMA_1850_PrintString(/*0x9148*/ "The guard offers\nno response!\n");
         return 0;
     }
 L_join:
     dialogNumber_f = npc->dialogNumber;
     if (dialogNumber_f == 0)
     {
-        ULTIMA_1850_PrintString(_TEXT(0x9168, "No response!\n"));
+        ULTIMA_1850_PrintString(/*0x9168*/ "No response!\n");
         return 0;
     }
     else
@@ -317,7 +317,7 @@ L_join:
         if (dialogNumber_f == 0xfd)
         {
             ULTIMA_16ba_PrintChar('\"');
-            ULTIMA_1850_PrintString(_TEXT(0x9176, "Don't hurt me!\nPlease go away!"));
+            ULTIMA_1850_PrintString(/*0x9176*/ "Don't hurt me!\nPlease go away!");
             ULTIMA_16ba_PrintChar('\"');
             ULTIMA_16ba_PrintChar('\n');
             return 0;
@@ -342,8 +342,8 @@ L_join:
         }
         else
         {
-            ULTIMA_1850_PrintString(_TEXT(0x9196, "A merchant says:\n\"Come see me at\nmy shoppe, "));
-            ULTIMA_1850_PrintString(_TEXT(0x91c4, "when\nit's open!\"\n"));
+            ULTIMA_1850_PrintString(/*0x9196*/ "A merchant says:\n\"Come see me at\nmy shoppe, ");
+            ULTIMA_1850_PrintString(/*0x91c4*/ "when\nit's open!\"\n");
             return 0;
         }
     }
@@ -375,7 +375,7 @@ int TALK_041c_TalkCmd(void)
 
     if (ULTIMA_368e_FindActorTileAtPos(x_i, y_o, D_5895_mapLevel) == 0)
     {
-        ULTIMA_1850_PrintString(_TEXT(0x91d6, "\nNobody's here!\n"));
+        ULTIMA_1850_PrintString(/*0x91d6*/ "\nNobody's here!\n");
     }
     else
     {
@@ -383,10 +383,10 @@ int TALK_041c_TalkCmd(void)
         switch (*ULTIMA_4402_GetTileAddr(x_i, y_o))
         {
         case TILE_MAP_BED:
-            ULTIMA_1850_PrintString(_TEXT(0x91e8, "\n\"Zzzzzz...\"\n"));
+            ULTIMA_1850_PrintString(/*0x91e8*/ "\n\"Zzzzzz...\"\n");
             break;
         case TILE_MAP_MIRROR:
-            ULTIMA_1850_PrintString(_TEXT(0x91f6, "\nNo response!\n"));
+            ULTIMA_1850_PrintString(/*0x91f6*/ "\nNo response!\n");
             break;
         default:
             return TALK_031e_TalkToNpc(npcIndex_f);
@@ -484,41 +484,41 @@ char* D_4aa0_talkFileNames[4] =
 
 char* D_4aa8_standardWords[0x22 + 1] =
 {
-    _STATIC_TEXT(0x9234, "NAME"),
-    _STATIC_TEXT(0x923a, "JOB"),
-    _STATIC_TEXT(0x923e, "WORK"),
-    _STATIC_TEXT(0x9244, "BYE"),
-    _STATIC_TEXT(0x9248, "THANK"),
-    _STATIC_TEXT(0x924e, "FUCK"),
-    _STATIC_TEXT(0x9254, "SHIT"),
-    _STATIC_TEXT(0x925a, "DAMN"),
-    _STATIC_TEXT(0x9260, "DICK"),
-    _STATIC_TEXT(0x9266, "PRICK"),
-    _STATIC_TEXT(0x926c, "PUSSY"),
-    _STATIC_TEXT(0x9272, "CUNT"),
-    _STATIC_TEXT(0x9278, "ASS"),
-    _STATIC_TEXT(0x927c, "BUTT"),
-    _STATIC_TEXT(0x9282, "BOOGER"),
-    _STATIC_TEXT(0x928a, "PISS"),
-    _STATIC_TEXT(0x9290, "JACK OFF"),
-    _STATIC_TEXT(0x929a, "MASTURBATE"),
-    _STATIC_TEXT(0x92a6, "SUCK"),
-    _STATIC_TEXT(0x92ac, "FART"),
-    _STATIC_TEXT(0x92b2, "TITS"),
-    _STATIC_TEXT(0x92b8, "BOOB"),
-    _STATIC_TEXT(0x92be, "MELONS"),
-    _STATIC_TEXT(0x92c6, "BLOW"),
-    _STATIC_TEXT(0x92cc, "PENIS"),
-    _STATIC_TEXT(0x92d2, "BREAST"),
-    _STATIC_TEXT(0x92da, "CLIT"),
-    _STATIC_TEXT(0x92e0, "BALLS"),
-    _STATIC_TEXT(0x92e6, "SCROTUM"),
-    _STATIC_TEXT(0x92ee, "NUTS"),
-    _STATIC_TEXT(0x92f4, "BULLSHIT"),
-    _STATIC_TEXT(0x92fe, "CUM"),
-    _STATIC_TEXT(0x9302, "CROTCH"),
-    _STATIC_TEXT(0x930a, "MOTHERFUCKER"),
-    _STATIC_TEXT(0x9318, "ELECTRONIC ARTS") // hidden string
+    /*0x9234*/ "NAME",
+    /*0x923a*/ "JOB",
+    /*0x923e*/ "WORK",
+    /*0x9244*/ "BYE",
+    /*0x9248*/ "THANK",
+    /*0x924e*/ "FUCK",
+    /*0x9254*/ "SHIT",
+    /*0x925a*/ "DAMN",
+    /*0x9260*/ "DICK",
+    /*0x9266*/ "PRICK",
+    /*0x926c*/ "PUSSY",
+    /*0x9272*/ "CUNT",
+    /*0x9278*/ "ASS",
+    /*0x927c*/ "BUTT",
+    /*0x9282*/ "BOOGER",
+    /*0x928a*/ "PISS",
+    /*0x9290*/ "JACK OFF",
+    /*0x929a*/ "MASTURBATE",
+    /*0x92a6*/ "SUCK",
+    /*0x92ac*/ "FART",
+    /*0x92b2*/ "TITS",
+    /*0x92b8*/ "BOOB",
+    /*0x92be*/ "MELONS",
+    /*0x92c6*/ "BLOW",
+    /*0x92cc*/ "PENIS",
+    /*0x92d2*/ "BREAST",
+    /*0x92da*/ "CLIT",
+    /*0x92e0*/ "BALLS",
+    /*0x92e6*/ "SCROTUM",
+    /*0x92ee*/ "NUTS",
+    /*0x92f4*/ "BULLSHIT",
+    /*0x92fe*/ "CUM",
+    /*0x9302*/ "CROTCH",
+    /*0x930a*/ "MOTHERFUCKER",
+    /*0x9318*/ "ELECTRONIC ARTS" // hidden string
 };
 
 u8 D_4aee_talkPendingCode = 0;
@@ -564,9 +564,9 @@ static int TALK_05b6_PayGold(void)
     {
         D_4af1_talkWordLength = 0;
         ULTIMA_16ba_PrintChar('\"');
-        ULTIMA_1850_PrintString(_TEXT(0x9328, "Thou hast not enough gold!"));
+        ULTIMA_1850_PrintString(/*0x9328*/ "Thou hast not enough gold!");
         ULTIMA_16ba_PrintChar('\"');
-        ULTIMA_1850_PrintString(_TEXT(0x9344, "\n\n"));
+        ULTIMA_1850_PrintString(/*0x9344*/ "\n\n");
 
         D_4aef_talkCodeArgCount = D_4aee_talkPendingCode = 0;
 
@@ -734,8 +734,8 @@ static int TALK_080a_Join(void)
     if (D_585b_partyCount == 6)
     {
         ULTIMA_266c_GetChar();
-        ULTIMA_1850_PrintString(_TEXT(0x9348, "\"Thou hast no room for me in thy party! "));
-        ULTIMA_1850_PrintString(_TEXT(0x9372, "Seek me again if one of thy members doth leave\nthee."));
+        ULTIMA_1850_PrintString(/*0x9348*/ "\"Thou hast no room for me in thy party! ");
+        ULTIMA_1850_PrintString(/*0x9372*/ "Seek me again if one of thy members doth leave\nthee.");
 
         return 0;
     }
@@ -770,7 +770,7 @@ static int TALK_080a_Join(void)
             // c824
             TALK_0574_BuildOrPrintWord(0x22);
             TALK_0574_BuildOrPrintWord(10);
-            ULTIMA_1850_PrintString(_TEXT(0x93a8, "\nSystem Error -\nNo Match!"));
+            ULTIMA_1850_PrintString(/*0x93a8*/ "\nSystem Error -\nNo Match!");
             D_bcde_talkPtr = savedPtr_o;
             // i = DI;
 
@@ -910,7 +910,7 @@ static int TALK_0a54_AnswerStandardWord(byte wordIndex)
             return 2;
         }
 
-        ULTIMA_1850_PrintString(_TEXT(0x93c2, "\"My name is "));
+        ULTIMA_1850_PrintString(/*0x93c2*/ "\"My name is ");
         if (TALK_07aa_ProcessNthTalkString(TALK_KEY_NAME) != 0)
         {
             return 1;
@@ -952,7 +952,7 @@ static int TALK_0a54_AnswerStandardWord(byte wordIndex)
 
     default:
         // c9f8
-        ULTIMA_1850_PrintString(_TEXT(0x93d0, "\"With language like that, how did you become an Avatar?"));
+        ULTIMA_1850_PrintString(/*0x93d0*/ "\"With language like that, how did you become an Avatar?");
         TALK_04da_PrintQuoteMark();
         TALK_04d2_PrintCr();
         TALK_04d2_PrintCr();
@@ -981,11 +981,11 @@ static int TALK_0b04_AskInterest(void)
     while (1)
     {
         D_4af2_talkInLabel = 0;
-        ULTIMA_1850_PrintString(_TEXT(0x9408, "Your interest?\n:"));
+        ULTIMA_1850_PrintString(/*0x9408*/ "Your interest?\n:");
         TALK_0a2c_GetString();
         if (D_bcf8_inputText[0] == 0)
         {
-            ULTIMA_1850_PrintString(_TEXT(0x941a, "BYE\n\n"));
+            ULTIMA_1850_PrintString(/*0x941a*/ "BYE\n\n");
             return TALK_0a3c_SayBye();
         }
         TALK_04d2_PrintCr();
@@ -1012,7 +1012,7 @@ static int TALK_0b04_AskInterest(void)
         {
             if (TALK_09d8_FindKeyword() == 0)
             {
-                ULTIMA_1850_PrintString(_TEXT(0x9420, "\"I cannot help thee with that."));
+                ULTIMA_1850_PrintString(/*0x9420*/ "\"I cannot help thee with that.");
                 TALK_04da_PrintQuoteMark();
                 TALK_04d2_PrintCr();
                 TALK_04d2_PrintCr();
@@ -1092,11 +1092,11 @@ static int TALK_0c5c_AskLabelQuestion(void)
             TALK_04d2_PrintCr();
             TALK_04d2_PrintCr();
             D_4af2_talkInLabel = 0xff;
-            ULTIMA_1850_PrintString(_TEXT(0x9440, "You respond-\n:"));
+            ULTIMA_1850_PrintString(/*0x9440*/ "You respond-\n:");
             TALK_0a2c_GetString();
             if (D_bcf8_inputText[0] == 0)
             {
-                ULTIMA_1850_PrintString(_TEXT(0x9450, "\n\n\"What didst thou say?"));
+                ULTIMA_1850_PrintString(/*0x9450*/ "\n\n\"What didst thou say?");
             }
         } while (D_bcf8_inputText[0] == 0);
 
@@ -1275,15 +1275,15 @@ static void TALK_0e78_AskName(void)
     member = 0;
     TALK_04da_PrintQuoteMark();
     TALK_04e2_PrintWord();
-    ULTIMA_1850_PrintString(_TEXT(0x9468, "What is thy name?\"\n"));
-    ULTIMA_1850_PrintString(_TEXT(0x947c, "\nYou respond-\n:"));
+    ULTIMA_1850_PrintString(/*0x9468*/ "What is thy name?\"\n");
+    ULTIMA_1850_PrintString(/*0x947c*/ "\nYou respond-\n:");
     TALK_0a2c_GetString();
 
     D_4aee_talkPendingCode = D_4aef_talkCodeArgCount = 0;
 
     if (D_bcf8_inputText[0] == 0)
     {
-        ULTIMA_1850_PrintString(_TEXT(0x948c, "\n\n\"If you say so..."));
+        ULTIMA_1850_PrintString(/*0x948c*/ "\n\n\"If you say so...");
     }
     else
     {
@@ -1300,12 +1300,12 @@ static void TALK_0e78_AskName(void)
             if (matchPos_i != -1 && (matchPos_i == 0 || (D_bcf8_inputText[matchPos_i - 1] == ' ')))
             {
                 TALK_0d42_SetNpcMet(D_bcdc_talkNpcIndex);
-                ULTIMA_1850_PrintString(_TEXT(0x94a0, "\n\n\"A pleasure!"));
+                ULTIMA_1850_PrintString(/*0x94a0*/ "\n\n\"A pleasure!");
                 return;
             }
         }
 
-        ULTIMA_1850_PrintString(_TEXT(0x94b0, "\n\n\"If you say so..."));
+        ULTIMA_1850_PrintString(/*0x94b0*/ "\n\n\"If you say so...");
     }
 }
 
@@ -1469,7 +1469,7 @@ static int TALK_0f32_ProcessChar(byte code)
 // NPC knows the Avatar's name, else (one time in two) "I am called" and the name.
 static int TALK_111c_Introduce(void)
 {
-    ULTIMA_1850_PrintString(_TEXT(0x94c4, "You see "));
+    ULTIMA_1850_PrintString(/*0x94c4*/ "You see ");
 
     if (TALK_07aa_ProcessNthTalkString(TALK_KEY_DESC) != 0)
     {
@@ -1485,7 +1485,7 @@ static int TALK_111c_Introduce(void)
             if (ULTIMA_2092_RandomRange(0, 1) != 0)
             {
                 // "I am called\nNAME"\n\n
-                ULTIMA_1850_PrintString(_TEXT(0x94ce, "\"I am called "));
+                ULTIMA_1850_PrintString(/*0x94ce*/ "\"I am called ");
                 if (TALK_07aa_ProcessNthTalkString(TALK_KEY_NAME) == 0)
                 {
                     TALK_04da_PrintQuoteMark();
@@ -1526,7 +1526,7 @@ static void TALK_1180_FalsehoodSteals(void)
 
     if (D_5958_townShadowlord == 0)
     {
-        ULTIMA_1850_PrintString(_TEXT(0x94dc, "\nSomething was stolen!\n"));
+        ULTIMA_1850_PrintString(/*0x94dc*/ "\nSomething was stolen!\n");
         ULTIMA_43ae_AudioSweepTone(800, 2000, 1, 0x32);
         ULTIMA_207e_srand(ULTIMA_2056_GetTime());
 

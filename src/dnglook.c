@@ -49,7 +49,7 @@ void DNGLOOK_0000_LookCmdInDungeon(void)
 
     if (D_58a7_torchTurns == 0 && D_58a6_lightSpellTurns == 0)
     {
-        ULTIMA_1850_PrintString(_TEXT(0x752e, "You see:\ndarkness.\n"));
+        ULTIMA_1850_PrintString(/*0x752e*/ "You see:\ndarkness.\n");
         return;
     }
 
@@ -63,7 +63,7 @@ void DNGLOOK_0000_LookCmdInDungeon(void)
 
     cell_o = GetDungeonMap(lookX & 7, lookY & 7, D_5895_mapLevel);
 
-    ULTIMA_1850_PrintString(_TEXT(0x7542, "You see:\n"));
+    ULTIMA_1850_PrintString(/*0x7542*/ "You see:\n");
 
     if (cell_o == 0x61)
     {
@@ -76,19 +76,19 @@ void DNGLOOK_0000_LookCmdInDungeon(void)
         switch (cell_o)
         {
         case 0x80:
-            ULTIMA_1850_PrintString(_TEXT(0x754c, "A sleep field.\n"));
+            ULTIMA_1850_PrintString(/*0x754c*/ "A sleep field.\n");
             break;
         case 0x81:
-            ULTIMA_1850_PrintString(_TEXT(0x755c, "A poison gas field.\n"));
+            ULTIMA_1850_PrintString(/*0x755c*/ "A poison gas field.\n");
             break;
         case 0x82:
-            ULTIMA_1850_PrintString(_TEXT(0x7572, "A wall of fire.\n"));
+            ULTIMA_1850_PrintString(/*0x7572*/ "A wall of fire.\n");
             break;
         case 0x83:
-            ULTIMA_1850_PrintString(_TEXT(0x7584, "An electric field.\n"));
+            ULTIMA_1850_PrintString(/*0x7584*/ "An electric field.\n");
             break;
         default:
-            ULTIMA_1850_PrintString(_TEXT(0x7598, "An energy field.\n"));
+            ULTIMA_1850_PrintString(/*0x7598*/ "An energy field.\n");
             // nop
             break;
         }
@@ -101,22 +101,22 @@ void DNGLOOK_0000_LookCmdInDungeon(void)
         style_o = D_6604_dungeonStyle & 0xf;
         if (style_o == 1)
         {
-            ULTIMA_1850_PrintString(_TEXT(0x75aa, "a dripping stalactite.\n"));
+            ULTIMA_1850_PrintString(/*0x75aa*/ "a dripping stalactite.\n");
         }
         else if (style_o == 2)
         {
-            ULTIMA_1850_PrintString(_TEXT(0x75c2, "a caved in passage.\n"));
+            ULTIMA_1850_PrintString(/*0x75c2*/ "a caved in passage.\n");
         }
         else
         {
             // a376
             if (ULTIMA_2092_RandomRange(1, 0xff) == 0xff)
             {
-                ULTIMA_1850_PrintString(_TEXT(0x75d8, "an unfortunate software pirate.\n"));
+                ULTIMA_1850_PrintString(/*0x75d8*/ "an unfortunate software pirate.\n");
             }
             else
             {
-                ULTIMA_1850_PrintString(_TEXT(0x75fa, "a less fortunate adventurer.\n"));
+                ULTIMA_1850_PrintString(/*0x75fa*/ "a less fortunate adventurer.\n");
             }
         }
 
@@ -127,52 +127,52 @@ void DNGLOOK_0000_LookCmdInDungeon(void)
     switch (cell_o & 0xf0)
     {
     case 0x00: // a3b8
-        ULTIMA_1850_PrintString(_TEXT(0x7618, "a passage.\n"));
+        ULTIMA_1850_PrintString(/*0x7618*/ "a passage.\n");
         break;
     case 0x10: // a3d6
-        ULTIMA_1850_PrintString(_TEXT(0x7624, "an up ladder.\n"));
+        ULTIMA_1850_PrintString(/*0x7624*/ "an up ladder.\n");
         break;
     case 0x20: // a3dc
-        ULTIMA_1850_PrintString(_TEXT(0x7634, "a down ladder.\n"));
+        ULTIMA_1850_PrintString(/*0x7634*/ "a down ladder.\n");
         break;
     case 0x30: // a3e2
-        ULTIMA_1850_PrintString(_TEXT(0x7644, "a ladder.\n"));
+        ULTIMA_1850_PrintString(/*0x7644*/ "a ladder.\n");
         break;
     case 0x40:
-        ULTIMA_1850_PrintString(_TEXT(0x7650, "a wooden chest.\n"));
+        ULTIMA_1850_PrintString(/*0x7650*/ "a wooden chest.\n");
         break;
     case 0x50:
-        ULTIMA_1850_PrintString(_TEXT(0x7662, "a fountain.\n"));
+        ULTIMA_1850_PrintString(/*0x7662*/ "a fountain.\n");
         break;
     case 0x60:
-        ULTIMA_1850_PrintString(_TEXT(0x7670, "a pit.\n"));
+        ULTIMA_1850_PrintString(/*0x7670*/ "a pit.\n");
         break;
     case 0x70: // a3fa
-        ULTIMA_1850_PrintString(_TEXT(0x7678, "an open chest.\n"));
+        ULTIMA_1850_PrintString(/*0x7678*/ "an open chest.\n");
         break;
     case 0x80:
-        ULTIMA_1850_PrintString(_TEXT(0x7688, "an energy field.\n"));
+        ULTIMA_1850_PrintString(/*0x7688*/ "an energy field.\n");
         break;
     case 0x90:
-        ULTIMA_1850_PrintString(_TEXT(0x769a, "nothing of note.\n"));
+        ULTIMA_1850_PrintString(/*0x769a*/ "nothing of note.\n");
         break;
     case 0xa0:
-        ULTIMA_1850_PrintString(_TEXT(0x76ac, "a heavy door.\n"));
+        ULTIMA_1850_PrintString(/*0x76ac*/ "a heavy door.\n");
         break;
     case 0xb0:
-        ULTIMA_1850_PrintString(_TEXT(0x76bc, "a wall.\n"));
+        ULTIMA_1850_PrintString(/*0x76bc*/ "a wall.\n");
         break;
     case 0xc0:
-        ULTIMA_1850_PrintString(_TEXT(0x76c6, "SPEC WALL ERR.\n"));
+        ULTIMA_1850_PrintString(/*0x76c6*/ "SPEC WALL ERR.\n");
         break;
     case 0xd0:
-        ULTIMA_1850_PrintString(_TEXT(0x76d6, "a wall.\n"));
+        ULTIMA_1850_PrintString(/*0x76d6*/ "a wall.\n");
         break;
     case 0xe0:
-        ULTIMA_1850_PrintString(_TEXT(0x76e0, "a heavy door.\n"));
+        ULTIMA_1850_PrintString(/*0x76e0*/ "a heavy door.\n");
         break;
     case 0xf0: // a42a
-        ULTIMA_1850_PrintString(_TEXT(0x76f0, "a heavy door.\n"));
+        ULTIMA_1850_PrintString(/*0x76f0*/ "a heavy door.\n");
         break;
     }
 
@@ -180,7 +180,7 @@ void DNGLOOK_0000_LookCmdInDungeon(void)
     if ((cell_o & 0xf0) == 0x50)
     {
         // a3cb
-        ULTIMA_1850_PrintString(_TEXT(0x7700, "Will you drink?\n"));
+        ULTIMA_1850_PrintString(/*0x7700*/ "Will you drink?\n");
         // -> a480
 
         // a480
@@ -191,32 +191,32 @@ void DNGLOOK_0000_LookCmdInDungeon(void)
         // a48a
         if (answer == 'N')
         {
-            ULTIMA_1850_PrintString(_TEXT(0x7712, "No.\n"));
+            ULTIMA_1850_PrintString(/*0x7712*/ "No.\n");
         }
         else
         {
             // a496~ (OK)
-            ULTIMA_1850_PrintString(_TEXT(0x7718, "Yes.  Gulp!\n"));
+            ULTIMA_1850_PrintString(/*0x7718*/ "Yes.  Gulp!\n");
 
             switch (cell_o)
             {
             case 0x50:
-                ULTIMA_1850_PrintString(_TEXT(0x7726, "Cured!\n"));
+                ULTIMA_1850_PrintString(/*0x7726*/ "Cured!\n");
                 D_55a8_party[member_g].status = STATUS_GOOD;
                 break;
 
             case 0x51:
-                ULTIMA_1850_PrintString(_TEXT(0x772e, "Healed!\n"));
+                ULTIMA_1850_PrintString(/*0x772e*/ "Healed!\n");
                 D_55a8_party[member_g].hp = D_55a8_party[member_g].maxHp;
                 break;
 
             case 0x52:
-                ULTIMA_1850_PrintString(_TEXT(0x7738, "Poisoned!\n"));
+                ULTIMA_1850_PrintString(/*0x7738*/ "Poisoned!\n");
                 D_55a8_party[member_g].status = STATUS_POISONED;
                 break;
 
             default:
-                ULTIMA_1850_PrintString(_TEXT(0x7744, "Bad taste.\n"));
+                ULTIMA_1850_PrintString(/*0x7744*/ "Bad taste.\n");
                 ULTIMA_2a52_DamagePlayer(member_g, ULTIMA_2092_RandomRange(0, 7));
                 break;
             }
@@ -1260,7 +1260,6 @@ void DNGLOOK_117e_PlaceCombatants(int cellKind, int mode)
                     }
                     else if (monsterType < 0x10)
                     {
-                        ASSERT(monsterType != 0);
                         // TODO: offset
                         D_5c5a_actors[slot].value = D_3850_objectValueBase[monsterType - 3] + ULTIMA_2092_RandomRange(0, D_3842_objectValueRange[monsterType - 3] - 1);
                     }

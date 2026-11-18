@@ -126,7 +126,7 @@ static void ULTIMA_60ec_LoadSpecialMap(int mapIndex)
 {
     int i;
 
-    ULTIMA_256e_ReadFileFromDisk(_TEXT(0xa3f0, "BRIT.CBT"), D_ad14_combatMap, 0x160, mapIndex * 0x160);
+    ULTIMA_256e_ReadFileFromDisk(/*0xa3f0*/ "BRIT.CBT", D_ad14_combatMap, 0x160, mapIndex * 0x160);
 
     for (i = 0; i < 6; i++)
     {
@@ -154,7 +154,7 @@ void ULTIMA_6150_Combat(int actorIndex)
     ULTIMA_16ba_PrintChar(CTRL_CHAR_CENTER_TEXT);
     if (actorTile < 0x40) // TILE_ACTOR_40
     {
-        ULTIMA_1850_PrintString(_TEXT(0xa3fa, "PIRATES"));
+        ULTIMA_1850_PrintString(/*0xa3fa*/ "PIRATES");
     }
     else
     {
@@ -162,7 +162,7 @@ void ULTIMA_6150_Combat(int actorIndex)
     }
 
     ULTIMA_16ba_PrintChar(CTRL_CHAR_UNCENTER_TEXT);
-    ULTIMA_1850_PrintString(_TEXT(0xa402, "\n\n"));
+    ULTIMA_1850_PrintString(/*0xa402*/ "\n\n");
 
     tileUnder_j = *ULTIMA_4402_GetTileAddr(D_5c5a_actors[actorIndex].x, D_5c5a_actors[actorIndex].y);
     if (tileUnder_j < TILE_MAP_POISON || (tileUnder_j & 0xfe) != TILE_MAP_6A && ((tileUnder_j & 0xf0) == TILE_MAP_60))
@@ -179,7 +179,7 @@ void ULTIMA_6150_Combat(int actorIndex)
         mapIndex = 10;
         if (D_57b5_sceptre != 0)
         {
-            ULTIMA_1850_PrintString(_TEXT(0xa406, "The Sceptre is reclaimed!\n"));
+            ULTIMA_1850_PrintString(/*0xa406*/ "The Sceptre is reclaimed!\n");
             ULTIMA_2192_AudioPulse(0xfd2, 1, 65000, 1, 1);
             D_57b5_sceptre = 0;
         }
@@ -631,7 +631,7 @@ void ULTIMA_6936_InitCombatants(void)
                 combatantIndex = ULTIMA_2092_RandomRange(0, 0xf);
                 if (combatantIndex == 0xb)
                 {
-                    ULTIMA_1850_PrintString(_TEXT(0xa422, "A ring has vanished!\n"));
+                    ULTIMA_1850_PrintString(/*0xa422*/ "A ring has vanished!\n");
                     ULTIMA_43ae_AudioSweepTone(0x4b0, 2000, 1, 0x28);
                     ULTIMA_6e60_Unequip(i_k, ringItem_i);
                 }
@@ -737,7 +737,7 @@ void ULTIMA_6bc2_SetUpCombat(int flags, int enemy)
 
     if (flags != 0x80 || flags != 0x4) // BUG: expression always true
     {
-        ULTIMA_1850_PrintString(_TEXT(0xa438, "*** CONFLICT ***\n"));
+        ULTIMA_1850_PrintString(/*0xa438*/ "*** CONFLICT ***\n");
     }
 
     if (D_5894_savedMapId != 0 && D_5894_savedMapId < 0x21 && enemy != 0xc && fromWorld_i != 0)

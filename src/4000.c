@@ -59,10 +59,10 @@ int ULTIMA_4080_SetActivePlayer(int key)
     result = 1;
     index = key - 0x31;
 
-    ULTIMA_1850_PrintString(_TEXT(0xa396, "Set Active Plr:\n"));
+    ULTIMA_1850_PrintString(/*0xa396*/ "Set Active Plr:\n");
     if (key == 0x30)
     {
-        ULTIMA_1850_PrintString(_TEXT(0xa3a8, "None!\n"));
+        ULTIMA_1850_PrintString(/*0xa3a8*/ "None!\n");
         D_587b_activePlayer = 0xff;
 
 		ULTIMA_2900_UpdateVitalsDisplay();
@@ -82,7 +82,7 @@ int ULTIMA_4080_SetActivePlayer(int key)
         }
 		else
 		{
-            ULTIMA_1850_PrintString(_TEXT(0xa3b0, "Invalid!\n"));
+            ULTIMA_1850_PrintString(/*0xa3b0*/ "Invalid!\n");
         }
     }
 
@@ -557,7 +557,7 @@ int ULTIMA_47f4_GoToMoonstone(int stoneIndex)
     {
         ULTIMA_251e_SwitchDisks(1);
 
-        while (ULTIMA_1674_TestOpenFile(_TEXT(0xa3ba, "BRIT.DAT")) == 0) {}
+        while (ULTIMA_1674_TestOpenFile(/*0xa3ba*/ "BRIT.DAT") == 0) {}
 
         ULTIMA_25d8_WriteFileToDisk(OUTSUBS_0368_GetWorldSavefile(), &D_5c5a_actors[0].tile, 0x100);
     }
@@ -662,7 +662,7 @@ int ULTIMA_4988_GetActingPlayer(void)
             chosen = 0;
             while (!chosen)
             {
-                ULTIMA_1850_PrintString(_TEXT(0xa3c4, "Player: "));
+                ULTIMA_1850_PrintString(/*0xa3c4*/ "Player: ");
                 player = ULTIMA_2e8e_SelectPlayer();
                 if (player < 0)
                 {
@@ -682,7 +682,7 @@ int ULTIMA_4988_GetActingPlayer(void)
                     }
                     else
                     {
-                        ULTIMA_1850_PrintString(_TEXT(0xa3ce, "Disabled!\n\n"));
+                        ULTIMA_1850_PrintString(/*0xa3ce*/ "Disabled!\n\n");
                     }
                 }
             }
@@ -691,7 +691,7 @@ int ULTIMA_4988_GetActingPlayer(void)
 
     if (player == -1)
     {
-        ULTIMA_1850_PrintString(_TEXT(0xa3da, "None!\n"));
+        ULTIMA_1850_PrintString(/*0xa3da*/ "None!\n");
     }
     else if (player == -2)
     {
@@ -808,7 +808,7 @@ void ULTIMA_4be8_ClearSky(void)
 	{
 		ULTIMA_1bf2_SetTextPosition(5, 0);
 		ULTIMA_4c2a_PrintLeftCap();
-		ULTIMA_1850_PrintString(_TEXT(0xa3e2, "            "));
+		ULTIMA_1850_PrintString(/*0xa3e2*/ "            ");
 		ULTIMA_4cce_PrintRightCap();
 	}
 

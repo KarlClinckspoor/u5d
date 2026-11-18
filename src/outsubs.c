@@ -285,7 +285,7 @@ int OUTSUBS_0388_EnterTown(char* verb)
     {
         if (placeIndex < 0xd || placeIndex > 0x11)
         {
-            ULTIMA_1850_PrintString(_TEXT(0x399c, "\n\n"));
+            ULTIMA_1850_PrintString(/*0x399c*/ "\n\n");
             ULTIMA_16ba_PrintChar(CTRL_CHAR_CENTER_TEXT);
             ULTIMA_1850_PrintString(D_1e3a_mapNames[placeIndex]);
             ULTIMA_16ba_PrintChar(CTRL_CHAR_UNCENTER_TEXT);
@@ -309,7 +309,7 @@ int OUTSUBS_0388_EnterTown(char* verb)
     }
     else
     {
-        ULTIMA_1850_PrintString(_TEXT(0x39a8, "\nWhat town?\n"));
+        ULTIMA_1850_PrintString(/*0x39a8*/ "\nWhat town?\n");
     }
 
     return failed;
@@ -330,7 +330,7 @@ void OUTSUBS_0458_Falls(void)
     int savedTile;
     int member_i;
 
-    ULTIMA_1850_PrintString(_TEXT(0x39b5, "F-A-L-L-S!!!\n"));
+    ULTIMA_1850_PrintString(/*0x39b5*/ "F-A-L-L-S!!!\n");
     MAINOUT_0354_MoveParty(0, 1);
     ULTIMA_3ae6_WaitFrames(1);
     MAINOUT_0354_MoveParty(0, 1);
@@ -354,7 +354,7 @@ void OUTSUBS_0458_Falls(void)
 
     if (D_5896_mapX == 0x36 && D_5897_mapY == 0x8a)
     {
-        ULTIMA_1850_PrintString(_TEXT(0x39c3, "Falling into underworld!!\n"));
+        ULTIMA_1850_PrintString(/*0x39c3*/ "Falling into underworld!!\n");
 
         D_5895_mapLevel = 0xff;
 
@@ -410,7 +410,7 @@ void OUTSUBS_0566_PlaceAmuletShards(void)
 void OUTSUBS_05ee_StepOnBurningTile(void)
 {
     ULTIMA_5910_UpdateFrame();
-    ULTIMA_1850_PrintString(_TEXT(0x3a11, "Burning!\n"));
+    ULTIMA_1850_PrintString(/*0x3a11*/ "Burning!\n");
     ULTIMA_2aa8_DamageParty();
 }
 
@@ -426,7 +426,7 @@ void OUTSUBS_05fc_StepOnPoisonTile(void)
             if (D_55a8_party[member].dex < ULTIMA_2092_RandomRange(1, 0x1e))
             {
                 D_55a8_party[member].status = STATUS_POISONED;
-                ULTIMA_1850_PrintString(_TEXT(0x3a1b, "Poisoned!\n"));
+                ULTIMA_1850_PrintString(/*0x3a1b*/ "Poisoned!\n");
             }
         }
     }

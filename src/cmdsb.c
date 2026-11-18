@@ -45,7 +45,7 @@ static int CMDS_18be_SelectReagents(void)
     ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
     ULTIMA_1c22_SetTextWindowSize(1, 0x18, 1, 0x27, 9);
     ULTIMA_4efc_OpenStatsDivider();
-    ULTIMA_4e50_ShowStatsTitle(_TEXT(0x8f64, "Reagents:"));
+    ULTIMA_4e50_ShowStatsTitle(/*0x8f64*/ "Reagents:");
 
     for (i = 0; i != count; i++)
     {
@@ -92,7 +92,7 @@ static int CMDS_18be_SelectReagents(void)
         case 0x4d:
             // 19e0
             done = 1;
-            ULTIMA_1850_PrintString(_TEXT(0x8f6e, "\n\n"));
+            ULTIMA_1850_PrintString(/*0x8f6e*/ "\n\n");
             break;
 
         case U5_KEY_ENTER:
@@ -141,7 +141,7 @@ static int CMDS_1a70_AskMixAmount(int mask)
     do
     {
         enough = 1;
-        ULTIMA_1850_PrintString(_TEXT(0x8f72, "How much? "));
+        ULTIMA_1850_PrintString(/*0x8f72*/ "How much? ");
         amount = ULTIMA_3b9e_GetNumber(2);
         if (amount != 0)
         {
@@ -150,7 +150,7 @@ static int CMDS_1a70_AskMixAmount(int mask)
             {
                 if ((mask & bit) != 0 && D_5850_reagents[i] < amount)
                 {
-                    ULTIMA_1850_PrintString(_TEXT(0x8f7e, "Insufficient reagents!\n\n"));
+                    ULTIMA_1850_PrintString(/*0x8f7e*/ "Insufficient reagents!\n\n");
                     enough = 0;
                     break;
                 }
@@ -180,15 +180,15 @@ void CMDS_1ad8_MixCmd(void)
 
     if (amount == 0)
     {
-        ULTIMA_1850_PrintString(_TEXT(0x8f98, "No reagents owned!\n"));
+        ULTIMA_1850_PrintString(/*0x8f98*/ "No reagents owned!\n");
         return;
     }
 
-    ULTIMA_1850_PrintString(_TEXT(0x8fac, "For what spell?\n:"));
+    ULTIMA_1850_PrintString(/*0x8fac*/ "For what spell?\n:");
     spell = CAST2_00de_SelectSpell();
     if (spell == -1)
     {
-        ULTIMA_1850_PrintString(_TEXT(0x8fbe, "\nNone!\n"));
+        ULTIMA_1850_PrintString(/*0x8fbe*/ "\nNone!\n");
     }
     else
     {
@@ -200,7 +200,7 @@ void CMDS_1ad8_MixCmd(void)
         ULTIMA_16ba_PrintChar(0x18); // ^
         ULTIMA_16ba_PrintChar(',');
         ULTIMA_16ba_PrintChar(0x19); // v
-        ULTIMA_1850_PrintString(_TEXT(0x8fc6, " to move,\nRETURN selects.\nType M to mix:"));
+        ULTIMA_1850_PrintString(/*0x8fc6*/ " to move,\nRETURN selects.\nType M to mix:");
 
         mask_d = CMDS_18be_SelectReagents();
         if (mask_d >= 0)
@@ -210,7 +210,7 @@ void CMDS_1ad8_MixCmd(void)
             {
                 if (mask_d != 0)
                 {
-                    ULTIMA_1850_PrintString(_TEXT(0x8ff0, "Mixing...\n"));
+                    ULTIMA_1850_PrintString(/*0x8ff0*/ "Mixing...\n");
                     if (D_5893_mapId > 0x20)
                     {
                         ULTIMA_20fa_WaitTicks(10);
@@ -232,7 +232,7 @@ void CMDS_1ad8_MixCmd(void)
 
                     if (spell >= 0 && D_1cc0_spellReagents[spell] == mask_d)
                     {
-                        ULTIMA_1850_PrintString(_TEXT(0x8ffc, "\nDone!\n"));
+                        ULTIMA_1850_PrintString(/*0x8ffc*/ "\nDone!\n");
                         D_57f0_mixedSpells[spell] += amount;
                         if (D_57f0_mixedSpells[spell] > 99)
                         {
@@ -248,7 +248,7 @@ void CMDS_1ad8_MixCmd(void)
                 }
                 else
                 {
-                    ULTIMA_1850_PrintString(_TEXT(0x9004, "\nNothing to mix!\n"));
+                    ULTIMA_1850_PrintString(/*0x9004*/ "\nNothing to mix!\n");
                 }
             }
         }
@@ -272,13 +272,13 @@ void CMDS_1c20_KlimbCmd(void)
 
     if (D_57af_grapple == 0)
     {
-        ULTIMA_1850_PrintString(_TEXT(0x9016, "With what?\n"));
+        ULTIMA_1850_PrintString(/*0x9016*/ "With what?\n");
         return;
     }
 
     if (D_587c_partyTile != TILE_ACTOR_AVATAR)
     {
-        ULTIMA_1850_PrintString(_TEXT(0x9022, "On foot!\n"));
+        ULTIMA_1850_PrintString(/*0x9022*/ "On foot!\n");
         return;
     }
 
@@ -296,11 +296,11 @@ void CMDS_1c20_KlimbCmd(void)
     tile = *ULTIMA_4402_GetTileAddr(x_e, y_e);
     if (tile == 13)
     {
-        ULTIMA_1850_PrintString(_TEXT(0x902c, "Impassable!\n"));
+        ULTIMA_1850_PrintString(/*0x902c*/ "Impassable!\n");
     }
     else if (tile != 12)
     {
-        ULTIMA_1850_PrintString(_TEXT(0x903a, "Not climbable!\n"));
+        ULTIMA_1850_PrintString(/*0x903a*/ "Not climbable!\n");
     }
     else
     {
@@ -308,7 +308,7 @@ void CMDS_1c20_KlimbCmd(void)
         {
             if (D_55a8_party[member].status != STATUS_DEAD && D_55a8_party[member].dex < ULTIMA_2092_RandomRange(1, 0x1e))
             {
-                ULTIMA_1850_PrintString(_TEXT(0x904a, "Fell!\n"));
+                ULTIMA_1850_PrintString(/*0x904a*/ "Fell!\n");
                 ULTIMA_2a52_DamagePlayer(member, ULTIMA_2092_RandomRange(1, 5));
             }
         }

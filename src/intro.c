@@ -34,9 +34,7 @@ void INTRO_20ae_ShowWD(byte* ptr);
 void INTRO_0010_PutBackdropStrips(void);
 int INTRO_0050_LordBritishAnim(int x, int y);
 
-// common.h defines const away in the DOS build; these three tables are really const there
-// too. MSC 5.1 still puts them in _DATA, in their place.
-#undef const
+// The three tables are const; MSC 5.1 still puts them in _DATA, in their place.
 
 Pair D_2f98_textLeft[0x15] =
 {
@@ -155,7 +153,7 @@ void INTRO_014e_Introduction(void)
         fontImage = ULTIMA_0fae_LoadResourceFile(D_25ea_fileNames[0]);
     } while (fontImage == 0);
 
-    FONT_0000_DrawJustifiedText(fontImage, _TEXT(0x2f30, ""));
+    FONT_0000_DrawJustifiedText(fontImage, /*0x2f30*/ "");
     ULTIMA_0c22_GRAP_0f_SelectPage(1);
     ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
     ULTIMA_0c22_GRAP_0f_SelectPage(0);
@@ -229,10 +227,10 @@ void INTRO_014e_Introduction(void)
         if (D_30f0_pageKind[page_m] == 3)
         {
             ULTIMA_0d4c_GRAP_4b_PutImage(pageImage, 3, 0x60, 0x27, 0);
-            FONT_0000_DrawJustifiedText(fontImage, _TEXT(0x2f31, "Instantly, a shimmering blue door springs up!"));
+            FONT_0000_DrawJustifiedText(fontImage, /*0x2f31*/ "Instantly, a shimmering blue door springs up!");
             D_5156_penX = D_306c_pageTextX[page_m];
             D_5158_penY = 0xb4;
-            FONT_0000_DrawJustifiedText(fontImage, _TEXT(0x2f5f, "With heart beating rapidly, you step into it."));
+            FONT_0000_DrawJustifiedText(fontImage, /*0x2f5f*/ "With heart beating rapidly, you step into it.");
         }
         else
         {
@@ -271,8 +269,6 @@ void INTRO_014e_Introduction(void)
     D_a9be_promptMode = 0;
     ULTIMA_251e_SwitchDisks(0);
 }
-
-#define const
 
 // Draws a bar at the bottom of the strip and prints the text centred in it between two caps (the title of a
 // story scene, the copyright line).
@@ -405,12 +401,12 @@ static void INTRO_0676_WriteMenuOption(int selected, int row, int col, char* lab
 // Prints the six menu lines with one selected (0 Journey Onward ... 5 Return to the View).
 void INTRO_06bc_BuildMainMenu(int selected)
 {
-    INTRO_0676_WriteMenuOption(selected, 0, 0xc, _TEXT(0x310c, "Journey Onward"));
-    INTRO_0676_WriteMenuOption(selected, 1, 9, _TEXT(0x311b, "Create New Character"));
-    INTRO_0676_WriteMenuOption(selected, 2, 8, _TEXT(0x3130, "Transfer from Ultima IV"));
-    INTRO_0676_WriteMenuOption(selected, 3, 9, _TEXT(0x3148, "Ultima V Introduction"));
-    INTRO_0676_WriteMenuOption(selected, 4, 0xb, _TEXT(0x315e, "Acknowledgements"));
-    INTRO_0676_WriteMenuOption(selected, 5, 10, _TEXT(0x316f, "Return to the View"));
+    INTRO_0676_WriteMenuOption(selected, 0, 0xc, /*0x310c*/ "Journey Onward");
+    INTRO_0676_WriteMenuOption(selected, 1, 9, /*0x311b*/ "Create New Character");
+    INTRO_0676_WriteMenuOption(selected, 2, 8, /*0x3130*/ "Transfer from Ultima IV");
+    INTRO_0676_WriteMenuOption(selected, 3, 9, /*0x3148*/ "Ultima V Introduction");
+    INTRO_0676_WriteMenuOption(selected, 4, 0xb, /*0x315e*/ "Acknowledgements");
+    INTRO_0676_WriteMenuOption(selected, 5, 10, /*0x316f*/ "Return to the View");
 }
 
 // The acknowledgements: the STARTSC.16 picture scrolls in, waits for a key and scrolls out, then the menu

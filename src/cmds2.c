@@ -36,7 +36,7 @@ static void CMDS_1202_RestoreShrine(int virtue, int x, int y)
 
     right = 1;
 
-    ULTIMA_1850_PrintString(_TEXT(0x4450, "\nUpon what virtue\ndost thou\nmeditate?\n\n:"));
+    ULTIMA_1850_PrintString(/*0x4450*/ "\nUpon what virtue\ndost thou\nmeditate?\n\n:");
     ULTIMA_3b1c_GetString(spoken, 0xf);
 
     if (ULTIMA_6f1e_CompareWord((byte*)D_1f4e_virtueNames[virtue], spoken) == -1)
@@ -46,7 +46,7 @@ static void CMDS_1202_RestoreShrine(int virtue, int x, int y)
 
     for (i = 0; i < 3; i++)
     {
-        ULTIMA_1850_PrintString(_TEXT(0x4479, "\nMantra:"));
+        ULTIMA_1850_PrintString(/*0x4479*/ "\nMantra:");
         ULTIMA_3b1c_GetString(spoken, 0xf);
 
         if (ULTIMA_6f1e_CompareWord((byte*)D_1f5e_mantras[virtue], spoken) == -1)
@@ -58,7 +58,7 @@ static void CMDS_1202_RestoreShrine(int virtue, int x, int y)
     if (right && D_1f6e_shrineX[virtue] == x && D_1f76_shrineY[virtue] == y)
     {
         D_58d8_shrineDestroyed[virtue] &= 0x7f;
-        ULTIMA_1850_PrintString(_TEXT(0x4482, "\n\nThe Shrine is\nrestored!\n"));
+        ULTIMA_1850_PrintString(/*0x4482*/ "\n\nThe Shrine is\nrestored!\n");
         ULTIMA_3072_ShakeScreen();
         *ULTIMA_4402_GetTileAddr(x, y) = TILE_MAP_SHRINE;
         D_24e6_viewDirty |= 2;
@@ -71,14 +71,14 @@ static void CMDS_1202_RestoreShrine(int virtue, int x, int y)
 
 char* D_4502_vileWords[8] =
 {
-    _STATIC_TEXT(0x449d, "FALLAX"),
-    _STATIC_TEXT(0x44a4, "VILIS"),
-    _STATIC_TEXT(0x44aa, "INOPIA"),
-    _STATIC_TEXT(0x44b1, "MALUM"),
-    _STATIC_TEXT(0x44b7, "AVIDUS"),
-    _STATIC_TEXT(0x44be, "INFAMA"),
-    _STATIC_TEXT(0x44c5, "IGNAVUS"),
-    _STATIC_TEXT(0x44cd, "VERAMOCOR")
+    /*0x449d*/ "FALLAX",
+    /*0x44a4*/ "VILIS",
+    /*0x44aa*/ "INOPIA",
+    /*0x44b1*/ "MALUM",
+    /*0x44b7*/ "AVIDUS",
+    /*0x44be*/ "INFAMA",
+    /*0x44c5*/ "IGNAVUS",
+    /*0x44cd*/ "VERAMOCOR"
 };
 
 u8 D_4512_wordTile[8] = {0x18, 0x16, 0x16, 0x18, 0x18, 0x17, 0x17, 0x16};
@@ -102,7 +102,7 @@ static void CMDS_12c8_YellWordOfPower(char* word)
     {
         if (ULTIMA_6f1e_CompareWord((byte*)*wordPtr_m, word) > -1)
         {
-            ULTIMA_1850_PrintString(_TEXT(0x44d7, "\nA word of power is uttered\n"));
+            ULTIMA_1850_PrintString(/*0x44d7*/ "\nA word of power is uttered\n");
             ULTIMA_3072_ShakeScreen();
 
             tile = GetMapViewport(4, 5);
@@ -165,7 +165,7 @@ static void CMDS_12c8_YellWordOfPower(char* word)
 
     if (!found)
     {
-        ULTIMA_1850_PrintString(_TEXT(0x44f4, "\nNo effect!\n"));
+        ULTIMA_1850_PrintString(/*0x44f4*/ "\nNo effect!\n");
     }
 }
 
@@ -182,24 +182,24 @@ int CMDS_1418_YellCmd(void)
     {
         if ((D_587c_partyTile & 0xfc) == TILE_ACTOR_FRIGATE_20)
         {
-            ULTIMA_1850_PrintString(_TEXT(0x451a, "FURL!\n"));
+            ULTIMA_1850_PrintString(/*0x451a*/ "FURL!\n");
             D_587c_partyTile += 4;
             return; // sic
         }
         else
         {
-            ULTIMA_1850_PrintString(_TEXT(0x4521, "HOIST!\n"));
+            ULTIMA_1850_PrintString(/*0x4521*/ "HOIST!\n");
             D_587c_partyTile -= 4;
             return; // sic
         }
     }
     else
     {
-        ULTIMA_1850_PrintString(_TEXT(0x4529, "what?\n:"));
+        ULTIMA_1850_PrintString(/*0x4529*/ "what?\n:");
         ULTIMA_3b1c_GetString(word, 0x1e);
         if (word[0] == 0)
         {
-            ULTIMA_1850_PrintString(_TEXT(0x4531, "Nothing\n"));
+            ULTIMA_1850_PrintString(/*0x4531*/ "Nothing\n");
             return; // sic
         }
         else
@@ -215,7 +215,7 @@ int CMDS_1418_YellCmd(void)
             }
             else
             {
-                ULTIMA_1850_PrintString(_TEXT(0x453a, "\nNo effect!\n"));
+                ULTIMA_1850_PrintString(/*0x453a*/ "\nNo effect!\n");
             }
         }
     }
@@ -279,7 +279,7 @@ static int CMDS_1504_FacingTile(int dx, int dy, int tile, int reverse)
 static void CMDS_1548_PutPushed(int objTile, int beyondTile, int objX, int objY, int beyondX, int beyondY, int dx,
                  int dy)
 {
-    ULTIMA_1850_PrintString(_TEXT(0x4547, "Pushed!\n"));
+    ULTIMA_1850_PrintString(/*0x4547*/ "Pushed!\n");
     *ULTIMA_4402_GetTileAddr(beyondX, beyondY) = objTile;
     *ULTIMA_4402_GetTileAddr(objX, objY) = beyondTile;
     objTile &= 0xfc;
@@ -294,7 +294,7 @@ static void CMDS_1548_PutPushed(int objTile, int beyondTile, int objX, int objY,
 static void CMDS_15b0_PutPulled(int floorTile, int objTile, int partyX, int partyY, int objX, int objY, int dx,
                  int dy)
 {
-    ULTIMA_1850_PrintString(_TEXT(0x4550, "Pulled!\n"));
+    ULTIMA_1850_PrintString(/*0x4550*/ "Pulled!\n");
     *ULTIMA_4402_GetTileAddr(partyX, partyY) = objTile;
     *ULTIMA_4402_GetTileAddr(objX, objY) = floorTile;
     objTile &= 0xfc;
@@ -350,7 +350,7 @@ void CMDS_161a_PushCmd(void)
     objTile = *ULTIMA_4402_GetTileAddr(objX_m, objY_l);
     if (ULTIMA_368e_FindActorTileAtPos(objX_m, objY_l, D_5895_mapLevel) != 0 || CMDS_14ba_IsPushable(objTile) == 0)
     {
-        ULTIMA_1850_PrintString(_TEXT(0x4559, "Won't budge!\n"));
+        ULTIMA_1850_PrintString(/*0x4559*/ "Won't budge!\n");
     }
     else
     {
@@ -371,7 +371,7 @@ void CMDS_161a_PushCmd(void)
             }
             else
             {
-                ULTIMA_1850_PrintString(_TEXT(0x4567, "Won't budge\n"));
+                ULTIMA_1850_PrintString(/*0x4567*/ "Won't budge\n");
                 return;
             }
         }
@@ -406,7 +406,7 @@ int CMDS_17ec_Escape(void)
     int refused_h;
     bool anyPlayer;
 
-    ULTIMA_1850_PrintString(_TEXT(0x4574, "Escape"));
+    ULTIMA_1850_PrintString(/*0x4574*/ "Escape");
 
     anyPlayer = refused_h = 0;
     for (i = 0; i < 0x20; i++)
@@ -422,12 +422,12 @@ int CMDS_17ec_Escape(void)
     {
         if ((D_58a1_combatFlags & 0x80) != 0)
         {
-            ULTIMA_1850_PrintString(_TEXT(0x457b, "-Not here!\n"));
+            ULTIMA_1850_PrintString(/*0x457b*/ "-Not here!\n");
             refused_h = 1;
         }
         else if (D_58a3_combatOver == 0)
         {
-            ULTIMA_1850_PrintString(_TEXT(0x4587, "-Not yet!\n"));
+            ULTIMA_1850_PrintString(/*0x4587*/ "-Not yet!\n");
             refused_h = 1;
         }
     }

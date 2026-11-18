@@ -27,7 +27,7 @@ static bool SHOPPES2_07e2_CanAfford(int price)
     if (price > D_57aa_gold)
     {
         SHOPPES_017a_PrintShopFileText(0x198e);
-        SHOPPES_0026_PrintShopText(_TEXT(0x9fc2, "yells $.\n"));
+        SHOPPES_0026_PrintShopText(/*0x9fc2*/ "yells $.\n");
         D_bd22_thrownOut = 1;
         return 0;
     }
@@ -59,14 +59,14 @@ static bool SHOPPES2_080e_FinishSale(int newShip, int charge, int member)
 
     if (D_55a8_party[member].gender == 'F') // BUG
     {
-        ULTIMA_1850_PrintString(_TEXT(0x9fcc, "milady"));
+        ULTIMA_1850_PrintString(/*0x9fcc*/ "milady");
     }
     else
     {
-        ULTIMA_1850_PrintString(_TEXT(0x9fd4, "sir"));
+        ULTIMA_1850_PrintString(/*0x9fd4*/ "sir");
     }
 
-    ULTIMA_1850_PrintString(_TEXT(0x9fd8, "?\" "));
+    ULTIMA_1850_PrintString(/*0x9fd8*/ "?\" ");
 
     while ((key = ULTIMA_266c_GetChar()) != 'Y' && key != 'N')
     {
@@ -74,12 +74,12 @@ static bool SHOPPES2_080e_FinishSale(int newShip, int charge, int member)
 
     if (key == 'Y')
     {
-        ULTIMA_1850_PrintString(_TEXT(0x9fdc, "Yes"));
+        ULTIMA_1850_PrintString(/*0x9fdc*/ "Yes");
         return 0;
     }
     else
     {
-        ULTIMA_1850_PrintString(_TEXT(0x9fe0, "No"));
+        ULTIMA_1850_PrintString(/*0x9fe0*/ "No");
         return 1;
     }
 }
@@ -104,7 +104,7 @@ static void SHOPPES2_08a8_ShipMenu(int member)
         switch (ULTIMA_266c_GetChar())
         {
         case 0x46:
-            ULTIMA_1850_PrintString(_TEXT(0x9fe4, "F\n\n"));
+            ULTIMA_1850_PrintString(/*0x9fe4*/ "F\n\n");
             done = 1;
             if ((D_6605_boughtShip & 0xc0) != 0)
             {
@@ -116,12 +116,12 @@ static void SHOPPES2_08a8_ShipMenu(int member)
 
                 if (key == 'Y')
                 {
-                    ULTIMA_1850_PrintString(_TEXT(0x9fe8, "Yes"));
+                    ULTIMA_1850_PrintString(/*0x9fe8*/ "Yes");
                     SHOPPES2_07e2_CanAfford(10000);
                 }
                 else
                 {
-                    ULTIMA_1850_PrintString(_TEXT(0x9fec, "No"));
+                    ULTIMA_1850_PrintString(/*0x9fec*/ "No");
                     SHOPPES2_08a8_ShipMenu(member);
                 }
             }
@@ -139,7 +139,7 @@ static void SHOPPES2_08a8_ShipMenu(int member)
 
                 if (key == 'Y')
                 {
-                    ULTIMA_1850_PrintString(_TEXT(0x9ff0, "Yes\n\n"));
+                    ULTIMA_1850_PrintString(/*0x9ff0*/ "Yes\n\n");
 
                     if (SHOPPES2_07e2_CanAfford(D_b118_shopPrice) == 0)
                     {
@@ -151,14 +151,14 @@ static void SHOPPES2_08a8_ShipMenu(int member)
                 }
                 else
                 {
-                    ULTIMA_1850_PrintString(_TEXT(0x9ff6, "No"));
+                    ULTIMA_1850_PrintString(/*0x9ff6*/ "No");
                     goto L_end;
                 }
             }
             break;
 
         case 0x53:
-            ULTIMA_1850_PrintString(_TEXT(0x9ffa, "S\n\n"));
+            ULTIMA_1850_PrintString(/*0x9ffa*/ "S\n\n");
 
             D_b118_shopPrice = D_4d6e_skiffPrices[D_b114_shopIndex];
             D_b118_shopPrice += D_b118_shopPrice * -((s32)(D_55a8_party[member].intel * 3) - 100) / (u32)100;
@@ -174,7 +174,7 @@ static void SHOPPES2_08a8_ShipMenu(int member)
 
             if (key == 'Y')
             {
-                ULTIMA_1850_PrintString(_TEXT(0x9ffe, "Yes\n\n"));
+                ULTIMA_1850_PrintString(/*0x9ffe*/ "Yes\n\n");
                 if (SHOPPES2_07e2_CanAfford(D_b118_shopPrice) == 0)
                 {
                     goto L_end;
@@ -199,7 +199,7 @@ static void SHOPPES2_08a8_ShipMenu(int member)
             }
             else
             {
-                ULTIMA_1850_PrintString(_TEXT(0xa004, "No"));
+                ULTIMA_1850_PrintString(/*0xa004*/ "No");
                 goto L_end;
             }
             break;
@@ -229,14 +229,14 @@ void SHOPPES2_0abc_Shipwright(int member)
         switch (ULTIMA_266c_GetChar())
         {
         case 'Y':
-            ULTIMA_1850_PrintString(_TEXT(0xa008, "Yes"));
+            ULTIMA_1850_PrintString(/*0xa008*/ "Yes");
             SHOPPES2_08a8_ShipMenu(member);
             done = 1;
             break;
 
         case U5_KEY_SPACE:
         case 'N':
-            ULTIMA_1850_PrintString(_TEXT(0xa00c, "No"));
+            ULTIMA_1850_PrintString(/*0xa00c*/ "No");
             done = 1;
             break;
         }

@@ -25,7 +25,7 @@ char D_545e_lastDisk = 0xff; // char, not u8: see vars.h
 #endif
 
 
-void FAR ULTIMA_2320_NoDiskSwapMessage(void)
+void far ULTIMA_2320_NoDiskSwapMessage(void)
 {
     // nop
 }
@@ -37,7 +37,7 @@ void FAR ULTIMA_2320_NoDiskSwapMessage(void)
 // GOG_BUILD); the patched bytes are not compiler output.
 // What matched it: D_545e_lastDisk as a plain char (vars.h). With u8 it was 506 bytes against 508.
 // 1992 patched: skip drive selection
-void FAR ULTIMA_2322_DiskSwapMessage(void)
+void far ULTIMA_2322_DiskSwapMessage(void)
 {
     byte drive;
     byte currentDrive_d;
@@ -89,36 +89,36 @@ void FAR ULTIMA_2322_DiskSwapMessage(void)
             D_545e_lastDisk = 0xff;
 
             // 2405
-            ULTIMA_1850_PrintString(_TEXT(0x545f, "\nPlease insert the Ultima "));
+            ULTIMA_1850_PrintString(/*0x545f*/ "\nPlease insert the Ultima ");
             if (D_a9bd_curDisk[0] == 4)
             {
                 ULTIMA_16ba_PrintChar('I');
             }
 
-            ULTIMA_1850_PrintString(_TEXT(0x547a, "V "));
+            ULTIMA_1850_PrintString(/*0x547a*/ "V ");
 
             // 360k: 0=Program 1,3=Britannia 4=Player 2=Dungeon 5=Underworld
             // 720k: 0=Program 1,3=Britannia 4=Player (2, 5 => 1)
             switch (D_a9bd_curDisk[0])
             {
             case 0:
-                ULTIMA_1850_PrintString(_TEXT(0x547d, "Program"));
+                ULTIMA_1850_PrintString(/*0x547d*/ "Program");
                 break;
             case 1:
             case 3:
-                ULTIMA_1850_PrintString(_TEXT(0x5485, "Britannia"));
+                ULTIMA_1850_PrintString(/*0x5485*/ "Britannia");
                 break;
 
             case 4:
-                ULTIMA_1850_PrintString(_TEXT(0x548f, "Player"));
+                ULTIMA_1850_PrintString(/*0x548f*/ "Player");
                 break;
             }
 
-            ULTIMA_1850_PrintString(_TEXT(0x5496, " Disk"));
+            ULTIMA_1850_PrintString(/*0x5496*/ " Disk");
 
             if (D_a9c8_diskDrives[D_a9bd_curDisk[0]] == 0xff)
             {
-                ULTIMA_1850_PrintString(_TEXT(0x549c, " and press drive letter: "));
+                ULTIMA_1850_PrintString(/*0x549c*/ " and press drive letter: ");
             }
             else
             {

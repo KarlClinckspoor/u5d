@@ -35,12 +35,12 @@ int CAST2_009e_OnWho(void)
 {
     int member;
 
-    ULTIMA_1850_PrintString(_TEXT(0x94f4, "On who: "));
+    ULTIMA_1850_PrintString(/*0x94f4*/ "On who: ");
 
     member = ULTIMA_2e8e_SelectPlayer();
     if (member < 0)
     {
-        ULTIMA_1850_PrintString(_TEXT(0x94fe, "None!"));
+        ULTIMA_1850_PrintString(/*0x94fe*/ "None!");
     }
     else
     {
@@ -232,7 +232,7 @@ int CAST2_0306_AskDirection(void)
     }
 
     // 033e
-    ULTIMA_1850_PrintString(_TEXT(0x9504, "Direction-"));
+    ULTIMA_1850_PrintString(/*0x9504*/ "Direction-");
     chosen = 0;
 
     do
@@ -242,23 +242,23 @@ int CAST2_0306_AskDirection(void)
         switch (key)
         {
         case U5_KEY_UP:
-            ULTIMA_1850_PrintString(_TEXT(0x9510, "North\n"));
+            ULTIMA_1850_PrintString(/*0x9510*/ "North\n");
             D_5878_tempY--;
             break;
         case U5_KEY_RIGHT:
-            ULTIMA_1850_PrintString(_TEXT(0x9518, "East\n"));
+            ULTIMA_1850_PrintString(/*0x9518*/ "East\n");
             D_5876_tempX++;
             break;
         case U5_KEY_DOWN:
-            ULTIMA_1850_PrintString(_TEXT(0x951e, "South\n"));
+            ULTIMA_1850_PrintString(/*0x951e*/ "South\n");
             D_5878_tempY++;
             break;
         case U5_KEY_LEFT:
-            ULTIMA_1850_PrintString(_TEXT(0x9526, "West\n"));
+            ULTIMA_1850_PrintString(/*0x9526*/ "West\n");
             D_5876_tempX--;
             break;
         case U5_KEY_SPACE:
-            ULTIMA_1850_PrintString(_TEXT(0x952c, "Pass\n"));
+            ULTIMA_1850_PrintString(/*0x952c*/ "Pass\n");
             key = 0;
             break;
         default:
@@ -404,7 +404,7 @@ int CAST2_04c2_KalXenCorp(int fromScroll)
         if (fromScroll == 0 && ULTIMA_3abe_Random1To30() >= COMBAT_13e2_QueryStat(D_589e_curCombatant, QUERY_STAT_INTEL))
         {
             // 05b2
-            ULTIMA_1850_PrintString(_TEXT(0x9532, "Oops...\n"));
+            ULTIMA_1850_PrintString(/*0x9532*/ "Oops...\n");
             result_i = -1;
         }
         else
@@ -441,7 +441,7 @@ int CAST2_05e0_Resurrect(int memberIdx, int mode)
     {
         if (mode != 0)
         {
-            ULTIMA_1850_PrintString(_TEXT(0x953c, "Not dead!\n"));
+            ULTIMA_1850_PrintString(/*0x953c*/ "Not dead!\n");
         }
 
         result_k = 0;
@@ -505,7 +505,7 @@ void CAST2_06ec_PrintPosition(void)
     ULTIMA_16ba_PrintChar(((D_5897_mapY & 0xf0) >> 4) + 0x41);
     ULTIMA_16ba_PrintChar('\'');
     ULTIMA_16ba_PrintChar((D_5897_mapY & 0xf) + 0x41);
-    ULTIMA_1850_PrintString(_TEXT(0x9548, "\", "));
+    ULTIMA_1850_PrintString(/*0x9548*/ "\", ");
     ULTIMA_16ba_PrintChar(((D_5896_mapX & 0xf0) >> 4) + 0x41);
     ULTIMA_16ba_PrintChar('\'');
     ULTIMA_16ba_PrintChar((D_5896_mapX & 0xf) + 0x41);
@@ -580,7 +580,7 @@ int CAST2_07bc_AnGrav(int withEffect)
         if ((*cellPtr & 0xf0) == 0x80)
         {
             *cellPtr &= 8;
-            ULTIMA_1850_PrintString(_TEXT(0x954c, "Field destroyed!\n"));
+            ULTIMA_1850_PrintString(/*0x954c*/ "Field destroyed!\n");
             result_i = -1;
             // NOT MATCHING: 085d: nop (not aligned?)
         }
@@ -666,14 +666,14 @@ u16 D_4b2c_castStep[9] = {0x0003, 0x0002, 0x0002, 0x0002, 0x0001, 0x0001, 0x0001
 
 char* D_4b3e_virtueKeywords[8] =
 {
-    _STATIC_TEXT(0x955e, "hone"),
-    _STATIC_TEXT(0x9564, "comp"),
-    _STATIC_TEXT(0x956a, "valo"),
-    _STATIC_TEXT(0x9570, "just"),
-    _STATIC_TEXT(0x9576, "sacr"),
-    _STATIC_TEXT(0x957c, "hono"),
-    _STATIC_TEXT(0x9582, "spir"),
-    _STATIC_TEXT(0x9588, "humi")
+    /*0x955e*/ "hone",
+    /*0x9564*/ "comp",
+    /*0x956a*/ "valo",
+    /*0x9570*/ "just",
+    /*0x9576*/ "sacr",
+    /*0x957c*/ "hono",
+    /*0x9582*/ "spir",
+    /*0x9588*/ "humi"
 };
 
 // DS:4b4e, referenced by no code
@@ -775,7 +775,7 @@ static void CAST2_0966_ShrineOfVirtue(void)
     for (step_e = 0; step_e < 3; step_e++)
     {
         // 0a0c
-        ULTIMA_1850_PrintString(_TEXT(0x958e, "\nMantra:"));
+        ULTIMA_1850_PrintString(/*0x958e*/ "\nMantra:");
         ULTIMA_3b1c_GetString(D_bd08_answer, 0xc);
         if (D_bd08_answer[0] == '\0')
         {
@@ -816,7 +816,7 @@ static void CAST2_0966_ShrineOfVirtue(void)
             // "\n\nThe Altar speaks and a Quest is ordained! "
             ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x40e]);
             ULTIMA_1850_PrintString((char*)&D_b21e_scratch[D_4b5e_questTextPos[virtue_c]]);
-            ULTIMA_1850_PrintString(_TEXT(0x9598, "\"\n"));
+            ULTIMA_1850_PrintString(/*0x9598*/ "\"\n");
             ULTIMA_266c_GetChar();
             // "\n\"Return again when thy Quest is done!\"\n"
             ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x44b]);
@@ -852,12 +852,12 @@ static void CAST2_0966_ShrineOfVirtue(void)
                 if (hundreds_b == 0)
                 {
                     // 0b2f
-                    ULTIMA_1850_PrintString(_TEXT(0x959c, " gp\n"));
+                    ULTIMA_1850_PrintString(/*0x959c*/ " gp\n");
                     return; // -> 0d1d
                 }
 
                 // 0b40 (OK)
-                ULTIMA_1850_PrintString(_TEXT(0x95a2, "00 gp\n\n"));
+                ULTIMA_1850_PrintString(/*0x95a2*/ "00 gp\n\n");
                 if ((int)D_57aa_gold < hundreds_b * 100)
                 {
                     // "Thou hast not that much gold!"
@@ -883,9 +883,9 @@ static void CAST2_0966_ShrineOfVirtue(void)
 
             // 0ba1 (OK)
             ULTIMA_1c9e_SelectCharset(1);
-            ULTIMA_1850_PrintString(_TEXT(0x95aa, "ALAKAZAM"));
+            ULTIMA_1850_PrintString(/*0x95aa*/ "ALAKAZAM");
             ULTIMA_1c9e_SelectCharset(0);
-            ULTIMA_1850_PrintString(_TEXT(0x95b4, "!\n"));
+            ULTIMA_1850_PrintString(/*0x95b4*/ "!\n");
             ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
             ULTIMA_0b86_GRAP_XorFillRect(8, 8, 0xb7, 0xb7);
 
@@ -939,7 +939,7 @@ static void CAST2_0966_ShrineOfVirtue(void)
                     D_55a8_party[0].str = 0x1e;
                 }
 
-                ULTIMA_1850_PrintString(_TEXT(0x95b8, "Strength +1\n"));
+                ULTIMA_1850_PrintString(/*0x95b8*/ "Strength +1\n");
             }
 
             if (D_4b86_dexterityGain[virtue_c] != 0)
@@ -950,7 +950,7 @@ static void CAST2_0966_ShrineOfVirtue(void)
                     D_55a8_party[0].dex = 0x1e;
                 }
 
-                ULTIMA_1850_PrintString(_TEXT(0x95c6, "Dexterity +1\n"));
+                ULTIMA_1850_PrintString(/*0x95c6*/ "Dexterity +1\n");
             }
 
             if (D_4b8e_intelligenceGain[virtue_c] != 0)
@@ -961,7 +961,7 @@ static void CAST2_0966_ShrineOfVirtue(void)
                     D_55a8_party[0].intel = 0x1e;
                 }
 
-                ULTIMA_1850_PrintString(_TEXT(0x95d4, "Intelligence +1\n"));
+                ULTIMA_1850_PrintString(/*0x95d4*/ "Intelligence +1\n");
             }
 
             if (virtue_c == 7)
@@ -1007,7 +1007,7 @@ static void CAST2_0d24_Codex(void)
 
         ULTIMA_16ba_PrintChar('\"');
         ULTIMA_1850_PrintString((char*)&D_b21e_scratch[D_4b6e_codexTextPos[virtue]]);
-        ULTIMA_1850_PrintString(_TEXT(0x95e6, "\"\n\n"));
+        ULTIMA_1850_PrintString(/*0x95e6*/ "\"\n\n");
         ULTIMA_266c_GetChar();
 
         if ((byte)D_58ce_questsDone == 0xff)
@@ -1023,7 +1023,7 @@ static void CAST2_0d24_Codex(void)
             ULTIMA_3072_ShakeScreen();
             ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x555]);
             ULTIMA_266c_GetChar();
-            ULTIMA_1850_PrintString(_TEXT(0x95ea, "Thou dost read:\n\n"));
+            ULTIMA_1850_PrintString(/*0x95ea*/ "Thou dost read:\n\n");
             ULTIMA_1c9e_SelectCharset(1);
             ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x57f]);
             ULTIMA_1c9e_SelectCharset(0);
@@ -1080,14 +1080,14 @@ void CAST2_0e76_Shrine(void)
 
     if (placeTile != TILE_MAP_CODEX)
     {
-        ULTIMA_256e_ReadFileFromDisk(_TEXT(0x95fc, "MISCMAPS.DAT"), D_ac64_viewActors, 0xb0, 0xb0);
+        ULTIMA_256e_ReadFileFromDisk(/*0x95fc*/ "MISCMAPS.DAT", D_ac64_viewActors, 0xb0, 0xb0);
     }
     else
     {
-        ULTIMA_256e_ReadFileFromDisk(_TEXT(0x960a, "MISCMAPS.DAT"), D_ac64_viewActors, 0xb0, 0x160);
+        ULTIMA_256e_ReadFileFromDisk(/*0x960a*/ "MISCMAPS.DAT", D_ac64_viewActors, 0xb0, 0x160);
     }
 
-    ULTIMA_256e_ReadFileFromDisk(_TEXT(0x9618, "MISCMSG.DAT"), D_b21e_scratch, 2000, 0x3ab);
+    ULTIMA_256e_ReadFileFromDisk(/*0x9618*/ "MISCMSG.DAT", D_b21e_scratch, 2000, 0x3ab);
 
     // 0f0c
     for (row = 0; row < 0xb; row++)
@@ -1140,14 +1140,14 @@ void CAST2_0e76_Shrine(void)
     CAST2_0e64_Footstep();
     if (placeTile == TILE_MAP_CODEX && urnCount_f > 0)
     {
-        ULTIMA_1850_PrintString(_TEXT(0x9624, "\n\nThou dost see\n"));
+        ULTIMA_1850_PrintString(/*0x9624*/ "\n\nThou dost see\n");
         if (urnCount_f == 1)
         {
-            ULTIMA_1850_PrintString(_TEXT(0x9636, "an urn marked:\n\n"));
+            ULTIMA_1850_PrintString(/*0x9636*/ "an urn marked:\n\n");
         }
         else
         {
-            ULTIMA_1850_PrintString(_TEXT(0x9648, "urns marked:\n\n"));
+            ULTIMA_1850_PrintString(/*0x9648*/ "urns marked:\n\n");
         }
 
         // 0fcf (OK)
@@ -1228,7 +1228,7 @@ void CAST2_10fe_SaveGame(void)
     byte local_4;
     byte local_6_an;
 
-    ULTIMA_1850_PrintString(_TEXT(0x9658, "\nSave game? "));
+    ULTIMA_1850_PrintString(/*0x9658*/ "\nSave game? ");
 
     while ((local_6_an = ULTIMA_266c_GetChar()) != 'Y')
     {
@@ -1238,30 +1238,30 @@ void CAST2_10fe_SaveGame(void)
 
     if (local_6_an == 'N')
     {
-        ULTIMA_1850_PrintString(_TEXT(0x9666, "No\n"));
+        ULTIMA_1850_PrintString(/*0x9666*/ "No\n");
     }
     else
     {
-        ULTIMA_1850_PrintString(_TEXT(0x966a, "Yes\nSaving...\n"));
+        ULTIMA_1850_PrintString(/*0x966a*/ "Yes\nSaving...\n");
         local_4 = D_a9bd_curDisk[0];
         if (D_a9bd_curDisk[0] != 5)
         {
             ULTIMA_251e_SwitchDisks(1);
         }
 
-        ULTIMA_256e_ReadFileFromDisk(_TEXT(0x967a, "UNDER.OOL"), D_b21e_scratch + 0x100, 0x100, 0);
+        ULTIMA_256e_ReadFileFromDisk(/*0x967a*/ "UNDER.OOL", D_b21e_scratch + 0x100, 0x100, 0);
         ULTIMA_251e_SwitchDisks(1);
-        ULTIMA_256e_ReadFileFromDisk(_TEXT(0x9684, "BRIT.OOL"), D_b21e_scratch, 0x100, 0);
+        ULTIMA_256e_ReadFileFromDisk(/*0x9684*/ "BRIT.OOL", D_b21e_scratch, 0x100, 0);
         if (local_4 != 1)
         {
-            ULTIMA_25d8_WriteFileToDisk(_TEXT(0x968e, "UNDER.OOL"), D_b21e_scratch + 0x100, 0x100);
+            ULTIMA_25d8_WriteFileToDisk(/*0x968e*/ "UNDER.OOL", D_b21e_scratch + 0x100, 0x100);
         }
 
         ULTIMA_251e_SwitchDisks(3);
-        ULTIMA_25d8_WriteFileToDisk(_TEXT(0x9698, "SAVED.GAM"), &D_55a6_saveStart, ((int)&D_6606_saveEnd - (int)&D_55a6_saveStart) /*0x1060*/);
-        ULTIMA_25d8_WriteFileToDisk(_TEXT(0x96a2, "SAVED.OOL"), D_b21e_scratch, 0x200);
+        ULTIMA_25d8_WriteFileToDisk(/*0x9698*/ "SAVED.GAM", &D_55a6_saveStart, ((int)&D_6606_saveEnd - (int)&D_55a6_saveStart) /*0x1060*/);
+        ULTIMA_25d8_WriteFileToDisk(/*0x96a2*/ "SAVED.OOL", D_b21e_scratch, 0x200);
         ULTIMA_251e_SwitchDisks(local_4);
-        ULTIMA_1850_PrintString(_TEXT(0x96ac, "Done.\n"));
+        ULTIMA_1850_PrintString(/*0x96ac*/ "Done.\n");
     }
 }
 

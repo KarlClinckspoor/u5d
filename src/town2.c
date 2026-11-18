@@ -22,7 +22,7 @@
 // "Begone, vermin!": the party is damaged and the NPC becomes a flee-er.
 void TOWN_10da_ShoutBegone(int npc)
 {
-    ULTIMA_1850_PrintString(_TEXT(0x278a, "\"Begone,\nvermin!\"\n"));
+    ULTIMA_1850_PrintString(/*0x278a*/ "\"Begone,\nvermin!\"\n");
     ULTIMA_2aa8_DamageParty();
     TOWN_08d4_SetFlee(npc);
 }
@@ -89,18 +89,18 @@ static void TOWN_1156_ShadowlordEffect(void)
 }
 
 char* D_27dc_shadowlordTraits[3] = {
-    _STATIC_TEXT(0x279d, "falsehood"),
-    _STATIC_TEXT(0x27a7, "hatred"),
-    _STATIC_TEXT(0x27ae, "cowardice")
+    /*0x279d*/ "falsehood",
+    /*0x27a7*/ "hatred",
+    /*0x27ae*/ "cowardice"
 };
 
 
 // "An air of falsehood/hatred/cowardice doth surround thee..." with a sound.
 static void TOWN_11b8_PrintAirOf(int shadowlord)
 {
-    ULTIMA_1850_PrintString(_TEXT(0x27b8, "\nAn air of\n"));
+    ULTIMA_1850_PrintString(/*0x27b8*/ "\nAn air of\n");
     ULTIMA_1850_PrintString(D_27dc_shadowlordTraits[shadowlord]);
-    ULTIMA_1850_PrintString(_TEXT(0x27c4, " doth surround thee...\n"));
+    ULTIMA_1850_PrintString(/*0x27c4*/ " doth surround thee...\n");
     ULTIMA_2192_AudioPulse(0x19c8, 1, 60000, 2000, 1);
 }
 
@@ -174,8 +174,8 @@ static int TOWN_12ae_Arrest(void)
     }
     else
     {
-        ULTIMA_1850_PrintString(_TEXT(0x27e2, "\n\"Thou art under arrest!\"\n\n"));
-        ULTIMA_1850_PrintString(_TEXT(0x27fe, "\"Wilt thou come quietly?\"\n\n:"));
+        ULTIMA_1850_PrintString(/*0x27e2*/ "\n\"Thou art under arrest!\"\n\n");
+        ULTIMA_1850_PrintString(/*0x27fe*/ "\"Wilt thou come quietly?\"\n\n:");
 
         do
         {
@@ -184,9 +184,9 @@ static int TOWN_12ae_Arrest(void)
 
         if (key_h == 'Y')
         {
-            ULTIMA_1850_PrintString(_TEXT(0x281b, "Yes\n\nThe guard strikes thee unconscious!\n"));
+            ULTIMA_1850_PrintString(/*0x281b*/ "Yes\n\nThe guard strikes thee unconscious!\n");
             ULTIMA_0a70_GRAP_2d_SetPenColor(0);
-            ULTIMA_1850_PrintString(_TEXT(0x2845, "\nThou dost awaken to...\n"));
+            ULTIMA_1850_PrintString(/*0x2845*/ "\nThou dost awaken to...\n");
             D_5893_mapId = 4;
             D_5896_mapX = 0x19;
             D_5897_mapY = 4;
@@ -203,7 +203,7 @@ static int TOWN_12ae_Arrest(void)
         }
         else
         {
-            ULTIMA_1850_PrintString(_TEXT(0x285e, "No\n\n\"Then defend thyself, rogue!\"\n"));
+            ULTIMA_1850_PrintString(/*0x285e*/ "No\n\n\"Then defend thyself, rogue!\"\n");
             TOWN_0958_RaiseAlarm();
             fight = 1;
         }
@@ -255,7 +255,7 @@ static void TOWN_1352_NpcApproaches(int forced)
     {
         if (D_5c5a_actors[D_5f5e_npcs[D_65bf_npcApproaching].actorIdx].tile >= TILE_ACTOR_WIZARD)
         {
-            ULTIMA_1850_PrintString(_TEXT(0x2881, "\nAttacked!\n"));
+            ULTIMA_1850_PrintString(/*0x2881*/ "\nAttacked!\n");
             TOWN_09bc_FightNpc(D_65bf_npcApproaching);
         }
         else
@@ -290,7 +290,7 @@ void TOWN_141e_MainLoop(void)
         {
             ULTIMA_16ba_PrintChar('\n');
             ULTIMA_4c2a_PrintLeftCap();
-            ULTIMA_1850_PrintString(_TEXT(0x288d, "Zzzzzz...\n"));
+            ULTIMA_1850_PrintString(/*0x288d*/ "Zzzzzz...\n");
         }
         else if (leader_m == -1)
         {
@@ -336,7 +336,7 @@ void TOWN_141e_MainLoop(void)
                         break;
 
                     case U5_KEY_CTRL_E: // 14cc (969c)
-                        ULTIMA_1850_PrintString(_TEXT(0x2898, "Exit to DOS? "));
+                        ULTIMA_1850_PrintString(/*0x2898*/ "Exit to DOS? ");
                         key = ULTIMA_266c_GetChar();
                         if (key == 0x59)
                         {
@@ -345,25 +345,25 @@ void TOWN_141e_MainLoop(void)
                         }
                         else
                         {
-                            ULTIMA_1850_PrintString(_TEXT(0x28a6, "N\n"));
+                            ULTIMA_1850_PrintString(/*0x28a6*/ "N\n");
                         }
                         break;
 
                     case U5_KEY_CTRL_V: // 14f8 (96c8)
-                        ULTIMA_1850_PrintString(_TEXT(0x28a9, U5_VERSION));
+                        ULTIMA_1850_PrintString(/*0x28a9*/ "1.16");
                         ULTIMA_16ba_PrintChar('\n');
                         turn = 0;
                         break;
 
                     case U5_KEY_CTRL_S: // 1508 (96d8)
-                        ULTIMA_1850_PrintString(_TEXT(0x28ae, "Sound "));
+                        ULTIMA_1850_PrintString(/*0x28ae*/ "Sound ");
                         if (D_a9ce_soundOn != 0)
                         {
-                            ULTIMA_1850_PrintString(_TEXT(0x28b5, "Off\n"));
+                            ULTIMA_1850_PrintString(/*0x28b5*/ "Off\n");
                         }
                         else
                         {
-                            ULTIMA_1850_PrintString(_TEXT(0x28ba, "On\n"));
+                            ULTIMA_1850_PrintString(/*0x28ba*/ "On\n");
                         }
 
                         D_a9ce_soundOn = !D_a9ce_soundOn;
@@ -380,7 +380,7 @@ void TOWN_141e_MainLoop(void)
                         break;
 
                     default: // 1544 (9714)
-                        ULTIMA_1850_PrintString(_TEXT(0x28be, "What?\n"));
+                        ULTIMA_1850_PrintString(/*0x28be*/ "What?\n");
                         turn = 0;
                         break;
                     }

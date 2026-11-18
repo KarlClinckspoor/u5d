@@ -33,16 +33,16 @@ void NPC_0000_LoadNpcFile(void)
     switch (kind_j)
     {
     case 0:
-        fileName = _TEXT(0x6d46, "towne.npc");
+        fileName = /*0x6d46*/ "towne.npc";
         break;
     case 1:
-        fileName = _TEXT(0x6d50, "dwelling.npc");
+        fileName = /*0x6d50*/ "dwelling.npc";
         break;
     case 2:
-        fileName = _TEXT(0x6d5e, "castle.npc");
+        fileName = /*0x6d5e*/ "castle.npc";
         break;
     case 3:
-        fileName = _TEXT(0x6d6a, "keep.npc");
+        fileName = /*0x6d6a*/ "keep.npc";
         break;
     }
 
@@ -483,8 +483,6 @@ static void NPC_06e4_PursueOrFlee(int npc, int slot)
     int distance_e;
     int type_n;
 
-    CHECK_PARAM_RANGE(npc, 0, 32);
-    CHECK_PARAM_RANGE(slot, 0, 3);
 
     avatar_d = &D_5c5a_actors[0];
     npcRec_e = &D_5f5e_npcs[npc];

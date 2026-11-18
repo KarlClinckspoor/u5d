@@ -530,7 +530,7 @@ STUB int D_5314_logoFrameHeight[7]; // and heights
 // 5338..533f: "EGA.DRV"
 // 5340..5347: "T1K.DRV"
 // 5348..534f: "HER.DRV"
-STUB void* FAR D_5350_driverEntry; // far pointer into the video driver; the offset is the function number
+STUB void* far D_5350_driverEntry; // far pointer into the video driver; the offset is the function number
 STUB u16 D_5354_pageSegment; // segment of video page buffer (ega: 0xa800, t1k: allocated memory)
 STUB u16 D_5356_timerCalibration; // timer calibration
 STUB u16 D_5358_memorySize; // memory size
@@ -547,12 +547,12 @@ STUB u16 D_538c_keyBufferOff; // Ctrl-B: "Buffer Off/On"
 STUB u16 D_538e_cursorAdvance; // cursor advance flag
 STUB u16 D_5390_cursorFirstChar; // keystroke cursor begin idx
 STUB u16 D_5392_cursorFrameCount;
-STUB void (FAR *D_5394_diskSwapFn)(void); // disk swap message function pointer
+STUB void (far *D_5394_diskSwapFn)(void); // disk swap message function pointer
 //STUB u16 D_5398; // segment of current charset
-STUB u8* FAR D_5398_currentCharset;        // ptr of current charset
+STUB u8* far D_5398_currentCharset;        // ptr of current charset
 STUB TextWindow* D_539a_currentTextWindow; // address of current text window data
 //STUB u16 D_539c_charsetTable[4]; // charset segment table
-STUB u8* FAR D_539c_charsetTable[4];    // charset table
+STUB u8* far D_539c_charsetTable[4];    // charset table
 STUB u16 D_53a4_underline; // underline flag (bit 0 of byte 7)
 STUB u16 D_53a6_centerText; // ? flag (bit 1 of byte 7)
 STUB u16 D_53a8_inverse; // inverse flag (bit 1 of byte 7)

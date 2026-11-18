@@ -74,12 +74,12 @@ static void COMSUBS_00d2_PrintMiss(int combatant)
 {
     if (D_588f_castCircle != 0)
     {
-        ULTIMA_1850_PrintString(_TEXT(0x99a0, "Failed!\n"));
+        ULTIMA_1850_PrintString(/*0x99a0*/ "Failed!\n");
     }
     else
     {
         COMSUBS_0094_PrintName(combatant);
-        ULTIMA_1850_PrintString(_TEXT(0x99aa, " missed!\n"));
+        ULTIMA_1850_PrintString(/*0x99aa*/ " missed!\n");
     }
 }
 
@@ -121,7 +121,7 @@ int COMSUBS_00f4_MonsterSpecial(int combatant)
 
                 ULTIMA_2900_UpdateVitalsDisplay();
                 COMSUBS_0094_PrintName(victim_c);
-                ULTIMA_1850_PrintString(_TEXT(0x99b4, " possessed!\n"));
+                ULTIMA_1850_PrintString(/*0x99b4*/ " possessed!\n");
                 ULTIMA_2192_AudioPulse(0xc1c, 1, 30000, 1000, 2);
                 if (enemyType == 0x26)
                 {
@@ -139,13 +139,13 @@ int COMSUBS_00f4_MonsterSpecial(int combatant)
         COMSUBS_0094_PrintName(combatant);
         if (D_5c5a_actors[actorIdx].animTile == 0)
         {
-            ULTIMA_1850_PrintString(_TEXT(0x99c2, " reappears!"));
+            ULTIMA_1850_PrintString(/*0x99c2*/ " reappears!");
             D_ba14_combatants[combatant].flags &= ~COMBAT_FLAGS_INVISIBLE;
             D_5c5a_actors[actorIdx].animTile = D_5c5a_actors[actorIdx].tile;
         }
         else
         {
-            ULTIMA_1850_PrintString(_TEXT(0x99ce, " disappears!"));
+            ULTIMA_1850_PrintString(/*0x99ce*/ " disappears!");
             D_ba14_combatants[combatant].flags |= COMBAT_FLAGS_INVISIBLE;
             D_5c5a_actors[actorIdx].animTile = 0;
         }
@@ -164,7 +164,7 @@ int COMSUBS_00f4_MonsterSpecial(int combatant)
                 {
                     ULTIMA_16ba_PrintChar('\n');
                     COMSUBS_0094_PrintName(combatant);
-                    ULTIMA_1850_PrintString(_TEXT(0x99dc, " gates in a daemon!\n"));
+                    ULTIMA_1850_PrintString(/*0x99dc*/ " gates in a daemon!\n");
                     ULTIMA_2192_AudioPulse(0xac8, 1, 5000, 1000, 0xf);
 
                     daemonActor = &D_5c5a_actors[D_ba14_combatants[daemon].actorIdx];
@@ -197,7 +197,7 @@ void COMSUBS_0312_ReportHit(int target, int attacker)
     if ((D_58a2_combatEvents & 0x20) != 0)
     {
         COMSUBS_0094_PrintName(target);
-        ULTIMA_1850_PrintString(_TEXT(0x99f2, " grazed!\n"));
+        ULTIMA_1850_PrintString(/*0x99f2*/ " grazed!\n");
         ULTIMA_43ae_AudioSweepTone(0x4b0, 2000, 1, 0x28);
     }
 
@@ -206,13 +206,13 @@ void COMSUBS_0312_ReportHit(int target, int attacker)
         if (targetFlags_k == 0 || (targetFlags_k & COMBAT_FLAGS_DEAD) != 0)
         {
             COMSUBS_0094_PrintName(target);
-            ULTIMA_1850_PrintString(_TEXT(0x99fc, " killed!\n"));
+            ULTIMA_1850_PrintString(/*0x99fc*/ " killed!\n");
             D_58a2_combatEvents |= 1;
         }
         else if ((D_58a2_combatEvents & 4) != 0)
         {
             COMSUBS_0094_PrintName(target);
-            ULTIMA_1850_PrintString(_TEXT(0x9a06, " slept!\n"));
+            ULTIMA_1850_PrintString(/*0x9a06*/ " slept!\n");
         }
         else if ((D_58a2_combatEvents & 8) == 0)
         {
@@ -221,7 +221,7 @@ void COMSUBS_0312_ReportHit(int target, int attacker)
             {
                 if (attacker != 0xff && D_ba14_combatants[attacker].entityIdx == 0x2d)
                 {
-                    ULTIMA_1850_PrintString(_TEXT(0x9a10, " dragged under!\n"));
+                    ULTIMA_1850_PrintString(/*0x9a10*/ " dragged under!\n");
                     ULTIMA_43ae_AudioSweepTone(0x4b0, 2000, 1, 0x28);
                     D_ba14_combatants[target].flags |= COMBAT_FLAGS_4;
                     D_5c5a_actors[D_ba14_combatants[target].actorIdx].animTile = 0;
@@ -229,7 +229,7 @@ void COMSUBS_0312_ReportHit(int target, int attacker)
                 }
                 else
                 {
-                    ULTIMA_1850_PrintString(_TEXT(0x9a22, " hit!\n"));
+                    ULTIMA_1850_PrintString(/*0x9a22*/ " hit!\n");
                 }
             }
             else
@@ -238,16 +238,16 @@ void COMSUBS_0312_ReportHit(int target, int attacker)
                 switch (woundLevel_j)
                 {
                 case 4:
-                    ULTIMA_1850_PrintString(_TEXT(0x9a2a, " barely wounded!\n"));
+                    ULTIMA_1850_PrintString(/*0x9a2a*/ " barely wounded!\n");
                     break;
                 case 3:
-                    ULTIMA_1850_PrintString(_TEXT(0x9a3c, " lightly wounded!\n"));
+                    ULTIMA_1850_PrintString(/*0x9a3c*/ " lightly wounded!\n");
                     break;
                 case 2:
-                    ULTIMA_1850_PrintString(_TEXT(0x9a50, " heavily wounded!\n"));
+                    ULTIMA_1850_PrintString(/*0x9a50*/ " heavily wounded!\n");
                     break;
                 case 1:
-                    ULTIMA_1850_PrintString(_TEXT(0x9a64, " critical!\n"));
+                    ULTIMA_1850_PrintString(/*0x9a64*/ " critical!\n");
                     break;
                 }
             }
@@ -623,7 +623,7 @@ int COMSUBS_09fc_EnemyInterferes(int combatant)
     {
         ULTIMA_16ba_PrintChar('\n');
         COMSUBS_0094_PrintName(attacker);
-        ULTIMA_1850_PrintString(_TEXT(0x9a70, " interferes!\n"));
+        ULTIMA_1850_PrintString(/*0x9a70*/ " interferes!\n");
         return 1;
     }
 
@@ -645,7 +645,7 @@ static void COMSUBS_0a68_FireMissile(int shooter, int weapon, int missileKind)
     if (weapon != 0x1a && weapon != 0x1c && weapon != 0x24 && weapon != 0x13 && weapon != 0x11 ||
         COMSUBS_09fc_EnemyInterferes(shooter) == 0)
     {
-        ULTIMA_1850_PrintString(_TEXT(0x9a7e, "Aim! "));
+        ULTIMA_1850_PrintString(/*0x9a7e*/ "Aim! ");
 
         range_b = COMSUBS_0504_AimCrosshair(shooter, D_1664_weaponRange[weapon]);
         if (range_b != 0)
@@ -758,12 +758,12 @@ void COMSUBS_0c52_AttackWith(int attacker, int weapon)
 
     if (range == 0)
     {
-        ULTIMA_1850_PrintString(_TEXT(0x9a84, "Aim! "));
+        ULTIMA_1850_PrintString(/*0x9a84*/ "Aim! ");
         aimed = COMSUBS_0504_AimCrosshair(attacker, 1);
         victim = COMSUBS_0748_CombatantAt(D_5899_crosshairX, D_589a_crosshairY);
         if (aimed == 0 || victim == -1)
         {
-            ULTIMA_1850_PrintString(_TEXT(0x9a8a, "Nothing!\n"));
+            ULTIMA_1850_PrintString(/*0x9a8a*/ "Nothing!\n");
         }
         else
         {
@@ -787,11 +787,11 @@ static void COMSUBS_0d3c_AttackWithWeapon(int weapon, int weaponCount)
             D_5890_spellAttack = D_588f_castCircle = 0;
             ULTIMA_16ba_PrintChar('\n');
             ULTIMA_1850_PrintString(D_17f6_equipNames[weapon]);
-            ULTIMA_1850_PrintString(_TEXT(0x9a94, ":\n"));
+            ULTIMA_1850_PrintString(/*0x9a94*/ ":\n");
         }
 
         D_589d_attackWeapon = (u8)weapon;
-        ULTIMA_1850_PrintString(_TEXT(0x9a98, "Attack-"));
+        ULTIMA_1850_PrintString(/*0x9a98*/ "Attack-");
         COMSUBS_0c52_AttackWith(D_589e_curCombatant, weapon);
     }
 }
@@ -805,7 +805,7 @@ void COMSUBS_0d96_AttackCmd(int attacker, int weaponCount)
     if ((D_ba14_combatants[attacker].flags & COMBAT_FLAGS_PLAYER) == 0 || weaponCount == 0)
     {
         D_589d_attackWeapon = 0xff;
-        ULTIMA_1850_PrintString(_TEXT(0x9aa0, "Attack-"));
+        ULTIMA_1850_PrintString(/*0x9aa0*/ "Attack-");
         COMSUBS_0c52_AttackWith(attacker, 0xff);
     }
     else

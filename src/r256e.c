@@ -34,9 +34,9 @@ void ULTIMA_256e_ReadFileFromDisk(char* fileName, void* addr, u16 size, u16 offs
     }
 }
 
-static void FAR ULTIMA_25ca_WriteError(void)
+static void far ULTIMA_25ca_WriteError(void)
 {
-    ULTIMA_1850_PrintString(_TEXT(0xa0e0, "\nYour disk may be write-protected. Try again.\n"));
+    ULTIMA_1850_PrintString(/*0xa0e0*/ "\nYour disk may be write-protected. Try again.\n");
     ULTIMA_1dda_WaitForKeystroke(0);
 }
 

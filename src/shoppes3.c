@@ -37,7 +37,7 @@ u8 D_4dc4_innRooms[6] = {0x03, 0x04, 0x03, 0x02, 0x02, 0x02};
 // gender is the party member's gender character: 0xc is addressed as "milady".
 static int SHOPPES3_002c_HasRoom(int gender)
 {
-    ULTIMA_1850_PrintString(_TEXT(0x4d84, "\n\n"));
+    ULTIMA_1850_PrintString(/*0x4d84*/ "\n\n");
 
     if (SHOPPES3_0000_CountGuests() < D_4dc4_innRooms[D_b114_shopIndex])
     {
@@ -45,17 +45,17 @@ static int SHOPPES3_002c_HasRoom(int gender)
     }
     else
     {
-        ULTIMA_1850_PrintString(_TEXT(0x4d87, "\"I am sorry,\n"));
+        ULTIMA_1850_PrintString(/*0x4d87*/ "\"I am sorry,\n");
         if (gender == 0xc)
         {
-            ULTIMA_1850_PrintString(_TEXT(0x4d95, "milady"));
+            ULTIMA_1850_PrintString(/*0x4d95*/ "milady");
         }
         else
         {
-            ULTIMA_1850_PrintString(_TEXT(0x4d9c, "sir"));
+            ULTIMA_1850_PrintString(/*0x4d9c*/ "sir");
         }
 
-        ULTIMA_1850_PrintString(_TEXT(0x4da0, ", but we\nhave no room\navailable.\"\n\n"));
+        ULTIMA_1850_PrintString(/*0x4da0*/ ", but we\nhave no room\navailable.\"\n\n");
         return 0;
     }
 }
@@ -88,15 +88,15 @@ static int SHOPPES3_0072_Rest(int intelligence, int gender, int outcome)
         D_b118_shopPrice += D_b118_shopPrice * -((s32)(intelligence * 3) - 100) / 100;
 
         SHOPPES_017a_PrintShopFileText(D_4e6e_innOfferTexts[D_b114_shopIndex]);
-        ULTIMA_1850_PrintString(_TEXT(0x4dca, "\nWilt thou take\nit?\" "));
+        ULTIMA_1850_PrintString(/*0x4dca*/ "\nWilt thou take\nit?\" ");
         answer = SHOPPES_0280_AskYesNo();
-        ULTIMA_1850_PrintString(_TEXT(0x4de0, "\n\n"));
+        ULTIMA_1850_PrintString(/*0x4de0*/ "\n\n");
         if (answer == 'Y')
         {
             if (D_57aa_gold < D_b118_shopPrice)
             {
-                ULTIMA_1850_PrintString(_TEXT(0x4de3, "\"Highwaymen!\nCheap, at that!\nOUT!\" "));
-                SHOPPES_0026_PrintShopText(_TEXT(0x4e07, "screams\n$.\n"));
+                ULTIMA_1850_PrintString(/*0x4de3*/ "\"Highwaymen!\nCheap, at that!\nOUT!\" ");
+                SHOPPES_0026_PrintShopText(/*0x4e07*/ "screams\n$.\n");
             }
             else
             {
@@ -104,17 +104,17 @@ static int SHOPPES3_0072_Rest(int intelligence, int gender, int outcome)
                 SHOPPES_019a_FalsehoodSurcharge();
                 ULTIMA_2900_UpdateVitalsDisplay();
 
-                ULTIMA_1850_PrintString(_TEXT(0x4e13, "\"Have a pleasant\nnight, "));
+                ULTIMA_1850_PrintString(/*0x4e13*/ "\"Have a pleasant\nnight, ");
                 if (gender == 0xc)
                 {
-                    ULTIMA_1850_PrintString(_TEXT(0x4e2c, "milady"));
+                    ULTIMA_1850_PrintString(/*0x4e2c*/ "milady");
                 }
                 else
                 {
-                    ULTIMA_1850_PrintString(_TEXT(0x4e33, "sir"));
+                    ULTIMA_1850_PrintString(/*0x4e33*/ "sir");
                 }
 
-                SHOPPES_0026_PrintShopText(_TEXT(0x4e37, "!\"\nsays $.\n\n"));
+                SHOPPES_0026_PrintShopText(/*0x4e37*/ "!\"\nsays $.\n\n");
 
                 ULTIMA_3ae6_WaitFrames(10);
                 ULTIMA_39cc_SetTile(D_594f_openDoorTile, D_5950_openDoorX, D_5951_openDoorY);
@@ -135,7 +135,7 @@ static int SHOPPES3_0072_Rest(int intelligence, int gender, int outcome)
 
                 ULTIMA_2900_UpdateVitalsDisplay();
                 ULTIMA_5910_UpdateFrame();
-                ULTIMA_1850_PrintString(_TEXT(0x4e44, "Zzzzzz....\n\n"));
+                ULTIMA_1850_PrintString(/*0x4e44*/ "Zzzzzz....\n\n");
 
                 for (member = 0; member < 0xc; member++)
                 {
@@ -154,7 +154,7 @@ static int SHOPPES3_0072_Rest(int intelligence, int gender, int outcome)
                     }
                 }
 
-                ULTIMA_1850_PrintString(_TEXT(0x4e51, "Morning!\n"));
+                ULTIMA_1850_PrintString(/*0x4e51*/ "Morning!\n");
                 TOWN_1694_PlaceActors();
 
                 // e3e0
@@ -185,7 +185,7 @@ static int SHOPPES3_0072_Rest(int intelligence, int gender, int outcome)
 
                             ULTIMA_16ba_PrintChar('\n');
                             ULTIMA_1850_PrintString(player_d->name);
-                            ULTIMA_1850_PrintString(_TEXT(0x4e5b, " has\npassed away.\n"));
+                            ULTIMA_1850_PrintString(/*0x4e5b*/ " has\npassed away.\n");
                         }
                         else if (player_d->status == STATUS_SLEEP)
                         {
@@ -238,24 +238,24 @@ static int SHOPPES3_02ae_LeaveCompanion(int intelligence, int gender, int outcom
         do
         {
             asked_i = 1;
-            SHOPPES_0026_PrintShopText(_TEXT(0x4e86, "$ asks,\n\"Who will\nstay?\" "));
+            SHOPPES_0026_PrintShopText(/*0x4e86*/ "$ asks,\n\"Who will\nstay?\" ");
             member = ULTIMA_2e8e_SelectPlayer();
             if (member == -1)
             {
-                ULTIMA_1850_PrintString(_TEXT(0x4ea0, "Nobody\n\n"));
+                ULTIMA_1850_PrintString(/*0x4ea0*/ "Nobody\n\n");
                 outcome = -2;
             }
             else
             {
-                ULTIMA_1850_PrintString(_TEXT(0x4ea9, "\n\n"));
+                ULTIMA_1850_PrintString(/*0x4ea9*/ "\n\n");
                 if (member == 0)
                 {
-                    ULTIMA_1850_PrintString(_TEXT(0x4eac, "Thy friend"));
+                    ULTIMA_1850_PrintString(/*0x4eac*/ "Thy friend");
                     if (D_585b_partyCount > 2)
                     {
                         ULTIMA_16ba_PrintChar('s');
                     }
-                    ULTIMA_1850_PrintString(_TEXT(0x4eb7, " will not leave thee!\n\n"));
+                    ULTIMA_1850_PrintString(/*0x4eb7*/ " will not leave thee!\n\n");
                     asked_i = 0;
                 }
                 else if (D_55a8_party[member].status == STATUS_DEAD)
@@ -268,11 +268,11 @@ static int SHOPPES3_02ae_LeaveCompanion(int intelligence, int gender, int outcom
                     D_b118_shopPrice = (uint)D_4d7e_innRates[D_b114_shopIndex] * 10;
                     D_b118_shopPrice += D_b118_shopPrice * -((s32)(intelligence * 3) - 100) / 100;
 
-                    ULTIMA_1850_PrintString(_TEXT(0x4ecf, "\"The rate for\nour most comfortable room will be "));
-                    SHOPPES_0026_PrintShopText(_TEXT(0x4f00, "% gold per month, due at check-out."));
-                    ULTIMA_1850_PrintString(_TEXT(0x4f24, "\nWilt thou take\nit?\" "));
+                    ULTIMA_1850_PrintString(/*0x4ecf*/ "\"The rate for\nour most comfortable room will be ");
+                    SHOPPES_0026_PrintShopText(/*0x4f00*/ "% gold per month, due at check-out.");
+                    ULTIMA_1850_PrintString(/*0x4f24*/ "\nWilt thou take\nit?\" ");
                     answer_b = SHOPPES_0280_AskYesNo();
-                    ULTIMA_1850_PrintString(_TEXT(0x4f3a, "\n\n"));
+                    ULTIMA_1850_PrintString(/*0x4f3a*/ "\n\n");
                     if (answer_b == 'Y')
                     {
                         outcome = 1;
@@ -299,7 +299,7 @@ static int SHOPPES3_02ae_LeaveCompanion(int intelligence, int gender, int outcom
 
                         D_585b_partyCount--;
                         ULTIMA_2900_UpdateVitalsDisplay();
-                        SHOPPES_0026_PrintShopText(_TEXT(0x4f3d, "\"I thank thee.\"\nsays $.\n\n"));
+                        SHOPPES_0026_PrintShopText(/*0x4f3d*/ "\"I thank thee.\"\nsays $.\n\n");
                     }
                 }
             }
@@ -360,18 +360,18 @@ static int SHOPPES3_04e6_PickUpCompanion(int intelligence, int outcome)
 
     if (D_585b_partyCount == 6)
     {
-        ULTIMA_1850_PrintString(_TEXT(0x4f57, "\n\nOne must first be left behind!\n\n"));
+        ULTIMA_1850_PrintString(/*0x4f57*/ "\n\nOne must first be left behind!\n\n");
     }
     else if (guestCount == 0)
     {
-        SHOPPES_0026_PrintShopText(_TEXT(0x4f7a, "\n\n\"No one here is from thy party!\"\nsays $.\n\n"));
+        SHOPPES_0026_PrintShopText(/*0x4f7a*/ "\n\n\"No one here is from thy party!\"\nsays $.\n\n");
     }
     else
     {
         if (guestCount > 1)
         {
             // e6ff
-            ULTIMA_1850_PrintString(_TEXT(0x4fa7, "\n\n\"Who will\ncheck out?\" "));
+            ULTIMA_1850_PrintString(/*0x4fa7*/ "\n\n\"Who will\ncheck out?\" ");
             ULTIMA_1b94_SelectTextWindow(1);
             ULTIMA_4efc_OpenStatsDivider();
             ULTIMA_1c22_SetTextWindowSize(1, 0x18, 1, 0x26, 9);
@@ -404,9 +404,9 @@ static int SHOPPES3_04e6_PickUpCompanion(int intelligence, int outcome)
 
             ULTIMA_16ba_PrintChar(0x16);
             ULTIMA_1bf2_SetTextPosition(1, 1);
-            ULTIMA_1850_PrintString(_TEXT(0x4fc0, "    GUEST"));
+            ULTIMA_1850_PrintString(/*0x4fc0*/ "    GUEST");
             ULTIMA_1bf2_SetTextPosition(1, 2);
-            ULTIMA_1850_PrintString(_TEXT(0x4fca, "  REGISTER:\n\n"));
+            ULTIMA_1850_PrintString(/*0x4fca*/ "  REGISTER:\n\n");
 
             // e7d6
             for (guest_b = 1; guest_b < 0x10; guest_b++)
@@ -464,7 +464,7 @@ static int SHOPPES3_04e6_PickUpCompanion(int intelligence, int outcome)
 
                     case U5_KEY_ESC:
                         // e8a8
-                        ULTIMA_1850_PrintString(_TEXT(0x4fd8, "No one\n\n"));
+                        ULTIMA_1850_PrintString(/*0x4fd8*/ "No one\n\n");
                         guest_b = 0;
 
                         moved_i = 1;
@@ -510,7 +510,7 @@ static int SHOPPES3_04e6_PickUpCompanion(int intelligence, int outcome)
 
             D_b118_shopPrice = months * D_b118_shopPrice;
 
-            SHOPPES_0026_PrintShopText(_TEXT(0x4fe1, "\n\n\"That will be % gold, please.\"\n\n\""));
+            SHOPPES_0026_PrintShopText(/*0x4fe1*/ "\n\n\"That will be % gold, please.\"\n\n\"");
             if (D_57aa_gold < D_b118_shopPrice)
             {
                 SHOPPES_017a_PrintShopFileText(0x275a);
@@ -543,7 +543,7 @@ static int SHOPPES3_04e6_PickUpCompanion(int intelligence, int outcome)
                     player_g->status = STATUS_DEAD;
                     player_g->hp = 0;
 
-                    ULTIMA_1850_PrintString(_TEXT(0x5005, "Thy friend has died, by the way.\"\n"));
+                    ULTIMA_1850_PrintString(/*0x5005*/ "Thy friend has died, by the way.\"\n");
                 }
                 else
                 {
@@ -560,10 +560,10 @@ static int SHOPPES3_04e6_PickUpCompanion(int intelligence, int outcome)
                         break;
                     }
 
-                    ULTIMA_1850_PrintString(_TEXT(0x5028, "I hope thou hast found thy stay enjoyable,\"\n"));
+                    ULTIMA_1850_PrintString(/*0x5028*/ "I hope thou hast found thy stay enjoyable,\"\n");
                 }
 
-                SHOPPES_0026_PrintShopText(_TEXT(0x5055, "says $.\n\n"));
+                SHOPPES_0026_PrintShopText(/*0x5055*/ "says $.\n\n");
                 ULTIMA_2900_UpdateVitalsDisplay();
             }
         }
@@ -605,19 +605,19 @@ void SHOPPES3_08b4_Inn(int playerIndex)
 
             if (key == 'N')
             {
-                ULTIMA_1850_PrintString(_TEXT(0x505f, "No"));
+                ULTIMA_1850_PrintString(/*0x505f*/ "No");
             }
             else if (key == 'Y')
             {
-                ULTIMA_1850_PrintString(_TEXT(0x5062, "Yes"));
+                ULTIMA_1850_PrintString(/*0x5062*/ "Yes");
             }
         } while (key != 'N' && key != 'Y');
 
         if (key == 'N')
             break;
 
-        SHOPPES_0026_PrintShopText(_TEXT(0x5066, "\n\n$ asks,\n\"Art thou here\nto Pick up or\n"));
-        ULTIMA_1850_PrintString(_TEXT(0x508e, "Leave a\ncompanion, or\nto Rest for the\nnight?\" "));
+        SHOPPES_0026_PrintShopText(/*0x5066*/ "\n\n$ asks,\n\"Art thou here\nto Pick up or\n");
+        ULTIMA_1850_PrintString(/*0x508e*/ "Leave a\ncompanion, or\nto Rest for the\nnight?\" ");
 
         do
         {
@@ -679,7 +679,7 @@ void SHOPPES3_08b4_Inn(int playerIndex)
 
         if (!done_k)
         {
-            ULTIMA_1850_PrintString(_TEXT(0x50bd, "\"Is there\nanything more\nI can do for\nthee?\" "));
+            ULTIMA_1850_PrintString(/*0x50bd*/ "\"Is there\nanything more\nI can do for\nthee?\" ");
         }
     }
 
