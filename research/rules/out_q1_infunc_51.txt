@@ -1,0 +1,10 @@
+NO PASS 1 OUTPUT live50one 
+base       base 199:50acba   edge 349
+cmt50      base 199:50acba   edge 299
+dedLines   base 199:50acba   edge 350
+dedOne     base 199:50acba   edge 350
+dedP4      base 199:50acba   edge 307
+dedP28     base 199:50acba   edge 267
+dedP4L     base 199:50acba   edge 307
+live50     base 199:50acba   edge 99
+ifdef50    base 199:50acba   edge 349
