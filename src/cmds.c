@@ -1,6 +1,6 @@
 #include "common/common.h"
 // CMDS_0000 sits at a limit of pass 2's memory, which the names of the globals this object
-// declares and uses count against: with the readable names of the 23 below (found by taking
+// declares and uses count against: with the readable names of the 24 below (found by taking
 // the new names one at a time) it loses its loop optimization. So this object alone knows
 // them by their short names; the source below uses the readable ones, and the link
 // resolves the short ones by the address they carry. After common.h, which defines
@@ -20,6 +20,7 @@
 #define D_a9ce_soundOn D_a9ce
 #define D_ba14_combatants D_ba14
 #define COMBAT_0000_IsCellFree COMBAT_0000
+#define DNGLOOK_117e_PlaceCombatants DNGLOOK_117e
 #define OUTSUBS_0658_Apparition OUTSUBS_0658
 #define ULTIMA_3ae6_WaitFrames ULTIMA_3ae6
 #define ULTIMA_400c_RingRegeneration ULTIMA_400c
@@ -81,7 +82,7 @@ int CMDS_0000(int param_1, int param_2, int param_3)
     D_587b_activePlayer = 0xff;
     if ((param_1 & 2) != 0)
     {
-        DNGLOOK_117e(GetDungeonMap((uint)D_5896_mapX, (uint)D_5897_mapY, D_5895_mapLevel & 0xff), 0);
+        DNGLOOK_117e_PlaceCombatants(GetDungeonMap((uint)D_5896_mapX, (uint)D_5897_mapY, D_5895_mapLevel & 0xff), 0);
     }
     else
     {
@@ -219,7 +220,7 @@ int CMDS_0000(int param_1, int param_2, int param_3)
                 ULTIMA_2900_UpdateVitalsDisplay();
                 if ((param_1 & 2) != 0)
                 {
-                    DNGLOOK_117e(GetDungeonMap((uint)D_5896_mapX, (uint)D_5897_mapY, D_5895_mapLevel & 0xff), 1);
+                    DNGLOOK_117e_PlaceCombatants(GetDungeonMap((uint)D_5896_mapX, (uint)D_5897_mapY, D_5895_mapLevel & 0xff), 1);
                 }
                 else
                 {

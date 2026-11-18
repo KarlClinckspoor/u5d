@@ -839,9 +839,9 @@ int DUNGEON_1d4a_AttackCmd(void)
     if (local_6 == D_5c5a_actors[1].x && local_8 == D_5c5a_actors[1].y)
     {
         D_58a1_combatFlags = 2;
-        DNGLOOK_1130();
-        DNGLOOK_0c6c();
-        DNGLOOK_0d3e();
+        DNGLOOK_1130_FreeDungeonImages();
+        DNGLOOK_0c6c_BuildWallRing();
+        DNGLOOK_0d3e_SetUpDungeonFight();
         ULTIMA_5f86_SpecialMapHandler(2, D_5c5a_actors[1].value, 0);
 
         if (D_58a0_combatExitDir == 5)
@@ -867,7 +867,7 @@ int DUNGEON_1d4a_AttackCmd(void)
             }
         }
 
-        DNGLOOK_109e(1);
+        DNGLOOK_109e_LoadDungeonImages(1);
 
         if (D_5893_mapId != 0)
         {

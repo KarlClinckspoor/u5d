@@ -123,19 +123,19 @@ STUB char* D_22ca_shopOwners[8][16]; // shop owners, likewise
 STUB u8 D_23ca_shopMapIds[8][16]; // the map of each shop: a kind's row is searched for the current map (TALK_00e6_TalkToMerchant)
 
 // dnglook
-STUB u8 D_244a[8];
-STUB u8 D_2452[6];
-STUB u8 D_2458[6];
-STUB u8 D_245e[6];
-STUB u8 D_2464[6];
-STUB u8 D_246a[6];
-STUB u8 D_2470[6];
-STUB u8 D_2476[0x10];
-STUB u8 D_2486[0x10];
-STUB u8 D_2496[0x10];
-STUB u8 D_24a6[0x10];
-STUB u8 D_24b6[0x10];
-STUB u8 D_24c6[0x10];
+STUB u8 D_244a_centreTiles[8];
+STUB u8 D_2452_roomPartyX[6];
+STUB u8 D_2458_roomPartyY[6];
+STUB u8 D_245e_partyLineA[6];
+STUB u8 D_2464_partyLineB[6];
+STUB u8 D_246a_partyLineC[6];
+STUB u8 D_2470_partyLineD[6];
+STUB u8 D_2476_monsterLineA[0x10];
+STUB u8 D_2486_monsterLineB[0x10];
+STUB u8 D_2496_monsterLineC[0x10];
+STUB u8 D_24a6_monsterLineD[0x10];
+STUB u8 D_24b6_roomMonsterX[0x10];
+STUB u8 D_24c6_roomMonsterY[0x10];
 
 STUB s16 D_24d6_facingDx[4]; // by facing: north, east, south, west
 STUB s16 D_24de_facingDy[4]; // direction offset
@@ -274,15 +274,15 @@ STUB u8 D_3822_shoreLandMask[16]; // ~3832)
 
 STUB u8 D_3832_edgeBits[8]; // ~383a; [7] + gap 1?
 
-STUB u8 D_383a[6];
-STUB u8 D_3840;
+STUB u8 D_383a_roomsNeverCleared[6];
+STUB u8 D_3840_neverClearedCount;
 //STUB u8 D_3841;
 
-STUB u8 D_3842[0xd]; // ~384f)? TODO: size, offset
-STUB u8 D_3850[0xd]; // ~385d)? TODO: size, offset
+STUB u8 D_3842_objectValueRange[0xd]; // ~384f)? TODO: size, offset
+STUB u8 D_3850_objectValueBase[0xd]; // ~385d)? TODO: size, offset
                      // D_383f, D_384d
 
-STUB u8 D_385e[8]; // ~3866)
+STUB u8 D_385e_randomMonsterTypes[8]; // ~3866)
 STUB u8 D_3866_dungeonChunks[8]; // ~386e)
 STUB u8 D_386e_shrineChunks[8]; // ~3876)
 STUB u8 D_3876_chunkFileIndex[0x100]; // ~3976) TODO: size?
@@ -810,7 +810,7 @@ STUB u8 D_6aa8[0x24];
 // a500
 
 // DS:a524-a9bc is the modules' _BSS, their static variables, in link order: D_a524 (mainout.c),
-// D_a526 and D_a527 (mainoutb.c), D_a528 and D_a628 (dnglook.c), D_a728_pathXs and D_a872_pathYs (comsubs.c).
+// D_a526 and D_a527 (mainoutb.c), D_a528_viewQueueX and D_a628_viewQueueY (dnglook.c), D_a728_pathXs and D_a872_pathYs (comsubs.c).
 
 // a900
 

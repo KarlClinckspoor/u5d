@@ -930,7 +930,7 @@ int ULTIMA_3b9e_GetNumber(int param_1_maxLen)
     return local_10_aa;
 }
 
-void DNGLOOK_109e(void); // NOTE: SIC
+void DNGLOOK_109e_LoadDungeonImages(void); // NOTE: SIC
 void MAINOUT_007a(void);
 int MAINOUT_1a60(void);
 
@@ -1067,11 +1067,11 @@ static void ULTIMA_3c9a_HoleUpCmd(void)
                 if (D_5893_mapId > 0x20)
                 {
                     D_58a1_combatFlags = 6;
-                    DNGLOOK_1130();
-                    DNGLOOK_0d3e();
+                    DNGLOOK_1130_FreeDungeonImages();
+                    DNGLOOK_0d3e_SetUpDungeonFight();
                     ULTIMA_5f86_SpecialMapHandler(D_58a1_combatFlags, local_8, local_10_aa);
                     ULTIMA_251e_SwitchDisks(2);
-                    DNGLOOK_109e(); // NOTE: sic (bug?)
+                    DNGLOOK_109e_LoadDungeonImages(); // NOTE: sic (bug?)
 
                     D_5c5a_actors[1] = D_a9fc_savedActors[1];
 

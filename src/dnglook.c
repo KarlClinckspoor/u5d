@@ -10,38 +10,39 @@
 #include "sjog.h"
 #include "audio/audio.h"
 
-static u8 D_a528[0x100]; // this object's _BSS (DS:a528)
-static u8 D_a628[0x100];
+static u8 D_a528_viewQueueX[0x100]; // this object's _BSS (DS:a528)
+static u8 D_a628_viewQueueY[0x100];
 
-u8 D_383a[6] = {0x50, 0x5b, 0x41, 0x46, 0x4b, 0x4c};
+u8 D_383a_roomsNeverCleared[6] = {0x50, 0x5b, 0x41, 0x46, 0x4b, 0x4c};
 
-u8 D_3840 = 6;
+u8 D_3840_neverClearedCount = 6;
 
-u8 D_3842[0xd] =
+u8 D_3842_objectValueRange[0xd] =
 {
     0x08, 0x08, 0x04, 0x03, 0x08, 0x08, 0x04, 0x03,
     0x06, 0x03, 0x08, 0x01, 0x08
 };
 
-u8 D_3850[0xd] =
+u8 D_3850_objectValueBase[0xd] =
 {
     0x00, 0x00, 0x1e, 0x04, 0x01, 0x01, 0x00, 0x2a,
     0x09, 0x2d, 0x01, 0x01, 0x01
 };
 
-u8 D_385e[8] = {0x14, 0x15, 0x16, 0x22, 0x21, 0x18, 0x1f, 0x18};
+u8 D_385e_randomMonsterTypes[8] = {0x14, 0x15, 0x16, 0x22, 0x21, 0x18, 0x1f, 0x18};
 
 // CHECKED (code structure)
+// the Look command in a dungeon: darkness without light, else what is in the cell ahead (fields, walls, doors, chests, ladders, a fountain to drink from)
 void DNGLOOK_0000_LookCmdInDungeon(void)
 {
-    int local_e_am;
-    int local_c;
-    int local_a;
-    int local_8;
-    byte local_6;
-    int local_4_ab;
+    int member_g;
+    int cell_o;
+    int lookY;
+    int lookX;
+    byte answer;
+    int style_o;
 
-    if ((local_e_am = ULTIMA_4988_GetActingPlayer()) + 1 == 0)
+    if ((member_g = ULTIMA_4988_GetActingPlayer()) + 1 == 0)
     {
         return;
     }
@@ -57,22 +58,22 @@ void DNGLOOK_0000_LookCmdInDungeon(void)
         return;
     }
 
-    local_8 = D_5876_tempX;
-    local_a = D_5878_tempY;
+    lookX = D_5876_tempX;
+    lookY = D_5878_tempY;
 
-    local_c = GetDungeonMap(local_8 & 7, local_a & 7, D_5895_mapLevel);
+    cell_o = GetDungeonMap(lookX & 7, lookY & 7, D_5895_mapLevel);
 
     ULTIMA_1850_PrintString(_TEXT(0x7542, "You see:\n"));
 
-    if (local_c == 0x61)
+    if (cell_o == 0x61)
     {
-        local_c = 0;
+        cell_o = 0;
     }
 
     // a30b
-    if ((local_c & 0xf0) == 0x80)
+    if ((cell_o & 0xf0) == 0x80)
     {
-        switch (local_c)
+        switch (cell_o)
         {
         case 0x80:
             ULTIMA_1850_PrintString(_TEXT(0x754c, "A sleep field.\n"));
@@ -95,14 +96,14 @@ void DNGLOOK_0000_LookCmdInDungeon(void)
         return;
     }
 
-    if ((local_c & 0xf0) == 0xc0)
+    if ((cell_o & 0xf0) == 0xc0)
     {
-        local_4_ab = D_6604_dungeonStyle & 0xf;
-        if (local_4_ab == 1)
+        style_o = D_6604_dungeonStyle & 0xf;
+        if (style_o == 1)
         {
             ULTIMA_1850_PrintString(_TEXT(0x75aa, "a dripping stalactite.\n"));
         }
-        else if (local_4_ab == 2)
+        else if (style_o == 2)
         {
             ULTIMA_1850_PrintString(_TEXT(0x75c2, "a caved in passage.\n"));
         }
@@ -123,7 +124,7 @@ void DNGLOOK_0000_LookCmdInDungeon(void)
     }
 
     // a392
-    switch (local_c & 0xf0)
+    switch (cell_o & 0xf0)
     {
     case 0x00: // a3b8
         ULTIMA_1850_PrintString(_TEXT(0x7618, "a passage.\n"));
@@ -176,19 +177,19 @@ void DNGLOOK_0000_LookCmdInDungeon(void)
     }
 
     // a3bf
-    if ((local_c & 0xf0) == 0x50)
+    if ((cell_o & 0xf0) == 0x50)
     {
         // a3cb
         ULTIMA_1850_PrintString(_TEXT(0x7700, "Will you drink?\n"));
         // -> a480
 
         // a480
-        while ((local_6 = (byte)ULTIMA_266c_GetChar()) != 'Y' && local_6 != 'N')
+        while ((answer = (byte)ULTIMA_266c_GetChar()) != 'Y' && answer != 'N')
         {
         }
 
         // a48a
-        if (local_6 == 'N')
+        if (answer == 'N')
         {
             ULTIMA_1850_PrintString(_TEXT(0x7712, "No.\n"));
         }
@@ -197,26 +198,26 @@ void DNGLOOK_0000_LookCmdInDungeon(void)
             // a496~ (OK)
             ULTIMA_1850_PrintString(_TEXT(0x7718, "Yes.  Gulp!\n"));
 
-            switch (local_c)
+            switch (cell_o)
             {
             case 0x50:
                 ULTIMA_1850_PrintString(_TEXT(0x7726, "Cured!\n"));
-                D_55a8_party[local_e_am].status = STATUS_GOOD;
+                D_55a8_party[member_g].status = STATUS_GOOD;
                 break;
 
             case 0x51:
                 ULTIMA_1850_PrintString(_TEXT(0x772e, "Healed!\n"));
-                D_55a8_party[local_e_am].hp = D_55a8_party[local_e_am].maxHp;
+                D_55a8_party[member_g].hp = D_55a8_party[member_g].maxHp;
                 break;
 
             case 0x52:
                 ULTIMA_1850_PrintString(_TEXT(0x7738, "Poisoned!\n"));
-                D_55a8_party[local_e_am].status = STATUS_POISONED;
+                D_55a8_party[member_g].status = STATUS_POISONED;
                 break;
 
             default:
                 ULTIMA_1850_PrintString(_TEXT(0x7744, "Bad taste.\n"));
-                ULTIMA_2a52_DamagePlayer(local_e_am, ULTIMA_2092_RandomRange(0, 7));
+                ULTIMA_2a52_DamagePlayer(member_g, ULTIMA_2092_RandomRange(0, 7));
                 break;
             }
         }
@@ -224,57 +225,58 @@ void DNGLOOK_0000_LookCmdInDungeon(void)
     // a50e
 }
 
-static void DNGLOOK_0284(int param_1, int param_2)
+// a field cell of the overview: stripes in magenta, red, blue and green
+static void DNGLOOK_0284_DrawFieldStripes(int left, int top)
 {
     ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b6_magentaColor + 8);
-    ULTIMA_0b10_GRAP_Line(param_1 + 1, param_2, param_1 + 6, param_2);
-    ULTIMA_0b10_GRAP_Line(param_1 + 1, param_2 + 1, param_1 + 6, param_2 + 1);
+    ULTIMA_0b10_GRAP_Line(left + 1, top, left + 6, top);
+    ULTIMA_0b10_GRAP_Line(left + 1, top + 1, left + 6, top + 1);
     ULTIMA_0a70_GRAP_2d_SetPenColor(D_13ae_redColor + 8);
-    ULTIMA_0b10_GRAP_Line(param_1 + 1, param_2 + 2, param_1 + 6, param_2 + 2);
-    ULTIMA_0b10_GRAP_Line(param_1 + 1, param_2 + 3, param_1 + 6, param_2 + 3);
+    ULTIMA_0b10_GRAP_Line(left + 1, top + 2, left + 6, top + 2);
+    ULTIMA_0b10_GRAP_Line(left + 1, top + 3, left + 6, top + 3);
     ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b2_blueColor + 8);
-    ULTIMA_0b10_GRAP_Line(param_1 + 1, param_2 + 4, param_1 + 6, param_2 + 4);
-    ULTIMA_0b10_GRAP_Line(param_1 + 1, param_2 + 5, param_1 + 6, param_2 + 5);
+    ULTIMA_0b10_GRAP_Line(left + 1, top + 4, left + 6, top + 4);
+    ULTIMA_0b10_GRAP_Line(left + 1, top + 5, left + 6, top + 5);
     ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b4_greenColor + 8);
-    ULTIMA_0b10_GRAP_Line(param_1 + 1, param_2 + 6, param_1 + 6, param_2 + 6);
-    ULTIMA_0b10_GRAP_Line(param_1 + 1, param_2 + 7, param_1 + 6, param_2 + 7);
+    ULTIMA_0b10_GRAP_Line(left + 1, top + 6, left + 6, top + 6);
+    ULTIMA_0b10_GRAP_Line(left + 1, top + 7, left + 6, top + 7);
 }
 
-// "view": put one tile (x, y)
-static int DNGLOOK_0340(int param_1, int param_2)
+// the View command: draws one cell (its glyph or picture) of the dungeon level at (col, row) of the 22x22 view; 1 when it is open ground to spread to
+static int DNGLOOK_0340_DrawViewCell(int col, int row)
 {
-    byte local_a;
-    int local_8;
-    int local_6;
-    int local_4_ab;
+    byte kind;
+    int open;
+    int cellY_g;
+    int cellX_h;
 
-    local_8 = 0;
-    if (param_1 < 0 || param_1 > 0x15 || param_2 < 0 || param_2 > 0x15)
+    open = 0;
+    if (col < 0 || col > 0x15 || row < 0 || row > 0x15)
     {
         return 0;
     }
 
-    if (D_ad14_combatMap[param_2 * 0x20 + param_1] != 0)
+    if (D_ad14_combatMap[row * 0x20 + col] != 0)
     {
-        local_8 = 1;
-        D_ad14_combatMap[param_2 * 0x20 + param_1] = 0;
+        open = 1;
+        D_ad14_combatMap[row * 0x20 + col] = 0;
 
-        local_4_ab = (param_1 + D_5896_mapX - 0xb) & 7;
-        local_6 = (param_2 + D_5897_mapY - 0xb) & 7;
-        local_a = GetDungeonMap(local_4_ab, local_6, D_5895_mapLevel);
-        local_a >>= 4;
+        cellX_h = (col + D_5896_mapX - 0xb) & 7;
+        cellY_g = (row + D_5897_mapY - 0xb) & 7;
+        kind = GetDungeonMap(cellX_h, cellY_g, D_5895_mapLevel);
+        kind >>= 4;
 
-        ULTIMA_1bf2_SetTextPosition(param_1 + 1, param_2 + 1);
+        ULTIMA_1bf2_SetTextPosition(col + 1, row + 1);
 
         // a66a
-        param_1 = param_1 * 8 + 8;
-        param_2 = param_2 * 8 + 8;
+        col = col * 8 + 8;
+        row = row * 8 + 8;
         ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
 
-        switch (local_a)
+        switch (kind)
         {
         case 0:
-            if ((GetDungeonMap(local_4_ab, local_6, D_5895_mapLevel) & 8) != 0)
+            if ((GetDungeonMap(cellX_h, cellY_g, D_5895_mapLevel) & 8) != 0)
             {
                 ULTIMA_1cca_SetTextForegroundColor(D_13ba_lightGrayColor);
                 ULTIMA_16ba_PrintChar(0x18);
@@ -306,24 +308,24 @@ static int DNGLOOK_0340(int param_1, int param_2)
             break;
 
         case 5:
-            ULTIMA_0b10_GRAP_Line(param_1 + 9 - 8, param_2 + 0xc - 8, param_1 + 0xe - 8, param_2 + 0xc - 8);
-            ULTIMA_0b10_GRAP_Line(param_1 + 10 - 8, param_2 + 0xd - 8, param_1 + 0xd - 8, param_2 + 0xd - 8);
-            ULTIMA_0b10_GRAP_Line(param_1 + 9 - 8, param_2 + 0xe - 8, param_1 + 10 - 8, param_2 + 0xe - 8);
-            ULTIMA_0b10_GRAP_Line(param_1 + 0xd - 8, param_2 + 0xe - 8, param_1 + 0xe - 8, param_2 + 0xe - 8);
+            ULTIMA_0b10_GRAP_Line(col + 9 - 8, row + 0xc - 8, col + 0xe - 8, row + 0xc - 8);
+            ULTIMA_0b10_GRAP_Line(col + 10 - 8, row + 0xd - 8, col + 0xd - 8, row + 0xd - 8);
+            ULTIMA_0b10_GRAP_Line(col + 9 - 8, row + 0xe - 8, col + 10 - 8, row + 0xe - 8);
+            ULTIMA_0b10_GRAP_Line(col + 0xd - 8, row + 0xe - 8, col + 0xe - 8, row + 0xe - 8);
             ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b2_blueColor + 8);
-            ULTIMA_0c64_GRAP_30_Pset(param_1 + 9 - 8, param_2 + 10 - 8);
-            ULTIMA_0c64_GRAP_30_Pset(param_1 + 10 - 8, param_2 + 9 - 8);
-            ULTIMA_0b10_GRAP_Line(param_1 + 0xb - 8, param_2 + 10 - 8, param_1 + 0xc - 8, param_2 + 10 - 8);
-            ULTIMA_0b10_GRAP_Line(param_1 + 0xb - 8, param_2 + 0xb - 8, param_1 + 0xc - 8, param_2 + 0xb - 8);
-            ULTIMA_0c64_GRAP_30_Pset(param_1 + 0xd - 8, param_2 + 9 - 8);
-            ULTIMA_0c64_GRAP_30_Pset(param_1 + 0xe - 8, param_2 + 10 - 8);
+            ULTIMA_0c64_GRAP_30_Pset(col + 9 - 8, row + 10 - 8);
+            ULTIMA_0c64_GRAP_30_Pset(col + 10 - 8, row + 9 - 8);
+            ULTIMA_0b10_GRAP_Line(col + 0xb - 8, row + 10 - 8, col + 0xc - 8, row + 10 - 8);
+            ULTIMA_0b10_GRAP_Line(col + 0xb - 8, row + 0xb - 8, col + 0xc - 8, row + 0xb - 8);
+            ULTIMA_0c64_GRAP_30_Pset(col + 0xd - 8, row + 9 - 8);
+            ULTIMA_0c64_GRAP_30_Pset(col + 0xe - 8, row + 10 - 8);
             break;
 
         case 6:
             // a7e4
             ULTIMA_1cca_SetTextForegroundColor(D_13ba_lightGrayColor);
             
-            switch (GetDungeonMap(local_4_ab, local_6, (uint)D_5895_mapLevel))
+            switch (GetDungeonMap(cellX_h, cellY_g, (uint)D_5895_mapLevel))
             {
             case 96:
                 ULTIMA_16ba_PrintChar(0x19);
@@ -346,7 +348,7 @@ static int DNGLOOK_0340(int param_1, int param_2)
             break;
 
         case 8:
-            DNGLOOK_0284(param_1, param_2);
+            DNGLOOK_0284_DrawFieldStripes(col, row);
             break;
 
         case 10:
@@ -357,7 +359,7 @@ static int DNGLOOK_0340(int param_1, int param_2)
             break;
 
         case 0xb:
-            if (GetDungeonMap(local_4_ab, local_6, (uint)D_5895_mapLevel) == 0xb0)
+            if (GetDungeonMap(cellX_h, cellY_g, (uint)D_5895_mapLevel) == 0xb0)
             {
                 ULTIMA_16ba_PrintChar(0x7f);
             }
@@ -366,7 +368,7 @@ static int DNGLOOK_0340(int param_1, int param_2)
                 ULTIMA_1c9e_SelectCharset(1);
                 ULTIMA_16ba_PrintChar(0x74);
             }
-            local_8 = 0;
+            open = 0;
             break;
 
         case 0xc:
@@ -374,7 +376,7 @@ static int DNGLOOK_0340(int param_1, int param_2)
             ULTIMA_1f26_SetTextBackgroundColor(D_13b2_blueColor);
             ULTIMA_16ba_PrintChar(0x75);
             ULTIMA_1f26_SetTextBackgroundColor(0);
-            local_8 = 0;
+            open = 0;
             break;
 
         case 0xd:
@@ -390,7 +392,7 @@ static int DNGLOOK_0340(int param_1, int param_2)
 
             ULTIMA_16ba_PrintChar(0x76);
             ULTIMA_1f26_SetTextBackgroundColor(0);
-            local_8 = 0;
+            open = 0;
             break;
 
         case 0xe:
@@ -404,37 +406,38 @@ static int DNGLOOK_0340(int param_1, int param_2)
     ULTIMA_1cca_SetTextForegroundColor(D_13b0_brightWhiteColor);
     ULTIMA_1c9e_SelectCharset(0);
 
-    return local_8;
+    return open;
 }
 
+// the View command: spreads from the party's cell over the open ground of the level, drawing each cell, until a key
 void DNGLOOK_06a8_ViewCmd(void)
 {
-    int local_16_ak;
-    int local_14_am;
-    int local_12_a;
-    byte* local_10_aa;
-    int local_e_am;
-    byte* local_c;
-    int local_a;
-    byte* local_8;
-    byte* local_6;
-    byte* local_4_ab;
+    int dir;
+    int nextY_d;
+    int nextX_e;
+    byte* headY;
+    int curY_h;
+    byte* headX;
+    int curX_i;
+    byte* queueLast;
+    byte* tailY;
+    byte* tailX;
 
     ULTIMA_0a70_GRAP_2d_SetPenColor(0);
     ULTIMA_0aa6_GRAP_3f_FillRect(8, 8, 0xb7, 0xb7);
 
-    local_4_ab = local_c = D_a528;
-    local_6 = local_10_aa = D_a628;
-    local_8 = &D_a528[0xff];
+    tailX = headX = D_a528_viewQueueX;
+    tailY = headY = D_a628_viewQueueY;
+    queueLast = &D_a528_viewQueueX[0xff];
 
     memset(D_ad14_combatMap, 0xff, 0x2e0);
 
-    *local_4_ab = 0xb;
-    local_4_ab++;
-    *local_6 = 0xb;
-    local_6++;
-    local_12_a = 0x60;
-    local_14_am = 0x60;
+    *tailX = 0xb;
+    tailX++;
+    *tailY = 0xb;
+    tailY++;
+    nextX_e = 0x60;
+    nextY_d = 0x60;
     D_ad14_combatMap[0x16b] = 0;
 
     ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
@@ -453,73 +456,73 @@ void DNGLOOK_06a8_ViewCmd(void)
     ULTIMA_1c9e_SelectCharset(0);
     // -> aa66
 
-    while (local_4_ab != local_c) // aa66
+    while (tailX != headX) // aa66
     {
-        for (local_16_ak = 0; local_16_ak < 8; local_16_ak++) // aa3f
+        for (dir = 0; dir < 8; dir++) // aa3f
         {
-            local_a = local_12_a = *local_c;
-            local_e_am = local_14_am = *local_10_aa;
+            curX_i = nextX_e = *headX;
+            curY_h = nextY_d = *headY;
 
             // ok
-            switch (local_16_ak)
+            switch (dir)
             {
             case 0:
-                local_12_a--;
-                local_14_am--;
+                nextX_e--;
+                nextY_d--;
                 break;
 
             case 1:
-                local_14_am--;
+                nextY_d--;
                 break;
 
             case 2:
-                local_12_a++;
-                local_14_am--;
+                nextX_e++;
+                nextY_d--;
                 break;
 
             case 3:
-                local_12_a--;
+                nextX_e--;
                 break;
 
             case 4:
-                local_12_a++;
+                nextX_e++;
                 break;
 
             case 5:
-                local_12_a--;
-                local_14_am++;
+                nextX_e--;
+                nextY_d++;
                 break;
 
             case 6:
-                local_14_am++;
+                nextY_d++;
                 break;
 
             case 7:
-                local_12_a++;
-                local_14_am++;
+                nextX_e++;
+                nextY_d++;
                 break;
             }
 
             // aa3f ok
-            if (DNGLOOK_0340(local_12_a, local_14_am) != 0)
+            if (DNGLOOK_0340_DrawViewCell(nextX_e, nextY_d) != 0)
             {
-                *local_4_ab++ = local_12_a;
-                *local_6++ = local_14_am;
+                *tailX++ = nextX_e;
+                *tailY++ = nextY_d;
 
-                if (local_4_ab > local_8)
+                if (tailX > queueLast)
                 {
-                    local_4_ab = D_a528;
-                    local_6 = D_a628;
+                    tailX = D_a528_viewQueueX;
+                    tailY = D_a628_viewQueueY;
                 }
             }
         }
 
-        local_c++;
-        local_10_aa++;
-        if (local_c > local_8)
+        headX++;
+        headY++;
+        if (headX > queueLast)
         {
-            local_c = D_a528;
-            local_10_aa = D_a628;
+            headX = D_a528_viewQueueX;
+            headY = D_a628_viewQueueY;
         }
     }
 
@@ -532,52 +535,54 @@ void DNGLOOK_06a8_ViewCmd(void)
 }
 
 // CHECKED (nop)
-void DNGLOOK_0844(int param_1)
+// sets the room's bit in D_58e0_roomsCleared (the level's 16 rooms), except for the rooms D_383a lists
+void DNGLOOK_0844_MarkRoomCleared(int room)
 {
-    int local_a;
-    int local_8;
-    int local_6;
-    int local_4_ab;
+    int roomBit;
+    int byteIndex;
+    int index;
+    int level;
 
-    for (local_6 = 0; local_6 < D_3840; local_6++)
+    for (index = 0; index < D_3840_neverClearedCount; index++)
     {
-        if (D_383a[local_6] == (D_5893_mapId & 0xf) * 0x10 + param_1)
+        if (D_383a_roomsNeverCleared[index] == (D_5893_mapId & 0xf) * 0x10 + room)
         {
             return; // nop NOT MATCHING
         }
     }
 
-    local_4_ab = D_5893_mapId - 0x21;
-    if (local_4_ab >= 1)
+    level = D_5893_mapId - 0x21;
+    if (level >= 1)
     {
-        local_4_ab--;
+        level--;
     }
 
-    local_a = param_1 + local_4_ab * 0x10;
-    local_8 = local_a / 8;
-    D_58e0_roomsCleared[local_8] |= 1 << ((byte)local_a & 7);
+    roomBit = room + level * 0x10;
+    byteIndex = roomBit / 8;
+    D_58e0_roomsCleared[byteIndex] |= 1 << ((byte)roomBit & 7);
 }
 
-static int DNGLOOK_08d4(int param_1)
+// the room's bit of D_58e0_roomsCleared on this level
+static int DNGLOOK_08d4_IsRoomCleared(int room)
 {
-    int local_6;
-    int local_c;
-    int local_a;
-    u8 local_8;
-    u8 local_4_ab;
+    int level;
+    int roomBit;
+    int byteIndex;
+    u8 mask;
+    u8 flags_c;
 
-    local_6 = (int)D_5893_mapId - 0x21;
-    if (local_6 >= 1) {
-        local_6--;
+    level = (int)D_5893_mapId - 0x21;
+    if (level >= 1) {
+        level--;
     }
 
     // 08ed
-    local_c = local_6 * 0x10 + param_1;
-    local_a = local_c / 8;
-    local_4_ab = D_58e0_roomsCleared[local_a];
-    local_8 = 1 << (local_c & 7);
+    roomBit = level * 0x10 + room;
+    byteIndex = roomBit / 8;
+    flags_c = D_58e0_roomsCleared[byteIndex];
+    mask = 1 << (roomBit & 7);
 
-    if (local_8 & local_4_ab)
+    if (mask & flags_c)
     {
         return 1;
     }
@@ -587,256 +592,262 @@ static int DNGLOOK_08d4(int param_1)
     }
 }
 
-void DNGLOOK_093a(void)
+// in the loaded level, a cell of kind 0xf? whose room is cleared becomes 0xa? (&= 0xaf: a door)
+void DNGLOOK_093a_ApplyClearedRooms(void)
 {
-    byte local_c;
-    byte* local_a;
-    int local_8;
-    int local_6;
-    byte local_4_ab;
+    byte cell_m;
+    byte* cellPtr_g;
+    int room;
+    int index;
+    byte kind;
 
-    local_a = D_595a_dungeonMap;
+    cellPtr_g = D_595a_dungeonMap;
 
-    for (local_6 = 0; local_6 < 0x200; local_6++)
+    for (index = 0; index < 0x200; index++)
     {
-        local_c = *local_a;
-        local_4_ab = local_c & 0xf0;
-        if (local_4_ab == 0xf0)
+        cell_m = *cellPtr_g;
+        kind = cell_m & 0xf0;
+        if (kind == 0xf0)
         {
-            local_8 = local_c & 0xf;
-            if (DNGLOOK_08d4(local_8) != 0)
+            room = cell_m & 0xf;
+            if (DNGLOOK_08d4_IsRoomCleared(room) != 0)
             {
-                *local_a &= 0xaf;
+                *cellPtr_g &= 0xaf;
             }
         }
-        local_a++;
+        cellPtr_g++;
     }
 }
 
-static void DNGLOOK_097e(byte param_1, int param_2)
+// a combat map side (0 north, 1 east, 2 south, 3 west) all solid (0xff); a door cell (0xe0) puts two wall tiles in the middle
+static void DNGLOOK_097e_FillWallSide(byte cellKind, int side)
 {
-    int local_6;
-    int local_4_ab;
-    int local_8;
-    int local_c;
-    int local_a;
+    int y;
+    int x;
+    int count;
+    int stepY_f;
+    int stepX_g;
 
-    local_a = 0;
-    local_c = 0;
-    local_4_ab = 0;
-    local_6 = 0;
+    stepX_g = 0;
+    stepY_f = 0;
+    x = 0;
+    y = 0;
 
-    switch (param_2)
+    switch (side)
     {
     case 0:
-        local_a++;
+        stepX_g++;
         break;
 
     case 1:
-        local_c++;
-        local_4_ab = 10;
+        stepY_f++;
+        x = 10;
         break;
 
     case 2:
-        local_a++;
-        local_6 = 10;
+        stepX_g++;
+        y = 10;
         break;
 
     case 3:
-        local_c++;
+        stepY_f++;
         break;
     }
 
-    for (local_8 = 0; local_8 < 0xb; local_8++)
+    for (count = 0; count < 0xb; count++)
     {
-        GetCombatMap(local_4_ab, local_6) = 0xff;
-        local_4_ab += local_a;
-        local_6 += local_c;
+        GetCombatMap(x, y) = 0xff;
+        x += stepX_g;
+        y += stepY_f;
     }
 
-    if (param_2 == 0 && param_1 == 0xe0)
+    if (side == 0 && cellKind == 0xe0)
     {
         GetCombatMap(5, 2) = GetCombatMap(5, 8) = D_bb14;
     }
 
-    if (param_2 == 3 && param_1 == 0xe0)
+    if (side == 3 && cellKind == 0xe0)
     {
         GetCombatMap(2, 5) = GetCombatMap(8, 5) = D_bb14;
     }
 }
 
-static void DNGLOOK_0a48(int param_1)
+// five floor tiles of the wall ring on one side
+static void DNGLOOK_0a48_OpenNarrowGap(int side)
 {
-    int local_8;
-    int local_c;
-    int local_a;
-    int local_6;
-    int local_4_ab;
+    int count;
+    int stepY_f;
+    int stepX_g;
+    int y;
+    int x;
 
-    local_a = 0;
-    local_c = 0;
-    local_4_ab = 3;
-    local_6 = 3;
+    stepX_g = 0;
+    stepY_f = 0;
+    x = 3;
+    y = 3;
 
-    switch (param_1)
+    switch (side)
     {
     case 0:
-        local_a++;
-        local_6 = 1;
+        stepX_g++;
+        y = 1;
         break;
 
     case 1:
-        local_c++;
-        local_4_ab = 9;
+        stepY_f++;
+        x = 9;
         break;
 
     case 2:
-        local_a++;
-        local_6 = 9;
+        stepX_g++;
+        y = 9;
         break;
 
     case 3:
-        local_c++;
-        local_4_ab = 1;
+        stepY_f++;
+        x = 1;
         break;
     }
 
-    for (local_8 = 0; local_8 < 5; local_8++)
+    for (count = 0; count < 5; count++)
     {
-        GetCombatMap(local_4_ab, local_6) = D_bb15;
-        local_4_ab += local_a;
-        local_6 += local_c;
+        GetCombatMap(x, y) = D_bb15;
+        x += stepX_g;
+        y += stepY_f;
     }
 }
 
-static void DNGLOOK_0aee(int param_1)
+// seven floor tiles of the wall ring on one side
+static void DNGLOOK_0aee_OpenWideGap(int side)
 {
-    int local_6;
-    int local_4_ab;
-    int local_8;
-    int local_c;
-    int local_a;
+    int y;
+    int x;
+    int count;
+    int stepY_f;
+    int stepX_g;
 
-    local_a = 0;
-    local_c = 0;
+    stepX_g = 0;
+    stepY_f = 0;
 
-    switch (param_1)
+    switch (side)
     {
     case 0:
-        local_a++;
-        local_4_ab = 2;
-        local_6 = 1;
+        stepX_g++;
+        x = 2;
+        y = 1;
         break;
 
     case 1:
-        local_c++;
-        local_4_ab = 9;
-        local_6 = 2;
+        stepY_f++;
+        x = 9;
+        y = 2;
         break;
 
     case 2:
-        local_a++;
-        local_4_ab = 2;
-        local_6 = 9;
+        stepX_g++;
+        x = 2;
+        y = 9;
         break;
 
     case 3:
-        local_c++;
-        local_4_ab = 1;
-        local_6 = 2;
+        stepY_f++;
+        x = 1;
+        y = 2;
         break;
     }
 
-    for (local_8 = 0; local_8 < 7; local_8++)
+    for (count = 0; count < 7; count++)
     {
-        GetCombatMap(local_4_ab, local_6) = D_bb15;
-        local_4_ab += local_a;
-        local_6 += local_c;
+        GetCombatMap(x, y) = D_bb15;
+        x += stepX_g;
+        y += stepY_f;
     }
 }
 
 // CHECKED (nop)
-static void DNGLOOK_0b9e(int param_1)
+// the combat map's side toward the neighbouring cell: a gap when it is open, solid when it is a wall, else the narrow gap
+static void DNGLOOK_0b9e_BuildSide(int side)
 {
-    byte local_8;
-    int local_6;
-    int local_4_ab;
+    byte neighbour_f;
+    int cellY;
+    int cellX;
 
-    local_4_ab = D_5896_mapX;
-    local_6 = D_5897_mapY;
-    switch (param_1)
+    cellX = D_5896_mapX;
+    cellY = D_5897_mapY;
+    switch (side)
     {
     case 0:
-        local_6--;
+        cellY--;
         break;
 
     case 1:
-        local_4_ab++;
+        cellX++;
         break;
 
     case 2:
-        local_6++;
+        cellY++;
         break;
 
     case 3:
-        local_4_ab--;
+        cellX--;
         break;
     }
 
-    local_8 = GetDungeonMap(local_4_ab & 7, local_6 & 7, D_5895_mapLevel);
-    local_8 &= 0xf0;
-    if (local_8 < 0xa0)
+    neighbour_f = GetDungeonMap(cellX & 7, cellY & 7, D_5895_mapLevel);
+    neighbour_f &= 0xf0;
+    if (neighbour_f < 0xa0)
     {
-        DNGLOOK_0aee(param_1);
+        DNGLOOK_0aee_OpenWideGap(side);
     }
 
-    if (local_8 == 0xb0 || local_8 == 0xc0 || local_8 == 0xd0)
+    if (neighbour_f == 0xb0 || neighbour_f == 0xc0 || neighbour_f == 0xd0)
     {
-        DNGLOOK_097e(GetDungeonMap(D_5896_mapX, D_5897_mapY, D_5895_mapLevel) & 0xf0, param_1);
+        DNGLOOK_097e_FillWallSide(GetDungeonMap(D_5896_mapX, D_5897_mapY, D_5895_mapLevel) & 0xf0, side);
         // nop
     }
     else
     {
-        DNGLOOK_0a48(param_1);
+        DNGLOOK_0a48_OpenNarrowGap(side);
     }
 }
 
 // CHECKED (loop)
-void DNGLOOK_0c6c(void)
+// the combat map's wall ring (rows and columns 1 and 9), the centre piece of the party's cell kind (D_244a) and the four sides
+void DNGLOOK_0c6c_BuildWallRing(void)
 {
-    byte local_8;
-    int local_6;
+    byte kind_j;
+    int index_h;
 
-    byte* local_4_aa;
+    byte* linePtr_b;
 
-    local_4_aa = &GetCombatMap(0, 1);
-    memset(local_4_aa, D_bb14, 0xb);
+    linePtr_b = &GetCombatMap(0, 1);
+    memset(linePtr_b, D_bb14, 0xb);
 
-    local_4_aa = &GetCombatMap(0, 9);
-    memset(local_4_aa, D_bb14, 0xb);
+    linePtr_b = &GetCombatMap(0, 9);
+    memset(linePtr_b, D_bb14, 0xb);
 
     // af2e; NOT MATCHING
-    for (local_6 = 0; local_6 < 0xb; local_6++)
+    for (index_h = 0; index_h < 0xb; index_h++)
     {
-        GetCombatMap(1, local_6) = GetCombatMap(9, local_6) = D_bb14;
+        GetCombatMap(1, index_h) = GetCombatMap(9, index_h) = D_bb14;
     }
 
     GetCombatMap(0, 0) = GetCombatMap(10, 0) = GetCombatMap(0, 10) = GetCombatMap(10, 10) = 0xff;
 
-    local_8 = GetDungeonMap(D_5896_mapX, D_5897_mapY, D_5895_mapLevel);
-    local_8 &= 0xf0;
-    if (local_8 != 0 && local_8 < 0x80)
+    kind_j = GetDungeonMap(D_5896_mapX, D_5897_mapY, D_5895_mapLevel);
+    kind_j &= 0xf0;
+    if (kind_j != 0 && kind_j < 0x80)
     {
-        byte local_c;
+        byte centreTile;
 
-        local_8 >>= 4;
-        local_c = D_244a[local_8];
-        if (local_c != 0)
+        kind_j >>= 4;
+        centreTile = D_244a_centreTiles[kind_j];
+        if (centreTile != 0)
         {
-            GetCombatMap(5, 5) = local_c;
+            GetCombatMap(5, 5) = centreTile;
         }
 
-        if (local_8 == 3)
+        if (kind_j == 3)
         {
             D_bb16 = 1;
             ULTIMA_6fbc_TilesetMode(0);
@@ -847,30 +858,31 @@ void DNGLOOK_0c6c(void)
         }
     }
 
-    for (local_6 = 0; local_6 < 4; local_6++)
+    for (index_h = 0; index_h < 4; index_h++)
     {
-        DNGLOOK_0b9e(local_6);
+        DNGLOOK_0b9e_BuildSide(index_h);
     }
 }
 
 // CHECKED (optimization)
-void DNGLOOK_0d3e(void)
+// floor, ring, the party's start cells, the monsters' cells (turned by the facing), the monster kind and how many; fills the combat map
+void DNGLOOK_0d3e_SetUpDungeonFight(void)
 {
-    byte* local_34_ak;
-    int local_32_am;
-    int local_30_a;
-    int local_2e_ak[16];
-    byte* local_e_am;
-    byte* local_c;
-    byte* local_a;
-    byte* local_8;
-    byte* local_6;
-    int local_4_ab;
+    byte* southPtr;
+    int pickIdx_l;
+    int index;
+    int order_m[16];
+    byte* eastPtr_u;
+    byte* monsterYPtr;
+    byte* westPtr_n;
+    byte* monsterXPtr;
+    byte* northPtr;
+    int count_g;
 
-    for (local_30_a = 0; local_30_a < 0xb; local_30_a++)
+    for (index = 0; index < 0xb; index++)
     {
-        local_34_ak = &GetCombatMap(0, local_30_a);
-        memset(local_34_ak, D_bb15, 0xb);
+        southPtr = &GetCombatMap(0, index);
+        memset(southPtr, D_bb15, 0xb);
     }
 
     if ((D_58a1_combatFlags & 4) != 0)
@@ -879,70 +891,70 @@ void DNGLOOK_0d3e(void)
     }
 
     // b006
-    DNGLOOK_0c6c();
+    DNGLOOK_0c6c_BuildWallRing();
 
-    for (local_30_a = 0; local_30_a < 8; local_30_a++)
+    for (index = 0; index < 8; index++)
     {
-        GetCombatMapTriggerX(local_30_a) = GetCombatMapTriggerY(local_30_a) = 0xff;
+        GetCombatMapTriggerX(index) = GetCombatMapTriggerY(index) = 0xff;
     }
 
-    local_34_ak = &GetCombatMapPartyX(COMBAT_MAP_SPECIAL_PARTY_SOUTH, 0);
-    local_a = &GetCombatMapPartyX(COMBAT_MAP_SPECIAL_PARTY_WEST, 0);
-    local_6 = &GetCombatMapPartyX(COMBAT_MAP_SPECIAL_PARTY_NORTH, 0);
-    local_e_am = &GetCombatMapPartyX(COMBAT_MAP_SPECIAL_PARTY_EAST, 0);
+    southPtr = &GetCombatMapPartyX(COMBAT_MAP_SPECIAL_PARTY_SOUTH, 0);
+    westPtr_n = &GetCombatMapPartyX(COMBAT_MAP_SPECIAL_PARTY_WEST, 0);
+    northPtr = &GetCombatMapPartyX(COMBAT_MAP_SPECIAL_PARTY_NORTH, 0);
+    eastPtr_u = &GetCombatMapPartyX(COMBAT_MAP_SPECIAL_PARTY_EAST, 0);
 
-    for (local_30_a = 0; local_30_a < 6; local_30_a++)
+    for (index = 0; index < 6; index++)
     {
         if ((D_58a1_combatFlags & 4) != 0)
         {
-            *local_34_ak = *local_a = *local_6 = *local_e_am = D_2452[local_30_a];
+            *southPtr = *westPtr_n = *northPtr = *eastPtr_u = D_2452_roomPartyX[index];
             // nop
         }
         else
         {
-            *local_34_ak = D_2470[local_30_a];
-            *local_a = D_246a[local_30_a];
-            *local_6 = D_245e[local_30_a];
-            *local_e_am = D_2464[local_30_a];
+            *southPtr = D_2470_partyLineD[index];
+            *westPtr_n = D_246a_partyLineC[index];
+            *northPtr = D_245e_partyLineA[index];
+            *eastPtr_u = D_2464_partyLineB[index];
         }
-        local_34_ak++;
-        local_a++;
-        local_6++;
-        local_e_am++;
+        southPtr++;
+        westPtr_n++;
+        northPtr++;
+        eastPtr_u++;
     }
 
     // OK
-    for (local_30_a = 0; local_30_a < 6; local_30_a++)
+    for (index = 0; index < 6; index++)
     {
         if ((D_58a1_combatFlags & 4) != 0)
         {
-            *local_34_ak = *local_a = *local_6 = *local_e_am = D_2458[local_30_a];
+            *southPtr = *westPtr_n = *northPtr = *eastPtr_u = D_2458_roomPartyY[index];
         }
         else
         {
-            *local_34_ak = D_2464[local_30_a];
-            *local_a = D_245e[local_30_a];
-            *local_6 = D_246a[local_30_a];
-            *local_e_am = D_2470[local_30_a];
+            *southPtr = D_2464_partyLineB[index];
+            *westPtr_n = D_245e_partyLineA[index];
+            *northPtr = D_246a_partyLineC[index];
+            *eastPtr_u = D_2470_partyLineD[index];
         }
-        local_34_ak++;
-        local_a++;
-        local_6++;
-        local_e_am++;
+        southPtr++;
+        westPtr_n++;
+        northPtr++;
+        eastPtr_u++;
     }
 
     // b0e3
-    local_8 = &GetCombatMapMonsterX(0);
-    local_c = &GetCombatMapMonsterY(0);
+    monsterXPtr = &GetCombatMapMonsterX(0);
+    monsterYPtr = &GetCombatMapMonsterY(0);
 
     // OK
-    for (local_30_a = 0; local_30_a < 0x10; local_30_a++)
+    for (index = 0; index < 0x10; index++)
     {
         // b0f8
         if ((D_58a1_combatFlags & 4) != 0)
         {
-            *local_c = D_24c6[local_30_a];
-            *local_8 = D_24b6[local_30_a];
+            *monsterYPtr = D_24c6_roomMonsterY[index];
+            *monsterXPtr = D_24b6_roomMonsterX[index];
         }
         else
         {
@@ -950,69 +962,70 @@ void DNGLOOK_0d3e(void)
             switch (D_6603_dungeonFacing)
             {
             case 0:
-                *local_8 = D_2476[local_30_a];
-                *local_c = D_2496[local_30_a];
+                *monsterXPtr = D_2476_monsterLineA[index];
+                *monsterYPtr = D_2496_monsterLineC[index];
                 break;
             case 1:
-                *local_8 = D_2486[local_30_a];
-                *local_c = D_24a6[local_30_a];
+                *monsterXPtr = D_2486_monsterLineB[index];
+                *monsterYPtr = D_24a6_monsterLineD[index];
                 break;
             case 2:
-                *local_8 = D_24a6[local_30_a];
-                *local_c = D_2486[local_30_a];
+                *monsterXPtr = D_24a6_monsterLineD[index];
+                *monsterYPtr = D_2486_monsterLineB[index];
                 break;
             case 3:
-                *local_8 = D_2496[local_30_a];
-                *local_c = D_2476[local_30_a];
+                *monsterXPtr = D_2496_monsterLineC[index];
+                *monsterYPtr = D_2476_monsterLineA[index];
                 break;
             }
         }
 
-        local_8++;
-        local_c++;
+        monsterXPtr++;
+        monsterYPtr++;
     }
 
-    for (local_30_a = 0; local_30_a < 0x10; local_30_a++)
+    for (index = 0; index < 0x10; index++)
     {
-        local_2e_ak[local_30_a] = local_30_a;
+        order_m[index] = index;
     }
 
     // b18d
-    for (local_30_a = 0; local_30_a < 0x10; local_30_a++)
+    for (index = 0; index < 0x10; index++)
     {
-        local_32_am = ULTIMA_2092_RandomRange(0, 0xf);
+        pickIdx_l = ULTIMA_2092_RandomRange(0, 0xf);
 
-        local_4_ab = local_2e_ak[local_30_a];
-        local_2e_ak[local_30_a] = local_2e_ak[local_32_am];
-        local_2e_ak[local_32_am] = local_4_ab;
+        count_g = order_m[index];
+        order_m[index] = order_m[pickIdx_l];
+        order_m[pickIdx_l] = count_g;
 
-        GetCombatMapMonsterTile(local_30_a) = 0;
+        GetCombatMapMonsterTile(index) = 0;
     }
 
     // b1cf OK
     if ((D_58a1_combatFlags & 4) != 0)
     {
-        local_32_am = D_173c[ULTIMA_2092_RandomRange(0, 7)];
+        pickIdx_l = D_173c[ULTIMA_2092_RandomRange(0, 7)];
     }
     else
     {
-        local_32_am = D_5c5a_actors[1].value;
+        pickIdx_l = D_5c5a_actors[1].value;
     }
 
-    local_4_ab = ULTIMA_2092_RandomRange(1, D_13bc_enemyStats[local_32_am].maxEncounterCount);
-    if (D_13bc_enemyStats[local_32_am].maxEncounterCount == 8 || D_13bc_enemyStats[local_32_am].maxEncounterCount == 0x10)
+    count_g = ULTIMA_2092_RandomRange(1, D_13bc_enemyStats[pickIdx_l].maxEncounterCount);
+    if (D_13bc_enemyStats[pickIdx_l].maxEncounterCount == 8 || D_13bc_enemyStats[pickIdx_l].maxEncounterCount == 0x10)
     {
-        local_4_ab = D_13bc_enemyStats[local_32_am].maxEncounterCount;
+        count_g = D_13bc_enemyStats[pickIdx_l].maxEncounterCount;
     }
 
     // b223
-    for (local_30_a = 0; local_30_a < local_4_ab; local_30_a++)
+    for (index = 0; index < count_g; index++)
     {
-        GetCombatMapMonsterTile(local_2e_ak[local_30_a]) = local_32_am * 4 + 64;
+        GetCombatMapMonsterTile(order_m[index]) = pickIdx_l * 4 + 64;
     }
 }
 
-void DNGLOOK_0fda(void)
+// after a fight the party steps in the direction it left by (wrapping), or takes the ladder: up (5) or down (6); out of the dungeon from level 0 or 7
+void DNGLOOK_0fda_StepAfterCombat(void)
 {
     switch (D_58a0_combatExitDir)
     {
@@ -1080,7 +1093,8 @@ void DNGLOOK_0fda(void)
     }
 }
 
-void DNGLOOK_109e(int param_1)
+// loads the dungeon's wall pictures (DNGn.16, n by the style) and ITEMS.16, clears the view; the encounter actor too when asked
+void DNGLOOK_109e_LoadDungeonImages(int clearEncounter)
 {
     if (D_5893_mapId != 0)
     {
@@ -1103,7 +1117,7 @@ void DNGLOOK_109e(int param_1)
         }
 
         D_bb17 = 1;
-        if (param_1 != 0)
+        if (clearEncounter != 0)
         {
             D_5c5a_actors[1].tile = D_5c5a_actors[1].animTile = 0;
             D_5c5a_actors[1].value = D_5c5a_actors[1].x = D_5c5a_actors[1].y = 0xff;
@@ -1117,8 +1131,8 @@ void DNGLOOK_109e(int param_1)
     }
 }
 
-// on leave (cleanup)
-void DNGLOOK_1130(void)
+// on leaving: frees the pictures, loads TILES.16 again and the tileset mode
+void DNGLOOK_1130_FreeDungeonImages(void)
 {
 #if defined(ENABLE_BGM)
     AUDIO_StopBgm();
@@ -1151,22 +1165,23 @@ void DNGLOOK_1130(void)
 
 // CHECKED (optimization)
 // prepare combat (in dungeon)
-void DNGLOOK_117e(int param_1, int param_2)
+// puts the party on the fight's start cells (by the facing) and the monsters of the combat map as actors, with their values
+void DNGLOOK_117e_PlaceCombatants(int cellKind, int mode)
 {
-    int local_16_ak;
-    int local_14_am;
-    int local_12_a;
-    int local_10_aa;
-    int local_e_am;
-    int local_c;
-    byte local_a;
-    byte local_8[4];
-    int local_4_ab;
+    int monsterType;
+    int placeKind_f;
+    int slot;
+    int index_j;
+    int yIndex;
+    int xIndex;
+    byte tile_b;
+    byte randomTypes_i[4];
+    int side_k;
 
-    local_c = COMBAT_MAP_PARTY_X_INDEX;
-    local_e_am = COMBAT_MAP_PARTY_Y_INDEX;
-    local_4_ab = COMBAT_MAP_SPECIAL_PARTY_NORTH;
-    if (param_2 != 1)
+    xIndex = COMBAT_MAP_PARTY_X_INDEX;
+    yIndex = COMBAT_MAP_PARTY_Y_INDEX;
+    side_k = COMBAT_MAP_SPECIAL_PARTY_NORTH;
+    if (mode != 1)
     {
         // b42e
         switch (D_6603_dungeonFacing)
@@ -1174,91 +1189,91 @@ void DNGLOOK_117e(int param_1, int param_2)
         case 0:
         case 5:
             // b44c
-            local_4_ab = COMBAT_MAP_SPECIAL_PARTY_SOUTH;
+            side_k = COMBAT_MAP_SPECIAL_PARTY_SOUTH;
             break;
         case 1:
             // b4c2
-            local_4_ab = COMBAT_MAP_SPECIAL_PARTY_WEST;
+            side_k = COMBAT_MAP_SPECIAL_PARTY_WEST;
             break;
         case 3:
             // b4ca
-            local_4_ab = COMBAT_MAP_SPECIAL_PARTY_EAST;
+            side_k = COMBAT_MAP_SPECIAL_PARTY_EAST;
             break;
         }
 
         // b451
         ULTIMA_6936_InitCombatants();
 
-        for (local_10_aa = 0; local_10_aa < D_585b_partyCount; local_10_aa++)
+        for (index_j = 0; index_j < D_585b_partyCount; index_j++)
         {
-            D_ba14_combatants[local_10_aa].x = D_5c5a_actors[local_10_aa].x = GetCombatMapSpecial(local_4_ab, local_c);
-            D_ba14_combatants[local_10_aa].y = D_5c5a_actors[local_10_aa].y = GetCombatMapSpecial(local_4_ab, local_e_am);
-            local_c++;
-            local_e_am++;
+            D_ba14_combatants[index_j].x = D_5c5a_actors[index_j].x = GetCombatMapSpecial(side_k, xIndex);
+            D_ba14_combatants[index_j].y = D_5c5a_actors[index_j].y = GetCombatMapSpecial(side_k, yIndex);
+            xIndex++;
+            yIndex++;
         }
     }
 
     // b4d8
-    if (param_2 > 0 && ((param_1 > 0xef && param_2 == 3) || param_2 < 3))
+    if (mode > 0 && ((cellKind > 0xef && mode == 3) || mode < 3))
     {
-        local_4_ab = local_e_am = local_c = COMBAT_MAP_SPECIAL_BASE;
+        side_k = yIndex = xIndex = COMBAT_MAP_SPECIAL_BASE;
 
-        for (local_10_aa = 0; local_10_aa < 4; local_10_aa++)
+        for (index_j = 0; index_j < 4; index_j++)
         {
-            local_8[local_10_aa] = D_385e[ULTIMA_2092_RandomRange(0, 7)];
+            randomTypes_i[index_j] = D_385e_randomMonsterTypes[ULTIMA_2092_RandomRange(0, 7)];
         }
 
         // b521
-        for (local_10_aa = 0; local_10_aa < 0x10; local_10_aa++)
+        for (index_j = 0; index_j < 0x10; index_j++)
         {
-            local_a = GetCombatMapSpecial(COMBAT_MAP_SPECIAL_MONSTER_TILES, local_4_ab);
-            if (local_a != 0)
+            tile_b = GetCombatMapSpecial(COMBAT_MAP_SPECIAL_MONSTER_TILES, side_k);
+            if (tile_b != 0)
             { 
                 // b542
-                if (local_a < 0x40 || (local_a & 0xfc) == 0xb4 || (local_a & 0xfc) == 0xe8)
+                if (tile_b < 0x40 || (tile_b & 0xfc) == 0xb4 || (tile_b & 0xfc) == 0xe8)
                 {
-                    local_14_am = 2;
-                    local_16_ak = local_a;
+                    placeKind_f = 2;
+                    monsterType = tile_b;
                     // nop
                 }
                 else
                 {
-                    local_14_am = 0;
-                    local_16_ak = (local_a - 0x40) / 4;
+                    placeKind_f = 0;
+                    monsterType = (tile_b - 0x40) / 4;
                 }
 
                 // b575
-                if ((local_a & 0xfc) == 0xec)
+                if ((tile_b & 0xfc) == 0xec)
                 {
-                    local_16_ak = local_8[local_a & 3];
+                    monsterType = randomTypes_i[tile_b & 3];
                 }
 
                 // b58e
-                local_12_a = ULTIMA_6506_PlaceCombatant(local_16_ak, local_14_am, GetCombatMapSpecial(COMBAT_MAP_SPECIAL_MONSTER_X, local_c),
-                                       GetCombatMapSpecial(COMBAT_MAP_SPECIAL_MONSTER_Y, local_e_am), D_5895_mapLevel);
-                if (local_14_am == 2)
+                slot = ULTIMA_6506_PlaceCombatant(monsterType, placeKind_f, GetCombatMapSpecial(COMBAT_MAP_SPECIAL_MONSTER_X, xIndex),
+                                       GetCombatMapSpecial(COMBAT_MAP_SPECIAL_MONSTER_Y, yIndex), D_5895_mapLevel);
+                if (placeKind_f == 2)
                 {
-                    if (local_16_ak == 1)
+                    if (monsterType == 1)
                     {
-                        D_5c5a_actors[local_12_a].value = D_5895_mapLevel * 3 + 7;
+                        D_5c5a_actors[slot].value = D_5895_mapLevel * 3 + 7;
                         // nop
                     }
-                    else if (local_16_ak == 2)
+                    else if (monsterType == 2)
                     {
-                        D_5c5a_actors[local_12_a].value = ULTIMA_2092_RandomRange(1, D_5895_mapLevel * 10 + 10);
+                        D_5c5a_actors[slot].value = ULTIMA_2092_RandomRange(1, D_5895_mapLevel * 10 + 10);
                     }
-                    else if (local_16_ak < 0x10)
+                    else if (monsterType < 0x10)
                     {
-                        ASSERT(local_16_ak != 0);
+                        ASSERT(monsterType != 0);
                         // TODO: offset
-                        D_5c5a_actors[local_12_a].value = D_3850[local_16_ak - 3] + ULTIMA_2092_RandomRange(0, D_3842[local_16_ak - 3] - 1);
+                        D_5c5a_actors[slot].value = D_3850_objectValueBase[monsterType - 3] + ULTIMA_2092_RandomRange(0, D_3842_objectValueRange[monsterType - 3] - 1);
                     }
                 }
             }
 
-            local_4_ab++;
-            local_c++;
-            local_e_am++;
+            side_k++;
+            xIndex++;
+            yIndex++;
         }
     }
 }

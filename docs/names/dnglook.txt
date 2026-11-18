@@ -1,0 +1,132 @@
+# DNGLOOK (dnglook.c): the dungeon's Look and View commands, the rooms already cleared, and the combat map
+# built for a fight in a dungeon (walls, openings by the neighbouring cells, who stands where), the fleeing step
+# and the loading of the dungeon pictures. One overlay, MSC 5.0.
+# functions
+DNGLOOK_0284 DNGLOOK_0284_DrawFieldStripes     # a field cell of the overview: stripes in magenta, red, blue and green
+DNGLOOK_0340 DNGLOOK_0340_DrawViewCell         # the View command: draws one cell (its glyph or picture) of the dungeon level at (col, row) of the 22x22 view; 1 when it is open ground to spread to
+DNGLOOK_0844 DNGLOOK_0844_MarkRoomCleared      # sets the room's bit in D_58e0_roomsCleared (the level's 16 rooms), except for the rooms D_383a lists
+DNGLOOK_08d4 DNGLOOK_08d4_IsRoomCleared        # the room's bit of D_58e0_roomsCleared on this level
+DNGLOOK_093a DNGLOOK_093a_ApplyClearedRooms    # in the loaded level, a cell of kind 0xf? whose room is cleared becomes 0xa? (&= 0xaf: a door)
+DNGLOOK_097e DNGLOOK_097e_FillWallSide         # a combat map side (0 north, 1 east, 2 south, 3 west) all solid (0xff); a door cell (0xe0) puts two wall tiles in the middle
+DNGLOOK_0a48 DNGLOOK_0a48_OpenNarrowGap        # five floor tiles of the wall ring on one side
+DNGLOOK_0aee DNGLOOK_0aee_OpenWideGap          # seven floor tiles of the wall ring on one side
+DNGLOOK_0b9e DNGLOOK_0b9e_BuildSide            # the combat map's side toward the neighbouring cell: a gap when it is open, solid when it is a wall, else the narrow gap
+DNGLOOK_0c6c DNGLOOK_0c6c_BuildWallRing        # the combat map's wall ring (rows and columns 1 and 9), the centre piece of the party's cell kind (D_244a) and the four sides
+DNGLOOK_0d3e DNGLOOK_0d3e_SetUpDungeonFight    # floor, ring, the party's start cells, the monsters' cells (turned by the facing), the monster kind and how many; fills the combat map
+DNGLOOK_0fda DNGLOOK_0fda_StepAfterCombat      # after a fight the party steps in the direction it left by (wrapping), or takes the ladder: up (5) or down (6); out of the dungeon from level 0 or 7
+DNGLOOK_109e DNGLOOK_109e_LoadDungeonImages    # loads the dungeon's wall pictures (DNGn.16, n by the style) and ITEMS.16, clears the view; the encounter actor too when asked
+DNGLOOK_1130 DNGLOOK_1130_FreeDungeonImages    # on leaving: frees the pictures, loads TILES.16 again and the tileset mode
+DNGLOOK_117e DNGLOOK_117e_PlaceCombatants      # puts the party on the fight's start cells (by the facing) and the monsters of the combat map as actors, with their values
+#= DNGLOOK_0000_LookCmdInDungeon # the Look command in a dungeon: darkness without light, else what is in the cell ahead (fields, walls, doors, chests, ladders, a fountain to drink from)
+#= DNGLOOK_06a8_ViewCmd # the View command: spreads from the party's cell over the open ground of the level, drawing each cell, until a key
+# locals and parameters
+dnglook.c:DNGLOOK_0000_LookCmdInDungeon local_e_am member
+dnglook.c:DNGLOOK_0000_LookCmdInDungeon local_c cell
+dnglook.c:DNGLOOK_0000_LookCmdInDungeon local_a lookY
+dnglook.c:DNGLOOK_0000_LookCmdInDungeon local_8 lookX
+dnglook.c:DNGLOOK_0000_LookCmdInDungeon local_6 answer
+dnglook.c:DNGLOOK_0000_LookCmdInDungeon local_4_ab style
+dnglook.c:DNGLOOK_0284 param_1 left
+dnglook.c:DNGLOOK_0284 param_2 top
+dnglook.c:DNGLOOK_0340 param_1 col
+dnglook.c:DNGLOOK_0340 param_2 row
+dnglook.c:DNGLOOK_0340 local_a kind
+dnglook.c:DNGLOOK_0340 local_8 open
+dnglook.c:DNGLOOK_0340 local_6 cellY
+dnglook.c:DNGLOOK_0340 local_4_ab cellX
+dnglook.c:DNGLOOK_06a8_ViewCmd local_16_ak dir
+dnglook.c:DNGLOOK_06a8_ViewCmd local_14_am nextY
+dnglook.c:DNGLOOK_06a8_ViewCmd local_12_a nextX
+dnglook.c:DNGLOOK_06a8_ViewCmd local_10_aa headY
+dnglook.c:DNGLOOK_06a8_ViewCmd local_e_am curY
+dnglook.c:DNGLOOK_06a8_ViewCmd local_c headX
+dnglook.c:DNGLOOK_06a8_ViewCmd local_a curX
+dnglook.c:DNGLOOK_06a8_ViewCmd local_8 queueLast
+dnglook.c:DNGLOOK_06a8_ViewCmd local_6 tailY
+dnglook.c:DNGLOOK_06a8_ViewCmd local_4_ab tailX
+dnglook.c:DNGLOOK_0844 param_1 room
+dnglook.c:DNGLOOK_0844 local_a roomBit
+dnglook.c:DNGLOOK_0844 local_8 byteIndex
+dnglook.c:DNGLOOK_0844 local_6 index
+dnglook.c:DNGLOOK_0844 local_4_ab level
+dnglook.c:DNGLOOK_08d4 param_1 room
+dnglook.c:DNGLOOK_08d4 local_6 level
+dnglook.c:DNGLOOK_08d4 local_c roomBit
+dnglook.c:DNGLOOK_08d4 local_a byteIndex
+dnglook.c:DNGLOOK_08d4 local_8 mask
+dnglook.c:DNGLOOK_08d4 local_4_ab flags
+dnglook.c:DNGLOOK_093a local_c cell
+dnglook.c:DNGLOOK_093a local_a cellPtr
+dnglook.c:DNGLOOK_093a local_8 room
+dnglook.c:DNGLOOK_093a local_6 index
+dnglook.c:DNGLOOK_093a local_4_ab kind
+dnglook.c:DNGLOOK_097e param_1 cellKind
+dnglook.c:DNGLOOK_097e param_2 side
+dnglook.c:DNGLOOK_097e local_6 y
+dnglook.c:DNGLOOK_097e local_4_ab x
+dnglook.c:DNGLOOK_097e local_8 count
+dnglook.c:DNGLOOK_097e local_c stepY
+dnglook.c:DNGLOOK_097e local_a stepX
+dnglook.c:DNGLOOK_0a48 param_1 side
+dnglook.c:DNGLOOK_0a48 local_8 count
+dnglook.c:DNGLOOK_0a48 local_c stepY
+dnglook.c:DNGLOOK_0a48 local_a stepX
+dnglook.c:DNGLOOK_0a48 local_6 y
+dnglook.c:DNGLOOK_0a48 local_4_ab x
+dnglook.c:DNGLOOK_0aee param_1 side
+dnglook.c:DNGLOOK_0aee local_6 y
+dnglook.c:DNGLOOK_0aee local_4_ab x
+dnglook.c:DNGLOOK_0aee local_8 count
+dnglook.c:DNGLOOK_0aee local_c stepY
+dnglook.c:DNGLOOK_0aee local_a stepX
+dnglook.c:DNGLOOK_0b9e param_1 side
+dnglook.c:DNGLOOK_0b9e local_8 neighbour
+dnglook.c:DNGLOOK_0b9e local_6 cellY
+dnglook.c:DNGLOOK_0b9e local_4_ab cellX
+dnglook.c:DNGLOOK_0c6c local_8 kind
+dnglook.c:DNGLOOK_0c6c local_6 index
+dnglook.c:DNGLOOK_0c6c local_4_aa linePtr
+dnglook.c:DNGLOOK_0c6c local_c centreTile
+dnglook.c:DNGLOOK_0d3e local_34_ak southPtr
+dnglook.c:DNGLOOK_0d3e local_32_am pickIdx
+dnglook.c:DNGLOOK_0d3e local_30_a index
+dnglook.c:DNGLOOK_0d3e local_2e_ak order
+dnglook.c:DNGLOOK_0d3e local_e_am eastPtr
+dnglook.c:DNGLOOK_0d3e local_c monsterYPtr
+dnglook.c:DNGLOOK_0d3e local_a westPtr
+dnglook.c:DNGLOOK_0d3e local_8 monsterXPtr
+dnglook.c:DNGLOOK_0d3e local_6 northPtr
+dnglook.c:DNGLOOK_0d3e local_4_ab count
+dnglook.c:DNGLOOK_109e param_1 clearEncounter
+dnglook.c:DNGLOOK_117e param_1 cellKind
+dnglook.c:DNGLOOK_117e param_2 mode
+dnglook.c:DNGLOOK_117e local_16_ak monsterType
+dnglook.c:DNGLOOK_117e local_14_am placeKind
+dnglook.c:DNGLOOK_117e local_12_a slot
+dnglook.c:DNGLOOK_117e local_10_aa index
+dnglook.c:DNGLOOK_117e local_e_am yIndex
+dnglook.c:DNGLOOK_117e local_c xIndex
+dnglook.c:DNGLOOK_117e local_a tile
+dnglook.c:DNGLOOK_117e local_8 randomTypes
+dnglook.c:DNGLOOK_117e local_4_ab side
+# globals
+D_383a D_383a_roomsNeverCleared      # rooms (map & 0xf, then the room) that never stay cleared: D_3840 entries
+D_3840 D_3840_neverClearedCount
+D_3842 D_3842_objectValueRange       # per object kind (type - 3) of a dungeon fight: the random range of its value ...
+D_3850 D_3850_objectValueBase        # ... and its base
+D_385e D_385e_randomMonsterTypes     # the monsters a "random" (0xec-0xef) monster tile of a room can be
+D_244a D_244a_centreTiles            # the tile in the middle of the combat map for each dungeon cell kind (the high nibble)
+D_2452 D_2452_roomPartyX             # the party's start x and y (six each) in a room fight, the same on all four sides
+D_2458 D_2458_roomPartyY
+D_245e D_245e_partyLineA             # outside a room: four orientations of the party's start cells (x of the north side, y of the west...)
+D_2464 D_2464_partyLineB
+D_246a D_246a_partyLineC
+D_2470 D_2470_partyLineD
+D_2476 D_2476_monsterLineA           # the monsters' 16 cells in the four orientations (x and y swap and mirror with the facing)
+D_2486 D_2486_monsterLineB
+D_2496 D_2496_monsterLineC
+D_24a6 D_24a6_monsterLineD
+D_24b6 D_24b6_roomMonsterX           # the monsters' 16 cells in a room fight
+D_24c6 D_24c6_roomMonsterY
+D_a528 D_a528_viewQueueX             # the View command's queue of cells to spread from (x and y, 0x100 each, a ring)
+D_a628 D_a628_viewQueueY

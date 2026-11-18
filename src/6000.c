@@ -89,7 +89,7 @@ void ULTIMA_5f86_SpecialMapHandler(int param_1, int param_2, int param_3)
         else if ((param_1 & 2) != 0) // 6046
         {
             local_6 = param_2;
-            DNGLOOK_117e(0, 2);
+            DNGLOOK_117e_PlaceCombatants(0, 2);
         }
         else
         {

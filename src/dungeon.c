@@ -16,7 +16,7 @@
 void DUNGEON_1a90(int param_1);
 void DUNGEON_1be0(void);
 
-void DNGLOOK_109e(int param_1);
+void DNGLOOK_109e_LoadDungeonImages(int clearEncounter);
 
 u8 D_2c76[6] = {0x00, 0x01, 0x02, 0x03, 0x00, 0x02};
 
@@ -65,7 +65,7 @@ static void DUNGEON_0000(byte param_1)
     D_5893_mapId = 0xff;
     D_58a0_combatExitDir = 0;
 
-    DNGLOOK_117e(param_1, 3);
+    DNGLOOK_117e_PlaceCombatants(param_1, 3);
     ULTIMA_5910_UpdateFrame();
 
     D_58a1_combatFlags = 0x82;
@@ -78,7 +78,7 @@ static void DUNGEON_0000(byte param_1)
         }
 
         D_5893_mapId = D_5894_savedMapId;
-        DNGLOOK_0844(local_1c);
+        DNGLOOK_0844_MarkRoomCleared(local_1c);
         GetDungeonMap((uint)local_6, (uint)local_8, (uint)D_5895_mapLevel) &= 0xaf;
     }
 
@@ -86,7 +86,7 @@ static void DUNGEON_0000(byte param_1)
     D_5896_mapX = local_6;
     D_5893_mapId = D_5894_savedMapId;
 
-    DNGLOOK_0fda();
+    DNGLOOK_0fda_StepAfterCombat();
 
     D_5c5a_actors[1] = local_12;
     D_5c5a_actors[2] = local_1a_aa;
@@ -676,14 +676,14 @@ static void DUNGEON_0a4c(byte param_1)
         param_1 &= 0xf0;
         if (param_1 == 0xa0 || param_1 == 0xf0)
         {
-            DNGLOOK_1130();
+            DNGLOOK_1130_FreeDungeonImages();
             DUNGEON_0000(GetDungeonMap(D_5896_mapX, D_5897_mapY, D_5895_mapLevel));
             if (D_5893_mapId == 0)
             {
                 return;
             }
 
-            DNGLOOK_109e(1);
+            DNGLOOK_109e_LoadDungeonImages(1);
         }
 
         DUNGEON_0134(1);
@@ -743,13 +743,13 @@ static void DUNGEON_0b7e(void)
     DUNGEON_1be0();
     ULTIMA_1b16_ClearKbdBuffer();
     ULTIMA_20fa_WaitTicks(2);
-    DNGLOOK_1130();
+    DNGLOOK_1130_FreeDungeonImages();
     D_58a0_combatExitDir = 0;
     D_58a1_combatFlags = 2;
-    DNGLOOK_0d3e();
+    DNGLOOK_0d3e_SetUpDungeonFight();
     ULTIMA_5f86_SpecialMapHandler(2, D_5c5a_actors[1].value, 0);
-    DNGLOOK_0fda();
-    DNGLOOK_109e(1);
+    DNGLOOK_0fda_StepAfterCombat();
+    DNGLOOK_109e_LoadDungeonImages(1);
     DUNGEON_0134(1);
     if (D_5893_mapId != 0)
     {
@@ -798,7 +798,7 @@ void DUNGEON_0c76(byte param_1, int param_2)
     if (local_4_ab == 0xf0 || local_4_ab == 0xa0)
     {
         // 0d23
-        DNGLOOK_1130();
+        DNGLOOK_1130_FreeDungeonImages();
 
         // 0d26
         while ((local_4_ab == 0xf0 || local_4_ab == 0xa0))
@@ -823,7 +823,7 @@ void DUNGEON_0c76(byte param_1, int param_2)
         }
 
         // 0d4a
-        DNGLOOK_109e(1);
+        DNGLOOK_109e_LoadDungeonImages(1);
 
         if (D_5893_mapId > 0x20)
         {
@@ -890,7 +890,7 @@ void DUNGEON_0e2e_MainLoop(int param_1)
     local_10_ad = 0;
     local_6 = 0;
     D_bb17 = 2;
-    DNGLOOK_093a();
+    DNGLOOK_093a_ApplyClearedRooms();
     local_8 = GetDungeonMap(D_5896_mapX, D_5897_mapY, D_5895_mapLevel);
     local_8 &= 0xf0;
     DUNGEON_0332();
@@ -924,13 +924,13 @@ void DUNGEON_0e2e_MainLoop(int param_1)
     if (local_8 == 0xa0 || local_8 == 0xf0)
     {
         // 0ed5
-        DNGLOOK_1130();
+        DNGLOOK_1130_FreeDungeonImages();
         DUNGEON_0000(GetDungeonMap(D_5896_mapX, D_5897_mapY, D_5895_mapLevel));
     }
 
     if (D_5893_mapId > 0x20)
     {
-        DNGLOOK_109e(param_1);
+        DNGLOOK_109e_LoadDungeonImages(param_1);
         DUNGEON_0134(param_1);
         DUNGEON_1be0();
     }
@@ -1025,7 +1025,7 @@ void DUNGEON_0e2e_MainLoop(int param_1)
         D_bb17 |= 4;
     }
     // 100b
-    DNGLOOK_1130();
+    DNGLOOK_1130_FreeDungeonImages();
 
     if (local_10_ad < 0)
     {
