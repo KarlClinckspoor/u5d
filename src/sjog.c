@@ -542,7 +542,7 @@ static void SJOG_0646_SearchInDungeon(void)
                 GetDungeonMap(local_a & 7, local_c & 7, D_5895_mapLevel + 1) |= 8;
             }
 
-            DUNGEON_1a90(1);
+            DUNGEON_1a90_DrawView(1);
             ULTIMA_0f46_GRAP_66_Reveal(8, 8, 0xb7, 0xb7);
             break;
 
@@ -627,7 +627,7 @@ static void SJOG_0646_SearchInDungeon(void)
             ULTIMA_1850_PrintString(_TEXT(0x88ea, "It crumbles away.\n"));
 
             GetDungeonMap(local_a & 7, local_c & 7, D_5895_mapLevel) = (local_e_am & 8) - 0x50;
-            DUNGEON_1a90(1);
+            DUNGEON_1a90_DrawView(1);
             ULTIMA_0f46_GRAP_66_Reveal(8, 8, 0xb7, 0xb7);
             break;
         }
@@ -638,7 +638,7 @@ static void SJOG_0646_SearchInDungeon(void)
         ULTIMA_1850_PrintString(_TEXT(0x88fe, "A hidden door!\n"));
 
         GetDungeonMap(local_a & 7, local_c & 7, D_5895_mapLevel) = (local_e_am & 8) - 0x20;
-        DUNGEON_1a90(1);
+        DUNGEON_1a90_DrawView(1);
         ULTIMA_0f46_GRAP_66_Reveal(8, 8, 0xb7, 0xb7);
         break;
 

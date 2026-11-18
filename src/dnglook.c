@@ -531,7 +531,7 @@ void DNGLOOK_06a8_ViewCmd(void)
     ULTIMA_1dda_WaitForKeystroke(0);
     ULTIMA_0a70_GRAP_2d_SetPenColor(0);
     ULTIMA_0aa6_GRAP_3f_FillRect(8, 8, 0xb7, 0xb7);
-    DUNGEON_1be0();
+    DUNGEON_1be0_Redraw();
 }
 
 // CHECKED (nop)
@@ -663,12 +663,12 @@ static void DNGLOOK_097e_FillWallSide(byte cellKind, int side)
 
     if (side == 0 && cellKind == 0xe0)
     {
-        GetCombatMap(5, 2) = GetCombatMap(5, 8) = D_bb14;
+        GetCombatMap(5, 2) = GetCombatMap(5, 8) = D_bb14_wallTile;
     }
 
     if (side == 3 && cellKind == 0xe0)
     {
-        GetCombatMap(2, 5) = GetCombatMap(8, 5) = D_bb14;
+        GetCombatMap(2, 5) = GetCombatMap(8, 5) = D_bb14_wallTile;
     }
 }
 
@@ -711,7 +711,7 @@ static void DNGLOOK_0a48_OpenNarrowGap(int side)
 
     for (count = 0; count < 5; count++)
     {
-        GetCombatMap(x, y) = D_bb15;
+        GetCombatMap(x, y) = D_bb15_floorTile;
         x += stepX_g;
         y += stepY_f;
     }
@@ -758,7 +758,7 @@ static void DNGLOOK_0aee_OpenWideGap(int side)
 
     for (count = 0; count < 7; count++)
     {
-        GetCombatMap(x, y) = D_bb15;
+        GetCombatMap(x, y) = D_bb15_floorTile;
         x += stepX_g;
         y += stepY_f;
     }
@@ -821,15 +821,15 @@ void DNGLOOK_0c6c_BuildWallRing(void)
     byte* linePtr_b;
 
     linePtr_b = &GetCombatMap(0, 1);
-    memset(linePtr_b, D_bb14, 0xb);
+    memset(linePtr_b, D_bb14_wallTile, 0xb);
 
     linePtr_b = &GetCombatMap(0, 9);
-    memset(linePtr_b, D_bb14, 0xb);
+    memset(linePtr_b, D_bb14_wallTile, 0xb);
 
     // af2e; NOT MATCHING
     for (index_h = 0; index_h < 0xb; index_h++)
     {
-        GetCombatMap(1, index_h) = GetCombatMap(9, index_h) = D_bb14;
+        GetCombatMap(1, index_h) = GetCombatMap(9, index_h) = D_bb14_wallTile;
     }
 
     GetCombatMap(0, 0) = GetCombatMap(10, 0) = GetCombatMap(0, 10) = GetCombatMap(10, 10) = 0xff;
@@ -882,7 +882,7 @@ void DNGLOOK_0d3e_SetUpDungeonFight(void)
     for (index = 0; index < 0xb; index++)
     {
         southPtr = &GetCombatMap(0, index);
-        memset(southPtr, D_bb15, 0xb);
+        memset(southPtr, D_bb15_floorTile, 0xb);
     }
 
     if ((D_58a1_combatFlags & 4) != 0)
@@ -1004,7 +1004,7 @@ void DNGLOOK_0d3e_SetUpDungeonFight(void)
     // b1cf OK
     if ((D_58a1_combatFlags & 4) != 0)
     {
-        pickIdx_l = D_173c[ULTIMA_2092_RandomRange(0, 7)];
+        pickIdx_l = D_173c_monsterTypes[ULTIMA_2092_RandomRange(0, 7)];
     }
     else
     {
@@ -1098,25 +1098,25 @@ void DNGLOOK_109e_LoadDungeonImages(int clearEncounter)
 {
     if (D_5893_mapId != 0)
     {
-        if ((D_bb17 & 2) != 0)
+        if ((D_bb17_loadFlags & 2) != 0)
         {
             ULTIMA_102e_UnloadTileset();
         }
 
-        if ((D_bb17 & 1) == 0)
+        if ((D_bb17_loadFlags & 1) == 0)
         {
             do
             {
-                D_a9c0 = ULTIMA_0bae_LoadImageFile(D_25ea_fileNames[4 + D_6604_dungeonStyle]); // DNGn.16
-            } while (D_a9c0 == 0);
+                D_a9c0_wallImage = ULTIMA_0bae_LoadImageFile(D_25ea_fileNames[4 + D_6604_dungeonStyle]); // DNGn.16
+            } while (D_a9c0_wallImage == 0);
 
             do
             {
-                D_a9c4 = ULTIMA_0bae_LoadImageFile(D_25ea_fileNames[4]); // ITEMS.16
-            } while (D_a9c4 == 0);
+                D_a9c4_itemsImage = ULTIMA_0bae_LoadImageFile(D_25ea_fileNames[4]); // ITEMS.16
+            } while (D_a9c4_itemsImage == 0);
         }
 
-        D_bb17 = 1;
+        D_bb17_loadFlags = 1;
         if (clearEncounter != 0)
         {
             D_5c5a_actors[1].tile = D_5c5a_actors[1].animTile = 0;
@@ -1138,29 +1138,29 @@ void DNGLOOK_1130_FreeDungeonImages(void)
     AUDIO_StopBgm();
 #endif
 
-    if ((D_bb17 & 1) != 0)
+    if ((D_bb17_loadFlags & 1) != 0)
     {
         if (D_5c5a_actors[1].value != 0xff)
         {
-            ULTIMA_0be4_FreeImage(D_a9c6);
+            ULTIMA_0be4_FreeImage(D_a9c6_monsterImage);
         }
-        D_a9c6 = 0;
-        ULTIMA_0be4_FreeImage(D_a9c4);
-        ULTIMA_0be4_FreeImage(D_a9c0);
+        D_a9c6_monsterImage = 0;
+        ULTIMA_0be4_FreeImage(D_a9c4_itemsImage);
+        ULTIMA_0be4_FreeImage(D_a9c0_wallImage);
     }
 
-    if ((D_bb17 & 2) == 0)
+    if ((D_bb17_loadFlags & 2) == 0)
     {
         while (ULTIMA_0ff4_LoadTileset(*D_25f0) == 0) // TILES.16
             ;
     }
 
-    if ((D_bb17 & 4) == 0)
+    if ((D_bb17_loadFlags & 4) == 0)
     {
         ULTIMA_6f9e_TilesetModePlus3(0);
     }
 
-    D_bb17 = 6;
+    D_bb17_loadFlags = 6;
 }
 
 // CHECKED (optimization)

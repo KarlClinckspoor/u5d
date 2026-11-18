@@ -186,8 +186,8 @@ LINK_DEFINES.update({
 # it first met it; within an object that is MSC's symbol-table order, which depends on names
 # the original's source had and u5d does not (docs/MATCHING.md, "The resident data").
 COMMUNALS = [n.upper() for n in (
-    'D_a9bc_townJustEntered D_a9bd_curDisk D_a9be D_a9c0 D_a9c2 D_a9c4 D_a9c6 D_a9c8_diskDrives D_a9ce_soundOn D_a9d0_rayBalance D_a9fa_vitalsDirty D_a9fb D_a9fc_savedActors D_aafc_shopName D_aafe_shopOwner D_ab00_itemName D_ab02_viewTiles D_ac62_placeName D_ac64_viewActors D_ad14_combatMap '
-    'D_b114_shopIndex D_b116_shopKind D_b118_shopPrice D_b11a_shopQuantity D_b11c D_b11e_tileFrames D_b21e_scratch D_b9ee D_ba14_combatants D_bb14 D_bb15 D_bb16 D_bb17 '
+    'D_a9bc_townJustEntered D_a9bd_curDisk D_a9be D_a9c0_wallImage D_a9c2 D_a9c4_itemsImage D_a9c6_monsterImage D_a9c8_diskDrives D_a9ce_soundOn D_a9d0_rayBalance D_a9fa_vitalsDirty D_a9fb_stepVolume D_a9fc_savedActors D_aafc_shopName D_aafe_shopOwner D_ab00_itemName D_ab02_viewTiles D_ac62_placeName D_ac64_viewActors D_ad14_combatMap '
+    'D_b114_shopIndex D_b116_shopKind D_b118_shopPrice D_b11a_shopQuantity D_b11c D_b11e_tileFrames D_b21e_scratch D_b9ee D_ba14_combatants D_bb14_wallTile D_bb15_floorTile D_bb16 D_bb17_loadFlags '
     'D_bb18 D_bb1a D_bb1c D_bbd2 D_bc88 D_bcb0 '
     'D_bcb2 D_bcda '
     'D_bcdc_talkNpcIndex D_bcde_talkPtr D_bce0_talkCodeArgs D_bce4_talkWord D_bcf4_talkLabel D_bcf6_talkKeywordIndex D_bcf8_inputText '

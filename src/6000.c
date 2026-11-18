@@ -705,7 +705,7 @@ void ULTIMA_6936_InitCombatants(void)
     {
         local_c = ULTIMA_6506_PlaceCombatant(1, 2, 5, 5, D_5895_mapLevel);
         D_5c5a_actors[local_c].value = D_5895_mapLevel * 3 + 7;
-        GetCombatMap(5, 5) = D_bb15;
+        GetCombatMap(5, 5) = D_bb15_floorTile;
     }
 }
 

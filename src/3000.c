@@ -1075,7 +1075,7 @@ static void ULTIMA_3c9a_HoleUpCmd(void)
 
                     D_5c5a_actors[1] = D_a9fc_savedActors[1];
 
-                    DUNGEON_0134(0);
+                    DUNGEON_0134_SetUpMonster(0);
                 }
                 else
                 {

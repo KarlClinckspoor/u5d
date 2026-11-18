@@ -51,8 +51,8 @@ STUB u8 D_172c_combatPartyY[8]; // six used
 // gap 2
 STUB u8 D_1734[8];
 
-STUB u8 D_173c[8];
-STUB u8 D_1744[8];
+STUB u8 D_173c_monsterTypes[8];
+STUB u8 D_1744_monsterAnimStates[8];
 
 STUB char* D_17f6_equipNames[0x30]; // Equipment names
 
@@ -141,7 +141,7 @@ STUB s16 D_24d6_facingDx[4]; // by facing: north, east, south, west
 STUB s16 D_24de_facingDy[4]; // direction offset
 
 STUB u8 D_24e6_viewDirty; // the map view must be built again (bit 1: the light map too)
-STUB u8 D_24e7; // footstep sfx related flag in dungeon
+STUB u8 D_24e7_stepToggle; // footstep sfx related flag in dungeon
 
 STUB char* D_24ea_wordTable[0x80]; // the words that bytes of the .TLK scripts (below 0x81) and of SHOPPE.DAT (from 0x80) stand for
 STUB char* D_25ea_fileNames[30]; // ~2626) compressed file name table
@@ -189,42 +189,42 @@ STUB u8 D_2c57_mountToggle;
 // ^ mainout
 
 // dungeon
-STUB u8 D_2c76[6]; // TODO: size
+STUB u8 D_2c76_facingOfDir[6]; // TODO: size
 
-STUB u8 D_2de8[8];
-STUB u8 D_2df0[8];
-STUB u8 D_2df8[12];
-STUB u8 D_2e04[12];
+STUB u8 D_2de8_placeNameBase[8];
+STUB u8 D_2df0_placeNameCount[8];
+STUB u8 D_2df8_placeNameX[12];
+STUB u8 D_2e04_placeNameY[12];
 STUB char* D_2e10[11];
 
-STUB u8 D_2e26[4];
-STUB s16 D_2e2a[4]; // int
-STUB s16 D_2e32[2][4]; // int
-STUB s16 D_2e42[4]; // int
-STUB s16 D_2e4a[4]; // int
-STUB s16 D_2e52[4]; // int
-STUB s16 D_2e5a[4]; // int
-STUB s16 D_2e62[2][4]; // int
-STUB s16 D_2e72[4]; // int
-STUB s16 D_2e7a[2][4]; // int
-STUB u8 D_2e8a[6]; // offset confirmed
-STUB u8 D_2e90[10]; // offset confirmed
-STUB u8 D_2e9a[10];
+STUB u8 D_2e26_monsterTurnMirror[4];
+STUB s16 D_2e2a_monsterX[4]; // int
+STUB s16 D_2e32_monsterY[2][4]; // int
+STUB s16 D_2e42_fieldTop[4]; // int
+STUB s16 D_2e4a_fieldBottom[4]; // int
+STUB s16 D_2e52_fieldCount[4]; // int
+STUB s16 D_2e5a_fieldWidth[4]; // int
+STUB s16 D_2e62_pieceX[2][4]; // int
+STUB s16 D_2e72_itemPieceX[4]; // int
+STUB s16 D_2e7a_itemPieceY[2][4]; // int
+STUB u8 D_2e8a_aheadPieceOffset[6]; // offset confirmed
+STUB u8 D_2e90_aheadDripY[10]; // offset confirmed
+STUB u8 D_2e9a_sideDripY[10];
 
-STUB Pair D_2ea4[3][8];
-STUB Pair D_2ed4[3][5];
-STUB Pair D_2ef2[3][4];
-STUB Pair D_2f0a[3];
-STUB Pair D_2f10[3];
+STUB Pair D_2ea4_dotsDist0[3][8];
+STUB Pair D_2ed4_dotsDist1[3][5];
+STUB Pair D_2ef2_dotsDist2[3][4];
+STUB Pair D_2f0a_dotsDist3[3];
+STUB Pair D_2f10_dotsDist0Extra[3];
 
-STUB u8 D_2f16[8]; // TODO: size
-STUB u8 D_2f1e[8]; // TODO: size
+STUB u8 D_2f16_mirroredPiece[8]; // TODO: size
+STUB u8 D_2f1e_plainPiece[8]; // TODO: size
 
-#define D_2f24 D_2f1e[6]
-STUB u8 D_2f26;
+#define D_2f24 D_2f1e_plainPiece[6]
+STUB u8 D_2f26_dotFrame;
 
-STUB s8 D_2f28[4]; // direction x
-STUB s8 D_2f2c[4]; // direction y
+STUB s8 D_2f28_sideDx[4]; // direction x
+STUB s8 D_2f2c_sideDy[4]; // direction y
 // ^ dungeon
 
 // intro
@@ -822,10 +822,10 @@ STUB u8 D_6aa8[0x24];
 BSS u8  D_a9bc_townJustEntered;
 BSS u8 D_a9bd_curDisk[1]; // the disk wanted (ULTIMA_251e_SwitchDisks)
 BSS u8 D_a9be; // two bytes on an odd address would have been put on an even one
-BSS u8* D_a9c0; // loaded image pointer
+BSS u8* D_a9c0_wallImage; // loaded image pointer
 BSS u8 D_a9c2;
-BSS u8* D_a9c4; // loaded image pointer
-BSS u8* D_a9c6; // loaded image pointer
+BSS u8* D_a9c4_itemsImage; // loaded image pointer
+BSS u8* D_a9c6_monsterImage; // loaded image pointer
 
 // disk drive table
 BSS u8 D_a9c8_diskDrives[6]; // the drive of each disk; 0xff: not set
@@ -842,7 +842,7 @@ BSS u8 D_a9ce_soundOn; // use sound effect?
 BSS u16 D_a9d0_rayBalance[0x15];
 
 BSS u8 D_a9fa_vitalsDirty; // dirty flag for vital
-BSS u8 D_a9fb; // footstep sfx duration in dungeon
+BSS u8 D_a9fb_stepVolume; // footstep sfx duration in dungeon
 
 // combat?
 BSS ActorFmt D_a9fc_savedActors[0x20]; // D_5c5a_actors during combat
@@ -902,10 +902,10 @@ BSS u8  D_b9ee[0x26]; // owned item counts
 
 BSS CombatEntity D_ba14_combatants[32]; // combat entities
 
-BSS u8  D_bb14; // pos?
-BSS u8  D_bb15; // pos?
+BSS u8  D_bb14_wallTile; // pos?
+BSS u8  D_bb15_floorTile; // pos?
 BSS u8  D_bb16;
-BSS u8  D_bb17;
+BSS u8  D_bb17_loadFlags;
 BSS u16 D_bb18; // "lord british" index
 BSS void* D_bb1a; // pointer
 
