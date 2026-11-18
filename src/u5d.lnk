@@ -1,156 +1,187 @@
-# u5d.lnk: the link script. tools/u5link.py links ULTIMA.EXE, the overlays and DATA.OVL
-# from this file and the objects alone; it opens no game file.
+# u5d.lnk: the link command file. tools/u5link.py links ULTIMA.EXE, the overlays and DATA.OVL
+# from this file and the objects alone; it opens no game file and needs no Phoenix file.
 #
-# Written by tools/linkscript.py, which measures every line from the GOG files and the
-# objects (its docstring says how); "tools/linkscript.py --check" measures again and
-# compares. Do not edit by hand: change the measurement and write the file again.
-# All numbers are hexadecimal. A '#' starts a comment.
+# It is written in the spirit of the PLINK86plus 2.24 command file Origin linked with
+# (docs/MATCHING.md, "Origin's link, reproduced"): the files in the order the linker processes
+# them, the overlay areas and their sections, the libraries, the DEFINEs. u5link places
+# everything from that by PLINK's rules (its docstring lists them): every code address, every
+# DGROUP offset, the library modules and their order, the areas, the overlays' and DATA.OVL's
+# headers, the overlay table and stubs. What no rule settles is stated here and marked "fact".
+# "tools/linkscript.py --check" compares what u5link computes with the original files.
+# A '#' starts a comment. A line that ends in target=gog or target=1988 holds for that target
+# only (the 1992 patch's assembly, A2322 and AINTRO2, is the gog target's).
 
-# exe: ULTIMA.EXE. image is the length of the resident image (the file after its
-# header). The other fields are PLINK86's own, read from the original's header: the
-# relocation table starts at fixed (the header's length before it), the word at 1c
-# is word1c, and SS is stackgap paragraphs past the end of the image and SP is sp
-# (the stack of Origin's wrapper, PLSTART, which took the entry point). Sizes,
-# relocation count and table, header length, minimum allocation, entry point and the
-# checksum (PLINK86's MZ checksum of the program without the wrapper) are the
-# linker's rules.
-exe      image=86f0 fixed=1e word1c=0001 stackgap=0100 sp=0064
+# output NAME: the program, as the overlay table names it.
+output   ULTIMA.EXE
 
-# dgroup: DATA.OVL is a header of this length (the far pointers in DGROUP, then zeros)
-# and DGROUP, size bytes from DS:0000.
-dgroup   size=bd40 header=10
+# define NAME=OTHER: a second name for the place OTHER names (a PLINK DEFINE). The original
+# reaches the overworld map through a name of its own for DS:6608 (vars.h); which object
+# defined it is not known.
+define   D_6608_overworld=D_6608_map
 
-# define: symbols the linker defines, the end of the initialised data and the end of
-# DGROUP, as the runtime's code holds them in the original.
-define   _edata=a524
-define   _end=bd40
+# The processing order (fact). The order the evidence gives (the DGROUP layout, the library
+# order): ULTIMA, the overlays, the library, then the other resident objects in address order.
+# How Origin's command file got that order with the resident objects in the root is not known
+# (in PLINK, files after the last END would make a section of their own): here a file after
+# an END belongs to the root again.
+#
+# file NAME...: objects, build/obj/NAME.OBJ (compiled from src/NAME.c, or assembled from
+# src/asm/NAME.ASM), in the root (before the first area, and after an END).
+file     ULTIMA
 
-# overlay: a .OVL file. base is the CS address its file offset 0 is loaded at (the
-# area base, less the header), size the file's length, header the length of the
-# relocation list PLINK86 wrote before the code (INTRO.OVL only). In the order of
-# the overlay numbers (the file names in PLINK86's table, src/asm/PLTAB.ASM).
-overlay  TOWN     base=81d0 size=1870 header=00
-overlay  MAINOUT  base=81d0 size=1cb0 header=00
-overlay  DUNGEON  base=81d0 size=1f50 header=00
-overlay  INTRO    base=81c0 size=20d0 header=10
-overlay  FLAMES   base=a290 size=0020 header=00
-overlay  NPC      base=a290 size=1330 header=00
-overlay  COMBAT   base=a290 size=1cf0 header=00
-overlay  BLCKTHRN base=a290 size=0c70 header=00
-overlay  LOOKOBJ  base=a290 size=11d0 header=00
-overlay  DNGLOOK  base=a290 size=13b0 header=00
-overlay  OUTSUBS  base=a290 size=09a0 header=00
-overlay  SHOPPES  base=a290 size=1730 header=00
-overlay  ENDGAME  base=a290 size=0af0 header=00
-overlay  SJOG     base=bf80 size=2260 header=00
-overlay  CMDS     base=bf80 size=1d10 header=00
-overlay  CAST     base=bf80 size=2170 header=00
-overlay  TALK     base=bf80 size=1310 header=00
-overlay  CAST2    base=e1e0 size=11c0 header=00
-overlay  ZSTATS   base=e1e0 size=1310 header=00
-overlay  COMSUBS  base=e1e0 size=1460 header=00
-overlay  SHOPPES2 base=e1e0 size=0b20 header=00
-overlay  SHOPPES3 base=e1e0 size=09e0 header=00
-overlay  FONT     base=e1e0 size=0ea0 header=00
+# begin ... end: an overlay area: it starts where the one before it ends (the first where
+# the root ends, at the paragraph) and is as large as its largest section.
+# section NAME FILE...: an overlay, NAME.OVL, made of the files named, in that order, at its
+# area's base. Its number (the stubs pass it to the loader) is its place among the sections.
+begin
+section  TOWN     TOWN TOWN2
+section  MAINOUT  MAINOUT MAINOUTB
+section  DUNGEON  DUNGEON DUNGEONB
+section  INTRO    INTRO0 INTRO INTRO2 AINTRO2 INTROB AINTRO          target=gog
+section  INTRO    INTRO0 INTRO INTRO2 INTROB AINTRO                  target=1988
+end
+begin
+section  FLAMES   AFLAMES
+section  NPC      NPC ANPC
+section  COMBAT   COMBAT
+section  BLCKTHRN BLCKTHRN
+section  LOOKOBJ  LOOKOBJ
+section  DNGLOOK  DNGLOOK
+section  OUTSUBS  OUTSUBS OUTSUBSB
+section  SHOPPES  SHOPPES
+section  ENDGAME  ENDGAME
+end
+begin
+section  SJOG     SJOG
+section  CMDS     CMDS CMDS2 CMDSB
+section  CAST     CAST CASTB
+section  TALK     TALK
+end
+begin
+section  CAST2    CAST2
+section  ZSTATS   ZSTATS
+section  COMSUBS  COMSUBS
+section  SHOPPES2 SHOPPES2 SHOPPE2B
+section  SHOPPES3 SHOPPES3
+section  FONT     AFONT0 FONT AFONT
+end
 
-# The resident modules, in the order of their code (the link order). Each line: where
-# the module's code starts (a CS offset) and where each of its data segments starts
-# in DGROUP (DS offsets).
-#   library LIB MODULE PUBLIC   the module of the Microsoft C 5.1 runtime library LIB
-#                        (build/msc51/LIB) that defines PUBLIC; MODULE is its name
-#   object NAME          build/obj/NAME.OBJ: compiled from src/NAME.c, or assembled
-#                        from src/asm/NAME.ASM
-object   ULTIMA   code=0000 _DATA=0042
-library  SLIBCR.LIB dos\crt0.asm     __abrkp     code=017e _DATA=520e
-library  SLIBCR.LIB dos\crt0dat.asm  ___argc     code=0230 _DATA=5266 CDATA=6acc XCB=6ada XCE=6ada XCFB=6ada XCFE=6ada XIB=6ada XIE=6ada XIFB=6ada XIFE=6ada XPB=6ada XPE=6ada XOB=a9bc XOE=a9bc
-library  LIBH.LIB   uldiv.asm        __aNuldiv   code=03a0
-library  SLIBCR.LIB memchr.asm       _memchr     code=0402
-library  SLIBCR.LIB itoa.asm         _itoa       code=0426
-library  LIBH.LIB   lmul.asm         __aNlmul    code=0442
-library  LIBH.LIB   alshl.asm        __aNNalshl  code=0476
-library  LIBH.LIB   ldiv.asm         __aNldiv    code=0496
-library  SLIBCR.LIB dos\nmsghdr.asm  __NMSG_TEXT code=0532 HDR=a44a PAD=a520 EPAD=a522
-library  SLIBCR.LIB dos\crt0msg.asm  __FF_MSGBANNER code=0586 _DATA=52b6 MSG=a452 PAD=a520 EPAD=a522
-library  SLIBCR.LIB dos\stdargv.asm  __setargv   code=05a6 _DATA=52b8
-library  SLIBCR.LIB dos\stdenvp.asm  __setenvp   code=0734
-library  SLIBCR.LIB chksum.asm       __nullcheck code=07a2 NULL=0000 MSG=a4d4 PAD=a520 EPAD=a522
-library  SLIBCR.LIB crt0fp.asm       __fptrap    code=07c4 MSG=a4f9 PAD=a520 EPAD=a522
-library  SLIBCR.LIB xtoa.asm         __cltoasub  code=07ca
-library  LIBH.LIB   lshl.asm         __aNlshl    code=082a
-library  SLIBCR.LIB dos\stdalloc.asm __myalloc   code=0836
-object   A0878    code=0878 _DATA=52ba
-object   LOGO     code=0d72 _DATA=5306
-object   A0DE0    code=0de0 _DATA=5322
-object   PRINT    code=1850 _DATA=5402
-object   A1B16    code=1b16
-object   POLLKEY  code=1b38 _DATA=540c
-object   A1B94    code=1b94 _DATA=540e
-object   WAITKEY  code=1dda
-object   A1EAC    code=1eac _DATA=541e
-object   BACKSPC  code=1fa0
-object   A2056    code=2056 _DATA=5420
-object   USTRLEN  code=216c
-object   A2192    code=2192 _DATA=5450
-object   DISKSWAP code=2320 target=gog
-object   A2322    code=2322 _DATA=545e target=gog
-object   DISKSWAP code=2320 _DATA=545e target=1988
-object   SWDISKS  code=251e
-object   FILEIO   code=256e CONST=a0e0
-object   PARTY    code=266c _DATA=54b6
-object   COMMANDS code=3072 _DATA=55a6 CONST=a110
-object   WORLD    code=400c _DATA=6a34 CONST=a396
-object   VIEW     code=51a0
-object   VISIBLE  code=5a28 _DATA=6a86
-object   BATTLE   code=5f86 CONST=a3f0
-object   A6F1E    code=6f1e _DATA=6aa4
-object   LIGHTHSE code=7040
-object   A71AA    code=71aa
-object   PLMGR    code=72e0
-object   PLTAB    code=7780
-object   PLSTART  code=81d0
+# library LIB...: the Microsoft C 5.1 runtime libraries (build/msc51/LIB), searched as one, as
+# MSC's setup merges SLIBCR.LIB and LIBH.LIB into SLIBCE.LIB; the modules the search pulls go
+# here in the processing order.
+library  SLIBCR.LIB LIBH.LIB
 
-# The overlays' objects: code=OVERLAY:offset, the offset in the .OVL file (as in the
-# functions' names), then the data segments as above.
-object   TOWN     code=TOWN:0000 _DATA=2626
-object   TOWN2    code=TOWN:10da _DATA=278a
-object   MAINOUT  code=MAINOUT:0000 _DATA=2946 _BSS=a524
-object   MAINOUTB code=MAINOUT:109e _DATA=2bc0 CONST=6ada _BSS=a526
-object   DUNGEON  code=DUNGEON:0000 _DATA=2c58
-object   DUNGEONB code=DUNGEON:104c _DATA=2de8 CONST=6bb0
-object   INTRO0   code=INTRO:0010
-object   INTRO    code=INTRO:014e _DATA=2f30
-object   INTRO2   code=INTRO:0986 _DATA=3182
-object   AINTRO2  code=INTRO:132a _DATA=3345 target=gog
-object   INTROB   code=INTRO:1e22 _DATA=3656 CONST=6cf8
-object   AINTRO   code=INTRO:2090
-object   AFLAMES  code=FLAMES:0000
-object   NPC      code=NPC:0000 _DATA=367e CONST=6d46
-object   ANPC     code=NPC:12e0
-object   COMBAT   code=COMBAT:0000 CONST=6d74
-object   BLCKTHRN code=BLCKTHRN:0000 _DATA=369e CONST=6f6e
-object   LOOKOBJ  code=LOOKOBJ:0000 _DATA=3750 CONST=71f8
-object   DNGLOOK  code=DNGLOOK:0000 _DATA=383a CONST=752e _BSS=a528
-object   OUTSUBS  code=OUTSUBS:0000 _DATA=3866
-object   OUTSUBSB code=OUTSUBS:0658 _DATA=3a26 CONST=7750
-object   SHOPPES  code=SHOPPES:0000 _DATA=3a32 CONST=7826
-object   ENDGAME  code=ENDGAME:0000 _DATA=3da6 CONST=81fe
-object   SJOG     code=SJOG:0000 _DATA=3e66 CONST=84e6
-object   CMDS     code=CMDS:0000 _DATA=41d4
-object   CMDS2    code=CMDS:1202 _DATA=4450
-object   CMDSB    code=CMDS:18be CONST=8f64
-object   CAST     code=CAST:0000 _DATA=4592
-object   CASTB    code=CAST:1c36
-object   TALK     code=TALK:0000 _DATA=4a9a CONST=9052
-object   CAST2    code=CAST2:0000 _DATA=4af6 CONST=94f4
-object   ZSTATS   code=ZSTATS:0000 CONST=96b4
-object   COMSUBS  code=COMSUBS:0000 CONST=99a0 _BSS=a728
-object   SHOPPES2 code=SHOPPES2:0000 _DATA=4c1e CONST=9aa8
-object   SHOPPE2B code=SHOPPES2:07e2 _DATA=4d66 CONST=9fc2
-object   SHOPPES3 code=SHOPPES3:0000 _DATA=4d7e
-object   AFONT0   code=FONT:0000
-object   FONT     code=FONT:02a2 _DATA=50ea CONST=a010
-object   AFONT    code=FONT:0e52 _DATA=520c
+file     A0878 LOGO A0DE0 PRINT A1B16 POLLKEY A1B94 WAITKEY A1EAC BACKSPC A2056 USTRLEN A2192
+file     DISKSWAP
+file     A2322                                                       target=gog
+file     SWDISKS FILEIO PARTY COMMANDS WORLD VIEW VISIBLE BATTLE A6F1E LIGHTHSE A71AA
 
-# Objects without code or data of their own: the communal variables, which the
-# linker allocates after the last _BSS (tools/u5.py, COMMUNALS).
-object   VARS
+# loader NAME: the overlay loader, OVERLAY.LIB's DUMMY and OVLYV and Origin's OVUSERM, as one
+# assembly module (src/asm/PLMGR.ASM). In Origin's link a reference to DUMMY brought it in
+# first, so its class (OVLOADER) came before the table's (LOADER); here both are class CODE,
+# met in this order.
+loader   PLMGR
+
+# table: the overlay table and the call stubs (PLINK's $OVTB$), which u5link makes.
+table
+
+# section NAME FILE... after the areas: the pre-loaded section, DGROUP, written to NAME.OVL.
+# VARS.OBJ declares the communal variables (which object Origin put here is not known).
+section  DATA     VARS
+
+# wrapper NAME stackgap=N sp=N: Origin's copy-protection wrapper (src/asm/PLSTART.ASM), appended
+# to the program PLINK wrote; it took the entry point. Its stack (fact): SS stackgap paragraphs
+# past the end of the image, SP sp (hexadecimal).
+wrapper  PLSTART  stackgap=0100 sp=0064
+
+# communals NAME...: the communal variables, in the order PLINK allocated them (fact; u5link
+# allocates them in this order by the rule). PLINK takes them in COMDEF record order, object by
+# object in processing order; MSC writes an object's records in the order of its symbol table
+# (research/RULES.md, section 2), and with all 70 in VARS.OBJ that order is not the original's.
+# The original's: the shared ones, then those first met in INTRO0, INTRO2, ENDGAME, TALK, CAST2,
+# SHOPPES2, SHOPPE2B and FONT.
+communals D_a9bc_townJustEntered D_a9bd_curDisk D_a9be_promptMode D_a9c0_wallImage
+communals D_a9c2_floppyCount D_a9c4_itemsImage D_a9c6_monsterImage D_a9c8_diskDrives
+communals D_a9ce_soundOn D_a9d0_rayBalance D_a9fa_vitalsDirty D_a9fb_stepVolume
+communals D_a9fc_savedActors D_aafc_shopName D_aafe_shopOwner D_ab00_itemName D_ab02_viewTiles
+communals D_ac62_placeName D_ac64_viewActors D_ad14_combatMap
+communals D_b114_shopIndex D_b116_shopKind D_b118_shopPrice D_b11a_shopQuantity
+communals D_b11c_searchGrid D_b11e_tileFrames D_b21e_scratch D_b9ee_itemCounts D_ba14_combatants
+communals D_bb14_wallTile D_bb15_floorTile D_bb16_altTileset D_bb17_loadFlags
+communals D_bb18_pathPos D_bb1a_titleImage D_bb1c_u4Virtues D_bbd2_unused D_bc88_u4Member
+communals D_bcb0_unused
+communals D_bcb2_lineBuf D_bcda_lineLen
+communals D_bcdc_talkNpcIndex D_bcde_talkPtr D_bce0_talkCodeArgs D_bce4_talkWord
+communals D_bcf4_talkLabel D_bcf6_talkKeywordIndex D_bcf8_inputText
+communals D_bd08_answer D_bd14_unused D_bd15_savedMapId
+communals D_bd16_pubKind D_bd18_boughtSomething D_bd1a_dinersFed D_bd1c_dinerCount
+communals D_bd1e_tableTile D_bd20_drinksBought D_bd22_thrownOut D_bd24_shipSold
+communals D_bd26_stripLeft D_bd27_stripRight D_bd28_stripWiden D_bd29_sceneNo
+communals D_bd2a_virtueOffered D_bd32_virtueRejected D_bd3a_unused D_bd3b_unused D_bd3c_newInt
+communals D_bd3d_newDex D_bd3e_newStr
+
+# stubs NAME...: the functions called from another section, in the order of their call stubs
+# in the table (fact). Which functions get one is the rule (u5link checks this list against
+# it); PLINK makes them in the order the symbols enter its symbol table (DEFINEs, then each
+# file's external and public names in processing order), which here gives each stub's section
+# but not the order within one: that is the original objects' record order.
+# The lines below start a new line at each turn the rule gives (with u5d's objects): ULTIMA 6,
+# TOWN 19, MAINOUT 15, DUNGEON 17, INTRO 5, FLAMES 1, COMBAT 41, BLCKTHRN 2, LOOKOBJ 3, DNGLOOK
+# 3, OUTSUBS 1, SHOPPES 14, SJOG 3, CMDS 10, CAST 18, TALK 4, CAST2 1, FONT 1.
+stubs    DUNGEON_0e2e_MainLoop OUTSUBS_0368_GetWorldSavefile INTRO_0986_Main MAINOUT_0d22_Entry
+stubs    TOWN_11f0_Entry TOWN_141e_MainLoop
+stubs    BLCKTHRN_0910_Death CAST2_0e76_Shrine NPC_0000_LoadNpcFile TOWN_10da_ShoutBegone
+stubs    TOWN_1694_PlaceActors TOWN_0170_SwapDayNightTiles NPC_00d6_PlaceNpcs NPC_0db4_MoveNpcs
+stubs    BLCKTHRN_060e_Capture TOWN_0b82_KlimbCmd TOWN_0958_RaiseAlarm TALK_031e_TalkToNpc
+stubs    TOWN_09e6_AttackCmd TOWN_0000_CheckNpcKilled TOWN_0052_SetNpcKilled
+stubs    TOWN_00b0_DespawnNpc TOWN_011e_FindNpcByActor TOWN_1726_PlaceNpcActor
+stubs    NPC_12e0_ScheduleSlot
+stubs    OUTSUBS_0458_Falls OUTSUBS_05fc_StepOnPoisonTile OUTSUBS_05ee_StepOnBurningTile
+stubs    MAINOUT_08de_EnterCmd MAINOUT_1a60_MonstersTurn MAINOUT_0000_SetUpOverworld
+stubs    OUTSUBS_01b4_LoadViewChunks OUTSUBS_0566_PlaceAmuletShards MAINOUT_007a_WaitIfActorNear
+stubs    MAINOUT_06ec_AttackCmd OUTSUBS_0388_EnterTown MAINOUT_0354_MoveParty
+stubs    OUTSUBS_02c8_ShiftChunks MAINOUT_105c_IsMovingActor COMSUBS_12de_FlyMissile
+stubs    DUNGEON_1be0_Redraw DNGLOOK_1130_FreeDungeonImages DNGLOOK_109e_LoadDungeonImages
+stubs    DNGLOOK_093a_ApplyClearedRooms DNGLOOK_0d3e_SetUpDungeonFight COMBAT_0b94_MainLoop
+stubs    DNGLOOK_117e_PlaceCombatants ENDGAME_0648_EndgameMain DUNGEON_1a90_DrawView
+stubs    DNGLOOK_0844_MarkRoomCleared DNGLOOK_0fda_StepAfterCombat DUNGEON_0134_SetUpMonster
+stubs    DUNGEON_1e10_KlimbCmd DUNGEON_1c6a_Klimb DUNGEON_1d08_Exit DUNGEON_1d4a_AttackCmd
+stubs    DNGLOOK_0c6c_BuildWallRing
+stubs    INTRO_043e_PrintCaptionBar FONT_0b0a_CreateCharacter FONT_04a4_PlayIntroStory
+stubs    FONT_0000_DrawJustifiedText INTRO_2090_AnimateWD
+stubs    FLAMES_0000_RETURNADDRESS
+stubs    CMDS_161a_PushCmd SJOG_2012_TurnUpkeep COMBAT_14d6_RollToHit COMBAT_1574_ApplyDamage
+stubs    SJOG_1c56_CombatMovePlayer SJOG_1f7a_CombatSetActivePlayer COMBAT_194a_ResolveHit
+stubs    COMBAT_1a5c_WoundLevel CMDS_1418_YellCmd COMBAT_0000_IsCellFree
+stubs    COMBAT_1236_RemoveEntity CMDS_17ec_Escape COMSUBS_0094_PrintName
+stubs    COMSUBS_00f4_MonsterSpecial COMSUBS_0312_ReportHit COMSUBS_04d4_CombatantDistance
+stubs    SJOG_1f26_CombatMiscCmd COMSUBS_0822_ResolveShot COMSUBS_09fc_EnemyInterferes
+stubs    COMSUBS_0bf8_MeleeBlow COMSUBS_0d96_AttackCmd SJOG_18ce_GetCmd SJOG_0d4a_JimmyCmd
+stubs    SJOG_1374_OpenCmd SJOG_095c_SearchCmd ZSTATS_0a3a_ZstatsCmd CAST_1792_UseCmd
+stubs    ZSTATS_1296_ReadyCmd CAST_0dba_CastSpellCmd SJOG_1ea4_CheckMirror SJOG_1d6a_CombatKlimb
+stubs    SJOG_21ce_BreakCharm SJOG_1b6c_CountCombatants COMBAT_120e_RandomCell
+stubs    SJOG_20d8_IsCellBlocked SJOG_2148_IsSurrounded COMBAT_111a_FireMapTrigger
+stubs    COMBAT_13e2_QueryStat COMSUBS_048a_Distance COMSUBS_07d4_PickNearbyCell
+stubs    COMBAT_18ba_Poison
+stubs    CAST2_05e0_Resurrect CAST2_08ea_SetLightTurns
+stubs    LOOKOBJ_10fc_ViewCmd LOOKOBJ_0366_LookSky LOOKOBJ_099c_LookCmd
+stubs    DNGLOOK_0000_LookCmdInDungeon SJOG_006c_AskDungeonCell DNGLOOK_06a8_ViewCmd
+stubs    OUTSUBS_0658_Apparition
+stubs    SHOPPES_0280_AskYesNo SHOPPES_0026_PrintShopText SHOPPES_04a2_Provisioner
+stubs    ZSTATS_056c_PrevItem ZSTATS_05a4_NextItem ZSTATS_05e2_PrintItemRow SHOPPES_14f8_Healer
+stubs    SHOPPES_017a_PrintShopFileText SHOPPES_12b2_Armourer SHOPPES_075e_Reagents
+stubs    SHOPPES_019a_FalsehoodSurcharge SHOPPES_01b6_Greet SHOPPES_0202_Farewell
+stubs    SHOPPES_07be_Stables
+stubs    SJOG_1b34_UnequipAll SJOG_203e_EndCombat COMSUBS_0056_FadeFields
+stubs    CMDS_0552_HoleUpCmd CMDS_07f6_BoardCmd CMDS_0aea_FireCmd CMDS_0d98_IgniteTorchCmd
+stubs    CMDS_0ddc_NewOrderCmd CMDS_0eb4_XitCmd CMDS_0000_HoleUpRest CMDS_1ad8_MixCmd
+stubs    CAST2_00de_SelectSpell CMDS_1c20_KlimbCmd
+stubs    CAST2_07bc_AnGrav CAST2_08f8_SetSpellStatus CAST2_06ec_PrintPosition
+stubs    COMSUBS_0c52_AttackWith CAST2_03c2_HealMember CAST2_0306_AskDirection
+stubs    CAST2_0768_InExPor CAST2_046c_WisAnYlem CAST2_0000_CastEffect CAST2_04c2_KalXenCorp
+stubs    COMSUBS_0000_TargetResists CAST2_009e_OnWho CAST2_040a_ChangeWindDirection
+stubs    COMSUBS_0504_AimCrosshair COMSUBS_0748_CombatantAt ZSTATS_045e_DrawListFrame
+stubs    ZSTATS_099a_FillItemCounts ZSTATS_0f2e_SelectItem
+stubs    SHOPPES2_066c_Pub SHOPPES2_0abc_Shipwright TALK_041c_TalkCmd SHOPPES3_08b4_Inn
+stubs    CAST2_10fe_SaveGame
+stubs    FONT_02fc_AnimateScene

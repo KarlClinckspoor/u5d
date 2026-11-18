@@ -6,6 +6,8 @@ SLIBCE.LIB built with MSC's LIB in WORKDIR/../libs-out/CEN.LIB, plus the rename)
 taken from WORKDIR/../plu5-a/undef.txt (a first run with variant a writes LINK.LOG; extract the
 "Symbol X" lines) and DEFINEd: CMDS_0000's short link names to their long names, STUB_X to X, the
 names u5link resolves by address to that address. See docs/MATCHING.md, "Linking with PLINK86plus 2.24".
+The first experiment, superseded by pl.py; it reads the link script's format of before phase B
+(overlay and object lines), which src/u5d.lnk no longer has.
 """
 import os, re, shutil, struct, subprocess, sys
 

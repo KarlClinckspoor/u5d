@@ -12,7 +12,7 @@ one. For each target:
    folder of its own, build/check/obj (gog) or build/check/obj-1988, starting empty: nothing
    from an earlier build is used. The 1988 target's sources are compiled and assembled with
    RELEASE_1988 defined.
-2. Links them (tools/u5link.py, as the link script src/u5d.lnk says) into build/check/out or
+2. Links them (tools/u5link.py, from the link command file src/u5d.lnk) into build/check/out or
    build/check/out-1988: ULTIMA.EXE, the 23 code overlays, FLAMES.OVL and DATA.OVL.
 3. Compares the SHA-1 of each with the release's (u5.release_sha1()).
 
@@ -29,8 +29,9 @@ file. When a target's game files are found (gamedata/ or ../gamedata, gamedata-1
 single target) two more checks are made for it, and its last line says so:
 
 4. the game files are the release's (their SHA-1s are the table's);
-5. the link script's lines for the target are what the files give (tools/linkscript.py
-   --check: every placement measured again from the game files and the objects just built).
+5. every placement u5link computed for the target is the original's, and the link command
+   file's facts are the files' (tools/linkscript.py: measured from the game files and the
+   objects just built).
 
 Without them the comparison is with the SHA-1 table alone, which is the same test of the
 25 files; 4 and 5 are skipped.
@@ -111,12 +112,8 @@ def check_target(target, gd, problems):
                 if sha1(u5.read_file(gd, name)) != want:
                     problems.append('%s in %s is not %s\'s file' % (name, gd, u5.TARGET_TITLE[target]))
             import linkscript
-            measured, notes = linkscript.text(gd)
-            problems += ['link script: ' + n for n in notes]
-            diff = linkscript.check_text(measured)
-            if diff:
-                problems.append('src/u5d.lnk is not what tools/linkscript.py measures from the game files: ' +
-                                ' '.join(diff.split()))
+            lines, found = linkscript.check(gd)
+            problems += ['link placement (tools/linkscript.py): ' + n for n in found]
     return same
 
 
@@ -188,9 +185,9 @@ def main():
         result[t] = ok
         print('%d of %d files identical to %s: %s' % (same, n, u5.TARGET_TITLE[t], 'PASS' if ok else 'FAIL'))
         print('built without the game files; ' + (
-            'the game files in %s are %s\'s and give the link script' % (gd, u5.TARGET_TITLE[t]) if gd and ok else
+            'the game files in %s are %s\'s and give u5link\'s placement' % (gd, u5.TARGET_TITLE[t]) if gd and ok else
             'game files found in %s' % gd if gd else
-            'no game files found: compared with the SHA-1 table only, the link script not measured again'))
+            'no game files found: compared with the SHA-1 table only, the placement not measured'))
     if not a.keep and not a.no_build:
         for t in needed:
             shutil.rmtree(folders(t)[0], ignore_errors=True)

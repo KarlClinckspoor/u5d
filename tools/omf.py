@@ -16,8 +16,10 @@ LOC_SIZE = {LOC_LOBYTE: 1, LOC_OFFSET: 2, LOC_BASE: 2, LOC_POINTER: 4, LOC_HIBYT
 
 
 class Segment:
-    def __init__(self, name, cls, length):
+    def __init__(self, name, cls, length, align=1, combine=2):
         self.name, self.cls, self.length = name, cls, length
+        self.align, self.combine = align, combine    # SEGDEF: 0 absolute, 1 byte, 2 word, 3 paragraph, 4 page;
+                                                     # combine 2/4/7 public, 5 stack, 6 common
         self.data = bytearray(length)
         self.fixups = []      # Fixup objects, .loc is the offset in this segment
         self.publics = {}     # name -> offset (public and local public)
@@ -46,8 +48,10 @@ class Object:
         self.lnames = [None]
         self.segs = [None]
         self.grps = [None]
+        self.groups = {}         # group name -> its segments' names
         self.exts = [None]
         self.comdefs = {}        # communal variables: name -> size in bytes
+        self.absolutes = {}      # absolute publics: name -> value
         self.module = None
         self.comments = []
         self._read(data if data is not None else open(path, 'rb').read())
@@ -99,10 +103,14 @@ class Object:
                     ln = 0x10000
                 nm, j = self._idx(r, j + 2)
                 cl, j = self._idx(r, j)
-                self.segs.append(Segment(self.lnames[nm], self.lnames[cl], ln))
+                self.segs.append(Segment(self.lnames[nm], self.lnames[cl], ln, acbp >> 5, (acbp >> 2) & 7))
             elif base == GRPDEF:
-                nm, _ = self._idx(r, 0)
+                nm, j = self._idx(r, 0)
                 self.grps.append(self.lnames[nm])
+                members = self.groups.setdefault(self.lnames[nm], [])
+                while j < len(r):
+                    si, j = self._idx(r, j + 1)          # 0xff: a segment index follows
+                    members.append(self.segs[si].name)
             elif base in (EXTDEF, LEXTDEF):
                 j = 0
                 while j < len(r):
@@ -137,6 +145,8 @@ class Object:
                     _, j = self._idx(r, j)
                     if si:
                         self.segs[si].publics[s] = off
+                    else:
+                        self.absolutes[s] = off          # an absolute public (crt0's __acrtused)
             elif base == MODEND:
                 break
             elif base == LEDATA:

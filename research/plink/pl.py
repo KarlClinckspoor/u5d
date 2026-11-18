@@ -68,34 +68,14 @@ def tag(b):
 
 
 def script(target):
-    """(root objects in link-script order, {overlay: [objects]}, overlay order, areas)"""
-    root, ovl, order, base = [], {}, [], {}
-    for line in open(os.path.join(ROOT, 'src', 'u5d.lnk')).read().splitlines():
-        f = line.split('#')[0].split()
-        if not f:
-            continue
-        t = [x[7:] for x in f if x.startswith('target=')]
-        if t and t[0] != target:
-            continue
-        if f[0] == 'overlay':
-            order.append(f[1])
-            ovl[f[1]] = []
-            base[f[1]] = int(f[2].split('=')[1], 16) + (0x10 if f[1] == 'INTRO' else 0)
-        elif f[0] == 'object':
-            if f[1] in SKIP:
-                continue
-            code = next((x for x in f if x.startswith('code=')), None)
-            if code and ':' in code:
-                ovl[code[5:].split(':')[0]].append(f[1])
-            else:
-                root.append(f[1])
-    areas = []
-    for o in order:
-        if areas and base[areas[-1][0]] == base[o]:
-            areas[-1].append(o)
-        else:
-            areas.append([o])
-    return root, ovl, order, areas
+    """(root objects in processing order, {overlay: [objects]}, overlay order, areas), from the
+    link command file (src/u5d.lnk)."""
+    import u5link
+    sc = u5link.Script(target=target)
+    files = [(n, sec) for k, n, sec in sc.order if k == 'file']
+    root = [n for n, sec in files if sec is None and n not in SKIP]
+    ovl = {o: [n for n, sec in files if sec == o] for o in sc.overlays()}
+    return root, ovl, sc.overlays(), sc.areas
 
 
 def objpath(name, target):
@@ -137,7 +117,8 @@ def merged_lib(libs):
 
 
 def defines(names):
-    alias = {k.upper(): v.upper() for k, v in u5.LINK_DEFINES.items()}
+    import u5link
+    alias = {u5link.exported(k): u5link.exported(v) for k, v in u5link.Script().defines.items()}
     L = []
     for s in names:
         if s in alias:

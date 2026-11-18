@@ -2,8 +2,10 @@
 
 Every number here was measured from the GOG release of Ultima V (see docs/MATCHING.md,
 "The layout of the binary"). tools/layout.py --check re-derives them from the game files.
-Where each module's code and data go is in the link script (src/u5d.lnk), which
-tools/linkscript.py measures and tools/u5link.py links from.
+Where each module's code and data go, tools/u5link.py computes from the link command file
+(src/u5d.lnk) by PLINK's rules; it checks that the overlay bases, header lengths, numbers
+and DGROUP's paragraph here (which the names' addresses rest on) are what it computes, and
+tools/linkscript.py compares its placement with the original files.
 
 u5d builds two releases, chosen by the target (TARGETS below): the GOG release (the default)
 and the October 1988 release it was patched from.
@@ -43,7 +45,7 @@ PATCH_OF = {'gog': '1988'}
 # Assembly modules a target leaves out, because C stands for them there: the 1988 target
 # compiles ULTIMA_2322 (with D_545e_lastDisk and diskswap.c's strings) from src/diskswap.c and INTRO_132a
 # (with its strings) from src/intro2.c; A2322.ASM and AINTRO2.ASM are the 1992 patch's bytes.
-# The link script's lines for them carry target=gog (tools/linkscript.py).
+# The link command file's lines for them carry target=gog (src/u5d.lnk).
 ASM_EXCLUDED = {'gog': (), '1988': ('A2322', 'AINTRO2')}
 
 
@@ -197,6 +199,7 @@ CFLAGS_BY_FILE = {'ultima.c': '/Oaitr /Or /Gs /Gc /Zp',
 # code segment at one of four area bases. A name such as TOWN_0052 is the offset in the
 # .OVL file, so its CS address is base + 0x52. (INTRO.OVL starts with a 16-byte header, so
 # its file offsets are 0x10 more than its code offsets and its base is 0x10 lower.)
+# tools/u5link.py computes the areas (PLINK's rule) and notes any base that is not this.
 OVERLAY_BASE = {
     'INTRO': 0x81c0, 'TOWN': 0x81d0, 'MAINOUT': 0x81d0, 'DUNGEON': 0x81d0,
     'COMBAT': 0xa290, 'SHOPPES': 0xa290, 'NPC': 0xa290, 'LOOKOBJ': 0xa290,
@@ -232,7 +235,8 @@ def overlay_relocations(gamedata, ovl):
 MODULES = {o.lower() + '.c': ('ovl', o) for o in OVERLAYS}
 # FLAMES.OVL is all assembly (src/asm/AFLAMES.ASM), as are parts of other overlays (AFONT0,
 # AFONT, AINTRO2, AINTRO, ANPC: first line "NAME.OVL xxxx-yyyy"): tools/asmbuild.py assembles
-# them, tools/linkscript.py places them in their overlay by their functions' names.
+# them, src/u5d.lnk names them in their overlay's section, and tools/linkscript.py measures
+# where the original has them by their functions' names.
 del MODULES['flames.c']
 # The resident C objects (docs/MATCHING.md, "The resident C files"): ultima.c (CS:0000), the
 # small modules between the resident assembly modules (logo.c 0d72 to fileio.c 256e), then
@@ -286,34 +290,11 @@ def object_parts(target=None):
     ex = ASM_EXCLUDED[target or TARGET]
     return [tuple(n for n in g if n not in ex) for g in OBJECT_PARTS]
 
-# A second name for a place that another name defines, as a linker's DEFINE gives. The
-# original reaches the overworld map through a name of its own for DS:6608 (vars.h); which
-# object defined it is not known.
-LINK_DEFINES = {'D_6608_OVERWORLD': 'D_6608_MAP'}
-
-
-# The uninitialised (communal) variables, in the order PLINK86 allocated them from the end of
-# the BSS segments (DS:a9bc) to _end (DS:bd40); tools/u5link.py allocates them by their
-# sizes in this order and reports any that does not land on the address in its name.
-# vars.c defines them. The order is a fact: the shared ones first, then those of INTRO,
-# ENDGAME, TALK, CAST2, SHOPPES2 and FONT in link order, so PLINK86 allocated a communal when
-# it first met it; within an object that is MSC's symbol-table order, which depends on names
-# the original's source had and u5d does not (docs/MATCHING.md, "The resident data").
-COMMUNALS = [n.upper() for n in (
-    'D_a9bc_townJustEntered D_a9bd_curDisk D_a9be_promptMode D_a9c0_wallImage D_a9c2_floppyCount D_a9c4_itemsImage D_a9c6_monsterImage D_a9c8_diskDrives D_a9ce_soundOn D_a9d0_rayBalance D_a9fa_vitalsDirty D_a9fb_stepVolume D_a9fc_savedActors D_aafc_shopName D_aafe_shopOwner D_ab00_itemName D_ab02_viewTiles D_ac62_placeName D_ac64_viewActors D_ad14_combatMap '
-    'D_b114_shopIndex D_b116_shopKind D_b118_shopPrice D_b11a_shopQuantity D_b11c_searchGrid D_b11e_tileFrames D_b21e_scratch D_b9ee_itemCounts D_ba14_combatants D_bb14_wallTile D_bb15_floorTile D_bb16_altTileset D_bb17_loadFlags '
-    'D_bb18_pathPos D_bb1a_titleImage D_bb1c_u4Virtues D_bbd2_unused D_bc88_u4Member D_bcb0_unused '
-    'D_bcb2_lineBuf D_bcda_lineLen '
-    'D_bcdc_talkNpcIndex D_bcde_talkPtr D_bce0_talkCodeArgs D_bce4_talkWord D_bcf4_talkLabel D_bcf6_talkKeywordIndex D_bcf8_inputText '
-    'D_bd08_answer D_bd14_unused D_bd15_savedMapId '
-    'D_bd16_pubKind D_bd18_boughtSomething D_bd1a_dinersFed D_bd1c_dinerCount D_bd1e_tableTile D_bd20_drinksBought D_bd22_thrownOut D_bd24_shipSold '
-    'D_bd26_stripLeft D_bd27_stripRight D_bd28_stripWiden D_bd29_sceneNo D_bd2a_virtueOffered D_bd32_virtueRejected D_bd3a_unused D_bd3b_unused D_bd3c_newInt D_bd3d_newDex D_bd3e_newStr '
-).split()]
-
 EXE_HEADER = 0x800  # 0x80 paragraphs
 DATA_OVL_HEADER = 0x10  # DATA.OVL is a 16-byte header, then DGROUP from DS:0000
 # DGROUP's paragraph, relative to the load segment: right after overlay area 4's largest
 # member (0xe1e0 + 0x1460 = 0xf640). Relocated words with this value are 'DGROUP'.
+# (tools/u5link.py computes it and notes when it is not this.)
 DGROUP_SEG = 0x0f64
 
 # Overlay numbers, as the stubs pass them to the overlay manager: the position (from 1) of
