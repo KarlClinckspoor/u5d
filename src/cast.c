@@ -1586,7 +1586,7 @@ static void CAST_15b4_UseGemShard(int param_1)
     if (ULTIMA_368e_FindActorTileAtPos(D_5896_mapX, D_5897_mapY - 1, D_5895_mapLevel) == TILE_ACTOR_SHADOWLORD &&
         param_1 == D_58cb)
     {
-        TOWN_00b0_DespawnNpc(TOWN_011e(D_5876_tempX));
+        TOWN_00b0_DespawnNpc(TOWN_011e_FindNpcByActor(D_5876_tempX));
 
         for (local_4 = 0; local_4 < 7; local_4++)
         {

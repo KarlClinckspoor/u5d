@@ -986,7 +986,7 @@ void NPC_0db4_MoveNpcs(int hour)
                                 (mode == 4 && tile == TILE_MAP_LADDER_DOWN) ||
                                 (tile & 0xfc) == TILE_MAP_STAIR)
                             {
-                                TOWN_1726(npc, x, y, D_5895_mapLevel);
+                                TOWN_1726_PlaceNpcActor(npc, x, y, D_5895_mapLevel);
                             }
 
                             npcRec_k->mode = 2;
@@ -997,7 +997,7 @@ void NPC_0db4_MoveNpcs(int hour)
                 else if ((npcRec_k->mode != 6 && npcRec_k->mode != 7) || NPC_0a4a_StandsOnStairs(npc, slot_g) != 0)
                 {
                     // 0ebf
-                    TOWN_1726(npc, D_5d5e_npcSchedules[npc].x[slot_g], D_5d5e_npcSchedules[npc].y[slot_g],
+                    TOWN_1726_PlaceNpcActor(npc, D_5d5e_npcSchedules[npc].x[slot_g], D_5d5e_npcSchedules[npc].y[slot_g],
                               D_5d5e_npcSchedules[npc].z[slot_g]);
 
                     npcRec_k->scheduleIdx = slot_g;

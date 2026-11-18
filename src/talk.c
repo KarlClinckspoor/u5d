@@ -327,9 +327,9 @@ L_join:
         if (dialogNumber_f == 0xfe)
         {
 #if !defined(MATCHING_BUILD)
-            TOWN_10da(npcIndex); // TODO: validate param (reference apple?)
+            TOWN_10da_ShoutBegone(npcIndex); // TODO: validate param (reference apple?)
 #else
-            TOWN_10da(); // BUG: TOWN_10da(unaff_SI)
+            TOWN_10da_ShoutBegone(); // BUG: TOWN_10da_ShoutBegone(unaff_SI)
 #endif
             return 0;
         }
@@ -383,7 +383,7 @@ int TALK_041c_TalkCmd(void)
     }
     else
     {
-        npcIndex_f = TOWN_011e(D_5876_tempX);
+        npcIndex_f = TOWN_011e_FindNpcByActor(D_5876_tempX);
         switch (*ULTIMA_4402_GetTileAddr(x_i, y_o))
         {
         case TILE_MAP_BED:
@@ -1384,7 +1384,7 @@ static int TALK_0f32_ProcessChar(byte code)
         return 0; // -> 0f5e
     case 0x8b:    // call guards
         // 0ff8
-        TOWN_0958();
+        TOWN_0958_RaiseAlarm();
         return 0; // -> 0f5e
     case 0x8e:    // rune
         // 0ffe

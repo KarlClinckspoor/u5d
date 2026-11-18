@@ -397,14 +397,14 @@ void CMDS_0552_HoleUpCmd(void)
             ULTIMA_4f7c_AdvanceTime(10);
             if (local_c != D_587f_hour && (D_587f_hour == 0x14 || D_587f_hour == 0x05))
             {
-                TOWN_0170();
+                TOWN_0170_SwapDayNightTiles();
             }
 
             local_c = D_587f_hour;
             ULTIMA_4a84_DrawSunAndMoons();
             ULTIMA_2ae8_EndTurn();
             ULTIMA_2900_UpdateVitalsDisplay();
-            TOWN_1694();
+            TOWN_1694_PlaceActors();
 
             if (ULTIMA_368e_FindActorTileAtPos(D_5896_mapX, D_5897_mapY, D_5895_mapLevel) != 0)
             {
@@ -532,7 +532,7 @@ int CMDS_07f6_BoardCmd(void)
     {
         if (D_5893_mapId != 0)
         {
-            local_4_ab = TOWN_011e(local_6);
+            local_4_ab = TOWN_011e_FindNpcByActor(local_6);
             if (local_4_ab != -1 && D_5f5e_npcs[local_4_ab]._a != 0)
             {
                 ULTIMA_1850_PrintString(_TEXT(0x425e, "\"Nay!\"\n"));
@@ -789,7 +789,7 @@ void CMDS_0aea_FireCmd(void)
 
     ULTIMA_1850_PrintString(_TEXT(0x42f2, "BOOOM!\n"));
     ULTIMA_43ae_AudioSweepTone(1000, 200, 5, 300);
-    TOWN_0958();
+    TOWN_0958_RaiseAlarm();
 
     local_4_ab = 0;
     local_1a_ac = 0;
@@ -857,7 +857,7 @@ void CMDS_0aea_FireCmd(void)
             D_5888_karma = 0;
         }
 
-        if ((local_6 = TOWN_011e(local_a)) == -1)
+        if ((local_6 = TOWN_011e_FindNpcByActor(local_a)) == -1)
         {
             return;
         }

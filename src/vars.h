@@ -149,14 +149,14 @@ STUB char* D_25ea_fileNames[30]; // ~2626) compressed file name table
 
 STUB char* D_2652[4]; // town dat names
 
-STUB u8 D_2742[4]; // town
+STUB u8 D_2742_drunkDirs[4]; // town
 STUB u16 D_2746[0xa]; // town: harpsichord audio freqs
-STUB u8 D_275a[0xd]; // town:harpsichord notes
-STUB u8 D_2767; // town
+STUB u8 D_275a_secretTune[0xd]; // town:harpsichord notes
+STUB u8 D_2767_tuneStep; // town
 
 STUB char* D_27dc[3]; // town
 
-STUB u32 D_28c6[0x20]; // ~2946) town
+STUB u32 D_28c6_npcValueMask[0x20]; // ~2946) town
 
 // 2946~: code strings
 
@@ -723,7 +723,7 @@ STUB u8  D_5954_boughtShipY; // +0x3AE
 STUB u8  D_5955_sailDir; // +0x3AF
 STUB u8  D_5956_newPrompt; // +0x3B0
 STUB u8  D_5957_drunkTurns; // +0x3B1
-STUB u8  D_5958_townShadowlord; // which of the three shadowlords (D_58c8_shadowlordTowns) is in this town, 0xff none (TOWN_02ae)
+STUB u8  D_5958_townShadowlord; // which of the three shadowlords (D_58c8_shadowlordTowns) is in this town, 0xff none (TOWN_02ae_SetupShadowlord)
 STUB u8  D_5959;
 STUB u8 D_595a_dungeonMap[0x200]; // +0x3B4
 // 5b00
@@ -819,7 +819,7 @@ STUB u8 D_6aa8[0x24];
 // order, by their sizes (tools/u5.py, COMMUNALS). The few that no code refers to (D_bbd2,
 // D_bcb0, D_bd14, D_bd3a, D_bd3b) are declared so that the others land where they are.
 
-BSS u8  D_a9bc;
+BSS u8  D_a9bc_townJustEntered;
 BSS u8 D_a9bd_curDisk[1]; // the disk wanted (ULTIMA_251e_SwitchDisks)
 BSS u8 D_a9be; // two bytes on an odd address would have been put on an even one
 BSS u8* D_a9c0; // loaded image pointer
