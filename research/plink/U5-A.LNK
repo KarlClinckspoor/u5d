@@ -1,0 +1,24 @@
+# U5-A.LNK: the best reconstruction so far of Origin's PLINK86plus 2.24 command file
+# (research/plink/FINDINGS.md). pl.py expands the @ lines; run with --overlay-lib OVU5.LIB
+# (plasm.py: OVERLAY.LIB with OVUSERM replaced by Origin's user module, OVUSER.ASM).
+# Gives the original's sections exactly: root 0000-81d0 (code to 72e0, DUMMY's stc/ret at
+# 72e0, OVLYV 72f0, Origin's OVUSERM 7690, OVDATA 76c0, the overlay table and stubs 7780-81c6),
+# areas at 81d0, a290, bf80, e1e0, DGROUP (DATA.OVL, pre-loaded) at f640.
+OUTPUT ULTIMA.EXE
+MAP = ULTIMA.MAP M
+VERBOSE
+# A reference to $$DUMMY (name unknown: nothing in the image refers to 72e0) pulls OVERLAY.LIB's
+# DUMMY first: its class OVLOADER is then met before LOADER, so OVCODE/OVDATA precede $OVTB$.
+# OVERLAY.LIB must not be named: searched implicitly, DUMMY goes to the root; named in a
+# LIBRARY line, DUMMY's OVCODE lands in the pre-loaded data section.
+DEFINE DUMMYREF = $$DUMMY
+FILE ULTIMA.OBJ
+LIBRARY SLIBCE.LIB
+# the resident objects (pl.py --rename all: code segment XTEXT, see FINDINGS point 4)
+@ROOT
+# 4 areas, 23 SECTION INTO lines in the link script's order
+@AREAS
+# a level-0 section after the areas: PLINK makes it the pre-loaded DGROUP section and writes
+# it INTO DATA.OVL (header: three far pointers) and adds DATA.OVL to the overlay table
+SECTION INTO DATA FILE VARS.OBJ
+@DEFINES
