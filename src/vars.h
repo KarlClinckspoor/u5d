@@ -251,7 +251,7 @@ STUB char* D_3666[8];
 // ^intro
 
 // npc
-STUB u8 D_367e[0x20]; // TODO: size ~369e)
+STUB u8 D_367e_npcBlockedTiles[0x20]; // TODO: size ~369e)
 
 // blckthrn
 STUB u8 D_369e[0x3c]; // TODO: size

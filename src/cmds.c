@@ -367,7 +367,7 @@ void CMDS_0552_HoleUpCmd(void)
 
         for (local_a = 0; local_a < 0x10; local_a++)
         {
-            NPC_0db4(D_587f_hour);
+            NPC_0db4_MoveNpcs(D_587f_hour);
             ULTIMA_5910_UpdateFrame();
             if (D_65be == 0x61)
             {

@@ -2,8 +2,8 @@
 #define _NPC_H
 
 void NPC_0000_LoadNpcFile(void);
-void NPC_00d6(int param_1);
-void NPC_0db4(int param_1);
-int NPC_12e0(int param_1, char param_2);
+void NPC_00d6_PlaceNpcs(int hour);
+void NPC_0db4_MoveNpcs(int hour);
+int NPC_12e0_ScheduleSlot(int npc, char hour);
 
 #endif

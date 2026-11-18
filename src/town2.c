@@ -118,7 +118,7 @@ void TOWN_11f0_Entry(int param_1)
         D_5957_drunkTurns = 0;
         D_58a4_viewOn = 1;
         NPC_0000_LoadNpcFile();
-        NPC_00d6(D_587f_hour);
+        NPC_00d6_PlaceNpcs(D_587f_hour);
     }
     D_5958_townShadowlord = 0xff;
     TOWN_0408(param_1);
@@ -427,7 +427,7 @@ void TOWN_141e_MainLoop(void)
                 TOWN_0c78();
                 if ((int)local_c < 2)
                 {
-                    NPC_0db4(D_587f_hour);
+                    NPC_0db4_MoveNpcs(D_587f_hour);
                 }
                 // 1671
                 if (D_65bf != 0 || local_c == 2)
@@ -458,7 +458,7 @@ void TOWN_1694(void)
     {
         if (D_659e_npcTypes[local_4] != 0)
         {
-            local_6_an = NPC_12e0(local_4, D_587f_hour);
+            local_6_an = NPC_12e0_ScheduleSlot(local_4, D_587f_hour);
             TOWN_1726(local_4, D_5d5e_npcSchedules[local_4].x[local_6_an], D_5d5e_npcSchedules[local_4].y[local_6_an], D_5d5e_npcSchedules[local_4].z[local_6_an]);
             D_5f5e_npcs[local_4].mode = 1;
             D_5f5e_npcs[local_4].scheduleIdx = local_6_an;

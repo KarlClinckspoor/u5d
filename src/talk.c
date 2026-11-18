@@ -339,7 +339,7 @@ L_join:
             return TALK_01e2_GuardDemandsTribute();
         }
 
-        if ((npc->scheduleIdx & 1) != 0 && (NPC_12e0(D_bcdc_talkNpcIndex, D_587f_hour) & 1) != 0)
+        if ((npc->scheduleIdx & 1) != 0 && (NPC_12e0_ScheduleSlot(D_bcdc_talkNpcIndex, D_587f_hour) & 1) != 0)
         {
             TALK_00e6_TalkToMerchant(dialogNumber_f);
             return 0;

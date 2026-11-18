@@ -1,0 +1,156 @@
+# NPC (npc.c + ANPC.ASM): the NPCs of a town: loading, schedules, walking, path search.
+# functions
+NPC_00d6 NPC_00d6_PlaceNpcs                 # on entering a town: every NPC to the schedule entry in force at the hour, mode 1
+NPC_01a0 NPC_01a0_FindLadder                # path search for the nearest ladder (up, or down); its tile ends in D_5876/D_5878
+NPC_01d2 NPC_01d2_BuildSearchGrid           # fills D_b11c (32x32): 0 free, 0x90 blocked, 5 goal, 0x46 start
+NPC_032c NPC_032c_SearchPath                # breadth-first search over D_b11c, direction in the high nibble; 1 when the goal is reached
+NPC_04ac NPC_04ac_BuildMoveList             # walks the marks back from the goal and stores (steps, direction) runs, reversed
+NPC_0632 NPC_0632_StepTemp                  # moves (D_5876, D_5878) one tile: 1 east, 2 north, 3 west, 4 south
+NPC_06a0 NPC_06a0_Distance                  # manhattan distance
+NPC_06e4 NPC_06e4_PursueOrFlee              # one step towards the Avatar (away for type 3); next to him it asks to talk (0x74) or attacks (0x61)
+NPC_0938 NPC_0938_ScheduleDue               # a schedule time has come: sets the NPC's mode (walk, change level); nonzero when it must move
+NPC_0a4a NPC_0a4a_StandsOnStairs            # does the NPC stand on a ladder or stairs towards the level of its schedule entry
+NPC_0adc NPC_0adc_CanEnter                  # the tile is the goal (2), or free by the table D_367e (1), else 0
+NPC_0b9e NPC_0b9e_CanStepTo                 # the tile is on the map, the NPC may enter it and no actor stands there
+NPC_0c50 NPC_0c50_Wander                    # one random step, kept within maxDist of the schedule's place
+NPC_0d00 NPC_0d00_ActBySchedule             # acts by the schedule entry's type: stand, wander, follow, pursue
+NPC_0db4 NPC_0db4_MoveNpcs                  # the per-turn movement of every NPC of the town
+NPC_12e0 NPC_12e0_ScheduleSlot              # which of the three schedule entries is in force at the hour (assembly, ANPC.ASM)
+# the NPC file
+npc.c:NPC_0000 local_2a fileOffset
+npc.c:NPC_0000 local_28 mapIndex
+npc.c:NPC_0000 local_26 dialogNumbers
+npc.c:NPC_0000 local_6 fileName
+npc.c:NPC_0000 local_4_ab kind
+# NPC_00d6
+npc.c:NPC_00d6 param_1 hour
+npc.c:NPC_00d6 local_6_an slot
+npc.c:NPC_00d6 local_4 npc
+# NPC_01a0
+npc.c:NPC_01a0 param_1 x
+npc.c:NPC_01a0 param_2 y
+npc.c:NPC_01a0 param_3 wantUp
+npc.c:NPC_01a0 param_4 npc
+npc.c:NPC_01a0 local_4 mode
+# NPC_01d2
+npc.c:NPC_01d2 param_1 startX
+npc.c:NPC_01d2 param_2 startY
+npc.c:NPC_01d2 param_3 goalX
+npc.c:NPC_01d2 param_4 goalY
+npc.c:NPC_01d2 param_5 mode
+npc.c:NPC_01d2 param_6 npc
+npc.c:NPC_01d2 local_e_ak ladderTile
+npc.c:NPC_01d2 local_c_n actor
+npc.c:NPC_01d2 local_a slot
+npc.c:NPC_01d2 local_8 x
+npc.c:NPC_01d2 local_6 y
+npc.c:NPC_01d2 local_4_ab npcRec
+# NPC_032c
+npc.c:NPC_032c param_1 startX
+npc.c:NPC_032c param_2 startY
+npc.c:NPC_032c param_3 goalX
+npc.c:NPC_032c param_4 goalY
+npc.c:NPC_032c param_5 mode
+npc.c:NPC_032c param_6 npc
+npc.c:NPC_032c local_50_am queueY
+npc.c:NPC_032c local_30_ab_am dir
+npc.c:NPC_032c local_2e_an_am queueX
+npc.c:NPC_032c local_e_am state
+npc.c:NPC_032c local_c head
+npc.c:NPC_032c local_a x
+npc.c:NPC_032c local_8 y
+npc.c:NPC_032c local_6 turn
+npc.c:NPC_032c local_4_ab tail
+# NPC_04ac
+npc.c:NPC_04ac param_1 npc
+npc.c:NPC_04ac param_2 mode
+npc.c:NPC_04ac param_3 x
+npc.c:NPC_04ac param_4 y
+npc.c:NPC_04ac local_c runDir
+npc.c:NPC_04ac local_a length
+npc.c:NPC_04ac local_8 cellState
+npc.c:NPC_04ac local_6 run
+npc.c:NPC_04ac local_4_ab dir
+# NPC_0632
+npc.c:NPC_0632 param_1 dir
+# NPC_06a0
+npc.c:NPC_06a0 param_1 fromX
+npc.c:NPC_06a0 param_2 fromY
+npc.c:NPC_06a0 param_3 toX
+npc.c:NPC_06a0 param_4 toY
+npc.c:NPC_06a0 local_6_an dy
+npc.c:NPC_06a0 local_4 dx
+# NPC_06e4
+npc.c:NPC_06e4 param_1 npc
+npc.c:NPC_06e4 param_2 slot
+npc.c:NPC_06e4 local_1c_a alternative
+npc.c:NPC_06e4 local_1a_aa best
+npc.c:NPC_06e4 local_18_ai avatar
+npc.c:NPC_06e4 local_16_ak dir
+npc.c:NPC_06e4 local_14_am newY
+npc.c:NPC_06e4 local_12 newX
+npc.c:NPC_06e4 local_10 distances
+npc.c:NPC_06e4 local_8 npcRec
+npc.c:NPC_06e4 local_6_an_ab distance
+npc.c:NPC_06e4 local_4_ab type
+# NPC_0938
+npc.c:NPC_0938 param_1 npc
+npc.c:NPC_0938 param_2 hour
+npc.c:NPC_0938 local_8 npcRec
+npc.c:NPC_0938 local_a slot
+npc.c:NPC_0938 local_6 i
+npc.c:NPC_0938 local_4_c schedule
+# NPC_0a4a
+npc.c:NPC_0a4a param_1 npc
+npc.c:NPC_0a4a param_2 slot
+npc.c:NPC_0a4a local_8 tile
+npc.c:NPC_0a4a local_6 onStairs
+npc.c:NPC_0a4a local_4_c npcRec
+# NPC_0adc
+npc.c:NPC_0adc param_1 x
+npc.c:NPC_0adc param_2 y
+npc.c:NPC_0adc param_3 z
+npc.c:NPC_0adc param_4 npc
+npc.c:NPC_0adc param_5 slot
+npc.c:NPC_0adc local_8 tile
+npc.c:NPC_0adc local_6 result
+npc.c:NPC_0adc local_4_c schedule
+# NPC_0b9e
+npc.c:NPC_0b9e param_1 x
+npc.c:NPC_0b9e param_2 y
+npc.c:NPC_0b9e param_3 npc
+npc.c:NPC_0b9e param_4 slot
+npc.c:NPC_0b9e local_8 tile
+npc.c:NPC_0b9e local_6 actorHere
+npc.c:NPC_0b9e local_4_ab result
+# NPC_0c50
+npc.c:NPC_0c50 param_1 npcRec
+npc.c:NPC_0c50 param_2 maxDist
+npc.c:NPC_0c50 param_3 slot
+npc.c:NPC_0c50 param_4 npc
+npc.c:NPC_0c50 param_5 schedule
+npc.c:NPC_0c50 local_8 y
+npc.c:NPC_0c50 local_6 x
+npc.c:NPC_0c50 local_4_ab dir
+# NPC_0d00
+npc.c:NPC_0d00 param_1 npc
+npc.c:NPC_0d00 param_2 slot
+npc.c:NPC_0d00 local_6 schedule
+npc.c:NPC_0d00 local_4_c npcRec
+# NPC_0db4
+npc.c:NPC_0db4 param_1 hour
+npc.c:NPC_0db4 local_14_am pathSearched
+npc.c:NPC_0db4 local_12_ab_am tile
+npc.c:NPC_0db4 local_10_ad_am result
+npc.c:NPC_0db4 local_e_am slot
+npc.c:NPC_0db4 local_c y
+npc.c:NPC_0db4 local_a x
+npc.c:NPC_0db4 local_6 mode
+npc.c:NPC_0db4 local_4_ab npc
+npc.c:NPC_0db4 local_8 npcRec
+# NPC_12e0 (the C version outside the DOS build)
+npc.c:NPC_12e0 param_1 npc
+npc.c:NPC_12e0 param_2 hour
+# private globals and field
+D_367e D_367e_npcBlockedTiles      # one bit per tile (high bit first): set when an NPC may not enter it
+field _8 npcType                   # +8: the NPC's type, as D_659e_npcTypes (NPC.OVL copies it; only NPC uses it)
