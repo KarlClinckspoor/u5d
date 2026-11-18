@@ -254,22 +254,18 @@ from a rule or from source, each named where it lives:
 - **The 1988 release** is a second target (`--target 1988`, gate 25/25; MATCHING.md, "Two
   targets"). Its ULTIMA_2322 and INTRO_132a are compiler output; only the wrapper's entry
   (PLSTART) and A1EAC's drive-letter byte are conditional assembly.
-- **Stand-in devices** in the source, each explained in its note: ULTIMA_1850's comment-line
-  padding, TOWN_0f02's dead references (both pass 2's pool), CMDS_0000's short link names,
-  AINTRO2's BYTE-aligned `_DATA`, A2322 holding D_545e and r2320's strings (the last two in
-  the gog target only). DUNGEON_1952's and SJOG_0514's register slot sharing is no longer
-  one: the original must have shared that slot too (MATCHING.md, "What pass 2 counts,
-  measured", which also has the measured costs and a candidate for CMDS_0000).
-  - ULTIMA_1850: `r1850.c` is an object of its own, and it matches without the padding
-    when pass 2 has 236.75-248.5 KB (MATCHING.md). A per-file memory limit for C2 in
-    `dosbuild.py` (`research/c2mem.py` has the wrapper) would replace the padding with a
-    statement about the build machine; neither can be told from the other by the code.
-    Civilization's rebuild (sjmelia/civd) does this for two modules (`loadfix -192 cl`);
-    the same could replace TOWN_0f02's fill and CMDS_0000's short link names
-    (MATCHING.md, "Others who matched MSC 5.x").
-  - A2322: ULTIMA_251e, now known to be part of the same object, refers to D_545e, so
-    D_545e could be defined in `r251e.c` again; A2322's `_DATA` (the strings from DS:545f)
-    would then need BYTE alignment, as AINTRO2's has. Not applied: it trades one device for
-    another.
-- **FONT_0000, ULTIMA_2322, INTRO_132a** are assembly in the DOS build (the first is
-  unmatched C, the other two GOG's patches).
+- **Stand-in devices**, final (each explained in its note; MATCHING.md, "What pass 2
+  counts, measured"):
+  - ULTIMA_1850's comment lines (r1850.c): kept. Its limit is the pool's cut, the widest
+    window of the three (123-563 lines); a C2 memory limit for r1850.c would do the same
+    and is no more certain.
+  - TOWN_0f02's 245 dead references (town.c): kept, four to a line. The original had about
+    7.5 KB more pass-2 memory in use between TOWN_0c78 and TOWN_0f02; no uniform cause fits.
+  - CMDS_0000's 72 dead references (cmds.c): replaced the 27 short link names; window 64-80.
+  - AINTRO2's BYTE-aligned `_DATA` and A2322 holding D_545e and r2320's strings: the gog
+    target only, the price of building 1992's patched functions from assembly; the 1988
+    target has neither.
+  - DUNGEON_1952's and SJOG_0514's register slot sharing is not a stand-in: the original
+    must have shared that slot too.
+- **FONT_0000** is assembly in both targets (unmatched C, 670/674 bytes; MATCHING.md has what
+  is known). ULTIMA_2322 and INTRO_132a are assembly in the gog target only (1992's patch).
