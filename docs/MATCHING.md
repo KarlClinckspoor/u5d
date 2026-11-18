@@ -517,9 +517,9 @@ with all of it applied at once; two did not, and both are pass 2's memory.
 ### What the module groups cost
 
 Four workers, one after another, named every overlay module in four groups (shops and
-town; magic and combat; world; commands, intro, endgame, font): about 390 functions, each
-with a comment above it, about 2,000 locals and parameters (40% with a slot suffix, none
-needing a hand fix), and about 300 globals used by one group only (`docs/names/*.txt`, one
+town; magic and combat; world; commands, intro, endgame, font): about 360 functions, each
+with a comment above it, about 1,700 locals and parameters (40% with a slot suffix, none
+needing a hand fix), and about 260 globals used by one group only (`docs/names/*.txt`, one
 batch per module). Each module took one batch, one compile of its files and the gate
 (about two minutes here, not six); four sessions of 20 to 40 minutes.
 

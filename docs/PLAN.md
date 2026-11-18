@@ -217,8 +217,8 @@ Next, in order:
    - Done (module groups; one batch per module in `docs/names/`): every overlay module.
      Shops and town (ZSTATS, SHOPPES2, SHOPPES, NPC, TOWN), magic and combat (COMSUBS,
      CAST2, CAST, COMBAT), world (OUTSUBS, BLCKTHRN, LOOKOBJ, DNGLOOK, MAINOUT, DUNGEON,
-     SJOG), commands and the rest (ENDGAME, FONT, INTRO, CMDS): about 390 functions with a
-     comment above each, 2,000 locals and parameters, 300 globals of one group. TOWN_0f02
+     SJOG), commands and the rest (ENDGAME, FONT, INTRO, CMDS): about 360 functions with a
+     comment above each, 1,700 locals and parameters, 260 globals of one group. TOWN_0f02
      lost 6 more fill references (245 left); cmds.c's short link names are 24 (COMBAT_0000,
      OUTSUBS_0658 and DNGLOOK_117e, which CMDS_0000 calls). MATCHING.md, "What the module
      groups cost".
