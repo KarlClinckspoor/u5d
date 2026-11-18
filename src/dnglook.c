@@ -1151,7 +1151,7 @@ void DNGLOOK_1130_FreeDungeonImages(void)
 
     if ((D_bb17_loadFlags & 2) == 0)
     {
-        while (ULTIMA_0ff4_LoadTileset(*D_25f0) == 0) // TILES.16
+        while (ULTIMA_0ff4_LoadTileset(*D_25f0_tilesFileName) == 0) // TILES.16
             ;
     }
 

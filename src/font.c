@@ -106,7 +106,7 @@ u8 D_5204_cardY[8] = {0x05, 0x07, 0x04, 0x0a, 0x08, 0x00, 0x05, 0x06};
 //   with a dead store at bp-1Ch (shl ax,1; mov [bp-1Ch],ax; mov bx,ax), where we get
 //   mov si,ax; shl si,1 as at the top of the function. Tried: the condition written out at
 //   each use, assigned inside the index, D_5146_textLeftX[region] read twice;
-// - 0173: the original adds D_50f7's temporary first (mov ax,[bp-14h]; add ax,si), we
+// - 0173: the original adds D_50f7_hyphenWidth's temporary first (mov ax,[bp-14h]; add ax,si), we
 //   mov ax,si; add ax,[bp-14h]. Tried: the operands in every order, the cast on either
 //   side of the comparison.
 void FONT_0000_DrawJustifiedText(byte* glyphs, byte* text)
@@ -154,9 +154,9 @@ void FONT_0000_DrawJustifiedText(byte* glyphs, byte* text)
                 spaces--;
                 break;
             }
-            if (text[scan] == '_' && (uint)(used + D_50f7 + 1) < lineWidth)
+            if (text[scan] == '_' && (uint)(used + D_50f7_hyphenWidth + 1) < lineWidth)
             {
-                used += D_50f7 + 1;
+                used += D_50f7_hyphenWidth + 1;
                 break;
             }
             if (text[scan] != '_' && text[scan] != '{')
@@ -392,7 +392,7 @@ void FONT_04a4_PlayIntroStory(void)
         if (D_5893_mapId == 0x40)
         {
             FONT_0e52_SaveVideoPage();
-            while (ULTIMA_0ff4_LoadTileset(*D_25f0) == 0) {}
+            while (ULTIMA_0ff4_LoadTileset(*D_25f0_tilesFileName) == 0) {}
             FONT_0e7b_RestoreVideoPage();
         }
     }

@@ -353,7 +353,7 @@ void INTRO_05b0_DisplayTitle(int withSound)
     }
     do
     {
-        D_bb1a_titleImage = ULTIMA_0bae_LoadImageFile(D_25f0[23]); // "ULTIMA.16"
+        D_bb1a_titleImage = ULTIMA_0bae_LoadImageFile(D_25f0_tilesFileName[23]); // "ULTIMA.16"
     } while (D_bb1a_titleImage == 0);
     ULTIMA_0c22_GRAP_0f_SelectPage(0);
     ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);

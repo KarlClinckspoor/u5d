@@ -1308,7 +1308,7 @@ static int COMBAT_12b0_RollDamage(int attacker, int victim)
         }
         else
         {
-            defense_e = D_55a8_party[D_ba14_combatants[victim].entityIdx]._18;
+            defense_e = D_55a8_party[D_ba14_combatants[victim].entityIdx].defense;
 #if defined(ENABLE_BUG_FIX)
             // BUGFIX: apply armour values
             defense_e += ULTIMA_6da8_PlayerDefense(D_ba14_combatants[victim].entityIdx);

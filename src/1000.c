@@ -97,7 +97,7 @@ void ULTIMA_10e0_GRAP_51_PutTile(uint tile, int x, int y)
     // cx: x offset
     // dx: y offset
     // si = 52c0, di = 52c2
-    DRV_51_PutTile(x, y, tile, D_52ba_vdp.tileXOffset, D_52ba_vdp.tileYOffset, D_52ba_vdp._52c0, D_52ba_vdp._52c2);
+    DRV_51_PutTile(x, y, tile, D_52ba_vdp.tileXOffset, D_52ba_vdp.tileYOffset, D_52ba_vdp.tileWidth, D_52ba_vdp.tileHeight);
 }
 #endif
 

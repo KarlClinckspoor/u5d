@@ -145,7 +145,7 @@ STUB u8 D_24e7_stepToggle; // footstep sfx related flag in dungeon
 
 STUB char* D_24ea_wordTable[0x80]; // the words that bytes of the .TLK scripts (below 0x81) and of SHOPPE.DAT (from 0x80) stand for
 STUB char* D_25ea_fileNames[30]; // ~2626) compressed file name table
-#define D_25f0 (&D_25ea_fileNames[3])
+#define D_25f0_tilesFileName (&D_25ea_fileNames[3])
 
 STUB char* D_2652_townFileNames[4]; // town dat names
 
@@ -220,7 +220,7 @@ STUB Pair D_2f10_dotsDist0Extra[3];
 STUB u8 D_2f16_mirroredPiece[8]; // TODO: size
 STUB u8 D_2f1e_plainPiece[8]; // TODO: size
 
-#define D_2f24 D_2f1e_plainPiece[6]
+#define D_2f24_plainPiece6 D_2f1e_plainPiece[6]
 STUB u8 D_2f26_dotFrame;
 
 STUB s8 D_2f28_sideDx[4]; // direction x
@@ -469,7 +469,7 @@ STUB u8 D_4e80_innBedY[6];
 
 STUB u8 D_50ea_glyphWidths[0x5b]; // glyph width table, from ' '
 
-#define D_50f7 D_50ea_glyphWidths[0xd]
+#define D_50f7_hyphenWidth D_50ea_glyphWidths[0xd]
 
 STUB u16 D_5146_textLeftX[2];
 STUB u16 D_514c_textRightX[2];
@@ -564,13 +564,13 @@ STUB u16 D_53a8_inverse; // inverse flag (bit 1 of byte 7)
 STUB u8  D_53aa_textFgColor; // text fg color (lo nibble of byte 6)
 STUB u8  D_53ab_textBgColor; // text bg color (hi nibble of byte 6)
 
-STUB u16 D_53b4; // loaded file size (lsb)
-STUB u16 D_53b6; // loaded file size (msb)
+STUB u16 D_53b4_fileSizeLo; // loaded file size (lsb)
+STUB u16 D_53b6_fileSizeHi; // loaded file size (msb)
 
-STUB u16 D_53b8; // file handle
-STUB u16 D_53ba; // first allocated segment
-STUB u16 D_53bc; // first allocated segment (for return)
-STUB u16 D_53be; // second allocated segment (for lzw)
+STUB u16 D_53b8_fileHandle; // file handle
+STUB u16 D_53ba_firstSegment; // first allocated segment
+STUB u16 D_53bc_returnSegment; // first allocated segment (for return)
+STUB u16 D_53be_lzwSegment; // second allocated segment (for lzw)
 
 // u16 53c4: read pointer
 // u16 53cc: 0x102
@@ -768,7 +768,7 @@ STUB u16 D_6606_saveEnd; // +0x1060: the end of the block
 
 STUB S_6608_Map D_6608_map; // ~6a08) map data: layer4 * y16 * x16 / y32 * x32
 #define D_6608 D_6608_map.raw
-#define D_6a07 (D_6608[1023])
+#define D_6a07_dummyCell (D_6608[1023])
 
 #if defined(TARGET_DOS16)
 // in the original, DS:6708 is a place inside D_6608_map, not a variable of its own

@@ -1,5 +1,5 @@
 ; AFLAMES.ASM: FLAMES.OVL 0000-0011, hand-written assembly in the original.
-; All of FLAMES.OVL. FLAMES_0000 returns, in AX, its own return address from FLAMES_000E:
+; All of FLAMES.OVL. FLAMES_0000_RETURNADDRESS returns, in AX, its own return address from FLAMES_000E_POPCALLER:
 ; an address in overlay area 2, which FONT_0E52_SAVEVIDEOPAGE (AFONT.ASM) uses as a scratch buffer.
 ; Written by hand from the original bytes; tools/asmbuild.py checks it.
 
@@ -17,22 +17,22 @@ DGROUP	GROUP	CONST, _BSS, _DATA
 
 _TEXT	SEGMENT
 
-	PUBLIC	FLAMES_0000
-FLAMES_0000:
+	PUBLIC	FLAMES_0000_RETURNADDRESS
+FLAMES_0000_RETURNADDRESS:
 	push bp
 	mov bp,sp
 	push si
 	push di
 	push ds
-	call FLAMES_000E
+	call FLAMES_000E_POPCALLER
 	pop ds
 	pop di
 	pop si
 	pop bp
 	ret
 
-	PUBLIC	FLAMES_000E
-FLAMES_000E:
+	PUBLIC	FLAMES_000E_POPCALLER
+FLAMES_000E_POPCALLER:
 	pop ax			; AX = the return address
 	push ax
 	ret

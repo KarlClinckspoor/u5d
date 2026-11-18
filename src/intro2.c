@@ -161,7 +161,7 @@ void INTRO_0986_Main(void)
         ULTIMA_1850_PrintString(_TEXT(0x31a4, "Journey Onward\n\n"));
         ULTIMA_16ba_PrintChar(CTRL_CHAR_UNCENTER_TEXT);
         // 0af2
-        while (ULTIMA_0ff4_LoadTileset(D_25f0[0]) == 0)
+        while (ULTIMA_0ff4_LoadTileset(D_25f0_tilesFileName[0]) == 0)
         {
         }
         D_5893_mapId = 0x41;
@@ -373,7 +373,7 @@ void INTRO_0986_Main(void)
             ULTIMA_1bf2_SetTextPosition(0, 0xc);
             if (D_5893_mapId == 0x40)
             {
-                while (ULTIMA_0ff4_LoadTileset(D_25f0[0]) == 0)
+                while (ULTIMA_0ff4_LoadTileset(D_25f0_tilesFileName[0]) == 0)
                 {
                 }
                 D_5893_mapId = 0x41;

@@ -70,7 +70,7 @@ static void TOWN_1156_ShadowlordEffect(void)
             if (TOWN_10f2_PickNpcForAlarm(npc) != 0)
             {
                 TOWN_085e_SetPursue(npc);
-                D_5f5e_npcs[npc]._a = 0xfe;
+                D_5f5e_npcs[npc].dialogNumber = 0xfe;
             }
         }
         break;
@@ -81,7 +81,7 @@ static void TOWN_1156_ShadowlordEffect(void)
             if (TOWN_10f2_PickNpcForAlarm(npc) != 0)
             {
                 TOWN_08d4_SetFlee(npc);
-                D_5f5e_npcs[npc]._a = 0xfd;
+                D_5f5e_npcs[npc].dialogNumber = 0xfd;
             }
         }
         break;
@@ -233,7 +233,7 @@ static void TOWN_1352_NpcApproaches(int forced)
 
     if (D_65be_npcApproach == 0x61)
     {
-        if (D_5f5e_npcs[D_65bf_npcApproaching]._a == 0xfe)
+        if (D_5f5e_npcs[D_65bf_npcApproaching].dialogNumber == 0xfe)
         {
             ULTIMA_16ba_PrintChar('\n');
             TOWN_10da_ShoutBegone(D_65bf_npcApproaching);
@@ -249,7 +249,7 @@ static void TOWN_1352_NpcApproaches(int forced)
     }
     else if (forced == 0)
     {
-        if (D_5f5e_npcs[D_65bf_npcApproaching]._a != 0 && TALK_031e_TalkToNpc(D_65bf_npcApproaching) != 0)
+        if (D_5f5e_npcs[D_65bf_npcApproaching].dialogNumber != 0 && TALK_031e_TalkToNpc(D_65bf_npcApproaching) != 0)
         {
             attacked = TOWN_12ae_Arrest();
         }

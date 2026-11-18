@@ -1,0 +1,2 @@
+FLAMES_0000 FLAMES_0000_ReturnAddress     # FLAMES.OVL entry: returns in AX the address FLAMES_000E was called from (a scratch buffer address for FONT_0e52)
+FLAMES_000E FLAMES_000E_PopCaller         # pops the return address into AX and returns

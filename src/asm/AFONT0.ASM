@@ -110,7 +110,7 @@ L_00a0:
 	mov [bp-8],di
 	mov [bp-2],si
 	mov [bp-0eh],cx
-	mov al,BYTE PTR D_50EA_GLYPHWIDTHS+0dh	; D_50f7, the width of '-'
+	mov al,BYTE PTR D_50EA_GLYPHWIDTHS+0dh	; D_50F7_HYPHENWIDTH, the width of '-'
 	sub ah,ah
 	mov [bp-16h],ax
 	inc ax

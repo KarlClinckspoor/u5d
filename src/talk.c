@@ -268,7 +268,7 @@ static int TALK_01e2_GuardDemandsTribute(void)
 
 // CHECKED
 // talk to npc
-// Talk to the NPC in slot npcIndex. Its dialog number (NpcFmt._a): 0 no response,
+// Talk to the NPC in slot npcIndex. Its dialog number (NpcFmt.dialogNumber): 0 no response,
 // 1-0x7f an entry of the map's .TLK file, 0x81-0x88 a merchant, 0xfd, 0xfe and 0xff
 // special cases (below).
 int TALK_031e_TalkToNpc(int npcIndex)
@@ -293,13 +293,13 @@ int TALK_031e_TalkToNpc(int npcIndex)
     // jmp near are that then-branch's dead jump over its else) and BX still holds npc.
     else
     {
-        if (D_5c5a_actors[npc->actorIdx].tile != TILE_ACTOR_GUARD || ((npc->scheduleIdx & 1) != 0 && (npc->_a) != 0))
+        if (D_5c5a_actors[npc->actorIdx].tile != TILE_ACTOR_GUARD || ((npc->scheduleIdx & 1) != 0 && (npc->dialogNumber) != 0))
             goto L_join;
         ULTIMA_1850_PrintString(_TEXT(0x9148, "The guard offers\nno response!\n"));
         return 0;
     }
 L_join:
-    dialogNumber_f = npc->_a;
+    dialogNumber_f = npc->dialogNumber;
     if (dialogNumber_f == 0)
     {
         ULTIMA_1850_PrintString(_TEXT(0x9168, "No response!\n"));

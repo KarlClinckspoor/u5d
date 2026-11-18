@@ -551,7 +551,7 @@ int CMDS_07f6_BoardCmd(void)
         if (D_5893_mapId != 0)
         {
             npc = TOWN_011e_FindNpcByActor(actorSlot_g);
-            if (npc != -1 && D_5f5e_npcs[npc]._a != 0)
+            if (npc != -1 && D_5f5e_npcs[npc].dialogNumber != 0)
             {
                 ULTIMA_1850_PrintString(_TEXT(0x425e, "\"Nay!\"\n"));
                 return 1;

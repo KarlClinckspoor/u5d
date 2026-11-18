@@ -114,23 +114,23 @@ D_53AB_TEXTBGCOLOR	LABEL	BYTE
 	PUBLIC	D_53AC
 D_53AC	LABEL	WORD
 	db	0FFh, 001h, 0FFh, 003h, 0FFh, 007h, 0FFh, 00Fh
-	PUBLIC	D_53B4
-D_53B4	LABEL	WORD
+	PUBLIC	D_53B4_FILESIZELO
+D_53B4_FILESIZELO	LABEL	WORD
 	db	000h, 000h
-	PUBLIC	D_53B6
-D_53B6	LABEL	WORD
+	PUBLIC	D_53B6_FILESIZEHI
+D_53B6_FILESIZEHI	LABEL	WORD
 	db	000h, 000h
-	PUBLIC	D_53B8
-D_53B8	LABEL	WORD
+	PUBLIC	D_53B8_FILEHANDLE
+D_53B8_FILEHANDLE	LABEL	WORD
 	db	000h, 000h
-	PUBLIC	D_53BA
-D_53BA	LABEL	WORD
+	PUBLIC	D_53BA_FIRSTSEGMENT
+D_53BA_FIRSTSEGMENT	LABEL	WORD
 	db	000h, 000h
-	PUBLIC	D_53BC
-D_53BC	LABEL	WORD
+	PUBLIC	D_53BC_RETURNSEGMENT
+D_53BC_RETURNSEGMENT	LABEL	WORD
 	db	000h, 000h
-	PUBLIC	D_53BE
-D_53BE	LABEL	WORD
+	PUBLIC	D_53BE_LZWSEGMENT
+D_53BE_LZWSEGMENT	LABEL	WORD
 	db	000h, 000h
 	PUBLIC	D_53C0
 D_53C0	LABEL	WORD
@@ -867,23 +867,23 @@ L_12a7:
 	stc
 	ret
 L_12ac:
-	mov WORD PTR D_53BA,0
-	mov WORD PTR D_53BC,0
-	mov WORD PTR D_53BE,0
-	mov WORD PTR D_53B8,0
+	mov WORD PTR D_53BA_FIRSTSEGMENT,0
+	mov WORD PTR D_53BC_RETURNSEGMENT,0
+	mov WORD PTR D_53BE_LZWSEGMENT,0
+	mov WORD PTR D_53B8_FILEHANDLE,0
 	mov al,2
 	mov ah,3dh
 	int 21h
 	mov bx,ax
 	jb	L_1321
-	mov WORD PTR D_53B8,bx
+	mov WORD PTR D_53B8_FILEHANDLE,bx
 	mov cx,4
-	mov dx,OFFSET DGROUP:D_53B4
+	mov dx,OFFSET DGROUP:D_53B4_FILESIZELO
 	mov ah,3fh
 	int 21h
 	jb	L_1321
-	mov bx,WORD PTR D_53B4
-	mov dx,WORD PTR D_53B6
+	mov bx,WORD PTR D_53B4_FILESIZELO
+	mov dx,WORD PTR D_53B6_FILESIZEHI
 	mov cl,4
 L_12e8:
 	shr dx,1
@@ -892,28 +892,28 @@ L_12e8:
 	inc bx
 	call	L_15c6
 	jae	L_12fc
-	mov WORD PTR D_53BA,0ffffh
+	mov WORD PTR D_53BA_FIRSTSEGMENT,0ffffh
 	jmp	SHORT L_1321
 L_12fc:
-	mov WORD PTR D_53BA,ax
-	mov WORD PTR D_53BC,ax
+	mov WORD PTR D_53BA_FIRSTSEGMENT,ax
+	mov WORD PTR D_53BC_RETURNSEGMENT,ax
 	mov bx,40h
 	call	L_15c6
 	jae	L_1312
-	mov WORD PTR D_53BA,0ffffh
+	mov WORD PTR D_53BA_FIRSTSEGMENT,0ffffh
 	jmp	SHORT L_1321
 L_1312:
-	mov WORD PTR D_53BE,ax
+	mov WORD PTR D_53BE_LZWSEGMENT,ax
 	call	L_135a
 	clc
-	mov ax,WORD PTR D_53B4
+	mov ax,WORD PTR D_53B4_FILESIZELO
 	or ax,ax
 	jne	L_1321
 	dec ax
 L_1321:
 	pushf
 	push ax
-	mov bx,WORD PTR D_53BE
+	mov bx,WORD PTR D_53BE_LZWSEGMENT
 	or bx,bx
 	je	L_1333
 	push es
@@ -922,12 +922,12 @@ L_1321:
 	int 21h
 	pop es
 L_1333:
-	mov bx,WORD PTR D_53B8
+	mov bx,WORD PTR D_53B8_FILEHANDLE
 	je	L_133d
 	mov ah,3eh
 	int 21h
 L_133d:
-	mov bx,WORD PTR D_53BA
+	mov bx,WORD PTR D_53BA_FIRSTSEGMENT
 	cmp bx,0ffffh
 	jne	L_134c
 	inc bx
@@ -942,7 +942,7 @@ L_134c:
 	stc
 	ret
 L_1355:
-	mov bx,WORD PTR D_53BC
+	mov bx,WORD PTR D_53BC_RETURNSEGMENT
 	ret
 L_135a:
 	mov word ptr D_53D2,9
@@ -952,9 +952,9 @@ L_135a:
 	mov word ptr D_53D0,200h
 	mov ax,WORD PTR D_5354_PAGESEGMENT
 	mov D_53C0,ax
-	mov bx,WORD PTR D_53B8
+	mov bx,WORD PTR D_53B8_FILEHANDLE
 	push ds
-	mov ds,WORD PTR D_53BE
+	mov ds,WORD PTR D_53BE_LZWSEGMENT
 	xor dx,dx
 	mov cx,400h
 	mov ah,3fh
@@ -977,8 +977,8 @@ L_1391:
 	mov bp,ax
 	sub cx,ax
 	push ds
-	mov bx,WORD PTR D_53B8
-	mov ds,WORD PTR D_53BE
+	mov bx,WORD PTR D_53B8_FILEHANDLE
+	mov ds,WORD PTR D_53BE_LZWSEGMENT
 	push ds
 	pop es
 	xor si,si
@@ -994,7 +994,7 @@ L_1391:
 	pop dx
 L_13d8:
 	push ds
-	mov ds,WORD PTR D_53BE
+	mov ds,WORD PTR D_53BE_LZWSEGMENT
 	mov si,ax
 	lodsw
 	mov bx,ax
@@ -1045,8 +1045,8 @@ L_1419:
 	mov bp,ax
 	sub cx,ax
 	push ds
-	mov bx,WORD PTR D_53B8
-	mov ds,WORD PTR D_53BE
+	mov bx,WORD PTR D_53B8_FILEHANDLE
+	mov ds,WORD PTR D_53BE_LZWSEGMENT
 	push ds
 	pop es
 	xor si,si
@@ -1062,7 +1062,7 @@ L_1419:
 	pop dx
 L_1472:
 	push ds
-	mov ds,WORD PTR D_53BE
+	mov ds,WORD PTR D_53BE_LZWSEGMENT
 	mov si,ax
 	lodsw
 	mov bx,ax
@@ -1086,14 +1086,14 @@ L_1487:
 	mov D_53D5,al
 	mov D_53D4,al
 	push es
-	mov es,WORD PTR D_53BA
+	mov es,WORD PTR D_53BA_FIRSTSEGMENT
 	mov di,D_53C2
 	stosb
 	pop es
 	inc word ptr D_53C2
 	cmp di,10h
 	jne	L_14c2
-	inc WORD PTR D_53BA
+	inc WORD PTR D_53BA_FIRSTSEGMENT
 	mov word ptr D_53C2,0
 L_14c2:
 	jmp	NEAR PTR L_1391
@@ -1136,14 +1136,14 @@ L_1508:
 L_151e:
 	pop ax
 	push es
-	mov es,WORD PTR D_53BA
+	mov es,WORD PTR D_53BA_FIRSTSEGMENT
 	mov di,D_53C2
 	stosb
 	pop es
 	inc word ptr D_53C2
 	cmp di,10h
 	jne	L_153d
-	inc WORD PTR D_53BA
+	inc WORD PTR D_53BA_FIRSTSEGMENT
 	mov word ptr D_53C2,0
 L_153d:
 	loop	L_151e

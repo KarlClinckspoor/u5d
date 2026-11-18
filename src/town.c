@@ -60,7 +60,7 @@ void TOWN_00b0_DespawnNpc(int npc)
     ActorFmt* actor = &D_5c5a_actors[D_5f5e_npcs[npc].actorIdx];
 
     actor->tile = actor->animTile = actor->x = actor->y = actor->z = actor->animState = actor->extra = D_5f5e_npcs[npc].mode =
-        D_5f5e_npcs[npc].x = D_5f5e_npcs[npc].y = D_5f5e_npcs[npc].z = D_5f5e_npcs[npc]._a = 0;
+        D_5f5e_npcs[npc].x = D_5f5e_npcs[npc].y = D_5f5e_npcs[npc].z = D_5f5e_npcs[npc].dialogNumber = 0;
     D_5d5e_npcSchedules[npc].type[0] = D_5d5e_npcSchedules[npc].type[1] = D_5d5e_npcSchedules[npc].type[2] = 0;
     D_659e_npcTypes[npc] = 0;
     D_24e6_viewDirty |= 2;
@@ -579,9 +579,9 @@ void TOWN_08d4_SetFlee(int npc)
         }
     }
 
-    if (D_659e_npcTypes[npc] < 0x74 && D_659e_npcTypes[npc] >= 0x40 && (D_5f5e_npcs[npc]._a == 0xfe || hasTimes_c))
+    if (D_659e_npcTypes[npc] < 0x74 && D_659e_npcTypes[npc] >= 0x40 && (D_5f5e_npcs[npc].dialogNumber == 0xfe || hasTimes_c))
     {
-        D_5f5e_npcs[npc]._a = 0xfd;
+        D_5f5e_npcs[npc].dialogNumber = 0xfd;
 
         for (i = 0; i < 3; i++)
         {

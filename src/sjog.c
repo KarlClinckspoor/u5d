@@ -992,9 +992,9 @@ void SJOG_0d4a_JimmyCmd(void)
                 break;
             }
 
-            if (D_5f5e_npcs[npcIndex_f]._a != 0)
+            if (D_5f5e_npcs[npcIndex_f].dialogNumber != 0)
             {
-                D_5f5e_npcs[npcIndex_f]._a = 0;
+                D_5f5e_npcs[npcIndex_f].dialogNumber = 0;
             }
 
             // ce24

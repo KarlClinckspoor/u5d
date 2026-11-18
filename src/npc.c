@@ -18,7 +18,7 @@ u8 D_367e_npcBlockedTiles[0x20] = {
     0xf0, 0x3f, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff
 };
 
-// Load the NPC file of the current town (towne.npc, dwelling.npc, castle.npc, keep.npc, 8 maps each): the schedules (0x200 bytes), the NPC types (0x20) and the dialog numbers (0x20, into NpcFmt._a).
+// Load the NPC file of the current town (towne.npc, dwelling.npc, castle.npc, keep.npc, 8 maps each): the schedules (0x200 bytes), the NPC types (0x20) and the dialog numbers (0x20, into NpcFmt.dialogNumber).
 void NPC_0000_LoadNpcFile(void)
 {
     int fileOffset;
@@ -59,7 +59,7 @@ void NPC_0000_LoadNpcFile(void)
 
     for (kind_j = 0; kind_j < 0x20; kind_j++)
     {
-        D_5f5e_npcs[kind_j]._a = (u16)dialogNumbers_d[kind_j];
+        D_5f5e_npcs[kind_j].dialogNumber = (u16)dialogNumbers_d[kind_j];
     }
 
     D_5893_mapId++;
@@ -505,7 +505,7 @@ static void NPC_06e4_PursueOrFlee(int npc, int slot)
     {
         if (type_n == 4 || type_n == 5)
         {
-            if (npcRec_e->_a != 0)
+            if (npcRec_e->dialogNumber != 0)
             {
                 D_65be_npcApproach = 0x74;
                 D_65bf_npcApproaching = npc;
@@ -771,7 +771,7 @@ static int NPC_0adc_CanEnter(int x, int y, int z, int npc, int slot)
     {
         if (x < 0 || y < 0 || 0x1f < x || 0x1f < y)
         {
-            tile = D_6a07;
+            tile = D_6a07_dummyCell;
         }
         else
         {
