@@ -184,6 +184,25 @@ Next, in order:
    from the game files and `--check`s it. `u5link.py` links from the script and the objects
    alone, and `check.py` builds without the game files (MATCHING.md, "The link script").
 
+7. **Readable names** *(started)*. Names change the compiled code here (a local's name its
+   stack slot, the length of global names pass 2's memory), so renames go through
+   `tools/rename.py`, which keeps the slot order (a suffix where needed), the 31 significant
+   characters and the address prefixes, recompiles and compares, and puts the files back
+   when a function stops matching. MATCHING.md, "Readable names", has the convention, the
+   tool, the measured cost and the plan.
+   - Done (pilot): TALK and SHOPPES3 whole (47 functions: names, parameters, locals, a
+     comment above each), the SHOPPES helpers they call, the shops' and the conversation's
+     globals, and six widely used savegame globals (gold, food, party size, karma, hour,
+     active player): 37 functions, 39 globals, 79 locals, 36 parameters. No pool window
+     moved; 31 locals carry a slot suffix.
+   - TOWN_0f02's fill no longer names other modules' globals (`F_xxxx` in town.c), so naming
+     a global elsewhere cannot move its window.
+   - To continue: first one worker for the shared vocabulary (`vars.h`'s savegame block and
+     tables, `structs.h` fields, the resident functions the overlays call), then up to four
+     workers on module groups in worktrees, the resident code last (the order and the
+     groups are in MATCHING.md). About 600 of the 640 globals and half of the function
+     names are still to do; locals and parameters everywhere but in the pilot.
+
 ## What is left
 
 The 25 files are identical, and building them needs only the repository, the compilers,

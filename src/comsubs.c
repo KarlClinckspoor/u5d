@@ -107,9 +107,9 @@ int COMSUBS_00f4(int param_1)
                 ULTIMA_16ba_PrintChar('\n');
 
                 D_ba14[local_e_am].flags |= COMBAT_FLAGS_CHARMED;
-                if (D_ba14[local_e_am].entityIdx == D_587b)
+                if (D_ba14[local_e_am].entityIdx == D_587b_activePlayer)
                 {
-                    D_587b = 0xff;
+                    D_587b_activePlayer = 0xff;
                 }
 
                 ULTIMA_2900_UpdateVitalsDisplay();

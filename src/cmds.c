@@ -41,12 +41,12 @@ int CMDS_0000(int param_1, int param_2, int param_3)
     local_1a = 0;
 #endif
 
-    local_20_ab = D_587f;
+    local_20_ab = D_587f_hour;
     local_6 = -1;
     local_1e_an = -1;
     D_587a = D_588e = 0;
-    local_1c = D_587b;
-    D_587b = 0xff;
+    local_1c = D_587b_activePlayer;
+    D_587b_activePlayer = 0xff;
     if ((param_1 & 2) != 0)
     {
         DNGLOOK_117e(GetDungeonMap((uint)D_5896_map_x, (uint)D_5897_map_y, D_5895_map_level & 0xff), 0);
@@ -61,7 +61,7 @@ int CMDS_0000(int param_1, int param_2, int param_3)
 #endif
 
     D_589e = 0xff;
-    local_2a_aa = param_3 + (uint)D_587f;
+    local_2a_aa = param_3 + (uint)D_587f_hour;
     if (local_2a_aa > 0x17)
     {
         local_2a_aa -= 0x18;
@@ -77,7 +77,7 @@ int CMDS_0000(int param_1, int param_2, int param_3)
         local_16[local_22] = 0;
     }
 
-    for (local_22 = 0; local_22 < D_585b; local_22++)
+    for (local_22 = 0; local_22 < D_585b_partyCount; local_22++)
     {
         for (local_26_al = 0; local_26_al < 0x20; local_26_al++)
         {
@@ -145,17 +145,17 @@ int CMDS_0000(int param_1, int param_2, int param_3)
         local_18 = D_5c5a[local_1a->actorIdx]._0_tile;
     }
 
-    while (local_2a_aa != D_587f)
+    while (local_2a_aa != D_587f_hour)
     {
-        if (D_587f >= 0x18)
+        if (D_587f_hour >= 0x18)
         {
-            D_587f -= 0x18;
+            D_587f_hour -= 0x18;
         }
 
         ULTIMA_5910_UpdateFrame();
         ULTIMA_400c();
         ULTIMA_2900_UpdateVitalsDisplay();
-        if (local_20_ab != D_587f)
+        if (local_20_ab != D_587f_hour)
         {
             if (ULTIMA_2092_RandomRange(0, 0x3f) == 0)
             {
@@ -169,7 +169,7 @@ int CMDS_0000(int param_1, int param_2, int param_3)
                     for (local_24_an = 0; local_24_an < 6; local_24_an++)
                     {
                         // 0283
-                        if ((local_22 = D_ba14[local_24_an].entityIdx) >= 0 && local_22 < D_585b)
+                        if ((local_22 = D_ba14[local_24_an].entityIdx) >= 0 && local_22 < D_585b_partyCount)
                         {
                             ULTIMA_6800(local_24_an);
                             if (local_16[local_22] != 0)
@@ -198,7 +198,7 @@ int CMDS_0000(int param_1, int param_2, int param_3)
             }
         }
 
-        local_20_ab = D_587f;
+        local_20_ab = D_587f_hour;
         ULTIMA_4f7c(5);
         ULTIMA_20fa_WaitTicks(1);
         if (D_5894 < 0x21)
@@ -253,7 +253,7 @@ int CMDS_0000(int param_1, int param_2, int param_3)
     {
         ULTIMA_1850_PrintString(_TEXT(0x41ec, "Party rested!\n"));
 
-        for (local_22 = 0; local_22 < D_585b; local_22++)
+        for (local_22 = 0; local_22 < D_585b_partyCount; local_22++)
         {
             if (local_16[local_22] == 0 && D_588c < 1 && param_3 > 5 && D_55a8_party[local_22].status != STATUS_DEAD && local_22 != param_2)
             {
@@ -292,7 +292,7 @@ int CMDS_0000(int param_1, int param_2, int param_3)
         ULTIMA_1850_PrintString(_TEXT(0x41fb, "No effect...\n"));
     }
 
-    for (local_22 = 0; local_22 < D_585b; local_22++)
+    for (local_22 = 0; local_22 < D_585b_partyCount; local_22++)
     {
         if (D_55a8_party[local_22].status == STATUS_SLEEP)
         {
@@ -300,7 +300,7 @@ int CMDS_0000(int param_1, int param_2, int param_3)
         }
     }
 
-    D_587b = local_1c;
+    D_587b_activePlayer = local_1c;
     ULTIMA_2900_UpdateVitalsDisplay();
 
 #if defined(ENABLE_BGM)
@@ -329,7 +329,7 @@ void CMDS_0552_HoleUpCmd(void)
         ULTIMA_16ba_PrintChar(local_6);
         ULTIMA_16ba_PrintChar('\n');
 
-        local_8 = (int)D_587f + (int)local_6 - 0x30;
+        local_8 = (int)D_587f_hour + (int)local_6 - 0x30;
         if (local_8 > 0x17)
         {
             local_8 -= 0x17;
@@ -337,7 +337,7 @@ void CMDS_0552_HoleUpCmd(void)
 
         for (local_a = 0; local_a < 0x10; local_a++)
         {
-            NPC_0db4(D_587f);
+            NPC_0db4(D_587f_hour);
             ULTIMA_5910_UpdateFrame();
             if (D_65be == 0x61)
             {
@@ -345,9 +345,9 @@ void CMDS_0552_HoleUpCmd(void)
             }
         }
 
-        local_4_ab = D_587b;
+        local_4_ab = D_587b_activePlayer;
 
-        for (local_a = 0; local_a < D_585b; local_a++)
+        for (local_a = 0; local_a < D_585b_partyCount; local_a++)
         {
             if (D_55a8_party[local_a].status == STATUS_GOOD)
             {
@@ -361,16 +361,16 @@ void CMDS_0552_HoleUpCmd(void)
         ULTIMA_0a70_GRAP_2d_SetPenColor(0);
         ULTIMA_0aa6_GRAP_3f_FillRect(8, 8, 0xb7, 0xb7);
 
-        local_c = D_587f;
-        while (local_8 != D_587f)
+        local_c = D_587f_hour;
+        while (local_8 != D_587f_hour)
         {
             ULTIMA_4f7c(10);
-            if (local_c != D_587f && (D_587f == 0x14 || D_587f == 0x05))
+            if (local_c != D_587f_hour && (D_587f_hour == 0x14 || D_587f_hour == 0x05))
             {
                 TOWN_0170();
             }
 
-            local_c = D_587f;
+            local_c = D_587f_hour;
             ULTIMA_4a84();
             ULTIMA_2ae8();
             ULTIMA_2900_UpdateVitalsDisplay();
@@ -389,7 +389,7 @@ void CMDS_0552_HoleUpCmd(void)
             ULTIMA_1850_PrintString(_TEXT(0x422a, "Thrown out of bed!\n"));
         }
 
-        for (local_a = 0; local_a < D_585b; local_a++)
+        for (local_a = 0; local_a < D_585b_partyCount; local_a++)
         {
             if (D_55a8_party[local_a].status == STATUS_SLEEP)
             {
@@ -397,7 +397,7 @@ void CMDS_0552_HoleUpCmd(void)
             }
         }
 
-        D_587b = local_4_ab;
+        D_587b_activePlayer = local_4_ab;
         D_5896_map_x++;
         D_24e6 = 1;
         D_5c5a[0]._2_x++;
@@ -818,13 +818,13 @@ void CMDS_0aea_FireCmd(void)
         ULTIMA_3a74(0, 0, 0, 0, 0, 0, local_a);
 
         D_24e6 |= 2;
-        if (D_5888 > 5)
+        if (D_5888_karma > 5)
         {
-            D_5888 -= 5;
+            D_5888_karma -= 5;
         }
         else
         {
-            D_5888 = 0;
+            D_5888_karma = 0;
         }
 
         if ((local_6 = TOWN_011e(local_a)) == -1)

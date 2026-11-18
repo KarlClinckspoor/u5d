@@ -40,8 +40,8 @@ static void DUNGEON_0000(byte param_1)
     ULTIMA_1b16_ClearKbdBuffer();
 
     local_1c = param_1 & 0xf;
-    local_4_ab = D_587b;
-    D_589e = D_587b = 0xff;
+    local_4_ab = D_587b_activePlayer;
+    D_589e = D_587b_activePlayer = 0xff;
 
     local_1e_an = D_5893_map_id - 0x21;
     if (local_1e_an >= 1)
@@ -90,7 +90,7 @@ static void DUNGEON_0000(byte param_1)
 
     D_5c5a[1] = local_12;
     D_5c5a[2] = local_1a_aa;
-    D_587b = local_4_ab;
+    D_587b_activePlayer = local_4_ab;
 }
 
 static int DUNGEON_0252(void);
@@ -449,7 +449,7 @@ static int DUNGEON_06c4_ProcessCommand(int param_1)
     {
     case U5_KEY_CTRL_K:
         // 06f2
-        ULTIMA_1a3e_PrintNumber(D_5888, 1, 0x20);
+        ULTIMA_1a3e_PrintNumber(D_5888_karma, 1, 0x20);
         ULTIMA_16ba_PrintChar('\n');
         break;
 
@@ -609,7 +609,7 @@ static void DUNGEON_0948_SleepSpell(void)
 
     ULTIMA_1850_PrintString(_TEXT(0x2d53, "Sleep spell!\n"));
 
-    for (local_4 = 0; local_4 < D_585b; local_4++)
+    for (local_4 = 0; local_4 < D_585b_partyCount; local_4++)
     {
         if (D_55a8_party[local_4].dex <= ULTIMA_2092_RandomRange(1, 0x1e) && D_55a8_party[local_4].status != STATUS_DEAD)
         {
@@ -630,7 +630,7 @@ static void DUNGEON_09e6_Poison(void)
 
     ULTIMA_1850_PrintString(_TEXT(0x2d61, "Poison!\n"));
 
-    for (local_4 = 0; local_4 < D_585b; local_4++)
+    for (local_4 = 0; local_4 < D_585b_partyCount; local_4++)
     {
         if (D_55a8_party[local_4].dex <= ULTIMA_2092_RandomRange(1, 0x1e) && D_55a8_party[local_4].status != STATUS_DEAD)
         {
@@ -768,7 +768,7 @@ void DUNGEON_0c76(byte param_1, int param_2)
     local_4_ab = param_1 & 0xf0;
     local_8 = 0;
 
-    for (local_6 = 0; local_6 < D_585b; local_6++)
+    for (local_6 = 0; local_6 < D_585b_partyCount; local_6++)
     {
         if (D_55a8_party[local_6].status == STATUS_SLEEP && ULTIMA_2092_RandomRange(0, 0x3f) < 4)
         {

@@ -455,10 +455,10 @@ int CAST2_05e0_Resurrect(int param_1, int param_2)
             break;
         }
 
-        if (D_5888 < 0x62)
+        if (D_5888_karma < 0x62)
         {
             // NOT MATCHING (pointer)
-            local_4_ab->exp = local_4_ab->exp * (s32)D_5888 / 100;
+            local_4_ab->exp = local_4_ab->exp * (s32)D_5888_karma / 100;
         }
 
         local_a = 1;
@@ -832,7 +832,7 @@ static void CAST2_0966_ShrineOfVirtue(void)
 
                 // 0b40 (OK)
                 ULTIMA_1850_PrintString(_TEXT(0x95a2, "00 gp\n\n"));
-                if ((int)D_57aa < local_4_ab * 100)
+                if ((int)D_57aa_gold < local_4_ab * 100)
                 {
                     // "Thou hast not that much gold!"
                     ULTIMA_1850_PrintString((char*)&D_b21e[0x49b]);
@@ -847,12 +847,12 @@ static void CAST2_0966_ShrineOfVirtue(void)
             }
 
             // 0b82 (OK)
-            D_57aa -= local_4_ab * 100;
+            D_57aa_gold -= local_4_ab * 100;
             ULTIMA_2900_UpdateVitalsDisplay();
-            D_5888 += local_4_ab;
-            if (D_5888 > 99)
+            D_5888_karma += local_4_ab;
+            if (D_5888_karma > 99)
             {
-                D_5888 = 99;
+                D_5888_karma = 99;
             }
 
             // 0ba1 (OK)
@@ -898,10 +898,10 @@ static void CAST2_0966_ShrineOfVirtue(void)
             }
 
             ULTIMA_3072_ShakeScreen();
-            D_5888 += 3;
-            if (D_5888 > 99)
+            D_5888_karma += 3;
+            if (D_5888_karma > 99)
             {
-                D_5888 = 99;
+                D_5888_karma = 99;
             }
 
             // 0c9c (OK)
@@ -940,10 +940,10 @@ static void CAST2_0966_ShrineOfVirtue(void)
 
             if (local_a == 7)
             {
-                D_5888 += 3;
-                if (D_5888 > 99)
+                D_5888_karma += 3;
+                if (D_5888_karma > 99)
                 {
-                    D_5888 = 99;
+                    D_5888_karma = 99;
                 }
             }
         }

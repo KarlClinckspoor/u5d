@@ -299,7 +299,7 @@ void CMDS_1c20_KlimbCmd(void)
     }
     else
     {
-        for (local_4_ab = 0; local_4_ab < D_585b; local_4_ab++)
+        for (local_4_ab = 0; local_4_ab < D_585b_partyCount; local_4_ab++)
         {
             if (D_55a8_party[local_4_ab].status != STATUS_DEAD && D_55a8_party[local_4_ab].dex < ULTIMA_2092_RandomRange(1, 0x1e))
             {

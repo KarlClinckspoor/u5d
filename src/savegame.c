@@ -35,8 +35,8 @@ int FILE_ReadSavegameFile(char* fileName)
 
     READ_16(D_55a6);
     fread(D_55a8_party, 0x20, 0x10, stream);
-    READ_16(D_57a8); // 3dfb4
-    READ_16(D_57aa); // 3dfb6
+    READ_16(D_57a8_food); // 3dfb4
+    READ_16(D_57aa_gold); // 3dfb6
     READ_8(D_57ac); // 3dfb8
     READ_8(D_57ad); // 3dfb9_gem_count
     READ_8(D_57ae); // 3dfba
@@ -65,17 +65,17 @@ int FILE_ReadSavegameFile(char* fileName)
     fread(D_5848, 8, 1, stream); // 3e058
     fread(D_5850, 8, 1, stream); // 3e060
     fread(D_5858, 3, 1, stream); // 3e068
-    READ_8(D_585b); // 3e06b
+    READ_8(D_585b_partyCount); // 3e06b
     fread(D_585c, 0x18, 1, stream); // 3e06c
     READ_16(D_5874); // 3e084
     READ_16(D_5876); // 3e086
     READ_16(D_5878); // 3e088
     READ_8(D_587a); // 3e08a
-    READ_8(D_587b); // 3e08b
+    READ_8(D_587b_activePlayer); // 3e08b
     READ_8(D_587c_partyTile); // 3e08c
     READ_8(D_587d); // 3e08d
     READ_8(D_587e); // 3e08e
-    READ_8(D_587f); // 3e08f
+    READ_8(D_587f_hour); // 3e08f
     READ_8(D_5880); // 3e090
     READ_8(D_5881); // 3e091
     READ_8(D_5882); // 3e092
@@ -84,7 +84,7 @@ int FILE_ReadSavegameFile(char* fileName)
     READ_8(D_5885); // 3e095
     READ_8(D_5886); // 3e096
     READ_8(D_5887); // 3e097
-    READ_8(D_5888); // 3e098
+    READ_8(D_5888_karma); // 3e098
     READ_8(D_5889); // 3e099
     READ_8(D_588a); // 3e09a
     READ_8(D_588b); // 3e09b
@@ -138,7 +138,7 @@ int FILE_ReadSavegameFile(char* fileName)
     READ_8(D_5955); // 3e167
     READ_8(D_5956); // 3e168
     READ_8(D_5957); // 3e169
-    READ_8(D_5958); // 3e16a
+    READ_8(D_5958_townShadowlord); // 3e16a
     READ_8(D_5959); // 3e16b
     fread(D_595a, 0x200, 1, stream); // 3e16c; map data
     fread(D_5b5a, 0x80, 1, stream); // 3e36c
@@ -193,8 +193,8 @@ int FILE_WriteSavegameFile(char* fileName)
 
     WRITE_16(D_55a6);
     fwrite(D_55a8_party, 0x20, 0x10, stream);
-    WRITE_16(D_57a8);             // 3dfb4
-    WRITE_16(D_57aa);             // 3dfb6
+    WRITE_16(D_57a8_food);             // 3dfb4
+    WRITE_16(D_57aa_gold);             // 3dfb6
     WRITE_8(D_57ac);              // 3dfb8
     WRITE_8(D_57ad);              // 3dfb9_gem_count
     WRITE_8(D_57ae);              // 3dfba
@@ -223,17 +223,17 @@ int FILE_WriteSavegameFile(char* fileName)
     fwrite(D_5848, 8, 1, stream);     // 3e058
     fwrite(D_5850, 8, 1, stream);     // 3e060
     fwrite(D_5858, 3, 1, stream);     // 3e068
-    WRITE_8(D_585b);                  // 3e06b
+    WRITE_8(D_585b_partyCount);                  // 3e06b
     fwrite(D_585c, 0x18, 1, stream);  // 3e06c
     WRITE_16(D_5874);                 // 3e084
     WRITE_16(D_5876);                 // 3e086
     WRITE_16(D_5878);                 // 3e088
     WRITE_8(D_587a);                  // 3e08a
-    WRITE_8(D_587b);                  // 3e08b
+    WRITE_8(D_587b_activePlayer);                  // 3e08b
     WRITE_8(D_587c_partyTile);                  // 3e08c
     WRITE_8(D_587d);                  // 3e08d
     WRITE_8(D_587e);                  // 3e08e
-    WRITE_8(D_587f);                  // 3e08f
+    WRITE_8(D_587f_hour);                  // 3e08f
     WRITE_8(D_5880);                  // 3e090
     WRITE_8(D_5881);                  // 3e091
     WRITE_8(D_5882);                  // 3e092
@@ -242,7 +242,7 @@ int FILE_WriteSavegameFile(char* fileName)
     WRITE_8(D_5885);                  // 3e095
     WRITE_8(D_5886);                  // 3e096
     WRITE_8(D_5887);                  // 3e097
-    WRITE_8(D_5888);                  // 3e098
+    WRITE_8(D_5888_karma);                  // 3e098
     WRITE_8(D_5889);                  // 3e099
     WRITE_8(D_588a);                  // 3e09a
     WRITE_8(D_588b);                  // 3e09b
@@ -296,7 +296,7 @@ int FILE_WriteSavegameFile(char* fileName)
     WRITE_8(D_5955);                  // 3e167
     WRITE_8(D_5956);                  // 3e168
     WRITE_8(D_5957);                  // 3e169
-    WRITE_8(D_5958);                  // 3e16a
+    WRITE_8(D_5958_townShadowlord);                  // 3e16a
     WRITE_8(D_5959);                  // 3e16b
     fwrite(D_595a, 0x200, 1, stream); // 3e16c; map data
     fwrite(D_5b5a, 0x80, 1, stream);  // 3e36c

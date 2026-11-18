@@ -26,8 +26,8 @@ int MAINOUT_08de_EnterCmd(void);
 // the same either way).
 u16 D_55a6 = 0; // +0x0
 S_55a8 D_55a8_party[0x10] = {0}; // ~57a8)
-s16 D_57a8 = 0; // +0x0202 Food // int (TALK_0682, MOVSX)
-s16 D_57aa = 0; // +0x0204 Gold // int (MAINOUT_1b3e, MOVSX)
+s16 D_57a8_food = 0; // +0x0202 Food // int (TALK_0682_ReceiveItem, MOVSX)
+s16 D_57aa_gold = 0; // +0x0204 Gold // int (MAINOUT_1b3e, MOVSX)
 u8 D_57ac = 0; // +0x0206 #Keys
 u8 D_57ad = 0; // +0x0207 #Gems
 u8 D_57ae = 0; // +0x0208 #Torches
@@ -55,17 +55,17 @@ u8 D_5840[8] = {0}; // +0x029A 0=buried,0xFF=Inventory moonstone flags
 u8 D_5848[8] = {0}; // +0x02A2 0=Britannia,0xFF=Underworld moonstone Z-coordinates (valid only if buried)
 u8 D_5850[8] = {0}; // +0x02AA Reagents (A..H)
 u8 D_5858[3] = {0}; // +0x02B2 Day each of the three nightshade/mandrake spots was last harvested [5858..585b)
-u8 D_585b = 0; // +0x02B5 party member count
+u8 D_585b_partyCount = 0; // +0x02B5 party member count
 u8 D_585c[0x18] = {0}; // [585c..5874)
 u16 D_5874 = 0; // +0x02CE Current year (TODO: int?)
 s16 D_5876 = 0; // selected x direction? // +0x02D0 first party member that is not dead or sleeping? # of active monsters & charmed PCs[2]?
 s16 D_5878 = 0; // selected y direction? // +0x02D2 # of active PCs and charmed monsters[2]?
 u8 D_587a = 0; // +0x02D4 Icon
-u8 D_587b = 0; // +0x02D5 Active character
+u8 D_587b_activePlayer = 0; // +0x02D5 Active character
 u8 D_587c_partyTile = 0; // +0x02D6 party tile
 u8 D_587d = 0; // +0x02D7 Current month
 u8 D_587e = 0; // +0x02D8 Current day
-u8 D_587f = 0; // +0x02D9 Current hour
+u8 D_587f_hour = 0; // +0x02D9 Current hour
 u8 D_5880 = 0; // +0x02DA copy of 0x2D9
 u8 D_5881 = 0; // +0x02DB Current minute
 u8 D_5882 = 0;
@@ -74,7 +74,7 @@ u8 D_5884 = 0;
 u8 D_5885 = 0; // +0x02DF Phase of Trammel
 u8 D_5886 = 0; // +0x02E0 Phase of Felucca
 u8 D_5887 = 0; // +0x02E1 Current moongate height (in pixels)
-u8 D_5888 = 0; // +0x02E2 Karma
+u8 D_5888_karma = 0; // +0x02E2 Karma
 u8 D_5889 = 0;
 u8 D_588a = 0;
 u8 D_588b = 0; // +0x02E5 Current turn count
@@ -127,7 +127,7 @@ u8 D_5954 = 0; // +0x03AE ship_y
 u8 D_5955 = 0;
 u8 D_5956 = 0;
 u8 D_5957 = 0; // +0x03B1 remaining drunk turn count (TOWN_0dc4)
-u8 D_5958 = 0;
+u8 D_5958_townShadowlord = 0;
 u8 D_5959 = 0;
 u8 D_595a[0x200] = {0}; // +0x03B4 dungeon map data ..5b5a)
 u8 D_5b5a[0x80] = {0}; // +0x05B4 NPC killed flags (4 bytes / 32 bits per settlement) [..5bda) // TODO: u32
@@ -749,7 +749,7 @@ int ULTIMA_39fc_GetFirstActivePartyMember(void)
 
     local_8 = 0;
 
-    for (local_4_ab = 0; local_4_ab < D_585b; local_4_ab++)
+    for (local_4_ab = 0; local_4_ab < D_585b_partyCount; local_4_ab++)
     {
         if ((local_6 = D_55a8_party[local_4_ab].status) == STATUS_GOOD || local_6 == STATUS_POISONED)
         {
@@ -1017,7 +1017,7 @@ static void ULTIMA_3c9a_HoleUpCmd(void)
                 local_10_aa = local_4_aa - 0x30;
 
                 local_6 = 0;
-                for (local_c = 0; local_c != D_585b; local_c++)
+                for (local_c = 0; local_c != D_585b_partyCount; local_c++)
                 {
                     if (D_55a8_party[local_c].status == STATUS_GOOD || D_55a8_party[local_c].status == STATUS_POISONED)
                     {

@@ -42,13 +42,13 @@ static void LOOKOBJ_0042(byte param_1, byte param_2, byte param_3)
     else
     {
         ULTIMA_1850_PrintString(_TEXT(0x7226, "Yes\n"));
-        if (D_57aa == 0)
+        if (D_57aa_gold == 0)
         {
             return;
         }
 
         ULTIMA_1850_PrintString(_TEXT(0x722c, "\nThy wish?\n"));
-        D_57aa--;
+        D_57aa_gold--;
         ULTIMA_3b1c_GetString(local_10, 0xc);
         if (local_10[0] == 0)
         {
@@ -195,15 +195,15 @@ void LOOKOBJ_0366(void)
     int local_6;
     int local_4_ab;
 
-    if (D_587f >= 6 && D_587f < 0x12)
+    if (D_587f_hour >= 6 && D_587f_hour < 0x12)
     {
         ULTIMA_1850_PrintString(_TEXT(0x72f0, "the sun!\n"));
-        if (D_587b == 0xff && ULTIMA_39fc_GetFirstActivePartyMember() == 0)
+        if (D_587b_activePlayer == 0xff && ULTIMA_39fc_GetFirstActivePartyMember() == 0)
         {
-            D_587b = D_5876;
+            D_587b_activePlayer = D_5876;
         }
 
-        ULTIMA_2a52(D_587b, 1);
+        ULTIMA_2a52(D_587b_activePlayer, 1);
         ULTIMA_2900_UpdateVitalsDisplay();
     }
     else
@@ -320,7 +320,7 @@ static void LOOKOBJ_0502(int param_1, int param_2, int param_3)
         LOOKOBJ_0000(param_1);
         if ((param_1 & 0xfe) == TILE_MAP_CLOCK)
         {
-            local_4 = D_587f % 0xc;
+            local_4 = D_587f_hour % 0xc;
             if (local_4 == 0)
             {
                 local_4 = 0xc;
@@ -330,7 +330,7 @@ static void LOOKOBJ_0502(int param_1, int param_2, int param_3)
             ULTIMA_16ba_PrintChar(':');
             ULTIMA_1a3e_PrintNumber(D_5881, 2, 0x30);
 
-            if (D_587f > 0xb)
+            if (D_587f_hour > 0xb)
             {
                 ULTIMA_1850_PrintString(_TEXT(0x730a, " PM.\n"));
             }
@@ -554,7 +554,7 @@ static void LOOKOBJ_07e4(byte param_1, byte param_2, byte param_3)
         ULTIMA_1850_PrintString(_TEXT(0x74b8, "g\ng"));
         for (local_6 = 0; local_6 < 3; local_6++)
         {
-            if (local_6 < D_585b)
+            if (local_6 < D_585b_partyCount)
             {
                 ULTIMA_1c9e_SelectCharset(0);
                 ULTIMA_1bf2_SetTextPosition(7 - (ULTIMA_216c_strlen(D_55a8_party[local_6].name) / 2),

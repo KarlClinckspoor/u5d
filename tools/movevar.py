@@ -8,7 +8,7 @@
 In the original, a module's tables sit in DGROUP between its string literals, in the order
 the module defines them. Microsoft C 5.1 writes a module's _DATA almost in source order:
 a definition at file scope comes after the string literals of the function that follows
-it (seen in shoppes3.c: a table defined before SHOPPES3_002c lands after its strings). So a
+it (seen in shoppes3.c: a table defined before SHOPPES3_002c_HasRoom lands after its strings). So a
 table that follows function F's strings in DGROUP is defined just before F (before the
 first function if no string of the module precedes it).
 

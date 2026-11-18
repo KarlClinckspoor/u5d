@@ -41,7 +41,7 @@ void OUTSUBS_0658(void)
 
     D_5c5a[10]._0_tile = D_5c5a[10]._1_animTile = TILE_ACTOR_74;
 
-    for (local_8 = 0; local_8 < D_585b; local_8++)
+    for (local_8 = 0; local_8 < D_585b_partyCount; local_8++)
     {
         if (D_55a8_party[local_8].status != STATUS_DEAD)
         {
@@ -131,7 +131,7 @@ void OUTSUBS_0658(void)
 
     ULTIMA_1850_PrintString(_TEXT(0x77e0, "\n\""));
 
-    local_c = D_5888 / 20;
+    local_c = D_5888_karma / 20;
     if (local_c < 4)
     {
         ULTIMA_256e_ReadFileFromDisk(_TEXT(0x77e4, "KARMA.DAT"), D_b21e, 2000, D_1a74[local_c]);

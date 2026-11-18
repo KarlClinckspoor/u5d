@@ -404,7 +404,7 @@ static int CAST_04b0_KalXen(void)
 static int CAST_05b4_InManiXen(void)
 {
     CAST2_0000_CastEffect(2);
-    ULTIMA_3f14_IncreaseInt(&D_57a8, ULTIMA_2092_RandomRange(1, 3), 9999);
+    ULTIMA_3f14_IncreaseInt(&D_57a8_food, ULTIMA_2092_RandomRange(1, 3), 9999);
     D_a9fa = 1;
     return 1;
 }
@@ -1801,7 +1801,7 @@ void CAST_1792_UseCmd(void)
             ULTIMA_1850_PrintString(_TEXT(0x498d, "Spyglass\n\n"));
             if (D_5893_map_id < 0x21 && D_5895_map_level < 0x80)
             {
-                if (D_587f < 6 || 0x12 < D_587f)
+                if (D_587f_hour < 6 || 0x12 < D_587f_hour)
                 {
                     ULTIMA_1850_PrintString(_TEXT(0x4998, "Looking...\n"));
                     LOOKOBJ_0366();
@@ -1837,7 +1837,7 @@ void CAST_1792_UseCmd(void)
             }
             else
             {
-                if (D_587f > 5 && D_587f < 0x13)
+                if (D_587f_hour > 5 && D_587f_hour < 0x13)
                 {
                     ULTIMA_1850_PrintString(_TEXT(0x4a16, "Only at night!\n"));
                 }
@@ -1851,7 +1851,7 @@ void CAST_1792_UseCmd(void)
 
         case 0x23:
             ULTIMA_1850_PrintString(_TEXT(0x4a30, "Watch\n\nThe pocket watch reads "));
-            local_10_ad = (byte)(D_587f % 0xc);
+            local_10_ad = (byte)(D_587f_hour % 0xc);
             if (local_10_ad == 0)
             {
                 local_10_ad = 0xc;
@@ -1860,7 +1860,7 @@ void CAST_1792_UseCmd(void)
             ULTIMA_1a3e_PrintNumber(local_10_ad, 1, 0x20);
             ULTIMA_16ba_PrintChar(':');
             ULTIMA_1a3e_PrintNumber(D_5881, 2, 0x30);
-            if (D_587f > 0xb)
+            if (D_587f_hour > 0xb)
             {
                 ULTIMA_1850_PrintString(_TEXT(0x4a4f, " PM.\n"));
             }

@@ -315,7 +315,7 @@ static void BLCKTHRN_03ae(int param_1)
     GetCombatMap(5, 7) = 0x80;
 
     local_26 = 0;
-    for (local_28 = 0; local_28 < D_585b; local_28++)
+    for (local_28 = 0; local_28 < D_585b_partyCount; local_28++)
     {
         if (D_55a8_party[local_28].status != STATUS_DEAD)
         {
@@ -339,7 +339,7 @@ static void BLCKTHRN_03ae(int param_1)
     D_55a8_party[0xf] = local_22_ab;
     D_55a8_party[0xf].mapId = 0x7f;
 
-    D_585b--;
+    D_585b_partyCount--;
     ULTIMA_2900_UpdateVitalsDisplay();
     if (param_1 != 0)
     {
@@ -384,7 +384,7 @@ static void BLCKTHRN_054a(int param_1, int param_2)
         if (BLCKTHRN_02ea(param_1) != 0)
         {
             *(D_58d8 + param_1) = 0xff;
-            ULTIMA_3f36_DecreaseByte(&D_5888, 5);
+            ULTIMA_3f36_DecreaseByte(&D_5888_karma, 5);
             if (param_2 > 1)
             {
                 BLCKTHRN_03ae(0);
@@ -446,7 +446,7 @@ void BLCKTHRN_060e_Capture(void)
     ActorFmt* local_4_c;
 
     local_a_i = 0;
-    for (local_8 = 0; local_8 != D_585b; local_8++)
+    for (local_8 = 0; local_8 != D_585b_partyCount; local_8++)
     {
         if (D_55a8_party[local_8].status != STATUS_DEAD)
         {
@@ -670,7 +670,7 @@ void BLCKTHRN_0910_Death(void)
     ULTIMA_5910_UpdateFrame();
 
     // ad93
-    local_4_ab = D_5888 / 0x14;
+    local_4_ab = D_5888_karma / 0x14;
     ULTIMA_1850_PrintString(_TEXT(0x71be, "\n\""));
     ULTIMA_256e_ReadFileFromDisk(_TEXT(0x71c2, "KARMA.DAT"), D_b21e, 2000, D_1a74[local_4_ab]);
     ULTIMA_1850_PrintString((char*)D_b21e);
@@ -679,7 +679,7 @@ void BLCKTHRN_0910_Death(void)
     ULTIMA_1850_PrintString(_TEXT(0x71cc, "\n\nStrange words are intoned."));
     ULTIMA_20fa_WaitTicks(4);
 
-    for (local_8 = 0; local_8 < D_585b; local_8++)
+    for (local_8 = 0; local_8 < D_585b_partyCount; local_8++)
     {
         local_6 = (u32)36400 / (local_8 + 7);
         ULTIMA_2192_AudioPulse(local_6, 1, 30000, 2000, 2);
@@ -697,9 +697,9 @@ void BLCKTHRN_0910_Death(void)
     ULTIMA_0c22_GRAP_0f_SelectPage(0);
     ULTIMA_0f46_GRAP_66_Reveal(8, 8, 0xb7, 0xb7);
 
-    if (D_5888 < 0x4b)
+    if (D_5888_karma < 0x4b)
     {
-        D_5888 = 0x4b;
+        D_5888_karma = 0x4b;
     }
 
     D_5893_map_id = 0x11;
@@ -709,16 +709,16 @@ void BLCKTHRN_0910_Death(void)
     D_5896_map_x = D_5897_map_y = 10;
     D_587a = D_588e = 0;
 
-    while (D_587f != 0x6)
+    while (D_587f_hour != 0x6)
     {
         ULTIMA_4f7c(9);
     }
 
     D_58a7 = D_58a6 = 0;
 
-    if (D_57a8 == 0)
+    if (D_57a8_food == 0)
     {
-        D_57a8 = 0x3f;
+        D_57a8_food = 0x3f;
     }
 
     if (local_c != 0 && local_c < 0x21)

@@ -1189,7 +1189,7 @@ void DNGLOOK_117e(int param_1, int param_2)
         // b451
         ULTIMA_6936();
 
-        for (local_10_aa = 0; local_10_aa < D_585b; local_10_aa++)
+        for (local_10_aa = 0; local_10_aa < D_585b_partyCount; local_10_aa++)
         {
             D_ba14[local_10_aa].x = D_5c5a[local_10_aa]._2_x = GetCombatMapSpecial(local_4_ab, local_c);
             D_ba14[local_10_aa].y = D_5c5a[local_10_aa]._3_y = GetCombatMapSpecial(local_4_ab, local_e_am);
