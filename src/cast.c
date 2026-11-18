@@ -1840,7 +1840,7 @@ void CAST_1792_UseCmd(void)
                 if (D_587f_hour < 6 || 0x12 < D_587f_hour)
                 {
                     ULTIMA_1850_PrintString(_TEXT(0x4998, "Looking...\n"));
-                    LOOKOBJ_0366();
+                    LOOKOBJ_0366_LookSky();
                     break;
                 }
 

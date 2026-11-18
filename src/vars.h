@@ -88,7 +88,7 @@ STUB u8 D_1c90[0x30];
 STUB u8 D_1cc0[0x30];
 STUB u16 D_1cf0[0x15];
 
-STUB u8 D_1d1a[0x100];
+STUB u8 D_1d1a_cellPattern[0x100];
 
 STUB u8 D_1e1a[0x20]; // map offset table ~1e3a)
 STUB char* D_1e3a_mapNames[0x28]; // map name table ~1e8a)
@@ -265,14 +265,14 @@ STUB u16 D_372c[6];
 STUB u16 D_3738[6];
 STUB s16 D_3744[6]; // ~3750)
 
-STUB u8 D_3750[8];
-STUB u8 D_3758[8];
-STUB u8 D_3760[0xb0]; // ~3810)
+STUB u8 D_3750_planetStartPos[8];
+STUB u8 D_3758_planetRow[8];
+STUB u8 D_3760_orbitSteps[0xb0]; // ~3810)
 
 STUB char* D_3810[9]; // ~3822)
-STUB u8 D_3822[16]; // ~3832)
+STUB u8 D_3822_shoreLandMask[16]; // ~3832)
 
-STUB u8 D_3832[8]; // ~383a; [7] + gap 1?
+STUB u8 D_3832_edgeBits[8]; // ~383a; [7] + gap 1?
 
 STUB u8 D_383a[6];
 STUB u8 D_3840;
@@ -500,7 +500,7 @@ STUB u16 D_520c; // AFONT.ASM's: where FONT_0e52 saves the video page
 STUB VideoDriverParams D_52ba_vdp;
 #if defined(TARGET_DOS16)
 // A0878.ASM's own names for two fields: the C modules read them as plain globals, which MSC
-// optimizes differently from a struct field (LOOKOBJ_0cf4)
+// optimizes differently from a struct field (LOOKOBJ_0cf4_DrawShore)
 STUB int D_52c4_clipEnabled;
 STUB int D_52c8_videoDriver;
 #else
