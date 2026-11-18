@@ -635,7 +635,8 @@ int ULTIMA_3702_FindLastActorTileAt(int param_1, int param_2, int param_3)
 
 // CHECKED
 // NOTE: UNUSED
-static int ULTIMA_3776(byte param_1)
+// UNUSED: a free actor slot, or one holding the given tile out of range of the party.
+static int ULTIMA_3776_FindFarActorSlot(byte param_1)
 {
     int local_6;
     int local_8;
@@ -679,7 +680,8 @@ static int ULTIMA_3776(byte param_1)
 }
 
 // CHECKED
-static int ULTIMA_3868(int param_1, int param_2, int param_3)
+// An actor slot (from 1) whose tile lies in param_1..param_2; with param_3 only one out of the 11x11 view. 0 none.
+static int ULTIMA_3868_FindActorInRange(int param_1, int param_2, int param_3)
 {
     int local_8;
     byte local_6;
@@ -713,25 +715,25 @@ int ULTIMA_38e4_FindActorSlot(void)
 {
     int ret;
 
-    ret = ULTIMA_3868(0, 0, 0);
+    ret = ULTIMA_3868_FindActorInRange(0, 0, 0);
     if (ret == 0)
-        ret = ULTIMA_3868(1, 0xf, 1);
+        ret = ULTIMA_3868_FindActorInRange(1, 0xf, 1);
     if (ret == 0)
-        ret = ULTIMA_3868(0x80, 0xff, 1);
+        ret = ULTIMA_3868_FindActorInRange(0x80, 0xff, 1);
     if (ret == 0)
-        ret = ULTIMA_3868(0x10, 0x11, 1);
+        ret = ULTIMA_3868_FindActorInRange(0x10, 0x11, 1);
     if (ret == 0)
-        ret = ULTIMA_3868(0x30, 0x7f, 1);
+        ret = ULTIMA_3868_FindActorInRange(0x30, 0x7f, 1);
     if (ret == 0)
-        ret = ULTIMA_3868(1, 0xf, 0);
+        ret = ULTIMA_3868_FindActorInRange(1, 0xf, 0);
     if (ret == 0)
-        ret = ULTIMA_3868(0x80, 0xff, 0);
+        ret = ULTIMA_3868_FindActorInRange(0x80, 0xff, 0);
     if (ret == 0)
-        ret = ULTIMA_3868(0x10, 0x11, 0);
+        ret = ULTIMA_3868_FindActorInRange(0x10, 0x11, 0);
     if (ret == 0)
-        ret = ULTIMA_3868(0x30, 0x7f, 0);
+        ret = ULTIMA_3868_FindActorInRange(0x30, 0x7f, 0);
     if (ret == 0)
-        ret = ULTIMA_3868(0, 0xff, 0);
+        ret = ULTIMA_3868_FindActorInRange(0, 0xff, 0);
 
     return ret;
 }

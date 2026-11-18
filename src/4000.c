@@ -485,7 +485,8 @@ void ULTIMA_4552_AnimateActors(void)
     ULTIMA_6fd6_GRAP_AnimateTiles();
 }
 
-static int ULTIMA_4702(int param_1)
+// True when moonstone param_1 is buried on this map and level (outdoors: inside the 32x32 map buffer).
+static int ULTIMA_4702_IsMoonstoneInView(int param_1)
 {
 	int local_8;
 	int local_6;
@@ -538,7 +539,7 @@ void ULTIMA_475a_UpdateMoongates(void)
 
 	for (local_6 = 0; local_6 < 8; local_6++)
 	{
-		if (ULTIMA_4702(local_6) != 0)
+		if (ULTIMA_4702_IsMoonstoneInView(local_6) != 0)
 		{
 			local_4_ab = ULTIMA_4402_GetTileAddr(D_5830_moonstoneX[local_6], D_5838_moonstoneY[local_6]);
 			local_8 = *local_4_ab != local_a;

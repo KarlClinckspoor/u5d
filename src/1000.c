@@ -773,7 +773,7 @@ void ULTIMA_1f26_SetTextBackgroundColor(int a)
 
 #if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // STUB (asm)
-static void ULTIMA_1f4e(int param_1)
+static void ULTIMA_1f4e_Drv27Offset(int param_1)
 {
     // call ULTIMA_1f77_ConvertCharCoordToPixel
     // far call DRV_27(-(param_1 * 8)

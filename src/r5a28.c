@@ -1,5 +1,5 @@
 // Resident code from CS:5a28 to 5f86: an object of its own, compiled with MSC 5.1, after the
-// MSC 5.0 object 5000.c (ULTIMA_51a0 to ULTIMA_5910) and before 6000.c. Its data is the two
+// MSC 5.0 object 5000.c (ULTIMA_51a0_RandomFrame to ULTIMA_5910) and before 6000.c. Its data is the two
 // tables at DS:6a86.
 
 #include "common/common.h"
@@ -26,7 +26,7 @@ u8 D_6a9a[10] = {
     0xB3, 0xBC
 };
 
-static bool ULTIMA_5dfe(byte param_1, int param_2);
+static bool ULTIMA_5dfe_IsTransparentTile(byte param_1, int param_2);
 
 // CHECKED
 // The locals are named for the original's slots (slots.py, after renaming them local_N).
@@ -37,7 +37,7 @@ static bool ULTIMA_5dfe(byte param_1, int param_2);
 // unused slot at -4 between local_4_ab and the queue (cell hashes to bucket 0, declared before
 // local_4_ab). As a block variable its slot came after the locals and moved the temporary.
 // generate visibility map (BFS)
-static void ULTIMA_5a28(int param_1, int param_2_y, int param_3_x, int param_4, int param_5, uint param_6, byte* param_7_map)
+static void ULTIMA_5a28_BuildVisibilityMap(int param_1, int param_2_y, int param_3_x, int param_4, int param_5, uint param_6, byte* param_7_map)
 {
     int local_218_aj; // -0x216
     byte local_216_al;
@@ -180,7 +180,7 @@ static void ULTIMA_5a28(int param_1, int param_2_y, int param_3_x, int param_4, 
                         if (local_210_ab)
                         {
                         L_c:
-                            if (ULTIMA_5dfe(local_216_al, ULTIMA_6ff0_DistanceFromCenter(local_212, local_214_an)) == 0)
+                            if (ULTIMA_5dfe_IsTransparentTile(local_216_al, ULTIMA_6ff0_DistanceFromCenter(local_212, local_214_an)) == 0)
                             {
                                 // 5c05
                                 if (
@@ -224,7 +224,7 @@ static void ULTIMA_5a28(int param_1, int param_2_y, int param_3_x, int param_4, 
                         goto L_5c93;
 
                     // 5ca1
-                    if (ULTIMA_5dfe(local_216_al, ULTIMA_6ff0_DistanceFromCenter(local_212, local_214_an)) != 0)
+                    if (ULTIMA_5dfe_IsTransparentTile(local_216_al, ULTIMA_6ff0_DistanceFromCenter(local_212, local_214_an)) != 0)
                     {
                         local_206[local_4_ab] = local_214_an;
                         local_4_ab++;
@@ -267,7 +267,7 @@ void ULTIMA_5d0a_BuildView(int param_1_light, int param_2_x, int param_3_y, int 
 
     if (param_1_light > 0)
     {
-        ULTIMA_5a28(param_1_light, local1_c, local2_a, -111, 0, 0x20, D_ab02_viewTiles);
+        ULTIMA_5a28_BuildVisibilityMap(param_1_light, local1_c, local2_a, -111, 0, 0x20, D_ab02_viewTiles);
         local3_8 = D_ab02_viewTiles;
 
         for (local1_c = 0; local1_c < 0xb; local1_c++)
@@ -303,7 +303,8 @@ void ULTIMA_5d0a_BuildView(int param_1_light, int param_2_x, int param_3_y, int 
     }
 }
 
-static bool ULTIMA_5dfe(byte param_1, int param_2)
+// Probably: the tile does not block sight (not in D_6a86); the door-like tiles only when param_2 is 1.
+static bool ULTIMA_5dfe_IsTransparentTile(byte param_1, int param_2)
 {
     if (param_1 == TILE_MAP_4B || param_1 == TILE_MAP_4A || param_1 == TILE_MAP_DOOR_BA || param_1 == TILE_MAP_DOOR_BB || param_1 == TILE_MAP_98)
     {
@@ -379,7 +380,7 @@ void ULTIMA_5e4a_BuildLightMap(void)
             }
 
             // 5f3f
-            ULTIMA_5a28(10, local_e, local_c, local_e, local_c, 0x20, D_ad14_combatMap);
+            ULTIMA_5a28_BuildVisibilityMap(10, local_e, local_c, local_e, local_c, 0x20, D_ad14_combatMap);
             local_8++;
         } while (local_8 < local_6);
     }

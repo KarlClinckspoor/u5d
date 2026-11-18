@@ -15,7 +15,8 @@
 #include "combat.h"
 #include "dnglook.h"
 
-static int ULTIMA_51a0(void)
+// A random animation phase 0-3 (always 0 when the status icon is T).
+static int ULTIMA_51a0_RandomFrame(void)
 {
     if (D_587a_statusIcon == 'T')
     {
@@ -27,7 +28,8 @@ static int ULTIMA_51a0(void)
     }
 }
 
-static void ULTIMA_51b8(int param_1, int param_2, int param_3, int param_4, int param_5)
+// Put actor shape param_5 on view cell (param_1,param_2), changed by the furniture under it (chairs, beds, ladders, mirrors); the view tile is cleared.
+static void ULTIMA_51b8_PutViewActor(int param_1, int param_2, int param_3, int param_4, int param_5)
 {
     int local_4;
 
@@ -70,12 +72,12 @@ static void ULTIMA_51b8(int param_1, int param_2, int param_3, int param_4, int 
                 {
                 case TILE_MAP_84: // 132
                     // 5276
-                    param_5 = ULTIMA_51a0() + 0x60; // -> 5300
+                    param_5 = ULTIMA_51a0_RandomFrame() + 0x60; // -> 5300
                     break;
 
                 case TILE_MAP_85: // 133
                     // 5280
-                    param_5 = ULTIMA_51a0() + 0x64; // -> 5300
+                    param_5 = ULTIMA_51a0_RandomFrame() + 0x64; // -> 5300
                     break;
 
                 case TILE_MAP_LADDER_UP: // 200
@@ -97,7 +99,7 @@ static void ULTIMA_51b8(int param_1, int param_2, int param_3, int param_4, int 
                 case TILE_MAP_MIRROR: // 157
                 case TILE_MAP_MIRROR_9E: // 158 (531a)
                     // 52a2
-                    param_5 = ULTIMA_51a0() + 0x3c;
+                    param_5 = ULTIMA_51a0_RandomFrame() + 0x3c;
                     break;
 
                 case TILE_MAP_CHAIR_92: // 146
@@ -105,7 +107,7 @@ static void ULTIMA_51b8(int param_1, int param_2, int param_3, int param_4, int 
                     if ((*ULTIMA_4402_GetTileAddr(param_3, param_4 + 1) == TILE_MAP_TABLE_9A) ||
                         (*ULTIMA_4402_GetTileAddr(param_3, param_4 + 1) == TILE_MAP_TABLE_9C))
                     {
-                        param_5 = ULTIMA_51a0() + 0x34;
+                        param_5 = ULTIMA_51a0_RandomFrame() + 0x34;
                     }
                     else
                     {
@@ -118,7 +120,7 @@ static void ULTIMA_51b8(int param_1, int param_2, int param_3, int param_4, int 
                     if ((*ULTIMA_4402_GetTileAddr(param_3, param_4 - 1) == TILE_MAP_TABLE_9B) ||
                         (*ULTIMA_4402_GetTileAddr(param_3, param_4 - 1) == TILE_MAP_TABLE_9C))
                     {
-                        param_5 = ULTIMA_51a0() + 0x38;
+                        param_5 = ULTIMA_51a0_RandomFrame() + 0x38;
                     }
                     else
                     {
@@ -233,12 +235,12 @@ void ULTIMA_5394_PutActorsInView(void)
                     }
                     else
                     {
-                        ULTIMA_51b8(local_8, local_a, local_4_ab, local_6, D_5c5a_actors[local_c].animTile - 8);
+                        ULTIMA_51b8_PutViewActor(local_8, local_a, local_4_ab, local_6, D_5c5a_actors[local_c].animTile - 8);
                     }
                 }
                 else
                 {
-                    ULTIMA_51b8(local_8, local_a, local_4_ab, local_6, D_5c5a_actors[local_c].animTile);
+                    ULTIMA_51b8_PutViewActor(local_8, local_a, local_4_ab, local_6, D_5c5a_actors[local_c].animTile);
                 }
             }
         }

@@ -239,7 +239,7 @@ MODULES['ultima.c'] = ('root', None)
 # the small C modules between the resident assembly modules (named by their CS address)
 MODULES.update({n + '.c': ('root', None) for n in ('r0d72', 'r1850', 'r1b38', 'r1dda', 'r1fa0', 'r216c',
                                                    'r2320', 'r251e', 'r256e')})
-# 5000.c (MSC 5.0, ULTIMA_51a0 to 5910) is followed by an MSC 5.1 object from 5a28 to 5f86.
+# 5000.c (MSC 5.0, ULTIMA_51a0_RandomFrame to 5910) is followed by an MSC 5.1 object from 5a28 to 5f86.
 MODULES['r5a28.c'] = ('root', None)
 MODULES['vars.c'] = ('data', None)
 # INTRO.OVL's MSC 5.1 code is three objects: intro0.c (INTRO_0010_PutBackdropStrips, INTRO_0050), intro.c (to

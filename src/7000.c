@@ -5,7 +5,8 @@
 #include "grap_drv.h"
 #include "common/file.h"
 
-static void ULTIMA_7040(int param_1, int param_2, int param_3, int param_4)
+// Write one frame (param_1 mod 16) of a lighthouse beam, 16 cells, to the combat map around (param_3,param_4): param_2 = 1 sets 0xff, else 0.
+static void ULTIMA_7040_SetBeamCells(int param_1, int param_2, int param_3, int param_4)
 {
     int local_6;
     PairS8* local_4_ab;
@@ -40,32 +41,32 @@ void ULTIMA_70a6_AnimateLighthouse(void)
     if (D_2186_beaconStep == 0xff)
     {
         D_2186_beaconStep++;
-        ULTIMA_7040(0, 1, D_217e_beaconX, D_2180_beaconY);
-        ULTIMA_7040(1, 1, D_217e_beaconX, D_2180_beaconY);
-        ULTIMA_7040(2, 1, D_217e_beaconX, D_2180_beaconY);
+        ULTIMA_7040_SetBeamCells(0, 1, D_217e_beaconX, D_2180_beaconY);
+        ULTIMA_7040_SetBeamCells(1, 1, D_217e_beaconX, D_2180_beaconY);
+        ULTIMA_7040_SetBeamCells(2, 1, D_217e_beaconX, D_2180_beaconY);
 
         if (D_2182_beacon2X != -1)
         {
-            ULTIMA_7040(0, 1, D_2182_beacon2X, D_2184_beacon2Y);
-            ULTIMA_7040(1, 1, D_2182_beacon2X, D_2184_beacon2Y);
-            ULTIMA_7040(2, 1, D_2182_beacon2X, D_2184_beacon2Y);
+            ULTIMA_7040_SetBeamCells(0, 1, D_2182_beacon2X, D_2184_beacon2Y);
+            ULTIMA_7040_SetBeamCells(1, 1, D_2182_beacon2X, D_2184_beacon2Y);
+            ULTIMA_7040_SetBeamCells(2, 1, D_2182_beacon2X, D_2184_beacon2Y);
         }
     }
     else
     {
-        ULTIMA_7040(D_2186_beaconStep, 0, D_217e_beaconX, D_2180_beaconY);
+        ULTIMA_7040_SetBeamCells(D_2186_beaconStep, 0, D_217e_beaconX, D_2180_beaconY);
 
         if (D_2182_beacon2X != -1)
         {
-            ULTIMA_7040(D_2186_beaconStep, 0, D_2182_beacon2X, D_2184_beacon2Y);
+            ULTIMA_7040_SetBeamCells(D_2186_beaconStep, 0, D_2182_beacon2X, D_2184_beacon2Y);
         }
 
         D_2186_beaconStep++;
-        ULTIMA_7040(D_2186_beaconStep + 2, 1, D_217e_beaconX, D_2180_beaconY);
+        ULTIMA_7040_SetBeamCells(D_2186_beaconStep + 2, 1, D_217e_beaconX, D_2180_beaconY);
 
         if (D_2182_beacon2X != -1)
         {
-            ULTIMA_7040(D_2186_beaconStep + 2, 1, D_2182_beacon2X, D_2184_beacon2Y);
+            ULTIMA_7040_SetBeamCells(D_2186_beaconStep + 2, 1, D_2182_beacon2X, D_2184_beacon2Y);
         }
     }
 

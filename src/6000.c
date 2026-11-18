@@ -979,7 +979,7 @@ int ULTIMA_6f1e_CompareWord(byte* param_1, char* param_2)
 
 #if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
-static int ULTIMA_6f90(char* di)
+static int ULTIMA_6f90_StrLenDI(char* di)
 {
     // repne scasb
     return strlen(di);

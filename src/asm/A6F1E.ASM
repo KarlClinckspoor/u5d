@@ -43,10 +43,10 @@ ULTIMA_6F1E_COMPAREWORD:
 	push ds
 	pop es
 	mov di,[bp+6]
-	call	ULTIMA_6F90
+	call	ULTIMA_6F90_STRLENDI
 	mov WORD PTR D_6AA4,di
 	mov di,[bp+4]
-	call	ULTIMA_6F90
+	call	ULTIMA_6F90_STRLENDI
 	cmp WORD PTR D_6AA4,di
 	jg	L_6f84
 	sub di,WORD PTR D_6AA4
@@ -93,8 +93,8 @@ L_6f87:
 	pop bp
 	ret 4
 
-	PUBLIC	ULTIMA_6F90
-ULTIMA_6F90:
+	PUBLIC	ULTIMA_6F90_STRLENDI
+ULTIMA_6F90_STRLENDI:
 	xor al,al
 	mov cx,0ffffh
 	mov bx,di

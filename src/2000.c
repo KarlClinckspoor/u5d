@@ -229,7 +229,8 @@ int ULTIMA_266c_GetChar(void)
     return local_4;
 }
 
-static void ULTIMA_2726(int param_1)
+// Print row param_1 of the party list: name, active-player marker, hit points (and the combat status).
+static void ULTIMA_2726_PrintPartyRow(int param_1)
 {
     int     local1_6;
     CombatEntity* local2_4;
@@ -353,7 +354,7 @@ void ULTIMA_2900_UpdateVitalsDisplay(void)
     local_2 = 0;
     do
     {
-        ULTIMA_2726(local_2);
+        ULTIMA_2726_PrintPartyRow(local_2);
         local_2++;
     } while (local_2 < 6);
 
@@ -562,7 +563,7 @@ u8 D_5544[4] = { 0x06, 0x03, 0x09, 0x0c };
 u8 D_5548[12] = { 0 };
 
 // walkable for normal walk type?
-static bool ULTIMA_2bd4(byte actorTile, int targetTile)
+static bool ULTIMA_2bd4_IsWalkableNormal(byte actorTile, int targetTile)
 {
     bool local_4;
 
@@ -580,7 +581,7 @@ static bool ULTIMA_2bd4(byte actorTile, int targetTile)
 }
 
 // is walkable water tile? (walkable/passable for sea monster / flying / ghost)
-static int ULTIMA_2c2e(int tile)
+static int ULTIMA_2c2e_IsWaterTile(int tile)
 {
     return tile < 4 || ((byte)tile & 0xf0) == TILE_MAP_60;
 }
@@ -596,27 +597,27 @@ int ULTIMA_2c4c_IsWalkableTile(int actorTile, int targetTile)
     switch (D_54f4[actorTile >> 2])
     {
     case 0: // normal
-        return ULTIMA_2bd4(actorTile, targetTile);
+        return ULTIMA_2bd4_IsWalkableNormal(actorTile, targetTile);
     case 1: // sea monsters
-        return ULTIMA_2c2e(targetTile);
+        return ULTIMA_2c2e_IsWaterTile(targetTile);
     case 2: // flying
-        if (((byte)targetTile & 0xf0) == TILE_MAP_60 || ULTIMA_2c2e(targetTile) != 0 || ULTIMA_2bd4(actorTile, targetTile) != 0)
+        if (((byte)targetTile & 0xf0) == TILE_MAP_60 || ULTIMA_2c2e_IsWaterTile(targetTile) != 0 || ULTIMA_2bd4_IsWalkableNormal(actorTile, targetTile) != 0)
             goto L_ret1;
         return 0;
     default:
         return 0;
     case 3: // horse
-        if (ULTIMA_2bd4(actorTile, targetTile) != 0 && targetTile != TILE_MAP_LAVA && targetTile != 4)
+        if (ULTIMA_2bd4_IsWalkableNormal(actorTile, targetTile) != 0 && targetTile != TILE_MAP_LAVA && targetTile != 4)
             goto L_ret1;
         return 0;
     case 4: // ghost / shadowlord
-        return ULTIMA_2c2e(targetTile) == 0;
+        return ULTIMA_2c2e_IsWaterTile(targetTile) == 0;
     case 5: // skiff
         if (((byte)targetTile & 0xfc) == TILE_MAP_34)
         {
             return (8 >> (actorTile & 3) & (uint)D_5544[targetTile - TILE_MAP_34]) != 0;
         }
-        if (ULTIMA_2c2e(targetTile) == 0)
+        if (ULTIMA_2c2e_IsWaterTile(targetTile) == 0)
         {
             return 0;
         }
@@ -813,7 +814,8 @@ void ULTIMA_2f62_UpdateWindDirectionRandomly(void)
     }
 }
 
-static void ULTIMA_2fa6(int param_1)
+// Poison a living party member (the trap effect).
+static void ULTIMA_2fa6_PoisonPlayer(int param_1)
 {
     if (param_1 < D_585b_partyCount && D_55a8_party[param_1].status != STATUS_DEAD)
     {
@@ -847,7 +849,7 @@ void ULTIMA_2fd0_SpringTrap(int param_1)
         break;
     case 1:
         ULTIMA_1850_PrintString(_TEXT(0x5588, "POISON!\n"));
-        ULTIMA_2fa6(param_1);
+        ULTIMA_2fa6_PoisonPlayer(param_1);
         break;
     case 2:
         ULTIMA_1850_PrintString(_TEXT(0x5591, "BOMB!\n"));
@@ -858,7 +860,7 @@ void ULTIMA_2fd0_SpringTrap(int param_1)
         local_6a = 0;
         do
         {
-            ULTIMA_2fa6(local_6a);
+            ULTIMA_2fa6_PoisonPlayer(local_6a);
         } while (++local_6a < 6);
         break;
     }
