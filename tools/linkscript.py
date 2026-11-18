@@ -6,7 +6,7 @@
 
 The script holds both targets (tools/u5.py, TARGETS). A line that holds for one target only
 ends in target=gog or target=1988 (the 1992 patch's assembly, A2322 and AINTRO2, is the gog
-target's; the 1988 target's r2320.c and intro2.c hold that code and data themselves); the
+target's; the 1988 target's diskswap.c and intro2.c hold that code and data themselves); the
 other lines hold for both. A target's lines are measured from its game files (gamedata/,
 gamedata-1988/, ...) and its objects (build/obj, build/obj-1988, or $U5_OBJ); writing
 measures the target given (--target, else $U5_TARGET, else gog), and the other target too when

@@ -23,7 +23,7 @@ static int ZSTATS_0000_ChoosePlayer(int allowAll)
     else
     {
         // 202e
-        ULTIMA_1850_PrintString(_TEXT(0x96b4, "Player: "));
+        ULTIMA_1850_PrintString(/*0x96b4*/ "Player: ");
         player = ULTIMA_2d7a_SelectPlayerOrNone(allowAll); // Select player
         if (player >= 0)
         {
@@ -38,7 +38,7 @@ static int ZSTATS_0000_ChoosePlayer(int allowAll)
     // 205b
     if (player == -1)
     {
-        ULTIMA_1850_PrintString(_TEXT(0x96be, "None!\n"));
+        ULTIMA_1850_PrintString(/*0x96be*/ "None!\n");
     }
     // 206a
     else if (player == -2)
@@ -67,8 +67,8 @@ static void ZSTATS_0082_ShowPlayerStats(int member)
     ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
     ULTIMA_1c22_SetTextWindowSize(1, 0x18, 1, 0x27, 9);
 
-    classIdx_e = ULTIMA_4d76_FindIndex(_TEXT(0x96c6, CLASS_LIST), player_c->cls);
-    statusIdx = ULTIMA_4d76_FindIndex(_TEXT(0x96d0, STATUS_LIST), player_c->status);
+    classIdx_e = ULTIMA_4d76_FindIndex(/*0x96c6*/ CLASS_LIST, player_c->cls);
+    statusIdx = ULTIMA_4d76_FindIndex(/*0x96d0*/ STATUS_LIST, player_c->status);
 
     for (pad = 0; pad < D_1a58_classNamePad[classIdx_e]; pad++)
     {
@@ -76,7 +76,7 @@ static void ZSTATS_0082_ShowPlayerStats(int member)
     }
 
     ULTIMA_16ba_PrintChar(player_c->gender);
-    ULTIMA_1850_PrintString(_TEXT(0x96d6, " Lv-"));
+    ULTIMA_1850_PrintString(/*0x96d6*/ " Lv-");
     ULTIMA_1a3e_PrintNumber(player_c->level, 1, 0x20);
     ULTIMA_16ba_PrintChar(' ');
     ULTIMA_1850_PrintString(D_1a44_classNames[classIdx_e]);
@@ -87,19 +87,19 @@ static void ZSTATS_0082_ShowPlayerStats(int member)
     ULTIMA_1c22_SetTextWindowSize(1, 0x18, 1, 0x27, 9);
     ULTIMA_1bf2_SetTextPosition(0, 3);
     ULTIMA_16ba_PrintChar(CTRL_CHAR_UNCENTER_TEXT);
-    ULTIMA_1850_PrintString(_TEXT(0x96dc, "Str="));
+    ULTIMA_1850_PrintString(/*0x96dc*/ "Str=");
     ULTIMA_1a3e_PrintNumber(player_c->str, 2, 0x30);
-    ULTIMA_1850_PrintString(_TEXT(0x96e2, "  HP:"));
+    ULTIMA_1850_PrintString(/*0x96e2*/ "  HP:");
     ULTIMA_1a3e_PrintNumber(player_c->hp, 4, 0x20);
-    ULTIMA_1850_PrintString(_TEXT(0x96e8, "\nInt="));
+    ULTIMA_1850_PrintString(/*0x96e8*/ "\nInt=");
     ULTIMA_1a3e_PrintNumber(player_c->intel, 2, 0x30);
-    ULTIMA_1850_PrintString(_TEXT(0x96ee, "  HM:"));
+    ULTIMA_1850_PrintString(/*0x96ee*/ "  HM:");
     ULTIMA_1a3e_PrintNumber(player_c->maxHp, 4, 0x20);
-    ULTIMA_1850_PrintString(_TEXT(0x96f4, "\nDex="));
+    ULTIMA_1850_PrintString(/*0x96f4*/ "\nDex=");
     ULTIMA_1a3e_PrintNumber(player_c->dex, 2, 0x30);
-    ULTIMA_1850_PrintString(_TEXT(0x96fa, "  Ex:"));
+    ULTIMA_1850_PrintString(/*0x96fa*/ "  Ex:");
     ULTIMA_1a3e_PrintNumber(player_c->exp, 4, 0x20);
-    ULTIMA_1850_PrintString(_TEXT(0x9700, "\n\n    Magic:"));
+    ULTIMA_1850_PrintString(/*0x9700*/ "\n\n    Magic:");
     ULTIMA_1a3e_PrintNumber(player_c->mag, 2, 0x20);
 }
 
@@ -133,7 +133,7 @@ static void ZSTATS_02a8_ShowPlayerArms(int member)
     ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
     ULTIMA_16ba_PrintChar(CTRL_CHAR_CENTER_TEXT);
     ULTIMA_16ba_PrintChar(CTRL_CHAR_TOGGLE_UNDERLINE);
-    ULTIMA_1850_PrintString(_TEXT(0x970e, "Arms\n\n"));
+    ULTIMA_1850_PrintString(/*0x970e*/ "Arms\n\n");
     ULTIMA_16ba_PrintChar(CTRL_CHAR_UNCENTER_TEXT);
     ULTIMA_16ba_PrintChar(CTRL_CHAR_TOGGLE_UNDERLINE);
 
@@ -148,7 +148,7 @@ static void ZSTATS_02a8_ShowPlayerArms(int member)
     {
         ULTIMA_1bf2_SetTextPosition(0, 4);
         ULTIMA_16ba_PrintChar(CTRL_CHAR_CENTER_TEXT);
-        ULTIMA_1850_PrintString(_TEXT(0x9716, "(None ready)"));
+        ULTIMA_1850_PrintString(/*0x9716*/ "(None ready)");
         ULTIMA_16ba_PrintChar(CTRL_CHAR_UNCENTER_TEXT);
     }
 
@@ -159,24 +159,24 @@ static void ZSTATS_02a8_ShowPlayerArms(int member)
 static void ZSTATS_039c_ShowSupplies(void)
 {
     ULTIMA_4daa_HideScrollArrow();
-    ULTIMA_4e50_ShowStatsTitle(_TEXT(0x9724, "Equipment"));
+    ULTIMA_4e50_ShowStatsTitle(/*0x9724*/ "Equipment");
     ULTIMA_1c22_SetTextWindowSize(1, 0x18, 1, 0x26, 9);
     ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
     ULTIMA_1c22_SetTextWindowSize(1, 0x18, 1, 0x27, 9);
-    ULTIMA_1850_PrintString(_TEXT(0x972e, "\n Food: "));
+    ULTIMA_1850_PrintString(/*0x972e*/ "\n Food: ");
     ULTIMA_1a3e_PrintNumber(D_57a8_food, 4, 0x20); // Food
-    ULTIMA_1850_PrintString(_TEXT(0x9738, "\n Gold: "));
+    ULTIMA_1850_PrintString(/*0x9738*/ "\n Gold: ");
     ULTIMA_1a3e_PrintNumber(D_57aa_gold, 4, 0x20); // Gold
-    ULTIMA_1850_PrintString(_TEXT(0x9742, "\n\n Keys......."));
+    ULTIMA_1850_PrintString(/*0x9742*/ "\n\n Keys.......");
     ULTIMA_1a3e_PrintNumber(D_57ac_keys, 2, 0x20); // Keys
-    ULTIMA_1850_PrintString(_TEXT(0x9752, "\n Gems......."));
+    ULTIMA_1850_PrintString(/*0x9752*/ "\n Gems.......");
     ULTIMA_1a3e_PrintNumber(D_57ad_gems, 2, 0x20); // Gems
-    ULTIMA_1850_PrintString(_TEXT(0x9760, "\n Torches...."));
+    ULTIMA_1850_PrintString(/*0x9760*/ "\n Torches....");
     ULTIMA_1a3e_PrintNumber(D_57ae_torches, 2, 0x20); // Torches
     if (D_57af_grapple != 0)
     {
         // Grapple
-        ULTIMA_1850_PrintString(_TEXT(0x976e, "\n Grapple"));
+        ULTIMA_1850_PrintString(/*0x976e*/ "\n Grapple");
     }
 }
 
@@ -290,7 +290,7 @@ void ZSTATS_05e2_PrintItemRow(int index, byte* counts, char** names, uint marker
         }
         else
         {
-            ULTIMA_1850_PrintString(_TEXT(0x9778, "--"));
+            ULTIMA_1850_PrintString(/*0x9778*/ "--");
         }
 
         if (marker < 0x20)
@@ -305,20 +305,20 @@ void ZSTATS_05e2_PrintItemRow(int index, byte* counts, char** names, uint marker
     if (names[index][0] == '*')
     {
         ULTIMA_1c9e_SelectCharset(1);
-        ULTIMA_1850_PrintString(_TEXT(0x977c, "\x1c + "));
+        ULTIMA_1850_PrintString(/*0x977c*/ "\x1c + ");
         ULTIMA_1850_PrintString(&names[index][1]);
         ULTIMA_1c9e_SelectCharset(0);
     }
     else if (names[index][0] == '!')
     {
         ULTIMA_1c9e_SelectCharset(1);
-        ULTIMA_1850_PrintString(_TEXT(0x9782, "\x1d + "));
+        ULTIMA_1850_PrintString(/*0x9782*/ "\x1d + ");
         ULTIMA_1c9e_SelectCharset(0);
         ULTIMA_1850_PrintString(D_1962_equipShortNames[40 + index]);
     }
     else if (names[index][0] == '(')
     {
-        ULTIMA_1850_PrintString(_TEXT(0x9788, "Moonstone "));
+        ULTIMA_1850_PrintString(/*0x9788*/ "Moonstone ");
         ULTIMA_1c9e_SelectCharset(1);
         ULTIMA_16ba_PrintChar((byte)names[index][1]);
         ULTIMA_1c9e_SelectCharset(0);
@@ -343,9 +343,7 @@ void ZSTATS_05e2_PrintItemRow(int index, byte* counts, char** names, uint marker
     ULTIMA_16ba_PrintChar('\n');
 }
 
-#if defined(TARGET_DOS16)
 #pragma loop_opt(off)
-#endif
 // Scrolling list of the Z command (reagents, spells, items, armaments); arrows scroll, Esc/space/1-6/0 leave. Returns the key that ended it.
 // CHECKED: the selection loop is written with gotos. The original places the loop test
 // (with the window setup that starts the next pass) right after the END case, which falls
@@ -374,7 +372,7 @@ static int ZSTATS_06e8_BrowseList(char* title, int count, byte* counts, char** n
     {
         ZSTATS_045e_DrawListFrame(8);
         ULTIMA_1bf2_SetTextPosition(1, 4);
-        ULTIMA_1850_PrintString(_TEXT(0x9794, "(None owned!)"));
+        ULTIMA_1850_PrintString(/*0x9794*/ "(None owned!)");
         ULTIMA_4daa_HideScrollArrow();
         ULTIMA_1b94_SelectTextWindow(2);
         return ULTIMA_266c_GetChar();
@@ -527,9 +525,7 @@ L_exit:
     return key;
 }
 
-#if defined(TARGET_DOS16)
 #pragma loop_opt(on)
-#endif
 // Copy the saved game's scrolls, potions and quest items into the D_b9ee_itemCounts table of owned item counts (the Use list).
 // 099A
 void ZSTATS_099a_FillItemCounts(void)
@@ -582,7 +578,7 @@ void ZSTATS_0a3a_ZstatsCmd(void)
     }
 
     // ec3f
-    ULTIMA_1850_PrintString(_TEXT(0x97a2, "\nStatus: "));
+    ULTIMA_1850_PrintString(/*0x97a2*/ "\nStatus: ");
     ZSTATS_099a_FillItemCounts();
     ULTIMA_4efc_OpenStatsDivider();
     page_c = member << 1;
@@ -687,16 +683,16 @@ void ZSTATS_0a3a_ZstatsCmd(void)
             {
             case 0xd:
                 // ed6a
-                key = ZSTATS_06e8_BrowseList(_TEXT(0x97ac, "Reagents"), 8, D_5850_reagents, D_19d2_reagentNames);
+                key = ZSTATS_06e8_BrowseList(/*0x97ac*/ "Reagents", 8, D_5850_reagents, D_19d2_reagentNames);
                 break;
             case 0xe:
-                key = ZSTATS_06e8_BrowseList(_TEXT(0x97b6, "Spells"), 0x30, D_57f0_mixedSpells, D_19e2_spellNames);
+                key = ZSTATS_06e8_BrowseList(/*0x97b6*/ "Spells", 0x30, D_57f0_mixedSpells, D_19e2_spellNames);
                 break;
             case 0xf:
-                key = ZSTATS_06e8_BrowseList(_TEXT(0x97be, "Items"), 0x26, D_b9ee_itemCounts, D_1916_itemNames);
+                key = ZSTATS_06e8_BrowseList(/*0x97be*/ "Items", 0x26, D_b9ee_itemCounts, D_1916_itemNames);
                 break;
             case 0x10:
-                key = ZSTATS_06e8_BrowseList(_TEXT(0x97c4, "Armaments"), 0x30, D_57c0_equipment, D_1962_equipShortNames);
+                key = ZSTATS_06e8_BrowseList(/*0x97c4*/ "Armaments", 0x30, D_57c0_equipment, D_1962_equipShortNames);
                 break;
             }
         }
@@ -707,15 +703,15 @@ void ZSTATS_0a3a_ZstatsCmd(void)
     ULTIMA_4e20_ClearStatsTitle();
     ULTIMA_4f3c_DrawStatsDivider();
     ULTIMA_2900_UpdateVitalsDisplay();
-    ULTIMA_1850_PrintString(_TEXT(0x97ce, "Done\n"));
+    ULTIMA_1850_PrintString(/*0x97ce*/ "Done\n");
 }
 
 // Print a refusal message and the "Item:" prompt again.
 static void ZSTATS_0bee_PrintEquipRefusal(char* message)
 {
-    ULTIMA_1850_PrintString(_TEXT(0x97d4, "\n\n"));
+    ULTIMA_1850_PrintString(/*0x97d4*/ "\n\n");
     ULTIMA_1850_PrintString(message);
-    ULTIMA_1850_PrintString(_TEXT(0x97d8, "\n\nItem: "));
+    ULTIMA_1850_PrintString(/*0x97d8*/ "\n\nItem: ");
 }
 
 // Which hand is free: 2 both, 0 the first (equips[2]), 1 the second (equips[3], when the first holds a one-handed item), 0xff none.
@@ -768,7 +764,7 @@ static int ZSTATS_0c5c_EquipOrRemove(int member, int item)
     }
     if (item >= 9 && item <= 0xf && D_5893_mapId > 0x7f && D_58a3_combatOver == 0)
     {
-        ZSTATS_0bee_PrintEquipRefusal(_TEXT(0x97e2, "Thou canst not change armour in heated battle!"));
+        ZSTATS_0bee_PrintEquipRefusal(/*0x97e2*/ "Thou canst not change armour in heated battle!");
     }
     else if (ZSTATS_0518_IsEquipped(member, item) != 0)
     {
@@ -780,13 +776,13 @@ static int ZSTATS_0c5c_EquipOrRemove(int member, int item)
 
         if (D_5893_mapId > 0x7f && item == 0x2a)
         {
-            classIdx_e = ULTIMA_4d76_FindIndex(_TEXT(0x9812, "AMBFDTPRS"), D_55a8_party[member].cls);
+            classIdx_e = ULTIMA_4d76_FindIndex(/*0x9812*/ "AMBFDTPRS", D_55a8_party[member].cls);
             actor_g->tile = actor_g->animTile = D_1ade_classTile[classIdx_e];
         }
     }
     else if (((item == 0x1a || item == 0x24) && D_57db_arrows == 0) || (item == 0x1c && D_57dd_quarrels == 0))
     {
-        ZSTATS_0bee_PrintEquipRefusal(_TEXT(0x981c, "Thou hast no ammunition for that weapon!"));
+        ZSTATS_0bee_PrintEquipRefusal(/*0x981c*/ "Thou hast no ammunition for that weapon!");
     }
     else
     {
@@ -808,7 +804,7 @@ static int ZSTATS_0c5c_EquipOrRemove(int member, int item)
         case 0x80:
             if (D_55a8_party[member].equips[0] != 0xff)
             {
-                ZSTATS_0bee_PrintEquipRefusal(_TEXT(0x9846, "Remove first thy present helm!"));
+                ZSTATS_0bee_PrintEquipRefusal(/*0x9846*/ "Remove first thy present helm!");
                 return 0;
             }
             slot_i = &D_55a8_party[member].equips[0];
@@ -816,7 +812,7 @@ static int ZSTATS_0c5c_EquipOrRemove(int member, int item)
         case 0x40:
             if (D_55a8_party[member].equips[1] != 0xff)
             {
-                ZSTATS_0bee_PrintEquipRefusal(_TEXT(0x9866, "Thou must first remove thine other armour!"));
+                ZSTATS_0bee_PrintEquipRefusal(/*0x9866*/ "Thou must first remove thine other armour!");
                 return 0;
             }
             slot_i = &D_55a8_party[member].equips[1];
@@ -825,7 +821,7 @@ static int ZSTATS_0c5c_EquipOrRemove(int member, int item)
             hand = ZSTATS_0c0a_FreeHandSlot(member);
             if (hand == 0xff)
             {
-                ZSTATS_0bee_PrintEquipRefusal(_TEXT(0x9892, "Thou must free one of thy hands first!"));
+                ZSTATS_0bee_PrintEquipRefusal(/*0x9892*/ "Thou must free one of thy hands first!");
                 return 0;
             }
             if (hand == 2)
@@ -838,7 +834,7 @@ static int ZSTATS_0c5c_EquipOrRemove(int member, int item)
             hand = ZSTATS_0c0a_FreeHandSlot(member);
             if (hand != 2)
             {
-                ZSTATS_0bee_PrintEquipRefusal(_TEXT(0x98ba, "Both hands must be free before thou canst wield that!"));
+                ZSTATS_0bee_PrintEquipRefusal(/*0x98ba*/ "Both hands must be free before thou canst wield that!");
                 return 0;
             }
             slot_i = &D_55a8_party[member].equips[2];
@@ -846,7 +842,7 @@ static int ZSTATS_0c5c_EquipOrRemove(int member, int item)
         case 4:
             if (D_55a8_party[member].equips[5] != 0xff)
             {
-                ZSTATS_0bee_PrintEquipRefusal(_TEXT(0x98f0, "Thou must remove thine other amulet!"));
+                ZSTATS_0bee_PrintEquipRefusal(/*0x98f0*/ "Thou must remove thine other amulet!");
                 return 0;
             }
             slot_i = &D_55a8_party[member].equips[5];
@@ -854,7 +850,7 @@ static int ZSTATS_0c5c_EquipOrRemove(int member, int item)
         case 2:
             if (D_55a8_party[member].equips[4] != 0xff)
             {
-                ZSTATS_0bee_PrintEquipRefusal(_TEXT(0x9916, "Only one magic ring may be worn at a time!"));
+                ZSTATS_0bee_PrintEquipRefusal(/*0x9916*/ "Only one magic ring may be worn at a time!");
                 return 0;
             }
             slot_i = &D_55a8_party[member].equips[4];
@@ -865,7 +861,7 @@ static int ZSTATS_0c5c_EquipOrRemove(int member, int item)
         {
             goto L_wear;
         }
-        ZSTATS_0bee_PrintEquipRefusal(_TEXT(0x9942, "Thou art not strong enough!"));
+        ZSTATS_0bee_PrintEquipRefusal(/*0x9942*/ "Thou art not strong enough!");
         return 0;
 
 L_wear:
@@ -874,7 +870,7 @@ L_wear:
 
         if ((item == 0x2a || item == 0x2c) && ULTIMA_2092_RandomRange(0, 0xf) == 0)
         {
-            ULTIMA_1850_PrintString(_TEXT(0x995e, "\n\nRing vanishes!\n"));
+            ULTIMA_1850_PrintString(/*0x995e*/ "\n\nRing vanishes!\n");
             D_55a8_party[member].equips[4] = 0xff;
             ULTIMA_43ae_AudioSweepTone(0x4b0, 0x7d0, 1, 0x28);
             return 1;
@@ -908,10 +904,6 @@ int ZSTATS_0f2e_SelectItem(int first, int member, int mode)
     int leave_c;
     int steps;
     int rows_e;
-
-#if !defined(MATCHING_BUILD)
-    selected_f = 0;
-#endif
 
     // f10e
     leave_c = 0;
@@ -1157,7 +1149,7 @@ int ZSTATS_0f2e_SelectItem(int first, int member, int mode)
             break;
         case U5_KEY_ESC:
             // 1238
-            ULTIMA_1850_PrintString(mode == 0x52 ? _TEXT(0x9970, "Done\n") : _TEXT(0x9976, "None!\n"));
+            ULTIMA_1850_PrintString(mode == 0x52 ? /*0x9970*/ "Done\n" : /*0x9976*/ "None!\n");
             leave_c = 1;
             selected_f = -1;
 
@@ -1184,11 +1176,11 @@ void ZSTATS_1296_ReadyCmd(void)
     first = ZSTATS_05a4_NextItem(-1, 0x30, D_57c0_equipment, member);
     if (first == -1)
     {
-        ULTIMA_1850_PrintString(_TEXT(0x997e, "Thou art empty-\nhanded!\n"));
+        ULTIMA_1850_PrintString(/*0x997e*/ "Thou art empty-\nhanded!\n");
         return;
     }
 
-    ULTIMA_1850_PrintString(_TEXT(0x9998, "Item: "));
+    ULTIMA_1850_PrintString(/*0x9998*/ "Item: ");
     ULTIMA_4efc_OpenStatsDivider();
     ULTIMA_1b94_SelectTextWindow(1);
 

@@ -26,7 +26,7 @@ import movevar  # noqa: E402
 import slots  # noqa: E402
 
 DEF = re.compile(r'^(?:static\s+)?(?:const\s+)?[A-Za-z_]\w*\*?\s+\*?(D_([0-9a-f]{4})\w*)((?:\[[^\]]*\])*)\s*(=|;)', re.M)
-ADDR = re.compile(r'_(?:STATIC_)?TEXT\(0x([0-9a-fA-F]{4})')
+ADDR = re.compile(r'(?:_(?:STATIC_)?TEXT\(|/\*)0x([0-9a-fA-F]{4})')
 
 
 def main():

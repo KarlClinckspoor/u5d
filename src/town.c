@@ -6,14 +6,11 @@
 
 #include <memory.h>
 
-#include "audio/aud_mus.h"
-
 #include "blckthrn.h"
 #include "cast2.h"
 #include "npc.h"
 #include "talk.h"
 #include "town.h"
-
 
 char* D_2652_townFileNames[4] =
 {
@@ -205,8 +202,6 @@ void TOWN_02ae_SetupShadowlord(void)
             }
         }
 
-        ASSERT(D_5893_mapId > 0 && D_5893_mapId <= 8);
-
         D_5f5e_npcs[npcSlot].mode = 1;
         D_5f5e_npcs[npcSlot].actorIdx = actorSlot;
         
@@ -314,12 +309,12 @@ static void TOWN_052e_TakeStairs(int facing, int tile)
         if (tile - TILE_MAP_STAIR == facing)
         {
             D_5895_mapLevel++;
-            ULTIMA_1850_PrintString(_TEXT(0x265a, "Up!\n"));
+            ULTIMA_1850_PrintString(/*0x265a*/ "Up!\n");
         }
         else if (tile - TILE_MAP_STAIR == (facing ^ 2))
         {
             D_5895_mapLevel--;
-            ULTIMA_1850_PrintString(_TEXT(0x265f, "Down!\n"));
+            ULTIMA_1850_PrintString(/*0x265f*/ "Down!\n");
         }
         else
         {
@@ -338,7 +333,7 @@ static void TOWN_057c_SetPartyIcon(int facing)
     switch (D_587c_partyTile & 0xfc)
     {
     case TILE_ACTOR_HORSE:
-        ULTIMA_1850_PrintString(_TEXT(0x2666, "Ride "));
+        ULTIMA_1850_PrintString(/*0x2666*/ "Ride ");
         if (facing == 1)
         {
             D_587c_partyTile = TILE_ACTOR_RIDING_HORSE;
@@ -350,7 +345,7 @@ static void TOWN_057c_SetPartyIcon(int facing)
         break;
 
     case TILE_ACTOR_FLYING_CARPET:
-        ULTIMA_1850_PrintString(_TEXT(0x266c, "Fly "));
+        ULTIMA_1850_PrintString(/*0x266c*/ "Fly ");
         if (facing == 1)
         {
             D_587c_partyTile = TILE_ACTOR_FLYING_CARPET;
@@ -362,7 +357,7 @@ static void TOWN_057c_SetPartyIcon(int facing)
         break;
 
     case TILE_ACTOR_SKIFF:
-        ULTIMA_1850_PrintString(_TEXT(0x2671, "Row "));
+        ULTIMA_1850_PrintString(/*0x2671*/ "Row ");
         // fall-through
 
     case TILE_ACTOR_FRIGATE_20:
@@ -403,7 +398,7 @@ bool TOWN_0600_MoveParty(int direction)
         // 0657
         direction = 0;
         TOWN_057c_SetPartyIcon(0);
-        ULTIMA_1850_PrintString(_TEXT(0x2676, "North\n"));
+        ULTIMA_1850_PrintString(/*0x2676*/ "North\n");
         break;
 
     case DIR_DOWN:
@@ -413,7 +408,7 @@ bool TOWN_0600_MoveParty(int direction)
             atEdge = 1;
         direction = 2;
         TOWN_057c_SetPartyIcon(2);
-        ULTIMA_1850_PrintString(_TEXT(0x267d, "South\n"));
+        ULTIMA_1850_PrintString(/*0x267d*/ "South\n");
         break;
 
     case DIR_RIGHT:
@@ -423,7 +418,7 @@ bool TOWN_0600_MoveParty(int direction)
             atEdge = 1;
         direction = 1;
         TOWN_057c_SetPartyIcon(1);
-        ULTIMA_1850_PrintString(_TEXT(0x2684, "East\n"));
+        ULTIMA_1850_PrintString(/*0x2684*/ "East\n");
         break;
 
     case DIR_LEFT:
@@ -433,7 +428,7 @@ bool TOWN_0600_MoveParty(int direction)
             atEdge = 1;
         direction = 3;
         TOWN_057c_SetPartyIcon(3);
-        ULTIMA_1850_PrintString(_TEXT(0x268a, "West\n"));
+        ULTIMA_1850_PrintString(/*0x268a*/ "West\n");
         break;
     }
 
@@ -472,7 +467,7 @@ bool TOWN_0600_MoveParty(int direction)
         // 0792
         if (atEdge != 0)
         {
-            ULTIMA_1850_PrintString(_TEXT(0x2690, "\nDost thou wish to leave? "));
+            ULTIMA_1850_PrintString(/*0x2690*/ "\nDost thou wish to leave? ");
 
             // 079f NOT MATCHING
             do
@@ -483,16 +478,16 @@ bool TOWN_0600_MoveParty(int direction)
             // 07b6
             if (key_h == 'Y')
             {
-                ULTIMA_1850_PrintString(_TEXT(0x26ab, "Yes\n\nExit to\n"));
+                ULTIMA_1850_PrintString(/*0x26ab*/ "Yes\n\nExit to\n");
                 if (D_5893_mapId == 0x19)
                 {
-                    ULTIMA_1850_PrintString(_TEXT(0x26b9, "Underworld!\n"));
+                    ULTIMA_1850_PrintString(/*0x26b9*/ "Underworld!\n");
                     D_5895_mapLevel = 0xff;
                 }
                 else
                 {
                     // 07da
-                    ULTIMA_1850_PrintString(_TEXT(0x26c6, "Britannia!\n"));
+                    ULTIMA_1850_PrintString(/*0x26c6*/ "Britannia!\n");
                     D_5895_mapLevel = 0;
                 }
 
@@ -505,7 +500,7 @@ bool TOWN_0600_MoveParty(int direction)
             else
             {
                 // 0806
-                ULTIMA_1850_PrintString(_TEXT(0x26d2, "No\n"));
+                ULTIMA_1850_PrintString(/*0x26d2*/ "No\n");
                 atEdge = 0;
             }
         }
@@ -526,7 +521,7 @@ bool TOWN_0600_MoveParty(int direction)
     else
     {
         // 083a
-        ULTIMA_1850_PrintString(_TEXT(0x26d6, "Blocked!\n"));
+        ULTIMA_1850_PrintString(/*0x26d6*/ "Blocked!\n");
         ULTIMA_22c0_AudioTone(0xa5, 200);
         ULTIMA_1b16_ClearKbdBuffer();
         atEdge = 0;
@@ -640,11 +635,11 @@ int TOWN_09e6_AttackCmd(void)
     int turnUsed_h = 1;
     int npc;
 
-    ULTIMA_1850_PrintString(_TEXT(0x26e0, "Attack-"));
+    ULTIMA_1850_PrintString(/*0x26e0*/ "Attack-");
 
     if (*ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY) < TILE_MAP_POISON && D_587c_partyTile != TILE_ACTOR_AVATAR)
     {
-        ULTIMA_1850_PrintString(_TEXT(0x26e8, "On foot!\n"));
+        ULTIMA_1850_PrintString(/*0x26e8*/ "On foot!\n");
         turnUsed_h = 0;
     }
     else if (ULTIMA_35ec_SelectDirection() != 0)
@@ -654,7 +649,7 @@ int TOWN_09e6_AttackCmd(void)
         if (*ULTIMA_4402_GetTileAddr(x, y_p) == TILE_MAP_MIRROR)
         {
             *ULTIMA_4402_GetTileAddr(x, y_p) = TILE_MAP_MIRROR_BROKEN;
-            ULTIMA_1850_PrintString(_TEXT(0x26f2, "Broken!\n"));
+            ULTIMA_1850_PrintString(/*0x26f2*/ "Broken!\n");
 
             for (pitch = 2000; pitch < 20000; pitch += 1000)
             {
@@ -681,7 +676,7 @@ int TOWN_09e6_AttackCmd(void)
             if (nothing)
             {
                 // 0ae1
-                ULTIMA_1850_PrintString(_TEXT(0x26fb, "Nothing to attack!\n"));
+                ULTIMA_1850_PrintString(/*0x26fb*/ "Nothing to attack!\n");
             }
             else
             {
@@ -703,11 +698,11 @@ int TOWN_09e6_AttackCmd(void)
                 case TILE_MAP_BED:
                     if (actorTile_h == TILE_ACTOR_BLACKTHORN)
                     {
-                        ULTIMA_1850_PrintString(_TEXT(0x270f, "Missed!\n"));
+                        ULTIMA_1850_PrintString(/*0x270f*/ "Missed!\n");
                     }
                     else
                     {
-                        ULTIMA_1850_PrintString(_TEXT(0x2718, "Murdered!\n"));
+                        ULTIMA_1850_PrintString(/*0x2718*/ "Murdered!\n");
                         ULTIMA_3f36_DecreaseByte(&D_5888_karma, 5);
                         ULTIMA_3522_HitEffectAt(x, y_p);
 
@@ -743,12 +738,12 @@ int TOWN_0b82_KlimbCmd(void)
     int done;
 
     done = 0;
-    ULTIMA_1850_PrintString(_TEXT(0x2723, "Klimb-"));
+    ULTIMA_1850_PrintString(/*0x2723*/ "Klimb-");
 
     if ((D_587c_partyTile & 0xfe) == TILE_ACTOR_RIDING_HORSE)
     {
         // 0ba0..
-        ULTIMA_1850_PrintString(_TEXT(0x272a, "-On foot!\n"));
+        ULTIMA_1850_PrintString(/*0x272a*/ "-On foot!\n");
     }
     else
     {
@@ -787,7 +782,7 @@ int TOWN_0b82_KlimbCmd(void)
                 else
                 {
                     // 0c38..0ba0
-                    ULTIMA_1850_PrintString(_TEXT(0x2735, "What?\n"));
+                    ULTIMA_1850_PrintString(/*0x2735*/ "What?\n");
                 }
             }
             else
@@ -894,8 +889,6 @@ u8 D_2767_tuneStep = 0;
 
 
 
-
-
 // Read a key in a town (with the screen update and prompt when asked); a drunk party staggers: "Hic!" and a random direction key.
 uint TOWN_0dc4_GetTownKey(int prompt)
 {
@@ -921,7 +914,7 @@ uint TOWN_0dc4_GetTownKey(int prompt)
         {
             TOWN_0958_RaiseAlarm();
             D_5957_drunkTurns--;
-            ULTIMA_1850_PrintString(_TEXT(0x273c, "Hic!\n"));
+            ULTIMA_1850_PrintString(/*0x273c*/ "Hic!\n");
             key = D_2742_drunkDirs[ULTIMA_2092_RandomRange(0, 3)];
         }
     }
@@ -988,7 +981,6 @@ int TOWN_0e34_NumberKey(int key)
 // the window, unless town.c itself uses that global: then the length of the names town.c
 // references changes (tools/rename.py reports it per module), and the same number of
 // characters must come off (or go onto) these names. Do not rename them otherwise.
-#if defined(TARGET_DOS16)
 extern u16 F_13ae_redColor;
 extern u16 F_13b0_brightWhiteColor;
 extern u16 F_13b2_blueColor;
@@ -1240,7 +1232,6 @@ extern int F_52f6;
 extern int F_52f8;
 extern int F_5306[7];
 extern int F_5314[7];
-#endif
 
 // Effects of the tile the party stands on each turn: sleepers may wake, a trapdoor (0x8c) drops the party a level (killing it on map 0x1d), swamp poison, fire (0xbc, 0x8f); then the turn ends.
 // CLEAN ROOM (written from the disassembly). Party status effects of the tile stood on:
@@ -1265,7 +1256,6 @@ void TOWN_0f02_TileEffects(void)
     int i;
     int again;
 
-#if defined(TARGET_DOS16)
     // pass 2 memory fill: see the note above the function
     if (0)
     {
@@ -1332,7 +1322,6 @@ void TOWN_0f02_TileEffects(void)
         F_520c = 0; F_52c4 = 0; F_52c8 = 0; F_52da_pen_color = 0;
         F_52ef_forceEga = 0;
     }
-#endif
     for (i = 0; i < (uint)D_585b_partyCount; i++)
     {
         if (D_55a8_party[i].status == 'S' && ULTIMA_2092_RandomRange(0, 0xf) == 0xf)
@@ -1347,7 +1336,7 @@ void TOWN_0f02_TileEffects(void)
         tile = *ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY);
         if (tile == 0x8c && (D_587c_partyTile & 0xfe) != 0x14)
         {
-            ULTIMA_1850_PrintString(_TEXT(0x2768, "A TRAPDOOR!\n"));
+            ULTIMA_1850_PrintString(/*0x2768*/ "A TRAPDOOR!\n");
             savedIcon = D_587c_partyTile;
             D_587c_partyTile = 0;
             ULTIMA_5910_UpdateFrame();
@@ -1388,7 +1377,7 @@ void TOWN_0f02_TileEffects(void)
                 if (D_55a8_party[i].status != 'D' && D_55a8_party[i].status != 'P' &&
                     D_55a8_party[i].dex < (uint)ULTIMA_2092_RandomRange(0, 0x1d))
                 {
-                    ULTIMA_1850_PrintString(_TEXT(0x2775, "Poisoned!\n"));
+                    ULTIMA_1850_PrintString(/*0x2775*/ "Poisoned!\n");
                     D_55a8_party[i].status = 'P';
                     ULTIMA_2900_UpdateVitalsDisplay();
                 }
@@ -1397,7 +1386,7 @@ void TOWN_0f02_TileEffects(void)
         else if (tile == 0xbc || tile == 0x8f)
         {
             ULTIMA_5910_UpdateFrame();
-            ULTIMA_1850_PrintString(_TEXT(0x2780, "Burning!\n"));
+            ULTIMA_1850_PrintString(/*0x2780*/ "Burning!\n");
             ULTIMA_2aa8_DamageParty();
         }
     } while (again != 0);

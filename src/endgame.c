@@ -5,8 +5,6 @@
 
 #include <stdlib.h>
 
-#include "audio/aud_mus.h"
-
 #include "endgame.h"
 #include "font.h"
 #include "tiles.h"
@@ -96,7 +94,7 @@ static void ENDGAME_0000_ShowEndScreens(void)
         D_5156_penX = D_3de2_startX[screen];
         D_5158_penY = D_3de8_startY[screen];
 
-        ULTIMA_256e_ReadFileFromDisk(_TEXT(0x81fe, "END.DAT"), D_b21e_scratch, 2000, D_3dca_textOffset[screen]);
+        ULTIMA_256e_ReadFileFromDisk(/*0x81fe*/ "END.DAT", D_b21e_scratch, 2000, D_3dca_textOffset[screen]);
         FONT_0000_DrawJustifiedText(fontImage, D_b21e_scratch); // 7ce6 -> 1778:0566
 
         if (screen != 0)
@@ -180,37 +178,37 @@ u8 D_3e06_hasBanner[6] = {0x01, 0x00, 0x00, 0x01, 0x00, 0x00};
 
 char* D_3e0c_numberNames[19] =
 {
-    _STATIC_TEXT(0x8206, "One"),
-    _STATIC_TEXT(0x820a, "Two"),
-    _STATIC_TEXT(0x820e, "Three"),
-    _STATIC_TEXT(0x8214, "Four"),
-    _STATIC_TEXT(0x821a, "Five"),
-    _STATIC_TEXT(0x8220, "Six"),
-    _STATIC_TEXT(0x8224, "Seven"),
-    _STATIC_TEXT(0x822a, "Eight"),
-    _STATIC_TEXT(0x8230, "Nine"),
-    _STATIC_TEXT(0x8236, "Ten"),
-    _STATIC_TEXT(0x823a, "Eleven"),
-    _STATIC_TEXT(0x8242, "Twelve"),
-    _STATIC_TEXT(0x824a, "Thirteen"),
-    _STATIC_TEXT(0x8254, "Fourteen"),
-    _STATIC_TEXT(0x825e, "Fifteen"),
-    _STATIC_TEXT(0x8266, "Sixteen"),
-    _STATIC_TEXT(0x826e, "Seventeen"),
-    _STATIC_TEXT(0x8278, "Eighteen"),
-    _STATIC_TEXT(0x8282, "Nineteen")
+    /*0x8206*/ "One",
+    /*0x820a*/ "Two",
+    /*0x820e*/ "Three",
+    /*0x8214*/ "Four",
+    /*0x821a*/ "Five",
+    /*0x8220*/ "Six",
+    /*0x8224*/ "Seven",
+    /*0x822a*/ "Eight",
+    /*0x8230*/ "Nine",
+    /*0x8236*/ "Ten",
+    /*0x823a*/ "Eleven",
+    /*0x8242*/ "Twelve",
+    /*0x824a*/ "Thirteen",
+    /*0x8254*/ "Fourteen",
+    /*0x825e*/ "Fifteen",
+    /*0x8266*/ "Sixteen",
+    /*0x826e*/ "Seventeen",
+    /*0x8278*/ "Eighteen",
+    /*0x8282*/ "Nineteen"
 };
 
 char* D_3e32_tensNames[8] =
 {
-    _STATIC_TEXT(0x828c, "Twenty"),
-    _STATIC_TEXT(0x8294, "Thirty"),
-    _STATIC_TEXT(0x829c, "Forty"),
-    _STATIC_TEXT(0x82a2, "Fifty"),
-    _STATIC_TEXT(0x82a8, "Sixty"),
-    _STATIC_TEXT(0x82ae, "Seventy"),
-    _STATIC_TEXT(0x82b6, "Eighty"),
-    _STATIC_TEXT(0x82be, "Ninety")
+    /*0x828c*/ "Twenty",
+    /*0x8294*/ "Thirty",
+    /*0x829c*/ "Forty",
+    /*0x82a2*/ "Fifty",
+    /*0x82a8*/ "Sixty",
+    /*0x82ae*/ "Seventy",
+    /*0x82b6*/ "Eighty",
+    /*0x82be*/ "Ninety"
 };
 
 // Puts a number from 1 to 99 into the line in words ("Twenty-One").
@@ -226,25 +224,25 @@ static void ENDGAME_028c_SpellNumber(int number)
 
         if (number % 10)
         {
-            ENDGAME_023a_AppendToLine(_TEXT(0x82c6, "-"));
+            ENDGAME_023a_AppendToLine(/*0x82c6*/ "-");
             ENDGAME_023a_AppendToLine(D_3e0c_numberNames[(number % 10) - 1]);
         }
     }
 }
 char* D_3e42_ordinalNames[12] =
 {
-    _STATIC_TEXT(0x82c8, "First"),
-    _STATIC_TEXT(0x82ce, "Second"),
-    _STATIC_TEXT(0x82d6, "Third"),
-    _STATIC_TEXT(0x82dc, "Fourth"),
-    _STATIC_TEXT(0x82e4, "Fifth"),
-    _STATIC_TEXT(0x82ea, "Sixth"),
-    _STATIC_TEXT(0x82f0, "Seventh"),
-    _STATIC_TEXT(0x82f8, "Eighth"),
-    _STATIC_TEXT(0x8300, "Ninth"),
-    _STATIC_TEXT(0x8306, "Tenth"),
-    _STATIC_TEXT(0x830c, "Eleventh"),
-    _STATIC_TEXT(0x8316, "Twelfth")
+    /*0x82c8*/ "First",
+    /*0x82ce*/ "Second",
+    /*0x82d6*/ "Third",
+    /*0x82dc*/ "Fourth",
+    /*0x82e4*/ "Fifth",
+    /*0x82ea*/ "Sixth",
+    /*0x82f0*/ "Seventh",
+    /*0x82f8*/ "Eighth",
+    /*0x8300*/ "Ninth",
+    /*0x8306*/ "Tenth",
+    /*0x830c*/ "Eleventh",
+    /*0x8316*/ "Twelfth"
 };
 
 u8 D_3e5a_partyDestX[6] = {0x05, 0x04, 0x06, 0x03, 0x05, 0x07};
@@ -261,18 +259,18 @@ static void ENDGAME_02d6_SpellOrdinal(int number)
     else if (number < 20)
     {
         ENDGAME_028c_SpellNumber(number);
-        ENDGAME_023a_AppendToLine(_TEXT(0x831e, "th"));
+        ENDGAME_023a_AppendToLine(/*0x831e*/ "th");
     }
     else
     {
-        ENDGAME_023a_AppendToLine(_TEXT(0x8322, "Twent"));
+        ENDGAME_023a_AppendToLine(/*0x8322*/ "Twent");
         if (number == 20)
         {
-            ENDGAME_023a_AppendToLine(_TEXT(0x8328, "ieth"));
+            ENDGAME_023a_AppendToLine(/*0x8328*/ "ieth");
         }
         else
         {
-            ENDGAME_023a_AppendToLine(_TEXT(0x832e, "y-"));
+            ENDGAME_023a_AppendToLine(/*0x832e*/ "y-");
             ENDGAME_023a_AppendToLine(D_3e42_ordinalNames[number - 0x15]);
         }
     }
@@ -290,32 +288,32 @@ static void ENDGAME_0326_PrintCertificate(void)
     ULTIMA_1bf2_SetTextPosition(0, 1);
     ULTIMA_16ba_PrintChar(CTRL_CHAR_TOGGLE_INVERSION);
     ULTIMA_16ba_PrintChar(CTRL_CHAR_CENTER_TEXT);
-    ULTIMA_1850_PrintString(_TEXT(0x8332, "Be it known that on\n"));
+    ULTIMA_1850_PrintString(/*0x8332*/ "Be it known that on\n");
     D_bcda_lineLen = 0;
-    ENDGAME_023a_AppendToLine(_TEXT(0x8348, "the "));
+    ENDGAME_023a_AppendToLine(/*0x8348*/ "the ");
     ENDGAME_02d6_SpellOrdinal(D_587e_day);
-    ENDGAME_023a_AppendToLine(_TEXT(0x834e, " Day of\n"));
-    ENDGAME_023a_AppendToLine(_TEXT(0x8358, "the "));
+    ENDGAME_023a_AppendToLine(/*0x834e*/ " Day of\n");
+    ENDGAME_023a_AppendToLine(/*0x8358*/ "the ");
     ENDGAME_02d6_SpellOrdinal(D_587d_month);
-    ENDGAME_023a_AppendToLine(_TEXT(0x835e, " Month\n"));
-    ULTIMA_1850_PrintString(_TEXT(0x8366, "of the Year\n"));
+    ENDGAME_023a_AppendToLine(/*0x835e*/ " Month\n");
+    ULTIMA_1850_PrintString(/*0x8366*/ "of the Year\n");
     ENDGAME_028c_SpellNumber((s16)D_5874_year / 100);
-    ENDGAME_023a_AppendToLine(_TEXT(0x8374, " Hundred\n"));
+    ENDGAME_023a_AppendToLine(/*0x8374*/ " Hundred\n");
     ENDGAME_028c_SpellNumber((s16)D_5874_year % 100);
-    ENDGAME_023a_AppendToLine(_TEXT(0x837e, "\n\n"));
+    ENDGAME_023a_AppendToLine(/*0x837e*/ "\n\n");
     ENDGAME_023a_AppendToLine(D_55a8_party[0].name);
-    ENDGAME_023a_AppendToLine(_TEXT(0x8382, " the Avatar\n\n"));
-    ULTIMA_1850_PrintString(_TEXT(0x8390, "saved the life\n"));
-    ULTIMA_1850_PrintString(_TEXT(0x83a0, "of our sovereign\n"));
-    ULTIMA_1850_PrintString(_TEXT(0x83b2, "Lord British, thereby\n"));
-    ULTIMA_1850_PrintString(_TEXT(0x83ca, "saving our people\n"));
-    ULTIMA_1850_PrintString(_TEXT(0x83de, "and our land.\n\n"));
+    ENDGAME_023a_AppendToLine(/*0x8382*/ " the Avatar\n\n");
+    ULTIMA_1850_PrintString(/*0x8390*/ "saved the life\n");
+    ULTIMA_1850_PrintString(/*0x83a0*/ "of our sovereign\n");
+    ULTIMA_1850_PrintString(/*0x83b2*/ "Lord British, thereby\n");
+    ULTIMA_1850_PrintString(/*0x83ca*/ "saving our people\n");
+    ULTIMA_1850_PrintString(/*0x83de*/ "and our land.\n\n");
     ULTIMA_1c9e_SelectCharset(1);
-    ULTIMA_1850_PrintString(_TEXT(0x83ee, "[E@QUE_@OF@[E@AVATAR\n"));
-    ULTIMA_1850_PrintString(_TEXT(0x8404, "IS@FOREVER\n\n\n\n"));
+    ULTIMA_1850_PrintString(/*0x83ee*/ "[E@QUE_@OF@[E@AVATAR\n");
+    ULTIMA_1850_PrintString(/*0x8404*/ "IS@FOREVER\n\n\n\n");
     ULTIMA_1c9e_SelectCharset(0);
     ULTIMA_16ba_PrintChar(CTRL_CHAR_TOGGLE_INVERSION);
-    ULTIMA_1850_PrintString(_TEXT(0x8414, "Report now, thy Quest compleat in\n"));
+    ULTIMA_1850_PrintString(/*0x8414*/ "Report now, thy Quest compleat in\n");
 
     // a697
     years = D_5874_year - 0x8b;
@@ -338,53 +336,50 @@ static void ENDGAME_0326_PrintCertificate(void)
     // a6ce
     if (years != 0)
     {
-        ENDGAME_023a_AppendToLine(u5_itoa(years, numberText_k, 10));
-        ENDGAME_023a_AppendToLine(_TEXT(0x8438, " year"));
+        ENDGAME_023a_AppendToLine(itoa(years, numberText_k, 10));
+        ENDGAME_023a_AppendToLine(/*0x8438*/ " year");
         if (years > 1)
         {
-            ENDGAME_023a_AppendToLine(_TEXT(0x843e, "s"));
+            ENDGAME_023a_AppendToLine(/*0x843e*/ "s");
         }
 
         if (months != 0 || days != 0)
         {
-            ENDGAME_023a_AppendToLine(_TEXT(0x8440, ", "));
+            ENDGAME_023a_AppendToLine(/*0x8440*/ ", ");
         }
     }
 
     if (months != 0)
     {
-        ENDGAME_023a_AppendToLine(u5_itoa(months, numberText_k, 10));
-        ENDGAME_023a_AppendToLine(_TEXT(0x8444, " month"));
+        ENDGAME_023a_AppendToLine(itoa(months, numberText_k, 10));
+        ENDGAME_023a_AppendToLine(/*0x8444*/ " month");
         if (months > 1)
         {
-            ENDGAME_023a_AppendToLine(_TEXT(0x844c, "s"));
+            ENDGAME_023a_AppendToLine(/*0x844c*/ "s");
         }
 
         if (days != 0)
         {
-            ENDGAME_023a_AppendToLine(_TEXT(0x844e, ", "));
+            ENDGAME_023a_AppendToLine(/*0x844e*/ ", ");
         }
     }
 
     if (days != 0)
     {
-        ENDGAME_023a_AppendToLine(u5_itoa(days, numberText_k, 10));
-        ENDGAME_023a_AppendToLine(_TEXT(0x8452, " day"));
+        ENDGAME_023a_AppendToLine(itoa(days, numberText_k, 10));
+        ENDGAME_023a_AppendToLine(/*0x8452*/ " day");
         if (days > 1)
         {
-            ENDGAME_023a_AppendToLine(_TEXT(0x8458, "s"));
+            ENDGAME_023a_AppendToLine(/*0x8458*/ "s");
         }
     }
 
-    ENDGAME_023a_AppendToLine(_TEXT(0x845a, "\n"));
-    ULTIMA_1850_PrintString(_TEXT(0x845c, "to Lord British at Origin Systems!"));
+    ENDGAME_023a_AppendToLine(/*0x845a*/ "\n");
+    ULTIMA_1850_PrintString(/*0x845c*/ "to Lord British at Origin Systems!");
 
     do
     {
         // infinite loop
-#if !defined(TARGET_DOS16)
-        ULTIMA_20fa_WaitTicks(1);
-#endif
         days++;
     } while (1);
 }
@@ -513,8 +508,8 @@ void ENDGAME_0648_EndgameMain(void)
     D_589e_curCombatant = 0xff;
     ULTIMA_2900_UpdateVitalsDisplay();
     ULTIMA_6f9e_TilesetModePlus3(1);
-    ULTIMA_256e_ReadFileFromDisk(_TEXT(0x8480, "MISCMAPS.DAT"), D_ac64_viewActors, 0xb0, 0x210);
-    ULTIMA_256e_ReadFileFromDisk(_TEXT(0x848e, "ENDMSG.DAT"), D_b21e_scratch, 1000, 0);
+    ULTIMA_256e_ReadFileFromDisk(/*0x8480*/ "MISCMAPS.DAT", D_ac64_viewActors, 0xb0, 0x210);
+    ULTIMA_256e_ReadFileFromDisk(/*0x848e*/ "ENDMSG.DAT", D_b21e_scratch, 1000, 0);
 
     for (index = 0; index < 0xb; index++)
     {
@@ -549,7 +544,7 @@ void ENDGAME_0648_EndgameMain(void)
         {
             ULTIMA_16ba_PrintChar('\n');
             ULTIMA_1850_PrintString(D_55a8_party[index].name);
-            ULTIMA_1850_PrintString(_TEXT(0x849a, " lives!\n"));
+            ULTIMA_1850_PrintString(/*0x849a*/ " lives!\n");
             D_55a8_party[index].status = STATUS_GOOD;
             D_55a8_party[index].hp = D_55a8_party[index].maxHp;
             ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
@@ -559,7 +554,7 @@ void ENDGAME_0648_EndgameMain(void)
         }
 
         // aa25
-        classIndex = ULTIMA_4d76_FindIndex(_TEXT(0x84a4, CLASS_LIST), D_55a8_party[index].cls);
+        classIndex = ULTIMA_4d76_FindIndex(/*0x84a4*/ CLASS_LIST, D_55a8_party[index].cls);
 
         // aa37
         actor_g = &D_5c5a_actors[index];
@@ -582,7 +577,7 @@ void ENDGAME_0648_EndgameMain(void)
     ULTIMA_3ae6_WaitFrames(0x28);
     ULTIMA_1850_PrintString((char*)D_b21e_scratch);
     ULTIMA_1850_PrintString(D_55a8_party[0].name);
-    ULTIMA_1850_PrintString(_TEXT(0x84ae, "!\"\n\n"));
+    ULTIMA_1850_PrintString(/*0x84ae*/ "!\"\n\n");
     ULTIMA_266c_GetChar();
     ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x21]);
 
@@ -592,10 +587,10 @@ void ENDGAME_0648_EndgameMain(void)
         switch (key_g)
         {
         case 0x59:
-            ULTIMA_1850_PrintString(_TEXT(0x84b4, "Yes\n\n"));
+            ULTIMA_1850_PrintString(/*0x84b4*/ "Yes\n\n");
             break;
         case 0x4e:
-            ULTIMA_1850_PrintString(_TEXT(0x84ba, "No\n\n"));
+            ULTIMA_1850_PrintString(/*0x84ba*/ "No\n\n");
             break;
         }
     } while ((uint)key_g != 0x59 && (uint)key_g != 0x4e); // aaf8
@@ -611,10 +606,10 @@ void ENDGAME_0648_EndgameMain(void)
             switch (key_g)
             {
             case 0x59:
-                ULTIMA_1850_PrintString(_TEXT(0x84c0, "Yes\n\n"));
+                ULTIMA_1850_PrintString(/*0x84c0*/ "Yes\n\n");
                 break;
             case 0x4e:
-                ULTIMA_1850_PrintString(_TEXT(0x84c6, "No\n\n"));
+                ULTIMA_1850_PrintString(/*0x84c6*/ "No\n\n");
                 break;
             }
         } while ((uint)key_g != 0x59 && (uint)key_g != 0x4e);
@@ -623,10 +618,6 @@ void ENDGAME_0648_EndgameMain(void)
     // ab49
     if (key_g == 0x59 && D_57bf_sandalwoodBox != 0)
     {
-#if defined(ENABLE_BGM)
-        AUDIO_PlayBgmForEnding();
-#endif
-
         ULTIMA_3ae6_WaitFrames(8);
 
         while (ENDGAME_0510_StepActorToward(0, 5, 4) != 0)
@@ -646,7 +637,7 @@ void ENDGAME_0648_EndgameMain(void)
 
         ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0xab]);
         ULTIMA_3ae6_WaitFrames(0x28);
-        ULTIMA_1850_PrintString(_TEXT(0x84cc, "\n\nHe says:\n\n"));
+        ULTIMA_1850_PrintString(/*0x84cc*/ "\n\nHe says:\n\n");
         ULTIMA_266c_GetChar();
         ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0xd3]);
         ULTIMA_266c_GetChar();
@@ -709,7 +700,7 @@ void ENDGAME_0648_EndgameMain(void)
     }
 
     // bad endgame
-    ULTIMA_1850_PrintString(_TEXT(0x84da, "\"I see...\n"));
+    ULTIMA_1850_PrintString(/*0x84da*/ "\"I see...\n");
     ULTIMA_3ae6_WaitFrames(0x28);
     ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x2d5]);
     D_5c5a_actors[0].y--;

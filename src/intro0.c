@@ -4,11 +4,8 @@
 // (pass 2's capacity, docs/MATCHING.md); as the first function of its own object it is
 // exact. These two use no strings and no data of their own, so this object's _DATA is empty
 // and intro.c's starts at DS:2f30 as before.
-#include "audio/audio.h"
 #include "common/common.h"
 #include "funcs.h"
-#include "grap_drv.h"
-#include "savegame.h"
 #include "vars.h"
 #include "macros.h"
 
@@ -18,8 +15,6 @@
 #include "intro.h"
 
 #include <string.h>
-
-#include "time/time.h"
 
 // Clears page 1 and puts the four 50-line pictures 1 to 4 of ULTIMA.16 one under the other at x 0x10
 // (probably the backdrop of the menu and story pages).
@@ -48,15 +43,9 @@ int INTRO_0050_LordBritishAnim(int x, int y)
     byte* path;
     int savedCalibration;
 
-#if !defined(MATCHING_BUILD)
-    path = D_b21e_scratch;
-    ASSERT(SCRATCH_SIZE >= 2783); // BRITISH.PTH file size
-#define MEM_SIZE SCRATCH_SIZE
-#else
     // DOS: uses savegame area
     path = &D_55a6_saveStart;
 #define MEM_SIZE ((byte*)&D_6606_saveEnd - (byte*)&D_55a6_saveStart) /*0x1060*/
-#endif
 
     penColor_n = D_13b0_brightWhiteColor;
 

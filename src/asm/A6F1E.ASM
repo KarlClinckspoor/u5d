@@ -16,7 +16,7 @@ DGROUP	GROUP	CONST, _BSS, _DATA
 	EXTRN	D_5350_DRIVERENTRY:WORD
 	EXTRN	D_539C_CHARSETTABLE:BYTE
 
-; this module's own data, after 5000.c's in DGROUP (DS:6aa4)
+; this module's own data, after view.c's in DGROUP (DS:6aa4)
 _DATA	SEGMENT
 	PUBLIC	D_6AA4_UNUSED
 D_6AA4_UNUSED	dw	0

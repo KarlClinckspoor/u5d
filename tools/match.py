@@ -7,7 +7,7 @@ Reads build/obj/NAME.OBJ (run tools/dosbuild.py first, or pass --compile) and co
 every function in its _TEXT segment with the bytes at the same function in the GOG files:
 
   - overlay modules (town.c ...): the function TOWN_0052 is at offset 0x52 of TOWN.OVL;
-  - resident modules (0000.c-7000.c, ultima.c): ULTIMA_1850 is at CS:1850 of ULTIMA.EXE.
+  - resident modules (ultima.c and the others): ULTIMA_1850 is at CS:1850 of ULTIMA.EXE.
 
 Bytes covered by a fixup are not compared as bytes. Each fixup is checked instead against
 what the original holds there, using the addresses u5d's names carry:
@@ -18,7 +18,7 @@ what the original holds there, using the addresses u5d's names carry:
   - an offset into the module's own _DATA/CONST/_BSS (string literals, statics) must be the
     same segment base for every reference; the base is learned from the first one;
   - an offset into the module's own _TEXT must point to the corresponding original place;
-  - names without an address (runtime library) are looked up in the comments of 0000.c
+  - names without an address (runtime library) are looked up in the comments of funcs.h
     ("// 0442: aNlmul"); anything else is reported as UNVERIFIED, never passed silently.
 
 Each function gets a verdict:
@@ -55,9 +55,9 @@ VERDICTS = ['EXACT', 'SLOTS', 'FIXUP', 'SIZE', 'CODE']
 
 
 def runtime_symbols():
-    """CS addresses of runtime-library routines, from the '// 0442: aNlmul' comments."""
+    """CS addresses of runtime-library routines, from the '// 0442: aNlmul' comments of funcs.h."""
     syms = {}
-    for p in glob.glob(os.path.join(u5.SRC, '[0-7]000.c')):
+    for p in [os.path.join(u5.SRC, 'funcs.h')]:
         for m in re.finditer(r'^// ([0-9a-f]{4}): (\w+)', open(p, encoding='utf-8', errors='replace').read(), re.M):
             off, name = int(m.group(1), 16), m.group(2)
             for k in (name, '_' + name, '__' + name):

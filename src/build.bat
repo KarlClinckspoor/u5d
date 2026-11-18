@@ -48,21 +48,15 @@ del *.obj
 %CL% %CFLAGS% font.c >> log.txt
 
 %CL% %CFLAGS% vars.c >> log.txt
-%CL% %CFLAGS% file.c >> log.txt
 %CL% %CFLAGS_ULTIMA% ultima.c >> log.txt
-%CL% %CFLAGS% grap.c >> log.txt
 
-%CL% %CFLAGS% 0000.c >> log.txt
-%CL% %CFLAGS% 1000.c >> log.txt
-%CL% %CFLAGS% 2000.c >> log.txt
-%CL% %CFLAGS% 3000.c >> log.txt
-%CL% %CFLAGS% 4000.c >> log.txt
-%CL% %CFLAGS% 5000.c >> log.txt
-%CL% %CFLAGS% r5a28.c >> log.txt
-%CL% %CFLAGS% 6000.c >> log.txt
-%CL% %CFLAGS% 7000.c >> log.txt
-
-rem %LINK% /MAP @u5.rsp >> log.txt
+%CL% %CFLAGS% party.c >> log.txt
+%CL% %CFLAGS% commands.c >> log.txt
+%CL% %CFLAGS% world.c >> log.txt
+%CL% %CFLAGS% view.c >> log.txt
+%CL% %CFLAGS% visible.c >> log.txt
+%CL% %CFLAGS% battle.c >> log.txt
+%CL% %CFLAGS% lighthse.c >> log.txt
 
 rem type log.txt
 

@@ -15,7 +15,7 @@ build/ is not in git, so a new worktree would have no compilers. This copies int
   build/msc51, build/msc50, build/masm    the compilers and the assembler
   build/obj, build/match                  the objects and the status file as they are here
 
-and then compiles and compares one small module (r251e.c) inside the new worktree, to show
+and then compiles and compares one small module (swdisks.c) inside the new worktree, to show
 that it works. The game files and DOSBox-X are looked up as usual (tools/u5.py): ../gamedata
 and the U6 project next door are found from a worktree too; a gamedata/ folder inside this
 checkout is not, so set U5_GAMEDATA then. The Python environment (.venv) is not copied:
@@ -31,7 +31,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import u5  # noqa: E402
 
 COPIED = ('msc51', 'msc50', 'masm', 'obj', 'match')
-CHECK = 'r251e.c'
+CHECK = 'swdisks.c'
 
 
 def git(*args, cwd=None, check=True):

@@ -4,8 +4,6 @@
 #include "macros.h"
 #include "tiles.h"
 
-#include "audio/aud_mus.h"
-
 #include <string.h>
 
 #include "cast.h"
@@ -14,7 +12,6 @@
 #include "comsubs.h"
 #include "sjog.h"
 #include "zstats.h"
-
 
 
 
@@ -205,9 +202,9 @@ static int COMBAT_0226_MonsterAttack(int monster)
 
                 if ((D_153c_enemyFlags[type_m] & ENEMY_FLAG_STEAL) != 0 && ULTIMA_2092_RandomRange(0, 3) != 0 && D_57a8_food != 0)
                 {
-                    ULTIMA_1850_PrintString(_TEXT(0x6d74, "\nA "));
+                    ULTIMA_1850_PrintString(/*0x6d74*/ "\nA ");
                     COMSUBS_0094_PrintName(monster);
-                    ULTIMA_1850_PrintString(_TEXT(0x6d78, " stole some food!\n"));
+                    ULTIMA_1850_PrintString(/*0x6d78*/ " stole some food!\n");
                     ULTIMA_3f54_DecreaseInt(&D_57a8_food, 5);
                     ULTIMA_43ae_AudioSweepTone(800, 2000, 1, 0x32);
                     ULTIMA_2900_UpdateVitalsDisplay();
@@ -294,7 +291,7 @@ static void COMBAT_03f4_MonsterTurn(void)
                     ULTIMA_16ba_PrintChar('\n');
                     ULTIMA_43ae_AudioSweepTone(0x4b0, 2000, 1, 0x28);
                     COMSUBS_0094_PrintName(D_589e_curCombatant);
-                    ULTIMA_1850_PrintString(_TEXT(0x6d8c, " escapes!\n"));
+                    ULTIMA_1850_PrintString(/*0x6d8c*/ " escapes!\n");
                     COMBAT_1236_RemoveEntity(-(uint)D_589e_curCombatant - 1);
 
                     if ((entity->flags & COMBAT_FLAGS_PLAYER) == 0 && entity->entityIdx == 0x2f)
@@ -346,7 +343,7 @@ static int COMBAT_0544_RunCommand(char* verb, int command)
     }
     else
     {
-        ULTIMA_1850_PrintString(_TEXT(0x6d98, "Can't!\n"));
+        ULTIMA_1850_PrintString(/*0x6d98*/ "Can't!\n");
         return 1;
     }
 
@@ -362,7 +359,7 @@ static int COMBAT_05b6_AppendWeaponName(int weapon, int listed)
         if (listed != 0)
         {
             // OK
-            strcat(D_b21e_scratch, _TEXT(0x6da0, ", "));
+            strcat(D_b21e_scratch, /*0x6da0*/ ", ");
         }
 
         // 05fb
@@ -387,10 +384,6 @@ static void COMBAT_063e_ProcessCommand(void)
     byte key;
     int keyDone;
     int askAgain;
-
-#if !defined(MATCHING_BUILD)
-    key = 0xff;
-#endif
 
     D_5896_mapX = D_ba14_combatants[D_589e_curCombatant].x;
     D_5897_mapY = D_ba14_combatants[D_589e_curCombatant].y;
@@ -434,17 +427,17 @@ static void COMBAT_063e_ProcessCommand(void)
                 D_b21e_scratch[0] = 0;
                 if ((D_ba14_combatants[D_589e_curCombatant].flags & COMBAT_FLAGS_PLAYER) != 0)
                 {
-                    ULTIMA_1850_PrintString(_TEXT(0x6da4, ", armed with "));
+                    ULTIMA_1850_PrintString(/*0x6da4*/ ", armed with ");
                     weaponCount_e = COMBAT_05b6_AppendWeaponName(D_55a8_party[member].equips[0], 0);
                     weaponCount_e += COMBAT_05b6_AppendWeaponName(D_55a8_party[member].equips[2], weaponCount_e);
                     weaponCount_e += COMBAT_05b6_AppendWeaponName(D_55a8_party[member].equips[3], weaponCount_e);
                     if (weaponCount_e == 0)
                     {
-                        strcat(D_b21e_scratch, _TEXT(0x6db2, "bare hands"));
+                        strcat(D_b21e_scratch, /*0x6db2*/ "bare hands");
                     }
                 }
 
-                strcat(D_b21e_scratch, _TEXT(0x6dbe, ":"));
+                strcat(D_b21e_scratch, /*0x6dbe*/ ":");
                 ULTIMA_1850_PrintString(D_b21e_scratch);
 
                 keyDone = askAgain = 0;
@@ -456,7 +449,7 @@ static void COMBAT_063e_ProcessCommand(void)
                     ULTIMA_4c2a_PrintLeftCap();
                     if ((D_ba14_combatants[D_589e_curCombatant].flags & COMBAT_FLAGS_4) != 0)
                     {
-                        ULTIMA_1850_PrintString(_TEXT(0x6dc0, "ARGH!\n"));
+                        ULTIMA_1850_PrintString(/*0x6dc0*/ "ARGH!\n");
                         ULTIMA_223c_AudioWhiteNoise(0x28, 3000, 500);
                         COMBAT_1c66_Regurgitate(D_589e_curCombatant);
                         keyDone = 1;
@@ -468,7 +461,7 @@ static void COMBAT_063e_ProcessCommand(void)
                             ULTIMA_6800_WakeCombatant(D_589e_curCombatant);
                         }
 
-                        ULTIMA_1850_PrintString(_TEXT(0x6dc8, "Zzzzz...\n"));
+                        ULTIMA_1850_PrintString(/*0x6dc8*/ "Zzzzz...\n");
                         keyDone = 1;
                     }
                     else
@@ -482,15 +475,15 @@ static void COMBAT_063e_ProcessCommand(void)
                         case U5_KEY_CTRL_B: // ok
                             // Buffer on/off
                             // ab1a
-                            ULTIMA_1850_PrintString(_TEXT(0x6dd2, "Buffer O"));
+                            ULTIMA_1850_PrintString(/*0x6dd2*/ "Buffer O");
                             D_538c_keyBufferOff = !D_538c_keyBufferOff;
                             if (D_538c_keyBufferOff != 0)
                             {
-                                ULTIMA_1850_PrintString(_TEXT(0x6ddc, "ff\n"));
+                                ULTIMA_1850_PrintString(/*0x6ddc*/ "ff\n");
                             }
                             else
                             {
-                                ULTIMA_1850_PrintString(_TEXT(0x6de0, "n\n"));
+                                ULTIMA_1850_PrintString(/*0x6de0*/ "n\n");
                             }
                             // ab3d
                             keyDone = 0;
@@ -498,14 +491,14 @@ static void COMBAT_063e_ProcessCommand(void)
 
                         case U5_KEY_CTRL_S: // ok
                             // ab46
-                            ULTIMA_1850_PrintString(_TEXT(0x6de4, "Sound "));
+                            ULTIMA_1850_PrintString(/*0x6de4*/ "Sound ");
                             if (D_a9ce_soundOn != 0)
                             {
-                                ULTIMA_1850_PrintString(_TEXT(0x6dec, "Off\n"));
+                                ULTIMA_1850_PrintString(/*0x6dec*/ "Off\n");
                             }
                             else
                             {
-                                ULTIMA_1850_PrintString(_TEXT(0x6df2, "On\n"));
+                                ULTIMA_1850_PrintString(/*0x6df2*/ "On\n");
                             }
                             D_a9ce_soundOn = !D_a9ce_soundOn;
                             // -> ab3d
@@ -521,7 +514,7 @@ static void COMBAT_063e_ProcessCommand(void)
                         case 0x43: // ok
                             /* 'C' Cast */
                             // ab80 / 08f0
-                            ULTIMA_1850_PrintString(_TEXT(0x6df6, "Cast...\n"));
+                            ULTIMA_1850_PrintString(/*0x6df6*/ "Cast...\n");
                             askAgain = 1;
                             if ((D_ba14_combatants[D_589e_curCombatant].flags & COMBAT_FLAGS_PLAYER) != 0)
                             {
@@ -532,7 +525,7 @@ static void COMBAT_063e_ProcessCommand(void)
                                     askAgain = 0;
                                     if (D_587a_statusIcon == 'N' || (D_57b4_crown == 0 && D_5894_savedMapId == 0x12))
                                     {
-                                        ULTIMA_1850_PrintString(_TEXT(0x6e00, "Absorbed!\n"));
+                                        ULTIMA_1850_PrintString(/*0x6e00*/ "Absorbed!\n");
                                         ULTIMA_2192_AudioPulse(0x2648, 1, 28000, 1000, 2);
                                     }
                                     else
@@ -544,20 +537,20 @@ static void COMBAT_063e_ProcessCommand(void)
                             else
                             {
                                 // abf4
-                                ULTIMA_1850_PrintString(_TEXT(0x6e0c, "Can't!\n"));
+                                ULTIMA_1850_PrintString(/*0x6e0c*/ "Can't!\n");
                             }
                             break;
 
                         case 0x47:
                             /* 'G' Get */
                             // abfa
-                            askAgain = COMBAT_0544_RunCommand(_TEXT(0x6e14, "Get-"), 0);
+                            askAgain = COMBAT_0544_RunCommand(/*0x6e14*/ "Get-", 0);
                             break;
 
                         case 0x4a: // ok
                             /* 'J' Jimmy */
                             // ac0a
-                            askAgain = COMBAT_0544_RunCommand(_TEXT(0x6e1a, "Jimmy-"), 1);
+                            askAgain = COMBAT_0544_RunCommand(/*0x6e1a*/ "Jimmy-", 1);
                             break;
 
                         case 0x4b:
@@ -573,44 +566,44 @@ static void COMBAT_063e_ProcessCommand(void)
                         case 0x4f:
                             /* 'O' Open */
                             // ac1a
-                            askAgain = COMBAT_0544_RunCommand(_TEXT(0x6e22, "Open-"), 2);
+                            askAgain = COMBAT_0544_RunCommand(/*0x6e22*/ "Open-", 2);
                             break;
 
                         case 0x50:
                             /* 'P' Push */
                             // ac24
-                            ULTIMA_1850_PrintString(_TEXT(0x6e28, "Push-"));
+                            ULTIMA_1850_PrintString(/*0x6e28*/ "Push-");
                             CMDS_161a_PushCmd();
                             break;
 
                         case 0x52:
                             /* 'R' Ready */
                             // ac32
-                            askAgain = COMBAT_0544_RunCommand(_TEXT(0x6e2e, "Ready...\n\n"), 3);
+                            askAgain = COMBAT_0544_RunCommand(/*0x6e2e*/ "Ready...\n\n", 3);
                             break;
 
                         case 0x53: // ok
                             /* 'S' Search */
                             // ac3c
-                            askAgain = COMBAT_0544_RunCommand(_TEXT(0x6e3a, "Search-"), 4);
+                            askAgain = COMBAT_0544_RunCommand(/*0x6e3a*/ "Search-", 4);
                             break;
 
                         case 0x55: // ok
                             // ac46
-                            askAgain = COMBAT_0544_RunCommand(_TEXT(0x6e42, "Use item\n\n"), 5);
+                            askAgain = COMBAT_0544_RunCommand(/*0x6e42*/ "Use item\n\n", 5);
                             break;
 
                         case 0x59: // ok
                             /* 'Y' Yell */
                             // ac50
-                            ULTIMA_1850_PrintString(_TEXT(0x6e4e, "Yell "));
+                            ULTIMA_1850_PrintString(/*0x6e4e*/ "Yell ");
                             CMDS_1418_YellCmd();
                             break;
 
                         case 0x5a: // ok
                             /* 'Z' Z-stats */
                             // ac5e
-                            ULTIMA_1850_PrintString(_TEXT(0x6e54, "Z-stats...\n"));
+                            ULTIMA_1850_PrintString(/*0x6e54*/ "Z-stats...\n");
                             ZSTATS_0a3a_ZstatsCmd();
                             break;
 
@@ -621,13 +614,13 @@ static void COMBAT_063e_ProcessCommand(void)
 
                         case U5_KEY_SPACE: // ok
                             // ac72
-                            ULTIMA_1850_PrintString(_TEXT(0x6e60, "Pass\n"));
+                            ULTIMA_1850_PrintString(/*0x6e60*/ "Pass\n");
                             break;
                         case 0x30: // ok
                             /* '0' */
                             // ac7c
                             D_587b_activePlayer = 0xff;
-                            ULTIMA_1850_PrintString(_TEXT(0x6e66, "Set active plr:\nNone!\n"));
+                            ULTIMA_1850_PrintString(/*0x6e66*/ "Set active plr:\nNone!\n");
                             ULTIMA_2900_UpdateVitalsDisplay();
                             break;
 
@@ -660,93 +653,93 @@ static void COMBAT_063e_ProcessCommand(void)
                         case 0x42:
                             /* 'B' Board */
                             // acbc
-                            askAgain = SJOG_1f26_CombatMiscCmd(_TEXT(0x6e7e, "Board"), 1);
+                            askAgain = SJOG_1f26_CombatMiscCmd(/*0x6e7e*/ "Board", 1);
                             break;
 
                         case 0x44:
                             /* 'D' What? */
                             // acca
-                            ULTIMA_1850_PrintString(_TEXT(0x6e84, "D-What?\n"));
+                            ULTIMA_1850_PrintString(/*0x6e84*/ "D-What?\n");
                             askAgain = 1;
                             break;
 
                         case 0x45: // ok
                             /* 'E' Enter */
                             // acda / 0a4a
-                            askAgain = SJOG_1f26_CombatMiscCmd(_TEXT(0x6e8e, "Enter"), 2);
+                            askAgain = SJOG_1f26_CombatMiscCmd(/*0x6e8e*/ "Enter", 2);
                             break;
 
                         case 0x46: // ok
                             /* 'F' Fire */
                             // ace4 / 0a54
-                            askAgain = SJOG_1f26_CombatMiscCmd(_TEXT(0x6e94, "Fire"), 2);
+                            askAgain = SJOG_1f26_CombatMiscCmd(/*0x6e94*/ "Fire", 2);
                             break;
 
                         case 0x48: // ok
                             /* 'H' Hole up */
                             // acea / 0a5a
-                            askAgain = SJOG_1f26_CombatMiscCmd(_TEXT(0x6e9a, "Hole up"), 2);
+                            askAgain = SJOG_1f26_CombatMiscCmd(/*0x6e9a*/ "Hole up", 2);
                             break;
 
                         case 0x49: // ok
                             /* 'I' Ignite torch */
                             // acf0 / 0a60
-                            askAgain = SJOG_1f26_CombatMiscCmd(_TEXT(0x6ea2, "Ignite torch"), 2);
+                            askAgain = SJOG_1f26_CombatMiscCmd(/*0x6ea2*/ "Ignite torch", 2);
                             break;
 
                         case 0x4c: // ok
                             /* 'L' Look */
                             // acf6 /  0a66
-                            askAgain = SJOG_1f26_CombatMiscCmd(_TEXT(0x6eb0, "Look"), 2);
+                            askAgain = SJOG_1f26_CombatMiscCmd(/*0x6eb0*/ "Look", 2);
                             break;
 
                         case 0x4d: // ok
                             /* 'M' Mix */
                             // acfc / 0a6c
-                            askAgain = SJOG_1f26_CombatMiscCmd(_TEXT(0x6eb6, "Mix"), 2);
+                            askAgain = SJOG_1f26_CombatMiscCmd(/*0x6eb6*/ "Mix", 2);
                             break;
 
                         case 0x4e: // ok
                             /* 'N' New order */
                             // ad02 / 0a72
-                            askAgain = SJOG_1f26_CombatMiscCmd(_TEXT(0x6eba, "New order"), 2);
+                            askAgain = SJOG_1f26_CombatMiscCmd(/*0x6eba*/ "New order", 2);
                             break;
 
                         case 0x51: // ok
                             /* 'Q' Quit */
                             // ad08 / 0a78
-                            askAgain = SJOG_1f26_CombatMiscCmd(_TEXT(0x6ec4, "Quit"), 2);
+                            askAgain = SJOG_1f26_CombatMiscCmd(/*0x6ec4*/ "Quit", 2);
                             break;
 
                         case 0x54: // ok
                             /* 'T' Talk */
                             // ad0e
-                            askAgain = SJOG_1f26_CombatMiscCmd(_TEXT(0x6eca, "Talk"), 3);
+                            askAgain = SJOG_1f26_CombatMiscCmd(/*0x6eca*/ "Talk", 3);
                             break;
 
                         case 0x56: // ok
                             /* 'V' View */
                             // ad18
-                            askAgain = SJOG_1f26_CombatMiscCmd(_TEXT(0x6ed0, "View"), 2);
+                            askAgain = SJOG_1f26_CombatMiscCmd(/*0x6ed0*/ "View", 2);
                             break;
 
                         case 0x57: // ok
                             /* 'W' What */
                             // ad1e
-                            ULTIMA_1850_PrintString(_TEXT(0x6ed6, "W-What?\n"));
+                            ULTIMA_1850_PrintString(/*0x6ed6*/ "W-What?\n");
                             askAgain = 1;
                             break;
 
                         case 0x58: // ok
                             /* 'X' X-it */
                             // ad24
-                            askAgain = SJOG_1f26_CombatMiscCmd(_TEXT(0x6ee0, "X-it"), 1);
+                            askAgain = SJOG_1f26_CombatMiscCmd(/*0x6ee0*/ "X-it", 1);
                             break;
 
                         default:
                             // ad47
                             // -> ab39
-                            ULTIMA_1850_PrintString(_TEXT(0x6ee6, "What?\n"));
+                            ULTIMA_1850_PrintString(/*0x6ee6*/ "What?\n");
                             keyDone = 0;
                             break;
                         }
@@ -799,10 +792,6 @@ int COMBAT_0b94_MainLoop(void)
     {
         D_58a3_combatOver = 0;
     }
-
-#if defined(ENABLE_BGM)
-    AUDIO_PlayBgmForCombat();
-#endif
 
     finished_c = 0;
     do
@@ -877,7 +866,7 @@ int COMBAT_0b94_MainLoop(void)
                                     ULTIMA_5910_UpdateFrame();
                                     if (D_58a3_combatOver == 0)
                                     {
-                                        ULTIMA_1850_PrintString(_TEXT(0x6eee, "\nBATTLE IS LOST!"));
+                                        ULTIMA_1850_PrintString(/*0x6eee*/ "\nBATTLE IS LOST!");
                                         result = 1;
                                     }
 
@@ -892,12 +881,9 @@ int COMBAT_0b94_MainLoop(void)
                             // af78
                             if (D_5876_tempX == 0 && D_58a3_combatOver == 0)
                             {
-                                ULTIMA_1850_PrintString(_TEXT(0x6f00, "\nVICTORY!\n"));
+                                ULTIMA_1850_PrintString(/*0x6f00*/ "\nVICTORY!\n");
                                 D_58a3_combatOver = 1;
 
-#if defined(ENABLE_BGM)
-                                AUDIO_PlayBgmForCombatVictory();
-#endif
                                 // BGM/NOTE: no jingle when bgm is activated
                                 ULTIMA_4368_AudioVictoryTune();
                                 ULTIMA_1b16_ClearKbdBuffer();
@@ -913,10 +899,6 @@ int COMBAT_0b94_MainLoop(void)
     // afaf
     ULTIMA_1b16_ClearKbdBuffer();
     D_2186_beaconStep = 0xff;
-
-#if defined(ENABLE_BGM)
-    AUDIO_StopBgm();
-#endif
 
     return result;
 }
@@ -1065,7 +1047,7 @@ static int COMBAT_0ee4_MonsterMove(int combatant)
                 D_5c5a_actors[self_f->actorIdx].y = self_f->y = D_5878_tempY;
 
                 ULTIMA_1850_PrintString(D_1856_enemyNames[self_f->entityIdx]);
-                ULTIMA_1850_PrintString(_TEXT(0x6f0c, " teleports!\n"));
+                ULTIMA_1850_PrintString(/*0x6f0c*/ " teleports!\n");
                 moved_h++;
             }
         }
@@ -1273,7 +1255,7 @@ static int COMBAT_12b0_RollDamage(int attacker, int victim)
         switch (attack)
         {
         case 0x27:
-            ULTIMA_1850_PrintString(_TEXT(0x6f1a, "Thy sword hath shattered!\n"));
+            ULTIMA_1850_PrintString(/*0x6f1a*/ "Thy sword hath shattered!\n");
             ULTIMA_6e60_Unequip(attacker, attack);
             attack = 99;
             break;
@@ -1309,10 +1291,6 @@ static int COMBAT_12b0_RollDamage(int attacker, int victim)
         else
         {
             defense_e = D_55a8_party[D_ba14_combatants[victim].entityIdx].defense;
-#if defined(ENABLE_BUG_FIX)
-            // BUGFIX: apply armour values
-            defense_e += ULTIMA_6da8_PlayerDefense(D_ba14_combatants[victim].entityIdx);
-#endif
         }
 
         damage = attack;
@@ -1352,7 +1330,6 @@ int COMBAT_13e2_QueryStat(int combatant, int stat)
 {
     int value;
     CombatEntity* entity = &D_ba14_combatants[combatant];
-    SET_UNINITIALIZED_16(value);
 
     if ((entity->flags & COMBAT_FLAGS_MONSTER) != 0)
     {
@@ -1375,14 +1352,6 @@ int COMBAT_13e2_QueryStat(int combatant, int stat)
         // 1418
         if (stat > 0)
         {
-#if !defined(MATCHING_BUILD)
-            // fix OOB when stat == 0xff (bare hands)
-            if (stat == 0xff)
-            {
-                stat = QUERY_STAT_DEX;
-            }
-            else
-#endif
             if (D_169c_weaponMissile[stat] == 8) // TODO: offset? (+1?)
             {
                 // -> 1411
@@ -1453,7 +1422,6 @@ int COMBAT_14d6_RollToHit(int target, int attacker, int unused, int weapon)
     int defendStat;
     int hit_n;
     int chance;
-    SET_UNINITIALIZED_16(defendStat);
 
     attackStat = QUERY_STAT_INTEL;
     hit_n = 0;
@@ -1486,7 +1454,6 @@ int COMBAT_14d6_RollToHit(int target, int attacker, int unused, int weapon)
     // 152f
     if (hit_n == 0)
     {
-        CHECK_UNINITIALIZED_16(defendStat);
         defendStat = COMBAT_13e2_QueryStat(target, defendStat);
         attackStat = COMBAT_13e2_QueryStat(attacker, attackStat);
         chance = ((defendStat - attackStat) + 0x1e) / 2;
@@ -1611,7 +1578,7 @@ int COMBAT_1574_ApplyDamage(int target, int damage)
             else if ((D_153c_enemyFlags[entity->entityIdx] & ENEMY_FLAG_VANISH) != 0)
             {
                 ULTIMA_1850_PrintString(D_1856_enemyNames[entity->entityIdx]);
-                ULTIMA_1850_PrintString(_TEXT(0x6f36, " vanishes!"));
+                ULTIMA_1850_PrintString(/*0x6f36*/ " vanishes!");
                 D_58a2_combatEvents = 2;
                 D_5c5a_actors[entity->actorIdx].tile = D_5c5a_actors[entity->actorIdx].animTile = TILE_ACTOR_CIRCLE;
                 ULTIMA_1068_RevealTile(GetCombatMap(entity->x, entity->y), entity->x, entity->y);
@@ -1639,7 +1606,7 @@ int COMBAT_1574_ApplyDamage(int target, int damage)
                     {
                         D_ba14_combatants[clone].hp = entity->hp;
                         ULTIMA_1850_PrintString(D_1856_enemyNames[entity->entityIdx]);
-                        ULTIMA_1850_PrintString(_TEXT(0x6f42, " divides!\n"));
+                        ULTIMA_1850_PrintString(/*0x6f42*/ " divides!\n");
                         break;
                     }
                 }
@@ -1659,7 +1626,7 @@ void COMBAT_18ba_Poison(int target, int attacker)
     {
         D_55a8_party[D_ba14_combatants[target].entityIdx].status = STATUS_POISONED;
         ULTIMA_1850_PrintString(D_55a8_party[D_ba14_combatants[target].entityIdx].name);
-        ULTIMA_1850_PrintString(_TEXT(0x6f4e, " is poisoned!\n"));
+        ULTIMA_1850_PrintString(/*0x6f4e*/ " is poisoned!\n");
         D_58a2_combatEvents = 8;
         D_a9fa_vitalsDirty = 1;
     }
@@ -1760,11 +1727,7 @@ int COMBAT_1a5c_WoundLevel(int combatant)
     if ((entity_c->flags & COMBAT_FLAGS_PLAYER) != 0)
     {
         // 1a81
-#if !defined(MATCHING_BUILD)
-        return level_h; // TODO: validate return value
-#else
         return; // sic (IBM: returns &D_ba14_combatants[combatant], FMT: returns D_ba14_combatants[combatant]._2)
-#endif
     }
     // 1a84
     quarter = D_13bc_enemyStats[entity_c->entityIdx].maxHp / 4; // max hp / 4 (25%)
@@ -1907,7 +1870,7 @@ static void COMBAT_1c66_Regurgitate(int combatant)
             ULTIMA_1850_PrintString(D_1856_enemyNames[D_ba14_combatants[combatant].entityIdx]);
         }
 
-        ULTIMA_1850_PrintString(_TEXT(0x6f5e, " regurgitated!\n"));
+        ULTIMA_1850_PrintString(/*0x6f5e*/ " regurgitated!\n");
         ULTIMA_223c_AudioWhiteNoise(1, 7000, 600);
 
         D_ba14_combatants[combatant].flags &= ~COMBAT_FLAGS_4;

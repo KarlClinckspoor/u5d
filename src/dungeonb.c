@@ -10,7 +10,6 @@
 #include "dnglook.h"
 #include "dungeon.h"
 #include "endgame.h"
-#include "audio/aud_mus.h"
 
 // The part of DUNGEON.OVL built with MSC 5.0 (docs/MATCHING.md, "Two compilers").
 // Where this part starts is not certain: DUNGEON_1020_StepSound uses no strings and compiles the same
@@ -32,17 +31,17 @@ u8 D_2df8_placeNameX[12] = {0x07, 0x08, 0x08, 0x08, 0x09, 0x09, 0x09, 0x0a, 0x09
 u8 D_2e04_placeNameY[12] = {0x0a, 0x09, 0x0a, 0x0b, 0x0a, 0x0a, 0x0a, 0x0b, 0x0b, 0x0b, 0x0a, 0x00};
 char* D_2e10_dungeonPlaceNames[11] =
 {
-    _STATIC_TEXT(0x6bb0, "BOTTOMLESS\n   PIT    "),
-    _STATIC_TEXT(0x6bc6, "[E MAZE\n OF LO_\n SOULS "),
-    _STATIC_TEXT(0x6bde, "[E PRISON\n   WRO]  "),
-    _STATIC_TEXT(0x6bf2, "[E CRYPT"),
-    _STATIC_TEXT(0x6bfc, "UPPER \nCRYPTS"),
-    _STATIC_TEXT(0x6c0a, "LOWER \nCRYPTS"),
-    _STATIC_TEXT(0x6c18, "DEBTERS\n ALLY  "),
-    _STATIC_TEXT(0x6c28, "D\\P"),
-    _STATIC_TEXT(0x6c2c, "D\\PER"),
-    _STATIC_TEXT(0x6c32, "D\\PE_"),
-    _STATIC_TEXT(0x6c38, "MO[ER LODE\n   MAZE   "),
+    /*0x6bb0*/ "BOTTOMLESS\n   PIT    ",
+    /*0x6bc6*/ "[E MAZE\n OF LO_\n SOULS ",
+    /*0x6bde*/ "[E PRISON\n   WRO]  ",
+    /*0x6bf2*/ "[E CRYPT",
+    /*0x6bfc*/ "UPPER \nCRYPTS",
+    /*0x6c0a*/ "LOWER \nCRYPTS",
+    /*0x6c18*/ "DEBTERS\n ALLY  ",
+    /*0x6c28*/ "D\\P",
+    /*0x6c2c*/ "D\\PER",
+    /*0x6c32*/ "D\\PE_",
+    /*0x6c38*/ "MO[ER LODE\n   MAZE   ",
 };
 
 // CHECKED
@@ -151,7 +150,7 @@ static void DUNGEON_111e_DrawMonster(int dist)
     if (D_a9c6_monsterImage == 0)
     {
         // debug message
-        ULTIMA_1850_PrintString(_TEXT(0x6c4e, "Hey!! What's going on here???"));
+        ULTIMA_1850_PrintString(/*0x6c4e*/ "Hey!! What's going on here???");
     }
     else
     {
@@ -340,13 +339,6 @@ static int DUNGEON_150a_DrawAhead(int x, int y, int dist)
     {
         phase = cell & 7;
 
-#if !defined(TARGET_DOS16)
-        if (phase >= 5)
-        {
-            debug("WARNING: local_8 >= 5");
-        }
-#endif
-
         phase = DUNGEON_145c_DrawDrip(0x5f, D_2e90_aheadDripY[phase + (dist - 1) * 5] + 0xe, phase, dist);
 
         GetDungeonMap(x & 7, y & 7, D_5895_mapLevel) &= 0xf8;
@@ -418,13 +410,6 @@ static void DUNGEON_1682_DrawSideCell(int x, int y, int side, int dist)
             {
                 dropX_c = 0xbe - dropX_c;
             }
-
-#if !defined(TARGET_DOS16)
-            if (phase >= 5)
-            {
-                debug("WARNING: local_a >= 5");
-            }
-#endif
 
             phase = DUNGEON_145c_DrawDrip(dropX_c, D_2e9a_sideDripY[phase + dist * 5] + 0xe, phase, dist);
 
@@ -562,7 +547,6 @@ static void DUNGEON_1952_DrawCell(int cellX, int cellY, int dist)
     static u8 D_2f1e_plainPiece[8] = {0x00, 0x00, 0x1f, 0x1f, 0x37, 0x27, 0x2f, 0x3f};
     static u8 D_2f26_dotFrame = 0;
     int kind_j;
-#if defined(TARGET_DOS16)
 
     if (1)
     {
@@ -629,56 +613,6 @@ L_wall:
         }
         goto L_field;
     }
-#else
-    int cell_b;
-
-    cell_b = DUNGEON_10dc_CellAt(cellX, cellY);
-    kind_j = cell_b >> 4;
-
-    if (kind_j > 0 && kind_j < 8 && (kind_j != 6 || (cell_b & 7) == 0))
-    {
-        if (D_2f16_mirroredPiece[kind_j] != 0)
-        {
-            DUNGEON_134a_DrawPiece(D_2f16_mirroredPiece[kind_j] + dist * 2, 1, 0);
-            DUNGEON_134a_DrawPiece(D_2f16_mirroredPiece[kind_j] + dist * 2, 1, 1);
-        }
-
-        if (D_2f1e_plainPiece[kind_j] != 0)
-        {
-            DUNGEON_134a_DrawPiece(D_2f1e_plainPiece[kind_j] + dist * 2, 0, 0);
-            DUNGEON_134a_DrawPiece(D_2f1e_plainPiece[kind_j] + dist * 2, 0, 1);
-        }
-
-        if (kind_j == 5)
-        {
-            DUNGEON_1786_DrawWallDots(dist, D_2f26_dotFrame);
-        }
-    }
-    else if (kind_j == 8)
-    {
-        DUNGEON_127e_DrawField(dist, cell_b & 7);
-    }
-
-    if (kind_j < 9 && (GetDungeonMap(cellX & 7, cellY & 7, D_5895_mapLevel) & 8) != 0)
-    {
-        DUNGEON_134a_DrawPiece(dist * 2 + D_2f1e_plainPiece[6], 1, 0);
-        DUNGEON_134a_DrawPiece(dist * 2 + D_2f1e_plainPiece[6], 1, 1);
-    }
-
-    if (dist != 0 && (u8)(cellX & 7) == D_5c5a_actors[1].x && (u8)(cellY & 7) == D_5c5a_actors[1].y)
-    {
-        DUNGEON_111e_DrawMonster(dist);
-    }
-
-    if (dist == 0)
-    {
-        D_2f26_dotFrame++;
-        if (D_2f26_dotFrame > 2)
-        {
-            D_2f26_dotFrame = 0;
-        }
-    }
-#endif
 }
 
 // renders the first-person view into page 1: the cells in front (up to four, in light), then back to front; dark without a torch or light
@@ -780,11 +714,11 @@ int DUNGEON_1c6a_Klimb(int dir, int mustBeEmpty)
 
     if (dir > 0)
     {
-        ULTIMA_1850_PrintString(_TEXT(0x6c6c, "Down!\n"));
+        ULTIMA_1850_PrintString(/*0x6c6c*/ "Down!\n");
     }
     else
     {
-        ULTIMA_1850_PrintString(_TEXT(0x6c74, "Up!\n"));
+        ULTIMA_1850_PrintString(/*0x6c74*/ "Up!\n");
     }
 
     if (dir > 0 && D_5895_mapLevel == 7 || dir < 0 && D_5895_mapLevel == 0)
@@ -810,7 +744,7 @@ int DUNGEON_1c6a_Klimb(int dir, int mustBeEmpty)
         }
         else
         {
-            ULTIMA_1850_PrintString(_TEXT(0x6c7a, "Failed!\n"));
+            ULTIMA_1850_PrintString(/*0x6c7a*/ "Failed!\n");
             ULTIMA_43ae_AudioSweepTone(800, 2000, 1, 0x32);
         }
     }
@@ -824,16 +758,16 @@ void DUNGEON_1d08_Exit(void)
     D_5896_mapX = D_1e8a_placeX[D_5893_mapId - 1];
     D_5897_mapY = D_1eb2_placeY[D_5893_mapId - 1];
 
-    ULTIMA_1850_PrintString(_TEXT(0x6c84, "\nExit to "));
+    ULTIMA_1850_PrintString(/*0x6c84*/ "\nExit to ");
     if (D_5895_mapLevel != 0)
     {
         D_5895_mapLevel = 0xff;
-        ULTIMA_1850_PrintString(_TEXT(0x6c8e, "Underworld!\n\n"));
+        ULTIMA_1850_PrintString(/*0x6c8e*/ "Underworld!\n\n");
     }
     else
     {
         D_5895_mapLevel = 0;
-        ULTIMA_1850_PrintString(_TEXT(0x6c9c, "Britannia!\n\n"));
+        ULTIMA_1850_PrintString(/*0x6c9c*/ "Britannia!\n\n");
     }
 
     D_5893_mapId = 0;
@@ -848,7 +782,7 @@ int DUNGEON_1d4a_AttackCmd(void)
 
     result = 0;
 
-    ULTIMA_1850_PrintString(_TEXT(0x6caa, "Attack\n"));
+    ULTIMA_1850_PrintString(/*0x6caa*/ "Attack\n");
 
     targetX = (D_24d6_facingDx[D_6603_dungeonFacing] + D_5896_mapX) & 7;
     targetY = (D_24de_facingDy[D_6603_dungeonFacing] + D_5897_mapY) & 7;
@@ -893,7 +827,7 @@ int DUNGEON_1d4a_AttackCmd(void)
     }
     else
     {
-        ULTIMA_1850_PrintString(_TEXT(0x6cb2, "What?\n"));
+        ULTIMA_1850_PrintString(/*0x6cb2*/ "What?\n");
     }
 
     return result;
@@ -923,7 +857,7 @@ int DUNGEON_1e10_KlimbCmd(void)
 
     if (canUp && canDown_m)
     {
-        ULTIMA_1850_PrintString(_TEXT(0x6cba, "Klimb-U/D-"));
+        ULTIMA_1850_PrintString(/*0x6cba*/ "Klimb-U/D-");
         while (canUp && canDown_m)
         {
             switch (ULTIMA_266c_GetChar())
@@ -939,7 +873,7 @@ int DUNGEON_1e10_KlimbCmd(void)
                 break;
 
             case U5_KEY_SPACE:
-                ULTIMA_1850_PrintString(_TEXT(0x6cc6, "Pass\n\n"));
+                ULTIMA_1850_PrintString(/*0x6cc6*/ "Pass\n\n");
                 canUp = canDown_m = 0;
                 break;
             }
@@ -948,19 +882,19 @@ int DUNGEON_1e10_KlimbCmd(void)
     else if (canUp || canDown_m) // 1eee
     {
         // 1efa
-        ULTIMA_1850_PrintString(_TEXT(0x6cce, "Klimb-"));
+        ULTIMA_1850_PrintString(/*0x6cce*/ "Klimb-");
     }
     else if (visited != 0)
     {
         // 1f08
-        ULTIMA_1850_PrintString(_TEXT(0x6cd6, "Klimb-\nWith What?\n"));
+        ULTIMA_1850_PrintString(/*0x6cd6*/ "Klimb-\nWith What?\n");
 
         return 0;
     }
     else
     {
         // 1f16
-        ULTIMA_1850_PrintString(_TEXT(0x6cea, "Klimb-what?\n"));
+        ULTIMA_1850_PrintString(/*0x6cea*/ "Klimb-what?\n");
 
         return 0;
     }

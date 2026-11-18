@@ -65,9 +65,9 @@ The examples below use `.venv/Scripts/python` (Windows); use `.venv/bin/python` 
 
 ### Data tools
 
-- `tools/dgroup.py` maps DGROUP. It finds each module's strings by their `_TEXT(addr, ...)`
-  (or `/*0xaddr*/` comment) addresses, and each `vars.c` variable by the address in its
-  name, with the modules that use it.
+- `tools/dgroup.py` maps DGROUP. It finds each module's strings by the `/*0xaddr*/` comment
+  before each literal, and each `vars.c` variable by the address in its name, with the
+  modules that use it.
 - `tools/movevar.py FILE.c --plan/--apply` moves a module's tables out of `vars.c` into the
   module, at the place that gives the original order, fixing sizes that ran into the next
   item.
@@ -94,7 +94,7 @@ addresses that u5d's names carry:
 | relative call or jump to another function of the same module (no fixup) | the original's target |
 
 Names with no address (runtime library) come from the `// 0442: aNlmul` comments in
-`0000.c`. Anything the tool cannot check is counted as *unverified* and never passed silently.
+`funcs.h`. Anything the tool cannot check is counted as *unverified* and never passed silently.
 
 The verdicts, worst first:
 
@@ -291,19 +291,19 @@ u5d builds the GOG release (`gog`, the default) and the October 1988 release v1.
   build/obj-1988, match.py's results to build/match/status-1988.tsv, and its game files are
   gamedata-1988/ or ../gamedata-1988 (`--gamedata`, `$U5_GAMEDATA_1988`, `$U5_GAMEDATA_GOG`
   or `$U5_GAMEDATA` name a folder).
-- It compiles ULTIMA_2322 (r2320.c, with D_545e and its strings) and INTRO_132a (intro2.c)
+- It compiles ULTIMA_2322 (diskswap.c, with D_545e and its strings) and INTRO_132a (intro2.c)
   from 1.16's C, which is EXACT against 1988 (596 functions EXACT), and leaves A2322 and
   AINTRO2 out (`u5.ASM_EXCLUDED`). PLSTART's first bytes (the wrapper's entry) and A1EAC's
   byte at 1f0b (`E`/`Z`) are `IFDEF RELEASE_1988`.
 - A source depends on the target when it uses `RELEASE_1988` (in a `#` line in C, outside a
   comment in assembly: `u5.target_dependent`); the 1988 build makes only those (A1EAC,
-  INTRO2, PLSTART, R2320) and takes the others from the gog build. If a header ever used
+  INTRO2, PLSTART, DISKSWAP) and takes the others from the gog build. If a header ever used
   the macro, every C file would depend on the target.
-- The link script's lines for one target only end in `target=gog` or `target=1988` (R2320,
+- The link script's lines for one target only end in `target=gog` or `target=1988` (DISKSWAP,
   A2322, AINTRO2). `linkscript.py --check --target T` compares that target's lines; writing
   measures the target given and the other one too when its files are there.
 - `check.py` checks both targets by default (`--target both|gog|1988`; `make check
-  RELEASE=both|gog|1988`, since the Makefile's TARGET is the native build's).
+  RELEASE=both|gog|1988`).
 - To move another module of a target from assembly to C: put the C under `RELEASE_1988`,
   add the module to `u5.ASM_EXCLUDED[target]`, run `linkscript.py`.
 
@@ -318,7 +318,7 @@ dgroup   size=bd40 header=10
 define   _edata=a524
 overlay  INTRO    base=81c0 size=20d0 header=10
 library  SLIBCR.LIB dos\crt0.asm     __abrkp     code=017e _DATA=520e
-object   3000     code=3072 _DATA=55a6 CONST=a110
+object   COMMANDS code=3072 _DATA=55a6 CONST=a110
 object   MAINOUTB code=MAINOUT:109e _DATA=2bc0 CONST=6ada _BSS=a526
 object   VARS
 ```
@@ -364,12 +364,6 @@ objects of the last run again, `--keep` keeps them.
   `open` audit event recorded no game file opened; the 25 outputs were then compared byte
   for byte with the GOG files.
 
-### `nativecheck.py`
-
-`tools/nativecheck.py [FILE.c ...]` compiles the files with the host compiler as the native
-(SDL) build would. The native build must keep compiling from the same sources, so run it
-after changing C.
-
 ## Working on a function
 
 1. `match.py FILE.c --dis FUNCTION` shows both disassemblies side by side. The listing
@@ -378,12 +372,9 @@ after changing C.
    shape, temporaries, declaration order, `register`, loop form, signedness.
 3. Recompile and compare (`match.py FILE.c --compile -v`). To try several forms at once
    without editing the file, use `variants.py` (see "Working in parallel").
-4. A change for the native (SDL) build that would alter the DOS code goes under
-   `#if !defined(TARGET_DOS16)`, as u5d already does. The DOS build is `MATCHING_BUILD` plus
-   the GOG differences (`GOG_BUILD`; see below).
-5. What you learn about the compiler goes into **"What MSC 5.1 does"** below, with the
+4. What you learn about the compiler goes into **"What MSC 5.1 does"** below, with the
    smallest example that shows it.
-6. A function you leave unmatched gets a `NOT MATCHING` note just above it or at the place
+5. A function you leave unmatched gets a `NOT MATCHING` note just above it or at the place
    it differs. The note says:
    - what still differs, in terms of the listing ("the original keeps local_6 in SI without
      storing it at e7b3");
@@ -427,7 +418,7 @@ about the useful limit; give workers disjoint modules, and expect a split that a
   branch. Its `src/`, `build/obj` and `build/match/status.tsv` are its own.
 - `build/` is not in git, so the tool copies the compilers and the assembler
   (`build/msc51`, `build/msc50`, `build/masm`) into the new worktree, and the objects and
-  the status file as they are here. Then it compiles and compares `r251e.c` there, to show
+  the status file as they are here. Then it compiles and compares `swdisks.c` there, to show
   that the worktree builds.
 - The game files and DOSBox-X are found from a worktree as from the main checkout
   (`../gamedata`, the U6 project next door). A `gamedata/` folder inside the main checkout
@@ -551,7 +542,7 @@ $P tools/rename.py -n ...                                         # dry run
 ```
 
 - A **global** rename (function, variable, macro, type) is whole-word in every C file and
-  header of `src/` (the native build's folders too), in upper case and cut at 31 in
+  header of `src/`, in upper case and cut at 31 in
   `src/asm/*.ASM`, and both ways in `src/u5d.lnk` and `tools/*.py` (`u5.COMMUNALS`,
   `u5.LINK_DEFINES`); `--docs` adds `docs/*.md`. String literals are left alone, comments are
   renamed, `.name` and `->name` are not (a field of the same name). Line endings are kept.
@@ -674,12 +665,10 @@ batch per module). Each module took one batch, one compile of its files and the 
   or local (`#define P2_SET ... param_2 ...`; fix by hand, then grep for the old names); a
   function header with comments inside the parameter list or after it on the same line
   (move the comment above first); a function header split by `#if`, and one-line
-  functions (left as they are). For C that only the native build compiles (FONT_0000,
-  INTRO_132a, whose DOS code is assembly) the slot solver finds no order; rename those
-  locals with `--exact`, since their slots do not matter, and run `nativecheck.py`.
+  functions (left as they are).
   A batch line that only adds a comment for a function already named is `#= NAME # text`.
-- **Globals left unnamed on purpose**: those `translate.c`, `aud_sfx.c`, the assembly or
-  another group also use, and the savegame bytes of the shared block. They go with the
+- **Globals left unnamed on purpose**: those the native port (`translate.c`, `aud_sfx.c`,
+  since removed), the assembly or another group also use, and the savegame bytes of the shared block. They go with the
   resident code.
 - **Plain one-line descriptions** above functions (`// use scroll`) were replaced; the
   matching notes, `// CHECKED` and the compiler notes were kept, with the new names in them.
@@ -699,7 +688,7 @@ every module that mentions the global change. So:
    many modules use and whose meaning is already in its comments (the savegame block
    DS:55a8-5c5a with the Codex's offsets, the map and actor tables, the text and video
    state), the struct fields of `structs.h` (free: fields are not in the object), and the
-   resident functions every overlay calls (`ULTIMA_xxxx` without a suffix in 2000.c-7000.c
+   resident functions every overlay calls (`ULTIMA_xxxx` without a suffix in the resident C files
    and the `r*.c` files). Merge it before the others start.
 2. **Then the module groups** *(done, one after another; above)*. At most four in parallel (DOSBox-X instances share the machine), each group
    owning its modules' functions, locals and private globals:
@@ -710,7 +699,7 @@ every module that mentions the global change. So:
 
    About 150 functions and 2,000 to 2,500 lines of bodies per worker session is a sensible
    size (the pilot was 47 functions, 2,300 lines); the big groups take two sessions.
-3. **Resident code last** (2000.c-7000.c, the `r*.c` files, with the assembly's names):
+3. **Resident code last** (the resident C files, with the assembly's names):
    its functions are called from everywhere, so each rename touches many modules, and
    ULTIMA_1850 (comment-line padding), town.c and the 5.0 modules with sharp limits
    (SHOPPES2_08a8) are where a pool window is most likely to move. Rename there in small
@@ -755,10 +744,40 @@ every run: a wrong base shows up as fixups that do not verify.
   MAINOUT 2, …, SHOPPES 12, …, FONT 23, DATA 24.
 - **DATA.OVL** is a 16-byte header followed by DGROUP from DS:0000. All string literals are
   in it. Each module's strings and static data sit at a fixed DS offset, in link order.
-- **GOG differences.** The GOG files are 1.16 with a few patched ranges. u5d marks them with
-  `GOG_BUILD`: the disk-swap prompt in `2000.c` (around CS:2405–24aa), and the start of the
-  U4 import in `intro.c` (around INTRO 1332–1402). The DOS build must produce the GOG bytes
-  there.
+- **GOG differences.** The GOG files are 1.16 with a few patched ranges: the disk-swap prompt
+  (ULTIMA_2322, around CS:2405–24aa) and the start of the U4 import (INTRO_132a, around
+  INTRO 1332–1402). The gog target takes both functions from assembly (`A2322.ASM`,
+  `AINTRO2.ASM`); the 1988 target compiles 1.16's C (`RELEASE_1988`, "Two targets").
+
+### The resident C files
+
+Each resident C file is one object of the original (or, for `diskswap.c` and `swdisks.c`,
+the C parts of one), in code order between the assembly modules (`src/u5d.lnk`). They
+were named by address until 2026-11-18; older notes, `docs/names/` and `research/` use the
+old names:
+
+| Old name | New name | CS | Holds |
+|---|---|---|---|
+| `r0d72.c` | `logo.c` | 0d72 | ULTIMA_0d72_AnimateOriginLogo |
+| `r1850.c` | `print.c` | 1850 | PrintString, PrintNumber |
+| `r1b38.c` | `pollkey.c` | 1b38 | PollKeyWithCursor |
+| `r1dda.c` | `waitkey.c` | 1dda | WaitForKeystroke, IntroGetString |
+| `r1fa0.c` | `backspc.c` | 1fa0 | Backspace, ToUpper |
+| `r216c.c` | `ustrlen.c` | 216c | the game's strlen |
+| `r2320.c` | `diskswap.c` | 2320 | NoDiskSwapMessage (and DiskSwapMessage in 1988) |
+| `r251e.c` | `swdisks.c` | 251e | SwitchDisks |
+| `r256e.c` | `fileio.c` | 256e | ReadFileFromDisk, WriteError, WriteFileToDisk |
+| `2000.c` | `party.c` | 266c | GetChar, the party's rows, damage, EndTurn, walkable tiles, wind, traps |
+| `3000.c` | `commands.c` | 3072 | ProcessCommand, HoleUpCmd, actor searches, input; the saved game's data |
+| `4000.c` | `world.c` | 400c | ring regeneration, ambient sounds, animation, moongates, sky, AdvanceTime |
+| `5000.c` | `view.c` | 51a0 | PutActorsInView, IsEnemy, DrawMap, UpdateFrame |
+| `r5a28.c` | `visible.c` | 5a28 | BuildVisibilityMap, BuildView, BuildLightMap |
+| `6000.c` | `battle.c` | 5f86 | SpecialMapHandler, Combat, Camping, combatants, rings |
+| `7000.c` | `lighthse.c` | 7040 | SetBeamCells, AnimateLighthouse |
+
+The objects are named after the files (`DISKSWAP`, `PARTY`, ...). The headers `0000.h` to
+`7000.h` (prototypes by address) are now one, `funcs.h`; `0000.c` and `1000.c` went with
+the native port.
 
 ## Two compilers
 
@@ -811,29 +830,29 @@ strings, from DS:6ada).
 
 `tools/u5.py` `COMPILER_BY_FILE` says which compiler builds which file. `dosbuild.py`
 follows it, and for 5.0 rewrites `//` comments as `/* */` in the staged copies (5.0 knows
-only the latter). MSC 5.0 modules so far: 3000, 4000, 6000, BLCKTHRN, CAST2, DNGLOOK,
+only the latter). MSC 5.0 modules so far: COMMANDS, WORLD, BATTLE, BLCKTHRN, CAST2, DNGLOOK,
 COMBAT, COMSUBS, ENDGAME, FONT, LOOKOBJ, NPC, SHOPPES, SHOPPES2, SJOG, TALK, ZSTATS, and
-the resident `r1850.c` and `r256e.c`. (r1850 has no strings; its word-wrap loop recomputes an
+the resident `print.c` and `fileio.c`. (print.c has no strings; its word-wrap loop recomputes an
 address for each test as only 5.0 does, and its locals fall in place only by 5.0's slot rule.)
 
-**The resident 2000.c range is three objects.** CONST holds one string between FONT's and
-3000.c's: DS:a0e0, ULTIMA_25ca's "Your disk may be write-protected". So the original had a
-5.0 module in the middle of what u5d had as 2000.c. ULTIMA_256e and ULTIMA_25d8 call
-ULTIMA_2322 with a far call, which MSC makes only for a far function of another object, so
-that module starts after 2322. ULTIMA.EXE's relocation table says where: its words for
+**The resident range 2320-266c is three objects.** CONST holds one string between FONT's and
+commands.c's: DS:a0e0, ULTIMA_25ca's "Your disk may be write-protected". So the original had a
+5.0 module in the middle of what u5d had as one file (2000.c, CS:2320-3072). ULTIMA_256e and
+ULTIMA_25d8 call ULTIMA_2322 with a far call, which MSC makes only for a far function of
+another object, so that module starts after 2322. ULTIMA.EXE's relocation table says where: its words for
 CS:2320-266c are 2567, 252b, 2516, 2333, then 2640, 2626, 25fd, 2592. MSC writes the fixups
 of a code record from the last to the first, so each falling run is one object: 2320, 2322
 and 251e (which sets D_545e, that object's variable), then 256e, 25ca and 25d8. They are now:
-- `r2320.c` (2320), `A2322.ASM` (the GOG-patched 2322) and `r251e.c` (251e), CS:2320-256e,
+- `diskswap.c` (2320), `A2322.ASM` (the GOG-patched 2322) and `swdisks.c` (251e), CS:2320-256e,
   MSC 5.1: three files for one object of the original, because the assembly lies between
   the C functions (`tools/u5.py`, `OBJECT_PARTS`); its strings at DS:545f. ULTIMA_251e
   compiles the same under both compilers;
-- `r256e.c`, CS:256e-266c, MSC 5.0: 256e, 25ca, 25d8; its string at DS:a0e0;
-- `2000.c`, from CS:266c, MSC 5.1. Its `_DATA` holds the walkable-tile tables between its
+- `fileio.c`, CS:256e-266c, MSC 5.0: 256e, 25ca, 25d8; its string at DS:a0e0;
+- `party.c`, from CS:266c, MSC 5.1. Its `_DATA` holds the walkable-tile tables between its
   strings (D_54d4-D_5547, then 12 bytes of zeros no code reads, D_5548), and D_559e after
   the last string. They moved there from `vars.c`.
 
-256e, 25ca, 2e96 and 2fd0 became exact, and 2000.c's `_DATA` is the original's.
+256e, 25ca, 2e96 and 2fd0 became exact, and party.c's `_DATA` is the original's.
 
 **Checks for object boundaries.** Three checks, run over the whole build, look for the
 remaining places where u5d's files do not follow the original's objects:
@@ -846,11 +865,11 @@ remaining places where u5d's files do not follow the original's objects:
   13a6-2626, 52ba-545f, 55a6-6acc) are the resident data in `vars.c`.
 - *Far calls.* MSC calls a far function with `call far` from another object and with
   `push cs; call near` from its own. The only far calls left in the resident code are
-  256e's and 25d8's to 2322, which the split of 2000.c explains.
+  256e's and 25d8's to 2322, which the split at 2320-266c explains.
 - *Both compilers.* Compiling every module with both compilers and comparing per function
   found ULTIMA_5f86: right length and 19 bytes off under 5.0, 251 under 5.1. It is the
-  last function before 6000.c (a 5.0 module) and uses no strings, so it is the first
-  function of 6000.c's object; it is now exact there. INTRO_0986 compiles exactly under
+  last function before battle.c (a 5.0 module) and uses no strings, so it is the first
+  function of battle.c's object; it is now exact there. INTRO_0986 compiles exactly under
   5.0 too, but INTRO's strings are packed at odd addresses, which 5.0 never does (it
   word-aligns every char array, with `ORG $+1`), so that object is 5.1 and the source
   has yet to be found.
@@ -865,13 +884,13 @@ link order, like everything else:
 | 2626-520e | the overlays | |
 | 520e-52ba | runtime | |
 | 52ba-5306 | A0878.ASM | video driver parameters |
-| 5306-5322 | `r0d72.c` | logo frame sizes |
+| 5306-5322 | `logo.c` | logo frame sizes |
 | 5322-5402 | A0DE0.ASM | driver names and pointer, text windows, file state |
-| 5402, 540c | `r1850.c`, `r1b38.c` | powers of ten, cursor index |
+| 5402, 540c | `print.c`, `pollkey.c` | powers of ten, cursor index |
 | 540e-545e | A1B94, A1EAC, A2056, A2192 (.ASM) | key tables, drive, timer, sound |
-| 545e-55a6 | `r2320.c`, `2000.c` | |
-| 55a6-6a0a | `3000.c` | saved game and game state (all zero) |
-| 6a0a-6aa4 | `3000.c`, `4000.c`, `5000.c` | their tables |
+| 545e-55a6 | `diskswap.c`, `party.c` | |
+| 55a6-6a0a | `commands.c` | saved game and game state (all zero) |
+| 6a0a-6aa4 | `commands.c`, `world.c`, `view.c` | their tables |
 | 6aa4-6acc | A6F1E.ASM | |
 | 6acc-a524 | runtime CDATA, then CONST, then the runtime's messages | |
 | a524-bd40 | uninitialised: `_BSS`, then the communal variables (below) | |
@@ -934,8 +953,7 @@ of class BSS, in this order:
   address would have been aligned). Five places hold variables no code names: D_bbd2 (0xb6
   bytes, the size of D_bb1c), D_bcb0 (2), D_bd14 (1), D_bd3a and D_bd3b (1 each). They are
   declared so that the rest lands.
-- `vars.c` defines the communal variables in the DOS build (`#define BSS`), and nothing
-  else; in the native build it defines all of vars.h as before.
+- `vars.c` defines the communal variables (`#define BSS`), and nothing else.
 
 **A 5.0 module's own data.** u5d first had these modules' strings as generated char arrays
 (`tools/strings.py`, a stand-in for 5.0's aligned literals) and their tables in `vars.c`.
@@ -971,8 +989,8 @@ and u5d now has them as `NAME.c` and `NAMEb.c`:
 | CMDS | `CMDS_18be` | none | CMDS_17ec still uses packed strings |
 | CAST | `CAST_1c36` | none | 1c36 and 1f60 have the right length only under 5.0 (no strings) |
 
-The resident 5000.c is two objects as well, the other way round: `5000.c` (MSC 5.0,
-ULTIMA_51a0-5910) and `r5a28.c` (MSC 5.1, 5a28-5e4a); see "Try both compilers" below.
+The resident range 51a0-5f86 is two objects as well, the other way round: `view.c` (MSC 5.0,
+ULTIMA_51a0-5910) and `visible.c` (MSC 5.1, 5a28-5e4a); see "Try both compilers" below.
 
 SHOPPES2 is two MSC 5.0 objects, `shoppes2.c` (to SHOPPES2_066c) and `shoppe2b.c` (from
 SHOPPES2_07e2, the shipwright, with the tables D_4d66-D_4d7a; not `shoppes2b`, which is
@@ -1000,13 +1018,12 @@ moves locals (CAST_1c36: 5.0's end-pointer loop compare was the tell).
   functions before them. A new object's `_DATA` starts at an even address, so CMDS2 starts
   at CMDS_1202's first string (DS:4450), right after the D_444a table, not at D_444a's
   strings (DS:43ef). Each new file is registered in `tools/u5.py` (`MODULES`) and the build
-  lists (CMakeLists.txt, Makefile, src/build.bat, u5win), and functions now called across
+  list (src/build.bat), and functions now called across
   objects lost `static`.
 - **Assembly instead of unmatched or patched C.** (ULTIMA_2322 and INTRO_132a are assembly in
   the gog target only; the 1988 target builds both from C: "Two targets".) Three functions are built from assembly
-  written from the original bytes, as the original's own assembly is, while their C stays
-  for the native build only (`#if !defined(TARGET_DOS16)`, with a note pointing to the
-  module): FONT_0000 (`AFONT0.ASM`, FONT.OVL 0000-02a2, MSC 5.0 output the C comes within 56
+  written from the original bytes, as the original's own assembly is (the native port kept
+  their C; it is gone with the port): FONT_0000 (`AFONT0.ASM`, FONT.OVL 0000-02a2, MSC 5.0 output the C comes within 56
   bytes of), ULTIMA_2322 (`A2322.ASM`, CS:2322-251e) and INTRO_132a (`AINTRO2.ASM`, INTRO.OVL
   132a-1e22), the two functions GOG patched in place, whose bytes are no compiler's output.
   `tools/asmgen.py NAME START END --ovl OVERLAY` drafts an overlay part (offsets in the
@@ -1015,7 +1032,7 @@ moves locals (CAST_1c36: 5.0's end-pointer loop compare was the tell).
   so they go into the assembly module's `_DATA`, placed by linkscript from the code's
   references. AINTRO2's strings follow intro2.c's packed strings at an odd address
   (DS:3345), so its `_DATA` is declared BYTE-aligned; A2322 holds all of the old object's
-  data (D_545e and the strings, DS:545e-54b6), because with 2322 gone no code of r2320.c
+  data (D_545e and the strings, DS:545e-54b6), because with 2322 gone no code of diskswap.c
   refers to D_545e and the link could not place it (ULTIMA_251e, the same object's last
   function, does: PLAN.md, "What is left"). Both are stand-ins for the original's
   single objects. Functions the assembly calls lose `static` (INTRO_1016, 1278, 12ea).
@@ -1066,7 +1083,7 @@ Each entry gives the evidence. Add to this list as you learn.
   DOS build defines them as `static char S_0x96b4[] = "...";` in DGROUP order
   (`tools/strings.py`, which generates a block after the `#include` lines and maps
   `_TEXT(0x96b4, ...)` to `S_0x96b4`).
-  - *Array* modules: 3000, 4000, 6000, BLCKTHRN, CAST2, COMBAT, COMSUBS, DNGLOOK,
+  - *Array* modules: COMMANDS, WORLD, BATTLE, BLCKTHRN, CAST2, COMBAT, COMSUBS, DNGLOOK,
     ENDGAME, FONT, LOOKOBJ, SHOPPES, SHOPPES2, SJOG, TALK, ZSTATS.
   - *Literal* modules: 2000, CAST, CMDS, DUNGEON, INTRO, MAINOUT, OUTSUBS, SHOPPES3,
     TOWN.
@@ -1124,8 +1141,8 @@ Each entry gives the evidence. Add to this list as you learn.
   else falls through and is kept. The original has `if (...) { print; return; }` for
   each, every copy ends in a jump, and the first one is kept.
 - **`return;` in a function with a value.** CMDS_1030's "No effect!" paths jump straight to
-  the epilogue without loading AX: the original had a bare `return;`. `RETURN_AX(value)`
-  (common.h) is that `return;` in the DOS build and `return value;` elsewhere.
+  the epilogue without loading AX: the original had a bare `return;` (u5d writes
+  `return /* AX: value */;`).
 - **Table values kept in registers across calls**: MSC keeps a value read from a table in
   SI/DI across calls (and hoists it out of loops that call) only when it knows a call
   can't change the table. Two source forms give that and keep the table in `_DATA`:
@@ -1133,10 +1150,10 @@ Each entry gives the evidence. Add to this list as you learn.
     every table there has one user and the tables sit in function order). The data keeps
     source order, but making only some tables static while later ones stay at file scope
     breaks the layout (5.0 seems to emit file-scope data before static locals). DUNGEON_104c's
-    tables stay global because translate.c patches D_2e10. (DUNGEON_111e, 127e, 1786.)
+    tables stay global because the native port's translate.c patched D_2e10. (DUNGEON_111e, 127e, 1786.)
   - MSC 5.1: the table is really `const`; 5.1 leaves an initialised const table in `_DATA`
-    in its place (5.0 moves it to CONST). common.h defines `const` away in the DOS build, so
-    intro.c has `#undef const` around its tables (INTRO_014e).
+    in its place (5.0 moves it to CONST). intro.c's three tables are `const` (INTRO_014e).
+    (common.h used to define `const` away, for the native port; no other file uses it.)
   A `register` local in an inner block gives the code too, but takes a stack slot.
 - **A label stops constant propagation.** SHOPPES2_00ac sets `local_4 = 0` and then
   indexes with it. The original reloads local_4 from the stack, where MSC would fold the 0.
@@ -1270,7 +1287,7 @@ Each entry gives the evidence. Add to this list as you learn.
     declarations for this (see its note). The "unused label" and `while (1)` effects below
     may be the same pool at work. **Recompile after editing comments inside a function.**
   - **Less DOS memory for C2.EXE shrinks the pool.** Under 5.0 the code is constant from about
-    249 KB free upward; at 236.75-248.5 KB the pool is about 280 units (r1850.c matches
+    249 KB free upward; at 236.75-248.5 KB the pool is about 280 units (print.c matches
     there with no padding); below about 220 KB pass 2 runs out of heap. Under 5.1 the code
     changes from one paragraph to the next below about 254 KB (town.c). The original's code
     can therefore depend on how much memory the build machine had at that compile, and it
@@ -1292,7 +1309,7 @@ Each entry gives the evidence. Add to this list as you learn.
     module does not otherwise reference generates no code, but each symbol costs pass-2
     memory like a live reference, and unlike tentative definitions it creates nothing at
     link. TOWN_0f02 matches with exactly 266 of them (265 and 267 give other code) at the
-    top of the function, under `#if defined(TARGET_DOS16)`. The memory stays used for the
+    top of the function. The memory stays used for the
     rest of the object, so TOWN_0f02 must be the last function of its object: TOWN.OVL is
     `town.c` (to TOWN_0f02) and `town2.c` (from TOWN_10da, `_DATA` at DS:278a). The window
     depends on u5d's symbol names: renaming or adding globals that town.c references moves
@@ -1306,8 +1323,8 @@ Each entry gives the evidence. Add to this list as you learn.
     become communals at link, so they are no fix. Open.
   - Split by it so far: intro0.c / intro2.c (INTRO_014e, INTRO_0986), cmds2.c (CMDS_12c8),
     shoppe2b.c (SHOPPES2_08a8).
-- **Try both compilers on every function before the capacity test.** 5000.c was 5.0 code
-  (ULTIMA_51a0-5910, still `5000.c`) followed by 5.1 code (`r5a28.c`, 5a28-5e4a, with the
+- **Try both compilers on every function before the capacity test.** The old 5000.c was 5.0 code
+  (ULTIMA_51a0-5910, now `view.c`) followed by 5.1 code (`visible.c`, 5a28-5e4a, with the
   tables at DS:6a86); compiling the whole file under the other compiler showed the boundary
   at once. The tell was ULTIMA_5394's loop exit: for a downward loop over a struct array
   (`for (i = 31; i >= 0; i--)`; a do-while is never strength-reduced) 5.0 compares the last
@@ -1372,8 +1389,7 @@ Each entry gives the evidence. Add to this list as you learn.
   not give its slot back to a block after it, so all of x's uses must sit in that one bare
   block (labels inside it may be goto targets). A then-branch can then be written at the
   end of the function as a block reached only by a goto and ending in one: MSC places it
-  after the first jump to it, inverted, where a plain if/else would (DUNGEON_1952, which
-  keeps the plain if/else for the native build under `#else`).
+  after the first jump to it, inverted, where a plain if/else would (DUNGEON_1952).
 - **An outer `for` needs an increment expression for its inner loops to get registers
   (5.0).** `while (c)` and `for (; c; )` give none; `for (;;) { if (!c) break; ...` gives
   them but leaves the first inner loop's loads at the top of the body; `for (; c; expr)`,
@@ -1541,7 +1557,7 @@ moves a probe function's window edge). MSC 5.0 and 5.1 give the same costs, and 
   their loop optimization runs out of memory, and only symbol bytes move them, in narrow
   windows.
 - **No single cause for the three pool devices.** With each device removed and K extra names
-  at the top of the module: r1850.c matches for K = 140-520; cmds.c for K = 70, 80 and 120
+  at the top of the module: print.c matches for K = 140-520; cmds.c for K = 70, 80 and 120
   (statics) or 64-84 dead references in CMDS_0000, and CMDS_0962 breaks from 160; town.c only
   at K = 261, while TOWN_0C78 already breaks from K = 35. So the original's town.c had about
   7.5 KB more pass-2 memory in use between TOWN_0c78 and TOWN_0f02 than u5d's (about 260 more
