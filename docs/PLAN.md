@@ -31,6 +31,7 @@ passes only when they are identical.
 | 2026-11-17, clean-room rewrites from the disassembly; town.c split (town2.c); 22 overlays and DGROUP link identical | 594 | 0 | 0 | 3 | 0 | 597 |
 | 2026-11-17, FONT_0000, ULTIMA_2322, INTRO_132a as assembly (AFONT0, A2322, AINTRO2); 23 overlays, resident image and DGROUP link identical | 594 | 0 | 0 | 0 | 0 | 594 |
 | 2026-11-17, the gate: EXE header and relocation table, DATA.OVL's header, communal variables; all 25 files identical (`tools/check.py`) | 594 | 0 | 0 | 0 | 0 | 594 |
+| 2026-11-18, two targets: GOG (1992) and the 1988 release v1.16 720K, 25/25 each; ULTIMA_2322 and INTRO_132a compiler output in 1988; the EXE checksum by rule | 596 | 0 | 0 | 0 | 0 | 596 |
 
 Most `SIZE` verdicts in `0000.c` and `1000.c` are routines that were hand-written assembly in
 the original and are C in u5d (step 5).
@@ -247,16 +248,12 @@ from a rule or from source, each named where it lives:
   D_bd14, D_bd3a, D_bd3b) are referenced by no code and declared only to fill the layout.
 - **`D_6608_overworld`** is a linker definition; which object defined the second name is
   not known.
-- **The EXE checksum** (0x7e39) is copied (the script's `exe` line), but now explained:
-  it is PLINK86plus 2.24's MZ checksum of the linked program before Origin's
-  copy-protection wrapper (PLSTART, CS:81d0-86f0) was appended, with PLINK's entry point
-  072e:0322 and stack 1b38:0800 (found with the 1988 release's ULTIMA.EXE; MATCHING.md,
-  "The link"). Left: computing it in u5link instead of copying it.
-- **The 1988 release** (v1.16 720K, `../gamedata-1988`, outside the repository) differs from
-  GOG's (1992) in ULTIMA.EXE (43 bytes: the wrapper's entry, ULTIMA_2322, one byte in
-  A1EAC) and INTRO.OVL (31 bytes, INTRO_132a). Against it, ULTIMA_2322 and INTRO_132a are
-  compiler output (u5d's 1.16 C: 506/508 and 2796/2808 bytes). Open: whether to target it
-  as well as GOG's.
+- **The EXE checksum** is computed (u5link: PLINK86's MZ checksum of the program without
+  PLSTART, Origin's copy-protection wrapper; for gog, of the 1988 link, since the 1992
+  patch left the field alone).
+- **The 1988 release** is a second target (`--target 1988`, gate 25/25; MATCHING.md, "Two
+  targets"). Its ULTIMA_2322 and INTRO_132a are compiler output; only the wrapper's entry
+  (PLSTART) and A1EAC's drive-letter byte are conditional assembly.
 - **Stand-in devices** in the source, each explained in its note: ULTIMA_1850's comment-line
   padding, TOWN_0f02's dead references (both pass 2's pool), DUNGEON_1952's register slot
   sharing, AINTRO2's BYTE-aligned `_DATA`, A2322 holding D_545e and r2320's strings.

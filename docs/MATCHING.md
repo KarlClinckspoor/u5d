@@ -235,7 +235,18 @@ identical and every name defined. It opens no game file to link.
   - u5d's C for both functions, written for 1.16 and compiled only for the native build,
     is close to the 1988 bytes: ULTIMA_2322 506 of 508 bytes (first difference at 0x23),
     INTRO_132a 2796 of 2808 (at 0x05) (`U5_GAMEDATA=../gamedata-1988`, variants.py with
-    the `#if` opened). With the 1988 files as the target, both are compiler output again.
+    the `#if` opened). With the 1988 files as the target, both are compiler output again,
+    and both are now EXACT ("Two targets" below).
+- **The EXE checksum is a rule in u5link**: PLINK86's MZ checksum of the program before
+  Origin's wrapper. The header is PLINK's (`Linker.plink_header`): the image up to PLSTART
+  (CS:81d0), CS:IP = PLMGR's `PLINK_START` (072e:0322), SS:SP = crt0's STACK after DGROUP
+  (1b38:0800), minimum allocation = the end of that stack less the program (139b, the same
+  number the final header has: this is why the old rule added PLSTART's paragraphs once
+  more). The final header is that one with the wrapper's size, entry 081d:0000 and stack
+  (the script's stackgap and sp). The GOG release's field is the 1988 link's: the 1992
+  patch did not write it again (the rule over GOG's own image gives 8d19). So for the gog
+  target u5link links the 1988 image (the 1988 objects of the modules that differ, from
+  build/obj-1988) and takes its checksum. Both targets give 7e39.
 
 ### Linking with PLINK86plus 2.24
 
@@ -270,6 +281,31 @@ address, CMDS_0000's short link names to their long names, `STUB_X` to `X`. What
 - So the link script's placement facts may follow from PLINK's rules plus a few facts about
   the original build (segment names, the merged library, the loader variant, Origin's
   `.LNK`). Not done: getting the overlay bases and DATA.OVL right and comparing byte for byte.
+
+### Two targets
+
+u5d builds the GOG release (`gog`, the default) and the October 1988 release v1.16 720K
+(`1988`), chosen by `--target gog|1988` on any tool or `$U5_TARGET`.
+
+- The 1988 target compiles and assembles with `RELEASE_1988` defined. Its objects go to
+  build/obj-1988, match.py's results to build/match/status-1988.tsv, and its game files are
+  gamedata-1988/ or ../gamedata-1988 (`--gamedata`, `$U5_GAMEDATA_1988`, `$U5_GAMEDATA_GOG`
+  or `$U5_GAMEDATA` name a folder).
+- It compiles ULTIMA_2322 (r2320.c, with D_545e and its strings) and INTRO_132a (intro2.c)
+  from 1.16's C, which is EXACT against 1988 (596 functions EXACT), and leaves A2322 and
+  AINTRO2 out (`u5.ASM_EXCLUDED`). PLSTART's first bytes (the wrapper's entry) and A1EAC's
+  byte at 1f0b (`E`/`Z`) are `IFDEF RELEASE_1988`.
+- A source depends on the target when it uses `RELEASE_1988` (in a `#` line in C, outside a
+  comment in assembly: `u5.target_dependent`); the 1988 build makes only those (A1EAC,
+  INTRO2, PLSTART, R2320) and takes the others from the gog build. If a header ever used
+  the macro, every C file would depend on the target.
+- The link script's lines for one target only end in `target=gog` or `target=1988` (R2320,
+  A2322, AINTRO2). `linkscript.py --check --target T` compares that target's lines; writing
+  measures the target given and the other one too when its files are there.
+- `check.py` checks both targets by default (`--target both|gog|1988`; `make check
+  RELEASE=both|gog|1988`, since the Makefile's TARGET is the native build's).
+- To move another module of a target from assembly to C: put the C under `RELEASE_1988`,
+  add the module to `u5.ASM_EXCLUDED[target]`, run `linkscript.py`.
 
 ### The link script: `src/u5d.lnk`
 
@@ -963,7 +999,8 @@ moves locals (CAST_1c36: 5.0's end-pointer loop compare was the tell).
   strings (DS:43ef). Each new file is registered in `tools/u5.py` (`MODULES`) and the build
   lists (CMakeLists.txt, Makefile, src/build.bat, u5win), and functions now called across
   objects lost `static`.
-- **Assembly instead of unmatched or patched C.** Three functions are built from assembly
+- **Assembly instead of unmatched or patched C.** (ULTIMA_2322 and INTRO_132a are assembly in
+  the gog target only; the 1988 target builds both from C: "Two targets".) Three functions are built from assembly
   written from the original bytes, as the original's own assembly is, while their C stays
   for the native build only (`#if !defined(TARGET_DOS16)`, with a note pointing to the
   module): FONT_0000 (`AFONT0.ASM`, FONT.OVL 0000-02a2, MSC 5.0 output the C comes within 56
@@ -1473,6 +1510,24 @@ structural changes (loop shapes, statement order).
   their first 31 characters become one symbol.
 - **No `NULL`.** MSC 5.1's `<time.h>` and `<stdlib.h>` don't define it.
 - **Packing.** `#pragma pack(push, 1)` is not understood (C4109); `/Zp` packs instead.
+
+## What the 1988 functions taught
+
+ULTIMA_2322 and INTRO_132a, matched against the 1988 release:
+
+- **A byte global's signedness picks a compare's operand order (5.1).** With the right-hand
+  side already in a register, `char g != expr` gives `mov al,bl; cmp [g],al`, and `u8 g`
+  gives `mov al,[g]; cmp bl,al` (2 bytes shorter). D_545e is a plain `char` (vars.h, DOS).
+  `(char)g` at the use gave the compare but changed another byte.
+- **`while` and `for` differ for loop registers (5.1).** `i = n; while (i > 0) { ...; i >>=
+  1; }` keeps i in CX (a store before the loop, then `mov cx,ax`); the same loop as a `for`
+  leaves it in memory.
+- **The Y/N loop**: `jmp T; L: cmp byte [key],'N'; je out; T: key = f(); cmp al,'Y'; jne L`
+  is `while ((key = f()) != 'Y' && key != 'N');` (a do-while with a break, or a body with
+  `if (key == 'N') break;`, is 5 bytes shorter).
+- **An unused local array is allocated** and takes its hash slot: one array can fill a gap
+  of unused words in a frame. Two decompiler variables in one slot are one variable.
+- variants.py compares with LF line ends: a spec written with `\r\n` finds nothing.
 
 ## Others who matched MSC 5.x
 
