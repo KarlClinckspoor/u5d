@@ -1,0 +1,142 @@
+# CAST (cast.c, MSC 5.1; castb.c, MSC 5.0; one overlay): casting a spell by its code, the spells
+# one by one, the Use command (scrolls, potions, moonstones, gem shards, the other items), the
+# cone spells. The spell functions were named after their runes already; the rest follows.
+# functions
+CAST_0000 CAST_0000_IsImmuneToSpells         # Blackthorn, Lord British and the Shadow Lord (entity 0xe, 0xf, 0x2f)
+CAST_0032 CAST_0032_SpellAttack              # a spell that is an attack with a missile kind of its own (0x30 .. 0x32)
+CAST_004c CAST_004c_FieldSpell               # the four field spells (fire, poison, sleep, energy): a dungeon cell or a missile that lays the field
+CAST_1764 CAST_1764_RemoveWornItem           # 0 ("Removed!") when the item is the one worn (status icon), else 1
+CAST_1bb0 CAST_1bb0_PlotSprayPixel           # draws a pixel of a cone; 0 off the view or when something blocks it
+CAST_1c36 CAST_1c36_SprayRays                # 21 rays of pixels from a combatant in a direction; fills the cells they reach (up to 63)
+CAST_1f60 CAST_1f60_ConeSpell                # In Zu, In Nox Hur, In Flam Hur, In Vas Grav Corp: a cone that sleeps, poisons, burns or kills
+# locals and parameters
+cast.c:CAST_0000 param_1 combatant
+cast.c:CAST_0000 local_4 type
+cast.c:CAST_0032 param_1 missileKind
+cast.c:CAST_004c param_1 field
+cast.c:CAST_004c local_a cell
+cast.c:CAST_004c local_8 result
+cast.c:CAST_004c local_6 cellY
+cast.c:CAST_004c local_4_ab cellX
+cast.c:CAST_0114 local_8 member
+cast.c:CAST_0114 local_6 combatant
+cast.c:CAST_0114 local_4_ab result
+cast.c:CAST_01ae local_6_an member
+cast.c:CAST_01ae local_4 result
+cast.c:CAST_01fa local_6_an member
+cast.c:CAST_01fa local_4 result
+cast.c:CAST_0230 local_6_an result
+cast.c:CAST_0230 local_4 tilePtr
+cast.c:CAST_02d2 local_6 actor
+cast.c:CAST_02d2 local_4_c cellPtr
+cast.c:CAST_02d2 local_8 result
+cast.c:CAST_02d2 local_a actorIdx
+cast.c:CAST_02d2 local_c dx
+cast.c:CAST_02d2 local_e dy
+cast.c:CAST_043e local_4 target
+cast.c:CAST_043e local_6_p combatant
+cast.c:CAST_04b0 local_10_ad revealTile
+cast.c:CAST_04b0 local_e animalTile
+cast.c:CAST_04b0 local_c tries
+cast.c:CAST_04b0 local_a result
+cast.c:CAST_04b0 local_8 combatant
+cast.c:CAST_04b0 local_6 actor
+cast.c:CAST_04b0 local_4_c animal
+cast.c:CAST_05dc local_14 stepY
+cast.c:CAST_05dc local_12_ab stepX
+cast.c:CAST_05dc local_10_ad limitY
+cast.c:CAST_05dc local_e limitX
+cast.c:CAST_05dc local_c result
+cast.c:CAST_05dc local_a y
+cast.c:CAST_05dc local_8 x
+cast.c:CAST_05dc local_6 attempt
+cast.c:CAST_05dc local_4_c actor
+cast.c:CAST_074c local_6_p combatant
+cast.c:CAST_074c local_4 actor
+cast.c:CAST_07b4 local_8 attempt
+cast.c:CAST_07b4 local_6 result
+cast.c:CAST_07b4 local_4_ab swarm
+cast.c:CAST_0846 local_6_an result
+cast.c:CAST_0846 local_4 tilePtr
+cast.c:CAST_08ac local_6_an member
+cast.c:CAST_08ac local_4 result
+cast.c:CAST_091e param_1 caster
+cast.c:CAST_091e local_4 combatant
+cast.c:CAST_09a0 local_4 target
+cast.c:CAST_0a5c local_8 targetY
+cast.c:CAST_0a5c local_6 targetX
+cast.c:CAST_0a5c local_4_ab target
+cast.c:CAST_0b28 local_c freeActor
+cast.c:CAST_0b28 local_a index
+cast.c:CAST_0b28 local_8 result
+cast.c:CAST_0b28 local_6 target
+cast.c:CAST_0b28 local_4_ab freeCombatant
+cast.c:CAST_0c98 local_6_p combatant
+cast.c:CAST_0c98 local_4 target
+cast.c:CAST_0cf0 local_4 key
+cast.c:CAST_0d4c local_6_an result
+cast.c:CAST_0d4c local_4 actorIdx
+cast.c:CAST_0dba local_e allowedHere
+cast.c:CAST_0dba local_c result
+cast.c:CAST_0dba local_a circle
+cast.c:CAST_0dba local_8 passTurn
+cast.c:CAST_0dba local_6 caster
+cast.c:CAST_0dba local_4_ab spell
+cast.c:CAST_11de param_1 scroll
+cast.c:CAST_11de local_6_an direction
+cast.c:CAST_11de local_4 result
+cast.c:CAST_135a param_1 potion
+cast.c:CAST_135a local_6 actor
+cast.c:CAST_135a local_4_c roll
+cast.c:CAST_135a local_8 result
+cast.c:CAST_135a local_a member
+cast.c:CAST_153c param_1 stone
+cast.c:CAST_153c local_4 tile
+cast.c:CAST_15b4 param_1 shard
+cast.c:CAST_15b4 local_4 index
+cast.c:CAST_1764 param_1 icon
+cast.c:CAST_1792 local_14 item
+cast.c:CAST_1792 local_12_ab dy
+cast.c:CAST_1792 local_10_ad hour12
+cast.c:CAST_1792 local_e dx
+cast.c:CAST_1792 local_c result
+cast.c:CAST_1792 local_a fieldResult
+cast.c:CAST_1792 local_8 tilePtr
+cast.c:CAST_1792 local_6 firstItem
+cast.c:CAST_1792 local_4_ab cleared
+castb.c:CAST_1c36 param_1 outXs
+castb.c:CAST_1c36 param_2 outYs
+castb.c:CAST_1c36 param_3 color
+castb.c:CAST_1c36 param_4 caster
+castb.c:CAST_1c36 param_5 direction
+castb.c:CAST_1c36 local_90_ad cellCount
+castb.c:CAST_1c36 local_8e side
+castb.c:CAST_1c36 local_8c ended
+castb.c:CAST_1c36 local_62_ab startY
+castb.c:CAST_1c36 local_60_ad startX
+castb.c:CAST_1c36 local_5e pixelStep
+castb.c:CAST_1c36 local_5c ray
+castb.c:CAST_1c36 local_5a_aa rayY
+castb.c:CAST_1c36 local_30_ac rayX
+castb.c:CAST_1c36 local_6 pixelsThisTurn
+castb.c:CAST_1c36 local_4_ab endedCount
+castb.c:CAST_1f60 param_1 caster
+castb.c:CAST_1f60 param_2 kind
+castb.c:CAST_1f60 param_3 color
+castb.c:CAST_1f60 local_104c member
+castb.c:CAST_1f60 local_106b target
+castb.c:CAST_1f60 local_108a victim
+castb.c:CAST_1f60 local_10ai noisePitch
+castb.c:CAST_1f60 local_10ch cellIdx
+castb.c:CAST_1f60 local_102d hitYs
+castb.c:CAST_1f60 local_82l hitXs
+castb.c:CAST_1f60 local_10eg dirOrCount
+# globals (used only here)
+D_4592 D_4592_fieldMissileKinds        # missile kinds of the field spells: fire 0x35, poison 0x33, sleep 0x34, energy 0x36
+D_4596 D_4596_dungeonFieldCells        # the dungeon cell value of each field (bit 3 kept)
+D_4882 D_4882_shardX                   # where each evil shard must be used: the flame at (x, y), map and level
+D_4886 D_4886_shardY
+D_488a D_488a_shardMap
+D_488e D_488e_shardLevel
+D_4892 D_4892_shardKilledBit           # the bit of the Shadow Lord's NPC slot (D_5b5a_npcKilled[0x70]) set when he falls
+D_a9d0 D_a9d0_rayBalance               # castb.c: the error term of each ray of a cone (0x15 words)

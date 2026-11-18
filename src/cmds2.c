@@ -340,7 +340,7 @@ void CMDS_161a_PushCmd(void)
     local_10_ad = local_12_ab + (uint)D_5896_mapX;
     local_16_an = local_18_al + (uint)D_5897_mapY;
 
-    if (D_5893_mapId > 0x7f && COMBAT_111a(local_10_ad, local_16_an) != 0)
+    if (D_5893_mapId > 0x7f && COMBAT_111a_FireMapTrigger(local_10_ad, local_16_an) != 0)
     {
         return;
     }
@@ -437,7 +437,7 @@ int CMDS_17ec_Escape(void)
         {
             if (D_ba14_combatants[local_8].flags != 0)
             {
-                COMBAT_1236(-local_8 - 1);
+                COMBAT_1236_RemoveEntity(-local_8 - 1);
                 ULTIMA_5910_UpdateFrame();
             }
         }
@@ -446,7 +446,7 @@ int CMDS_17ec_Escape(void)
         {
             if (D_5c5a_actors[local_8].tile != 0)
             {
-                COMBAT_1236(local_8 + 1);
+                COMBAT_1236_RemoveEntity(local_8 + 1);
                 ULTIMA_5910_UpdateFrame();
             }
         }

@@ -147,7 +147,7 @@ OBJECT_PARTS = [('R2320', 'A2322', 'R251E'), ('INTRO2', 'AINTRO2'), ('AFONT0', '
 # original reaches the overworld map through a name of its own for DS:6608 (vars.h); which
 # object defined it is not known.
 LINK_DEFINES = {'D_6608_OVERWORLD': 'D_6608_MAP'}
-# cmds.c knows 21 globals by their short names (the note at its top: CMDS_0000's pass-2 memory)
+# cmds.c knows 22 names by their short forms (the note at its top: CMDS_0000's pass-2 memory)
 LINK_DEFINES.update({
     'D_5876': 'D_5876_TEMPX',
     'D_5878': 'D_5878_TEMPY',
@@ -161,6 +161,8 @@ LINK_DEFINES.update({
     'D_5C5A': 'D_5C5A_ACTORS',
     'D_A9CE': 'D_A9CE_SOUNDON',
     'D_BA14': 'D_BA14_COMBATANTS',
+    'COMBAT_0000': 'COMBAT_0000_ISCELLFREE',
+    'STUB_COMBAT_0000': 'STUB_COMBAT_0000_ISCELLFREE',    # the overlay call stub (PLTAB) has the long name
     'ULTIMA_3AE6': 'ULTIMA_3AE6_WAITFRAMES',
     'ULTIMA_400C': 'ULTIMA_400C_RINGREGENERATION',
     'ULTIMA_4A84': 'ULTIMA_4A84_DRAWSUNANDMOONS',
@@ -180,12 +182,12 @@ LINK_DEFINES.update({
 # it first met it; within an object that is MSC's symbol-table order, which depends on names
 # the original's source had and u5d does not (docs/MATCHING.md, "The resident data").
 COMMUNALS = [n.upper() for n in (
-    'D_a9bc_townJustEntered D_a9bd_curDisk D_a9be D_a9c0 D_a9c2 D_a9c4 D_a9c6 D_a9c8_diskDrives D_a9ce_soundOn D_a9d0 D_a9fa_vitalsDirty D_a9fb D_a9fc_savedActors D_aafc_shopName D_aafe_shopOwner D_ab00_itemName D_ab02_viewTiles D_ac62_placeName D_ac64_viewActors D_ad14_combatMap '
+    'D_a9bc_townJustEntered D_a9bd_curDisk D_a9be D_a9c0 D_a9c2 D_a9c4 D_a9c6 D_a9c8_diskDrives D_a9ce_soundOn D_a9d0_rayBalance D_a9fa_vitalsDirty D_a9fb D_a9fc_savedActors D_aafc_shopName D_aafe_shopOwner D_ab00_itemName D_ab02_viewTiles D_ac62_placeName D_ac64_viewActors D_ad14_combatMap '
     'D_b114_shopIndex D_b116_shopKind D_b118_shopPrice D_b11a_shopQuantity D_b11c D_b11e_tileFrames D_b21e_scratch D_b9ee D_ba14_combatants D_bb14 D_bb15 D_bb16 D_bb17 '
     'D_bb18 D_bb1a D_bb1c D_bbd2 D_bc88 D_bcb0 '
     'D_bcb2 D_bcda '
     'D_bcdc_talkNpcIndex D_bcde_talkPtr D_bce0_talkCodeArgs D_bce4_talkWord D_bcf4_talkLabel D_bcf6_talkKeywordIndex D_bcf8_inputText '
-    'D_bd08 D_bd14 D_bd15 '
+    'D_bd08_answer D_bd14 D_bd15_savedMapId '
     'D_bd16_pubKind D_bd18_boughtSomething D_bd1a_dinersFed D_bd1c_dinerCount D_bd1e_tableTile D_bd20_drinksBought D_bd22_thrownOut D_bd24_shipSold '
     'D_bd26 D_bd27 D_bd28 D_bd29 D_bd2a D_bd32 D_bd3a D_bd3b D_bd3c D_bd3d D_bd3e '
 ).split()]

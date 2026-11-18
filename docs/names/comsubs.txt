@@ -1,0 +1,167 @@
+# COMSUBS (comsubs.c): the combat subroutines shared by the melee, missile, spell and monster code:
+# who is where, the line of a missile, its pictures, hit reports. One overlay.
+# functions
+COMSUBS_0000 COMSUBS_0000_TargetResists       # intelligence contest of two combatants; 1 when the target holds out
+COMSUBS_0056 COMSUBS_0056_FadeFields          # each field tile (E8-EB) on the map has 16 in 256 to vanish
+COMSUBS_00d2 COMSUBS_00d2_PrintMiss           # "Failed!" for a spell, else "<name> missed!"
+COMSUBS_00f4 COMSUBS_00f4_MonsterSpecial      # a monster's own tricks: possess, vanish and return, gate in a daemon; 1 when used
+COMSUBS_0312 COMSUBS_0312_ReportHit           # prints what a blow did (grazed, killed, slept, wounded..) by the flags in D_58a2
+COMSUBS_0458 COMSUBS_0458_DistanceSquared
+COMSUBS_048a COMSUBS_048a_Distance            # integer square root of the above, by subtracting 1, 3, 5..
+COMSUBS_04d4 COMSUBS_04d4_CombatantDistance
+COMSUBS_0504 COMSUBS_0504_AimCrosshair        # the crosshair moves by the arrow keys within a range; returns the distance, 0 when cancelled
+COMSUBS_0748 COMSUBS_0748_CombatantAt         # the standing combatant on a cell, else -1
+COMSUBS_07d4 COMSUBS_07d4_PickNearbyCell      # a random cell within one step of (x, y), on the 11x11 map, into D_5876/D_5878
+COMSUBS_0822 COMSUBS_0822_ResolveShot         # flies a missile at a cell (scattered when it missed); returns the combatant it hits, else -1
+COMSUBS_097c COMSUBS_097c_SpendAmmo           # a shot uses an arrow or quarrel; a thrown weapon is used up
+COMSUBS_09fc COMSUBS_09fc_EnemyInterferes     # an adjacent enemy that last attacked this one spoils the spell or shot
+COMSUBS_0a68 COMSUBS_0a68_FireMissile         # a ranged attack: aim, fly, hit or miss
+COMSUBS_0bf8 COMSUBS_0bf8_MeleeBlow           # a hand-to-hand blow: roll to hit, damage, report
+COMSUBS_0c52 COMSUBS_0c52_AttackWith          # the attack with one weapon: melee when its range is 0, else a missile
+COMSUBS_0d3c COMSUBS_0d3c_AttackWithWeapon    # one readied weapon's attack (named first when several)
+COMSUBS_0d96 COMSUBS_0d96_AttackCmd           # the Attack command: bare hands or each readied weapon
+COMSUBS_0e26 COMSUBS_0e26_TracePath           # the pixels of a straight line, 100 units a pixel, ending in 0xff
+COMSUBS_0f4a COMSUBS_0f4a_DrawMissile         # one frame of a missile (dart, boulder, bolt, field sparkle..) by its kind
+COMSUBS_12de COMSUBS_12de_FlyMissile          # animates a missile along the path; 0 when something stops it
+# locals and parameters
+comsubs.c:COMSUBS_0000 param_1 attacker
+comsubs.c:COMSUBS_0000 param_2 target
+comsubs.c:COMSUBS_0000 param_3 weaponKind
+comsubs.c:COMSUBS_0000 local_6_an attackerInt
+comsubs.c:COMSUBS_0000 local_4 targetInt
+comsubs.c:COMSUBS_0056 iVar2 actorIdx
+comsubs.c:COMSUBS_0094 param_1 combatant
+comsubs.c:COMSUBS_00d2 param_1 combatant
+comsubs.c:COMSUBS_00f4 param_1 combatant
+comsubs.c:COMSUBS_00f4 local_e_am victim
+comsubs.c:COMSUBS_00f4 local_c actorIdx
+comsubs.c:COMSUBS_00f4 local_8 daemon
+comsubs.c:COMSUBS_00f4 local_6 victimFlags
+comsubs.c:COMSUBS_00f4 local_4_ab enemyType
+comsubs.c:COMSUBS_00f4 local_a daemonActor
+comsubs.c:COMSUBS_0312 param_1 target
+comsubs.c:COMSUBS_0312 param_2 attacker
+comsubs.c:COMSUBS_0312 local_6 woundLevel
+comsubs.c:COMSUBS_0312 local_4_ab targetFlags
+comsubs.c:COMSUBS_0458 param_1 fromX
+comsubs.c:COMSUBS_0458 param_2 fromY
+comsubs.c:COMSUBS_0458 param_3 toX
+comsubs.c:COMSUBS_0458 param_4 toY
+comsubs.c:COMSUBS_0458 local_6 dx
+comsubs.c:COMSUBS_0458 local_8 dy
+comsubs.c:COMSUBS_0458 local_4_ab sum
+comsubs.c:COMSUBS_048a param_1 fromX
+comsubs.c:COMSUBS_048a param_2 fromY
+comsubs.c:COMSUBS_048a param_3 toX
+comsubs.c:COMSUBS_048a param_4 toY
+comsubs.c:COMSUBS_048a local_8 remainder
+comsubs.c:COMSUBS_048a local_6 root
+comsubs.c:COMSUBS_048a local_4_ab odd
+comsubs.c:COMSUBS_04d4 param_1 fromIdx
+comsubs.c:COMSUBS_04d4 param_2 toIdx
+comsubs.c:COMSUBS_0504 param_1 shooter
+comsubs.c:COMSUBS_0504 param_2 maxRange
+comsubs.c:COMSUBS_0504 local_14_am distance
+comsubs.c:COMSUBS_0504 local_12_a stepY
+comsubs.c:COMSUBS_0504 local_10_aa stepX
+comsubs.c:COMSUBS_0504 local_e_am cancelled
+comsubs.c:COMSUBS_0504 local_c firstTarget
+comsubs.c:COMSUBS_0504 local_a confirmed
+comsubs.c:COMSUBS_0504 local_6 newY
+comsubs.c:COMSUBS_0504 local_4_ab newX
+comsubs.c:COMSUBS_0504 local_8 targetActor
+comsubs.c:COMSUBS_0748 param_1 cellX
+comsubs.c:COMSUBS_0748 param_2 cellY
+comsubs.c:COMSUBS_0748 local_6 combatant
+comsubs.c:COMSUBS_0748 local_4_ab flags
+comsubs.c:COMSUBS_0748 local_8 found
+comsubs.c:COMSUBS_07d4 param_1 centerX
+comsubs.c:COMSUBS_07d4 param_2 centerY
+comsubs.c:COMSUBS_0822 param_1 shooter
+comsubs.c:COMSUBS_0822 param_2 aimX
+comsubs.c:COMSUBS_0822 param_3 aimY
+comsubs.c:COMSUBS_0822 param_4 onTarget
+comsubs.c:COMSUBS_0822 param_5 missileKind
+comsubs.c:COMSUBS_0822 local_e_am landed
+comsubs.c:COMSUBS_0822 local_c endY
+comsubs.c:COMSUBS_0822 local_a startY
+comsubs.c:COMSUBS_0822 local_8 victim
+comsubs.c:COMSUBS_0822 local_6 endX
+comsubs.c:COMSUBS_0822 local_4_ab startX
+comsubs.c:COMSUBS_097c param_1 weapon
+comsubs.c:COMSUBS_097c param_2 range
+comsubs.c:COMSUBS_09fc param_1 combatant
+comsubs.c:COMSUBS_09fc uVar1 attacker
+comsubs.c:COMSUBS_0a68 param_1 shooter
+comsubs.c:COMSUBS_0a68 param_2 weapon
+comsubs.c:COMSUBS_0a68 param_3 missileKind
+comsubs.c:COMSUBS_0a68 local_10_aa range
+comsubs.c:COMSUBS_0a68 local_e_am aimedAt
+comsubs.c:COMSUBS_0a68 local_c victim
+comsubs.c:COMSUBS_0a68 local_8 hitY
+comsubs.c:COMSUBS_0a68 local_6 hitX
+comsubs.c:COMSUBS_0a68 local_4_ab onTarget
+comsubs.c:COMSUBS_0a68 local_a shooterActor
+comsubs.c:COMSUBS_0bf8 param_1 attacker
+comsubs.c:COMSUBS_0bf8 param_2 victim
+comsubs.c:COMSUBS_0bf8 param_3 weapon
+comsubs.c:COMSUBS_0c52 param_1 attacker
+comsubs.c:COMSUBS_0c52 param_2 weapon
+comsubs.c:COMSUBS_0c52 local_a range
+comsubs.c:COMSUBS_0c52 local_8 victim
+comsubs.c:COMSUBS_0c52 local_6 aimed
+comsubs.c:COMSUBS_0c52 local_4_ab missileKind
+comsubs.c:COMSUBS_0d3c param_1 weapon
+comsubs.c:COMSUBS_0d3c param_2 weaponCount
+comsubs.c:COMSUBS_0d96 param_1 attacker
+comsubs.c:COMSUBS_0d96 param_2 weaponCount
+comsubs.c:COMSUBS_0d96 local_4 member
+comsubs.c:COMSUBS_0e26 param_1 fromX
+comsubs.c:COMSUBS_0e26 param_2 fromY
+comsubs.c:COMSUBS_0e26 param_3 toX
+comsubs.c:COMSUBS_0e26 param_4 toY
+comsubs.c:COMSUBS_0e26 param_5 outXs
+comsubs.c:COMSUBS_0e26 param_6 outYs
+comsubs.c:COMSUBS_0e26 local_10_aa absDx
+comsubs.c:COMSUBS_0e26 local_e_am balance
+comsubs.c:COMSUBS_0e26 local_c stepsLeft
+comsubs.c:COMSUBS_0e26 local_a slope
+comsubs.c:COMSUBS_0e26 local_8 stepY
+comsubs.c:COMSUBS_0e26 local_6 stepX
+comsubs.c:COMSUBS_0e26 local_4_ab absDy
+comsubs.c:COMSUBS_0f4a param_1 pixelX
+comsubs.c:COMSUBS_0f4a param_2 pixelY
+comsubs.c:COMSUBS_0f4a param_3 heading
+comsubs.c:COMSUBS_0f4a param_4 missileKind
+comsubs.c:COMSUBS_0f4a param_5 pathXs
+comsubs.c:COMSUBS_0f4a param_6 pathYs
+comsubs.c:COMSUBS_0f4a local_1e_ao signY
+comsubs.c:COMSUBS_0f4a local_1c_aa signX
+comsubs.c:COMSUBS_0f4a local_1a_ac lineY2
+comsubs.c:COMSUBS_0f4a local_18_al ptrYs
+comsubs.c:COMSUBS_0f4a local_16_an index
+comsubs.c:COMSUBS_0f4a local_14_ap lineY1
+comsubs.c:COMSUBS_0f4a local_12_ab lineX2
+comsubs.c:COMSUBS_0f4a local_10_ad ptrXs
+comsubs.c:COMSUBS_0f4a local_e_a shapeY
+comsubs.c:COMSUBS_0f4a local_c_ac lineX1
+comsubs.c:COMSUBS_0f4a local_a_ae shapeX
+comsubs.c:COMSUBS_0f4a local_8_an flipY
+comsubs.c:COMSUBS_0f4a local_6 flipX
+comsubs.c:COMSUBS_0f4a local_4_ab sparkColor
+comsubs.c:COMSUBS_12de param_1 fromX
+comsubs.c:COMSUBS_12de param_2 fromY
+comsubs.c:COMSUBS_12de param_3 toX
+comsubs.c:COMSUBS_12de param_4 toY
+comsubs.c:COMSUBS_12de param_5 missileKind
+comsubs.c:COMSUBS_12de local_12_a ptrYs
+comsubs.c:COMSUBS_12de local_10_aa fromPixelX
+comsubs.c:COMSUBS_12de local_e_am ptrXs
+comsubs.c:COMSUBS_12de local_c pathStep
+comsubs.c:COMSUBS_12de local_a heading
+comsubs.c:COMSUBS_12de local_8 toPixelY
+comsubs.c:COMSUBS_12de local_6 fromPixelY
+comsubs.c:COMSUBS_12de local_4_ab toPixelX
+# globals (used only here)
+D_a728 D_a728_pathXs                   # the x of each pixel of a missile's path (0x14a bytes, ends in 0xff)
+D_a872 D_a872_pathYs                   # the y of each

@@ -1,6 +1,6 @@
 #include "common/common.h"
 // CMDS_0000 sits at a limit of pass 2's memory, which the names of the globals this object
-// declares and uses count against: with the readable names of the 21 below (found by taking
+// declares and uses count against: with the readable names of the 22 below (found by taking
 // the new names one at a time) it loses its loop optimization. So this object alone knows
 // them by their short names; the source below uses the readable ones, and the link
 // resolves the short ones by the address they carry. After common.h, which defines
@@ -19,6 +19,7 @@
 #define D_5c5a_actors D_5c5a
 #define D_a9ce_soundOn D_a9ce
 #define D_ba14_combatants D_ba14
+#define COMBAT_0000_IsCellFree COMBAT_0000
 #define ULTIMA_3ae6_WaitFrames ULTIMA_3ae6
 #define ULTIMA_400c_RingRegeneration ULTIMA_400c
 #define ULTIMA_4a84_DrawSunAndMoons ULTIMA_4a84
@@ -259,7 +260,7 @@ int CMDS_0000(int param_1, int param_2, int param_3)
                 break;
             }
 
-            if (ULTIMA_6d82_IsInView(D_5876_tempX, D_5878_tempY) != 0 && COMBAT_0000(local_18, D_5876_tempX, D_5878_tempY) != 0)
+            if (ULTIMA_6d82_IsInView(D_5876_tempX, D_5878_tempY) != 0 && COMBAT_0000_IsCellFree(local_18, D_5876_tempX, D_5878_tempY) != 0)
             {
                 local_1a->x = D_5c5a_actors[local_1a->actorIdx].x = D_5876_tempX;
                 local_1a->y = D_5c5a_actors[local_1a->actorIdx].y = D_5878_tempY;
@@ -678,7 +679,7 @@ static void CMDS_0962(void)
 
                     local_8 = D_5c5a_actors[local_6].x - D_5896_mapX + 5;
                     local_a = D_5c5a_actors[local_6].y - D_5897_mapY + 5;
-                    local_4_ab = COMSUBS_12de(5, 5, local_8, local_a, 1);
+                    local_4_ab = COMSUBS_12de_FlyMissile(5, 5, local_8, local_a, 1);
                     if (local_4_ab != 0)
                     {
                         ULTIMA_5910_UpdateFrame();
@@ -698,7 +699,7 @@ static void CMDS_0962(void)
 
             local_8 = local_10_ad * 3 + 5;
             local_a = local_14 * 3 + 5;
-            COMSUBS_12de(5, 5, local_8, local_a, 1);
+            COMSUBS_12de_FlyMissile(5, 5, local_8, local_a, 1);
         }
     }
 }
@@ -829,7 +830,7 @@ void CMDS_0aea_FireCmd(void)
         }
     }
 
-    COMSUBS_12de(local_8, local_c, local_e, local_12_ab, 1);
+    COMSUBS_12de_FlyMissile(local_8, local_c, local_e, local_12_ab, 1);
     if (local_4_ab || local_1a_ac)
     {
         ULTIMA_3522_HitEffectAt(local_14, local_1c_aa);
