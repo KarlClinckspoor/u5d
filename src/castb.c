@@ -19,173 +19,175 @@
 // cast.c's (MSC 5.1). They use no strings, so no string shows the compiler: compiled after
 // cast.c's functions their loops were not optimized (pass 2's capacity), alone under MSC 5.1
 // still not all of them; under MSC 5.0 both are exact. That object has no data, and CAST's
-// _DATA is cast.c's alone. CAST_1bb0 compiles the same either way, so the object may start
+// _DATA is cast.c's alone. CAST_1bb0_PlotSprayPixel compiles the same either way, so the object may start
 // there instead; this file takes the latest possible start.
 
 // defined in cast.c
-int CAST_0000(int param_1);
-int CAST_1bb0(int x, int y, int penColor);
+int CAST_0000_IsImmuneToSpells(int combatant);
+int CAST_1bb0_PlotSprayPixel(int x, int y, int penColor);
 
+// The spray of a cone spell: 21 rays of pixels leave the caster's side in a direction, each wavering by its own slope (D_1cf0),
+// a random number of pixels a turn; the cells they cross are collected (once each, up to 63) into the two lists. Returns how many.
 // CHECKED
-// MSC 5.0: the inverted CAST_1bb0 test, the switches' cases in the order UP, DOWN, RIGHT,
+// MSC 5.0: the inverted CAST_1bb0_PlotSprayPixel test, the switches' cases in the order UP, DOWN, RIGHT,
 // LEFT (which gives the original's pointer temporaries and case layout), and local_5a
 // renamed for 5.0's slot rule (local_5a and local_30_ac had swapped places).
-static int CAST_1c36(s16* param_1, s16* param_2, int param_3, int param_4, int param_5)
+static int CAST_1c36_SprayRays(s16* outXs, s16* outYs, int color, int caster, int direction)
 {
-    int local_90_ad;
-    int local_8e;
+    int cellCount;
+    int side_c;
 
-    s16 local_8c[21];
-    int local_62_ab;
-    int local_60_ad;
-    int local_5e;
-    int local_5c;
-    s16 local_5a_aa[21];
+    s16 ended_h[21];
+    int startY;
+    int startX;
+    int pixelStep_f;
+    int ray_i;
+    s16 rayY[21];
 
-    s16 local_30_ac[21];
-    int local_6;
-    int local_4_ab;
+    s16 rayX[21];
+    int pixelsThisTurn_h;
+    int endedCount_f;
 
-    local_90_ad = 0;
+    cellCount = 0;
 
-    local_60_ad = D_ba14_combatants[param_4].x * 0x10 + 8;
-    local_62_ab = D_ba14_combatants[param_4].y * 0x10 + 8;
+    startX = D_ba14_combatants[caster].x * 0x10 + 8;
+    startY = D_ba14_combatants[caster].y * 0x10 + 8;
 
-    switch (param_5)
+    switch (direction)
     {
     case DIR_UP:
         // dc04
-        local_60_ad += 8;
+        startX += 8;
         break;
 
     case DIR_RIGHT:
         // dc5a
-        local_60_ad += 0x10;
-        local_62_ab += 8;
+        startX += 0x10;
+        startY += 8;
         break;
 
     case DIR_LEFT:
         // dc5e
-        local_62_ab += 8;
+        startY += 8;
         break;
 
     case DIR_DOWN:
         // dc64
-        local_60_ad += 8;
-        local_62_ab += 0x10;
+        startX += 8;
+        startY += 0x10;
         break;
     }
 
     // dc08
-    param_3 += 8;
-    for (local_5c = 0; local_5c < 0x15; local_5c++)
+    color += 8;
+    for (ray_i = 0; ray_i < 0x15; ray_i++)
     {
-        local_8c[local_5c] = 0; // dc1d
-        D_a9d0[local_5c] = D_1cf0[local_5c]; // dc2a
+        ended_h[ray_i] = 0; // dc1d
+        D_a9d0_rayBalance[ray_i] = D_1cf0[ray_i]; // dc2a
 
-        local_30_ac[local_5c] = local_60_ad; // dc44
-        local_5a_aa[local_5c] = local_62_ab; // dc49
+        rayX[ray_i] = startX; // dc44
+        rayY[ray_i] = startY; // dc49
     }
 
     // dc6e
-    local_4_ab = 0;
-    local_90_ad = 0;
+    endedCount_f = 0;
+    cellCount = 0;
 
     // dc7f
     do
     {
-        local_4_ab = 0;
+        endedCount_f = 0;
 
-        for (local_5c = 0; local_5c < 0x15; local_5c++)
+        for (ray_i = 0; ray_i < 0x15; ray_i++)
         {
             // dca7
-            if (local_8c[local_5c] == 0)
+            if (ended_h[ray_i] == 0)
             {
                 // dcb3
-                local_6 = ULTIMA_3aae_Random(0xf);
+                pixelsThisTurn_h = ULTIMA_3aae_Random(0xf);
 
 #if defined(ENABLE_SPEED_FIX)
                 TIME_SleepMs(3);
 #endif
 
-                for (local_5e = 0; local_5e < local_6; local_5e++)
+                for (pixelStep_f = 0; pixelStep_f < pixelsThisTurn_h; pixelStep_f++)
                 {
-                    if (CAST_1bb0(local_30_ac[local_5c], local_5a_aa[local_5c], param_3) != 0)
+                    if (CAST_1bb0_PlotSprayPixel(rayX[ray_i], rayY[ray_i], color) != 0)
                     {
-                        if (local_90_ad < 0x3f && D_5876_tempX > -1 && D_5878_tempY > -1 && D_5876_tempX < 0xb && D_5878_tempY < 0xb &&
+                        if (cellCount < 0x3f && D_5876_tempX > -1 && D_5878_tempY > -1 && D_5876_tempX < 0xb && D_5878_tempY < 0xb &&
                             GetMapViewport(D_5876_tempX, D_5878_tempY) == 0)
                         {
-                            local_90_ad++;
+                            cellCount++;
 
-                            param_1[local_90_ad] = D_5876_tempX;
-                            param_2[local_90_ad] = D_5878_tempY;
+                            outXs[cellCount] = D_5876_tempX;
+                            outYs[cellCount] = D_5878_tempY;
 
                             GetMapViewport(D_5876_tempX, D_5878_tempY) = 0xff;
                         }
                     }
                     else
                     {
-                        local_8c[local_5c] = 1;
+                        ended_h[ray_i] = 1;
                     }
 
-                    if (local_8c[local_5c] == 0)
+                    if (ended_h[ray_i] == 0)
                     {
-                        D_a9d0[local_5c] -= 10;
+                        D_a9d0_rayBalance[ray_i] -= 10;
 
-                        switch (param_5)
+                        switch (direction)
                         {
                         case DIR_UP:
-                            local_5a_aa[local_5c]--;
+                            rayY[ray_i]--;
                             break;
 
                         case DIR_DOWN:
-                            local_5a_aa[local_5c]++;
+                            rayY[ray_i]++;
                             break;
 
                         case DIR_RIGHT:
-                            local_30_ac[local_5c]++;
+                            rayX[ray_i]++;
                             break;
 
                         case DIR_LEFT:
-                            local_30_ac[local_5c]--;
+                            rayX[ray_i]--;
                             break;
                         }
 
-                        if ((s16)D_a9d0[local_5c] < 1)
+                        if ((s16)D_a9d0_rayBalance[ray_i] < 1)
                         {
-                            if (local_5c < 10)
+                            if (ray_i < 10)
                             {
-                                local_8e = -1;
+                                side_c = -1;
                             }
                             else
                             {
-                                local_8e = 1;
+                                side_c = 1;
                             }
 
-                            switch (param_5)
+                            switch (direction)
                             {
                             case DIR_UP:
-                                local_30_ac[local_5c] += local_8e;
+                                rayX[ray_i] += side_c;
                                 break;
 
                             case DIR_DOWN:
-                                local_30_ac[local_5c] -= local_8e;
+                                rayX[ray_i] -= side_c;
                                 break;
 
                             case DIR_RIGHT:
-                                local_5a_aa[local_5c] += local_8e;
+                                rayY[ray_i] += side_c;
                                 break;
 
                             case DIR_LEFT:
-                                local_5a_aa[local_5c] -= local_8e;
+                                rayY[ray_i] -= side_c;
                                 break;
                             }
 
-                            D_a9d0[local_5c] += D_1cf0[local_5c];
+                            D_a9d0_rayBalance[ray_i] += D_1cf0[ray_i];
                         }
                     }
 
-                    if (local_8c[local_5c] != 0)
+                    if (ended_h[ray_i] != 0)
                     {
                         break;
                     }
@@ -193,110 +195,112 @@ static int CAST_1c36(s16* param_1, s16* param_2, int param_3, int param_4, int p
             }
             else
             {
-                local_4_ab++;
+                endedCount_f++;
             }
         }
-    } while (local_4_ab < 0x15);
+    } while (endedCount_f < 0x15);
 
     ULTIMA_230e_PcspkOff();
-    return local_90_ad;
+    return cellCount;
 }
 
+// The four cone spells (kind 1 In Zu sleeps, 2 In Nox Hur poisons, 3 In Flam Hur burns, 4 In Vas Grav Corp kills outright; each
+// in a color of its own): asks a direction, sprays, then every creature on a cell reached suffers its effect once (it may resist).
 // CHECKED
 // MSC 5.0: the first switch's cases ordered 1, default, 2; "ULTIMA_3abe_Random1To30() >= COMBAT_13e2()"
 // (MSC calls the right-hand side first); the last loop's "> -1". The original's 10 bytes
 // after the ret are the zero padding at the end of CAST.OVL.
-void CAST_1f60(int param_1, int param_2, int param_3)
+void CAST_1f60_ConeSpell(int caster, int kind, int color)
 {
-    S_55a8* local_104c;
-    CombatEntity* local_106b;
-    int local_108a;
-    int local_10ai;
-    int local_10ch;
-    s16 local_102d[64];
-    s16 local_82l[64];
-    int local_10eg;
+    S_55a8* member_j;
+    CombatEntity* target_l;
+    int victim_h;
+    int noisePitch_n;
+    int cellIdx;
+    s16 hitYs[64];
+    s16 hitXs[64];
+    int dirOrCount;
 
-    local_10ch = 1;
-    local_104c = &D_55a8_party[D_ba14_combatants[param_1].entityIdx];
+    cellIdx = 1;
+    member_j = &D_55a8_party[D_ba14_combatants[caster].entityIdx];
 #if !defined(MATCHING_BUILD)
-    local_10eg = CAST2_0306_AskDirection();
+    dirOrCount = CAST2_0306_AskDirection();
 #else
-    local_10eg = CAST2_0306_AskDirection(param_1); // NOTE: original code error?
+    dirOrCount = CAST2_0306_AskDirection(caster); // NOTE: original code error?
 #endif
 #if !defined(MATCHING_BUILD) // added in FMT
-    if (local_10eg != 0)
+    if (dirOrCount != 0)
 #endif
     {
-        switch (param_2)
+        switch (kind)
         {
         case 1:
-            local_10ai = 16000;
+            noisePitch_n = 16000;
             break;
         default:
-            local_10ai = 0x5140;
+            noisePitch_n = 0x5140;
             break;
         case 2:
-            local_10ai = 0x4b00;
+            noisePitch_n = 0x4b00;
             break;
         }
 
         // df30
-        ULTIMA_223c_AudioWhiteNoise(800, local_10ai, 700);
+        ULTIMA_223c_AudioWhiteNoise(800, noisePitch_n, 700);
 
-        local_10eg = CAST_1c36(local_82l, local_102d, param_3, param_1, local_10eg);
-        local_10eg++;
+        dirOrCount = CAST_1c36_SprayRays(hitXs, hitYs, color, caster, dirOrCount);
+        dirOrCount++;
 
-        for (local_10ch = 1; local_10ch < local_10eg; local_10ch++)
+        for (cellIdx = 1; cellIdx < dirOrCount; cellIdx++)
         {
-            for (local_108a = 0x1f; local_108a > -1; local_108a--)
+            for (victim_h = 0x1f; victim_h > -1; victim_h--)
             {
                 // dfac?
-                local_106b = &D_ba14_combatants[local_108a]; // local_114
-                if (local_106b->x == local_82l[local_10ch] && local_106b->y == local_102d[local_10ch] &&
-                    (local_106b->turnTimer & 0x80) == 0 && (local_106b->flags & COMBAT_FLAGS_DEAD) == 0 && local_106b->flags != 0)
+                target_l = &D_ba14_combatants[victim_h]; // local_114
+                if (target_l->x == hitXs[cellIdx] && target_l->y == hitYs[cellIdx] &&
+                    (target_l->turnTimer & 0x80) == 0 && (target_l->flags & COMBAT_FLAGS_DEAD) == 0 && target_l->flags != 0)
                 {
-                    local_106b->turnTimer |= 0x80;
-                    switch (param_2)
+                    target_l->turnTimer |= 0x80;
+                    switch (kind)
                     {
                     case 1:
                         // e012
-                        if (COMSUBS_0000_TargetResists(param_1, local_108a, 0) == 0 && CAST_0000(local_108a) == 0)
+                        if (COMSUBS_0000_TargetResists(caster, victim_h, 0) == 0 && CAST_0000_IsImmuneToSpells(victim_h) == 0)
                         {
-                            ULTIMA_3564_HitEffectOnActor(local_108a);
-                            ULTIMA_68ae_PutToSleep(local_108a);
-                            COMSUBS_0312_ReportHit(local_108a, param_1); // -> e034 -> e0b2
+                            ULTIMA_3564_HitEffectOnActor(victim_h);
+                            ULTIMA_68ae_PutToSleep(victim_h);
+                            COMSUBS_0312_ReportHit(victim_h, caster); // -> e034 -> e0b2
                         }
 
                         break;
 
                     case 2:
                         // e03c
-                        if (ULTIMA_3abe_Random1To30() >= COMBAT_13e2(local_108a, QUERY_STAT_DEX))
+                        if (ULTIMA_3abe_Random1To30() >= COMBAT_13e2(victim_h, QUERY_STAT_DEX))
                         {
-                            ULTIMA_3564_HitEffectOnActor(local_108a);
-                            COMBAT_18ba(local_108a, param_1);
-                            COMSUBS_0312_ReportHit(local_108a, param_1); // -> e034 -> e0b2
+                            ULTIMA_3564_HitEffectOnActor(victim_h);
+                            COMBAT_18ba(victim_h, caster);
+                            COMSUBS_0312_ReportHit(victim_h, caster); // -> e034 -> e0b2
                         }
 
                         break;
 
                     case 3:
                         // e05c
-                        ULTIMA_3564_HitEffectOnActor(local_108a);
+                        ULTIMA_3564_HitEffectOnActor(victim_h);
 
-                        ULTIMA_3f14_IncreaseInt(&local_104c->exp, COMBAT_1574(local_108a, ULTIMA_3aae_Random(0x1e)), 9999);
-                        COMSUBS_0312_ReportHit(local_108a, param_1); // -> e034 -> e0b2
+                        ULTIMA_3f14_IncreaseInt(&member_j->exp, COMBAT_1574(victim_h, ULTIMA_3aae_Random(0x1e)), 9999);
+                        COMSUBS_0312_ReportHit(victim_h, caster); // -> e034 -> e0b2
                         break;
 
                     case 4:
                         // e07e
-                        if (COMSUBS_0000_TargetResists(param_1, local_108a, 0) == 0 && CAST_0000(local_108a) == 0)
+                        if (COMSUBS_0000_TargetResists(caster, victim_h, 0) == 0 && CAST_0000_IsImmuneToSpells(victim_h) == 0)
                         {
-                            ULTIMA_3564_HitEffectOnActor(local_108a);
+                            ULTIMA_3564_HitEffectOnActor(victim_h);
 
-                            ULTIMA_3f14_IncreaseInt(&local_104c->exp, COMBAT_1574(local_108a, 99), 9999); // -> e070
-                            COMSUBS_0312_ReportHit(local_108a, param_1); // -> e034 -> e0b2
+                            ULTIMA_3f14_IncreaseInt(&member_j->exp, COMBAT_1574(victim_h, 99), 9999); // -> e070
+                            COMSUBS_0312_ReportHit(victim_h, caster); // -> e034 -> e0b2
                         }
                         break;
                     }
@@ -309,10 +313,10 @@ void CAST_1f60(int param_1, int param_2, int param_3)
         }
 
         // e0c8
-        for (local_108a = 0x1f; local_108a > -1; local_108a--)
+        for (victim_h = 0x1f; victim_h > -1; victim_h--)
         {
             // e0d1
-            D_ba14_combatants[local_108a].turnTimer &= 0x7f;
+            D_ba14_combatants[victim_h].turnTimer &= 0x7f;
         }
     }
 }

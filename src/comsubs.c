@@ -185,7 +185,7 @@ int COMSUBS_00f4_MonsterSpecial(int combatant)
 }
 
 // Says what a blow did to the target, by the result bits in D_58a2: grazed, killed, slept, dragged under (by the
-// sea monster 0x2d), hit or how wounded a monster is (COMBAT_1a5c).
+// Corpser, 0x2d), hit or how wounded a monster is (COMBAT_1a5c).
 void COMSUBS_0312_ReportHit(int target, int attacker)
 {
     int local_8; // unused

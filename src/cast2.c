@@ -515,7 +515,8 @@ void CAST2_06ec_PrintPosition(void)
 }
 
 // CHECKED (07b2 block)
-// In Ex Por ("EIP"): in the chosen direction a door tile 97 or 98 becomes the open door; -1 when no direction was given, else 1 or 0.
+// In Ex Por ("EIP") and the Skull Key: in the chosen direction a door locked by magic (tile 97 or 98, An Ex Por) opens; -1 when
+// no direction was given, else 1 or 0.
 int CAST2_0768_InExPor(void)
 {
     int result;
@@ -620,7 +621,8 @@ int CAST2_07bc_AnGrav(int withEffect)
 // Sets the turns of light left (D_58a6).
 void CAST2_08ea_SetLightTurns(int param_1) { D_58a6_lightSpellTurns = param_1; }
 
-// Sets the party's spell status (icon letter and turns left: P protection, Q quickness, C, N negate magic), plays the effect and
+// Sets the party's spell status (icon letter and turns left: P protection, Q quickness, C confusion?, N negate magic,
+// T negate time; 0x0e, 0x1c and 0x1d for the amulet, crown and badge), plays the effect and
 // redraws the party display.
 void CAST2_08f8_SetSpellStatus(int icon, int turns, int level)
 {

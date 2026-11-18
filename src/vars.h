@@ -388,14 +388,14 @@ STUB char* D_444a[3];
 STUB char* D_4502[8];
 STUB u8 D_4512[8];
 
-STUB u8 D_4592[4];
-STUB u8 D_4596[4];
+STUB u8 D_4592_fieldMissileKinds[4];
+STUB u8 D_4596_dungeonFieldCells[4];
 
-STUB u8 D_4882[4]; // map x
-STUB u8 D_4886[4]; // map y
-STUB u8 D_488a[4]; // map id
-STUB u8 D_488e[4]; // map level
-STUB u8 D_4892[3];
+STUB u8 D_4882_shardX[4]; // map x
+STUB u8 D_4886_shardY[4]; // map y
+STUB u8 D_488a_shardMap[4]; // map id
+STUB u8 D_488e_shardLevel[4]; // map level
+STUB u8 D_4892_shardKilledBit[3];
 
 STUB char* D_4aa0_talkFileNames[4]; // the .TLK file of each group of eight maps
 STUB char* D_4aa8_standardWords[0x22+1]; // NAME, JOB, WORK, BYE, THANK, then words that get a rebuke
@@ -839,7 +839,7 @@ BSS u8 D_a9c8_diskDrives[6]; // the drive of each disk; 0xff: not set
 // used in intro
 BSS u8 D_a9ce_soundOn; // use sound effect?
 
-BSS u16 D_a9d0[0x15];
+BSS u16 D_a9d0_rayBalance[0x15];
 
 BSS u8 D_a9fa_vitalsDirty; // dirty flag for vital
 BSS u8 D_a9fb; // footstep sfx duration in dungeon
