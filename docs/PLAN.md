@@ -32,6 +32,7 @@ passes only when they are identical.
 | 2026-11-17, FONT_0000, ULTIMA_2322, INTRO_132a as assembly (AFONT0, A2322, AINTRO2); 23 overlays, resident image and DGROUP link identical | 594 | 0 | 0 | 0 | 0 | 594 |
 | 2026-11-17, the gate: EXE header and relocation table, DATA.OVL's header, communal variables; all 25 files identical (`tools/check.py`) | 594 | 0 | 0 | 0 | 0 | 594 |
 | 2026-11-18, two targets: GOG (1992) and the 1988 release v1.16 720K, 25/25 each; ULTIMA_2322 and INTRO_132a compiler output in 1988; the EXE checksum by rule | 596 | 0 | 0 | 0 | 0 | 596 |
+| 2026-11-18, the native port removed (only the DOS code and RELEASE_1988 remain); the resident C files named after what they hold (MATCHING.md, "The resident C files") | 596 | 0 | 0 | 0 | 0 | 596 |
 
 The early `SIZE` verdicts in `0000.c` and `1000.c` were routines that were hand-written
 assembly in the original and C in u5d (step 5); both files went with the native port.
@@ -106,8 +107,8 @@ Done, each checked by a tool:
 - **Objects:** INTRO has four objects (`intro0.c`, `intro.c`, `intro2.c`, `introb.c`), CMDS
   three (`cmds.c`, `cmds2.c`, `cmdsb.c`), SHOPPES2 two 5.0 objects (`shoppes2.c`,
   `shoppe2b.c`), found by the optimizer capacity; CAST is a 5.1 + 5.0 pair (`cast.c`,
-  `castb.c` from CAST_1c36), and the resident 5000.c a 5.0 + 5.1 pair (`5000.c`,
-  `r5a28.c` from ULTIMA_5a28). See MATCHING.md.
+  `castb.c` from CAST_1c36), and the resident 51a0-5f86 a 5.0 + 5.1 pair (`view.c`,
+  `visible.c` from ULTIMA_5a28). See MATCHING.md.
 
 Next, in order:
 
@@ -130,7 +131,7 @@ Next, in order:
      - *(done, by splitting objects)* CMDS_12c8, INTRO_0986.
      - *(done in batch 2)* INTRO_014e, CAST_1c36/1f60, SHOPPES2_08a8, TALK_01e2, SJOG_0514,
        NPC_06e4/0DB4, DUNGEON_111e/127e/1786.
-     - *(done in batch 3)* ULTIMA_5394 (5000.c split), ULTIMA_5a28, ULTIMA_1850 (with a
+     - *(done in batch 3)* ULTIMA_5394 (the 51a0-5f86 split), ULTIMA_5a28, ULTIMA_1850 (with a
        block of comment lines standing for the original's source lines), FONT_04A4,
        FONT_02FC, ZSTATS_0F2E, ZSTATS_06e8, MAINOUT_17d4.
      - *(done by a clean-room rewrite)* ZSTATS_0c5c, DUNGEON_1952 (a register pointer sharing a
@@ -145,24 +146,24 @@ Next, in order:
      - ULTIMA_1850's padding stands for a smaller pass-2 pool (more lines or less memory in
        the original). To drop it, give `tools/dosbuild.py` a per-file memory limit for C2
        (`research/c2mem.py` has the wrapper).
-     - 2000.c: ULTIMA_256e and 25d8 call ULTIMA_2322 with `call far 0:2322`, where MSC emits
+     - fileio.c: ULTIMA_256e and 25d8 call ULTIMA_2322 with `call far 0:2322`, where MSC emits
        `push cs; call near` for a far function defined earlier in the same module. So 2322
        (the GOG-patched function) was probably in another object; it is now A2322.ASM.
 2. **Split the resident C into its original modules** *(done)*. The runs between the
-   assembly modules are objects of their own: `r0d72.c`, `r1850.c`, `r1b38.c`, `r1dda.c`,
-   `r1fa0.c`, `r216c.c`, `r2320.c` + `A2322.ASM` + `r251e.c` (one object in the original,
-   CS:2320-256e), `r256e.c` (256e-266c), `2000.c` (from 266c), `3000.c`, `4000.c`, `5000.c`,
-   `r5a28.c`, `6000.c` (from 5f86), `7000.c` (7040-71aa).
+   assembly modules are objects of their own: `logo.c`, `print.c`, `pollkey.c`, `waitkey.c`,
+   `backspc.c`, `ustrlen.c`, `diskswap.c` + `A2322.ASM` + `swdisks.c` (one object in the original,
+   CS:2320-256e), `fileio.c` (256e-266c), `party.c` (from 266c), `commands.c`, `world.c`, `view.c`,
+   `visible.c`, `battle.c` (from 5f86), `lighthse.c` (7040-71aa).
    - The native port's C rewrites of the assembly functions (`0000.c`, `1000.c` and the
      blocks under `#if !defined(TARGET_DOS16)`) went with the port.
    - The boundary at 256e (not 251e) comes from the relocation table: see MATCHING.md,
-     "The resident 2000.c range".
+     "The resident range 2320-266c".
 3. **Resident data** *(done)*.
    - Every initialised variable is defined by the module that owns it; `vars.c` gives the DOS
      build only the communal (uninitialised) variables.
    - The runtime's data segments (`_DATA`, `CDATA`, the empty `XI*`/`XC*`/`XO*` tables, the
      message segments) are the library modules' own, placed in DGROUP.
-   - ULTIMA_25ca's string at DS:a0e0 is `r256e.c`'s own literal in CONST (no `_XTEXT`
+   - ULTIMA_25ca's string at DS:a0e0 is `fileio.c`'s own literal in CONST (no `_XTEXT`
      needed once the module was split off).
    - Uninitialised data: DS:a524-a9bc is the `_BSS` of four objects (their `static`
      variables), DS:a9bc-bd40 the communal variables, which the link allocates.
@@ -223,7 +224,7 @@ Next, in order:
      lost 6 more fill references (245 left); cmds.c's short link names are 24 (COMBAT_0000,
      OUTSUBS_0658 and DNGLOOK_117e, which CMDS_0000 calls). MATCHING.md, "What the module
      groups cost".
-   - To continue: the resident code (2000.c-7000.c, the `r*.c` files, ultima.c, the
+   - To continue: the resident code (ultima.c and the other resident C files, the
      assembly's private names), with the shared globals the groups left (used by the
      assembly or several groups). Small batches: ULTIMA_1850, town.c and cmds.c are at limits.
    - Done (resident code; `docs/names/resident-*.txt`): the last 18 functions, about 540
@@ -295,13 +296,13 @@ from a rule or from source, each named where it lives:
   (PLSTART) and A1EAC's drive-letter byte are conditional assembly.
 - **Stand-in devices**, final (each explained in its note; MATCHING.md, "What pass 2
   counts, measured"):
-  - ULTIMA_1850's comment lines (r1850.c): kept. Its limit is the pool's cut, the widest
-    window of the three (123-563 lines); a C2 memory limit for r1850.c would do the same
+  - ULTIMA_1850's comment lines (print.c): kept. Its limit is the pool's cut, the widest
+    window of the three (123-563 lines); a C2 memory limit for print.c would do the same
     and is no more certain.
   - TOWN_0f02's 245 dead references (town.c): kept, four to a line. The original had about
     7.5 KB more pass-2 memory in use between TOWN_0c78 and TOWN_0f02; no uniform cause fits.
   - CMDS_0000's 72 dead references (cmds.c): replaced the 27 short link names; window 64-80.
-  - AINTRO2's BYTE-aligned `_DATA` and A2322 holding D_545e and r2320's strings: the gog
+  - AINTRO2's BYTE-aligned `_DATA` and A2322 holding D_545e and diskswap's strings: the gog
     target only, the price of building 1992's patched functions from assembly; the 1988
     target has neither.
   - DUNGEON_1952's and SJOG_0514's register slot sharing is not a stand-in: the original

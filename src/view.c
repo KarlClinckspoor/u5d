@@ -1,5 +1,5 @@
 // Resident code from CS:51a0 to 5a28: an object of its own, compiled with MSC 5.0 (ULTIMA_5394_PutActorsInView
-// matches only under 5.0; 5a28, 5d0a and 5e4a only under 5.1, in r5a28.c).
+// matches only under 5.0; 5a28, 5d0a and 5e4a only under 5.1, in visible.c).
 
 #include "common/common.h"
 #include "vars.h"
@@ -149,7 +149,7 @@ static void ULTIMA_51b8_PutViewActor(int viewX, int viewY, int mapX, int mapY, i
 }
 
 // CHECKED
-// MSC 5.0 (this object is 5.0, r5a28.c after it 5.1): only 5.0 replaces the loop test with a
+// MSC 5.0 (this object is 5.0, visible.c after it 5.1): only 5.0 replaces the loop test with a
 // pointer compare (cmp [bp-26h],5C5Bh; jb) while keeping the dec of index; 5.1 gives
 // dec/jns. The loop must be a for: a do-while is never strength-reduced (13 pointer temporaries).
 // Put the party and the actors on their cells of the view (sitting, sleeping and climbing shapes by the tile under them).

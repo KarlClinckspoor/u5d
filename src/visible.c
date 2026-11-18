@@ -1,5 +1,5 @@
 // Resident code from CS:5a28 to 5f86: an object of its own, compiled with MSC 5.1, after the
-// MSC 5.0 object 5000.c (ULTIMA_51a0_RandomFrame to ULTIMA_5910) and before 6000.c. Its data is the two
+// MSC 5.0 object view.c (ULTIMA_51a0_RandomFrame to ULTIMA_5910) and before battle.c. Its data is the two
 // tables at DS:6a86.
 
 #include "common/common.h"

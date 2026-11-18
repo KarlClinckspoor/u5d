@@ -27,7 +27,7 @@ MSC51 = os.path.join(BUILD, 'msc51')
 #   1988   the October 1988 release, v1.16 720K (the files are kept as ../gamedata-1988).
 # The two differ only in ULTIMA.EXE and INTRO.OVL. A target's sources are compiled and
 # assembled with its macros defined (CL and MASM /DRELEASE_1988 for 1988, none for gog): the
-# parts that differ are `#if defined(RELEASE_1988)` in C (ULTIMA_2322 in r2320.c, INTRO_132a
+# parts that differ are `#if defined(RELEASE_1988)` in C (ULTIMA_2322 in diskswap.c, INTRO_132a
 # in intro2.c: 1.16's C, compiler output in 1988), `IFDEF RELEASE_1988` in assembly (PLSTART's
 # first 35 bytes, one byte of A1EAC).
 TARGETS = ('gog', '1988')
@@ -41,7 +41,7 @@ GAMEDATA_DIR = {'gog': 'gamedata', '1988': 'gamedata-1988'}
 # GOG target's build also builds the 1988 form of the modules that differ, for it.
 PATCH_OF = {'gog': '1988'}
 # Assembly modules a target leaves out, because C stands for them there: the 1988 target
-# compiles ULTIMA_2322 (with D_545e_lastDisk and r2320.c's strings) from src/r2320.c and INTRO_132a
+# compiles ULTIMA_2322 (with D_545e_lastDisk and diskswap.c's strings) from src/diskswap.c and INTRO_132a
 # (with its strings) from src/intro2.c; A2322.ASM and AINTRO2.ASM are the 1992 patch's bytes.
 # The link script's lines for them carry target=gog (tools/linkscript.py).
 ASM_EXCLUDED = {'gog': (), '1988': ('A2322', 'AINTRO2')}
@@ -234,13 +234,16 @@ MODULES = {o.lower() + '.c': ('ovl', o) for o in OVERLAYS}
 # AFONT, AINTRO2, AINTRO, ANPC: first line "NAME.OVL xxxx-yyyy"): tools/asmbuild.py assembles
 # them, tools/linkscript.py places them in their overlay by their functions' names.
 del MODULES['flames.c']
-MODULES.update({'%d000.c' % i: ('root', None) for i in range(2, 8)})
+# The resident C objects (docs/MATCHING.md, "The resident C files"): ultima.c (CS:0000), the
+# small modules between the resident assembly modules (logo.c 0d72 to fileio.c 256e), then
+# party.c (266c), commands.c (3072), world.c (400c), view.c (51a0), visible.c (5a28),
+# battle.c (5f86) and lighthse.c (7040).
+MODULES.update({n + '.c': ('root', None) for n in ('party', 'commands', 'world', 'view', 'battle', 'lighthse')})
 MODULES['ultima.c'] = ('root', None)
-# the small C modules between the resident assembly modules (named by their CS address)
-MODULES.update({n + '.c': ('root', None) for n in ('r0d72', 'r1850', 'r1b38', 'r1dda', 'r1fa0', 'r216c',
-                                                   'r2320', 'r251e', 'r256e')})
-# 5000.c (MSC 5.0, ULTIMA_51a0_RandomFrame to 5910) is followed by an MSC 5.1 object from 5a28 to 5f86.
-MODULES['r5a28.c'] = ('root', None)
+MODULES.update({n + '.c': ('root', None) for n in ('logo', 'print', 'pollkey', 'waitkey', 'backspc', 'ustrlen',
+                                                   'diskswap', 'swdisks', 'fileio')})
+# view.c (MSC 5.0, ULTIMA_51a0_RandomFrame to 5910) is followed by an MSC 5.1 object from 5a28 to 5f86.
+MODULES['visible.c'] = ('root', None)
 MODULES['vars.c'] = ('data', None)
 # INTRO.OVL's MSC 5.1 code is three objects: intro0.c (INTRO_0010_PutBackdropStrips, INTRO_0050), intro.c (to
 # INTRO_094e) and intro2.c (from INTRO_0986_Main), linked in that order before introb.c
@@ -260,9 +263,9 @@ MODULES['shoppe2b.c'] = ('ovl', 'SHOPPES2')
 # immediates in the long form (and si,7 as 81 e6 07 00); MSC 5.1 modules keep literals in
 # _DATA, packed. Each module is compiled with the one the original used (docs/MATCHING.md).
 COMPILER_BY_FILE = {f: 'msc50' for f in (
-    '3000.c', '4000.c', '6000.c', 'blckthrn.c', 'cast2.c', 'combat.c', 'comsubs.c', 'dnglook.c',
-    'endgame.c', 'font.c', 'lookobj.c', 'npc.c', 'r1850.c', 'r256e.c', 'shoppes.c', 'shoppes2.c', 'sjog.c',
-    'talk.c', 'zstats.c', '5000.c')}
+    'commands.c', 'world.c', 'battle.c', 'blckthrn.c', 'cast2.c', 'combat.c', 'comsubs.c', 'dnglook.c',
+    'endgame.c', 'font.c', 'lookobj.c', 'npc.c', 'print.c', 'fileio.c', 'shoppes.c', 'shoppes2.c', 'sjog.c',
+    'talk.c', 'zstats.c', 'view.c')}
 COMPILER_BY_FILE['shoppe2b.c'] = 'msc50'
 # Overlays built from two objects: NAME.c (MSC 5.1) and NAMEb.c (MSC 5.0), linked in that
 # order. The 5.0 part holds the functions that use CONST strings; its _DATA follows the 5.1
@@ -275,7 +278,7 @@ for _o in ('DUNGEON', 'MAINOUT', 'INTRO', 'OUTSUBS', 'CMDS', 'CAST'):
 # that stands for one of its functions (docs/MATCHING.md, "Assembly instead of unmatched or
 # patched C"). MSC wrote such an object's fixups in one record, last to first, and the
 # relocation tables have its words in that order (tools/u5link.py, relocation_order).
-OBJECT_PARTS = [('R2320', 'A2322', 'R251E'), ('INTRO2', 'AINTRO2'), ('AFONT0', 'FONT')]
+OBJECT_PARTS = [('DISKSWAP', 'A2322', 'SWDISKS'), ('INTRO2', 'AINTRO2'), ('AFONT0', 'FONT')]
 
 
 def object_parts(target=None):

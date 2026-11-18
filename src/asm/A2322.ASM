@@ -1,10 +1,10 @@
 ; A2322.ASM: ULTIMA.EXE CS:2322-251e, ULTIMA_2322_DiskSwapMessage as the GOG release has it.
-; In 1.16 this was MSC 5.1 output, the second function of r2320.c's object; GOG patched it in
+; In 1.16 this was MSC 5.1 output, the second function of diskswap.c's object; GOG patched it in
 ; place (2405-240c: the default drive is taken instead of asking for a disk; 24aa-24ac: the
 ; drive letter is no longer echoed), so its bytes are no compiler's output. The DOS build
 ; of the GOG target takes it from here. The 1988 target leaves this module out
 ; (tools/u5.py ASM_EXCLUDED; the link script's lines for it say target=gog) and compiles
-; 1.16's C in src/r2320.c (RELEASE_1988) instead, with D_545E_LASTDISK and the strings.
+; 1.16's C in src/diskswap.c (RELEASE_1988) instead, with D_545E_LASTDISK and the strings.
 ; Its _DATA is the object's: D_545E_LASTDISK (the disk last selected) and the strings, DS:545e-54b6.
 ; Drafted from the original bytes by tools/asmgen.py and checked by tools/asmbuild.py.
 

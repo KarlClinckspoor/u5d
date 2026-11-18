@@ -20,7 +20,7 @@ int MAINOUT_06ec_AttackCmd(void);
 int MAINOUT_08de_EnterCmd(void);
 
 // DS:55a6-6a0a: the saved game (55a6-6606), the map buffers and the game state, zero in the
-// original's DATA.OVL. Initialised data, so in some module's _DATA between 2000.c's (ends
+// original's DATA.OVL. Initialised data, so in some module's _DATA between party.c's (ends
 // at 55a6) and this module's tables (6a0a); which of the two is not known (the bytes are
 // the same either way).
 u16 D_55a6_saveStart = 0; // +0x0

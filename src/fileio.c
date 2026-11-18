@@ -1,7 +1,7 @@
 // Resident code, CS:256e-266c: a module of its own in the original, compiled with MSC 5.0:
-// its one string is in CONST (DS:a0e0, after FONT.OVL's strings and before 3000.c's), and
+// its one string is in CONST (DS:a0e0, after FONT.OVL's strings and before commands.c's), and
 // it calls ULTIMA_2322 with a far call, which MSC makes only for a far function of another
-// object. Its relocated words follow those of 2320-256e in ULTIMA.EXE's table (r251e.c).
+// object. Its relocated words follow those of 2320-256e in ULTIMA.EXE's table (swdisks.c).
 
 #include "common/common.h"
 #include "vars.h"
