@@ -14,16 +14,11 @@
 #include "macros.h"
 #include "tiles.h"
 
-#include "audio/aud_sfx.h"
-#include "event/event.h"
-#include "time/time.h"
-
 #include <stdlib.h>
 #include <time.h>
 #if defined(RELEASE_1988) // GOG DOS build: src/asm/A2322.ASM
 char D_545e_lastDisk = 0xff; // char, not u8: see vars.h
 #endif
-
 
 void far ULTIMA_2320_NoDiskSwapMessage(void)
 {

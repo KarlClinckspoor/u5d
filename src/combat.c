@@ -4,8 +4,6 @@
 #include "macros.h"
 #include "tiles.h"
 
-#include "audio/aud_mus.h"
-
 #include <string.h>
 
 #include "cast.h"
@@ -14,7 +12,6 @@
 #include "comsubs.h"
 #include "sjog.h"
 #include "zstats.h"
-
 
 
 

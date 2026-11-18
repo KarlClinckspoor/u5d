@@ -3,11 +3,8 @@
 #define D_306c_pageTextX D_306c_vars_h
 #define D_30c4_pageImageX D_30c4_vars_h
 #define D_30da_pageImageY D_30da_vars_h
-#include "audio/audio.h"
 #include "common/common.h"
 #include "funcs.h"
-#include "grap_drv.h"
-#include "savegame.h"
 #include "vars.h"
 #include "macros.h"
 #undef D_306c_pageTextX
@@ -20,8 +17,6 @@
 #include "intro.h"
 
 #include <string.h>
-
-#include "time/time.h"
 
 // defined in introb.c, the part of INTRO.OVL built with MSC 5.0
 void INTRO_2090_AnimateWD(void);

@@ -6,14 +6,11 @@
 
 #include <memory.h>
 
-#include "audio/aud_mus.h"
-
 #include "blckthrn.h"
 #include "cast2.h"
 #include "npc.h"
 #include "talk.h"
 #include "town.h"
-
 
 char* D_2652_townFileNames[4] =
 {
@@ -204,7 +201,6 @@ void TOWN_02ae_SetupShadowlord(void)
                 break;
             }
         }
-
 
         D_5f5e_npcs[npcSlot].mode = 1;
         D_5f5e_npcs[npcSlot].actorIdx = actorSlot;
@@ -890,8 +886,6 @@ u8 D_275a_secretTune[0xd] = {
 };
 
 u8 D_2767_tuneStep = 0;
-
-
 
 
 

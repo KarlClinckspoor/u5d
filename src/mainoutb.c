@@ -7,8 +7,6 @@
 
 #include <stdlib.h>
 
-#include "audio/aud_mus.h"
-
 #include "blckthrn.h"
 #include "cast2.h"
 #include "comsubs.h"

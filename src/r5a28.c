@@ -10,8 +10,6 @@
 
 #include <string.h>
 
-#include "audio/aud_mus.h"
-
 #include "cmds.h"
 #include "combat.h"
 #include "dnglook.h"

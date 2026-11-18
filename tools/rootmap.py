@@ -7,7 +7,7 @@
 Kinds:
   C       a C function of u5d (its last match verdict from build/match/status.tsv)
   ASM     a function the original wrote in assembly (u5d's // ASM or // STUB (asm) tag)
-  CRT     Microsoft C runtime (the '// xxxx: name' list in 0000.c)
+  CRT     Microsoft C runtime (the '// xxxx: name' list in funcs.h)
   STUBS   PLINK86 overlay call stubs (12 bytes each)
   PLINK   PLINK86's overlay manager and start-up (the far segments)
   ?       not covered by anything known
@@ -43,7 +43,7 @@ def function_tags():
 
 def crt_names():
     out = {}
-    for p in glob.glob(os.path.join(u5.SRC, '[0-7]000.c')):
+    for p in [os.path.join(u5.SRC, 'funcs.h')]:
         for m in re.finditer(r'^// ([0-9a-f]{4}): (.+)$', open(p, encoding='utf-8', errors='replace').read(), re.M):
             out[int(m.group(1), 16)] = m.group(2).strip()
     return out

@@ -10,7 +10,6 @@
 #include "dnglook.h"
 #include "dungeon.h"
 #include "endgame.h"
-#include "audio/aud_mus.h"
 
 // The part of DUNGEON.OVL built with MSC 5.0 (docs/MATCHING.md, "Two compilers").
 // Where this part starts is not certain: DUNGEON_1020_StepSound uses no strings and compiles the same

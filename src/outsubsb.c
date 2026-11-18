@@ -6,8 +6,6 @@
 
 #include <string.h>
 
-#include "audio/aud_mus.h"
-
 #include "outsubs.h"
 
 // The part of OUTSUBS.OVL built with MSC 5.0 (docs/MATCHING.md, "Two compilers").

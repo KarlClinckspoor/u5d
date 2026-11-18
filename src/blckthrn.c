@@ -4,8 +4,6 @@
 #include "macros.h"
 #include "tiles.h"
 
-#include "audio/aud_mus.h"
-
 #include "blckthrn.h"
 #include "cast2.h"
 #include "town.h"
@@ -61,7 +59,6 @@ static int BLCKTHRN_002e_MoveActorOf(int moveCode)
 {
     int actorIndex;
 
-
     switch (moveCode & 0xfc)
     {
     case 0x10:
@@ -98,7 +95,6 @@ static int BLCKTHRN_002e_MoveActorOf(int moveCode)
         D_5876_tempX--;
         break;
     }
-
 
     return actorIndex;
 }

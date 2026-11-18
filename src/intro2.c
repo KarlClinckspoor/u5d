@@ -1,8 +1,5 @@
-#include "audio/audio.h"
 #include "common/common.h"
 #include "funcs.h"
-#include "grap_drv.h"
-#include "savegame.h"
 #include "vars.h"
 #include "macros.h"
 
@@ -12,8 +9,6 @@
 #include "intro.h"
 
 #include <string.h>
-
-#include "time/time.h"
 
 // INTRO.OVL's MSC 5.1 code is three objects: intro0.c (INTRO_0010_PutBackdropStrips, INTRO_0050), intro.c
 // (INTRO_014e-INTRO_094e) and this one, from INTRO_0986_Main. Compiled after the first part's functions, INTRO_0986 loses

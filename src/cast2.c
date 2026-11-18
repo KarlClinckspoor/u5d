@@ -1,12 +1,9 @@
 #include "common/common.h"
 
-#include "savegame.h"
 #include "funcs.h"
 #include "vars.h"
 #include "macros.h"
 #include "tiles.h"
-
-#include "audio/aud_mus.h"
 
 #include "cast2.h"
 #include "combat.h"

@@ -4,7 +4,6 @@
 #include "macros.h"
 #include "tiles.h"
 
-#include "grap_drv.h"
 #include "sjog.h"
 
 #include <string.h>

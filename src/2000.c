@@ -4,10 +4,6 @@
 #include "macros.h"
 #include "tiles.h"
 
-#include "audio/aud_sfx.h"
-#include "event/event.h"
-#include "time/time.h"
-
 #include <stdlib.h>
 #include <time.h>
 

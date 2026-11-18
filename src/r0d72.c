@@ -3,13 +3,11 @@
 #include "common/common.h"
 #include "vars.h"
 #include "funcs.h"
-#include "grap_drv.h"
 #include <stdio.h>
 #include "macros.h"
 int D_5306_logoFrameWidth[7] = {0x0018, 0x0028, 0x0048, 0x0070, 0x0098, 0x00d8, 0x0118};
 
 int D_5314_logoFrameHeight[7] = {0x0003, 0x0007, 0x000b, 0x0014, 0x0020, 0x002d, 0x003d};
-
 
 int ULTIMA_0d72_AnimateOriginLogo(byte* image)
 {

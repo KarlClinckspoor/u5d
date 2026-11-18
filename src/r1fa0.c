@@ -4,15 +4,10 @@
 #include "funcs.h"
 #include "vars.h"
 #include "macros.h"
-#include "grap_drv.h"
-#include "common/lzw.h"
-#include "key/key.h"
-#include "time/time.h"
 #include "font.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
 
 void ULTIMA_1fa0_Backspace(int char_count)
 {
@@ -44,7 +39,6 @@ void ULTIMA_1fa0_Backspace(int char_count)
         D_538e_cursorAdvance = savedFlag_d;
     }
 }
-
 
 u16 ULTIMA_2032_ToUpper(u8 x)
 {

@@ -6,8 +6,6 @@
 
 #include <string.h>
 
-#include "audio/aud_mus.h"
-
 #include "outsubs.h"
 
 u8 D_3866_dungeonChunks[8] = {0x4F, 0x45, 0xA4, 0x17, 0x19, 0x63, 0xFE, 0x88};

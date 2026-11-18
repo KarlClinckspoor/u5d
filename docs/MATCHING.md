@@ -65,9 +65,9 @@ The examples below use `.venv/Scripts/python` (Windows); use `.venv/bin/python` 
 
 ### Data tools
 
-- `tools/dgroup.py` maps DGROUP. It finds each module's strings by their `_TEXT(addr, ...)`
-  (or `/*0xaddr*/` comment) addresses, and each `vars.c` variable by the address in its
-  name, with the modules that use it.
+- `tools/dgroup.py` maps DGROUP. It finds each module's strings by the `/*0xaddr*/` comment
+  before each literal, and each `vars.c` variable by the address in its name, with the
+  modules that use it.
 - `tools/movevar.py FILE.c --plan/--apply` moves a module's tables out of `vars.c` into the
   module, at the place that gives the original order, fixing sizes that ran into the next
   item.
@@ -94,7 +94,7 @@ addresses that u5d's names carry:
 | relative call or jump to another function of the same module (no fixup) | the original's target |
 
 Names with no address (runtime library) come from the `// 0442: aNlmul` comments in
-`0000.c`. Anything the tool cannot check is counted as *unverified* and never passed silently.
+`funcs.h`. Anything the tool cannot check is counted as *unverified* and never passed silently.
 
 The verdicts, worst first:
 
@@ -303,7 +303,7 @@ u5d builds the GOG release (`gog`, the default) and the October 1988 release v1.
   A2322, AINTRO2). `linkscript.py --check --target T` compares that target's lines; writing
   measures the target given and the other one too when its files are there.
 - `check.py` checks both targets by default (`--target both|gog|1988`; `make check
-  RELEASE=both|gog|1988`, since the Makefile's TARGET is the native build's).
+  RELEASE=both|gog|1988`).
 - To move another module of a target from assembly to C: put the C under `RELEASE_1988`,
   add the module to `u5.ASM_EXCLUDED[target]`, run `linkscript.py`.
 
@@ -364,12 +364,6 @@ objects of the last run again, `--keep` keeps them.
   `open` audit event recorded no game file opened; the 25 outputs were then compared byte
   for byte with the GOG files.
 
-### `nativecheck.py`
-
-`tools/nativecheck.py [FILE.c ...]` compiles the files with the host compiler as the native
-(SDL) build would. The native build must keep compiling from the same sources, so run it
-after changing C.
-
 ## Working on a function
 
 1. `match.py FILE.c --dis FUNCTION` shows both disassemblies side by side. The listing
@@ -378,12 +372,9 @@ after changing C.
    shape, temporaries, declaration order, `register`, loop form, signedness.
 3. Recompile and compare (`match.py FILE.c --compile -v`). To try several forms at once
    without editing the file, use `variants.py` (see "Working in parallel").
-4. A change for the native (SDL) build that would alter the DOS code goes under
-   `#if !defined(TARGET_DOS16)`, as u5d already does. The DOS build is `MATCHING_BUILD` plus
-   the GOG differences (`GOG_BUILD`; see below).
-5. What you learn about the compiler goes into **"What MSC 5.1 does"** below, with the
+4. What you learn about the compiler goes into **"What MSC 5.1 does"** below, with the
    smallest example that shows it.
-6. A function you leave unmatched gets a `NOT MATCHING` note just above it or at the place
+5. A function you leave unmatched gets a `NOT MATCHING` note just above it or at the place
    it differs. The note says:
    - what still differs, in terms of the listing ("the original keeps local_6 in SI without
      storing it at e7b3");
@@ -551,7 +542,7 @@ $P tools/rename.py -n ...                                         # dry run
 ```
 
 - A **global** rename (function, variable, macro, type) is whole-word in every C file and
-  header of `src/` (the native build's folders too), in upper case and cut at 31 in
+  header of `src/`, in upper case and cut at 31 in
   `src/asm/*.ASM`, and both ways in `src/u5d.lnk` and `tools/*.py` (`u5.COMMUNALS`,
   `u5.LINK_DEFINES`); `--docs` adds `docs/*.md`. String literals are left alone, comments are
   renamed, `.name` and `->name` are not (a field of the same name). Line endings are kept.
@@ -674,12 +665,10 @@ batch per module). Each module took one batch, one compile of its files and the 
   or local (`#define P2_SET ... param_2 ...`; fix by hand, then grep for the old names); a
   function header with comments inside the parameter list or after it on the same line
   (move the comment above first); a function header split by `#if`, and one-line
-  functions (left as they are). For C that only the native build compiles (FONT_0000,
-  INTRO_132a, whose DOS code is assembly) the slot solver finds no order; rename those
-  locals with `--exact`, since their slots do not matter, and run `nativecheck.py`.
+  functions (left as they are).
   A batch line that only adds a comment for a function already named is `#= NAME # text`.
-- **Globals left unnamed on purpose**: those `translate.c`, `aud_sfx.c`, the assembly or
-  another group also use, and the savegame bytes of the shared block. They go with the
+- **Globals left unnamed on purpose**: those the native port (`translate.c`, `aud_sfx.c`,
+  since removed), the assembly or another group also use, and the savegame bytes of the shared block. They go with the
   resident code.
 - **Plain one-line descriptions** above functions (`// use scroll`) were replaced; the
   matching notes, `// CHECKED` and the compiler notes were kept, with the new names in them.
@@ -755,10 +744,10 @@ every run: a wrong base shows up as fixups that do not verify.
   MAINOUT 2, …, SHOPPES 12, …, FONT 23, DATA 24.
 - **DATA.OVL** is a 16-byte header followed by DGROUP from DS:0000. All string literals are
   in it. Each module's strings and static data sit at a fixed DS offset, in link order.
-- **GOG differences.** The GOG files are 1.16 with a few patched ranges. u5d marks them with
-  `GOG_BUILD`: the disk-swap prompt in `2000.c` (around CS:2405–24aa), and the start of the
-  U4 import in `intro.c` (around INTRO 1332–1402). The DOS build must produce the GOG bytes
-  there.
+- **GOG differences.** The GOG files are 1.16 with a few patched ranges: the disk-swap prompt
+  (ULTIMA_2322, around CS:2405–24aa) and the start of the U4 import (INTRO_132a, around
+  INTRO 1332–1402). The gog target takes both functions from assembly (`A2322.ASM`,
+  `AINTRO2.ASM`); the 1988 target compiles 1.16's C (`RELEASE_1988`, "Two targets").
 
 ## Two compilers
 
@@ -934,8 +923,7 @@ of class BSS, in this order:
   address would have been aligned). Five places hold variables no code names: D_bbd2 (0xb6
   bytes, the size of D_bb1c), D_bcb0 (2), D_bd14 (1), D_bd3a and D_bd3b (1 each). They are
   declared so that the rest lands.
-- `vars.c` defines the communal variables in the DOS build (`#define BSS`), and nothing
-  else; in the native build it defines all of vars.h as before.
+- `vars.c` defines the communal variables (`#define BSS`), and nothing else.
 
 **A 5.0 module's own data.** u5d first had these modules' strings as generated char arrays
 (`tools/strings.py`, a stand-in for 5.0's aligned literals) and their tables in `vars.c`.
@@ -1000,13 +988,12 @@ moves locals (CAST_1c36: 5.0's end-pointer loop compare was the tell).
   functions before them. A new object's `_DATA` starts at an even address, so CMDS2 starts
   at CMDS_1202's first string (DS:4450), right after the D_444a table, not at D_444a's
   strings (DS:43ef). Each new file is registered in `tools/u5.py` (`MODULES`) and the build
-  lists (CMakeLists.txt, Makefile, src/build.bat, u5win), and functions now called across
+  list (src/build.bat), and functions now called across
   objects lost `static`.
 - **Assembly instead of unmatched or patched C.** (ULTIMA_2322 and INTRO_132a are assembly in
   the gog target only; the 1988 target builds both from C: "Two targets".) Three functions are built from assembly
-  written from the original bytes, as the original's own assembly is, while their C stays
-  for the native build only (`#if !defined(TARGET_DOS16)`, with a note pointing to the
-  module): FONT_0000 (`AFONT0.ASM`, FONT.OVL 0000-02a2, MSC 5.0 output the C comes within 56
+  written from the original bytes, as the original's own assembly is (the native port kept
+  their C; it is gone with the port): FONT_0000 (`AFONT0.ASM`, FONT.OVL 0000-02a2, MSC 5.0 output the C comes within 56
   bytes of), ULTIMA_2322 (`A2322.ASM`, CS:2322-251e) and INTRO_132a (`AINTRO2.ASM`, INTRO.OVL
   132a-1e22), the two functions GOG patched in place, whose bytes are no compiler's output.
   `tools/asmgen.py NAME START END --ovl OVERLAY` drafts an overlay part (offsets in the
@@ -1124,8 +1111,8 @@ Each entry gives the evidence. Add to this list as you learn.
   else falls through and is kept. The original has `if (...) { print; return; }` for
   each, every copy ends in a jump, and the first one is kept.
 - **`return;` in a function with a value.** CMDS_1030's "No effect!" paths jump straight to
-  the epilogue without loading AX: the original had a bare `return;`. `RETURN_AX(value)`
-  (common.h) is that `return;` in the DOS build and `return value;` elsewhere.
+  the epilogue without loading AX: the original had a bare `return;` (u5d writes
+  `return /* AX: value */;`).
 - **Table values kept in registers across calls**: MSC keeps a value read from a table in
   SI/DI across calls (and hoists it out of loops that call) only when it knows a call
   can't change the table. Two source forms give that and keep the table in `_DATA`:
@@ -1133,10 +1120,10 @@ Each entry gives the evidence. Add to this list as you learn.
     every table there has one user and the tables sit in function order). The data keeps
     source order, but making only some tables static while later ones stay at file scope
     breaks the layout (5.0 seems to emit file-scope data before static locals). DUNGEON_104c's
-    tables stay global because translate.c patches D_2e10. (DUNGEON_111e, 127e, 1786.)
+    tables stay global because the native port's translate.c patched D_2e10. (DUNGEON_111e, 127e, 1786.)
   - MSC 5.1: the table is really `const`; 5.1 leaves an initialised const table in `_DATA`
-    in its place (5.0 moves it to CONST). common.h defines `const` away in the DOS build, so
-    intro.c has `#undef const` around its tables (INTRO_014e).
+    in its place (5.0 moves it to CONST). intro.c's three tables are `const` (INTRO_014e).
+    (common.h used to define `const` away, for the native port; no other file uses it.)
   A `register` local in an inner block gives the code too, but takes a stack slot.
 - **A label stops constant propagation.** SHOPPES2_00ac sets `local_4 = 0` and then
   indexes with it. The original reloads local_4 from the stack, where MSC would fold the 0.
@@ -1292,7 +1279,7 @@ Each entry gives the evidence. Add to this list as you learn.
     module does not otherwise reference generates no code, but each symbol costs pass-2
     memory like a live reference, and unlike tentative definitions it creates nothing at
     link. TOWN_0f02 matches with exactly 266 of them (265 and 267 give other code) at the
-    top of the function, under `#if defined(TARGET_DOS16)`. The memory stays used for the
+    top of the function. The memory stays used for the
     rest of the object, so TOWN_0f02 must be the last function of its object: TOWN.OVL is
     `town.c` (to TOWN_0f02) and `town2.c` (from TOWN_10da, `_DATA` at DS:278a). The window
     depends on u5d's symbol names: renaming or adding globals that town.c references moves
@@ -1372,8 +1359,7 @@ Each entry gives the evidence. Add to this list as you learn.
   not give its slot back to a block after it, so all of x's uses must sit in that one bare
   block (labels inside it may be goto targets). A then-branch can then be written at the
   end of the function as a block reached only by a goto and ending in one: MSC places it
-  after the first jump to it, inverted, where a plain if/else would (DUNGEON_1952, which
-  keeps the plain if/else for the native build under `#else`).
+  after the first jump to it, inverted, where a plain if/else would (DUNGEON_1952).
 - **An outer `for` needs an increment expression for its inner loops to get registers
   (5.0).** `while (c)` and `for (; c; )` give none; `for (;;) { if (!c) break; ...` gives
   them but leaves the first inner loop's loads at the top of the body; `for (; c; expr)`,

@@ -8,7 +8,6 @@
 #include "dnglook.h"
 #include "dungeon.h"
 #include "sjog.h"
-#include "audio/audio.h"
 
 static u8 D_a528_viewQueueX[0x100]; // this object's _BSS (DS:a528)
 static u8 D_a628_viewQueueY[0x100];

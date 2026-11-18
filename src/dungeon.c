@@ -10,7 +10,6 @@
 #include "dnglook.h"
 #include "dungeon.h"
 #include "endgame.h"
-#include "audio/aud_mus.h"
 
 // defined in dungeonb.c, the part of DUNGEON.OVL built with MSC 5.0
 void DUNGEON_1a90_DrawView(int fullView);

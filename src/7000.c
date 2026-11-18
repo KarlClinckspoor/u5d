@@ -2,9 +2,6 @@
 #include "funcs.h"
 #include "vars.h"
 
-#include "grap_drv.h"
-#include "common/file.h"
-
 // Write one frame (param_1 mod 16) of a lighthouse beam, 16 cells, to the combat map around (param_3,param_4): param_2 = 1 sets 0xff, else 0.
 static void ULTIMA_7040_SetBeamCells(int frame, int setCells, int beaconX, int beaconY)
 {

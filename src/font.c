@@ -1,12 +1,9 @@
 #include "common/common.h"
-#include "savegame.h"
 #include "funcs.h"
 #include "vars.h"
 #include "macros.h"
 
 #include <string.h>
-
-#include "audio/audio.h"
 
 #include "font.h"
 #include "intro.h"
@@ -193,7 +190,6 @@ static void FONT_0418_LoadSceneStrip(int scene)
 {
     int row;
     int col_b;
-
 
     INTRO_043e_PrintCaptionBar(D_515c_sceneCaptions[scene]);
 

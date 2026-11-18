@@ -9,8 +9,6 @@
 
 #include <string.h>
 
-#include "audio/aud_mus.h"
-
 #include "cmds.h"
 #include "combat.h"
 #include "dnglook.h"
@@ -32,7 +30,6 @@ static int ULTIMA_51a0_RandomFrame(void)
 static void ULTIMA_51b8_PutViewActor(int viewX, int viewY, int mapX, int mapY, int shape)
 {
     int tileUnder;
-
 
     if (shape == 0x1c || shape >= 0x12 && shape < 0x16 || shape >= 0x40 || shape >= 0x28 && shape < 0x2c)
     {

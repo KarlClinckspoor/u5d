@@ -1,6 +1,4 @@
 #include "common/common.h"
-#include "audio/aud_mus.h"
-#include "audio/aud_sfx.h"
 #include "funcs.h"
 #include "macros.h"
 #include "vars.h"

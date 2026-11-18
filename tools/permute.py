@@ -16,7 +16,7 @@ not match, this tries such variants automatically:
 Each round compiles a batch of variants (each a full copy of the module with one or more
 changes to the function) in one DOSBox-X session, scores them against the original (verdict,
 length difference, differing bytes) and continues from the best. Every variant keeps the
-meaning of the code; the result is still checked by match.py and nativecheck.py as usual.
+meaning of the code; the result is still checked by match.py as usual.
 With --apply, the best variant found replaces the function in src/ (only if it is better).
 """
 import argparse, os, random, re, shutil, subprocess, sys, tempfile

@@ -13,7 +13,6 @@
 #include "lookobj.h"
 #include "town.h"
 #include "zstats.h"
-#include "time/time.h"
 
 // CAST.OVL's last two functions are an object of their own, built with MSC 5.0, after
 // cast.c's (MSC 5.1). They use no strings, so no string shows the compiler: compiled after

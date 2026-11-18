@@ -10,14 +10,11 @@
 
 #include <memory.h>
 
-#include "audio/aud_mus.h"
-
 #include "blckthrn.h"
 #include "cast2.h"
 #include "npc.h"
 #include "talk.h"
 #include "town.h"
-
 
 // "Begone, vermin!": the party is damaged and the NPC becomes a flee-er.
 void TOWN_10da_ShoutBegone(int npc)
@@ -93,7 +90,6 @@ char* D_27dc_shadowlordTraits[3] = {
     /*0x27a7*/ "hatred",
     /*0x27ae*/ "cowardice"
 };
-
 
 // "An air of falsehood/hatred/cowardice doth surround thee..." with a sound.
 static void TOWN_11b8_PrintAirOf(int shadowlord)

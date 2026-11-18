@@ -5,8 +5,6 @@
 
 #include <stdlib.h>
 
-#include "audio/aud_mus.h"
-
 #include "endgame.h"
 #include "font.h"
 #include "tiles.h"

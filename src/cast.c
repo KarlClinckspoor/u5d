@@ -13,14 +13,12 @@
 #include "lookobj.h"
 #include "town.h"
 #include "zstats.h"
-#include "time/time.h"
 
 void MAINOUT_0000_SetUpOverworld(void);
 
 u8 D_4592_fieldMissileKinds[4] = {0x35, 0x33, 0x34, 0x36};
 
 u8 D_4596_dungeonFieldCells[4] = {0x82, 0x81, 0x80, 0x83};
-
 
 
 // 1 for the three who no spell touches: Blackthorn, Lord British and the Shadow Lord.
@@ -1522,7 +1520,6 @@ static void CAST_153c_UseMoonstone(int stone)
         ULTIMA_1850_PrintString(/*0x477c*/ "cannot be buried here!\n");
     }
 }
-
 
 u8 D_4882_shardX[4] = {0x0f, 0x0f, 0x0f};
 

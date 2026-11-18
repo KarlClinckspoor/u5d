@@ -33,8 +33,8 @@ passes only when they are identical.
 | 2026-11-17, the gate: EXE header and relocation table, DATA.OVL's header, communal variables; all 25 files identical (`tools/check.py`) | 594 | 0 | 0 | 0 | 0 | 594 |
 | 2026-11-18, two targets: GOG (1992) and the 1988 release v1.16 720K, 25/25 each; ULTIMA_2322 and INTRO_132a compiler output in 1988; the EXE checksum by rule | 596 | 0 | 0 | 0 | 0 | 596 |
 
-Most `SIZE` verdicts in `0000.c` and `1000.c` are routines that were hand-written assembly in
-the original and are C in u5d (step 5).
+The early `SIZE` verdicts in `0000.c` and `1000.c` were routines that were hand-written
+assembly in the original and C in u5d (step 5); both files went with the native port.
 
 ## Steps
 
@@ -65,7 +65,7 @@ the original and are C in u5d (step 5).
      to the original bytes.
    - MASM 3.0/4.0 are in the sibling projects. Instructions they encode differently are
      written as `db`.
-   - The C versions stay for the native build.
+   - The native port's C versions went with the port.
 
 6. **Runtime library.** Identify which modules of `SLIBCR.LIB` (and which build) make up
    the resident runtime, by matching them against the image.
@@ -112,7 +112,7 @@ Done, each checked by a tool:
 Next, in order:
 
 1. **Finish the C functions** (done: every C function of the DOS build is exact; FONT_0000,
-   ULTIMA_2322 and INTRO_132a are assembly in the DOS build, their C native-only;
+   ULTIMA_2322 and INTRO_132a are assembly in the gog build and C in the 1988 build;
    `build/match/status.tsv`). Every
    module now compiles with the compiler the original used, with 5.0's own slot hash, and
    DUNGEON, MAINOUT, INTRO, OUTSUBS and CMDS are split into their 5.1 and 5.0 objects.
@@ -153,8 +153,8 @@ Next, in order:
    `r1fa0.c`, `r216c.c`, `r2320.c` + `A2322.ASM` + `r251e.c` (one object in the original,
    CS:2320-256e), `r256e.c` (256e-266c), `2000.c` (from 266c), `3000.c`, `4000.c`, `5000.c`,
    `r5a28.c`, `6000.c` (from 5f86), `7000.c` (7040-71aa).
-   - The C rewrites of assembly functions are native-only (`#if !defined(TARGET_DOS16)`);
-     `0000.c` and `1000.c` give the DOS build no code.
+   - The native port's C rewrites of the assembly functions (`0000.c`, `1000.c` and the
+     blocks under `#if !defined(TARGET_DOS16)`) went with the port.
    - The boundary at 256e (not 251e) comes from the relocation table: see MATCHING.md,
      "The resident 2000.c range".
 3. **Resident data** *(done)*.
@@ -223,10 +223,9 @@ Next, in order:
      lost 6 more fill references (245 left); cmds.c's short link names are 24 (COMBAT_0000,
      OUTSUBS_0658 and DNGLOOK_117e, which CMDS_0000 calls). MATCHING.md, "What the module
      groups cost".
-   - To continue: the resident code (2000.c-7000.c, the `r*.c` files, ultima.c,
-     translate.c, savegame.c, grap_drv.c, the assembly's private names), with the shared
-     globals the groups left (used by translate.c, aud_sfx.c, the assembly or several
-     groups). Small batches: ULTIMA_1850, town.c and cmds.c are at limits.
+   - To continue: the resident code (2000.c-7000.c, the `r*.c` files, ultima.c, the
+     assembly's private names), with the shared globals the groups left (used by the
+     assembly or several groups). Small batches: ULTIMA_1850, town.c and cmds.c are at limits.
    - Done (resident code; `docs/names/resident-*.txt`): the last 18 functions, about 540
      locals and parameters, 160 globals, the struct fields; then the stand-in step
      (CMDS_0000's dead references, TOWN_0f02's fill four to a line).
