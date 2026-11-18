@@ -294,7 +294,7 @@ void ULTIMA_6150_Combat(int param_1)
     ULTIMA_60ec_LoadSpecialMap(local_4_ab);
     ULTIMA_5f86_SpecialMapHandler(0, param_1, 0);
 
-    SJOG_203e(param_1);
+    SJOG_203e_EndCombat(param_1);
     ULTIMA_5e4a_BuildLightMap();
     ULTIMA_4f7c_AdvanceTime(0);
 }

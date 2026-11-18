@@ -53,7 +53,7 @@ void DNGLOOK_0000_LookCmdInDungeon(void)
         return;
     }
 
-    if (SJOG_006c(D_6603_dungeonFacing) == 0)
+    if (SJOG_006c_AskDungeonCell(D_6603_dungeonFacing) == 0)
     {
         return;
     }

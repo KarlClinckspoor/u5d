@@ -568,7 +568,7 @@ int COMSUBS_0822_ResolveShot(int shooter, int aimX, int aimY, int onTarget, int 
 }
 
 // Bookkeeping of a shot by a party member: an arrow or a quarrel is used (when the count runs out it is recounted from
-// the members who still hold some, SJOG_1b34), a thrown weapon is taken from the stack or unequipped. Nothing is spent for a spell.
+// the members who still hold some, SJOG_1b34_UnequipAll), a thrown weapon is taken from the stack or unequipped. Nothing is spent for a spell.
 static void COMSUBS_097c_SpendAmmo(int weapon, int range)
 {
     if (D_588f != 0)
@@ -582,14 +582,14 @@ static void COMSUBS_097c_SpendAmmo(int weapon, int range)
     case 0x24:
         if (--D_57db_arrows == 0)
         {
-            D_57c0_equipment[weapon] += SJOG_1b34(weapon);
+            D_57c0_equipment[weapon] += SJOG_1b34_UnequipAll(weapon);
         }
         break;
 
     case 0x1c:
         if (--D_57dd_quarrels == 0)
         {
-            D_57c0_equipment[weapon] += SJOG_1b34(weapon);
+            D_57c0_equipment[weapon] += SJOG_1b34_UnequipAll(weapon);
         }
         break;
 

@@ -550,7 +550,7 @@ static void DUNGEON_1786_DrawWallDots(int dist, int frame)
 // directly in SI (mov si,[bp+4]; shl si,1); only a register pointer assigned and then
 // incremented gives the original's instructions. A register variable takes a stack slot,
 // so the DOS build shares it with the tile's: the tile is local to an "if (1)" body and
-// the register variable to the bare block after it (the same device as SJOG_0514). That
+// the register variable to the bare block after it (the same device as SJOG_0514_FindHiddenItem). That
 // needs the wall branch written with gotos: its block ends in a jump, so MSC places it
 // right after the test, as the then-branch of the plain if/else below.
 // The source the original was compiled from is not known; this is a spelling that gives

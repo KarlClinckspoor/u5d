@@ -357,31 +357,31 @@ STUB char* D_3e42[12];
 STUB u8 D_3e5a[6];
 STUB u8 D_3e60[6];
 
-STUB u8 D_3e66[4];
-STUB u8 D_3e6a[4];
-STUB u8 D_3e6e[4];
+STUB u8 D_3e66_harvestX[4];
+STUB u8 D_3e6a_harvestY[4];
+STUB u8 D_3e6e_harvestReagent[4];
 STUB char* D_3e72[3];
 
-STUB u8 D_3e78[0x72]; // TODO: size
-STUB u8 D_3eea[0x72]; // hidden item - value TODO: size
-STUB u8 D_3f5c[0x72]; // hidden item - map id TODO: size
-STUB u8 D_3fce[0x72]; // hidden item - map z TODO: size
-STUB u8 D_4040[0x72]; // hidden item - map x TODO: size
-STUB u8 D_40b2[0x72]; // hidden item - map y TODO: size
+STUB u8 D_3e78_hiddenTile[0x72]; // TODO: size
+STUB u8 D_3eea_hiddenValue[0x72]; // hidden item - value TODO: size
+STUB u8 D_3f5c_hiddenMap[0x72]; // hidden item - map id TODO: size
+STUB u8 D_3fce_hiddenLevel[0x72]; // hidden item - map z TODO: size
+STUB u8 D_4040_hiddenX[0x72]; // hidden item - map x TODO: size
+STUB u8 D_40b2_hiddenY[0x72]; // hidden item - map y TODO: size
 
 // 4100
-STUB u8 D_4124[8];
-STUB u8 D_412c[8];
-STUB u8 D_4134[8];
+STUB u8 D_4124_treasureKind[8];
+STUB u8 D_412c_treasureMinLevel[8];
+STUB u8 D_4134_treasureMaxAmount[8];
 
-STUB u8 D_413c[0x30];
-STUB u8 D_416c[0x30]; // ~419c)
+STUB u8 D_413c_gearKind[0x30];
+STUB u8 D_416c_gearMinLevel[0x30]; // ~419c)
 
 STUB char* D_419c[8];
 STUB char* D_41ac[8];
-STUB u8 D_41bc[8];
-STUB u8 D_41c4[8];
-STUB u8 D_41cc[8];
+STUB u8 D_41bc_dungeonLootOdds[8];
+STUB u8 D_41c4_dungeonLootMax[8];
+STUB u8 D_41cc_dungeonLootKind[8];
 
 STUB char* D_444a[3];
 
