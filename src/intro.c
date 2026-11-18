@@ -31,14 +31,14 @@ void INTRO_2090_AnimateWD(void);
 void INTRO_20ae_ShowWD(byte* ptr);
 
 // defined in intro0.c
-void INTRO_0010(void);
-int INTRO_0050_LordBritishAnim(int param_1, int param_2);
+void INTRO_0010_PutBackdropStrips(void);
+int INTRO_0050_LordBritishAnim(int x, int y);
 
 // common.h defines const away in the DOS build; these three tables are really const there
 // too. MSC 5.1 still puts them in _DATA, in their place.
 #undef const
 
-Pair D_2f98[0x15] =
+Pair D_2f98_textLeft[0x15] =
 {
     0xb4, 0x00, 0x00, 0xac, 0x00, 0x00, 0x00, 0xd2,
     0x00, 0x00, 0xb0, 0x00, 0x00, 0x00, 0xbc, 0x00,
@@ -48,7 +48,7 @@ Pair D_2f98[0x15] =
     0x00, 0x9c
 };
 
-Pair2 D_2fc2[0x15] =
+Pair2 D_2fc2_textRight[0x15] =
 {
     0x0140, 0x0140, 0x0140, 0x0140, 0x0084, 0x0140, 0x0140, 0x0140,
     0x0140, 0x0094, 0x0140, 0x0140, 0x0140, 0x0140, 0x0140, 0x0140,
@@ -58,21 +58,21 @@ Pair2 D_2fc2[0x15] =
     0x0140, 0x0140
 };
 
-u16 D_3016[0x15] =
+u16 D_3016_storyOffset[0x15] =
 {
     0x0000, 0x0111, 0x03cb, 0x0590, 0x0803, 0x0ac4, 0x0000, 0x0d6d,
     0x0e23, 0x0fb6, 0x1173, 0x132a, 0x14be, 0x162e, 0x192b, 0x1b9a,
     0x1e7b, 0x2172, 0x244b, 0x2780, 0x2a97
 };
 
-u8 D_3040[0x16] =
+u8 D_3040_regionTop[0x16] =
 {
     0xb4, 0x46, 0x83, 0x20, 0x46, 0x85, 0xc8, 0xa8,
     0xc8, 0xc8, 0xc8, 0xc8, 0xc8, 0x72, 0x72, 0x60,
     0x21, 0x46, 0x60, 0x33, 0x4f, 0x00
 };
 
-u8 D_3056[0x16] =
+u8 D_3056_regionBottom[0x16] =
 {
     0xc8, 0xc8, 0xc8, 0xa0, 0xc8, 0xc8, 0xc8, 0xc8,
     0xc8, 0xc8, 0xc8, 0xc8, 0xc8, 0xc8, 0xc8, 0xc8,
@@ -86,21 +86,21 @@ const u8 D_306c[0x16] =
     0x00, 0x00, 0xae, 0x00, 0x00, 0x00
 };
 
-u8 D_3082[0x16] =
+u8 D_3082_startY[0x16] =
 {
     0x80, 0x00, 0x28, 0x00, 0x09, 0x00, 0x09, 0x88,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x20, 0x00,
     0x00, 0x00, 0x00, 0x09, 0x00, 0x00
 };
 
-u8 D_3098[0x16] =
+u8 D_3098_imageIndex[0x16] =
 {
     0x00, 0x01, 0x00, 0x01, 0x02, 0x02, 0x02, 0x00,
     0x01, 0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x02,
     0x06, 0x04, 0x02, 0x06, 0x04, 0x00
 };
 
-u8 D_30ae[0x16] =
+u8 D_30ae_imageFile[0x16] =
 {
     0x00, 0x00, 0x01, 0x01, 0x01, 0x01, 0x01, 0x02,
     0x02, 0x03, 0x03, 0x04, 0x04, 0x05, 0x05, 0x05,
@@ -121,27 +121,28 @@ const u8 D_30da[0x16] =
     0x2e, 0x4e, 0x00, 0x37, 0x57, 0x00
 };
 
-u8 D_30f0[0x15] =
+u8 D_30f0_pageKind[0x15] =
 {
     0x01, 0x02, 0x00, 0x00, 0x00, 0x00, 0x03, 0x01,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x04,
     0x05, 0x06, 0x05, 0x06, 0x04
 };
 
+// The introduction story ("Ultima V Introduction" in the menu): 21 pages, each a picture from the END/STORY
+// picture files with its text from STORY.DAT in the justified font; a key turns the page.
 // CHECKED
-// introduction
-// Exact with two things: INTRO_0010/0050 in an object of their own (intro0.c; after them
+// Exact with two things: INTRO_0010_PutBackdropStrips/0050 in an object of their own (intro0.c; after them
 // the do-while that reloads local_6 is not optimized: pass 2's capacity), and D_30da,
 // D_30c4 and D_306c const. The original keeps their values in SI/DI across the calls
 // without any register variable (frame 0Ch): MSC knows a call cannot change a const table.
 // Register variables for them take stack slots (frame 12h), even at function level.
 void INTRO_014e_Introduction(void)
 {
-    byte* local_c;
-    int local_a;
-    int local_8;
-    byte* local_6;
-    byte* local_4_ab;
+    byte* fontImage;
+    int page_m;
+    int loadedFile;
+    byte* pageImage;
+    byte* bannerImage_h;
 
     if (D_5893_mapId != 64)
     {
@@ -151,10 +152,10 @@ void INTRO_014e_Introduction(void)
     D_5893_mapId = 0x40;
     do
     {
-        local_c = ULTIMA_0fae_LoadResourceFile(D_25ea_fileNames[0]);
-    } while (local_c == 0);
+        fontImage = ULTIMA_0fae_LoadResourceFile(D_25ea_fileNames[0]);
+    } while (fontImage == 0);
 
-    FONT_0000_DrawJustifiedText(local_c, _TEXT(0x2f30, ""));
+    FONT_0000_DrawJustifiedText(fontImage, _TEXT(0x2f30, ""));
     ULTIMA_0c22_GRAP_0f_SelectPage(1);
     ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
     ULTIMA_0c22_GRAP_0f_SelectPage(0);
@@ -163,83 +164,83 @@ void INTRO_014e_Introduction(void)
 
     do
     {
-        local_4_ab = ULTIMA_0bae_LoadImageFile(D_25ea_fileNames[0x11]);
-    } while (local_4_ab == 0);
+        bannerImage_h = ULTIMA_0bae_LoadImageFile(D_25ea_fileNames[0x11]);
+    } while (bannerImage_h == 0);
 
     // 01b2
     do
     {
-        local_6 = ULTIMA_0bae_LoadImageFile(D_25ea_fileNames[0x12]);
-    } while (local_6 == 0);
+        pageImage = ULTIMA_0bae_LoadImageFile(D_25ea_fileNames[0x12]);
+    } while (pageImage == 0);
 
-    local_8 = 0;
-    for (local_a = 0; local_a < 0x15; local_a++) // 0384
+    loadedFile = 0;
+    for (page_m = 0; page_m < 0x15; page_m++) // 0384
     {
         // 038a
-        if (local_8 != D_30ae[local_a])
+        if (loadedFile != D_30ae_imageFile[page_m])
         {
-            ULTIMA_0be4_FreeImage(local_6);
-            local_8 = D_30ae[local_a];
+            ULTIMA_0be4_FreeImage(pageImage);
+            loadedFile = D_30ae_imageFile[page_m];
             do
             {
-                local_6 = ULTIMA_0bae_LoadImageFile(D_25ea_fileNames[local_8 + 0x12]);
-            } while (local_6 == 0);
+                pageImage = ULTIMA_0bae_LoadImageFile(D_25ea_fileNames[loadedFile + 0x12]);
+            } while (pageImage == 0);
         }
 
         D_a9be = 2;
         ULTIMA_0c22_GRAP_0f_SelectPage(1);
         ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
-        if (D_30f0[local_a] == 1)
+        if (D_30f0_pageKind[page_m] == 1)
         {
-            switch (local_a)
+            switch (page_m)
             {
             case 0:
-                ULTIMA_0d4c_GRAP_4b_PutImage(local_4_ab, 0, 0xe0, 0x1e, 0);
-                ULTIMA_0d4c_GRAP_4b_PutImage(local_4_ab, 1, 0xa8, 0x3a, 0);
+                ULTIMA_0d4c_GRAP_4b_PutImage(bannerImage_h, 0, 0xe0, 0x1e, 0);
+                ULTIMA_0d4c_GRAP_4b_PutImage(bannerImage_h, 1, 0xa8, 0x3a, 0);
                 break;
             case 7:
-                ULTIMA_0d4c_GRAP_4b_PutImage(local_4_ab, 0, 0xe8, 0x1a, 0);
-                ULTIMA_0d4c_GRAP_4b_PutImage(local_4_ab, 2, 200, 0x36, 0);
+                ULTIMA_0d4c_GRAP_4b_PutImage(bannerImage_h, 0, 0xe8, 0x1a, 0);
+                ULTIMA_0d4c_GRAP_4b_PutImage(bannerImage_h, 2, 200, 0x36, 0);
                 break;
             case 0xe:
-                ULTIMA_0d4c_GRAP_4b_PutImage(local_4_ab, 0, 0xb8, 0, 0);
-                ULTIMA_0d4c_GRAP_4b_PutImage(local_4_ab, 3, 0xf8, 0, 0);
+                ULTIMA_0d4c_GRAP_4b_PutImage(bannerImage_h, 0, 0xb8, 0, 0);
+                ULTIMA_0d4c_GRAP_4b_PutImage(bannerImage_h, 3, 0xf8, 0, 0);
                 break;
             }
         }
 
-        ULTIMA_0d4c_GRAP_4b_PutImage(local_6, D_3098[local_a], D_30c4[local_a], D_30da[local_a], 0);
-        if (D_30f0[local_a] >= 4)
+        ULTIMA_0d4c_GRAP_4b_PutImage(pageImage, D_3098_imageIndex[page_m], D_30c4[page_m], D_30da[page_m], 0);
+        if (D_30f0_pageKind[page_m] >= 4)
         {
-            ULTIMA_0d4c_GRAP_4b_PutImage(local_6, D_30f0[local_a] * 2 - 5, D_30c4[local_a], D_30da[local_a] + 0x37, 0);
+            ULTIMA_0d4c_GRAP_4b_PutImage(pageImage, D_30f0_pageKind[page_m] * 2 - 5, D_30c4[page_m], D_30da[page_m] + 0x37, 0);
         }
 
-        D_5146[0] = D_2f98[local_a].x;
-        D_5146[1] = D_2f98[local_a].y;
+        D_5146[0] = D_2f98_textLeft[page_m].x;
+        D_5146[1] = D_2f98_textLeft[page_m].y;
 
-        D_514c[0] = D_2fc2[local_a].x;
-        D_514c[1] = D_2fc2[local_a].y;
+        D_514c[0] = D_2fc2_textRight[page_m].x;
+        D_514c[1] = D_2fc2_textRight[page_m].y;
 
-        D_5150 = D_3040[local_a];
-        D_5152 = D_3056[local_a];
-        D_5156 = D_306c[local_a];
-        D_5158 = D_3082[local_a];
+        D_5150 = D_3040_regionTop[page_m];
+        D_5152 = D_3056_regionBottom[page_m];
+        D_5156 = D_306c[page_m];
+        D_5158 = D_3082_startY[page_m];
 
-        if (D_30f0[local_a] == 3)
+        if (D_30f0_pageKind[page_m] == 3)
         {
-            ULTIMA_0d4c_GRAP_4b_PutImage(local_6, 3, 0x60, 0x27, 0);
-            FONT_0000_DrawJustifiedText(local_c, _TEXT(0x2f31, "Instantly, a shimmering blue door springs up!"));
-            D_5156 = D_306c[local_a];
+            ULTIMA_0d4c_GRAP_4b_PutImage(pageImage, 3, 0x60, 0x27, 0);
+            FONT_0000_DrawJustifiedText(fontImage, _TEXT(0x2f31, "Instantly, a shimmering blue door springs up!"));
+            D_5156 = D_306c[page_m];
             D_5158 = 0xb4;
-            FONT_0000_DrawJustifiedText(local_c, _TEXT(0x2f5f, "With heart beating rapidly, you step into it."));
+            FONT_0000_DrawJustifiedText(fontImage, _TEXT(0x2f5f, "With heart beating rapidly, you step into it."));
         }
         else
         {
-            ULTIMA_256e_ReadFileFromDisk(/*0x2f8d*/ "STORY.DAT", D_b21e_scratch, 2000, D_3016[local_a]);
-            FONT_0000_DrawJustifiedText(local_c, D_b21e_scratch);
+            ULTIMA_256e_ReadFileFromDisk(/*0x2f8d*/ "STORY.DAT", D_b21e_scratch, 2000, D_3016_storyOffset[page_m]);
+            FONT_0000_DrawJustifiedText(fontImage, D_b21e_scratch);
         }
 
-        if (local_a != 0)
+        if (page_m != 0)
         {
             ULTIMA_1b16_ClearKbdBuffer();
             while (ULTIMA_1d5e_PollKey() == 0)
@@ -248,17 +249,17 @@ void INTRO_014e_Introduction(void)
 
         ULTIMA_0f6e_GRAP_1b_TransferFullscreen(1, 0);
 
-        if (D_30f0[local_a] == 2)
+        if (D_30f0_pageKind[page_m] == 2)
         {
             ULTIMA_0c22_GRAP_0f_SelectPage(1);
-            ULTIMA_0d4c_GRAP_4b_PutImage(local_6, 2, 0x28, 0x56, 0);
+            ULTIMA_0d4c_GRAP_4b_PutImage(pageImage, 2, 0x28, 0x56, 0);
             ULTIMA_0f46_GRAP_66_Reveal(0x28, 0x56, 0x4b, 0x78);
         }
     }
 
-    ULTIMA_0be4_FreeImage(local_6);
-    ULTIMA_0be4_FreeImage(local_4_ab);
-    ULTIMA_0fdc_FreeBitImage(local_c);
+    ULTIMA_0be4_FreeImage(pageImage);
+    ULTIMA_0be4_FreeImage(bannerImage_h);
+    ULTIMA_0fdc_FreeBitImage(fontImage);
 
     ULTIMA_1b16_ClearKbdBuffer();
     while (ULTIMA_1d5e_PollKey() == 0)
@@ -275,41 +276,44 @@ void INTRO_014e_Introduction(void)
 #define const
 #endif
 
-void INTRO_043e(char* param_1)
+// Draws a bar at the bottom of the strip and prints the text centred in it between two caps (the title of a
+// story scene, the copyright line).
+void INTRO_043e_PrintCaptionBar(char* text)
 {
-    int local_6_an;
-    int local_4;
+    int right;
+    int left;
 
-    local_4 = -(ULTIMA_216c_strlen(param_1) / 2 - 0x12);
-    local_6_an = local_4 + ULTIMA_216c_strlen(param_1) + 2;
+    left = -(ULTIMA_216c_strlen(text) / 2 - 0x12);
+    right = left + ULTIMA_216c_strlen(text) + 2;
     ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b2_blueColor);
-    ULTIMA_0aa6_GRAP_3f_FillRect(8, 0xc1, local_4 * 8, 199);
-    ULTIMA_0aa6_GRAP_3f_FillRect(local_6_an * 8, 0xc1, 0x137, 199);
+    ULTIMA_0aa6_GRAP_3f_FillRect(8, 0xc1, left * 8, 199);
+    ULTIMA_0aa6_GRAP_3f_FillRect(right * 8, 0xc1, 0x137, 199);
     ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
-    ULTIMA_0b10_GRAP_Line(8, 0xc0, local_4 * 8, 0xc0);
-    ULTIMA_0b10_GRAP_Line(local_6_an * 8, 0xc0, 0x137, 0xc0);
-    ULTIMA_1bf2_SetTextPosition(local_4, 0x18);
+    ULTIMA_0b10_GRAP_Line(8, 0xc0, left * 8, 0xc0);
+    ULTIMA_0b10_GRAP_Line(right * 8, 0xc0, 0x137, 0xc0);
+    ULTIMA_1bf2_SetTextPosition(left, 0x18);
     ULTIMA_4c2a_PrintLeftCap();
-    ULTIMA_1850_PrintString(param_1);
+    ULTIMA_1850_PrintString(text);
     ULTIMA_4cce_PrintRightCap();
 }
 
+// Draws the frame of the main menu area: the box of blue border characters and the white outline.
 static void INTRO_04e0_DrawMenuBorders(void)
 {
-    int local_4;
+    int i;
 
     ULTIMA_1cca_SetTextForegroundColor(D_13b2_blueColor);
     ULTIMA_1bf2_SetTextPosition(0, 0xf);
     ULTIMA_16ba_PrintChar(0x7b);
 
-    for (local_4 = 0; local_4 < 0x26; local_4++)
+    for (i = 0; i < 0x26; i++)
     {
         ULTIMA_16ba_PrintChar(0x7f);
     }
 
     ULTIMA_16ba_PrintChar(0x7c);
 
-    for (local_4 = 0; local_4 < 8; local_4++)
+    for (i = 0; i < 8; i++)
     {
         ULTIMA_16ba_PrintChar(0x7f);
         ULTIMA_1bf2_SetTextPosition(0x27, ULTIMA_1cee_GetCurrentTextY());
@@ -318,7 +322,7 @@ static void INTRO_04e0_DrawMenuBorders(void)
 
     ULTIMA_16ba_PrintChar(0x7d);
 
-    for (local_4 = 0; local_4 < 0x26; local_4++)
+    for (i = 0; i < 0x26; i++)
     {
         ULTIMA_16ba_PrintChar(0x7f);
     }
@@ -334,9 +338,11 @@ static void INTRO_04e0_DrawMenuBorders(void)
     ULTIMA_1cca_SetTextForegroundColor(D_13b0_brightWhiteColor);
 }
 
-void INTRO_05b0_DisplayTitle(int param_1) // (0 for fast display)
+// The title screen: the ULTIMA picture (revealed with its sound unless withSound is 0, which shows it at
+// once), the backdrop strips, "Warriors of Destiny" from WD.BIT and its animation, then the menu frame.
+void INTRO_05b0_DisplayTitle(int withSound)
 {
-    byte* local_4;
+    byte* wdImage;
     int local_6_p; // unused
 
     D_a9be = 2;
@@ -347,45 +353,45 @@ void INTRO_05b0_DisplayTitle(int param_1) // (0 for fast display)
     }
     do
     {
-        D_bb1a = ULTIMA_0bae_LoadImageFile(D_25f0[23]); // "ULTIMA.16"
-    } while (D_bb1a == 0);
+        D_bb1a_titleImage = ULTIMA_0bae_LoadImageFile(D_25f0[23]); // "ULTIMA.16"
+    } while (D_bb1a_titleImage == 0);
     ULTIMA_0c22_GRAP_0f_SelectPage(0);
     ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
     ULTIMA_0c22_GRAP_0f_SelectPage(1);
-    ULTIMA_0d4c_GRAP_4b_PutImage(D_bb1a, 0, 0, 0, 0);
-    if (param_1 != 0)
+    ULTIMA_0d4c_GRAP_4b_PutImage(D_bb1a_titleImage, 0, 0, 0, 0);
+    if (withSound != 0)
     {
 #if !defined(TARGET_DOS16)
         // "ULTIMA" with sound
         AUDIO_PlayTitle1Sfx();
 #endif
         ULTIMA_0f46_GRAP_66_Reveal(0, 0, 319, 100);
-        param_1 = ULTIMA_1d5e_PollKey() == 0;
+        withSound = ULTIMA_1d5e_PollKey() == 0;
 #if !defined(TARGET_DOS16)
         AUDIO_StopSfx();
 #endif
     }
-    if (param_1 == 0)
+    if (withSound == 0)
     {
         ULTIMA_0ace_GRAP_18_TransferArea(1, 0, 0, 0, 319, 100);
     }
-    INTRO_0010();
-    ULTIMA_0be4_FreeImage(D_bb1a);
-    if (param_1 != 0)
+    INTRO_0010_PutBackdropStrips();
+    ULTIMA_0be4_FreeImage(D_bb1a_titleImage);
+    if (withSound != 0)
     {
         do
         {
-            local_4 = ULTIMA_0fae_LoadResourceFile(/*0x3105*/ "WD.BIT");
-        } while (local_4 == 0);
+            wdImage = ULTIMA_0fae_LoadResourceFile(/*0x3105*/ "WD.BIT");
+        } while (wdImage == 0);
 #if !defined(TARGET_DOS16)
         // "warriors of destiny" with sound
         AUDIO_PlayTitle2Sfx();
 #endif
-        INTRO_20ae_ShowWD(local_4);
+        INTRO_20ae_ShowWD(wdImage);
 #if !defined(TARGET_DOS16)
         AUDIO_StopSfx();
 #endif
-        ULTIMA_0fdc_FreeBitImage(local_4);
+        ULTIMA_0fdc_FreeBitImage(wdImage);
     }
     ULTIMA_0c22_GRAP_0f_SelectPage(0);
     INTRO_2090_AnimateWD();
@@ -393,76 +399,80 @@ void INTRO_05b0_DisplayTitle(int param_1) // (0 for fast display)
     INTRO_04e0_DrawMenuBorders();
 }
 
-static void INTRO_0676_WriteMenuOption(int param_4, int param_3, int param_2, char* param_1)
+// Prints one menu line at its column and row, inverted when it is the selected one.
+static void INTRO_0676_WriteMenuOption(int selected, int row, int col, char* label)
 {
-    if (param_3 == param_4)
+    if (row == selected)
     {
         ULTIMA_16ba_PrintChar(CTRL_CHAR_TOGGLE_INVERSION);
     }
 
-    ULTIMA_1bf2_SetTextPosition(param_2, param_3 + 0x11);
+    ULTIMA_1bf2_SetTextPosition(col, row + 0x11);
     ULTIMA_16ba_PrintChar(' ');
-    ULTIMA_1850_PrintString(param_1);
+    ULTIMA_1850_PrintString(label);
     ULTIMA_16ba_PrintChar(' ');
 
-    if (param_3 == param_4)
+    if (row == selected)
     {
         ULTIMA_16ba_PrintChar(CTRL_CHAR_TOGGLE_INVERSION);
     }
 }
 
-void INTRO_06bc_BuildMainMenu(int param_1)
+// Prints the six menu lines with one selected (0 Journey Onward ... 5 Return to the View).
+void INTRO_06bc_BuildMainMenu(int selected)
 {
-    INTRO_0676_WriteMenuOption(param_1, 0, 0xc, _TEXT(0x310c, "Journey Onward"));
-    INTRO_0676_WriteMenuOption(param_1, 1, 9, _TEXT(0x311b, "Create New Character"));
-    INTRO_0676_WriteMenuOption(param_1, 2, 8, _TEXT(0x3130, "Transfer from Ultima IV"));
-    INTRO_0676_WriteMenuOption(param_1, 3, 9, _TEXT(0x3148, "Ultima V Introduction"));
-    INTRO_0676_WriteMenuOption(param_1, 4, 0xb, _TEXT(0x315e, "Acknowledgements"));
-    INTRO_0676_WriteMenuOption(param_1, 5, 10, _TEXT(0x316f, "Return to the View"));
+    INTRO_0676_WriteMenuOption(selected, 0, 0xc, _TEXT(0x310c, "Journey Onward"));
+    INTRO_0676_WriteMenuOption(selected, 1, 9, _TEXT(0x311b, "Create New Character"));
+    INTRO_0676_WriteMenuOption(selected, 2, 8, _TEXT(0x3130, "Transfer from Ultima IV"));
+    INTRO_0676_WriteMenuOption(selected, 3, 9, _TEXT(0x3148, "Ultima V Introduction"));
+    INTRO_0676_WriteMenuOption(selected, 4, 0xb, _TEXT(0x315e, "Acknowledgements"));
+    INTRO_0676_WriteMenuOption(selected, 5, 10, _TEXT(0x316f, "Return to the View"));
 }
 
+// The acknowledgements: the STARTSC.16 picture scrolls in, waits for a key and scrolls out, then the menu
+// frame returns.
 void INTRO_072e_Acknowledgements(void)
 {
-    int local_6_an;
-    void* local_4;
+    int pos;
+    void* scrollImage;
 
     do
     {
-        local_4 = ULTIMA_0bae_LoadImageFile(D_25ea_fileNames[27]); // "STARTSC.16"
-    } while (local_4 == 0);
+        scrollImage = ULTIMA_0bae_LoadImageFile(D_25ea_fileNames[27]); // "STARTSC.16"
+    } while (scrollImage == 0);
 
     ULTIMA_0c22_GRAP_0f_SelectPage(1);
-    ULTIMA_0d4c_GRAP_4b_PutImage(local_4, 1, 0x10, 0x3f, 0);
+    ULTIMA_0d4c_GRAP_4b_PutImage(scrollImage, 1, 0x10, 0x3f, 0);
     ULTIMA_0c22_GRAP_0f_SelectPage(0);
 
-    for (local_6_an = 199; local_6_an >= 0x3f; local_6_an--)
+    for (pos = 199; pos >= 0x3f; pos--)
     {
-        ULTIMA_0d4c_GRAP_4b_PutImage(local_4, 0, 0x90, local_6_an, 0); // (image_buffer, image_idx, x, y, ?)
-        ULTIMA_0d4c_GRAP_4b_PutImage(local_4, 2, 0xa0, local_6_an, 0);
+        ULTIMA_0d4c_GRAP_4b_PutImage(scrollImage, 0, 0x90, pos, 0); // (image_buffer, image_idx, x, y, ?)
+        ULTIMA_0d4c_GRAP_4b_PutImage(scrollImage, 2, 0xa0, pos, 0);
 
 #if defined(ENABLE_SPEED_FIX)
-        TIME_SleepMs((199 - local_6_an) / 16);
+        TIME_SleepMs((199 - pos) / 16);
 #endif
     }
 
-    for (local_6_an = 0; local_6_an < 0x90; local_6_an += 8)
+    for (pos = 0; pos < 0x90; pos += 8)
     {
-        ULTIMA_0d4c_GRAP_4b_PutImage(local_4, 0, 0x88 - local_6_an, 0x3f, 0);
-        ULTIMA_0ace_GRAP_18_TransferArea(1, 0, 0x98 - local_6_an, 0x3f, 0x9f - local_6_an, 199);
-        ULTIMA_0d4c_GRAP_4b_PutImage(local_4, 2, local_6_an + 0xa8, 0x3f, 0);
-        ULTIMA_0ace_GRAP_18_TransferArea(1, 0, local_6_an + 0xa0, 0x3f, local_6_an + 0xa7, 199);
+        ULTIMA_0d4c_GRAP_4b_PutImage(scrollImage, 0, 0x88 - pos, 0x3f, 0);
+        ULTIMA_0ace_GRAP_18_TransferArea(1, 0, 0x98 - pos, 0x3f, 0x9f - pos, 199);
+        ULTIMA_0d4c_GRAP_4b_PutImage(scrollImage, 2, pos + 0xa8, 0x3f, 0);
+        ULTIMA_0ace_GRAP_18_TransferArea(1, 0, pos + 0xa0, 0x3f, pos + 0xa7, 199);
         ULTIMA_20fa_WaitTicks(1);
     }
 
     do
     {
-        D_bb1a = ULTIMA_0bae_LoadImageFile(D_25ea_fileNames[26]); // "ULTIMA.16"
-    } while (D_bb1a == 0);
+        D_bb1a_titleImage = ULTIMA_0bae_LoadImageFile(D_25ea_fileNames[26]); // "ULTIMA.16"
+    } while (D_bb1a_titleImage == 0);
 
     ULTIMA_0c22_GRAP_0f_SelectPage(1);
     ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
-    ULTIMA_0d4c_GRAP_4b_PutImage(D_bb1a, 1, 0x10, 0x41, 0);
-    ULTIMA_0be4_FreeImage(D_bb1a);
+    ULTIMA_0d4c_GRAP_4b_PutImage(D_bb1a_titleImage, 1, 0x10, 0x41, 0);
+    ULTIMA_0be4_FreeImage(D_bb1a_titleImage);
     INTRO_04e0_DrawMenuBorders();
     INTRO_06bc_BuildMainMenu(4);
 
@@ -472,49 +482,49 @@ void INTRO_072e_Acknowledgements(void)
 
     ULTIMA_0c22_GRAP_0f_SelectPage(0);
 
-    for (local_6_an = 0x88; local_6_an >= 0; local_6_an -= 8)
+    for (pos = 0x88; pos >= 0; pos -= 8)
     {
-        ULTIMA_0d4c_GRAP_4b_PutImage(local_4, 0, 0x90 - local_6_an, 0x3f, 0);
-        ULTIMA_0ace_GRAP_18_TransferArea(1, 0, 0x88 - local_6_an, 0x3f, 0x8f - local_6_an, 199);
-        ULTIMA_0d4c_GRAP_4b_PutImage(local_4, 2, local_6_an + 0xa0, 0x3f, 0);
-        ULTIMA_0ace_GRAP_18_TransferArea(1, 0, local_6_an + 0xb0, 0x3f, local_6_an + 0xb7, 199);
+        ULTIMA_0d4c_GRAP_4b_PutImage(scrollImage, 0, 0x90 - pos, 0x3f, 0);
+        ULTIMA_0ace_GRAP_18_TransferArea(1, 0, 0x88 - pos, 0x3f, 0x8f - pos, 199);
+        ULTIMA_0d4c_GRAP_4b_PutImage(scrollImage, 2, pos + 0xa0, 0x3f, 0);
+        ULTIMA_0ace_GRAP_18_TransferArea(1, 0, pos + 0xb0, 0x3f, pos + 0xb7, 199);
         ULTIMA_20fa_WaitTicks(1);
     }
 
-    ULTIMA_0be4_FreeImage(local_4);
+    ULTIMA_0be4_FreeImage(scrollImage);
 
-    for (local_6_an = 0x3f; local_6_an < 199; local_6_an++)
+    for (pos = 0x3f; pos < 199; pos++)
     {
-        ULTIMA_0d4c_GRAP_4b_PutImage(local_4, 0, 0x90, local_6_an + 1, 0);
-        ULTIMA_0d4c_GRAP_4b_PutImage(local_4, 2, 0xa0, local_6_an + 1, 0);
-        ULTIMA_0ace_GRAP_18_TransferArea(1, 0, 0x90, local_6_an, 0xaf, local_6_an);
+        ULTIMA_0d4c_GRAP_4b_PutImage(scrollImage, 0, 0x90, pos + 1, 0);
+        ULTIMA_0d4c_GRAP_4b_PutImage(scrollImage, 2, 0xa0, pos + 1, 0);
+        ULTIMA_0ace_GRAP_18_TransferArea(1, 0, 0x90, pos, 0xaf, pos);
 
 #if defined(ENABLE_SPEED_FIX)
-        TIME_SleepMs((199 - local_6_an) / 16);
+        TIME_SleepMs((199 - pos) / 16);
 #endif
     }
 
     ULTIMA_0ace_GRAP_18_TransferArea(1, 0, 0x90, 199, 0xaf, 199);
-    INTRO_0010();
+    INTRO_0010_PutBackdropStrips();
     ULTIMA_0c22_GRAP_0f_SelectPage(0);
     ULTIMA_1b16_ClearKbdBuffer();
 }
 
-// pause(wait time) (8b0e)
-int INTRO_094e_Pause(int param_1)
+// Waits that many ticks, or less when a key is pressed; returns the key (0 when none).
+int INTRO_094e_Pause(int ticks)
 {
-    int local_6_an;
-    int local_4;
+    int i;
+    int key;
 
-    local_4 = 0;
+    key = 0;
 
-    for (local_6_an = 0; local_6_an < param_1; local_6_an++)
+    for (i = 0; i < ticks; i++)
     {
-        if ((local_4 = ULTIMA_1d5e_PollKey()) != 0)
+        if ((key = ULTIMA_1d5e_PollKey()) != 0)
             break;
 
         ULTIMA_20fa_WaitTicks(1);
     }
 
-    return local_4;
+    return key;
 }

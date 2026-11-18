@@ -336,7 +336,7 @@ static void FONT_0418_LoadSceneStrip(int scene)
 
     ASSERT(scene < 4);
 
-    INTRO_043e(D_515c[scene]);
+    INTRO_043e_PrintCaptionBar(D_515c[scene]);
 
     for (col_b = 0; col_b < 0x13; col_b++)
     {

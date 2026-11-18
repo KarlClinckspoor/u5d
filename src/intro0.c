@@ -1,4 +1,4 @@
-// INTRO.OVL's MSC 5.1 code is three objects: this one (INTRO_0010, INTRO_0050), intro.c
+// INTRO.OVL's MSC 5.1 code is three objects: this one (INTRO_0010_PutBackdropStrips, INTRO_0050), intro.c
 // (INTRO_014e-INTRO_094e) and intro2.c (from INTRO_0986_Main), linked in that order before
 // introb.c. Compiled after these two functions, INTRO_014e's inner do-while is not optimized
 // (pass 2's capacity, docs/MATCHING.md); as the first function of its own object it is
@@ -21,98 +21,102 @@
 
 #include "time/time.h"
 
-void INTRO_0010(void)
+// Clears page 1 and puts the four 50-line pictures 1 to 4 of ULTIMA.16 one under the other at x 0x10
+// (probably the backdrop of the menu and story pages).
+void INTRO_0010_PutBackdropStrips(void)
 {
-    int local_4;
+    int band;
 
     ULTIMA_0c22_GRAP_0f_SelectPage(1);
     ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
 
-    for (local_4 = 0; local_4 < 4; local_4++)
+    for (band = 0; band < 4; band++)
     {
-        ULTIMA_0d4c_GRAP_4b_PutImage(D_bb1a, local_4 + 1, 0x10, local_4 * 0x32, 0);
+        ULTIMA_0d4c_GRAP_4b_PutImage(D_bb1a_titleImage, band + 1, 0x10, band * 0x32, 0);
     }
 }
 
-// lord british animation
-int INTRO_0050_LordBritishAnim(int param_1, int param_2)
+// Draws Lord British by the path in BRITISH.PTH from its current position (D_bb18_pathPos) up to the next
+// pen-up, one pen step per byte (3-bit steps in y and x, signs in bits 3 and 7); returns the new position,
+// or 0 when a key was pressed.
+int INTRO_0050_LordBritishAnim(int x, int y)
 {
-    int local_e;
-    int local_c_yMove;
-    int local_a_xMove;
-    int local_8;
-    byte* local_6;
-    int local_4_ab;
+    int penColor_n;
+    int yMove_p;
+    int xMove;
+    int pos_l;
+    byte* path;
+    int savedCalibration;
 
 #if !defined(MATCHING_BUILD)
-    local_6 = D_b21e_scratch;
+    path = D_b21e_scratch;
     ASSERT(SCRATCH_SIZE >= 2783); // BRITISH.PTH file size
 #define MEM_SIZE SCRATCH_SIZE
 #else
     // DOS: uses savegame area
-    local_6 = &D_55a6_saveStart;
+    path = &D_55a6_saveStart;
 #define MEM_SIZE ((byte*)&D_6606_saveEnd - (byte*)&D_55a6_saveStart) /*0x1060*/
 #endif
 
-    local_e = D_13b0_brightWhiteColor;
+    penColor_n = D_13b0_brightWhiteColor;
 
-    ULTIMA_0a70_GRAP_2d_SetPenColor(local_e);
+    ULTIMA_0a70_GRAP_2d_SetPenColor(penColor_n);
 
-    local_4_ab = D_5356_timerCalibration;
+    savedCalibration = D_5356_timerCalibration;
     D_5356_timerCalibration = 0x113;
 
-    for (local_8 = D_bb18; local_8 < MEM_SIZE; local_8++)
+    for (pos_l = D_bb18_pathPos; pos_l < MEM_SIZE; pos_l++)
     {
-        if (local_e != 0)
+        if (penColor_n != 0)
         {
-            ULTIMA_0c64_GRAP_30_Pset(param_1, param_2);
+            ULTIMA_0c64_GRAP_30_Pset(x, y);
         }
 
-        local_e = D_13b0_brightWhiteColor;
+        penColor_n = D_13b0_brightWhiteColor;
 
-        local_c_yMove = local_6[local_8] & 7;
-        if (local_c_yMove > 2)
+        yMove_p = path[pos_l] & 7;
+        if (yMove_p > 2)
         {
-            local_e = 0;
+            penColor_n = 0;
         }
 
-        if ((local_6[local_8] & 8) != 0)
+        if ((path[pos_l] & 8) != 0)
         {
-            local_c_yMove = -local_c_yMove;
+            yMove_p = -yMove_p;
         }
 
-        local_a_xMove = (local_6[local_8] >> 4) & 0x7;
-        if (local_a_xMove > 2)
+        xMove = (path[pos_l] >> 4) & 0x7;
+        if (xMove > 2)
         {
-            local_e = 0;
+            penColor_n = 0;
         }
 
-        if ((local_6[local_8] & 0x80) != 0)
+        if ((path[pos_l] & 0x80) != 0)
         {
-            local_a_xMove = -local_a_xMove;
+            xMove = -xMove;
         }
 
-        param_1 += local_a_xMove;
-        param_2 += local_c_yMove;
+        x += xMove;
+        y += yMove_p;
 
         if (ULTIMA_1d5e_PollKey() != 0)
         {
-            D_5356_timerCalibration = local_4_ab;
+            D_5356_timerCalibration = savedCalibration;
             return 0;
         }
 
-        if ((local_8 & 0x1f) == 0)
+        if ((pos_l & 0x1f) == 0)
         {
             ULTIMA_20fa_WaitTicks(1);
         }
 
-        if (local_6[local_8] == 0)
+        if (path[pos_l] == 0)
             break;
     }
 
-    D_bb18 = local_8 + 1;
-    D_5356_timerCalibration = local_4_ab;
+    D_bb18_pathPos = pos_l + 1;
+    D_5356_timerCalibration = savedCalibration;
 
-    return D_bb18;
+    return D_bb18_pathPos;
 #undef MEM_SIZE
 }

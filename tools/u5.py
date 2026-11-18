@@ -108,7 +108,7 @@ MODULES.update({n + '.c': ('root', None) for n in ('r0d72', 'r1850', 'r1b38', 'r
 # 5000.c (MSC 5.0, ULTIMA_51a0 to 5910) is followed by an MSC 5.1 object from 5a28 to 5f86.
 MODULES['r5a28.c'] = ('root', None)
 MODULES['vars.c'] = ('data', None)
-# INTRO.OVL's MSC 5.1 code is three objects: intro0.c (INTRO_0010, INTRO_0050), intro.c (to
+# INTRO.OVL's MSC 5.1 code is three objects: intro0.c (INTRO_0010_PutBackdropStrips, INTRO_0050), intro.c (to
 # INTRO_094e) and intro2.c (from INTRO_0986_Main), linked in that order before introb.c
 # (docs/MATCHING.md).
 MODULES['intro0.c'] = ('ovl', 'INTRO')
@@ -188,7 +188,7 @@ LINK_DEFINES.update({
 COMMUNALS = [n.upper() for n in (
     'D_a9bc_townJustEntered D_a9bd_curDisk D_a9be D_a9c0_wallImage D_a9c2 D_a9c4_itemsImage D_a9c6_monsterImage D_a9c8_diskDrives D_a9ce_soundOn D_a9d0_rayBalance D_a9fa_vitalsDirty D_a9fb_stepVolume D_a9fc_savedActors D_aafc_shopName D_aafe_shopOwner D_ab00_itemName D_ab02_viewTiles D_ac62_placeName D_ac64_viewActors D_ad14_combatMap '
     'D_b114_shopIndex D_b116_shopKind D_b118_shopPrice D_b11a_shopQuantity D_b11c D_b11e_tileFrames D_b21e_scratch D_b9ee D_ba14_combatants D_bb14_wallTile D_bb15_floorTile D_bb16 D_bb17_loadFlags '
-    'D_bb18 D_bb1a D_bb1c D_bbd2 D_bc88 D_bcb0 '
+    'D_bb18_pathPos D_bb1a_titleImage D_bb1c_u4Virtues D_bbd2 D_bc88_u4Member D_bcb0 '
     'D_bcb2_lineBuf D_bcda_lineLen '
     'D_bcdc_talkNpcIndex D_bcde_talkPtr D_bce0_talkCodeArgs D_bce4_talkWord D_bcf4_talkLabel D_bcf6_talkKeywordIndex D_bcf8_inputText '
     'D_bd08_answer D_bd14 D_bd15_savedMapId '

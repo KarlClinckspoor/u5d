@@ -228,25 +228,25 @@ STUB s8 D_2f2c_sideDy[4]; // direction y
 // ^ dungeon
 
 // intro
-STUB Pair D_2f98[0x15];
-STUB Pair2 D_2fc2[0x15];
-STUB u16 D_3016[0x15];
-STUB u8 D_3040[0x16]; // 0x15 + gap 1
-STUB u8 D_3056[0x16]; // 0x15 + gap 1
+STUB Pair D_2f98_textLeft[0x15];
+STUB Pair2 D_2fc2_textRight[0x15];
+STUB u16 D_3016_storyOffset[0x15];
+STUB u8 D_3040_regionTop[0x16]; // 0x15 + gap 1
+STUB u8 D_3056_regionBottom[0x16]; // 0x15 + gap 1
 STUB u8 D_306c[0x16]; // 0x15 + gap 1
-STUB u8 D_3082[0x16]; // 0x15 + gap 1
-STUB u8 D_3098[0x16]; // 0x15 + gap 1
-STUB u8 D_30ae[0x16]; // 0x15 + gap 1
+STUB u8 D_3082_startY[0x16]; // 0x15 + gap 1
+STUB u8 D_3098_imageIndex[0x16]; // 0x15 + gap 1
+STUB u8 D_30ae_imageFile[0x16]; // 0x15 + gap 1
 STUB u8 D_30c4[0x16]; // 0x15 + gap 1
 STUB u8 D_30da[0x16]; // 0x15 + gap 1
-STUB u8 D_30f0[0x15];
+STUB u8 D_30f0_pageKind[0x15];
 // 0x3105: "WD.BIT"
 
 // 3000
 
 STUB u16 D_3304; // u4 save - is avatar?
 
-STUB u16 D_3656[8];
+STUB u16 D_3656_labelRow[8];
 STUB char* D_3666[8];
 // ^intro
 
@@ -906,13 +906,13 @@ BSS u8  D_bb14_wallTile; // pos?
 BSS u8  D_bb15_floorTile; // pos?
 BSS u8  D_bb16;
 BSS u8  D_bb17_loadFlags;
-BSS u16 D_bb18; // "lord british" index
-BSS void* D_bb1a; // pointer
+BSS u16 D_bb18_pathPos; // "lord british" index
+BSS void* D_bb1a_titleImage; // pointer
 
-BSS S_bb1c D_bb1c;
-BSS u8 D_bbd2[0xb6]; // no code refers to it; as large as D_bb1c
+BSS S_bb1c D_bb1c_u4Virtues;
+BSS u8 D_bbd2[0xb6]; // no code refers to it; as large as D_bb1c_u4Virtues
 
-BSS S_bc88_U4Party D_bc88;
+BSS S_bc88_U4Party D_bc88_u4Member;
 BSS u16 D_bcb0; // no code refers to it
 
 BSS char D_bcb2_lineBuf[0x27 + 1];
