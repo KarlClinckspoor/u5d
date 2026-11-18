@@ -1,10 +1,12 @@
 // Resident code, CS:2320-251e: a module of its own in the original (MSC 5.1: its strings
 // are in _DATA, DS:545f). ULTIMA_256e and ULTIMA_25d8 call ULTIMA_2322 with a far call,
 // which MSC makes only for a far function of another object.
-// The DOS build takes ULTIMA_2322 (CS:2322-251e) from src/asm/A2322.ASM: GOG patched the
-// function in place, so its bytes are no compiler's output. A2322.ASM also holds this
-// object's data (D_545e and the strings, DS:545e-54b6): with 2322 gone, no code here refers
-// to D_545e, and the link places an object's data by its references.
+// The GOG (1992) DOS build takes ULTIMA_2322 (CS:2322-251e) from src/asm/A2322.ASM: the 1992
+// patch changed the function in place, so its bytes are no compiler's output. A2322.ASM also
+// holds this object's data (D_545e and the strings, DS:545e-54b6): with 2322 gone, no code
+// here refers to D_545e, and the link places an object's data by its references.
+// The 1988 build (RELEASE_1988) compiles ULTIMA_2322 and its data from the C below: it is
+// byte-identical to the October 1988 ULTIMA.EXE (match.py with U5_GAMEDATA=../gamedata-1988).
 
 #include "common/common.h"
 #include "vars.h"
@@ -18,8 +20,10 @@
 
 #include <stdlib.h>
 #include <time.h>
-#if !defined(TARGET_DOS16) // DOS build: src/asm/A2322.ASM
+#if !defined(TARGET_DOS16)
 u8 D_545e = 0xff;
+#elif defined(RELEASE_1988) // GOG DOS build: src/asm/A2322.ASM
+char D_545e = 0xff; // char, not u8: see vars.h
 #endif
 
 
@@ -43,11 +47,13 @@ void FAR ULTIMA_2322_DiskSwapMessage(void)
 
     D_5394_diskSwapFn = ULTIMA_2322_DiskSwapMessage;
 }
-#elif 0
-// Not compiled: the DOS build has ULTIMA_2322 from src/asm/A2322.ASM (above). This is 1.16's
-// function with GOG's patch written as gotos, kept for reference; the patched bytes are not
-// compiler output, and this came within 2 bytes (506 against 508).
-// GOG patched: skip drive selection
+#elif defined(RELEASE_1988)
+// The 1988 release's function, EXACT against the 1988 ULTIMA.EXE. The GOG DOS build does not
+// compile it: it has ULTIMA_2322 from src/asm/A2322.ASM (above). The GOG_BUILD parts are the
+// 1992 patch written as gotos, kept for reference (never compiled: the DOS build has no
+// GOG_BUILD); the patched bytes are not compiler output.
+// What matched it: D_545e as a plain char (vars.h). With u8 it was 506 bytes against 508.
+// 1992 patched: skip drive selection
 void FAR ULTIMA_2322_DiskSwapMessage(void)
 {
     byte local_6_an;
