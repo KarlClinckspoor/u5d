@@ -883,22 +883,22 @@ BSS u8 D_b21e_scratch[SCRATCH_SIZE]; // scratch buffer ~b9ee)
 
 BSS u8  D_b9ee[0x26]; // owned item counts
 // [8]
-#define D_b9f6 (D_b9ee + 8)
-#define D_b9fe D_b9ee[0x10]
-#define D_b9ff D_b9ee[0x11]
-#define D_ba00 D_b9ee[0x12]
-#define D_ba01 D_b9ee[0x13]
-#define D_ba02 D_b9ee[0x14]
+#define D_b9f6_potionCounts (D_b9ee + 8)
+#define D_b9fe_carpetCount D_b9ee[0x10]
+#define D_b9ff_skullKeyCount D_b9ee[0x11]
+#define D_ba00_amuletOwned D_b9ee[0x12]
+#define D_ba01_crownOwned D_b9ee[0x13]
+#define D_ba02_sceptreOwned D_b9ee[0x14]
 // [8]
-#define D_ba03 (D_b9ee + 0x15)
+#define D_ba03_moonstoneFlags (D_b9ee + 0x15)
 // [3]
-#define D_ba0b (D_b9ee + 0x1d)
-#define D_ba0e D_b9ee[0x20]
-#define D_ba0f D_b9ee[0x21]
-#define D_ba10 D_b9ee[0x22]
-#define D_ba11 D_b9ee[0x23]
-#define D_ba12 D_b9ee[0x24]
-#define D_ba13 D_b9ee[0x25]
+#define D_ba0b_shardFlags (D_b9ee + 0x1d)
+#define D_ba0e_spyglassCount D_b9ee[0x20]
+#define D_ba0f_capePlansOwned D_b9ee[0x21]
+#define D_ba10_sextantCount D_b9ee[0x22]
+#define D_ba11_pocketWatchOwned D_b9ee[0x23]
+#define D_ba12_blackBadgeOwned D_b9ee[0x24]
+#define D_ba13_sandalwoodBoxOwned D_b9ee[0x25]
 
 BSS CombatEntity D_ba14_combatants[32]; // combat entities
 

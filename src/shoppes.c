@@ -967,23 +967,23 @@ static int SHOPPES_0c80(int* param_1, int* param_2)
     {
         if (*param_1 == *param_2)
         {
-            *param_2 = ZSTATS_056c(*param_2, 0x30, D_57c0_equipment, 0xff);
+            *param_2 = ZSTATS_056c_PrevItem(*param_2, 0x30, D_57c0_equipment, 0xff);
             if (*param_2 == -1)
             {
-                *param_2 = ZSTATS_05a4(-1, 0x30, D_57c0_equipment, 0xff);
+                *param_2 = ZSTATS_05a4_NextItem(-1, 0x30, D_57c0_equipment, 0xff);
             }
 
             *param_1 = *param_2;
         }
         else
         {
-            *param_2 = ZSTATS_05a4(*param_2, 0x30, D_57c0_equipment, 0xff);
+            *param_2 = ZSTATS_05a4_NextItem(*param_2, 0x30, D_57c0_equipment, 0xff);
             if (*param_2 == -1)
             {
-                *param_2 = ZSTATS_056c(0x30, 0x30, D_57c0_equipment, 0xff);
-                if (ZSTATS_056c(*param_1, 0x30, D_57c0_equipment, 0xff) > -1)
+                *param_2 = ZSTATS_056c_PrevItem(0x30, 0x30, D_57c0_equipment, 0xff);
+                if (ZSTATS_056c_PrevItem(*param_1, 0x30, D_57c0_equipment, 0xff) > -1)
                 {
-                    *param_1 = ZSTATS_056c(*param_1, 0x30, D_57c0_equipment, 0xff);
+                    *param_1 = ZSTATS_056c_PrevItem(*param_1, 0x30, D_57c0_equipment, 0xff);
                 }
             }
         }
@@ -1001,7 +1001,7 @@ static int SHOPPES_0c80(int* param_1, int* param_2)
             local_4_ab = ULTIMA_1cee_GetCurrentTextY();
         }
 
-        ZSTATS_05e2(local_8, D_57c0_equipment, D_1962_equipShortNames, 0x2d);
+        ZSTATS_05e2_PrintItemRow(local_8, D_57c0_equipment, D_1962_equipShortNames, 0x2d);
 
         if (*param_2 == local_8)
         {
@@ -1012,7 +1012,7 @@ static int SHOPPES_0c80(int* param_1, int* param_2)
         if (ULTIMA_1cee_GetCurrentTextY() == 5)
             break;
         
-        local_8 = ZSTATS_05a4(local_8, 0x30, D_57c0_equipment, 0xff);
+        local_8 = ZSTATS_05a4_NextItem(local_8, 0x30, D_57c0_equipment, 0xff);
     }
 
     for (local_6 = ULTIMA_1cee_GetCurrentTextY(); local_6 != 5; local_6 = local_6 + 1)
@@ -1022,12 +1022,12 @@ static int SHOPPES_0c80(int* param_1, int* param_2)
     }
 
     local_a = 0;
-    if (ZSTATS_056c(*param_1, 0x30, D_57c0_equipment, 0xff) != -1)
+    if (ZSTATS_056c_PrevItem(*param_1, 0x30, D_57c0_equipment, 0xff) != -1)
     {
         local_a = 2;
     }
 
-    if (local_8 != -1 && ZSTATS_05a4(local_8, 0x30, D_57c0_equipment, 0xff) != -1)
+    if (local_8 != -1 && ZSTATS_05a4_NextItem(local_8, 0x30, D_57c0_equipment, 0xff) != -1)
     {
         local_a++;
     }
@@ -1239,7 +1239,7 @@ static void SHOPPES_0f64(int param_1)
 
         ULTIMA_16ba_PrintChar(0x16);
 
-        local_10_ad_am = local_6 = ZSTATS_05a4(-1, 0x30, D_57c0_equipment, 0xff);
+        local_10_ad_am = local_6 = ZSTATS_05a4_NextItem(-1, 0x30, D_57c0_equipment, 0xff);
         local_c = SHOPPES_0c80(&local_6, &local_10_ad_am);
         local_a = local_12_ab_am = 0;
 
@@ -1269,7 +1269,7 @@ static void SHOPPES_0f64(int param_1)
                 for (local_e_am = 0; local_e_am < local_4_ab; local_e_am++)
                 {
                     // b376
-                    local_14_am = ZSTATS_056c(local_10_ad_am, 0x30, D_57c0_equipment, 0xff);
+                    local_14_am = ZSTATS_056c_PrevItem(local_10_ad_am, 0x30, D_57c0_equipment, 0xff);
 
                     if (local_10_ad_am == local_6)
                     {
@@ -1307,13 +1307,13 @@ static void SHOPPES_0f64(int param_1)
                 for (local_e_am = 0; local_e_am < local_4_ab; local_e_am++)
                 {
                     // b3da
-                    local_14_am = ZSTATS_05a4(local_10_ad_am, 0x30, D_57c0_equipment, 0xff);
+                    local_14_am = ZSTATS_05a4_NextItem(local_10_ad_am, 0x30, D_57c0_equipment, 0xff);
                     if (local_14_am > -1)
                     {
                         local_10_ad_am = local_14_am;
                         if (++local_c > 4)
                         {
-                            local_6 = ZSTATS_05a4(local_6, 0x30, D_57c0_equipment, 0xff);
+                            local_6 = ZSTATS_05a4_NextItem(local_6, 0x30, D_57c0_equipment, 0xff);
                         }
                     }
                 }
@@ -1323,16 +1323,16 @@ static void SHOPPES_0f64(int param_1)
 
             case U5_KEY_HOME:
                 // b41a
-                local_10_ad_am = local_6 = ZSTATS_05a4(-1, 0x30, D_57c0_equipment, 0xff);
+                local_10_ad_am = local_6 = ZSTATS_05a4_NextItem(-1, 0x30, D_57c0_equipment, 0xff);
                 local_c = SHOPPES_0c80(&local_6, &local_10_ad_am);
                 break;
 
             case U5_KEY_END:
                 // b436
-                local_10_ad_am = local_6 = ZSTATS_056c(0x30, 0x30, D_57c0_equipment, 0xff);
+                local_10_ad_am = local_6 = ZSTATS_056c_PrevItem(0x30, 0x30, D_57c0_equipment, 0xff);
                 for (local_e_am = 1; local_e_am < 4; local_e_am++)
                 {
-                    local_14_am = ZSTATS_056c(local_6, 0x30, D_57c0_equipment, 0xff);
+                    local_14_am = ZSTATS_056c_PrevItem(local_6, 0x30, D_57c0_equipment, 0xff);
                     if (local_14_am == -1)
                         break;
 

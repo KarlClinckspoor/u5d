@@ -1,0 +1,123 @@
+# ZSTATS (zstats.c): the Z command (party stats), the Ready command, the item lists.
+# functions
+ZSTATS_0000 ZSTATS_0000_ChoosePlayer              # in combat the acting player, else asks "Player:"; -1 none, -2 for 0
+ZSTATS_0082 ZSTATS_0082_ShowPlayerStats           # the first stats page: name, class, status, Str Int Dex HP HM Ex Magic
+ZSTATS_0278 ZSTATS_0278_PrintArm                  # one line of the Arms page; 0 when the slot is empty (0xff)
+ZSTATS_02a8 ZSTATS_02a8_ShowPlayerArms            # the second page: the six equipped items
+ZSTATS_039c ZSTATS_039c_ShowSupplies              # food, gold, keys, gems, torches, grapple
+ZSTATS_045e ZSTATS_045e_DrawListFrame             # the box the item lists are printed in (graphic border characters)
+ZSTATS_0518 ZSTATS_0518_IsEquipped                # does the member wear or wield the item
+ZSTATS_056c ZSTATS_056c_PrevItem                  # the previous item with a count, or worn by the member; -1 none
+ZSTATS_05a4 ZSTATS_05a4_NextItem                  # the next such item; -1 none
+ZSTATS_05e2 ZSTATS_05e2_PrintItemRow              # one row of a list: count, marker, name, padded to 14 columns
+ZSTATS_06e8 ZSTATS_06e8_BrowseList                # the scrolling list of reagents/spells/items/armaments of the Z command
+ZSTATS_099a ZSTATS_099a_FillItemCounts            # copies the saved game's items into the D_b9ee table (the Use list)
+ZSTATS_0bee ZSTATS_0bee_PrintEquipRefusal         # a refusal message, then the "Item:" prompt again
+ZSTATS_0c0a ZSTATS_0c0a_FreeHandSlot              # 2 both hands free, 0 first hand free, 1 second, 0xff none
+ZSTATS_0c5c_EquipItem ZSTATS_0c5c_EquipOrRemove   # ready or take off an item; 1 when a ring vanished
+ZSTATS_0f2e ZSTATS_0f2e_SelectItem                # the cursor list of Ready (mode 0x52) and Use; returns the item or -1
+# ZSTATS_0000
+zstats.c:ZSTATS_0000 param_1 allowAll
+zstats.c:ZSTATS_0000 local_4 player
+# ZSTATS_0082
+zstats.c:ZSTATS_0082 param_1 member
+zstats.c:ZSTATS_0082 local_4_ab player
+zstats.c:ZSTATS_0082 local_6 classIdx
+zstats.c:ZSTATS_0082 local_8 pad
+zstats.c:ZSTATS_0082 local_a statusIdx
+# ZSTATS_0278
+zstats.c:ZSTATS_0278 param_1 item
+# ZSTATS_02a8
+zstats.c:ZSTATS_02a8 param_1 member
+zstats.c:ZSTATS_02a8 local_6_an player
+zstats.c:ZSTATS_02a8 local_4 shown
+# ZSTATS_045e
+zstats.c:ZSTATS_045e param_1 lastRow
+zstats.c:ZSTATS_045e local_4 i
+# ZSTATS_0518
+zstats.c:ZSTATS_0518 param_1 member
+zstats.c:ZSTATS_0518 param_2 item
+zstats.c:ZSTATS_0518 local_4 player
+# ZSTATS_056c
+zstats.c:ZSTATS_056c param_1 index
+zstats.c:ZSTATS_056c param_3 counts
+zstats.c:ZSTATS_056c param_4 member
+# ZSTATS_05a4
+zstats.c:ZSTATS_05a4 param_1 index
+zstats.c:ZSTATS_05a4 param_2 count
+zstats.c:ZSTATS_05a4 param_3 counts
+zstats.c:ZSTATS_05a4 param_4 member
+# ZSTATS_05e2
+zstats.c:ZSTATS_05e2 param_1 index
+zstats.c:ZSTATS_05e2 param_2 counts
+zstats.c:ZSTATS_05e2 param_3 names
+zstats.c:ZSTATS_05e2 param_4 marker
+zstats.c:ZSTATS_05e2 local_6_an owned
+zstats.c:ZSTATS_05e2 local_4 column
+# ZSTATS_06e8
+zstats.c:ZSTATS_06e8 param_1 title
+zstats.c:ZSTATS_06e8 param_2 count
+zstats.c:ZSTATS_06e8 param_3 counts
+zstats.c:ZSTATS_06e8 param_4 names
+zstats.c:ZSTATS_06e8 local_10_aa arrows
+zstats.c:ZSTATS_06e8 local_e_am key
+zstats.c:ZSTATS_06e8 local_c last
+zstats.c:ZSTATS_06e8 local_a step
+zstats.c:ZSTATS_06e8 local_8 leave
+zstats.c:ZSTATS_06e8 local_6 first
+zstats.c:ZSTATS_06e8 local_4_ab steps
+# ZSTATS_099a
+zstats.c:ZSTATS_099a local_4 i
+# ZSTATS_0a3a_ZstatsCmd
+zstats.c:ZSTATS_0a3a local_8 member
+zstats.c:ZSTATS_0a3a local_6 key
+zstats.c:ZSTATS_0a3a local_4_ab page
+# ZSTATS_0bee
+zstats.c:ZSTATS_0bee param_1 message
+# ZSTATS_0c0a
+zstats.c:ZSTATS_0c0a param_1 member
+zstats.c:ZSTATS_0c0a s player
+# ZSTATS_0c5c
+zstats.c:ZSTATS_0c5c param_1 member
+zstats.c:ZSTATS_0c5c param_2 item
+zstats.c:ZSTATS_0c5c local_10_aa slot
+zstats.c:ZSTATS_0c5c local_e_am strongEnough
+zstats.c:ZSTATS_0c5c local_c hand
+zstats.c:ZSTATS_0c5c local_a i
+zstats.c:ZSTATS_0c5c local_8 classIdx
+zstats.c:ZSTATS_0c5c local_6 actor
+zstats.c:ZSTATS_0c5c local_4_aa load
+# ZSTATS_0f2e
+zstats.c:ZSTATS_0f2e param_1 first
+zstats.c:ZSTATS_0f2e param_2 member
+zstats.c:ZSTATS_0f2e param_3 mode
+zstats.c:ZSTATS_0f2e local_1a_ac selected
+zstats.c:ZSTATS_0f2e local_18_al arrows
+zstats.c:ZSTATS_0f2e local_16_an key
+zstats.c:ZSTATS_0f2e local_14_ap counts
+zstats.c:ZSTATS_0f2e local_12_ab item
+zstats.c:ZSTATS_0f2e local_10_ad cursorRow
+zstats.c:ZSTATS_0f2e local_e_a step
+zstats.c:ZSTATS_0f2e local_c_ac marker
+zstats.c:ZSTATS_0f2e local_a_ae count
+zstats.c:ZSTATS_0f2e local_8_an leave
+zstats.c:ZSTATS_0f2e local_6 steps
+zstats.c:ZSTATS_0f2e local_4_ab rows
+# ZSTATS_1296_ReadyCmd
+zstats.c:ZSTATS_1296 local_6_an member
+zstats.c:ZSTATS_1296 local_4 first
+# private globals: the Use list's table is D_b9ee (shared with CAST); its parts are named here
+D_b9f6 D_b9f6_potionCounts            # D_b9ee + 8
+D_b9fe D_b9fe_carpetCount
+D_b9ff D_b9ff_skullKeyCount
+D_ba00 D_ba00_amuletOwned
+D_ba01 D_ba01_crownOwned
+D_ba02 D_ba02_sceptreOwned
+D_ba03 D_ba03_moonstoneFlags          # 8 flags, 0xff when buried
+D_ba0b D_ba0b_shardFlags              # 3 shards
+D_ba0e D_ba0e_spyglassCount
+D_ba0f D_ba0f_capePlansOwned
+D_ba10 D_ba10_sextantCount
+D_ba11 D_ba11_pocketWatchOwned
+D_ba12 D_ba12_blackBadgeOwned
+D_ba13 D_ba13_sandalwoodBoxOwned
