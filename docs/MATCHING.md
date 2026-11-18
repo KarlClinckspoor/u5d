@@ -173,6 +173,24 @@ identical and every name defined. It opens no game file to link.
   bytes, by a sum of 6b1e in the words (restored file's MZ checksum e957, field 7e39).
   CHECKSUM.EXE, from the same disk, sums the whole file and expects ffff: on ULTIMA.EXE it
   reports 7101. The tools are kept outside the repository (`../tools/plink86-1.28`).
+- **The linker was PLINK86plus 2.24.** Two Nantucket editions of PLINK86plus survive (Clipper
+  Autumn '86, "2.21", library record "2.204", 1986-10-31; Clipper Summer '87, "2.24",
+  1987-12-21; on discmaster.textfiles.com, wbiz0004 and wbiz0008). Linking PLINK86's test
+  program with each and lining up the linked loaders with ULTIMA.EXE's (PLMGR): in all 15
+  places where 2.21's and 2.24's code differ, ULTIMA.EXE has 2.24's bytes, never 2.21's (the
+  rest differs by addresses, as between any two programs; Origin also replaced the loader's
+  messages: "Error...Call OSI$"). Both write the header as ULTIMA.EXE has it (the relocation
+  table at 0x1e, the word 1 at 0x1c) and put DGROUP in a pre-loaded overlay section (as
+  DATA.OVL is); both write the **MZ checksum of the EXE alone**, the `.OVL` files not
+  counted. So the 7e39 says that ULTIMA.EXE was changed after the link in more than GOG's
+  eight bytes (by 6b1e in the sum of its words), unless Origin's copy of 2.24 differs from
+  Nantucket's. Not that DATA.OVL was split out of the EXE afterwards: the EXE with DATA.OVL
+  (with and without its header, and with the overlays) appended, its size fields set to
+  match and any minimum allocation within 0x1000 paragraphs, gives no 7e39.
+  The Nantucket editions refuse objects not made by Clipper ("Fatal error 67 Modules are not
+  Nantucket format"); an object passes with a COMENT record of class 0xC8 holding
+  `00 5e a1 07` after its THEADR, as Clipper's objects have. Kept in
+  `../tools/plink86plus-2.24` (with tagged test objects and NOTES.txt) and `-2.21`.
 
 ### The link script: `src/u5d.lnk`
 

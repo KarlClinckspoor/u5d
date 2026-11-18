@@ -255,8 +255,11 @@ from a rule or from source, each named where it lives:
   the GOG file's 0d37). Left: the sum of the program as PLINK86 wrote it before the
   overlays and DGROUP went to their own files, whose header is unknown. PLINK86 1.28
   (1983, archive.org) writes the plain MZ checksum of the EXE when the overlays go to
-  files of their own; Ultima V's linker is a 1986 one, which may differ, or ULTIMA.EXE
-  was changed after the link in more than GOG's eight bytes (MATCHING.md, "The link").
+  files of their own. Ultima V's linker was PLINK86plus 2.24 (its loader has 2.24's bytes
+  wherever 2.21's and 2.24's differ), which also writes the plain MZ checksum of the EXE:
+  so ULTIMA.EXE was changed after the link in more than GOG's eight bytes (MATCHING.md,
+  "The link"). 2.24 itself is now at hand (`../tools/plink86plus-2.24`): linking u5d's
+  objects with it could test the link script's placement facts and the communal order.
 - **Stand-in devices** in the source, each explained in its note: ULTIMA_1850's comment-line
   padding, TOWN_0f02's dead references (both pass 2's pool), DUNGEON_1952's register slot
   sharing, AINTRO2's BYTE-aligned `_DATA`, A2322 holding D_545e and r2320's strings.
