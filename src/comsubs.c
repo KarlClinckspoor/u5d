@@ -29,8 +29,8 @@ int COMSUBS_0000_TargetResists(int attacker, int target, int weaponKind)
     if (weaponKind == 0x30 || weaponKind == 0x31 || weaponKind >= 0x33)
         return 0;
 
-    attackerInt = COMBAT_13e2(attacker, QUERY_STAT_INTEL);
-    targetInt = COMBAT_13e2(target, QUERY_STAT_INTEL);
+    attackerInt = COMBAT_13e2_QueryStat(attacker, QUERY_STAT_INTEL);
+    targetInt = COMBAT_13e2_QueryStat(target, QUERY_STAT_INTEL);
     if (ULTIMA_3abe_Random1To30() < (targetInt + 0x1e - attackerInt) / 2)
     {
         return 1;
@@ -50,7 +50,7 @@ void COMSUBS_0056_FadeFields(void)
         {
             if (ULTIMA_2092_RandomRange(0, 0xff) < 0x10)
             {
-                COMBAT_1236(actorIdx + 1);
+                COMBAT_1236_RemoveEntity(actorIdx + 1);
             }
         }
     }
@@ -125,7 +125,7 @@ int COMSUBS_00f4_MonsterSpecial(int combatant)
                 ULTIMA_2192_AudioPulse(0xc1c, 1, 30000, 1000, 2);
                 if (enemyType == 0x26)
                 {
-                    COMBAT_1236(-combatant - 1);
+                    COMBAT_1236_RemoveEntity(-combatant - 1);
                 }
             }
 
@@ -155,9 +155,9 @@ int COMSUBS_00f4_MonsterSpecial(int combatant)
 
     if ((D_153c_enemyFlags[enemyType] & ENEMY_FLAG_SUMMON) != 0 && ULTIMA_2092_RandomRange(0, 0xff) < 0x20)
     {
-        if (COMBAT_120e() != 0)
+        if (COMBAT_120e_RandomCell() != 0)
         {
-            if (COMBAT_0000(TILE_ACTOR_D8, D_5876_tempX, D_5878_tempY) != 0)
+            if (COMBAT_0000_IsCellFree(TILE_ACTOR_D8, D_5876_tempX, D_5878_tempY) != 0)
             {
                 daemon = ULTIMA_6506_PlaceCombatant(0x26, 0, D_5876_tempX, D_5878_tempY, D_5895_mapLevel);
                 if (daemon != -1)
@@ -185,7 +185,7 @@ int COMSUBS_00f4_MonsterSpecial(int combatant)
 }
 
 // Says what a blow did to the target, by the result bits in D_58a2: grazed, killed, slept, dragged under (by the
-// Corpser, 0x2d), hit or how wounded a monster is (COMBAT_1a5c).
+// Corpser, 0x2d), hit or how wounded a monster is (COMBAT_1a5c_WoundLevel).
 void COMSUBS_0312_ReportHit(int target, int attacker)
 {
     int local_8; // unused
@@ -234,7 +234,7 @@ void COMSUBS_0312_ReportHit(int target, int attacker)
             }
             else
             {
-                woundLevel_j = COMBAT_1a5c(target);
+                woundLevel_j = COMBAT_1a5c_WoundLevel(target);
                 switch (woundLevel_j)
                 {
                 case 4:
@@ -524,7 +524,7 @@ int COMSUBS_0822_ResolveShot(int shooter, int aimX, int aimY, int onTarget, int 
         landed = COMSUBS_12de_FlyMissile(startX, startY, endX_h, endY_h, missileKind);
         if (landed != 0)
         {
-            COMBAT_111a(endX_h, endY_h);
+            COMBAT_111a_FireMapTrigger(endX_h, endY_h);
         }
         else
         {
@@ -670,7 +670,7 @@ static void COMSUBS_0a68_FireMissile(int shooter, int weapon, int missileKind)
             {
                 shooterActor->extra = victim_c;
                 COMSUBS_097c_SpendAmmo(weapon, range_b);
-                onTarget = COMBAT_14d6(victim_c, shooter, -D_588f, weapon);
+                onTarget = COMBAT_14d6_RollToHit(victim_c, shooter, -D_588f, weapon);
                 victim_c = COMSUBS_0822_ResolveShot(shooter, D_5899_crosshairX, D_589a_crosshairY, onTarget, missileKind);
             }
             else
@@ -684,7 +684,7 @@ static void COMSUBS_0a68_FireMissile(int shooter, int weapon, int missileKind)
             {
                 ULTIMA_3564_HitEffectOnActor(victim_c);
                 ULTIMA_16ba_PrintChar('\n');
-                COMBAT_194a(victim_c, shooter);
+                COMBAT_194a_ResolveHit(victim_c, shooter);
                 COMSUBS_0312_ReportHit(victim_c, shooter);
             }
             else if (aimedAt_i > -1)
@@ -706,10 +706,10 @@ void COMSUBS_0bf8_MeleeBlow(int attacker, int victim, int weapon)
 {
     ULTIMA_43ae_AudioSweepTone(400, 0x2ee, 5, 0x96);
     ULTIMA_16ba_PrintChar('\n');
-    if (COMBAT_14d6(victim, attacker, -D_588f, weapon) != 0)
+    if (COMBAT_14d6_RollToHit(victim, attacker, -D_588f, weapon) != 0)
     {
         ULTIMA_3564_HitEffectOnActor(victim);
-        COMBAT_194a(victim, attacker);
+        COMBAT_194a_ResolveHit(victim, attacker);
         COMSUBS_0312_ReportHit(victim, attacker);
     }
     else

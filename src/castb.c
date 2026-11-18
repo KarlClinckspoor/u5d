@@ -207,7 +207,7 @@ static int CAST_1c36_SprayRays(s16* outXs, s16* outYs, int color, int caster, in
 // The four cone spells (kind 1 In Zu sleeps, 2 In Nox Hur poisons, 3 In Flam Hur burns, 4 In Vas Grav Corp kills outright; each
 // in a color of its own): asks a direction, sprays, then every creature on a cell reached suffers its effect once (it may resist).
 // CHECKED
-// MSC 5.0: the first switch's cases ordered 1, default, 2; "ULTIMA_3abe_Random1To30() >= COMBAT_13e2()"
+// MSC 5.0: the first switch's cases ordered 1, default, 2; "ULTIMA_3abe_Random1To30() >= COMBAT_13e2_QueryStat()"
 // (MSC calls the right-hand side first); the last loop's "> -1". The original's 10 bytes
 // after the ret are the zero padding at the end of CAST.OVL.
 void CAST_1f60_ConeSpell(int caster, int kind, int color)
@@ -276,10 +276,10 @@ void CAST_1f60_ConeSpell(int caster, int kind, int color)
 
                     case 2:
                         // e03c
-                        if (ULTIMA_3abe_Random1To30() >= COMBAT_13e2(victim_h, QUERY_STAT_DEX))
+                        if (ULTIMA_3abe_Random1To30() >= COMBAT_13e2_QueryStat(victim_h, QUERY_STAT_DEX))
                         {
                             ULTIMA_3564_HitEffectOnActor(victim_h);
-                            COMBAT_18ba(victim_h, caster);
+                            COMBAT_18ba_Poison(victim_h, caster);
                             COMSUBS_0312_ReportHit(victim_h, caster); // -> e034 -> e0b2
                         }
 
@@ -289,7 +289,7 @@ void CAST_1f60_ConeSpell(int caster, int kind, int color)
                         // e05c
                         ULTIMA_3564_HitEffectOnActor(victim_h);
 
-                        ULTIMA_3f14_IncreaseInt(&member_j->exp, COMBAT_1574(victim_h, ULTIMA_3aae_Random(0x1e)), 9999);
+                        ULTIMA_3f14_IncreaseInt(&member_j->exp, COMBAT_1574_ApplyDamage(victim_h, ULTIMA_3aae_Random(0x1e)), 9999);
                         COMSUBS_0312_ReportHit(victim_h, caster); // -> e034 -> e0b2
                         break;
 
@@ -299,7 +299,7 @@ void CAST_1f60_ConeSpell(int caster, int kind, int color)
                         {
                             ULTIMA_3564_HitEffectOnActor(victim_h);
 
-                            ULTIMA_3f14_IncreaseInt(&member_j->exp, COMBAT_1574(victim_h, 99), 9999); // -> e070
+                            ULTIMA_3f14_IncreaseInt(&member_j->exp, COMBAT_1574_ApplyDamage(victim_h, 99), 9999); // -> e070
                             COMSUBS_0312_ReportHit(victim_h, caster); // -> e034 -> e0b2
                         }
                         break;

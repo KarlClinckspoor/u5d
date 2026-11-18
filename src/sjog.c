@@ -1980,7 +1980,7 @@ static int SJOG_1bb2_CombatExit(int param_1, int param_2)
 
     ULTIMA_43ae_AudioSweepTone(0x4b0, 2000, 1, 0x28);
     D_587b_activePlayer = 0xff;
-    COMBAT_1236(-param_1 - 1);
+    COMBAT_1236_RemoveEntity(-param_1 - 1);
     ULTIMA_2900_UpdateVitalsDisplay();
     ULTIMA_5910_UpdateFrame();
 
@@ -2027,7 +2027,7 @@ int SJOG_1c56_CombatMovePlayer(int param_1, int param_2)
         return SJOG_1bb2_CombatExit(param_1, param_2);
     }
 
-    if (COMBAT_0000(D_5c5a_actors[local_8].tile, local_4_ab, local_6) != 0)
+    if (COMBAT_0000_IsCellFree(D_5c5a_actors[local_8].tile, local_4_ab, local_6) != 0)
     {
         D_5c5a_actors[local_8].x = D_ba14_combatants[param_1].x = local_4_ab;
         D_5c5a_actors[local_8].y = D_ba14_combatants[param_1].y = local_6;
@@ -2035,7 +2035,7 @@ int SJOG_1c56_CombatMovePlayer(int param_1, int param_2)
         ULTIMA_433e_AudioFootstep();
         if ((D_58a1_combatFlags & 0x82) != 0)
         {
-            COMBAT_111a(local_4_ab, local_6);
+            COMBAT_111a_FireMapTrigger(local_4_ab, local_6);
         }
 
         return 1;
@@ -2115,7 +2115,7 @@ int SJOG_1d6a_CombatKlimb(void)
             local_6->x = D_ba14_combatants[D_589e_curCombatant].x = local_8;
             local_6->y = D_ba14_combatants[D_589e_curCombatant].y = local_a;
 
-            COMBAT_111a(local_8, local_a);
+            COMBAT_111a_FireMapTrigger(local_8, local_a);
         }
         else
         {
@@ -2143,7 +2143,7 @@ void SJOG_1ea4_CheckMirror(void)
         ULTIMA_43ae_AudioSweepTone(0x4b0, 2000, 1, 0x28);
         D_587b_activePlayer = 0xff;
         ULTIMA_2900_UpdateVitalsDisplay();
-        COMBAT_1236(-D_589e_curCombatant - 1);
+        COMBAT_1236_RemoveEntity(-D_589e_curCombatant - 1);
         ULTIMA_5910_UpdateFrame();
     }
 }
@@ -2285,7 +2285,7 @@ int SJOG_20d8(int param_1, int param_2, int param_3)
 
     if (param_1 > -1 && param_1 < 11 && param_2 > -1 && param_2 < 11)
     {
-        local_6_o = COMBAT_0000(D_5c5a_actors[local_4->actorIdx].tile, param_1, param_2);
+        local_6_o = COMBAT_0000_IsCellFree(D_5c5a_actors[local_4->actorIdx].tile, param_1, param_2);
         local_6_o = 1 - local_6_o;
     }
     else

@@ -19,62 +19,62 @@
 
 
 static void COMBAT_063e_ProcessCommand(void);
-static int COMBAT_0d30(int a);
-static int COMBAT_0ee4(int param_1);
-static void COMBAT_1b1e(int param_1);
-static void COMBAT_1c66(int param_1);
+static int COMBAT_0d30_ChooseTarget(int a);
+static int COMBAT_0ee4_MonsterMove(int combatant);
+static void COMBAT_1b1e_TerrainEffect(int combatant);
+static void COMBAT_1c66_Regurgitate(int combatant);
 
 // CHECKED
-// walkable?
-// param_1: actor tile, param_2: x, param_3: y
-int COMBAT_0000(int param_1, int param_2, int param_3)
+// 1 when an actor of that tile may enter the cell (x, y) of the 11x11 combat map: the tile is walkable (and not 0xff), and no actor
+// (fields, sleepers, the dead and the invisible do not count) or live combatant stands there. Off the map counts as free.
+int COMBAT_0000_IsCellFree(int actorTile, int cellX, int cellY)
 {
-    int local_8;
-    int local_6;
-    int local_4_ab;
+    int index_f;
+    int flags;
+    int occupant;
 
-    if (param_2 > 0xa || param_3 > 0xa || param_2 < 0 || param_3 < 0)
+    if (cellX > 0xa || cellY > 0xa || cellX < 0 || cellY < 0)
     {
         // -> a2b0
         return 1;
     }
 
     // 0026
-    if (ULTIMA_2c4c_IsWalkableTile(param_1, *ULTIMA_4402_GetTileAddr(param_2, param_3)) != 0 &&
-        *ULTIMA_4402_GetTileAddr(param_2, param_3) != 0xff)
+    if (ULTIMA_2c4c_IsWalkableTile(actorTile, *ULTIMA_4402_GetTileAddr(cellX, cellY)) != 0 &&
+        *ULTIMA_4402_GetTileAddr(cellX, cellY) != 0xff)
     {
         // 0043
-        for (local_8 = 0; local_8 < 0x20; local_8++)
+        for (index_f = 0; index_f < 0x20; index_f++)
         {
-            if (D_5c5a_actors[local_8].x == param_2 && D_5c5a_actors[local_8].y == param_3) // a317
+            if (D_5c5a_actors[index_f].x == cellX && D_5c5a_actors[index_f].y == cellY) // a317
             {
-                local_4_ab = D_5c5a_actors[local_8].tile;
-                if (local_4_ab == TILE_ACTOR_EB)
+                occupant = D_5c5a_actors[index_f].tile;
+                if (occupant == TILE_ACTOR_EB)
                 {
                     return 0; // a33a
                 }
 
-                if ((local_4_ab & 0xfc) == TILE_ACTOR_E8 || local_4_ab == TILE_ACTOR_SLEEP || local_4_ab == TILE_ACTOR_DEAD) // a346
+                if ((occupant & 0xfc) == TILE_ACTOR_E8 || occupant == TILE_ACTOR_SLEEP || occupant == TILE_ACTOR_DEAD) // a346
                 {
                     continue;
                 }
 
-                if (local_4_ab == 0 || D_5c5a_actors[local_8].animTile == 0) // a38a
+                if (occupant == 0 || D_5c5a_actors[index_f].animTile == 0) // a38a
                 {
                     continue;
                 }
                 return 0;
             }
-            else if (D_ba14_combatants[local_8].x == param_2 && D_ba14_combatants[local_8].y == param_3) // a398
+            else if (D_ba14_combatants[index_f].x == cellX && D_ba14_combatants[index_f].y == cellY) // a398
             {
-                local_6 = D_ba14_combatants[local_8].flags; // a3b3
-                if ((local_6 & (COMBAT_FLAGS_DEAD | COMBAT_FLAGS_4)) == 0 && local_6 != 0)
+                flags = D_ba14_combatants[index_f].flags; // a3b3
+                if ((flags & (COMBAT_FLAGS_DEAD | COMBAT_FLAGS_4)) == 0 && flags != 0)
                 {
-                    if (D_5c5a_actors[D_ba14_combatants[local_8].actorIdx].animTile == 0)
+                    if (D_5c5a_actors[D_ba14_combatants[index_f].actorIdx].animTile == 0)
                     {
                         return 0;
                     }
-                    if ((local_6 & 8) != 0) // sic: both ways return 0
+                    if ((flags & 8) != 0) // sic: both ways return 0
                     {
                         return 0;
                     }
@@ -91,16 +91,19 @@ int COMBAT_0000(int param_1, int param_2, int param_3)
     return 0;
 }
 
-static int COMBAT_014e(int param_1, int param_2, int param_3)
+// A monster's missile or spell at a target: it happens half of the time (a Mimic, 0x1a, always), and not at all for a magic monster when
+// magic is negated (status N or 0x1c). warded (the target wears the amulet 0x2d against a magic monster, half of the time) makes it a
+// sure miss. Returns 1 when the attack was made.
+static int COMBAT_014e_MonsterRanged(int attacker, int target, int warded)
 {
-    int local_a;
-    int local_8;
-    int local_6;
-    int local_4_ab;
+    int type_k;
+    int struck;
+    int onTarget;
+    int missileKind_c;
 
-    local_a = D_ba14_combatants[param_1].entityIdx;
-    local_4_ab = D_15cc[local_a];
-    if (local_a != 0x1a && ULTIMA_2092_RandomRange(0, 0xff) >= 0x80 || (D_153c_enemyFlags[local_a] & ENEMY_FLAG_MAGIC) != 0 && (D_587a_statusIcon == 'N' ||
+    type_k = D_ba14_combatants[attacker].entityIdx;
+    missileKind_c = D_15cc[type_k];
+    if (type_k != 0x1a && ULTIMA_2092_RandomRange(0, 0xff) >= 0x80 || (D_153c_enemyFlags[type_k] & ENEMY_FLAG_MAGIC) != 0 && (D_587a_statusIcon == 'N' ||
         D_587a_statusIcon == 0x1c))
     {
         return 0;
@@ -108,57 +111,59 @@ static int COMBAT_014e(int param_1, int param_2, int param_3)
     else
     {
         ULTIMA_43ae_AudioSweepTone(0x2ee, 400, 5, 0x96);
-        if (param_3 != 0)
+        if (warded != 0)
         {
-            local_6 = 0;
+            onTarget = 0;
         }
         else
         {
-            local_6 = COMBAT_14d6(param_2, param_1, -(int)D_588f, 0);
+            onTarget = COMBAT_14d6_RollToHit(target, attacker, -(int)D_588f, 0);
         }
 
-        local_8 = COMSUBS_0822_ResolveShot(param_1, D_ba14_combatants[param_2].x, D_ba14_combatants[param_2].y, local_6, local_4_ab);
-        if (local_8 >= 0)
+        struck = COMSUBS_0822_ResolveShot(attacker, D_ba14_combatants[target].x, D_ba14_combatants[target].y, onTarget, missileKind_c);
+        if (struck >= 0)
         {
-            ULTIMA_3564_HitEffectOnActor(local_8);
+            ULTIMA_3564_HitEffectOnActor(struck);
             ULTIMA_16ba_PrintChar('\n');
-            COMBAT_194a(local_8, param_1);
-            COMSUBS_0312_ReportHit(local_8, param_1);
+            COMBAT_194a_ResolveHit(struck, attacker);
+            COMSUBS_0312_ReportHit(struck, attacker);
         }
 
         return 1;
     }
 }
 
-static int COMBAT_0226(int param_1)
+// A monster's attack on the target it chose (COMBAT_0d30). A charmed one only strikes a neighbour; otherwise within its range it strikes a
+// neighbour (a hit roll; a thief may steal 5 food) or shoots (COMBAT_014e). Returns 1 when it used its turn.
+static int COMBAT_0226_MonsterAttack(int monster)
 {
-    int local_c;
-    int local_a;
-    int local_8;
-    int local_6;
-    int local_4_ab;
+    int warded_h;
+    int type_m;
+    int actorIdx;
+    int targetType;
+    int target;
 
-    local_c = 0;
-    local_a = D_ba14_combatants[param_1].entityIdx;
-    local_8 = D_ba14_combatants[param_1].actorIdx;
-    local_4_ab = COMBAT_0d30(param_1);
-    if (local_4_ab < 0)
+    warded_h = 0;
+    type_m = D_ba14_combatants[monster].entityIdx;
+    actorIdx = D_ba14_combatants[monster].actorIdx;
+    target = COMBAT_0d30_ChooseTarget(monster);
+    if (target < 0)
     {
         // 0256
         return 0;
     }
 
     // 025c
-    local_6 = D_ba14_combatants[local_4_ab].entityIdx;
+    targetType = D_ba14_combatants[target].entityIdx;
 
-    if ((D_ba14_combatants[param_1].flags & COMBAT_FLAGS_CHARMED) != 0)
+    if ((D_ba14_combatants[monster].flags & COMBAT_FLAGS_CHARMED) != 0)
     {
         // 0278
-        if (COMSUBS_04d4_CombatantDistance(param_1, local_4_ab) == 1)
+        if (COMSUBS_04d4_CombatantDistance(monster, target) == 1)
         {
             // 0286
             D_589d_attackWeapon = 0x21;
-            COMSUBS_0bf8_MeleeBlow(param_1, local_4_ab, 0x21);
+            COMSUBS_0bf8_MeleeBlow(monster, target, 0x21);
             // -> 035f
         }
         else
@@ -169,39 +174,39 @@ static int COMBAT_0226(int param_1)
     else
     {
         // 029c
-        if ((D_ba14_combatants[local_4_ab].flags & COMBAT_FLAGS_PLAYER) != 0 &&
-            D_55a8_party[local_6].equips[5] == 0x2d &&
-            (D_153c_enemyFlags[local_a] & ENEMY_FLAG_MAGIC) != 0)
+        if ((D_ba14_combatants[target].flags & COMBAT_FLAGS_PLAYER) != 0 &&
+            D_55a8_party[targetType].equips[5] == 0x2d &&
+            (D_153c_enemyFlags[type_m] & ENEMY_FLAG_MAGIC) != 0)
         {
-            local_c = ULTIMA_2092_RandomRange(0, 0xff) < 0x80;
+            warded_h = ULTIMA_2092_RandomRange(0, 0xff) < 0x80;
         }
 
         // 02df
-        if (COMSUBS_04d4_CombatantDistance(param_1, local_4_ab) <= D_159c[local_a])
+        if (COMSUBS_04d4_CombatantDistance(monster, target) <= D_159c[type_m])
         {
-            if (local_a == 0x1a)
+            if (type_m == 0x1a)
             {
-                D_5c5a_actors[local_8].animState = 0x20;
+                D_5c5a_actors[actorIdx].animState = 0x20;
             }
 
-            if (COMSUBS_04d4_CombatantDistance(param_1, local_4_ab) == 1)
+            if (COMSUBS_04d4_CombatantDistance(monster, target) == 1)
             {
-                if (local_a == 0x2d)
+                if (type_m == 0x2d)
                 {
-                    D_5c5a_actors[local_8].animState = 0x20;
+                    D_5c5a_actors[actorIdx].animState = 0x20;
                 }
 
                 ULTIMA_43ae_AudioSweepTone(0x2ee, 400, 5, 0x96);
-                D_58a8[local_4_ab] = param_1;
-                if (COMBAT_14d6(local_4_ab, param_1, -(uint)D_588f, 0) == 0)
+                D_58a8[target] = monster;
+                if (COMBAT_14d6_RollToHit(target, monster, -(uint)D_588f, 0) == 0)
                 {
                     return 1;
                 }
 
-                if ((D_153c_enemyFlags[local_a] & ENEMY_FLAG_STEAL) != 0 && ULTIMA_2092_RandomRange(0, 3) != 0 && D_57a8_food != 0)
+                if ((D_153c_enemyFlags[type_m] & ENEMY_FLAG_STEAL) != 0 && ULTIMA_2092_RandomRange(0, 3) != 0 && D_57a8_food != 0)
                 {
                     ULTIMA_1850_PrintString(_TEXT(0x6d74, "\nA "));
-                    COMSUBS_0094_PrintName(param_1);
+                    COMSUBS_0094_PrintName(monster);
                     ULTIMA_1850_PrintString(_TEXT(0x6d78, " stole some food!\n"));
                     ULTIMA_3f54_DecreaseInt(&D_57a8_food, 5);
                     ULTIMA_43ae_AudioSweepTone(800, 2000, 1, 0x32);
@@ -209,14 +214,14 @@ static int COMBAT_0226(int param_1)
                     return 1;
                 }
 
-                ULTIMA_3564_HitEffectOnActor(local_4_ab);
+                ULTIMA_3564_HitEffectOnActor(target);
                 ULTIMA_16ba_PrintChar('\n');
-                COMBAT_194a(local_4_ab, param_1);
-                COMSUBS_0312_ReportHit(local_4_ab, param_1);
+                COMBAT_194a_ResolveHit(target, monster);
+                COMSUBS_0312_ReportHit(target, monster);
                 return 1;
             }
 
-            return COMBAT_014e(param_1, local_4_ab, local_c);
+            return COMBAT_014e_MonsterRanged(monster, target, warded_h);
         }
         else
         {
@@ -227,21 +232,24 @@ static int COMBAT_0226(int param_1)
     return 1;
 }
 
-static void COMBAT_03f4(void)
+// A monster's turn. Nothing happens while time is stopped (status T), to a swallowed monster, or on half the turns under status Q.
+// A sleeper may wake; a fleeing one may recover a hit point; otherwise it tries its tricks (COMSUBS_00f4) and its attack
+// (COMBAT_0226), then it moves (COMBAT_0ee4). One that moves out of the view escapes (the Shadow Lord's escape: SJOG_21ce).
+static void COMBAT_03f4_MonsterTurn(void)
 {
-    int local_6_an;
-    CombatEntity* local_4;
+    int actorIdx;
+    CombatEntity* entity;
 
-    local_4 = &D_ba14_combatants[D_589e_curCombatant];
+    entity = &D_ba14_combatants[D_589e_curCombatant];
     D_589d_attackWeapon = 0;
-    local_6_an = local_4->actorIdx;
+    actorIdx = entity->actorIdx;
 
     if (D_587a_statusIcon != 'T' &&
         (D_587a_statusIcon != 'Q' || ULTIMA_2092_RandomRange(0, 1) != 0) &&
-        (local_4->flags & COMBAT_FLAGS_4) == 0)
+        (entity->flags & COMBAT_FLAGS_4) == 0)
     {
         // 0446
-        if ((local_4->flags & COMBAT_FLAGS_ASLEEP) != 0)
+        if ((entity->flags & COMBAT_FLAGS_ASLEEP) != 0)
         {
             if (ULTIMA_2092_RandomRange(0, 0x10) == 0x10)
             {
@@ -250,20 +258,20 @@ static void COMBAT_03f4(void)
         }
         else
         {
-            if ((local_4->entityIdx) == 0x2d)
+            if ((entity->entityIdx) == 0x2d)
             {
-                D_5c5a_actors[local_6_an].animState = 0;
+                D_5c5a_actors[actorIdx].animState = 0;
             }
 
             // 047f
-            if ((local_4->flags & COMBAT_FLAGS_2) != 0)
+            if ((entity->flags & COMBAT_FLAGS_2) != 0)
             {
-                if ((local_4->flags & COMBAT_FLAGS_PLAYER) == 0 && ULTIMA_2092_RandomRange(0, 3) == 3)
+                if ((entity->flags & COMBAT_FLAGS_PLAYER) == 0 && ULTIMA_2092_RandomRange(0, 3) == 3)
                 {
-                    local_4->hp++;
+                    entity->hp++;
                 }
 
-                COMBAT_1a5c(D_589e_curCombatant);
+                COMBAT_1a5c_WoundLevel(D_589e_curCombatant);
             }
             else
             {
@@ -272,14 +280,14 @@ static void COMBAT_03f4(void)
                     return;
                 }
 
-                if (COMBAT_0226(D_589e_curCombatant) != 0)
+                if (COMBAT_0226_MonsterAttack(D_589e_curCombatant) != 0)
                 {
                     return;
                 }
             }
 
             // 04cb
-            if (COMBAT_0ee4(D_589e_curCombatant) != 0)
+            if (COMBAT_0ee4_MonsterMove(D_589e_curCombatant) != 0)
             {
                 if ((D_58a2 & 0x10) != 0)
                 {
@@ -287,9 +295,9 @@ static void COMBAT_03f4(void)
                     ULTIMA_43ae_AudioSweepTone(0x4b0, 2000, 1, 0x28);
                     COMSUBS_0094_PrintName(D_589e_curCombatant);
                     ULTIMA_1850_PrintString(_TEXT(0x6d8c, " escapes!\n"));
-                    COMBAT_1236(-(uint)D_589e_curCombatant - 1);
+                    COMBAT_1236_RemoveEntity(-(uint)D_589e_curCombatant - 1);
 
-                    if ((local_4->flags & COMBAT_FLAGS_PLAYER) == 0 && local_4->entityIdx == 0x2f)
+                    if ((entity->flags & COMBAT_FLAGS_PLAYER) == 0 && entity->entityIdx == 0x2f)
                     {
                         SJOG_21ce();
                     }
@@ -298,22 +306,24 @@ static void COMBAT_03f4(void)
             }
             else
             {
-                if ((local_4->flags & COMBAT_FLAGS_2) != 0)
+                if ((entity->flags & COMBAT_FLAGS_2) != 0)
                 {
-                    COMBAT_0226(D_589e_curCombatant);
+                    COMBAT_0226_MonsterAttack(D_589e_curCombatant);
                 }
             }
         }
     }
 }
 
-static int COMBAT_0544(char* param_1, int param_2)
+// A command the party shares with the world: prints its word and calls it for a party member (0 Get, 1 Jimmy, 2 Open, 3 Ready, 4 Search,
+// 5 Use); a monster says "Can't!" (returns 1).
+static int COMBAT_0544_RunCommand(char* verb, int command)
 {
-    ULTIMA_1850_PrintString(param_1);
+    ULTIMA_1850_PrintString(verb);
 
     if ((D_ba14_combatants[D_589e_curCombatant].flags & COMBAT_FLAGS_PLAYER) != 0)
     {
-        switch (param_2)
+        switch (command)
         {
         case 0:
             SJOG_18ce_GetCmd();
@@ -344,18 +354,19 @@ static int COMBAT_0544(char* param_1, int param_2)
 }
 
 // CHECKED
-static int COMBAT_05b6(int param_1, int param_2)
+// Adds ", " (after the first) and the name of a readied weapon to the line in D_b21e_scratch; 1 when the weapon exists.
+static int COMBAT_05b6_AppendWeaponName(int weapon, int listed)
 {
-    if (param_1 != 0xff && D_15fc[param_1] != 0)
+    if (weapon != 0xff && D_15fc[weapon] != 0)
     {
-        if (param_2 != 0)
+        if (listed != 0)
         {
             // OK
             strcat(D_b21e_scratch, _TEXT(0x6da0, ", "));
         }
 
         // 05fb
-        strcat(D_b21e_scratch, D_17f6_equipNames[param_1]);
+        strcat(D_b21e_scratch, D_17f6_equipNames[weapon]);
 
         return 1;
     }
@@ -365,36 +376,39 @@ static int COMBAT_05b6(int param_1, int param_2)
     }
 }
 
-// process combat command
+// The turn of a party member: the prompt names the member and the weapons in hand, then one command key is read and run (Attack, Cast,
+// Get, Jimmy, Klimb, Open, Push, Ready, Search, Use, Yell, Z-stats, Pass, the active player 0-6, the arrows to move, and the
+// world's commands, which SJOG_1f26 refuses or runs). A sleeper or a swallowed member cannot act; one holding the weapon 0x23 is
+// charmed and acts as a monster. The party display is redrawn first when D_a9fa says so.
 static void COMBAT_063e_ProcessCommand(void)
 {
-    int local_c;
-    int local_a;
-    byte local_8;
-    int local_6;
-    int local_4_ab;
+    int weaponCount_e;
+    int member;
+    byte key;
+    int keyDone;
+    int askAgain;
 
 #if !defined(MATCHING_BUILD)
-    local_8 = 0xff;
+    key = 0xff;
 #endif
 
     D_5896_mapX = D_ba14_combatants[D_589e_curCombatant].x;
     D_5897_mapY = D_ba14_combatants[D_589e_curCombatant].y;
-    local_a = D_ba14_combatants[D_589e_curCombatant].entityIdx;
+    member = D_ba14_combatants[D_589e_curCombatant].entityIdx;
 
-    if (D_587b_activePlayer != 0xff && ((D_ba14_combatants[D_589e_curCombatant].flags & COMBAT_FLAGS_PLAYER) == 0 || D_587b_activePlayer != local_a))
+    if (D_587b_activePlayer != 0xff && ((D_ba14_combatants[D_589e_curCombatant].flags & COMBAT_FLAGS_PLAYER) == 0 || D_587b_activePlayer != member))
     {
         SJOG_2012();
     }
     else
     {
-        if ((D_ba14_combatants[D_589e_curCombatant].flags & COMBAT_FLAGS_PLAYER) != 0 && (D_55a8_party[local_a].equips[2] == 0x23 || D_55a8_party[local_a].equips[3] == 0x23))
+        if ((D_ba14_combatants[D_589e_curCombatant].flags & COMBAT_FLAGS_PLAYER) != 0 && (D_55a8_party[member].equips[2] == 0x23 || D_55a8_party[member].equips[3] == 0x23))
         {
             // a938
             D_ba14_combatants[D_589e_curCombatant].flags |= COMBAT_FLAGS_CHARMED;
             D_587b_activePlayer = 0xff;
             D_a9fa_vitalsDirty = 1;
-            COMBAT_03f4();
+            COMBAT_03f4_MonsterTurn();
             // -> ae09
         }
         else
@@ -421,10 +435,10 @@ static void COMBAT_063e_ProcessCommand(void)
                 if ((D_ba14_combatants[D_589e_curCombatant].flags & COMBAT_FLAGS_PLAYER) != 0)
                 {
                     ULTIMA_1850_PrintString(_TEXT(0x6da4, ", armed with "));
-                    local_c = COMBAT_05b6(D_55a8_party[local_a].equips[0], 0);
-                    local_c += COMBAT_05b6(D_55a8_party[local_a].equips[2], local_c);
-                    local_c += COMBAT_05b6(D_55a8_party[local_a].equips[3], local_c);
-                    if (local_c == 0)
+                    weaponCount_e = COMBAT_05b6_AppendWeaponName(D_55a8_party[member].equips[0], 0);
+                    weaponCount_e += COMBAT_05b6_AppendWeaponName(D_55a8_party[member].equips[2], weaponCount_e);
+                    weaponCount_e += COMBAT_05b6_AppendWeaponName(D_55a8_party[member].equips[3], weaponCount_e);
+                    if (weaponCount_e == 0)
                     {
                         strcat(D_b21e_scratch, _TEXT(0x6db2, "bare hands"));
                     }
@@ -433,10 +447,10 @@ static void COMBAT_063e_ProcessCommand(void)
                 strcat(D_b21e_scratch, _TEXT(0x6dbe, ":"));
                 ULTIMA_1850_PrintString(D_b21e_scratch);
 
-                local_6 = local_4_ab = 0;
+                keyDone = askAgain = 0;
 
                 // aa4a
-                while (!local_6)
+                while (!keyDone)
                 {
                     ULTIMA_16ba_PrintChar('\n');
                     ULTIMA_4c2a_PrintLeftCap();
@@ -444,8 +458,8 @@ static void COMBAT_063e_ProcessCommand(void)
                     {
                         ULTIMA_1850_PrintString(_TEXT(0x6dc0, "ARGH!\n"));
                         ULTIMA_223c_AudioWhiteNoise(0x28, 3000, 500);
-                        COMBAT_1c66(D_589e_curCombatant);
-                        local_6 = 1;
+                        COMBAT_1c66_Regurgitate(D_589e_curCombatant);
+                        keyDone = 1;
                     }
                     else if ((D_ba14_combatants[D_589e_curCombatant].flags & COMBAT_FLAGS_ASLEEP) != 0)
                     {
@@ -455,15 +469,15 @@ static void COMBAT_063e_ProcessCommand(void)
                         }
 
                         ULTIMA_1850_PrintString(_TEXT(0x6dc8, "Zzzzz...\n"));
-                        local_6 = 1;
+                        keyDone = 1;
                     }
                     else
                     {
-                        local_8 = ULTIMA_266c_GetChar();
-                        local_6 = 1;
-                        local_4_ab = 0;
+                        key = ULTIMA_266c_GetChar();
+                        keyDone = 1;
+                        askAgain = 0;
 
-                        switch (local_8)
+                        switch (key)
                         {
                         case U5_KEY_CTRL_B: // ok
                             // Buffer on/off
@@ -479,7 +493,7 @@ static void COMBAT_063e_ProcessCommand(void)
                                 ULTIMA_1850_PrintString(_TEXT(0x6de0, "n\n"));
                             }
                             // ab3d
-                            local_6 = 0;
+                            keyDone = 0;
                             break;
 
                         case U5_KEY_CTRL_S: // ok
@@ -495,27 +509,27 @@ static void COMBAT_063e_ProcessCommand(void)
                             }
                             D_a9ce_soundOn = !D_a9ce_soundOn;
                             // -> ab3d
-                            local_6 = 0;
+                            keyDone = 0;
                             break;
 
                         case 0x41:
                             /* 'A' Attack */
                             // ab70
-                            COMSUBS_0d96_AttackCmd(D_589e_curCombatant, local_c);
+                            COMSUBS_0d96_AttackCmd(D_589e_curCombatant, weaponCount_e);
                             break;
 
                         case 0x43: // ok
                             /* 'C' Cast */
                             // ab80 / 08f0
                             ULTIMA_1850_PrintString(_TEXT(0x6df6, "Cast...\n"));
-                            local_4_ab = 1;
+                            askAgain = 1;
                             if ((D_ba14_combatants[D_589e_curCombatant].flags & COMBAT_FLAGS_PLAYER) != 0)
                             {
                                 if (COMSUBS_09fc_EnemyInterferes(D_589e_curCombatant) == 0)
                                 {
                                     // abab / 091b
                                     D_588f = D_5890 = 1;
-                                    local_4_ab = 0;
+                                    askAgain = 0;
                                     if (D_587a_statusIcon == 'N' || (D_57b4_crown == 0 && D_5894_savedMapId == 0x12))
                                     {
                                         ULTIMA_1850_PrintString(_TEXT(0x6e00, "Absorbed!\n"));
@@ -537,13 +551,13 @@ static void COMBAT_063e_ProcessCommand(void)
                         case 0x47:
                             /* 'G' Get */
                             // abfa
-                            local_4_ab = COMBAT_0544(_TEXT(0x6e14, "Get-"), 0);
+                            askAgain = COMBAT_0544_RunCommand(_TEXT(0x6e14, "Get-"), 0);
                             break;
 
                         case 0x4a: // ok
                             /* 'J' Jimmy */
                             // ac0a
-                            local_4_ab = COMBAT_0544(_TEXT(0x6e1a, "Jimmy-"), 1);
+                            askAgain = COMBAT_0544_RunCommand(_TEXT(0x6e1a, "Jimmy-"), 1);
                             break;
 
                         case 0x4b:
@@ -552,14 +566,14 @@ static void COMBAT_063e_ProcessCommand(void)
                             if (SJOG_1d6a_CombatKlimb() == 0)
                             {
                                 // -> ab3d
-                                local_6 = 0;
+                                keyDone = 0;
                             }
                             break;
 
                         case 0x4f:
                             /* 'O' Open */
                             // ac1a
-                            local_4_ab = COMBAT_0544(_TEXT(0x6e22, "Open-"), 2);
+                            askAgain = COMBAT_0544_RunCommand(_TEXT(0x6e22, "Open-"), 2);
                             break;
 
                         case 0x50:
@@ -572,18 +586,18 @@ static void COMBAT_063e_ProcessCommand(void)
                         case 0x52:
                             /* 'R' Ready */
                             // ac32
-                            local_4_ab = COMBAT_0544(_TEXT(0x6e2e, "Ready...\n\n"), 3);
+                            askAgain = COMBAT_0544_RunCommand(_TEXT(0x6e2e, "Ready...\n\n"), 3);
                             break;
 
                         case 0x53: // ok
                             /* 'S' Search */
                             // ac3c
-                            local_4_ab = COMBAT_0544(_TEXT(0x6e3a, "Search-"), 4);
+                            askAgain = COMBAT_0544_RunCommand(_TEXT(0x6e3a, "Search-"), 4);
                             break;
 
                         case 0x55: // ok
                             // ac46
-                            local_4_ab = COMBAT_0544(_TEXT(0x6e42, "Use item\n\n"), 5);
+                            askAgain = COMBAT_0544_RunCommand(_TEXT(0x6e42, "Use item\n\n"), 5);
                             break;
 
                         case 0x59: // ok
@@ -602,7 +616,7 @@ static void COMBAT_063e_ProcessCommand(void)
 
                         case U5_KEY_ESC:
                             // ac6c
-                            local_4_ab = CMDS_17ec_Escape();
+                            askAgain = CMDS_17ec_Escape();
                             break;
 
                         case U5_KEY_SPACE: // ok
@@ -625,10 +639,10 @@ static void COMBAT_063e_ProcessCommand(void)
                         case 0x36:
                             /* '1' .. '6' */
                             // ac8e
-                            if (SJOG_1f7a_CombatSetActivePlayer(local_8 - 0x31) == 0)
+                            if (SJOG_1f7a_CombatSetActivePlayer(key - 0x31) == 0)
                             {
                                 // -> acd1
-                                local_4_ab = 1;
+                                askAgain = 1;
                             }
                             break;
 
@@ -637,109 +651,109 @@ static void COMBAT_063e_ProcessCommand(void)
                         case U5_KEY_UP:
                         case U5_KEY_DOWN:
                             // aca4
-                            if (SJOG_1c56_CombatMovePlayer(D_589e_curCombatant, local_8) == 0)
+                            if (SJOG_1c56_CombatMovePlayer(D_589e_curCombatant, key) == 0)
                             {
-                                local_6 = 0;
+                                keyDone = 0;
                             }
                             break;
 
                         case 0x42:
                             /* 'B' Board */
                             // acbc
-                            local_4_ab = SJOG_1f26_CombatMiscCmd(_TEXT(0x6e7e, "Board"), 1);
+                            askAgain = SJOG_1f26_CombatMiscCmd(_TEXT(0x6e7e, "Board"), 1);
                             break;
 
                         case 0x44:
                             /* 'D' What? */
                             // acca
                             ULTIMA_1850_PrintString(_TEXT(0x6e84, "D-What?\n"));
-                            local_4_ab = 1;
+                            askAgain = 1;
                             break;
 
                         case 0x45: // ok
                             /* 'E' Enter */
                             // acda / 0a4a
-                            local_4_ab = SJOG_1f26_CombatMiscCmd(_TEXT(0x6e8e, "Enter"), 2);
+                            askAgain = SJOG_1f26_CombatMiscCmd(_TEXT(0x6e8e, "Enter"), 2);
                             break;
 
                         case 0x46: // ok
                             /* 'F' Fire */
                             // ace4 / 0a54
-                            local_4_ab = SJOG_1f26_CombatMiscCmd(_TEXT(0x6e94, "Fire"), 2);
+                            askAgain = SJOG_1f26_CombatMiscCmd(_TEXT(0x6e94, "Fire"), 2);
                             break;
 
                         case 0x48: // ok
                             /* 'H' Hole up */
                             // acea / 0a5a
-                            local_4_ab = SJOG_1f26_CombatMiscCmd(_TEXT(0x6e9a, "Hole up"), 2);
+                            askAgain = SJOG_1f26_CombatMiscCmd(_TEXT(0x6e9a, "Hole up"), 2);
                             break;
 
                         case 0x49: // ok
                             /* 'I' Ignite torch */
                             // acf0 / 0a60
-                            local_4_ab = SJOG_1f26_CombatMiscCmd(_TEXT(0x6ea2, "Ignite torch"), 2);
+                            askAgain = SJOG_1f26_CombatMiscCmd(_TEXT(0x6ea2, "Ignite torch"), 2);
                             break;
 
                         case 0x4c: // ok
                             /* 'L' Look */
                             // acf6 /  0a66
-                            local_4_ab = SJOG_1f26_CombatMiscCmd(_TEXT(0x6eb0, "Look"), 2);
+                            askAgain = SJOG_1f26_CombatMiscCmd(_TEXT(0x6eb0, "Look"), 2);
                             break;
 
                         case 0x4d: // ok
                             /* 'M' Mix */
                             // acfc / 0a6c
-                            local_4_ab = SJOG_1f26_CombatMiscCmd(_TEXT(0x6eb6, "Mix"), 2);
+                            askAgain = SJOG_1f26_CombatMiscCmd(_TEXT(0x6eb6, "Mix"), 2);
                             break;
 
                         case 0x4e: // ok
                             /* 'N' New order */
                             // ad02 / 0a72
-                            local_4_ab = SJOG_1f26_CombatMiscCmd(_TEXT(0x6eba, "New order"), 2);
+                            askAgain = SJOG_1f26_CombatMiscCmd(_TEXT(0x6eba, "New order"), 2);
                             break;
 
                         case 0x51: // ok
                             /* 'Q' Quit */
                             // ad08 / 0a78
-                            local_4_ab = SJOG_1f26_CombatMiscCmd(_TEXT(0x6ec4, "Quit"), 2);
+                            askAgain = SJOG_1f26_CombatMiscCmd(_TEXT(0x6ec4, "Quit"), 2);
                             break;
 
                         case 0x54: // ok
                             /* 'T' Talk */
                             // ad0e
-                            local_4_ab = SJOG_1f26_CombatMiscCmd(_TEXT(0x6eca, "Talk"), 3);
+                            askAgain = SJOG_1f26_CombatMiscCmd(_TEXT(0x6eca, "Talk"), 3);
                             break;
 
                         case 0x56: // ok
                             /* 'V' View */
                             // ad18
-                            local_4_ab = SJOG_1f26_CombatMiscCmd(_TEXT(0x6ed0, "View"), 2);
+                            askAgain = SJOG_1f26_CombatMiscCmd(_TEXT(0x6ed0, "View"), 2);
                             break;
 
                         case 0x57: // ok
                             /* 'W' What */
                             // ad1e
                             ULTIMA_1850_PrintString(_TEXT(0x6ed6, "W-What?\n"));
-                            local_4_ab = 1;
+                            askAgain = 1;
                             break;
 
                         case 0x58: // ok
                             /* 'X' X-it */
                             // ad24
-                            local_4_ab = SJOG_1f26_CombatMiscCmd(_TEXT(0x6ee0, "X-it"), 1);
+                            askAgain = SJOG_1f26_CombatMiscCmd(_TEXT(0x6ee0, "X-it"), 1);
                             break;
 
                         default:
                             // ad47
                             // -> ab39
                             ULTIMA_1850_PrintString(_TEXT(0x6ee6, "What?\n"));
-                            local_6 = 0;
+                            keyDone = 0;
                             break;
                         }
                     }
                 }
                 // ade6
-            } while (local_4_ab != 0); // -> a981
+            } while (askAgain != 0); // -> a981
 
             // adef
             if ((D_ba14_combatants[D_589e_curCombatant].flags & COMBAT_FLAGS_PLAYER) != 0)
@@ -749,7 +763,7 @@ static void COMBAT_063e_ProcessCommand(void)
         }
 
         // ae09
-        if (local_8 < 0x30 || local_8 > 0x36)
+        if (key < 0x30 || key > 0x36)
         {
             SJOG_2012();
             ULTIMA_5910_UpdateFrame();
@@ -759,15 +773,17 @@ static void COMBAT_063e_ProcessCommand(void)
 }
 
 // CHECKED
-// perform combat (main loop)
+// The battle loop. Every combatant has a timer (36 minus its dexterity); when it runs out, a monster acts (COMBAT_03f4) or the party
+// member is asked (COMBAT_063e). Every ten turns the clock advances. VICTORY! when no monster is left, BATTLE IS LOST! when no
+// member. Returns 1 (0 when SJOG_1b6c's two counts in D_5876/D_5878 are both zero).
 int COMBAT_0b94_MainLoop(void)
 {
-    int local_a_ac;
-    CombatEntity* local_8;
-    int local_6;
-    int local_4_ab;
+    int finished_c;
+    CombatEntity* entity;
+    int flags;
+    int result;
 
-    local_4_ab = 1;
+    result = 1;
     D_58a0_combatExitDir = 0;
 
     ULTIMA_5910_UpdateFrame();
@@ -788,7 +804,7 @@ int COMBAT_0b94_MainLoop(void)
     AUDIO_PlayBgmForCombat();
 #endif
 
-    local_a_ac = 0;
+    finished_c = 0;
     do
     {
         // ae5a
@@ -796,28 +812,28 @@ int COMBAT_0b94_MainLoop(void)
         {
             // ae5f
             D_594f_openDoorTile = 0;
-            local_8 = &D_ba14_combatants[D_589e_curCombatant];
-            local_6 = local_8->flags;
+            entity = &D_ba14_combatants[D_589e_curCombatant];
+            flags = entity->flags;
 
-            if (((byte)local_6 & (COMBAT_FLAGS_PLAYER | COMBAT_FLAGS_MONSTER)) != 0 && ((byte)local_6 & COMBAT_FLAGS_DEAD) == 0)
+            if (((byte)flags & (COMBAT_FLAGS_PLAYER | COMBAT_FLAGS_MONSTER)) != 0 && ((byte)flags & COMBAT_FLAGS_DEAD) == 0)
             {
                 // ae86
-                if (((byte)local_6 & COMBAT_FLAGS_PLAYER) != 0 && D_55a8_party[local_8->entityIdx].status == STATUS_DEAD) // monster / non-dead player
+                if (((byte)flags & COMBAT_FLAGS_PLAYER) != 0 && D_55a8_party[entity->entityIdx].status == STATUS_DEAD) // monster / non-dead player
                 {
-                    local_8->flags |= COMBAT_FLAGS_DEAD;
+                    entity->flags |= COMBAT_FLAGS_DEAD;
                     ULTIMA_3564_HitEffectOnActor(D_589e_curCombatant);
-                    COMBAT_1574(D_589e_curCombatant, 99);
+                    COMBAT_1574_ApplyDamage(D_589e_curCombatant, 99);
                 }
                 else
                 {
                     // aeb6
-                    if ((GetCombatMap(local_8->x, local_8->y) & 0xfe) != 0x84)
+                    if ((GetCombatMap(entity->x, entity->y) & 0xfe) != 0x84)
                     {
                         // aed3
-                        if (--local_8->turnTimer == 0) // decrease turn timer
+                        if (--entity->turnTimer == 0) // decrease turn timer
                         {
                             // aedb
-                            local_8->turnTimer = 36 - local_8->dex; // reset timer
+                            entity->turnTimer = 36 - entity->dex; // reset timer
                             D_589d_attackWeapon = D_5890 = D_588f = D_58a2 = D_5898_crosshairOn = 0;
                             D_5882++;
                             if (D_5882 == 10)
@@ -830,7 +846,7 @@ int COMBAT_0b94_MainLoop(void)
                             D_589f_focusBlink = 1;
                             if (ULTIMA_5646_IsEnemy(D_589e_curCombatant) != 0)
                             {
-                                COMBAT_03f4();
+                                COMBAT_03f4_MonsterTurn();
                             }
                             else
                             {
@@ -839,7 +855,7 @@ int COMBAT_0b94_MainLoop(void)
 
                             // af23
                             D_58a8[D_589e_curCombatant] = 0xff;
-                            COMBAT_1b1e(D_589e_curCombatant);
+                            COMBAT_1b1e_TerrainEffect(D_589e_curCombatant);
                             SJOG_1b6c();
 
                             // af39
@@ -848,10 +864,10 @@ int COMBAT_0b94_MainLoop(void)
                                 if (D_5876_tempX == 0)
                                 {
                                     // af47
-                                    local_4_ab = 0;
+                                    result = 0;
 
                                     // af4c
-                                    local_a_ac = 1;
+                                    finished_c = 1;
                                     break; // -> afa6
                                 }
 
@@ -862,11 +878,11 @@ int COMBAT_0b94_MainLoop(void)
                                     if (D_58a3_combatOver == 0)
                                     {
                                         ULTIMA_1850_PrintString(_TEXT(0x6eee, "\nBATTLE IS LOST!"));
-                                        local_4_ab = 1;
+                                        result = 1;
                                     }
 
                                     // -> af4c
-                                    local_a_ac = 1;
+                                    finished_c = 1;
                                     break;
                                 }
 
@@ -892,7 +908,7 @@ int COMBAT_0b94_MainLoop(void)
                 }
             }
         } // af98
-    } while (local_a_ac == 0); // afa6
+    } while (finished_c == 0); // afa6
 
     // afaf
     ULTIMA_1b16_ClearKbdBuffer();
@@ -902,180 +918,185 @@ int COMBAT_0b94_MainLoop(void)
     AUDIO_StopBgm();
 #endif
 
-    return local_4_ab;
+    return result;
 }
 
 // CHECKED
-static int COMBAT_0d30(int param_1)
+// Chooses the opponent of a combatant: the nearest live and visible one of the other side (under status C a monster may mistake its side).
+// D_5876/D_5878 get the step toward it (-1, 0 or 1; reversed when fleeing). With nobody left the monsters all flee. Returns its index, or -1.
+static int COMBAT_0d30_ChooseTarget(int combatant)
 {
-    int local_18_ai;
-    int local_16_ak;
-    int local_14_am;
-    int local_12;
-    int local_10_aa;
-    int local_e_al;
-    CombatEntity* local_c_an;
-    int local_a;
-    int local_8;
-    CombatEntity* local_6;
-    int local_4_ab;
+    int distance;
+    int best_k;
+    int index;
+    int bestY;
+    int playersSeen_k;
+    int bestX;
+    CombatEntity* other;
+    int otherIsEnemy_c;
+    int selfIsEnemy_k;
+    CombatEntity* self_f;
+    int bestDistance_f;
 
-    local_10_aa = -1;
-    local_16_ak = -1;
-    local_4_ab = 99;
-    local_6 = &D_ba14_combatants[param_1];
+    playersSeen_k = -1;
+    best_k = -1;
+    bestDistance_f = 99;
+    self_f = &D_ba14_combatants[combatant];
 
-    local_8 = ULTIMA_5646_IsEnemy(param_1);
+    selfIsEnemy_k = ULTIMA_5646_IsEnemy(combatant);
     if (D_587a_statusIcon == 67)
     {
-        local_18_ai = COMBAT_13e2(param_1, QUERY_STAT_INTEL);
-        if (local_18_ai < ULTIMA_3abe_Random1To30())
+        distance = COMBAT_13e2_QueryStat(combatant, QUERY_STAT_INTEL);
+        if (distance < ULTIMA_3abe_Random1To30())
         {
-            local_8 = 0;
+            selfIsEnemy_k = 0;
         }
     }
 
-    for (local_14_am = 0x1f; local_14_am > -1; local_14_am--)
+    for (index = 0x1f; index > -1; index--)
     {
-        local_c_an = &D_ba14_combatants[local_14_am];
-        if (local_14_am != param_1 && local_c_an->flags != 0 && (local_c_an->flags & COMBAT_FLAGS_DEAD) == 0)
+        other = &D_ba14_combatants[index];
+        if (index != combatant && other->flags != 0 && (other->flags & COMBAT_FLAGS_DEAD) == 0)
         {
-            local_a = ULTIMA_5646_IsEnemy(local_14_am);
-            if (local_8 != local_a)
+            otherIsEnemy_c = ULTIMA_5646_IsEnemy(index);
+            if (selfIsEnemy_k != otherIsEnemy_c)
             {
-                if (((D_5894_savedMapId == 40 || local_6->entityIdx == 47 || (local_c_an->flags & COMBAT_FLAGS_INVISIBLE) == 0) && (local_c_an->flags & COMBAT_FLAGS_4) == 0))
+                if (((D_5894_savedMapId == 40 || self_f->entityIdx == 47 || (other->flags & COMBAT_FLAGS_INVISIBLE) == 0) && (other->flags & COMBAT_FLAGS_4) == 0))
                 {
-                    if (local_14_am < 5)
+                    if (index < 5)
                     {
-                        local_10_aa = local_10_aa + 1;
+                        playersSeen_k = playersSeen_k + 1;
                     }
 
                     // b06b
-                    local_18_ai = COMSUBS_048a_Distance(local_6->x, local_6->y, local_c_an->x, local_c_an->y);
-                    if (local_18_ai < local_4_ab)
+                    distance = COMSUBS_048a_Distance(self_f->x, self_f->y, other->x, other->y);
+                    if (distance < bestDistance_f)
                     {
-                        local_4_ab = local_18_ai;
-                        local_16_ak = local_14_am;
-                        local_e_al = local_c_an->x;
-                        local_12 = local_c_an->y;
+                        bestDistance_f = distance;
+                        best_k = index;
+                        bestX = other->x;
+                        bestY = other->y;
                     }
                 }
             }
         }
     }
 
-    if (local_10_aa == -1 && local_16_ak == -1)
+    if (playersSeen_k == -1 && best_k == -1)
     {
-        local_16_ak = SJOG_21ce();
+        best_k = SJOG_21ce();
     }
 
-    if (local_16_ak == -1)
+    if (best_k == -1)
     {
-        for (local_14_am = 0x1f; local_14_am > 5; local_14_am--)
+        for (index = 0x1f; index > 5; index--)
         {
-            if ((D_ba14_combatants[local_14_am].flags & COMBAT_FLAGS_MONSTER) != 0)
+            if ((D_ba14_combatants[index].flags & COMBAT_FLAGS_MONSTER) != 0)
             {
-                D_ba14_combatants[local_14_am].hp = 1;
-                D_ba14_combatants[local_14_am].flags |= COMBAT_FLAGS_2;
+                D_ba14_combatants[index].hp = 1;
+                D_ba14_combatants[index].flags |= COMBAT_FLAGS_2;
             }
         }
 
-        local_e_al = 5;
-        local_12 = 5;
+        bestX = 5;
+        bestY = 5;
     }
 
     D_5876_tempX = D_5878_tempY = 0;
 
-    if (local_6->x > local_e_al)
+    if (self_f->x > bestX)
     {
         D_5876_tempX = -1;
     }
 
-    if (local_6->x < local_e_al)
+    if (self_f->x < bestX)
     {
         D_5876_tempX = 1;
     }
 
-    if (local_6->y > local_12)
+    if (self_f->y > bestY)
     {
         D_5878_tempY = -1;
     }
 
-    if (local_6->y < local_12)
+    if (self_f->y < bestY)
     {
         D_5878_tempY = 1;
     }
 
-    if ((local_6->flags & COMBAT_FLAGS_2) != 0)
+    if ((self_f->flags & COMBAT_FLAGS_2) != 0)
     {
         D_5876_tempX *= -1;
         D_5878_tempY *= -1;
     }
 
-    if (local_16_ak == param_1)
+    if (best_k == combatant)
     {
-        local_16_ak = -1;
+        best_k = -1;
     }
 
-    return local_16_ak;
+    return best_k;
 }
 
 // CHECKED
-static int COMBAT_0ee4(int param_1)
+// A monster's move. A teleporter (ENEMY_FLAG_TELEPORT) tries to jump to a free random cell: always when boxed in (SJOG_2148), else 3 in 4.
+// The Mimic and the Reaper (0x1a, 0x1b) never move. Otherwise it steps toward its target when it can, else a random side step; leaving
+// the view sets D_58a2 to 0x10. Returns 1 when it moved.
+static int COMBAT_0ee4_MonsterMove(int combatant)
 {
-    int local_a;
-    int local_8;
-    int local_6;
-    CombatEntity* local_4_ab;
+    int target;
+    int moved_h;
+    int moveCode;
+    CombatEntity* self_f;
 
-    local_8 = 0;
-    local_6 = 0;
-    local_4_ab = &D_ba14_combatants[param_1];
+    moved_h = 0;
+    moveCode = 0;
+    self_f = &D_ba14_combatants[combatant];
 
-    if (local_4_ab->entityIdx != 0x1b && local_4_ab->entityIdx != 0x1a)
+    if (self_f->entityIdx != 0x1b && self_f->entityIdx != 0x1a)
     {
         // 0f17
-        if ((local_4_ab->flags & COMBAT_FLAGS_PLAYER) == 0 && (D_153c_enemyFlags[local_4_ab->entityIdx] & ENEMY_FLAG_TELEPORT) != 0 && D_587a_statusIcon != 0x4e && D_587a_statusIcon != 0x1c &&
-            (SJOG_2148(param_1) != 0 || ULTIMA_3aae_Random(3) != 3) && COMBAT_120e() != 0)
+        if ((self_f->flags & COMBAT_FLAGS_PLAYER) == 0 && (D_153c_enemyFlags[self_f->entityIdx] & ENEMY_FLAG_TELEPORT) != 0 && D_587a_statusIcon != 0x4e && D_587a_statusIcon != 0x1c &&
+            (SJOG_2148(combatant) != 0 || ULTIMA_3aae_Random(3) != 3) && COMBAT_120e_RandomCell() != 0)
         {
-            if (COMBAT_0000(D_5c5a_actors[local_4_ab->actorIdx].tile, D_5876_tempX, D_5878_tempY) != 0)
+            if (COMBAT_0000_IsCellFree(D_5c5a_actors[self_f->actorIdx].tile, D_5876_tempX, D_5878_tempY) != 0)
             {
-                D_5c5a_actors[local_4_ab->actorIdx].x = local_4_ab->x = D_5876_tempX;
-                D_5c5a_actors[local_4_ab->actorIdx].y = local_4_ab->y = D_5878_tempY;
+                D_5c5a_actors[self_f->actorIdx].x = self_f->x = D_5876_tempX;
+                D_5c5a_actors[self_f->actorIdx].y = self_f->y = D_5878_tempY;
 
-                ULTIMA_1850_PrintString(D_1856_enemyNames[local_4_ab->entityIdx]);
+                ULTIMA_1850_PrintString(D_1856_enemyNames[self_f->entityIdx]);
                 ULTIMA_1850_PrintString(_TEXT(0x6f0c, " teleports!\n"));
-                local_8++;
+                moved_h++;
             }
         }
 
         // 0fab
-        if (local_8 == 0 && SJOG_2148(param_1) == 0)
+        if (moved_h == 0 && SJOG_2148(combatant) == 0)
         {
             // 0fc1
-            local_a = COMBAT_0d30(param_1);
-            if (ULTIMA_3aae_Random(0xff) > 0x7f && SJOG_20d8(local_4_ab->x + D_5876_tempX, local_4_ab->y, param_1) == 0)
+            target = COMBAT_0d30_ChooseTarget(combatant);
+            if (ULTIMA_3aae_Random(0xff) > 0x7f && SJOG_20d8(self_f->x + D_5876_tempX, self_f->y, combatant) == 0)
             {
                 D_5878_tempY = 0;
-                local_6 = 999;
+                moveCode = 999;
             }
             else
             {
-                if (SJOG_20d8(local_4_ab->x, local_4_ab->y + D_5878_tempY, param_1) == 0)
+                if (SJOG_20d8(self_f->x, self_f->y + D_5878_tempY, combatant) == 0)
                 {
                     D_5876_tempX = 0;
-                    local_6 = 998;
+                    moveCode = 998;
                 }
             }
 
-            if (local_6 < 990)
+            if (moveCode < 990)
             {
                 // 1030
-                local_6 = 0;
-                for (local_8 = 4; local_8 > 0; local_8--)
+                moveCode = 0;
+                for (moved_h = 4; moved_h > 0; moved_h--)
                 {
-                    local_6 = ULTIMA_3aae_Random(3);
-                    switch (local_6)
+                    moveCode = ULTIMA_3aae_Random(3);
+                    switch (moveCode)
                     {
                     case 0:
                         D_5878_tempY = 1;
@@ -1096,12 +1117,12 @@ static int COMBAT_0ee4(int param_1)
                     }
 
                     // 1070
-                    if (SJOG_20d8(local_4_ab->x + D_5876_tempX, local_4_ab->y + D_5878_tempY, param_1) == 0)
+                    if (SJOG_20d8(self_f->x + D_5876_tempX, self_f->y + D_5878_tempY, combatant) == 0)
                     {
-                        local_6 = 991;
+                        moveCode = 991;
                     }
 
-                    if (local_6 > 990)
+                    if (moveCode > 990)
                         break;
 
                     
@@ -1110,14 +1131,14 @@ static int COMBAT_0ee4(int param_1)
             }
 
             // 10c7
-            if (local_6 != 0)
+            if (moveCode != 0)
             {
-                D_5c5a_actors[local_4_ab->actorIdx].x = local_4_ab->x += D_5876_tempX;
-                D_5c5a_actors[local_4_ab->actorIdx].y = local_4_ab->y += D_5878_tempY;
+                D_5c5a_actors[self_f->actorIdx].x = self_f->x += D_5876_tempX;
+                D_5c5a_actors[self_f->actorIdx].y = self_f->y += D_5878_tempY;
 
-                local_8 = 1;
+                moved_h = 1;
 
-                if (ULTIMA_6d82_IsInView(local_4_ab->x, local_4_ab->y) == 0)
+                if (ULTIMA_6d82_IsInView(self_f->x, self_f->y) == 0)
                 {
                     D_58a2 = 0x10;
                 }
@@ -1125,70 +1146,72 @@ static int COMBAT_0ee4(int param_1)
         }
     }
 
-    return local_8;
+    return moved_h;
 }
 
-int COMBAT_111a(int param_1, int param_2)
+// The combat map's triggers (D_58a1 bit 0x80 or 2): a trigger at the cell (x, y) writes its new tile at its two places, once. 1 when one went off.
+int COMBAT_111a_FireMapTrigger(int cellX, int cellY)
 {
-    byte* local_14_am;
-    byte* local_12_a;
-    int local_10_aq;
-    int local_e_am;
-    byte* local_c;
-    byte* local_a;
-    byte* local_8;
-    byte* local_6;
-    byte* local_4_ab;
+    byte* triggerXs_l;
+    byte* newTiles;
+    int fired;
+    int index;
+    byte* newTile2Ys;
+    byte* newTile1Ys;
+    byte* newTile2Xs;
+    byte* newTile1Xs;
+    byte* triggerYs;
 
-    local_10_aq = 0;
+    fired = 0;
 
     if ((D_58a1_combatFlags & 0x80) != 0 || (D_58a1_combatFlags & 2) != 0)
     {
-        local_14_am = &GetCombatMapTriggerX(0);
-        local_4_ab = &GetCombatMapTriggerY(0);
-        local_12_a = &GetCombatMapNewTileId(0);
-        local_6 = &GetCombatMapNewTile1X(0);
-        local_a = &GetCombatMapNewTile1Y(0);
-        local_8 = &GetCombatMapNewTile2X(0);
-        local_c = &GetCombatMapNewTile2Y(0);
+        triggerXs_l = &GetCombatMapTriggerX(0);
+        triggerYs = &GetCombatMapTriggerY(0);
+        newTiles = &GetCombatMapNewTileId(0);
+        newTile1Xs = &GetCombatMapNewTile1X(0);
+        newTile1Ys = &GetCombatMapNewTile1Y(0);
+        newTile2Xs = &GetCombatMapNewTile2X(0);
+        newTile2Ys = &GetCombatMapNewTile2Y(0);
 
-        for (local_e_am = 0; local_e_am < 8; local_e_am++)
+        for (index = 0; index < 8; index++)
         {
-            if (*local_14_am == param_1 && *local_4_ab == param_2)
+            if (*triggerXs_l == cellX && *triggerYs == cellY)
             {
-                *local_14_am = *local_4_ab = 0xff;
+                *triggerXs_l = *triggerYs = 0xff;
 
-                if (*local_6 < 0xb && *local_a < 0xb)
+                if (*newTile1Xs < 0xb && *newTile1Ys < 0xb)
                 {
-                    GetCombatMap((uint)*local_6, (uint)*local_a) = *local_12_a;
+                    GetCombatMap((uint)*newTile1Xs, (uint)*newTile1Ys) = *newTiles;
                 }
 
-                if (*local_8 < 0xb && *local_c < 0xb)
+                if (*newTile2Xs < 0xb && *newTile2Ys < 0xb)
                 {
-                    GetCombatMap((uint)*local_8, (uint)*local_c) = *local_12_a;
+                    GetCombatMap((uint)*newTile2Xs, (uint)*newTile2Ys) = *newTiles;
                 }
-                local_10_aq = 1;
+                fired = 1;
             }
 
-            local_14_am++;
-            local_4_ab++;
-            local_12_a++;
-            local_6++;
-            local_a++;
-            local_8++;
-            local_c++;
+            triggerXs_l++;
+            triggerYs++;
+            newTiles++;
+            newTile1Xs++;
+            newTile1Ys++;
+            newTile2Xs++;
+            newTile2Ys++;
         }
 
-        if (local_10_aq != 0)
+        if (fired != 0)
         {
             ULTIMA_5910_UpdateFrame();
         }
     }
 
-    return local_10_aq;
+    return fired;
 }
 
-int COMBAT_120e(void)
+// A random cell of 16x16 into D_5876_tempX and D_5878_tempY: 1 when it is on the 11x11 map.
+int COMBAT_120e_RandomCell(void)
 {
     D_5876_tempX = ULTIMA_3aae_Random(0xf);
     D_5878_tempY = ULTIMA_3aae_Random(0xf);
@@ -1203,308 +1226,316 @@ int COMBAT_120e(void)
     }
 }
 
-void COMBAT_1236(int param_1)
+// Removes an actor from the map: the actor index + 1, or, negative, the combatant -(index + 1) and with it its actor.
+void COMBAT_1236_RemoveEntity(int which)
 {
-    int local_6_an;
-    CombatEntity* local_4;
+    int actorIdx;
+    CombatEntity* entity;
 
-    if (param_1 < 0)
+    if (which < 0)
     {
-        param_1 *= -1;
-        param_1--;
-        local_4 = &D_ba14_combatants[param_1]; // [-param_1 - 1]
-        local_6_an = local_4->actorIdx;
+        which *= -1;
+        which--;
+        entity = &D_ba14_combatants[which]; // [-which - 1]
+        actorIdx = entity->actorIdx;
 
-        local_4->hp = local_4->dex = local_4->actorIdx = 0;
-        local_4->flags = local_4->turnTimer = local_4->x = local_4->y = 0;
+        entity->hp = entity->dex = entity->actorIdx = 0;
+        entity->flags = entity->turnTimer = entity->x = entity->y = 0;
     }
     else
     {
-        local_6_an = param_1 - 1;
+        actorIdx = which - 1;
     }
 
-    D_5c5a_actors[local_6_an].y =
-        D_5c5a_actors[local_6_an].z =
-        D_5c5a_actors[local_6_an].value =
-        D_5c5a_actors[local_6_an].tile =
-        D_5c5a_actors[local_6_an].animTile =
-        D_5c5a_actors[local_6_an].x = 0;
+    D_5c5a_actors[actorIdx].y =
+        D_5c5a_actors[actorIdx].z =
+        D_5c5a_actors[actorIdx].value =
+        D_5c5a_actors[actorIdx].tile =
+        D_5c5a_actors[actorIdx].animTile =
+        D_5c5a_actors[actorIdx].x = 0;
 }
 
-// attack
-static int COMBAT_12b0(int param_1, int param_2)
+// Damage of a hit: a monster's attack value, or the weapon's (a random 1 to its damage; 99 kills at once; bare hands 1; weapon 0x27 shatters
+// and does 99; 0x28 none) less a random 1 to the victim's defense. Negative is a miss.
+static int COMBAT_12b0_RollDamage(int attacker, int victim)
 {
-    int local_8;
-    int local_6;
-    int local_4_ab;
+    int attack;
+    int damage;
+    int defense_e;
 
-    if ((D_ba14_combatants[param_1].flags & COMBAT_FLAGS_MONSTER) != 0)
+    if ((D_ba14_combatants[attacker].flags & COMBAT_FLAGS_MONSTER) != 0)
     {
-        local_8 = D_13bc_enemyStats[D_ba14_combatants[param_1].entityIdx].atk;
+        attack = D_13bc_enemyStats[D_ba14_combatants[attacker].entityIdx].atk;
     }
     else
     {
-        local_8 = D_589d_attackWeapon;
-        switch (local_8)
+        attack = D_589d_attackWeapon;
+        switch (attack)
         {
         case 0x27:
             ULTIMA_1850_PrintString(_TEXT(0x6f1a, "Thy sword hath shattered!\n"));
-            ULTIMA_6e60_Unequip(param_1, local_8);
-            local_8 = 99;
+            ULTIMA_6e60_Unequip(attacker, attack);
+            attack = 99;
             break;
 
         case 0xff:
-            local_8 = 1;
+            attack = 1;
             break;
 
         case 0x28:
-            local_8 = 0;
+            attack = 0;
             break;
 
         default:
-            local_8 = D_15fc[local_8];
-            if (local_8 > 1 && local_8 != 99)
+            attack = D_15fc[attack];
+            if (attack > 1 && attack != 99)
             {
-                local_8 = ULTIMA_2092_RandomRange(1, local_8);
+                attack = ULTIMA_2092_RandomRange(1, attack);
             }
             break;
         }
     }
 
-    if (local_8 == 99)
+    if (attack == 99)
     {
-        local_6 = 99;
+        damage = 99;
     }
     else
     {
-        if ((D_ba14_combatants[param_2].flags & COMBAT_FLAGS_MONSTER) != 0)
+        if ((D_ba14_combatants[victim].flags & COMBAT_FLAGS_MONSTER) != 0)
         {
-            local_4_ab = D_13bc_enemyStats[D_ba14_combatants[param_2].entityIdx].def;
+            defense_e = D_13bc_enemyStats[D_ba14_combatants[victim].entityIdx].def;
         }
         else
         {
-            local_4_ab = D_55a8_party[D_ba14_combatants[param_2].entityIdx]._18;
+            defense_e = D_55a8_party[D_ba14_combatants[victim].entityIdx]._18;
 #if defined(ENABLE_BUG_FIX)
             // BUGFIX: apply armour values
-            local_4_ab += ULTIMA_6da8_PlayerDefense(D_ba14_combatants[param_2].entityIdx);
+            defense_e += ULTIMA_6da8_PlayerDefense(D_ba14_combatants[victim].entityIdx);
 #endif
         }
 
-        local_6 = local_8;
-        if (local_4_ab != 0)
+        damage = attack;
+        if (defense_e != 0)
         {
-            local_6 -= ULTIMA_2092_RandomRange(1, local_4_ab);
+            damage -= ULTIMA_2092_RandomRange(1, defense_e);
         }
     }
 
-    return local_6;
+    return damage;
 }
 
-static int COMBAT_139a(int param_1)
+// The dexterity used for turns and hits: 1 for a monster while time is stopped, for the Mimic (0x1a) and for the asleep; else the stored one.
+static int COMBAT_139a_EffectiveDex(int combatant)
 {
-    if (D_587a_statusIcon == 'T' && (D_ba14_combatants[param_1].flags & COMBAT_FLAGS_MONSTER) != 0)
+    if (D_587a_statusIcon == 'T' && (D_ba14_combatants[combatant].flags & COMBAT_FLAGS_MONSTER) != 0)
     {
         return 1;
     }
 
-    if (D_ba14_combatants[param_1].entityIdx == 0x1a)
+    if (D_ba14_combatants[combatant].entityIdx == 0x1a)
     {
         return 1;
     }
 
-    if ((D_ba14_combatants[param_1].flags & COMBAT_FLAGS_ASLEEP) != 0)
+    if ((D_ba14_combatants[combatant].flags & COMBAT_FLAGS_ASLEEP) != 0)
     {
         return 1;
     }
 
-    return D_ba14_combatants[param_1].dex;
+    return D_ba14_combatants[combatant].dex;
 }
 
-// query entity stat
-int COMBAT_13e2(int param_1, int param_2)
+// A stat of a combatant: -1 intelligence, -2 dexterity (COMBAT_139a), -3 strength, -4 defense. A weapon number (> 0) picks strength or
+// dexterity by its kind (D_169c == 8: strength), and 0 does so for a monster by its flags.
+int COMBAT_13e2_QueryStat(int combatant, int stat)
 {
-    int local_6_an;
-    CombatEntity* local_4 = &D_ba14_combatants[param_1];
-    SET_UNINITIALIZED_16(local_6_an);
+    int value;
+    CombatEntity* entity = &D_ba14_combatants[combatant];
+    SET_UNINITIALIZED_16(value);
 
-    if ((local_4->flags & COMBAT_FLAGS_MONSTER) != 0)
+    if ((entity->flags & COMBAT_FLAGS_MONSTER) != 0)
     {
-        if (param_2 == 0)
+        if (stat == 0)
         {
-            if ((D_153c_enemyFlags[local_4->entityIdx] & ENEMY_FLAG_80) != 0)
+            if ((D_153c_enemyFlags[entity->entityIdx] & ENEMY_FLAG_80) != 0)
             {
                 // 1411
-                param_2 = QUERY_STAT_STR;
+                stat = QUERY_STAT_STR;
             }
             else
             {
                 // -> 1428
-                param_2 = QUERY_STAT_DEX;
+                stat = QUERY_STAT_DEX;
             }
         }
     }
     else
     {
         // 1418
-        if (param_2 > 0)
+        if (stat > 0)
         {
 #if !defined(MATCHING_BUILD)
-            // fix OOB when param_2 == 0xff (bare hands)
-            if (param_2 == 0xff)
+            // fix OOB when stat == 0xff (bare hands)
+            if (stat == 0xff)
             {
-                param_2 = QUERY_STAT_DEX;
+                stat = QUERY_STAT_DEX;
             }
             else
 #endif
-            if (D_169c[param_2] == 8) // TODO: offset? (+1?)
+            if (D_169c[stat] == 8) // TODO: offset? (+1?)
             {
                 // -> 1411
-                param_2 = QUERY_STAT_STR;
+                stat = QUERY_STAT_STR;
             }
             else
             {
                 // 1428
-                param_2 = QUERY_STAT_DEX;
+                stat = QUERY_STAT_DEX;
             }
         }
     }
 
     // 142d
-    switch (param_2)
+    switch (stat)
     {
     case QUERY_STAT_INTEL:
         // 1444
-        if ((local_4->flags & COMBAT_FLAGS_MONSTER) != 0)
+        if ((entity->flags & COMBAT_FLAGS_MONSTER) != 0)
         {
-            local_6_an = D_13bc_enemyStats[local_4->entityIdx].intel;
+            value = D_13bc_enemyStats[entity->entityIdx].intel;
         }
         else
         {
             // 145e
-            local_6_an = D_55a8_party[local_4->entityIdx].intel;
+            value = D_55a8_party[entity->entityIdx].intel;
         }
         break;
 
     case QUERY_STAT_DEX:
         // 1478
-        local_6_an = COMBAT_139a(param_1);
+        value = COMBAT_139a_EffectiveDex(combatant);
         break;
 
     case QUERY_STAT_STR:
         // 1480
-        if ((local_4->flags & COMBAT_FLAGS_MONSTER) != 0)
+        if ((entity->flags & COMBAT_FLAGS_MONSTER) != 0)
         {
-            local_6_an = D_13bc_enemyStats[local_4->entityIdx].str;
+            value = D_13bc_enemyStats[entity->entityIdx].str;
         }
         else
         {
-            local_6_an = D_55a8_party[local_4->entityIdx].str;
+            value = D_55a8_party[entity->entityIdx].str;
         }
         break;
 
     case QUERY_STAT_DEF:
         // 14aa
-        if ((local_4->flags & COMBAT_FLAGS_MONSTER) != 0)
+        if ((entity->flags & COMBAT_FLAGS_MONSTER) != 0)
         {
-            local_6_an = D_13bc_enemyStats[local_4->entityIdx].def;
+            value = D_13bc_enemyStats[entity->entityIdx].def;
         }
         else
         {
-            local_6_an = ULTIMA_6da8_PlayerDefense(local_4->entityIdx);
+            value = ULTIMA_6da8_PlayerDefense(entity->entityIdx);
         }
         break;
     }
 
-    return local_6_an; // sic: uninitialised for other stats
+    return value; // sic: uninitialised for other stats
 }
 
-int COMBAT_14d6(int param_1, int param_2, int param_3, int param_4)
+// The roll to hit: (the target's stat - the attacker's + 30) / 2 is not above a roll of 1 to 30. Weapons use the target's dexterity and the
+// weapon's stat; spells both intelligence. Always a hit: the weapons 0x23, 0x27 and 0x28, and the spells 0x2a-0x31 and 0x33.
+int COMBAT_14d6_RollToHit(int target, int attacker, int unused, int weapon)
 {
-    int local_a;
-    int local_8;
-    int local_6;
-    int local_4_ab;
-    SET_UNINITIALIZED_16(local_8);
+    int attackStat;
+    int defendStat;
+    int hit_n;
+    int chance;
+    SET_UNINITIALIZED_16(defendStat);
 
-    local_a = QUERY_STAT_INTEL;
-    local_6 = 0;
+    attackStat = QUERY_STAT_INTEL;
+    hit_n = 0;
 
     if (D_588f != 0)
     {
-        if (param_4 > 0x29 && param_4 < 0x32 || param_4 == 0x33)
+        if (weapon > 0x29 && weapon < 0x32 || weapon == 0x33)
         {
-            local_6 = 1;
+            hit_n = 1;
         }
         else
         {
-            local_8 = local_a = QUERY_STAT_INTEL;
+            defendStat = attackStat = QUERY_STAT_INTEL;
         }
     }
     else
     {
         // 1512
-        if (param_4 == 0x27 || param_4 == 0x23 || param_4 == 0x28)
+        if (weapon == 0x27 || weapon == 0x23 || weapon == 0x28)
         {
-            local_6 = 1;
+            hit_n = 1;
         }
         else
         {
-            local_8 = QUERY_STAT_DEX;
-            local_a = param_4;
+            defendStat = QUERY_STAT_DEX;
+            attackStat = weapon;
         }
     }
 
     // 152f
-    if (local_6 == 0)
+    if (hit_n == 0)
     {
-        CHECK_UNINITIALIZED_16(local_8);
-        local_8 = COMBAT_13e2(param_1, local_8);
-        local_a = COMBAT_13e2(param_2, local_a);
-        local_4_ab = ((local_8 - local_a) + 0x1e) / 2;
-        if (local_4_ab <= ULTIMA_3abe_Random1To30())
+        CHECK_UNINITIALIZED_16(defendStat);
+        defendStat = COMBAT_13e2_QueryStat(target, defendStat);
+        attackStat = COMBAT_13e2_QueryStat(attacker, attackStat);
+        chance = ((defendStat - attackStat) + 0x1e) / 2;
+        if (chance <= ULTIMA_3abe_Random1To30())
         {
-            local_6 = 1;
+            hit_n = 1;
         }
     }
 
-    return local_6;
+    return hit_n;
 }
 
-// on damage (param_1: target entity, param_2: dmg)
-int COMBAT_1574(int param_1, int param_2)
+// Damage to a combatant. A member at 0 hit points (or 99 damage) dies. A monster is halved if undead (unless by magic) and unharmed if
+// flagged so; at 0 it dies and may leave a chest or a corpse, vanish, or become a swarm (the Gazer); the experience and the treasure level
+// are from its record. A monster that divides gets a twin instead. Returns the experience.
+int COMBAT_1574_ApplyDamage(int target, int damage)
 {
-    int local_12_a;
-    int local_10_aq;
-    int local_e_am;
-    int local_c;
-    int local_8;
-    int local_6;
-    int local_4_ab;
+    int cellY_f;
+    int cellX_g;
+    int groundTile;
+    int attempt_n;
+    int experience;
+    int treasure_f;
+    int clone;
 
-    CombatEntity* local_a;
+    CombatEntity* entity;
 
-    local_8 = 0;
-    local_6 = 0;
-    local_4_ab = -1;
-    local_a = &D_ba14_combatants[param_1];
+    experience = 0;
+    treasure_f = 0;
+    clone = -1;
+    entity = &D_ba14_combatants[target];
 
-    if (param_2 < 1)
+    if (damage < 1)
     {
         D_58a2 = 0x20;
-        param_2 = 0;
+        damage = 0;
     }
 
-    if ((local_a->flags & COMBAT_FLAGS_PLAYER) != 0)
+    if ((entity->flags & COMBAT_FLAGS_PLAYER) != 0)
     {
-        D_55a8_party[local_a->entityIdx].hp -= param_2;
-        if (D_55a8_party[local_a->entityIdx].hp < 1 || param_2 == 99)
+        D_55a8_party[entity->entityIdx].hp -= damage;
+        if (D_55a8_party[entity->entityIdx].hp < 1 || damage == 99)
         {
-            D_55a8_party[local_a->entityIdx].hp = 0;
-            local_a->flags |= COMBAT_FLAGS_DEAD;
-            D_55a8_party[local_a->entityIdx].status = STATUS_DEAD;
+            D_55a8_party[entity->entityIdx].hp = 0;
+            entity->flags |= COMBAT_FLAGS_DEAD;
+            D_55a8_party[entity->entityIdx].status = STATUS_DEAD;
 
-            D_5c5a_actors[local_a->actorIdx].tile = D_5c5a_actors[local_a->actorIdx].animTile = TILE_ACTOR_SLEEP;
-            if (local_a->entityIdx == D_587b_activePlayer)
+            D_5c5a_actors[entity->actorIdx].tile = D_5c5a_actors[entity->actorIdx].animTile = TILE_ACTOR_SLEEP;
+            if (entity->entityIdx == D_587b_activePlayer)
             {
                 D_587b_activePlayer = 0xff;
             }
@@ -1514,100 +1545,100 @@ int COMBAT_1574(int param_1, int param_2)
     }
     else
     {
-        if ((((byte)D_153c_enemyFlags[local_a->entityIdx]) & ENEMY_FLAG_UNDEAD) != 0 && D_5890 == 0)
+        if ((((byte)D_153c_enemyFlags[entity->entityIdx]) & ENEMY_FLAG_UNDEAD) != 0 && D_5890 == 0)
         {
-            param_2 /= 2;
+            damage /= 2;
         }
 
-        if ((((byte)D_153c_enemyFlags[local_a->entityIdx]) & ENEMY_FLAG_NO_DAMAGE) != 0)
+        if ((((byte)D_153c_enemyFlags[entity->entityIdx]) & ENEMY_FLAG_NO_DAMAGE) != 0)
         {
-            param_2 = 0;
+            damage = 0;
         }
 
-        if (local_a->hp < param_2)
+        if (entity->hp < damage)
         {
-            local_a->hp = 0;
+            entity->hp = 0;
         }
         else
         {
-            local_a->hp -= param_2;
+            entity->hp -= damage;
         }
 
-        if (local_a->hp == 0 || param_2 == 99)
+        if (entity->hp == 0 || damage == 99)
         {
-            local_8 = (D_13bc_enemyStats[local_a->entityIdx].maxHp >> 2) + 1;
-            local_6 = D_13bc_enemyStats[local_a->entityIdx].treas;
+            experience = (D_13bc_enemyStats[entity->entityIdx].maxHp >> 2) + 1;
+            treasure_f = D_13bc_enemyStats[entity->entityIdx].treas;
 
-            local_a->flags = COMBAT_FLAGS_DEAD;
+            entity->flags = COMBAT_FLAGS_DEAD;
 
-            local_a->hp = 0;
-            local_10_aq = local_a->x;
-            local_12_a = local_a->y;
-            local_e_am = GetCombatMap(local_10_aq, local_12_a);
+            entity->hp = 0;
+            cellX_g = entity->x;
+            cellY_f = entity->y;
+            groundTile = GetCombatMap(cellX_g, cellY_f);
 
-            if ((D_153c_enemyFlags[local_a->entityIdx] & (ENEMY_FLAG_VANISH | ENEMY_FLAG_NO_CORPSE)) == 0)
+            if ((D_153c_enemyFlags[entity->entityIdx] & (ENEMY_FLAG_VANISH | ENEMY_FLAG_NO_CORPSE)) == 0)
             {
-                if (local_a->entityIdx == 0x1c)
+                if (entity->entityIdx == 0x1c)
                 {
-                    D_5c5a_actors[local_a->actorIdx].tile = D_5c5a_actors[local_a->actorIdx].animTile = TILE_ACTOR_DEAD;
-                    ULTIMA_6506_PlaceCombatant(0x1f, 0, local_10_aq, local_12_a, D_5895_mapLevel);
+                    D_5c5a_actors[entity->actorIdx].tile = D_5c5a_actors[entity->actorIdx].animTile = TILE_ACTOR_DEAD;
+                    ULTIMA_6506_PlaceCombatant(0x1f, 0, cellX_g, cellY_f, D_5895_mapLevel);
                     ULTIMA_5910_UpdateFrame();
                 }
-                else if (local_a->entityIdx == 0x1e)
+                else if (entity->entityIdx == 0x1e)
                 {
-                    *ULTIMA_4402_GetTileAddr(local_10_aq, local_12_a) = TILE_MAP_4C;
-                    COMBAT_1236(-param_1 - 1);
+                    *ULTIMA_4402_GetTileAddr(cellX_g, cellY_f) = TILE_MAP_4C;
+                    COMBAT_1236_RemoveEntity(-target - 1);
                 }
-                else if (local_e_am == 0x87 || local_e_am < 4)
+                else if (groundTile == 0x87 || groundTile < 4)
                 {
-                    COMBAT_1236(-param_1 - 1);
+                    COMBAT_1236_RemoveEntity(-target - 1);
                 }
-                else if (local_6 >= ULTIMA_3abe_Random1To30())
+                else if (treasure_f >= ULTIMA_3abe_Random1To30())
                 {
-                    D_5c5a_actors[local_a->actorIdx].tile = D_5c5a_actors[local_a->actorIdx].animTile = TILE_ACTOR_CHEST;
-                    D_5c5a_actors[local_a->actorIdx].value = local_6;
+                    D_5c5a_actors[entity->actorIdx].tile = D_5c5a_actors[entity->actorIdx].animTile = TILE_ACTOR_CHEST;
+                    D_5c5a_actors[entity->actorIdx].value = treasure_f;
 
-                    if (local_6 > ULTIMA_3abe_Random1To30())
+                    if (treasure_f > ULTIMA_3abe_Random1To30())
                     {
-                        D_5c5a_actors[local_a->actorIdx].value |= 0x80;
+                        D_5c5a_actors[entity->actorIdx].value |= 0x80;
                     }
                 }
                 else
                 {
-                    D_5c5a_actors[local_a->actorIdx].tile = D_5c5a_actors[local_a->actorIdx].animTile = TILE_ACTOR_DEAD;
+                    D_5c5a_actors[entity->actorIdx].tile = D_5c5a_actors[entity->actorIdx].animTile = TILE_ACTOR_DEAD;
                 }
             }
-            else if ((D_153c_enemyFlags[local_a->entityIdx] & ENEMY_FLAG_VANISH) != 0)
+            else if ((D_153c_enemyFlags[entity->entityIdx] & ENEMY_FLAG_VANISH) != 0)
             {
-                ULTIMA_1850_PrintString(D_1856_enemyNames[local_a->entityIdx]);
+                ULTIMA_1850_PrintString(D_1856_enemyNames[entity->entityIdx]);
                 ULTIMA_1850_PrintString(_TEXT(0x6f36, " vanishes!"));
                 D_58a2 = 2;
-                D_5c5a_actors[local_a->actorIdx].tile = D_5c5a_actors[local_a->actorIdx].animTile = TILE_ACTOR_CIRCLE;
-                ULTIMA_1068_RevealTile(GetCombatMap(local_a->x, local_a->y), local_a->x, local_a->y);
-                COMBAT_1236(-(param_1 + 1));
+                D_5c5a_actors[entity->actorIdx].tile = D_5c5a_actors[entity->actorIdx].animTile = TILE_ACTOR_CIRCLE;
+                ULTIMA_1068_RevealTile(GetCombatMap(entity->x, entity->y), entity->x, entity->y);
+                COMBAT_1236_RemoveEntity(-(target + 1));
                 SJOG_21ce();
             }
             else
             {
-                COMBAT_1236(-(param_1 + 1));
+                COMBAT_1236_RemoveEntity(-(target + 1));
             }
 
         }
-        else if ((D_153c_enemyFlags[local_a->entityIdx] & ENEMY_FLAG_DIVIDE) != 0)
+        else if ((D_153c_enemyFlags[entity->entityIdx] & ENEMY_FLAG_DIVIDE) != 0)
         {
-            for (local_c = 0; local_c < 8; local_c++)
+            for (attempt_n = 0; attempt_n < 8; attempt_n++)
             {
-                COMSUBS_07d4_PickNearbyCell(local_a->x, local_a->y);
+                COMSUBS_07d4_PickNearbyCell(entity->x, entity->y);
 
-                local_10_aq = D_5876_tempX;
-                local_12_a = D_5878_tempY;
-                if (COMBAT_0000(D_5c5a_actors[local_a->actorIdx].tile, local_10_aq, local_12_a) != 0)
+                cellX_g = D_5876_tempX;
+                cellY_f = D_5878_tempY;
+                if (COMBAT_0000_IsCellFree(D_5c5a_actors[entity->actorIdx].tile, cellX_g, cellY_f) != 0)
                 {
-                    local_4_ab = ULTIMA_6506_PlaceCombatant((D_5c5a_actors[local_a->actorIdx].tile - TILE_ACTOR_WIZARD) >> 2, 0, local_10_aq, local_12_a, D_5895_mapLevel);
-                    if (local_4_ab > -1)
+                    clone = ULTIMA_6506_PlaceCombatant((D_5c5a_actors[entity->actorIdx].tile - TILE_ACTOR_WIZARD) >> 2, 0, cellX_g, cellY_f, D_5895_mapLevel);
+                    if (clone > -1)
                     {
-                        D_ba14_combatants[local_4_ab].hp = local_a->hp;
-                        ULTIMA_1850_PrintString(D_1856_enemyNames[local_a->entityIdx]);
+                        D_ba14_combatants[clone].hp = entity->hp;
+                        ULTIMA_1850_PrintString(D_1856_enemyNames[entity->entityIdx]);
                         ULTIMA_1850_PrintString(_TEXT(0x6f42, " divides!\n"));
                         break;
                     }
@@ -1616,61 +1647,63 @@ int COMBAT_1574(int param_1, int param_2)
         }
     }
 
-    return local_8;
+    return experience;
 }
 
-// poison attack
-void COMBAT_18ba(int param_1, int param_2)
+// Poison: a good party member becomes poisoned; anything else takes up to 20 damage (the attacking member earns the experience).
+void COMBAT_18ba_Poison(int target, int attacker)
 {
-    int local_4;
+    int damage;
 
-    if ((D_ba14_combatants[param_1].flags & COMBAT_FLAGS_PLAYER) != 0 && D_55a8_party[D_ba14_combatants[param_1].entityIdx].status == STATUS_GOOD)
+    if ((D_ba14_combatants[target].flags & COMBAT_FLAGS_PLAYER) != 0 && D_55a8_party[D_ba14_combatants[target].entityIdx].status == STATUS_GOOD)
     {
-        D_55a8_party[D_ba14_combatants[param_1].entityIdx].status = STATUS_POISONED;
-        ULTIMA_1850_PrintString(D_55a8_party[D_ba14_combatants[param_1].entityIdx].name);
+        D_55a8_party[D_ba14_combatants[target].entityIdx].status = STATUS_POISONED;
+        ULTIMA_1850_PrintString(D_55a8_party[D_ba14_combatants[target].entityIdx].name);
         ULTIMA_1850_PrintString(_TEXT(0x6f4e, " is poisoned!\n"));
         D_58a2 = 8;
         D_a9fa_vitalsDirty = 1;
     }
     else
     {
-        local_4 = COMBAT_1574(param_1, ULTIMA_3aae_Random(0x14));
-        if (param_2 > -1 && (D_ba14_combatants[param_2].flags & COMBAT_FLAGS_PLAYER) != 0)
+        damage = COMBAT_1574_ApplyDamage(target, ULTIMA_3aae_Random(0x14));
+        if (attacker > -1 && (D_ba14_combatants[attacker].flags & COMBAT_FLAGS_PLAYER) != 0)
         {
-            ULTIMA_3f14_IncreaseInt(&D_55a8_party[D_ba14_combatants[param_2].entityIdx].exp, local_4, 9999);
+            ULTIMA_3f14_IncreaseInt(&D_55a8_party[D_ba14_combatants[attacker].entityIdx].exp, damage, 9999);
         }
     }
 }
 
-void COMBAT_194a(int param_1, int param_2)
+// The effect of a hit: a poisonous monster poisons (3 in 4), the Gazer puts to sleep, a spell of sleep or poison acts as a field would,
+// else the damage is rolled (COMBAT_12b0) and applied; the attacking member earns experience. A miss on a member sets D_58a2 to 0x20.
+void COMBAT_194a_ResolveHit(int target, int attacker)
 {
-    int local_8;
-    int local_6;
-    int local_4_ab;
+    int damage;
+    int byMonster_l;
+    int slept_h;
 
-    local_6 = 0;
-    if ((D_ba14_combatants[param_2].flags & COMBAT_FLAGS_PLAYER) == 0)
+    byMonster_l = 0;
+    if ((D_ba14_combatants[attacker].flags & COMBAT_FLAGS_PLAYER) == 0)
     {
-        local_6 = 1;
+        byMonster_l = 1;
     }
 
     // 1969
-    if (local_6 && (D_153c_enemyFlags[D_ba14_combatants[param_2].entityIdx] & (ENEMY_FLAG_POISON_200 | ENEMY_FLAG_POISON_4)) != 0 && ULTIMA_2092_RandomRange(0, 3) != 0)
+    if (byMonster_l && (D_153c_enemyFlags[D_ba14_combatants[attacker].entityIdx] & (ENEMY_FLAG_POISON_200 | ENEMY_FLAG_POISON_4)) != 0 && ULTIMA_2092_RandomRange(0, 3) != 0)
     {
-        COMBAT_18ba(param_1, param_2);
+        COMBAT_18ba_Poison(target, attacker);
     }
     else
     {
         // 19a0
-        local_4_ab = 0;
-        if (local_6 && D_ba14_combatants[param_2].entityIdx == 0x1c && (D_ba14_combatants[param_1].flags & COMBAT_FLAGS_ASLEEP) == 0)
+        slept_h = 0;
+        if (byMonster_l && D_ba14_combatants[attacker].entityIdx == 0x1c && (D_ba14_combatants[target].flags & COMBAT_FLAGS_ASLEEP) == 0)
         {
-            ULTIMA_68ae_PutToSleep(param_1);
-            local_4_ab = 1;
+            ULTIMA_68ae_PutToSleep(target);
+            slept_h = 1;
         }
 
         // 19d0
-        if (local_4_ab)
+        if (slept_h)
         {
             // -> 1a54
             return;
@@ -1678,7 +1711,7 @@ void COMBAT_194a(int param_1, int param_2)
 
         if (D_5890 != 0 && D_589d_attackWeapon == 52)
         {
-            ULTIMA_68ae_PutToSleep(param_1);
+            ULTIMA_68ae_PutToSleep(target);
             // -> 1a54
             return;
         }
@@ -1687,194 +1720,198 @@ void COMBAT_194a(int param_1, int param_2)
         if (D_5890 == 0 || D_589d_attackWeapon != 51)
         {
             // 19fc
-            local_8 = COMBAT_12b0(param_2, param_1);
-            if (local_8 < 0 && (D_ba14_combatants[param_1].flags & COMBAT_FLAGS_PLAYER) != 0)
+            damage = COMBAT_12b0_RollDamage(attacker, target);
+            if (damage < 0 && (D_ba14_combatants[target].flags & COMBAT_FLAGS_PLAYER) != 0)
             {
                 D_58a2 = 0x20;
                 return; // -> 1a54
             }
 
             // 1a22
-            local_8 = COMBAT_1574(param_1, local_8);
-            if ((D_ba14_combatants[param_2].flags & COMBAT_FLAGS_PLAYER) != 0)
+            damage = COMBAT_1574_ApplyDamage(target, damage);
+            if ((D_ba14_combatants[attacker].flags & COMBAT_FLAGS_PLAYER) != 0)
             {
                 // 1a3c
-                ULTIMA_3f14_IncreaseInt(&D_55a8_party[D_ba14_combatants[param_2].entityIdx].exp, local_8, 9999);
+                ULTIMA_3f14_IncreaseInt(&D_55a8_party[D_ba14_combatants[attacker].entityIdx].exp, damage, 9999);
             }
         }
         else
         {
-            COMBAT_18ba(param_1, param_2);
+            COMBAT_18ba_Poison(target, attacker);
             return;
         }
     }
 }
 
 // CHECKED
-int COMBAT_1a5c(int param_1)
+// How hurt a monster is: 4 above three quarters of its hit points, 3 above half, 2 above a quarter, 1 below. A monster below half has about
+// 1 in 64 to start to flee (flag 2), one below a quarter always does. Party members return nothing.
+int COMBAT_1a5c_WoundLevel(int combatant)
 {
-    int local_a;
-    int local_8;
-    int local_6;
-    CombatEntity* local_4_ab;
+    int quarter;
+    int flees;
+    int level_h;
+    CombatEntity* entity_c;
 
-    local_8 = 0;
-    local_6 = 0;
-    local_4_ab = &D_ba14_combatants[param_1];
+    flees = 0;
+    level_h = 0;
+    entity_c = &D_ba14_combatants[combatant];
 
-    if ((local_4_ab->flags & COMBAT_FLAGS_PLAYER) != 0)
+    if ((entity_c->flags & COMBAT_FLAGS_PLAYER) != 0)
     {
         // 1a81
 #if !defined(MATCHING_BUILD)
-        return local_6; // TODO: validate return value
+        return level_h; // TODO: validate return value
 #else
-        return; // sic (IBM: returns &D_ba14_combatants[param_1], FMT: returns D_ba14_combatants[param_1]._2)
+        return; // sic (IBM: returns &D_ba14_combatants[combatant], FMT: returns D_ba14_combatants[combatant]._2)
 #endif
     }
     // 1a84
-    local_a = D_13bc_enemyStats[local_4_ab->entityIdx].maxHp / 4; // max hp / 4 (25%)
-    if (local_4_ab->hp < local_a)
+    quarter = D_13bc_enemyStats[entity_c->entityIdx].maxHp / 4; // max hp / 4 (25%)
+    if (entity_c->hp < quarter)
     {
-        local_6 = 1;
+        level_h = 1;
         // 1aa9
-        local_8 = 1;
+        flees = 1;
     }
     else
     {
         // 1ab0
-        local_a *= 2;
-        if (local_4_ab->hp < local_a) // max hp / 2 (50%)
+        quarter *= 2;
+        if (entity_c->hp < quarter) // max hp / 2 (50%)
         {
-            local_6 = 2;
-            local_a = ULTIMA_3aae_Random(0x100);
-            if (local_a > 0xfb)
+            level_h = 2;
+            quarter = ULTIMA_3aae_Random(0x100);
+            if (quarter > 0xfb)
             {
-                local_8 = 1;
+                flees = 1;
             }
         }
         else
         {
             // 1ad2
-            local_a /= 2;
-            local_a *= 3; // max hp / 4 * 3 (75%)
-            if (local_4_ab->hp < local_a)
+            quarter /= 2;
+            quarter *= 3; // max hp / 4 * 3 (75%)
+            if (entity_c->hp < quarter)
             {
-                local_6 = 3;
+                level_h = 3;
             }
             else
             {
-                local_6 = 4;
+                level_h = 4;
             }
         }
     }
 
-    if (local_8)
+    if (flees)
     {
-        local_4_ab->flags |= COMBAT_FLAGS_2;
+        entity_c->flags |= COMBAT_FLAGS_2;
     }
     else
     {
-        local_4_ab->flags &= ~COMBAT_FLAGS_2;
+        entity_c->flags &= ~COMBAT_FLAGS_2;
     }
 
-    return local_6;
+    return level_h;
 }
 
-static void COMBAT_1b1e(int param_1)
+// The ground under a combatant at the end of its turn: lava (0x8f, 0xbc) and fire (EA) burn, poison (E8, or the tile 0x04) poisons, sleep (E9) sleeps.
+static void COMBAT_1b1e_TerrainEffect(int combatant)
 {
-    CombatEntity* local_6;
-    int local_4_ab;
-    int local_8;
-    int local_a;
+    CombatEntity* entity_c;
+    int tile_b;
+    int index;
+    int hazard;
 
-    local_a = 0;
-    local_6 = &D_ba14_combatants[param_1];
-    local_4_ab = GetCombatMap(local_6->x, local_6->y);
-    if (local_4_ab == 0x8f || local_4_ab == 0xbc)
+    hazard = 0;
+    entity_c = &D_ba14_combatants[combatant];
+    tile_b = GetCombatMap(entity_c->x, entity_c->y);
+    if (tile_b == 0x8f || tile_b == 0xbc)
     {
-        local_a = 100;
+        hazard = 100;
     }
 
-    if (local_4_ab == 4)
+    if (tile_b == 4)
     {
-        local_a = 50;
+        hazard = 50;
     }
 
     // 1b6f
-    if (local_a == 0)
+    if (hazard == 0)
     {
-        for (local_8 = 0; local_8 < 0x20; local_8++)
+        for (index = 0; index < 0x20; index++)
         {
-            if (local_8 != local_6->actorIdx &&
-                local_6->x == D_5c5a_actors[local_8].x &&
-                local_6->y == D_5c5a_actors[local_8].y)
+            if (index != entity_c->actorIdx &&
+                entity_c->x == D_5c5a_actors[index].x &&
+                entity_c->y == D_5c5a_actors[index].y)
             {
-                if (D_5c5a_actors[local_8].tile == TILE_ACTOR_EA)
+                if (D_5c5a_actors[index].tile == TILE_ACTOR_EA)
                 {
-                    local_a = 100;
+                    hazard = 100;
                 }
 
-                if (D_5c5a_actors[local_8].tile == TILE_ACTOR_E8)
+                if (D_5c5a_actors[index].tile == TILE_ACTOR_E8)
                 {
-                    local_a = 50;
+                    hazard = 50;
                 }
 
-                if (D_5c5a_actors[local_8].tile == TILE_ACTOR_E9)
+                if (D_5c5a_actors[index].tile == TILE_ACTOR_E9)
                 {
-                    local_a = 150;
+                    hazard = 150;
                 }
 
-                if (local_a != 0)
+                if (hazard != 0)
                     break;
             }
         }
     }
 
     // 1bdd
-    switch (local_a)
+    switch (hazard)
     {
     case 150:
         // 1c0c
-        ULTIMA_68ae_PutToSleep(param_1);
+        ULTIMA_68ae_PutToSleep(combatant);
         break;
 
     case 100:
         // 1c14
-        ULTIMA_3564_HitEffectOnActor(param_1);
-        COMBAT_1574(param_1, ULTIMA_3aae_Random(10));
-        COMSUBS_0312_ReportHit(param_1, 0xff);
+        ULTIMA_3564_HitEffectOnActor(combatant);
+        COMBAT_1574_ApplyDamage(combatant, ULTIMA_3aae_Random(10));
+        COMSUBS_0312_ReportHit(combatant, 0xff);
         D_a9fa_vitalsDirty = 1;
         break;
 
     case 50:
         // 1c3a
-        if (D_5c5a_actors[local_6->actorIdx].tile < TILE_ACTOR_80)
+        if (D_5c5a_actors[entity_c->actorIdx].tile < TILE_ACTOR_80)
         {
-            COMBAT_18ba(param_1, -1);
-            ULTIMA_3564_HitEffectOnActor(param_1);
+            COMBAT_18ba_Poison(combatant, -1);
+            ULTIMA_3564_HitEffectOnActor(combatant);
         }
         break;
     }
 }
 
-static void COMBAT_1c66(int param_1)
+// A swallowed combatant (flag 4) is brought up again when a roll of 1 to 30 is below its dexterity: "regurgitated!".
+static void COMBAT_1c66_Regurgitate(int combatant)
 {
-    if (ULTIMA_3abe_Random1To30() < D_ba14_combatants[param_1].dex)
+    if (ULTIMA_3abe_Random1To30() < D_ba14_combatants[combatant].dex)
     {
-        if ((D_ba14_combatants[param_1].flags & COMBAT_FLAGS_PLAYER) != 0)
+        if ((D_ba14_combatants[combatant].flags & COMBAT_FLAGS_PLAYER) != 0)
         {
-            ULTIMA_1850_PrintString(D_55a8_party[D_ba14_combatants[param_1].entityIdx].name);
+            ULTIMA_1850_PrintString(D_55a8_party[D_ba14_combatants[combatant].entityIdx].name);
         }
         else
         {
-            ULTIMA_1850_PrintString(D_1856_enemyNames[D_ba14_combatants[param_1].entityIdx]);
+            ULTIMA_1850_PrintString(D_1856_enemyNames[D_ba14_combatants[combatant].entityIdx]);
         }
 
         ULTIMA_1850_PrintString(_TEXT(0x6f5e, " regurgitated!\n"));
         ULTIMA_223c_AudioWhiteNoise(1, 7000, 600);
 
-        D_ba14_combatants[param_1].flags &= ~COMBAT_FLAGS_4;
+        D_ba14_combatants[combatant].flags &= ~COMBAT_FLAGS_4;
 
-        D_5c5a_actors[D_ba14_combatants[param_1].actorIdx].animTile = D_5c5a_actors[D_ba14_combatants[param_1].actorIdx].tile;
+        D_5c5a_actors[D_ba14_combatants[combatant].actorIdx].animTile = D_5c5a_actors[D_ba14_combatants[combatant].actorIdx].tile;
     }
 }

@@ -1,0 +1,138 @@
+# COMBAT (combat.c): the combat turn loop, the monsters' turns (target, move, attack), the player's
+# command, damage and the stats of a combatant. One overlay. Public ones are called from the spells,
+# COMSUBS, SJOG and the commands.
+# functions
+COMBAT_0000 COMBAT_0000_IsCellFree             # a tile may be entered at (x, y) of the 11x11 map: walkable, no actor or combatant on it (off the map: 1)
+COMBAT_014e COMBAT_014e_MonsterRanged          # a monster's missile or spell at a target (half of the time; a magic monster not at all when magic is negated)
+COMBAT_0226 COMBAT_0226_MonsterAttack          # a monster attacks the target it chose: in reach it strikes, farther it shoots; 1 when it acted
+COMBAT_03f4 COMBAT_03f4_MonsterTurn            # a monster's whole turn: asleep, held, special tricks, attack or move, escape off the view
+COMBAT_0544 COMBAT_0544_RunCommand             # prints the command's word and runs it for a party member (Get, Jimmy, Open, Ready, Search, Use); a monster "Can't!"
+COMBAT_05b6 COMBAT_05b6_AppendWeaponName       # adds ", " and the weapon's name to the line in D_b21e_scratch; 1 when it has one
+COMBAT_0d30 COMBAT_0d30_ChooseTarget           # the nearest opponent (the party's side or the monsters'); D_5876/D_5878 get the step toward it (away when fleeing)
+COMBAT_0ee4 COMBAT_0ee4_MonsterMove            # a teleporting monster may jump; otherwise a step toward the target, else a random one; 1 when it moved
+COMBAT_111a COMBAT_111a_FireMapTrigger         # a trigger cell of the combat map (D_58a1_combatFlags & 0x82) changes the tiles it controls; 1 when it did
+COMBAT_120e COMBAT_120e_RandomCell             # a random cell of the 16x16 into D_5876/D_5878; 1 when it is on the 11x11 map
+COMBAT_1236 COMBAT_1236_RemoveEntity           # clears an actor (index + 1) or, negative, a combatant (-(index + 1)) and its actor
+COMBAT_12b0 COMBAT_12b0_RollDamage             # the damage of a hit: the weapon's (monster: its attack) minus a random roll of the victim's defense; 99 kills at once
+COMBAT_139a COMBAT_139a_EffectiveDex           # 1 for the held, the asleep and the Gazer (0x1a); else the combatant's dexterity
+COMBAT_13e2 COMBAT_13e2_QueryStat              # intelligence, dexterity, strength or defense of a combatant; a weapon number picks strength or dexterity
+COMBAT_14d6 COMBAT_14d6_RollToHit              # (target dexterity - attacker's stat + 30) / 2 against a roll of 1 to 30; spells use intelligence; 1 when it hits
+COMBAT_1574 COMBAT_1574_ApplyDamage            # hurts a combatant: a party member dies at 0, a monster leaves a corpse or chest, vanishes, or divides; returns the experience
+COMBAT_18ba COMBAT_18ba_Poison                 # poisons a party member, or hurts any other by up to 20 (the attacker gets the experience)
+COMBAT_194a COMBAT_194a_ResolveHit             # what a landed hit does: poison, sleep, the weapon's damage; the party's attacker earns the experience
+COMBAT_1a5c COMBAT_1a5c_WoundLevel             # how hurt a monster is, 1 (a quarter left) to 4; a badly hurt monster may start to flee
+COMBAT_1b1e COMBAT_1b1e_TerrainEffect          # the cell a combatant ends its turn on: fire and lava burn, a poison field poisons, a sleep field sleeps
+COMBAT_1c66 COMBAT_1c66_Regurgitate            # a swallowed combatant may be brought up again, by its dexterity
+# locals and parameters
+combat.c:COMBAT_0000 param_1 actorTile
+combat.c:COMBAT_0000 param_2 cellX
+combat.c:COMBAT_0000 param_3 cellY
+combat.c:COMBAT_0000 local_8 index
+combat.c:COMBAT_0000 local_6 flags
+combat.c:COMBAT_0000 local_4_ab occupant
+combat.c:COMBAT_014e param_1 attacker
+combat.c:COMBAT_014e param_2 target
+combat.c:COMBAT_014e param_3 warded
+combat.c:COMBAT_014e local_a type
+combat.c:COMBAT_014e local_8 struck
+combat.c:COMBAT_014e local_6 onTarget
+combat.c:COMBAT_014e local_4_ab missileKind
+combat.c:COMBAT_0226 param_1 monster
+combat.c:COMBAT_0226 local_c warded
+combat.c:COMBAT_0226 local_a type
+combat.c:COMBAT_0226 local_8 actorIdx
+combat.c:COMBAT_0226 local_6 targetType
+combat.c:COMBAT_0226 local_4_ab target
+combat.c:COMBAT_03f4 local_6_an actorIdx
+combat.c:COMBAT_03f4 local_4 entity
+combat.c:COMBAT_0544 param_1 verb
+combat.c:COMBAT_0544 param_2 command
+combat.c:COMBAT_05b6 param_1 weapon
+combat.c:COMBAT_05b6 param_2 listed
+combat.c:COMBAT_063e local_c weaponCount
+combat.c:COMBAT_063e local_a member
+combat.c:COMBAT_063e local_8 key
+combat.c:COMBAT_063e local_6 keyDone
+combat.c:COMBAT_063e local_4_ab askAgain
+combat.c:COMBAT_0b94 local_a_ac finished
+combat.c:COMBAT_0b94 local_8 entity
+combat.c:COMBAT_0b94 local_6 flags
+combat.c:COMBAT_0b94 local_4_ab result
+combat.c:COMBAT_0d30 param_1 combatant
+combat.c:COMBAT_0d30 local_18_ai distance
+combat.c:COMBAT_0d30 local_16_ak best
+combat.c:COMBAT_0d30 local_14_am index
+combat.c:COMBAT_0d30 local_12 bestY
+combat.c:COMBAT_0d30 local_10_aa playersSeen
+combat.c:COMBAT_0d30 local_e_al bestX
+combat.c:COMBAT_0d30 local_c_an other
+combat.c:COMBAT_0d30 local_a otherIsEnemy
+combat.c:COMBAT_0d30 local_8 selfIsEnemy
+combat.c:COMBAT_0d30 local_6 self
+combat.c:COMBAT_0d30 local_4_ab bestDistance
+combat.c:COMBAT_0ee4 param_1 combatant
+combat.c:COMBAT_0ee4 local_a target
+combat.c:COMBAT_0ee4 local_8 moved
+combat.c:COMBAT_0ee4 local_6 moveCode
+combat.c:COMBAT_0ee4 local_4_ab self
+combat.c:COMBAT_111a param_1 cellX
+combat.c:COMBAT_111a param_2 cellY
+combat.c:COMBAT_111a local_14_am triggerXs
+combat.c:COMBAT_111a local_12_a newTiles
+combat.c:COMBAT_111a local_10_aq fired
+combat.c:COMBAT_111a local_e_am index
+combat.c:COMBAT_111a local_c newTile2Ys
+combat.c:COMBAT_111a local_a newTile1Ys
+combat.c:COMBAT_111a local_8 newTile2Xs
+combat.c:COMBAT_111a local_6 newTile1Xs
+combat.c:COMBAT_111a local_4_ab triggerYs
+combat.c:COMBAT_1236 param_1 which
+combat.c:COMBAT_1236 local_6_an actorIdx
+combat.c:COMBAT_1236 local_4 entity
+combat.c:COMBAT_12b0 param_1 attacker
+combat.c:COMBAT_12b0 param_2 victim
+combat.c:COMBAT_12b0 local_8 attack
+combat.c:COMBAT_12b0 local_6 damage
+combat.c:COMBAT_12b0 local_4_ab defense
+combat.c:COMBAT_139a param_1 combatant
+combat.c:COMBAT_13e2 param_1 combatant
+combat.c:COMBAT_13e2 param_2 stat
+combat.c:COMBAT_13e2 local_6_an value
+combat.c:COMBAT_13e2 local_4 entity
+combat.c:COMBAT_14d6 param_1 target
+combat.c:COMBAT_14d6 param_2 attacker
+combat.c:COMBAT_14d6 param_3 unused
+combat.c:COMBAT_14d6 param_4 weapon
+combat.c:COMBAT_14d6 local_a attackStat
+combat.c:COMBAT_14d6 local_8 defendStat
+combat.c:COMBAT_14d6 local_6 hit
+combat.c:COMBAT_14d6 local_4_ab chance
+combat.c:COMBAT_1574 param_1 target
+combat.c:COMBAT_1574 param_2 damage
+combat.c:COMBAT_1574 local_12_a cellY
+combat.c:COMBAT_1574 local_10_aq cellX
+combat.c:COMBAT_1574 local_e_am groundTile
+combat.c:COMBAT_1574 local_c attempt
+combat.c:COMBAT_1574 local_8 experience
+combat.c:COMBAT_1574 local_6 treasure
+combat.c:COMBAT_1574 local_a entity
+combat.c:COMBAT_1574 local_4_ab clone
+combat.c:COMBAT_18ba param_1 target
+combat.c:COMBAT_18ba param_2 attacker
+combat.c:COMBAT_18ba local_4 damage
+combat.c:COMBAT_194a param_1 target
+combat.c:COMBAT_194a param_2 attacker
+combat.c:COMBAT_194a local_8 damage
+combat.c:COMBAT_194a local_6 byMonster
+combat.c:COMBAT_194a local_4_ab slept
+combat.c:COMBAT_1a5c param_1 combatant
+combat.c:COMBAT_1a5c local_a quarter
+combat.c:COMBAT_1a5c local_8 flees
+combat.c:COMBAT_1a5c local_6 level
+combat.c:COMBAT_1a5c local_4_ab entity
+combat.c:COMBAT_1b1e param_1 combatant
+combat.c:COMBAT_1b1e local_6 entity
+combat.c:COMBAT_1b1e local_4_ab tile
+combat.c:COMBAT_1b1e local_8 index
+combat.c:COMBAT_1b1e local_a hazard
+combat.c:COMBAT_1c66 param_1 combatant

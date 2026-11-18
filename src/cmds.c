@@ -1,6 +1,6 @@
 #include "common/common.h"
 // CMDS_0000 sits at a limit of pass 2's memory, which the names of the globals this object
-// declares and uses count against: with the readable names of the 21 below (found by taking
+// declares and uses count against: with the readable names of the 22 below (found by taking
 // the new names one at a time) it loses its loop optimization. So this object alone knows
 // them by their short names; the source below uses the readable ones, and the link
 // resolves the short ones by the address they carry. After common.h, which defines
@@ -19,6 +19,7 @@
 #define D_5c5a_actors D_5c5a
 #define D_a9ce_soundOn D_a9ce
 #define D_ba14_combatants D_ba14
+#define COMBAT_0000_IsCellFree COMBAT_0000
 #define ULTIMA_3ae6_WaitFrames ULTIMA_3ae6
 #define ULTIMA_400c_RingRegeneration ULTIMA_400c
 #define ULTIMA_4a84_DrawSunAndMoons ULTIMA_4a84
@@ -259,7 +260,7 @@ int CMDS_0000(int param_1, int param_2, int param_3)
                 break;
             }
 
-            if (ULTIMA_6d82_IsInView(D_5876_tempX, D_5878_tempY) != 0 && COMBAT_0000(local_18, D_5876_tempX, D_5878_tempY) != 0)
+            if (ULTIMA_6d82_IsInView(D_5876_tempX, D_5878_tempY) != 0 && COMBAT_0000_IsCellFree(local_18, D_5876_tempX, D_5878_tempY) != 0)
             {
                 local_1a->x = D_5c5a_actors[local_1a->actorIdx].x = D_5876_tempX;
                 local_1a->y = D_5c5a_actors[local_1a->actorIdx].y = D_5878_tempY;

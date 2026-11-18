@@ -381,7 +381,7 @@ int CAST2_04c2_KalXenCorp(int fromScroll)
     tries = 0;
     while (tries < 8)
     {
-        if (COMBAT_120e() == 0 || COMBAT_0000(TILE_ACTOR_D8, D_5876_tempX, D_5878_tempY) == 0 || *ULTIMA_4402_GetTileAddr(D_5876_tempX, D_5878_tempY) == 0xff)
+        if (COMBAT_120e_RandomCell() == 0 || COMBAT_0000_IsCellFree(TILE_ACTOR_D8, D_5876_tempX, D_5878_tempY) == 0 || *ULTIMA_4402_GetTileAddr(D_5876_tempX, D_5878_tempY) == 0xff)
         {
             tries++;
             continue;
@@ -401,7 +401,7 @@ int CAST2_04c2_KalXenCorp(int fromScroll)
         ULTIMA_1068_RevealTile(0x1d8, D_5876_tempX, D_5878_tempY);
         daemonActor_g->tile = daemonActor_g->animTile = TILE_ACTOR_D8;
 
-        if (fromScroll == 0 && ULTIMA_3abe_Random1To30() >= COMBAT_13e2(D_589e_curCombatant, QUERY_STAT_INTEL))
+        if (fromScroll == 0 && ULTIMA_3abe_Random1To30() >= COMBAT_13e2_QueryStat(D_589e_curCombatant, QUERY_STAT_INTEL))
         {
             // 05b2
             ULTIMA_1850_PrintString(_TEXT(0x9532, "Oops...\n"));

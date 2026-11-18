@@ -384,7 +384,7 @@ static int CAST_04b0_KalXen(void)
     // 0522
     while (tries_c < 8)
     {
-        if (COMBAT_120e() == 0 || COMBAT_0000(TILE_ACTOR_90, D_5876_tempX, D_5878_tempY) == 0)
+        if (COMBAT_120e_RandomCell() == 0 || COMBAT_0000_IsCellFree(TILE_ACTOR_90, D_5876_tempX, D_5878_tempY) == 0)
         {
             tries_c++;
             continue;
@@ -450,10 +450,10 @@ static int CAST_05dc_InPor(void)
             CAST2_0000_CastEffect(3);
             for (attempt_b = 0; attempt_b < 7; attempt_b++)
             {
-                if (COMBAT_120e() == 0)
+                if (COMBAT_120e_RandomCell() == 0)
                     continue;
 
-                if (COMBAT_0000(actor_h->tile, D_5876_tempX, D_5878_tempY) == 0)
+                if (COMBAT_0000_IsCellFree(actor_h->tile, D_5876_tempX, D_5878_tempY) == 0)
                     continue;
 
                 actor_h->x = D_ba14_combatants[D_589e_curCombatant].x = D_5876_tempX;
@@ -555,7 +555,7 @@ static int CAST_07b4_BetInXen(void)
     // 07c7
     for (attempt = 0; attempt < 8; attempt++)
     {
-        if (COMBAT_120e() == 0 || COMBAT_0000(TILE_ACTOR_BC, D_5876_tempX, D_5878_tempY) == 0)
+        if (COMBAT_120e_RandomCell() == 0 || COMBAT_0000_IsCellFree(TILE_ACTOR_BC, D_5876_tempX, D_5878_tempY) == 0)
             continue;
 
         result = 1;
@@ -661,10 +661,10 @@ static void CAST_091e_InPorVasYlem(int caster)
         {
             if (ULTIMA_5646_IsEnemy(combatant) != 0)
             {
-                if (COMBAT_13e2(combatant, QUERY_STAT_DEX) <= ULTIMA_3abe_Random1To30())
+                if (COMBAT_13e2_QueryStat(combatant, QUERY_STAT_DEX) <= ULTIMA_3abe_Random1To30())
                 {
                     ULTIMA_3564_HitEffectOnActor(combatant);
-                    ULTIMA_3f14_IncreaseInt(&D_55a8_party[caster].exp, COMBAT_1574(combatant, ULTIMA_2092_RandomRange(1, 0x14)), 9999); // FMT: &local_8 ??
+                    ULTIMA_3f14_IncreaseInt(&D_55a8_party[caster].exp, COMBAT_1574_ApplyDamage(combatant, ULTIMA_2092_RandomRange(1, 0x14)), 9999); // FMT: &local_8 ??
                     COMSUBS_0312_ReportHit(combatant, D_589e_curCombatant);
                 }
             }
@@ -737,7 +737,7 @@ static int CAST_0a5c_BetRelXen(void)
     {
         targetX = D_ba14_combatants[target].x;
         targetY_p = D_ba14_combatants[target].y;
-        COMBAT_1236(-target - 1);
+        COMBAT_1236_RemoveEntity(-target - 1);
         ULTIMA_6506_PlaceCombatant(0x14, 0, targetX, targetY_p, D_5895_mapLevel);
         return 1;
     }
@@ -810,7 +810,7 @@ static int CAST_0b28_InQuasXen(void)
 
                 do
                 {
-                    if (COMBAT_120e() == 0 || COMBAT_0000(TILE_ACTOR_AVATAR, D_5876_tempX, D_5878_tempY) == 0)
+                    if (COMBAT_120e_RandomCell() == 0 || COMBAT_0000_IsCellFree(TILE_ACTOR_AVATAR, D_5876_tempX, D_5878_tempY) == 0)
                     {
                         result_i = 0;
                     }
