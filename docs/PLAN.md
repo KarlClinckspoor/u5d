@@ -244,7 +244,10 @@ from a rule or from source, each named where it lives:
   segments, with the overlays and DATA.OVL, CRC-16s, rotating sums; all also on the file
   with GOG's eight patched bytes of ULTIMA_2322 restored (its MZ checksum would be e957,
   the GOG file's 0d37). Left: the sum of the program as PLINK86 wrote it before the
-  overlays and DGROUP went to their own files, whose header is unknown.
+  overlays and DGROUP went to their own files, whose header is unknown. PLINK86 1.28
+  (1983, archive.org) writes the plain MZ checksum of the EXE when the overlays go to
+  files of their own; Ultima V's linker is a 1986 one, which may differ, or ULTIMA.EXE
+  was changed after the link in more than GOG's eight bytes (MATCHING.md, "The link").
 - **Stand-in devices** in the source, each explained in its note: ULTIMA_1850's comment-line
   padding, TOWN_0f02's dead references (both pass 2's pool), DUNGEON_1952's register slot
   sharing, AINTRO2's BYTE-aligned `_DATA`, A2322 holding D_545e and r2320's strings.
@@ -252,6 +255,9 @@ from a rule or from source, each named where it lives:
     when pass 2 has 236.75-248.5 KB (MATCHING.md). A per-file memory limit for C2 in
     `dosbuild.py` (`research/c2mem.py` has the wrapper) would replace the padding with a
     statement about the build machine; neither can be told from the other by the code.
+    Civilization's rebuild (sjmelia/civd) does this for two modules (`loadfix -192 cl`);
+    the same could replace TOWN_0f02's fill and CMDS_0000's short link names
+    (MATCHING.md, "Others who matched MSC 5.x").
   - A2322: ULTIMA_251e, now known to be part of the same object, refers to D_545e, so
     D_545e could be defined in `r251e.c` again; A2322's `_DATA` (the strings from DS:545f)
     would then need BYTE alignment, as AINTRO2's has. Not applied: it trades one device for

@@ -159,6 +159,20 @@ identical and every name defined. It opens no game file to link.
   the file, the image and the header; each against 7e39, its negative, its complement and
   its bytes swapped. If PLINK86 summed the program before the overlays and DGROUP were
   written to their own files, the sum cannot be redone: that file's header is not known.
+- **PLINK86 1.28 was tried** (Phoenix, 1983; on the Victor 9000 Applications Programmer's
+  Toolkit II, disks 1 and 2, on archive.org; it runs in DOSBox-X). Linking its own overlay
+  test (`PLTEST.LNK`): with the overlays in the EXE, the checksum is the MZ checksum of the
+  whole file, overlays included; with each overlay `INTO` a file of its own, it is the MZ
+  checksum of the EXE alone, and the `.OVL` files are not counted. Its `.OVL` files have
+  Ultima V's header (offset:segment entries, a zero dword, zeros to the paragraph). The sums
+  of ULTIMA.EXE with the overlays and DATA.OVL, GOG's or restored, give no 7e39 either.
+  Ultima V's linker was a later one: its overlay loader says "Copyright (C) 1984, 1985, 1986
+  by Phoenix Software Associates" (1.28's says 1983), and 1.28 puts the relocation table at
+  0x1c, where ULTIMA.EXE has the word 1 and the table at 0x1e. If the later PLINK86 also
+  wrote the MZ checksum, ULTIMA.EXE was changed after the link in more than GOG's eight
+  bytes, by a sum of 6b1e in the words (restored file's MZ checksum e957, field 7e39).
+  CHECKSUM.EXE, from the same disk, sums the whole file and expects ffff: on ULTIMA.EXE it
+  reports 7101. The tools are kept outside the repository (`../tools/plink86-1.28`).
 
 ### The link script: `src/u5d.lnk`
 
@@ -1326,6 +1340,35 @@ structural changes (loop shapes, statement order).
   their first 31 characters become one symbol.
 - **No `NULL`.** MSC 5.1's `<time.h>` and `<stdlib.h>` don't define it.
 - **Packing.** `#pragma pack(push, 1)` is not understood (C4109); `/Zp` packs instead.
+
+## Others who matched MSC 5.x
+
+Two other projects rebuild a DOS game with Microsoft C 5.1, and both found some of what is
+above. No write-up of MSC 5.x's insides (the name hash, pass 2's pool) was found; this file
+seems to be the longest account of them.
+
+- **Sid Meier's Civilization**, [sjmelia/civd](https://github.com/sjmelia/civd): MSC 5.1,
+  MASM 5.10, LINK 5.01, byte-identical. Its notes ("Building the same executable") say that
+  identifier spelling "can affect local-variable allocation and the order of uninitialized
+  global storage", and keep awkward names for it; no mechanism is given. That is the name
+  hash, for locals and for communals: u5d's communal order (`u5.COMMUNALS`) is still copied
+  and may follow from the names the same way. Two large modules are compiled as
+  `loadfix -192 cl ...`, because "available memory can affect the code Microsoft C 5.1
+  emits" there; the makefile says one function then gives "the original C4063 code" (too
+  large for the post-optimizer). That is pass 2's memory above, applied to the whole of CL
+  as a statement about the build machine (here CL as a whole runs out of heap first, so the
+  limit must be C2's alone). Their one difference from the linker's output, a startup call,
+  is patched after the link by a small tool that checks the bytes before and after; u5d
+  writes GOG's patched functions as assembly instead. Their drivers and a picture codec
+  stay assembly.
+- **F-15 Strike Eagle II**, [neuviemeporte/f15se2-re](https://github.com/neuviemeporte/f15se2-re)
+  and its blog: MSC 5.1, matched instruction by instruction, not the layout. The compiler
+  was found from the run-time library's copyright year (1988); MSC 5.0 gave the same code
+  but does not take `//` comments. `/Zi` changes the code (it turns off optimizations that
+  get in the way of debugging). MSC puts a `nop` after the last function of a source file.
+  Nothing on slots or memory.
+- Microsoft's KB says LINK 3.x-5.x writes a wrong MZ checksum with /CODEVIEW or /EXEPACK
+  (Q67795, Q71971); Ultima V was linked with PLINK86, so it does not apply ("The link").
 
 ## DOSBox-X notes
 
