@@ -418,16 +418,16 @@ STUB u16 D_4b2c[9]; // cast sound pulse table
 
 STUB char* D_4b3e[8]; // virtue keywords
 
-STUB u16 D_4b5e[8]; // int
-STUB u16 D_4b6e[8];
+STUB u16 D_4b5e_questTextPos[8]; // int
+STUB u16 D_4b6e_codexTextPos[8];
 
-STUB u8 D_4b7e[8];
-STUB u8 D_4b86[8];
-STUB u8 D_4b8e[8];
+STUB u8 D_4b7e_strengthGain[8];
+STUB u8 D_4b86_dexterityGain[8];
+STUB u8 D_4b8e_intelligenceGain[8];
 
-STUB u8 D_4b96[8];
-STUB u8 D_4b9e[0x24]; // TODO: size
-STUB u8 D_4bc2[0x24]; // TODO: size
+STUB u8 D_4b96_urnFirst[8];
+STUB u8 D_4b9e_urnX[0x24]; // TODO: size
+STUB u8 D_4bc2_urnY[0x24]; // TODO: size
 
 // some sound table
 STUB u16 D_4be6[7];
@@ -930,10 +930,10 @@ BSS u8 D_bcf4_talkLabel; // the label being asked, 0x91-0x9f
 BSS u16 D_bcf6_talkKeywordIndex; // the NPC's keyword that matched
 BSS char D_bcf8_inputText[16]; // what the player typed
 
-BSS char D_bd08[12];
+BSS char D_bd08_answer[12];
 BSS u8 D_bd14; // no code refers to it
 
-BSS u8 D_bd15;
+BSS u8 D_bd15_savedMapId;
 BSS u8 D_bd16_pubKind;
 BSS s16 D_bd18_boughtSomething; // int?
 BSS int D_bd1a_dinersFed; // int

@@ -583,7 +583,7 @@ void BLCKTHRN_0910_Death(void)
 
     while (ULTIMA_1674_TestOpenFile(_TEXT(0x70d8, "BRIT.DAT")) == 0) {}
 
-    CAST2_08ea(D_58a6_lightSpellTurns);
+    CAST2_08ea_SetLightTurns(D_58a6_lightSpellTurns);
     D_587c_partyTile = TILE_ACTOR_SLEEP;
 
     if (D_5893_mapId < 0x21)

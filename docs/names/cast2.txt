@@ -1,0 +1,83 @@
+# CAST2 (cast2.c): the helpers of the spell code (select a spell, who, which direction, the
+# effects of the spells that need more than a few lines), the shrines and the Codex, saving the game. One overlay.
+# functions
+CAST2_0306 CAST2_0306_AskDirection           # "Direction-": an arrow key; the cell beside the actor (or party) is left in D_5876/D_5878; 0 for Pass
+CAST2_03c2 CAST2_03c2_HealMember             # 1 to 30 hit points, up to the maximum; 0 for the dead
+CAST2_046c CAST2_046c_WisAnYlem              # (Wis An Ylem, "AWY"): the view built with the walls seen through, animated for 20 frames
+CAST2_04c2 CAST2_04c2_KalXenCorp             # (Kal Xen Corp, "CKX"): gates in a daemon (0x26) charmed; the spell may fail and leave it hostile
+CAST2_06ec CAST2_06ec_PrintPosition          # (In Wis, "IW"): prints the position as letters, A'B", C'D" (x and y, each as two hex digits + 'A')
+CAST2_0768 CAST2_0768_InExPor                # (In Ex Por, "EIP"): turns a door tile 97 or 98 into the open door; -1 without a direction
+CAST2_07bc CAST2_07bc_AnGrav                 # (An Grav, "AG"): destroys a field: the dungeon field underfoot or ahead, else the field actor in the direction
+CAST2_08ea CAST2_08ea_SetLightTurns          # D_58a6: turns of light left
+CAST2_08f8 CAST2_08f8_SetSpellStatus         # the status icon and its turns (P protection, Q quickness, C, N negate..), the effect and the party display
+CAST2_0914 CAST2_0914_PlaceUrns              # puts the markers (potion tiles) for the party members who are gone into the Codex room; at positions of tables D_4b96..
+CAST2_0e64 CAST2_0e64_Footstep               # a step of the walk in the shrine: a pause, the footstep, a pause
+# locals and parameters
+cast2.c:CAST2_0000 param_1 level
+cast2.c:CAST2_009e local_4 member
+cast2.c:CAST2_00de local_1c_a nameLength
+cast2.c:CAST2_00de local_1a_aa matches
+cast2.c:CAST2_00de local_18_aj codePos
+cast2.c:CAST2_00de local_16_al letter
+cast2.c:CAST2_00de local_14_an letterPos
+cast2.c:CAST2_00de local_12_ap index
+cast2.c:CAST2_00de local_10_ab letters
+cast2.c:CAST2_00de local_c done
+cast2.c:CAST2_00de local_a count
+cast2.c:CAST2_00de local_8 columns
+cast2.c:CAST2_00de local_4_ab spell
+cast2.c:CAST2_0306 local_6_an key
+cast2.c:CAST2_0306 local_4 chosen
+cast2.c:CAST2_03c2 param_1 member
+cast2.c:CAST2_03c2 local_4 healed
+cast2.c:CAST2_040a param_1 direction
+cast2.c:CAST2_040a param_2 fromScroll
+cast2.c:CAST2_046c local_4 frame
+cast2.c:CAST2_04c2 param_1 fromScroll
+cast2.c:CAST2_04c2 local_a result
+cast2.c:CAST2_04c2 local_8 tries
+cast2.c:CAST2_04c2 local_6 daemonActor
+cast2.c:CAST2_04c2 local_4_c daemon
+cast2.c:CAST2_05e0 param_1 memberIdx
+cast2.c:CAST2_05e0 param_2 mode
+cast2.c:CAST2_05e0 local_6 expLeft
+cast2.c:CAST2_05e0 local_a newLevel
+cast2.c:CAST2_05e0 local_8 result
+cast2.c:CAST2_05e0 local_4_ab member
+cast2.c:CAST2_0768 local_6_an result
+cast2.c:CAST2_0768 local_4 tilePtr
+cast2.c:CAST2_07bc param_1 withEffect
+cast2.c:CAST2_07bc local_6 actorIdx
+cast2.c:CAST2_07bc local_4_ab cellPtr
+cast2.c:CAST2_07bc local_8 result
+cast2.c:CAST2_07bc local_a dx
+cast2.c:CAST2_07bc local_c dy
+cast2.c:CAST2_08f8 param_1 icon
+cast2.c:CAST2_08f8 param_2 turns
+cast2.c:CAST2_08f8 param_3 level
+cast2.c:CAST2_0914 param_1 count
+cast2.c:CAST2_0914 local_6_an index
+cast2.c:CAST2_0914 local_4 position
+cast2.c:CAST2_0966 local_6 paid
+cast2.c:CAST2_0966 local_8 step
+cast2.c:CAST2_0966 local_4_ab hundreds
+cast2.c:CAST2_0966 local_a virtue
+cast2.c:CAST2_0966 local_c allRight
+cast2.c:CAST2_0d24 local_4 virtue
+cast2.c:CAST2_0e76 local_c column
+cast2.c:CAST2_0e76 local_a row
+cast2.c:CAST2_0e76 local_8 urnCount
+cast2.c:CAST2_0e76 local_6 placeTile
+cast2.c:CAST2_0e76 local_4_ab stepsIn
+# globals (used only here)
+D_4b4e D_4b4e_unused                   # referenced by no code
+D_4b5e D_4b5e_questTextPos             # where each virtue's quest text starts in the shrine's text (MISCMSG.DAT)
+D_4b6e D_4b6e_codexTextPos             # the Codex's answer for each virtue
+D_4b7e D_4b7e_strengthGain             # the virtue's reward: 1 where it adds a point of strength
+D_4b86 D_4b86_dexterityGain
+D_4b8e D_4b8e_intelligenceGain
+D_4b96 D_4b96_urnFirst                 # triangular: where the markers for n gone members start in the position tables
+D_4b9e D_4b9e_urnX                     # marker positions on the Codex map
+D_4bc2 D_4bc2_urnY
+D_bd08 D_bd08_answer                   # what was typed at the altar (12 characters)
+D_bd15 D_bd15_savedMapId               # the map to come back to

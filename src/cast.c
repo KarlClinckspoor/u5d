@@ -161,7 +161,7 @@ static int CAST_01fa_Mani(void)
     }
     else
     {
-        local_4 = CAST2_03c2(local_6_an);
+        local_4 = CAST2_03c2_HealMember(local_6_an);
     }
 
     if (local_4 != 0)
@@ -177,7 +177,7 @@ static int CAST_0230_AnYlem(void)
     int local_6_an;
     byte* local_4;
 
-    if (CAST2_0306() == 0)
+    if (CAST2_0306_AskDirection() == 0)
     {
         return -1;
     }
@@ -259,7 +259,7 @@ static int CAST_02d2_AnSanct(void)
     }
     else
     {
-        if (CAST2_0306() == 0)
+        if (CAST2_0306_AskDirection() == 0)
         {
             return -1;
         }
@@ -326,7 +326,7 @@ static void CAST_043e_AnCorpXen(void)
 static void CAST_04a4_InWis(void)
 {
     CAST2_0000_CastEffect(2);
-    CAST2_06ec();
+    CAST2_06ec_PrintPosition();
 }
 
 // CHECKED
@@ -451,7 +451,7 @@ static int CAST_05dc_InPor(void)
     else
     {
         // 0680
-        if (CAST2_0306() == 0)
+        if (CAST2_0306_AskDirection() == 0)
         {
             return -1;
         }
@@ -569,7 +569,7 @@ static int CAST_0846_AnExPor(void)
     int local_6_an;
     byte* local_4;
 
-    if (CAST2_0306() == 0)
+    if (CAST2_0306_AskDirection() == 0)
     {
         return -1;
     }
@@ -1017,7 +1017,7 @@ int CAST_0dba_CastSpellCmd(void)
             switch (local_4_ab)
             {
             case 0: // IL
-                CAST2_08ea(100);
+                CAST2_08ea_SetLightTurns(100);
                 CAST2_0000_CastEffect(1);
                 break;
             case 1: // GP
@@ -1042,7 +1042,7 @@ int CAST_0dba_CastSpellCmd(void)
                 CAST_043e_AnCorpXen();
                 break;
             case 8: // HR
-                CAST2_040a_ChangeWindDirection(CAST2_0306(), 0);
+                CAST2_040a_ChangeWindDirection(CAST2_0306_AskDirection(), 0);
                 break;
             case 9: // IW
                 CAST_04a4_InWis();
@@ -1054,7 +1054,7 @@ int CAST_0dba_CastSpellCmd(void)
                 local_c = CAST_05b4_InManiXen();
                 break;
             case 0xc: // LV
-                CAST2_08ea(0xff);
+                CAST2_08ea_SetLightTurns(0xff);
                 CAST2_0000_CastEffect(3);
                 break;
             case 0xd: // FV
@@ -1073,10 +1073,10 @@ int CAST_0dba_CastSpellCmd(void)
                 local_c = CAST_05dc_InPor();
                 break;
             case 0x12: // AG
-                local_c = CAST2_07bc(1);
+                local_c = CAST2_07bc_AnGrav(1);
                 break;
             case 0x13: // IS
-                CAST2_08f8(0x50, 0x14, 4);
+                CAST2_08f8_SetSpellStatus(0x50, 0x14, 4);
                 break;
             case 0x14: // GIS
                 local_c = CAST_004c(3);
@@ -1117,7 +1117,7 @@ int CAST_0dba_CastSpellCmd(void)
                 local_c = CAST_0846_AnExPor();
                 break;
             case 0x1a: // EIP
-                local_c = CAST2_0768();
+                local_c = CAST2_0768_InExPor();
                 if (local_c == -1)
                     break;
                 CAST2_0000_CastEffect(5);
@@ -1129,20 +1129,20 @@ int CAST_0dba_CastSpellCmd(void)
                 CAST_1f60(D_589e_curCombatant, 1, D_13b6_magentaColor);
                 break;
             case 0x1d: // RT
-                CAST2_08f8(0x51, 0x1e, 5);
+                CAST2_08f8_SetSpellStatus(0x51, 0x1e, 5);
                 break;
             case 0x1e: // IPVY
                 CAST_091e_InPorVasYlem(local_6);
                 break;
             case 0x1f: // AQW
-                CAST2_08f8(0x43, 0x14, 6);
+                CAST2_08f8_SetSpellStatus(0x43, 0x14, 6);
                 break;
             case 0x20: // AI
-                CAST2_08f8(0x4e, 10, 6);
+                CAST2_08f8_SetSpellStatus(0x4e, 10, 6);
                 break;
             case 0x21: // AWY
                 CAST2_0000_CastEffect(6);
-                CAST2_046c();
+                CAST2_046c_WisAnYlem();
                 break;
             case 0x22: // AEX
                 local_c = CAST_09a0_AnExXen();
@@ -1181,7 +1181,7 @@ int CAST_0dba_CastSpellCmd(void)
                 ULTIMA_2900_UpdateVitalsDisplay();
                 break;
             case 0x2b: // CKX
-                local_c = CAST2_04c2(0);
+                local_c = CAST2_04c2_KalXenCorp(0);
                 break;
             case 0x2c: // CGIV
                 CAST_1f60(D_589e_curCombatant, 4, D_13b2_blueColor);
@@ -1227,14 +1227,14 @@ static int CAST_11de_UseScroll(int param_1)
     switch (param_1)
     {
     case 0:
-        CAST2_08ea(0xf0);
+        CAST2_08ea_SetLightTurns(0xf0);
         ULTIMA_1850_PrintString(_TEXT(0x4673, "Light!\n"));
         CAST2_0000_CastEffect(0);
         break;
 
     case 1:
         ULTIMA_1850_PrintString(_TEXT(0x467b, "Wind change!\n"));
-        local_6_an = CAST2_0306();
+        local_6_an = CAST2_0306_AskDirection();
         if (D_5893_mapId < 0x21)
         {
             CAST2_040a_ChangeWindDirection(local_6_an, 1);
@@ -1245,12 +1245,12 @@ static int CAST_11de_UseScroll(int param_1)
 
     case 2:
         ULTIMA_1850_PrintString(_TEXT(0x4689, "Protection!\n"));
-        CAST2_08f8(0x50, 100, 2);
+        CAST2_08f8_SetSpellStatus(0x50, 100, 2);
         break;
 
     case 3:
         ULTIMA_1850_PrintString(_TEXT(0x4696, "Negate magic!\n"));
-        CAST2_08f8(0x4e, 0x14, 3);
+        CAST2_08f8_SetSpellStatus(0x4e, 0x14, 3);
         break;
 
     case 4:
@@ -1279,7 +1279,7 @@ static int CAST_11de_UseScroll(int param_1)
         ULTIMA_1850_PrintString(_TEXT(0x46b7, "Summon Daemon!\n"));
         if (D_5893_mapId > 0x7f)
         {
-            local_4 = CAST2_04c2(1);
+            local_4 = CAST2_04c2_KalXenCorp(1);
             break;
         }
         else
@@ -1308,7 +1308,7 @@ static int CAST_11de_UseScroll(int param_1)
             break;
         }
         ULTIMA_1850_PrintString(_TEXT(0x46f8, "Negate time!\n"));
-        CAST2_08f8(0x54, 0x14, 7);
+        CAST2_08f8_SetSpellStatus(0x54, 0x14, 7);
         break;
     }
 
@@ -1394,7 +1394,7 @@ static int CAST_135a_UsePotion(int param_1)
         break;
 
     case 1:
-        local_8 = CAST2_03c2(local_a);
+        local_8 = CAST2_03c2_HealMember(local_a);
         if (local_8 != 0)
         {
             ULTIMA_1850_PrintString(_TEXT(0x470e, "Healed!\n"));
@@ -1481,7 +1481,7 @@ static int CAST_135a_UsePotion(int param_1)
     case 7:
         if (D_5893_mapId < 0x21)
         {
-            CAST2_046c();
+            CAST2_046c_WisAnYlem();
         }
         else
         {
@@ -1721,7 +1721,7 @@ void CAST_1792_UseCmd(void)
             ULTIMA_1850_PrintString(_TEXT(0x48fe, "Skull Key\n"));
             if (D_5893_mapId < 0x21 || 0x7f < D_5893_mapId)
             {
-                local_c = CAST2_0768();
+                local_c = CAST2_0768_InExPor();
                 if (local_c != 0 && D_5893_mapId < 0x80)
                 {
                     ULTIMA_3522_HitEffectAt(D_5876_tempX, D_5878_tempY);
@@ -1739,7 +1739,7 @@ void CAST_1792_UseCmd(void)
 
             ULTIMA_1850_PrintString(_TEXT(0x491d, "Wearing the Amulet"));
             ULTIMA_1850_PrintString(_XTEXT(0x4a84, " of Lord British...\n"));
-            CAST2_08f8(0xe, 0xff, 9);
+            CAST2_08f8_SetSpellStatus(0xe, 0xff, 9);
             break;
 
         case 0x13:
@@ -1749,7 +1749,7 @@ void CAST_1792_UseCmd(void)
 
             ULTIMA_1850_PrintString(_TEXT(0x4938, "Thou dost don the Crown"));
             ULTIMA_1850_PrintString(_XTEXT(0x4a84, " of Lord British...\n"));
-            CAST2_08f8(0x1c, 0xff, 9);
+            CAST2_08f8_SetSpellStatus(0x1c, 0xff, 9);
             break;
 
         case 0x14:
@@ -1780,7 +1780,7 @@ void CAST_1792_UseCmd(void)
             if (local_4_ab != 0)
                 break;
 
-            local_a = CAST2_07bc(0);
+            local_a = CAST2_07bc_AnGrav(0);
             if (local_a == 1)
             {
                 ULTIMA_1850_PrintString(_TEXT(0x496f, "Field dissolved!\n"));
@@ -1844,7 +1844,7 @@ void CAST_1792_UseCmd(void)
                 else
                 {
                     ULTIMA_1850_PrintString(_TEXT(0x4a26, "Position:"));
-                    CAST2_06ec();
+                    CAST2_06ec_PrintPosition();
                 }
             }
             break;

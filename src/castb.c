@@ -220,9 +220,9 @@ void CAST_1f60(int param_1, int param_2, int param_3)
     local_10ch = 1;
     local_104c = &D_55a8_party[D_ba14_combatants[param_1].entityIdx];
 #if !defined(MATCHING_BUILD)
-    local_10eg = CAST2_0306();
+    local_10eg = CAST2_0306_AskDirection();
 #else
-    local_10eg = CAST2_0306(param_1); // NOTE: original code error?
+    local_10eg = CAST2_0306_AskDirection(param_1); // NOTE: original code error?
 #endif
 #if !defined(MATCHING_BUILD) // added in FMT
     if (local_10eg != 0)
