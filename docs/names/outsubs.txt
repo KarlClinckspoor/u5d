@@ -7,11 +7,11 @@ OUTSUBS_0098 OUTSUBS_0098_LoadChunk                # reads one 16x16 chunk into 
 OUTSUBS_01b4 OUTSUBS_01b4_LoadViewChunks           # loads the chunks that come into view (-1/1 steps in x and y); finds the lighthouse beacon (tile 0x1b) in the four
 OUTSUBS_02c8 OUTSUBS_02c8_ShiftChunks              # after a scroll, copies the two chunks that stay in view to their new slots
 OUTSUBS_0566 OUTSUBS_0566_PlaceAmuletShards     # in the underworld: the Amulet's piece and the shards not yet taken (Shadowlord alive) are actors on the map
-OUTSUBS_0368_GetWorldSavefile = # the saved-map file of the level: BRIT.OOL on the surface, UNDER.OOL below
-OUTSUBS_0388_EnterTown = # prints the verb, finds the town at the party's position (D_1e8a/D_1eb2) and enters it: 0, or 1 with "What town?"
-OUTSUBS_0458_Falls = # "F-A-L-L-S!!!": hurts the party, and at the one hole (0x36, 0x8a) falls into the underworld
-OUTSUBS_05ee_StepOnBurningTile = # "Burning!": the party is damaged
-OUTSUBS_05fc_StepOnPoisonTile = # each living member may be poisoned (dexterity against a roll of 1 to 30)
+#= OUTSUBS_0368_GetWorldSavefile # the saved-map file of the level: BRIT.OOL on the surface, UNDER.OOL below
+#= OUTSUBS_0388_EnterTown # prints the verb, finds the town at the party's position (D_1e8a/D_1eb2) and enters it: 0, or 1 with "What town?"
+#= OUTSUBS_0458_Falls # "F-A-L-L-S!!!": hurts the party, and at the one hole (0x36, 0x8a) falls into the underworld
+#= OUTSUBS_05ee_StepOnBurningTile # "Burning!": the party is damaged
+#= OUTSUBS_05fc_StepOnPoisonTile # each living member may be poisoned (dexterity against a roll of 1 to 30)
 OUTSUBS_0658 OUTSUBS_0658_Apparition # "An apparition!": heals the party, raises levels by experience, then speaks a speech chosen by karma
 # locals and parameters
 outsubs.c:OUTSUBS_0000 param_1 chunkWord

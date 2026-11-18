@@ -96,10 +96,10 @@ STUB u8 D_1e8a_placeX[0x28]; // where each map's place is in the world
 STUB u8 D_1eb2_placeY[0x28]; // ~1ed9) town position y
 STUB u8 D_1eda_moonPhases[28 * 2]; // for each day of the month: Trammel's, Felucca's
 
-STUB u8 D_1f12[0x30]; // TODO: size, offset
+STUB u8 D_1f12_prisonCellOf[0x30]; // TODO: size, offset
 
-STUB u8 D_1f42[6];
-STUB u8 D_1f48[6];
+STUB u8 D_1f42_prisonCellX[6];
+STUB u8 D_1f48_prisonCellY[6];
 
 STUB char* D_1f4e_virtueNames[8];
 STUB char* D_1f5e_mantras[8]; // mantra
@@ -254,11 +254,11 @@ STUB char* D_3666[8];
 STUB u8 D_367e_npcBlockedTiles[0x20]; // TODO: size ~369e)
 
 // blckthrn
-STUB u8 D_369e[0x3c]; // TODO: size
-STUB u8 D_36da[0x27];
-STUB u8 D_3702[12];
-STUB u8 D_370e[8];
-STUB u8 D_3716[10];
+STUB u8 D_369e_scriptAfterTest[0x3c]; // TODO: size
+STUB u8 D_36da_scriptThreat[0x27];
+STUB u8 D_3702_scriptGuardsEnter[12];
+STUB u8 D_370e_scriptRelease[8];
+STUB u8 D_3716_scriptBlackthornLeaves[10];
 
 STUB u16 D_3720[6];
 STUB u16 D_372c[6];
