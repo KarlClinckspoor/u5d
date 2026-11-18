@@ -62,6 +62,14 @@ def gather(gd, notes):
     import asmbuild, libmatch
     mods = []
     have = {os.path.splitext(os.path.basename(p))[0].upper(): p for p in glob.glob(os.path.join(u5.OBJ, '*.OBJ'))}
+    if u5.TARGET != 'gog' and os.path.abspath(u5.OBJ) != os.path.abspath(u5.DEFAULT_OBJ):
+        # an object whose source does not depend on the target is the gog build's (match.py
+        # does not compile vars.c, so build/obj-1988 need not have VARS.OBJ)
+        dep = u5.target_dependent_objects()
+        for p in glob.glob(os.path.join(u5.DEFAULT_OBJ, '*.OBJ')):
+            n = os.path.splitext(os.path.basename(p))[0].upper()
+            if n not in have and n not in dep:
+                have[n] = p
 
     def overlay_module(n, ovl, cfile):
         # at the area base, or, for a later object of an overlay built from several, where
