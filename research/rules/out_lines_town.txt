@@ -1,0 +1,9 @@
+    0 records: TOWN_0F02_TILEEFFECTS              90d2 SIZE  len  476/472  diffs 104 first @0005 | others not exact: 0 
+  300 records: TOWN_0F02_TILEEFFECTS              90d2 SIZE  len  470/472  diffs 365 first @0005 | others not exact: 0 
+  306 records: TOWN_0F02_TILEEFFECTS              90d2 SIZE  len  476/472  diffs 152 first @0005 | others not exact: 0 
+  358 records: TOWN_0F02_TILEEFFECTS              90d2 SIZE  len  486/472  diffs 375 first @0005 | others not exact: 0 
+  362 records: TOWN_0F02_TILEEFFECTS              90d2 SIZE  len  476/472  diffs 104 first @0005 | others not exact: 0 
+  666 records: TOWN_0F02_TILEEFFECTS              90d2 SIZE  len  470/472  diffs 365 first @0005 | others not exact: 0 
+  674 records: TOWN_0F02_TILEEFFECTS              90d2 SIZE  len  476/472  diffs 152 first @0005 | others not exact: 0 
+  726 records: TOWN_0F02_TILEEFFECTS              90d2 SIZE  len  486/472  diffs 375 first @0005 | others not exact: 0 
+  728 records: TOWN_0F02_TILEEFFECTS              90d2 SIZE  len  476/472  diffs 104 first @0005 | others not exact: 0 

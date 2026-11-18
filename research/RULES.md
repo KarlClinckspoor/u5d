@@ -49,11 +49,16 @@ Evidence:
 
 ### Compiler or linker?
 
-The order *within an object* is the compiler's (above). The order *across* objects (shared ones
-first, then INTRO0's, INTRO2's, ... in link order) is the linker's, first seen. PLINK86 1.28
-cannot be asked: it does not know COMDEF records at all (`q2_plink.py`: "Warning: unknown record
-type B0H"), so Ultima V's later PLINK86 is the only witness, and nothing contradicts "allocated
-when first met, in record order".
+Both, one after the other. **PLINK86plus 2.24 (Ultima V's linker) allocates communals in the
+order of the COMDEF records, object by object in link order; a name already allocated is
+skipped; a communal of 2 bytes or more (a 3-byte char array too) starts on an even address, a
+1-byte one anywhere.** Test (`q2_plinkplus.py`, MSC 5.1 objects tagged with the Nantucket COMENT,
+the communals' addresses read from address tables in the linked EXE): object A's 70 communals
+landed exactly in A's COMDEF order (`a55..a63, a00 a64, a01 a65, ...`, the slot walk above), B's
+in B's record order with A's `a04`, `a03` skipped, then C's (declared `c05..c00`) in that order.
+So u5link's rule (sizes, alignment, first seen) is PLINK86plus's, and the order within an object
+is the compiler's slot walk. (PLINK86 1.28 does not know COMDEF records at all, `q2_plink.py`:
+"Warning: unknown record type B0H".)
 
 ### Could u5.COMMUNALS be derived?
 
