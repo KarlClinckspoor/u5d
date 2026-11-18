@@ -8,8 +8,8 @@ void ULTIMA_70a6_AnimateLighthouse(void);
 // Grap cont.
 
 void ULTIMA_71aa_UpdateClockTiles(void);
-void ULTIMA_71ca_DRV_27_ScrollTextWindow1(int param_1, int param_2, int param_3, int param_4, int param_5);
-void ULTIMA_7200_DRV_27_ScrollTextWindow2(int param_1, int param_2, int param_3, int param_4, int param_5);
+void ULTIMA_71ca_DRV_27_ScrollTextWindow1(int left, int top, int right, int bottom, int rows);
+void ULTIMA_7200_DRV_27_ScrollTextWindow2(int left, int top, int right, int bottom, int rows);
 
 // File
 

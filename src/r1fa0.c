@@ -16,32 +16,32 @@
 
 void ULTIMA_1fa0_Backspace(int char_count)
 {
-    int local_a;
-    int local_8;
-    TextWindow* local_6;
-    u16 local_4_ab;
+    int textX;
+    int charIndex;
+    TextWindow* window_i;
+    u16 savedFlag_d;
 
     if ((ULTIMA_1f12_GetCurrentTextX() != 0 || ULTIMA_1cee_GetCurrentTextY() != 0) && char_count != 0)
     {
-        local_4_ab = D_538e;
-        local_6 = &D_535e_textWindows[D_5386_textWindowIndex];
+        savedFlag_d = D_538e;
+        window_i = &D_535e_textWindows[D_5386_textWindowIndex];
         D_538e = 0;
 
-        for (local_8 = 0; local_8 < char_count; local_8++)
+        for (charIndex = 0; charIndex < char_count; charIndex++)
         {
-            local_a = ULTIMA_1f12_GetCurrentTextX();
+            textX = ULTIMA_1f12_GetCurrentTextX();
             ULTIMA_16ba_PrintChar(' ');
-            if (local_a != 0)
+            if (textX != 0)
             {
-                ULTIMA_1bf2_SetTextPosition(local_a - 1, ULTIMA_1cee_GetCurrentTextY());
+                ULTIMA_1bf2_SetTextPosition(textX - 1, ULTIMA_1cee_GetCurrentTextY());
             }
             else
             {
-                ULTIMA_1bf2_SetTextPosition(local_6->right - local_6->left, ULTIMA_1cee_GetCurrentTextY() - 1);
+                ULTIMA_1bf2_SetTextPosition(window_i->right - window_i->left, ULTIMA_1cee_GetCurrentTextY() - 1);
             }
         }
 
-        D_538e = local_4_ab;
+        D_538e = savedFlag_d;
     }
 }
 

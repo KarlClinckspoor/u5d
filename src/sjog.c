@@ -12,7 +12,7 @@
 
 #include "town.h"
 
-void ULTIMA_6794_ApplyRing(int param_1);
+void ULTIMA_6794_ApplyRing(int combatantIndex);
 
 // the last free actor slot (tile 0), counting down from 31; 0 when none
 static int SJOG_0000_FindFreeActor(void)

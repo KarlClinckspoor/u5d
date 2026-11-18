@@ -6,25 +6,25 @@
 #include "common/file.h"
 
 // Write one frame (param_1 mod 16) of a lighthouse beam, 16 cells, to the combat map around (param_3,param_4): param_2 = 1 sets 0xff, else 0.
-static void ULTIMA_7040_SetBeamCells(int param_1, int param_2, int param_3, int param_4)
+static void ULTIMA_7040_SetBeamCells(int frame, int setCells, int beaconX, int beaconY)
 {
-    int local_6;
-    PairS8* local_4_ab;
-    u8 local_8;
+    int cellIndex_i;
+    PairS8* cell;
+    u8 fill;
 
-    local_8 = 0;
-    if (param_2 == 1)
+    fill = 0;
+    if (setCells == 1)
     {
-        local_8 = 0xff;
+        fill = 0xff;
     }
 
-    param_1 = (param_1 % 0x10);
-    local_4_ab = &D_1f7e[param_1 * 0x10];
+    frame = (frame % 0x10);
+    cell = &D_1f7e[frame * 0x10];
 
-    for (local_6 = 0; local_6 < 0x10; local_6++)
+    for (cellIndex_i = 0; cellIndex_i < 0x10; cellIndex_i++)
     {
-        D_ad14_combatMap[(local_4_ab->y + param_4) * 0x20 + local_4_ab->x + param_3] = local_8;
-        local_4_ab++;
+        D_ad14_combatMap[(cell->y + beaconY) * 0x20 + cell->x + beaconX] = fill;
+        cell++;
     }
 }
 
@@ -90,39 +90,39 @@ void ULTIMA_71aa_UpdateClockTiles(void)
 
 #if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // NOT MATCHING: driver
-void ULTIMA_71ca_DRV_27_ScrollTextWindow1(int param_1, int param_2, int param_3, int param_4, int param_5)
+void ULTIMA_71ca_DRV_27_ScrollTextWindow1(int left, int top, int right, int bottom, int rows)
 {
     int di;
 
-    ULTIMA_08e6_ClipRectCoord(&param_1, &param_2, &param_3, &param_4);
+    ULTIMA_08e6_ClipRectCoord(&left, &top, &right, &bottom);
 
-    di = param_4 - param_2;
-    if (param_5 > di)
+    di = bottom - top;
+    if (rows > di)
     {
-        param_5 = di;
+        rows = di;
     }
 
     // scroll text window
-    DRV_27(param_1, param_2, param_3, param_4, -param_5);
+    DRV_27(left, top, right, bottom, -rows);
 }
 #endif
 
 #if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // NOT MATCHING: driver
-void ULTIMA_7200_DRV_27_ScrollTextWindow2(int param_1, int param_2, int param_3, int param_4, int param_5)
+void ULTIMA_7200_DRV_27_ScrollTextWindow2(int left, int top, int right, int bottom, int rows)
 {
     int di;
 
-    ULTIMA_08e6_ClipRectCoord(&param_1, &param_2, &param_3, &param_4);
+    ULTIMA_08e6_ClipRectCoord(&left, &top, &right, &bottom);
 
-    di = param_4 - param_2;
-    if (param_5 > di)
+    di = bottom - top;
+    if (rows > di)
     {
-        param_5 = di;
+        rows = di;
     }
 
     // scroll text window
-    DRV_27(param_1, param_2, param_3, param_4, param_5);
+    DRV_27(left, top, right, bottom, rows);
 }
 #endif
 

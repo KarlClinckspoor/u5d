@@ -16,7 +16,7 @@ void ULTIMA_43ae_AudioSweepTone(int a, int b, int c, int d);
 byte* ULTIMA_4402_GetTileAddr(int x, int y);
 void ULTIMA_4552_AnimateActors(void);
 void ULTIMA_475a_UpdateMoongates(void);
-int ULTIMA_47f4_GoToMoonstone(int param_1);
+int ULTIMA_47f4_GoToMoonstone(int stoneIndex);
 int ULTIMA_48a8_EnterMoongate(void);
 int ULTIMA_4988_GetActingPlayer(void);
 void ULTIMA_4a84_DrawSunAndMoons(void);

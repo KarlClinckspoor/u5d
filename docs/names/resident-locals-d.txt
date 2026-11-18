@@ -1,0 +1,7 @@
+3000.c:ULTIMA_3a74 a tile
+3000.c:ULTIMA_3a74 b animTile
+3000.c:ULTIMA_3a74 c mapX
+3000.c:ULTIMA_3a74 d mapY
+3000.c:ULTIMA_3a74 e mapLevel
+3000.c:ULTIMA_3a74 f value
+3000.c:ULTIMA_3a74 g slot

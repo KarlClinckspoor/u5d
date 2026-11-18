@@ -168,7 +168,7 @@ u8 D_6a14[0x20] =
 void ULTIMA_3072_ShakeScreen(void)
 {
     int i;
-    int local_8;
+    int shakeRound;
 
     ULTIMA_0f6e_GRAP_1b_TransferFullscreen(0, 1);
     ULTIMA_0c22_GRAP_0f_SelectPage(1);
@@ -177,7 +177,7 @@ void ULTIMA_3072_ShakeScreen(void)
     ULTIMA_223c_AudioWhiteNoise(0x13, 16000, 0x96);
 #endif
 
-    for (local_8 = 0; local_8 < 8; local_8++)
+    for (shakeRound = 0; shakeRound < 8; shakeRound++)
     {
         for (i = 8; i <= 0xb3; i += 3)
         {
@@ -244,13 +244,13 @@ void ULTIMA_3072_ShakeScreen(void)
 
 static void ULTIMA_3c9a_HoleUpCmd(void);
 
-int ULTIMA_3178_ProcessCommand(int param_1)
+int ULTIMA_3178_ProcessCommand(int key)
 {
     int result;
-    int local_6;
+    int tileUnder;
 
     result = 1;
-    switch (param_1)
+    switch (key)
     {
     case U5_KEY_CTRL_B:
         ULTIMA_1850_PrintString(_TEXT(0xa110, "Buffer O"));
@@ -332,9 +332,9 @@ int ULTIMA_3178_ProcessCommand(int param_1)
             ULTIMA_3c9a_HoleUpCmd();
             break;
         }
-        local_6 = *ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY);
+        tileUnder = *ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY);
         ULTIMA_1850_PrintString(_TEXT(0xa170, "Hole up- "));
-        if (local_6 != TILE_MAP_BED)
+        if (tileUnder != TILE_MAP_BED)
         {
             ULTIMA_1850_PrintString(_TEXT(0xa17a, "Only in bed!\n"));
         }
@@ -515,42 +515,42 @@ int ULTIMA_3178_ProcessCommand(int param_1)
 
 // "explosion effect"
 // The hit effect on the map cell (x, y): the flash tile and noise.
-void ULTIMA_3522_HitEffectAt(int param_1, int param_2)
+void ULTIMA_3522_HitEffectAt(int cellX, int cellY)
 {
     if (D_5893_mapId < 0x80)
     {
-        param_1 -= D_5896_mapX - 5;
-        param_2 -= D_5897_mapY - 5;
+        cellX -= D_5896_mapX - 5;
+        cellY -= D_5897_mapY - 5;
     }
 
-    ULTIMA_10e0_GRAP_51_PutTile(0, param_1, param_2);
+    ULTIMA_10e0_GRAP_51_PutTile(0, cellX, cellY);
     ULTIMA_223c_AudioWhiteNoise(10, 3000, 2000);
     ULTIMA_5910_UpdateFrame();
 }
 
 // The hit effect on an actor (in combat a combatant; a party member's stats row flashes too).
-void ULTIMA_3564_HitEffectOnActor(int param_1)
+void ULTIMA_3564_HitEffectOnActor(int index)
 {
-    CombatEntity* local_4;
+    CombatEntity* combatant;
 
 #if !defined(MATCHING_BUILD)
-    local_4 = 0;
+    combatant = 0;
     ASSERT(D_5893_mapId > 0x7f);
 #endif
 
     if (D_5893_mapId > 0x7f)
     {
-        local_4 = &D_ba14_combatants[param_1];
-        param_1 = local_4->actorIdx;
+        combatant = &D_ba14_combatants[index];
+        index = combatant->actorIdx;
     }
 
-    ULTIMA_10e0_GRAP_51_PutTile(0, D_5c5a_actors[param_1].x, D_5c5a_actors[param_1].y);
+    ULTIMA_10e0_GRAP_51_PutTile(0, D_5c5a_actors[index].x, D_5c5a_actors[index].y);
 
-    if (D_5893_mapId > 0x7f && (local_4->flags & COMBAT_FLAGS_PLAYER) != 0)
+    if (D_5893_mapId > 0x7f && (combatant->flags & COMBAT_FLAGS_PLAYER) != 0)
     {
-        ULTIMA_2a28_InvertPlayerRow(local_4->entityIdx);
+        ULTIMA_2a28_InvertPlayerRow(combatant->entityIdx);
         ULTIMA_223c_AudioWhiteNoise(0x28, 3000, 500);
-        ULTIMA_2a28_InvertPlayerRow(local_4->entityIdx);
+        ULTIMA_2a28_InvertPlayerRow(combatant->entityIdx);
     }
     else
     {
@@ -562,18 +562,18 @@ void ULTIMA_3564_HitEffectOnActor(int param_1)
 
 int ULTIMA_35ec_SelectDirection(void)
 {
-    u8 local_4;
+    u8 key;
 
     D_5876_tempX = 0;
     D_5878_tempY = 0;
 
-    while ((local_4 = ULTIMA_266c_GetChar()) != U5_KEY_SPACE &&
-           local_4 != U5_KEY_UP && local_4 != U5_KEY_DOWN &&
-           local_4 != U5_KEY_LEFT && local_4 != U5_KEY_RIGHT)
+    while ((key = ULTIMA_266c_GetChar()) != U5_KEY_SPACE &&
+           key != U5_KEY_UP && key != U5_KEY_DOWN &&
+           key != U5_KEY_LEFT && key != U5_KEY_RIGHT)
     {
     }
 
-    switch (local_4)
+    switch (key)
     {
     case U5_KEY_ESC:
     case U5_KEY_SPACE:
@@ -598,17 +598,17 @@ int ULTIMA_35ec_SelectDirection(void)
     }
 
 #if !defined(MATCHING_BUILD)
-    return local_4;
+    return key;
 #endif
 }
 
 // CHECKED
-int ULTIMA_368e_FindActorTileAtPos(int param_1_x, int param_2_y, int param_3_level)
+int ULTIMA_368e_FindActorTileAtPos(int mapX, int mapY, int mapLevel)
 {
     for (D_5876_tempX = 1; D_5876_tempX < 32; D_5876_tempX++)
     {
-        if (D_5c5a_actors[D_5876_tempX].x == param_1_x && D_5c5a_actors[D_5876_tempX].y == param_2_y &&
-            (D_5893_mapId > 0x7f || (D_5893_mapId < 0x80 && D_5c5a_actors[D_5876_tempX].z == param_3_level)))
+        if (D_5c5a_actors[D_5876_tempX].x == mapX && D_5c5a_actors[D_5876_tempX].y == mapY &&
+            (D_5893_mapId > 0x7f || (D_5893_mapId < 0x80 && D_5c5a_actors[D_5876_tempX].z == mapLevel)))
         {
             return D_5c5a_actors[D_5876_tempX].tile;
         }
@@ -619,12 +619,12 @@ int ULTIMA_368e_FindActorTileAtPos(int param_1_x, int param_2_y, int param_3_lev
 
 // CHECKED
 // The tile of the actor at (x, y, level), searching from slot 31 down to the party (slot 0); D_5876_tempX is its slot. 0 none.
-int ULTIMA_3702_FindLastActorTileAt(int param_1, int param_2, int param_3)
+int ULTIMA_3702_FindLastActorTileAt(int mapX, int mapY, int mapLevel)
 {
     for (D_5876_tempX = 31; D_5876_tempX >= 0; D_5876_tempX--)
     {
-        if (D_5c5a_actors[D_5876_tempX].x == param_1 && D_5c5a_actors[D_5876_tempX].y == param_2 &&
-            (D_5893_mapId > 0x7f || (D_5893_mapId < 0x80 && D_5c5a_actors[D_5876_tempX].z == param_3)))
+        if (D_5c5a_actors[D_5876_tempX].x == mapX && D_5c5a_actors[D_5876_tempX].y == mapY &&
+            (D_5893_mapId > 0x7f || (D_5893_mapId < 0x80 && D_5c5a_actors[D_5876_tempX].z == mapLevel)))
         {
             return D_5c5a_actors[D_5876_tempX].tile;
         }
@@ -636,42 +636,42 @@ int ULTIMA_3702_FindLastActorTileAt(int param_1, int param_2, int param_3)
 // CHECKED
 // NOTE: UNUSED
 // UNUSED: a free actor slot, or one holding the given tile out of range of the party.
-static int ULTIMA_3776_FindFarActorSlot(byte param_1)
+static int ULTIMA_3776_FindFarActorSlot(byte tile)
 {
-    int local_6;
-    int local_8;
-    int local_4_ab;
+    int distY;
+    int slot_m;
+    int distX;
 
-    for (local_8 = 0x1f; local_8 >= 0; local_8--)
+    for (slot_m = 0x1f; slot_m >= 0; slot_m--)
     {
-        if (D_5c5a_actors[local_8].tile == 0)
+        if (D_5c5a_actors[slot_m].tile == 0)
         {
-            return local_8;
+            return slot_m;
         }
 
-        if (D_5c5a_actors[local_8].tile == param_1)
+        if (D_5c5a_actors[slot_m].tile == tile)
         {
-            if (D_5896_mapX >= D_5c5a_actors[local_8].x)
+            if (D_5896_mapX >= D_5c5a_actors[slot_m].x)
             {
-                local_4_ab = D_5896_mapX - D_5c5a_actors[local_8].x;
+                distX = D_5896_mapX - D_5c5a_actors[slot_m].x;
             }
             else
             {
-                local_4_ab = ~(D_5896_mapX - D_5c5a_actors[local_8].x) + 1;
+                distX = ~(D_5896_mapX - D_5c5a_actors[slot_m].x) + 1;
             }
 
-            if (D_5897_mapY >= D_5c5a_actors[local_8].y)
+            if (D_5897_mapY >= D_5c5a_actors[slot_m].y)
             {
-                local_6 = D_5897_mapY - D_5c5a_actors[local_8].y;
+                distY = D_5897_mapY - D_5c5a_actors[slot_m].y;
             }
             else
             {
-                local_6 = ~(D_5897_mapY - D_5c5a_actors[local_8].y) + 1;
+                distY = ~(D_5897_mapY - D_5c5a_actors[slot_m].y) + 1;
             }
 
-            if (D_5c5a_actors[local_8].z != D_5895_mapLevel || (D_5c5a_actors[local_8].z == D_5895_mapLevel && local_4_ab >= 6 && local_6 >= 6))
+            if (D_5c5a_actors[slot_m].z != D_5895_mapLevel || (D_5c5a_actors[slot_m].z == D_5895_mapLevel && distX >= 6 && distY >= 6))
             {
-                return local_8;
+                return slot_m;
             }
         }
     }
@@ -680,29 +680,29 @@ static int ULTIMA_3776_FindFarActorSlot(byte param_1)
 }
 
 // CHECKED
-// An actor slot (from 1) whose tile lies in param_1..param_2; with param_3 only one out of the 11x11 view. 0 none.
-static int ULTIMA_3868_FindActorInRange(int param_1, int param_2, int param_3)
+// An actor slot (from 1) whose tile lies in minTile..maxTile; with outOfViewOnly only one out of the 11x11 view. 0 none.
+static int ULTIMA_3868_FindActorInRange(int minTile, int maxTile, int outOfViewOnly)
 {
-    int local_8;
-    byte local_6;
-    byte local_4_ab;
+    int slot_c;
+    byte viewY;
+    byte viewX;
 
-    for (local_8 = 1; local_8 < 0x18; local_8++)
+    for (slot_c = 1; slot_c < 0x18; slot_c++)
     {
-        if (D_5c5a_actors[local_8].tile >= param_1 && D_5c5a_actors[local_8].tile <= param_2 && D_5c5a_actors[local_8].tile != TILE_ACTOR_CROWN)
+        if (D_5c5a_actors[slot_c].tile >= minTile && D_5c5a_actors[slot_c].tile <= maxTile && D_5c5a_actors[slot_c].tile != TILE_ACTOR_CROWN)
         {
-            if (param_3 != 0)
+            if (outOfViewOnly != 0)
             {
-                local_4_ab = D_5c5a_actors[local_8].x - D_5896_mapX + 5;
-                local_6 = D_5c5a_actors[local_8].y - D_5897_mapY + 5;
-                if (local_4_ab > 10 || local_6 > 10)
+                viewX = D_5c5a_actors[slot_c].x - D_5896_mapX + 5;
+                viewY = D_5c5a_actors[slot_c].y - D_5897_mapY + 5;
+                if (viewX > 10 || viewY > 10)
                 {
-                    return local_8;
+                    return slot_c;
                 }
             }
             else
             {
-                return local_8;
+                return slot_c;
             }
         }
     }
@@ -749,26 +749,26 @@ void ULTIMA_39cc_SetTile(byte new_tile_id, byte x, byte y)
 // CHECKED
 int ULTIMA_39fc_GetFirstActivePartyMember(void)
 {
-    byte local_6;
-    int local_4_ab;
-    int local_8;
+    byte status_l;
+    int member_h;
+    int sleepingCount;
 
-    local_8 = 0;
+    sleepingCount = 0;
 
-    for (local_4_ab = 0; local_4_ab < D_585b_partyCount; local_4_ab++)
+    for (member_h = 0; member_h < D_585b_partyCount; member_h++)
     {
-        if ((local_6 = D_55a8_party[local_4_ab].status) == STATUS_GOOD || local_6 == STATUS_POISONED)
+        if ((status_l = D_55a8_party[member_h].status) == STATUS_GOOD || status_l == STATUS_POISONED)
         {
-            D_5876_tempX = local_4_ab;
+            D_5876_tempX = member_h;
             return 0;
         }
-        else if (local_6 == STATUS_SLEEP)
+        else if (status_l == STATUS_SLEEP)
         {
-            local_8++;
+            sleepingCount++;
         }
     }
 
-    if (local_8 != 0)
+    if (sleepingCount != 0)
     {
         return 1;
     }
@@ -779,44 +779,44 @@ int ULTIMA_39fc_GetFirstActivePartyMember(void)
 }
 
 // Fill slot `slot` of D_5c5a_actors: tile, animTile, x, y, z, value.
-void ULTIMA_3a74_SetActor(byte a, byte b, byte c, byte d, byte e, byte f, int g)
+void ULTIMA_3a74_SetActor(byte tile, byte animTile, byte mapX, byte mapY, byte mapLevel, byte value, int slot)
 {
-    D_5c5a_actors[g].tile = a;
-    D_5c5a_actors[g].animTile = b;
-    D_5c5a_actors[g].x = c;
-    D_5c5a_actors[g].y = d;
-    D_5c5a_actors[g].z = e;
-    D_5c5a_actors[g].value = f;
+    D_5c5a_actors[slot].tile = tile;
+    D_5c5a_actors[slot].animTile = animTile;
+    D_5c5a_actors[slot].x = mapX;
+    D_5c5a_actors[slot].y = mapY;
+    D_5c5a_actors[slot].z = mapLevel;
+    D_5c5a_actors[slot].value = value;
 }
 
-int ULTIMA_3aae_Random(int param_1)
+int ULTIMA_3aae_Random(int maxValue)
 {
-    return ULTIMA_2092_RandomRange(0, param_1);
+    return ULTIMA_2092_RandomRange(0, maxValue);
 }
 
 // A random number from 1 to 30.
 int ULTIMA_3abe_Random1To30(void)
 {
-    int local_4 = 0;
+    int value = 0;
 
-    local_4 = ULTIMA_3aae_Random(0x3c) / 2;
-    if (local_4 == 0)
+    value = ULTIMA_3aae_Random(0x3c) / 2;
+    if (value == 0)
     {
-        local_4++;
+        value++;
     }
-    return local_4;
+    return value;
 }
 
 // sleep_ticks
 // Show `count` frames of the map, a timer tick apart (nothing while the view is off).
-void ULTIMA_3ae6_WaitFrames(int param_1)
+void ULTIMA_3ae6_WaitFrames(int frameCount)
 {
-    int local_4;
+    int frame;
 
     if (D_58a4_viewOn == 0)
         return;
 
-    for (local_4 = 0; local_4 < param_1; local_4++)
+    for (frame = 0; frame < frameCount; frame++)
     {
         ULTIMA_5910_UpdateFrame();
         ULTIMA_20fa_WaitTicks(1);
@@ -824,112 +824,112 @@ void ULTIMA_3ae6_WaitFrames(int param_1)
 }
 
 // gets
-void ULTIMA_3b1c_GetString(char* param_1, int param_2)
+void ULTIMA_3b1c_GetString(char* buffer, int maxLength)
 {
-    int local_8;
-    int local_6;
-    int local_4_ab;
+    int savedKeyBufferOff;
+    int key_j;
+    int length;
 
-    local_4_ab = 0; // di
-    local_8 = D_538c_keyBufferOff;
+    length = 0; // di
+    savedKeyBufferOff = D_538c_keyBufferOff;
     D_538c_keyBufferOff = 0;
     do
     {
-        local_6 = ULTIMA_266c_GetChar();
-        if ((local_6 == U5_KEY_BACKSPACE || local_6 == U5_KEY_LEFT) && local_4_ab != 0)
+        key_j = ULTIMA_266c_GetChar();
+        if ((key_j == U5_KEY_BACKSPACE || key_j == U5_KEY_LEFT) && length != 0)
         {
             // 3b43
             ULTIMA_1fa0_Backspace(1);
-            local_4_ab--;
+            length--;
         }
-        else if ((local_6 == U5_KEY_ESC) && (local_4_ab != 0))
+        else if ((key_j == U5_KEY_ESC) && (length != 0))
         {
-            ULTIMA_1fa0_Backspace(local_4_ab);
-            local_4_ab = 0;
+            ULTIMA_1fa0_Backspace(length);
+            length = 0;
         }
-        else if (0x1f < local_6 && local_6 < 0x80 && local_4_ab < param_2)
+        else if (0x1f < key_j && key_j < 0x80 && length < maxLength)
         {
-            param_1[local_4_ab++] = (char)local_6;
-            ULTIMA_16ba_PrintChar(local_6);
+            buffer[length++] = (char)key_j;
+            ULTIMA_16ba_PrintChar(key_j);
         }
-    } while (local_6 != U5_KEY_ENTER);
-    param_1[local_4_ab] = 0;
-    D_538c_keyBufferOff = local_8;
+    } while (key_j != U5_KEY_ENTER);
+    buffer[length] = 0;
+    D_538c_keyBufferOff = savedKeyBufferOff;
 }
 
 // Read a number of up to `maxLen` (at most 5) digits from the keyboard, with a sign; Enter ends it.
-int ULTIMA_3b9e_GetNumber(int param_1_maxLen)
+int ULTIMA_3b9e_GetNumber(int maxLen)
 {
-    int local_10_aa;
-    int local_e_am;
-    int local_c;
-    int local_a;
-    byte local_8[6];
+    int value;
+    int key;
+    int charCount;
+    int power_h;
+    byte digits[6];
 
-    local_c = 0;
-    local_10_aa = 0;
-    local_a = 0;
-    if (param_1_maxLen > 5)
+    charCount = 0;
+    value = 0;
+    power_h = 0;
+    if (maxLen > 5)
     {
-        param_1_maxLen = 5;
+        maxLen = 5;
     }
 
     do
     {
-        local_e_am = ULTIMA_266c_GetChar();
-        if ((uint)local_e_am >= '0' && (uint)local_e_am <= '9')
+        key = ULTIMA_266c_GetChar();
+        if ((uint)key >= '0' && (uint)key <= '9')
         {
-            if (local_c < param_1_maxLen)
+            if (charCount < maxLen)
             {
-                local_8[local_c] = local_e_am;
-                local_c++;
-                ULTIMA_16ba_PrintChar(local_e_am);
+                digits[charCount] = key;
+                charCount++;
+                ULTIMA_16ba_PrintChar(key);
             }
         }
         else
         {
-            if (((uint)local_e_am == U5_KEY_MINUS || (uint)local_e_am == U5_KEY_PLUS) && local_c == 0)
+            if (((uint)key == U5_KEY_MINUS || (uint)key == U5_KEY_PLUS) && charCount == 0)
             {
-                local_8[local_c] = local_e_am;
-                local_c++;
-                ULTIMA_16ba_PrintChar(local_e_am);
+                digits[charCount] = key;
+                charCount++;
+                ULTIMA_16ba_PrintChar(key);
             }
-            else if ((local_e_am == U5_KEY_BACKSPACE || local_e_am == U5_KEY_LEFT) && local_c != 0)
+            else if ((key == U5_KEY_BACKSPACE || key == U5_KEY_LEFT) && charCount != 0)
             {
-                local_c--;
+                charCount--;
                 ULTIMA_1fa0_Backspace(1);
             }
-            else if (local_e_am == U5_KEY_ESC && local_c != 0)
+            else if (key == U5_KEY_ESC && charCount != 0)
             {
-                ULTIMA_1fa0_Backspace(local_c);
-                local_c = 0;
+                ULTIMA_1fa0_Backspace(charCount);
+                charCount = 0;
             }
         }
-    } while (local_e_am != U5_KEY_ENTER);
+    } while (key != U5_KEY_ENTER);
 
 #if !defined(MATCHING_BUILD)
-    if (local_c == 0)
+    if (charCount == 0)
     {
         return 0;
     }
 #endif
 
-    while (--local_c > 0)
+    while (--charCount > 0)
     {
-        local_10_aa += (local_8[local_c] - 0x30) * D_6a0a_powersOfTen[local_a];
-        local_a++;
+        value += (digits[charCount] - 0x30) * D_6a0a_powersOfTen[power_h];
+        power_h++;
     }
 
-    if (local_8[0] == U5_KEY_MINUS)
+    if (digits[0] == U5_KEY_MINUS)
     {
-        local_10_aa = -local_10_aa;
+        value = -value;
     }
-    else if (local_8[0] >= 0x30)
+    else if (digits[0] >= 0x30)
     {
-        local_10_aa += D_6a0a_powersOfTen[local_a] * (local_8[0] - 0x30);
+        value += D_6a0a_powersOfTen[power_h] * (digits[0] - 0x30);
     }
 
-    return local_10_aa;
+    return value;
 }
 
 void DNGLOOK_109e_LoadDungeonImages(void); // NOTE: SIC
@@ -939,20 +939,20 @@ int MAINOUT_1a60_MonstersTurn(void);
 // hole up from outside
 static void ULTIMA_3c9a_HoleUpCmd(void)
 {
-    int local_10_aa;
-    byte local_e_am;
-    int local_c;
-    ActorFmt* local_a;
-    int local_8;
-    int local_6;
-    byte local_4_aa;
+    int hours_m;
+    byte tile;
+    int i;
+    ActorFmt* avatar;
+    int guard_m;
+    int ableCount_b;
+    byte key_g;
 
-    local_a = &D_5c5a_actors[0];
-    local_e_am = D_5c5a_actors[0].animTile;
+    avatar = &D_5c5a_actors[0];
+    tile = D_5c5a_actors[0].animTile;
 
     ULTIMA_1850_PrintString(_TEXT(0xa2c2, "Hole up & "));
 
-    if ((local_e_am & 0xf8) == TILE_ACTOR_FRIGATE_20)
+    if ((tile & 0xf8) == TILE_ACTOR_FRIGATE_20)
     {
         ULTIMA_1850_PrintString(_TEXT(0xa2ce, "\nrepair...\n\n"));
 
@@ -963,7 +963,7 @@ static void ULTIMA_3c9a_HoleUpCmd(void)
         }
         else
         {
-            for (local_c = 0; local_c < 5; local_c++)
+            for (i = 0; i < 5; i++)
             {
                 MAINOUT_007a_WaitIfActorNear();
                 MAINOUT_1a60_MonstersTurn();
@@ -976,15 +976,15 @@ static void ULTIMA_3c9a_HoleUpCmd(void)
 
             do
             {
-                local_a->value += ULTIMA_2092_RandomRange(1, 3);
-                if (local_a->value > 99)
+                avatar->value += ULTIMA_2092_RandomRange(1, 3);
+                if (avatar->value > 99)
                 {
-                    local_a->value = 99;
+                    avatar->value = 99;
                 }
-            } while (local_a->value < 10);
+            } while (avatar->value < 10);
 
             ULTIMA_1850_PrintString(_TEXT(0xa2f8, "Hull now "));
-            ULTIMA_1a3e_PrintNumber(local_a->value, 2, 0x20);
+            ULTIMA_1a3e_PrintNumber(avatar->value, 2, 0x20);
             ULTIMA_1850_PrintString(_TEXT(0xa302, "!\n\n"));
             D_a9fa_vitalsDirty = 1;
         }
@@ -995,16 +995,16 @@ static void ULTIMA_3c9a_HoleUpCmd(void)
 
         if (D_5893_mapId < 0x21)
         {
-            local_e_am = *ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY);
+            tile = *ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY);
         }
 
-        if (D_5893_mapId < 0x21 && local_e_am != 0 && local_e_am < 4)
+        if (D_5893_mapId < 0x21 && tile != 0 && tile < 4)
         {
             ULTIMA_1850_PrintString(_TEXT(0xa30e, "On land or ship!\n\n"));
         }
         else
         {
-            if (D_5893_mapId < 0x21 && local_a->animTile != TILE_ACTOR_AVATAR)
+            if (D_5893_mapId < 0x21 && avatar->animTile != TILE_ACTOR_AVATAR)
             {
                 ULTIMA_1850_PrintString(_TEXT(0xa322, "On foot!\n"));
             }
@@ -1012,58 +1012,58 @@ static void ULTIMA_3c9a_HoleUpCmd(void)
             {
                 ULTIMA_1850_PrintString(_TEXT(0xa32c, "For how many hours? (1-9) "));
 
-                while ((local_4_aa = ULTIMA_266c_GetChar()) != U5_KEY_SPACE && (local_4_aa < 0x30 || local_4_aa > 0x39))
+                while ((key_g = ULTIMA_266c_GetChar()) != U5_KEY_SPACE && (key_g < 0x30 || key_g > 0x39))
                 {
                 }
 
-                ULTIMA_16ba_PrintChar(local_4_aa);
+                ULTIMA_16ba_PrintChar(key_g);
                 ULTIMA_16ba_PrintChar('\n');
 
-                if (local_4_aa == U5_KEY_SPACE || local_4_aa == 0x30)
+                if (key_g == U5_KEY_SPACE || key_g == 0x30)
                 {
                     return;
                 }
 
-                local_10_aa = local_4_aa - 0x30;
+                hours_m = key_g - 0x30;
 
-                local_6 = 0;
-                for (local_c = 0; local_c != D_585b_partyCount; local_c++)
+                ableCount_b = 0;
+                for (i = 0; i != D_585b_partyCount; i++)
                 {
-                    if (D_55a8_party[local_c].status == STATUS_GOOD || D_55a8_party[local_c].status == STATUS_POISONED)
+                    if (D_55a8_party[i].status == STATUS_GOOD || D_55a8_party[i].status == STATUS_POISONED)
                     {
-                        local_6++;
+                        ableCount_b++;
                     }
                 }
 
-                if (local_6 > 1)
+                if (ableCount_b > 1)
                 {
                     ULTIMA_1850_PrintString(_TEXT(0xa348, "\nWilt thou set a watch? "));
 
-                    while ((local_4_aa = ULTIMA_266c_GetChar()) != 'Y' && local_4_aa != 'N')
+                    while ((key_g = ULTIMA_266c_GetChar()) != 'Y' && key_g != 'N')
                     {
                     }
 
-                    if (local_4_aa == 'N')
+                    if (key_g == 'N')
                     {
                         ULTIMA_1850_PrintString(_TEXT(0xa362, "No\n\n"));
-                        local_8 = -1;
+                        guard_m = -1;
                     }
                     else
                     {
                         ULTIMA_1850_PrintString(_TEXT(0xa368, "Yes\n\n"));
                         ULTIMA_1850_PrintString(_TEXT(0xa36e, "Who will stand guard? "));
-                        local_8 = ULTIMA_2e8e_SelectPlayer();
+                        guard_m = ULTIMA_2e8e_SelectPlayer();
                         ULTIMA_16ba_PrintChar('\n');
-                        if (local_8 == -1 || D_55a8_party[local_8].status != STATUS_GOOD)
+                        if (guard_m == -1 || D_55a8_party[guard_m].status != STATUS_GOOD)
                         {
-                            local_8 = -1;
+                            guard_m = -1;
                             ULTIMA_1850_PrintString(_TEXT(0xa386, "None posted!\n\n"));
                         }
                     }
                 }
                 else
                 {
-                    local_8 = -1;
+                    guard_m = -1;
                 }
 
                 if (D_5893_mapId > 0x20)
@@ -1071,7 +1071,7 @@ static void ULTIMA_3c9a_HoleUpCmd(void)
                     D_58a1_combatFlags = 6;
                     DNGLOOK_1130_FreeDungeonImages();
                     DNGLOOK_0d3e_SetUpDungeonFight();
-                    ULTIMA_5f86_SpecialMapHandler(D_58a1_combatFlags, local_8, local_10_aa);
+                    ULTIMA_5f86_SpecialMapHandler(D_58a1_combatFlags, guard_m, hours_m);
                     ULTIMA_251e_SwitchDisks(2);
                     DNGLOOK_109e_LoadDungeonImages(); // NOTE: sic (bug?)
 
@@ -1081,7 +1081,7 @@ static void ULTIMA_3c9a_HoleUpCmd(void)
                 }
                 else
                 {
-                    ULTIMA_6360_Camping(local_8, local_10_aa);
+                    ULTIMA_6360_Camping(guard_m, hours_m);
                 }
             }
         }
@@ -1091,72 +1091,72 @@ static void ULTIMA_3c9a_HoleUpCmd(void)
 }
 
 // TODO: int? byte?
-void ULTIMA_3ef0_IncreaseByte(byte* param_1, int param_2, int param_3)
+void ULTIMA_3ef0_IncreaseByte(byte* value, int amount, int limit)
 {
-    if (*param_1 + param_2 < param_3)
+    if (*value + amount < limit)
     {
-        *param_1 += param_2;
+        *value += amount;
     }
     else
     {
-        *param_1 = param_3;
+        *value = limit;
     }
 }
 
 // TODO: u16? s16? int? (FMT)
-void ULTIMA_3f14_IncreaseInt(s16* param_1, int param_2, int param_3)
+void ULTIMA_3f14_IncreaseInt(s16* value, int amount, int limit)
 {
-    if (*param_1 + param_2 < param_3)
+    if (*value + amount < limit)
     {
-        *param_1 += param_2;
+        *value += amount;
     }
     else
     {
-        *param_1 = param_3;
+        *value = limit;
     }
 }
 
-void ULTIMA_3f36_DecreaseByte(byte* param_1, int param_2)
+void ULTIMA_3f36_DecreaseByte(byte* value, int amount)
 {
-    if (*param_1 > param_2)
+    if (*value > amount)
     {
-        *param_1 = *param_1 - param_2;
+        *value = *value - amount;
     }
     else
     {
-        *param_1 = 0;
+        *value = 0;
     }
 }
 
-void ULTIMA_3f54_DecreaseInt(s16* param_1, int param_2)
+void ULTIMA_3f54_DecreaseInt(s16* value, int amount)
 {
-    if (*param_1 > param_2)
+    if (*value > amount)
     {
-        *param_1 = *param_1 - param_2;
+        *value = *value - amount;
     }
     else
     {
-        *param_1 = 0;
+        *value = 0;
     }
 }
 
 // Test the tile in view cell (x, y) against the bit table D_6a14 (CAST and COMSUBS: probably whether a missile passes).
-bool ULTIMA_3f6e_TestViewTileFlag(int param_1, int param_2)
+bool ULTIMA_3f6e_TestViewTileFlag(int viewX, int viewY)
 {
-    int local_4 = GetMapViewport(param_1, param_2);
-    return (0x80 >> (local_4 & 7) & D_6a14[local_4 >> 3]) != 0;
+    int tile = GetMapViewport(viewX, viewY);
+    return (0x80 >> (tile & 7) & D_6a14[tile >> 3]) != 0;
 }
 
 // Pixel coordinates to the view cell, in D_5876_tempX and D_5878_tempY; -1 outside the view.
-void ULTIMA_3fb4_PixelToViewCell(int param_1, int param_2)
+void ULTIMA_3fb4_PixelToViewCell(int pixelX, int pixelY)
 {
-    if (param_1 < 8 || param_1 > 0xb7 || param_2 < 8 || param_2 > 0xb7)
+    if (pixelX < 8 || pixelX > 0xb7 || pixelY < 8 || pixelY > 0xb7)
     {
         D_5876_tempX = D_5878_tempY = -1;
     }
     else
     {
-        D_5876_tempX = (param_1 - 8) / 0x10;
-        D_5878_tempY = (param_2 - 8) / 0x10;
+        D_5876_tempX = (pixelX - 8) / 0x10;
+        D_5878_tempY = (pixelY - 8) / 0x10;
     }
 }

@@ -18,21 +18,21 @@ u16 D_540c = 0; // this module's data (DS:540c)
 
 u16 ULTIMA_1b38_PollKeyWithCursor(void)
 {
-    int local_6_an;
-    int local_4;
+    int key;
+    int savedFlag_d;
 
-    local_4 = D_538e;
+    savedFlag_d = D_538e;
     D_538e = 0;
 
     ULTIMA_16ba_PrintChar(D_5390 + D_540c++); // animate cursor
 
-    local_6_an = ULTIMA_1d5e_PollKey();
+    key = ULTIMA_1d5e_PollKey();
     if ((int)D_540c >= (int)D_5392)
     {
         D_540c = 0;
     }
 
-    if (local_6_an != 0)
+    if (key != 0)
     {
         ULTIMA_16ba_PrintChar(' ');
     }
@@ -46,6 +46,6 @@ u16 ULTIMA_1b38_PollKeyWithCursor(void)
 #endif
     }
 
-    D_538e = local_4;
-    return local_6_an;
+    D_538e = savedFlag_d;
+    return key;
 }

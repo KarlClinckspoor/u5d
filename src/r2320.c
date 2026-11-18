@@ -56,13 +56,13 @@ void FAR ULTIMA_2322_DiskSwapMessage(void)
 // 1992 patched: skip drive selection
 void FAR ULTIMA_2322_DiskSwapMessage(void)
 {
-    byte local_6_an;
-    byte local_4;
+    byte drive;
+    byte currentDrive_d;
 
     D_5394_diskSwapFn = ULTIMA_2320_NoDiskSwapMessage;
 
-    local_6_an = D_a9c8_diskDrives[D_a9bd_curDisk[0]];
-    if (local_6_an != 0xff && D_545e != D_a9bd_curDisk[0] && ULTIMA_16a6_GetDefaultDrive() != local_6_an)
+    drive = D_a9c8_diskDrives[D_a9bd_curDisk[0]];
+    if (drive != 0xff && D_545e != D_a9bd_curDisk[0] && ULTIMA_16a6_GetDefaultDrive() != drive)
     {
         // 235a
         ULTIMA_1eac_SetDefaultDrive(D_a9c8_diskDrives[D_a9bd_curDisk[0]]);
@@ -107,7 +107,7 @@ void FAR ULTIMA_2322_DiskSwapMessage(void)
 
 #if defined(GOG_BUILD)
             // 2405 GOG: PATCHED (different instructions)
-            local_4 = ULTIMA_16a6_GetDefaultDrive();
+            currentDrive_d = ULTIMA_16a6_GetDefaultDrive();
             goto L_GOG_247d;
 #endif
 
@@ -151,7 +151,7 @@ void FAR ULTIMA_2322_DiskSwapMessage(void)
             do
             {
                 // 2473
-                local_4 = ULTIMA_2032_ToUpper(ULTIMA_1dda_WaitForKeystroke(0));
+                currentDrive_d = ULTIMA_2032_ToUpper(ULTIMA_1dda_WaitForKeystroke(0));
 
 #if defined(GOG_BUILD)
 L_GOG_247d:
@@ -160,7 +160,7 @@ L_GOG_247d:
                 if (D_a9c8_diskDrives[D_a9bd_curDisk[0]] != 0xff)
                     break;
 
-            } while (ULTIMA_1eac_SetDefaultDrive(local_4) == 0);
+            } while (ULTIMA_1eac_SetDefaultDrive(currentDrive_d) == 0);
 
             // 2497
             if (D_a9c8_diskDrives[D_a9bd_curDisk[0]] == 0xff)
@@ -168,18 +168,18 @@ L_GOG_247d:
                 // 24aa
 #if !defined(GOG_BUILD)
                 // GOG: PATCHED (3 nops)
-                ULTIMA_16ba_PrintChar(local_4);
+                ULTIMA_16ba_PrintChar(currentDrive_d);
 #endif
 
-                if (local_4 == 'B')
+                if (currentDrive_d == 'B')
                 {
                     D_a9c2 = 2;
                 }
 
-                D_a9c8_diskDrives[D_a9bd_curDisk[0]] = local_4;
+                D_a9c8_diskDrives[D_a9bd_curDisk[0]] = currentDrive_d;
                 if (D_a9bd_curDisk[0] == 3 && D_a9c9 == 0xff)
                 {
-                    D_a9c9 = local_4;
+                    D_a9c9 = currentDrive_d;
                 }
             }
 

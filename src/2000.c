@@ -21,25 +21,25 @@ uint ULTIMA_2056_GetTime(void)
 
 #if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
-void ULTIMA_207e_srand(uint param_1)
+void ULTIMA_207e_srand(uint seed)
 {
 #if !defined(TARGET_DOS16)
-    srand(param_1);
+    srand(seed);
 #else
-    D_5420_randomSeed = param_1;
+    D_5420_randomSeed = seed;
 #endif
 }
 #endif
 
 #if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // range: [min..max]
-int ULTIMA_2092_RandomRange(int param_1, int param_2) // inclusive_min, inclusive_max
+int ULTIMA_2092_RandomRange(int minValue, int maxValue)
 {
     // the original (src/asm/A2056.ASM): D_5420_randomSeed = ror(D_5420_randomSeed + 0x9248, 3) ^ 0x9248 + 0x11,
     // then (D_5420_randomSeed & 0x7fff) % (max - min + 1) + min
-    ASSERT(param_1 <= param_2);
+    ASSERT(minValue <= maxValue);
 
-    return rand() % ((param_2 - param_1) + 1) + param_1;
+    return rand() % ((maxValue - minValue) + 1) + minValue;
 }
 #endif
 
@@ -47,25 +47,25 @@ int ULTIMA_2092_RandomRange(int param_1, int param_2) // inclusive_min, inclusiv
 // ASM
 // some busy-wait delay?
 // Busy-wait: `count` loops of the calibrated length shifted by D_5426[shift].
-void ULTIMA_20c8_Delay(int param_1, int param_2)
+void ULTIMA_20c8_Delay(int shiftIndex, int loopCount)
 {
     // FMT: empty
 #if defined(ENABLE_SPEED_FIX)
-    if (param_2 == 0x14)
+    if (loopCount == 0x14)
     {
         TIME_SleepMs(16);
     }
     // dummy values / approximation
-    if (param_2 > 0x14)
+    if (loopCount > 0x14)
     {
-        TIME_SleepMs(param_2);
+        TIME_SleepMs(loopCount);
     }
     return;
 #else
     register uint ax, cx;
 
     ax = D_5356_timerCalibration; // timer calibration
-    cx = D_5426[param_1];
+    cx = D_5426[shiftIndex];
 
     if (cx != 0)
     {
@@ -74,7 +74,7 @@ void ULTIMA_20c8_Delay(int param_1, int param_2)
     }
 
     // 20dc
-    D_5424 = param_2;
+    D_5424 = loopCount;
 
     do
     {
@@ -174,7 +174,7 @@ void ULTIMA_230e_PcspkOff(void)
 
 int ULTIMA_266c_GetChar(void)
 {
-    int local_4;
+    int key;
 
     if (D_52c8_videoDriver == 2)
     {
@@ -183,63 +183,63 @@ int ULTIMA_266c_GetChar(void)
 
     do
     {
-        local_4 = ULTIMA_2032_ToUpper(ULTIMA_1b38_PollKeyWithCursor());
-        if ((local_4 == 0) && (D_5893_mapId < 0x21 || 0x7f < D_5893_mapId))
+        key = ULTIMA_2032_ToUpper(ULTIMA_1b38_PollKeyWithCursor());
+        if ((key == 0) && (D_5893_mapId < 0x21 || 0x7f < D_5893_mapId))
         {
             ULTIMA_5910_UpdateFrame();
         }
-    } while (local_4 == 0);
+    } while (key == 0);
 
     if (D_538a != 0)
     {
         // numpad
-        switch (local_4)
+        switch (key)
         {
         case 0x31:
-            local_4 = U5_KEY_END;
+            key = U5_KEY_END;
             break;
         case 0x32:
-            local_4 = U5_KEY_DOWN;
+            key = U5_KEY_DOWN;
             break;
         case 0x33:
-            local_4 = U5_KEY_PGDN;
+            key = U5_KEY_PGDN;
             break;
         case 0x34:
-            local_4 = U5_KEY_LEFT;
+            key = U5_KEY_LEFT;
             break;
         case 0x36:
-            local_4 = U5_KEY_RIGHT;
+            key = U5_KEY_RIGHT;
             break;
         case 0x37:
-            local_4 = U5_KEY_HOME;
+            key = U5_KEY_HOME;
             break;
         case 0x38:
-            local_4 = U5_KEY_UP;
+            key = U5_KEY_UP;
             break;
         case 0x39:
-            local_4 = U5_KEY_PGUP;
+            key = U5_KEY_PGUP;
         }
     }
     else
     {
-        if (local_4 < 5)
-            local_4 += 0xfa;
+        if (key < 5)
+            key += 0xfa;
     }
 
-    return local_4;
+    return key;
 }
 
-// Print row param_1 of the party list: name, active-player marker, hit points (and the combat status).
-static void ULTIMA_2726_PrintPartyRow(int param_1)
+// Print row rowIndex of the party list: name, active-player marker, hit points (and the combat status).
+static void ULTIMA_2726_PrintPartyRow(int rowIndex)
 {
-    int     local1_6;
-    CombatEntity* local2_4;
+    int     col;
+    CombatEntity* combatant;
 
-    ULTIMA_1bf2_SetTextPosition(0, param_1);
+    ULTIMA_1bf2_SetTextPosition(0, rowIndex);
 
-    if (D_585b_partyCount <= param_1)
+    if (D_585b_partyCount <= rowIndex)
     {
-        for (local1_6 = 0; local1_6 < 0xf; local1_6++)
+        for (col = 0; col < 0xf; col++)
         {
             // 2748
             ULTIMA_16ba_PrintChar(' ');
@@ -249,24 +249,24 @@ static void ULTIMA_2726_PrintPartyRow(int param_1)
     }
 
     // 2758
-    local2_4 = &D_ba14_combatants[D_589e_curCombatant];
-    if (D_5893_mapId > 0x7f && D_589e_curCombatant != 0xff && (local2_4->flags & COMBAT_FLAGS_PLAYER) != 0 && local2_4->entityIdx == param_1)
+    combatant = &D_ba14_combatants[D_589e_curCombatant];
+    if (D_5893_mapId > 0x7f && D_589e_curCombatant != 0xff && (combatant->flags & COMBAT_FLAGS_PLAYER) != 0 && combatant->entityIdx == rowIndex)
     {
         ULTIMA_16ba_PrintChar(CTRL_CHAR_TOGGLE_INVERSION);
     }
 
     // 278e
-    ULTIMA_1850_PrintString(D_55a8_party[param_1].name);
-    for (local1_6 = ULTIMA_216c_strlen(D_55a8_party[param_1].name); local1_6 < 9; local1_6++)
+    ULTIMA_1850_PrintString(D_55a8_party[rowIndex].name);
+    for (col = ULTIMA_216c_strlen(D_55a8_party[rowIndex].name); col < 9; col++)
     {
         // 27b8
         ULTIMA_16ba_PrintChar(' ');
     }
 
     // 27c2
-    if (param_1 == D_587b_activePlayer)
+    if (rowIndex == D_587b_activePlayer)
     {
-        if (D_55a8_party[param_1].status != STATUS_DEAD && D_55a8_party[param_1].status != STATUS_SLEEP)
+        if (D_55a8_party[rowIndex].status != STATUS_DEAD && D_55a8_party[rowIndex].status != STATUS_SLEEP)
         {
             ULTIMA_16ba_PrintChar(0x1a);
         }
@@ -283,13 +283,13 @@ static void ULTIMA_2726_PrintPartyRow(int param_1)
     }
 
     // 27fd
-    ULTIMA_1a3e_PrintNumber(D_55a8_party[param_1].hp, 4, 0x20);
+    ULTIMA_1a3e_PrintNumber(D_55a8_party[rowIndex].hp, 4, 0x20);
 
     if (D_5893_mapId > 0x7f)
     {
-        if ((D_ba14_combatants[param_1].flags & (COMBAT_FLAGS_PLAYER | COMBAT_FLAGS_MONSTER | COMBAT_FLAGS_DEAD | COMBAT_FLAGS_CHARMED)) ==
+        if ((D_ba14_combatants[rowIndex].flags & (COMBAT_FLAGS_PLAYER | COMBAT_FLAGS_MONSTER | COMBAT_FLAGS_DEAD | COMBAT_FLAGS_CHARMED)) ==
             (COMBAT_FLAGS_PLAYER | COMBAT_FLAGS_CHARMED) &&
-            D_ba14_combatants[param_1].entityIdx == param_1)
+            D_ba14_combatants[rowIndex].entityIdx == rowIndex)
         {
             // -> 2849
             ULTIMA_16ba_PrintChar('C');
@@ -297,12 +297,12 @@ static void ULTIMA_2726_PrintPartyRow(int param_1)
         else
         {
             // 283c -> 2849
-            ULTIMA_16ba_PrintChar(D_55a8_party[param_1].status);
+            ULTIMA_16ba_PrintChar(D_55a8_party[rowIndex].status);
         }
 
-        if (D_589e_curCombatant != 0xff && (local2_4->flags & COMBAT_FLAGS_PLAYER) != 0)
+        if (D_589e_curCombatant != 0xff && (combatant->flags & COMBAT_FLAGS_PLAYER) != 0)
         {
-            if (local2_4->entityIdx == param_1)
+            if (combatant->entityIdx == rowIndex)
             {
                 ULTIMA_16ba_PrintChar(CTRL_CHAR_TOGGLE_INVERSION);
             }
@@ -313,14 +313,14 @@ static void ULTIMA_2726_PrintPartyRow(int param_1)
     }
 
     // 286c
-    ULTIMA_16ba_PrintChar(D_55a8_party[param_1].status);
+    ULTIMA_16ba_PrintChar(D_55a8_party[rowIndex].status);
 }
 
 void ULTIMA_2884_UpdateGoldDisplay(void)
 {
-    int local_2;
+    int savedWindow;
 
-    local_2 = D_5386_textWindowIndex;
+    savedWindow = D_5386_textWindowIndex;
     ULTIMA_1b94_SelectTextWindow(1);
     ULTIMA_1bf2_SetTextPosition(8, 7);
     if (D_57aa_gold < 1000)
@@ -342,21 +342,21 @@ void ULTIMA_2884_UpdateGoldDisplay(void)
         ULTIMA_16ba_PrintChar(' ');
     }
 
-    ULTIMA_1b94_SelectTextWindow(local_2);
+    ULTIMA_1b94_SelectTextWindow(savedWindow);
 }
 
 void ULTIMA_2900_UpdateVitalsDisplay(void)
 {
-    int local_2;
+    int row;
 
     ULTIMA_1b94_SelectTextWindow(1);
 
-    local_2 = 0;
+    row = 0;
     do
     {
-        ULTIMA_2726_PrintPartyRow(local_2);
-        local_2++;
-    } while (local_2 < 6);
+        ULTIMA_2726_PrintPartyRow(row);
+        row++;
+    } while (row < 6);
 
     ULTIMA_1bf2_SetTextPosition(0, 7);
 
@@ -421,26 +421,26 @@ void ULTIMA_2900_UpdateVitalsDisplay(void)
 }
 
 // Invert the party member's row in the stats window (the selection bar, the flash of a hit).
-void ULTIMA_2a28_InvertPlayerRow(int param_1)
+void ULTIMA_2a28_InvertPlayerRow(int playerIndex)
 {
     ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
-    ULTIMA_0b86_GRAP_XorFillRect(0xc0, param_1 * 8 + 8, 0x137, param_1 * 8 + 0xf);
+    ULTIMA_0b86_GRAP_XorFillRect(0xc0, playerIndex * 8 + 8, 0x137, playerIndex * 8 + 0xf);
 }
 
 // process damage (show fx, reduce hp)
 // Hurt a party member: flash and noise, hit points down by `damage`, dead at 0.
-void ULTIMA_2a52_DamagePlayer(int param_1, uint param_2)
+void ULTIMA_2a52_DamagePlayer(int playerIndex, uint damage)
 {
-    ULTIMA_2a28_InvertPlayerRow(param_1);
+    ULTIMA_2a28_InvertPlayerRow(playerIndex);
     ULTIMA_223c_AudioWhiteNoise(10, 0x640, 2000);
-    ULTIMA_2a28_InvertPlayerRow(param_1);
+    ULTIMA_2a28_InvertPlayerRow(playerIndex);
 
-    D_55a8_party[param_1].hp -= param_2;
-    if (D_55a8_party[param_1].hp <= 0)
+    D_55a8_party[playerIndex].hp -= damage;
+    if (D_55a8_party[playerIndex].hp <= 0)
     {
-        D_55a8_party[param_1].hp = 0;
-        D_55a8_party[param_1].status = STATUS_DEAD;
-        if (param_1 == D_587b_activePlayer)
+        D_55a8_party[playerIndex].hp = 0;
+        D_55a8_party[playerIndex].status = STATUS_DEAD;
+        if (playerIndex == D_587b_activePlayer)
         {
             D_587b_activePlayer = 0xff;
         }
@@ -463,34 +463,34 @@ void ULTIMA_2aa8_DamageParty(void)
     }
 }
 
-void ULTIMA_3ef0_IncreaseByte(byte* param_1, int param_2, int param_3);
+void ULTIMA_3ef0_IncreaseByte(byte* value, int amount, int limit);
 
 // CHECKED
 // The end of a turn: poison, food (three meals a day, starving without), the turn count, the protection spell, the regeneration rings.
 void ULTIMA_2ae8_EndTurn(void)
 {
-    int local_6;
-    int local_8;
-    int local_4_ab;
+    int playerIndex_l;
+    int status;
+    int ableCount_d;
 
-    local_4_ab = 0;
+    ableCount_d = 0;
 
-    for (local_6 = 0; local_6 < D_585b_partyCount; local_6++)
+    for (playerIndex_l = 0; playerIndex_l < D_585b_partyCount; playerIndex_l++)
     {
-        local_8 = D_55a8_party[local_6].status;
-        if ((uint)local_8 == STATUS_DEAD && local_6 == D_587b_activePlayer)
+        status = D_55a8_party[playerIndex_l].status;
+        if ((uint)status == STATUS_DEAD && playerIndex_l == D_587b_activePlayer)
         {
             D_587b_activePlayer = 0xff;
         }
 
-        if ((uint)local_8 != STATUS_DEAD && (uint)local_8 != STATUS_SLEEP)
+        if ((uint)status != STATUS_DEAD && (uint)status != STATUS_SLEEP)
         {
-            if ((uint)local_8 == STATUS_POISONED)
+            if ((uint)status == STATUS_POISONED)
             {
-                ULTIMA_2a52_DamagePlayer(local_6, 1);
+                ULTIMA_2a52_DamagePlayer(playerIndex_l, 1);
             }
 
-            local_4_ab++;
+            ableCount_d++;
         }
     }
 
@@ -503,7 +503,7 @@ void ULTIMA_2ae8_EndTurn(void)
         }
         else if (D_587f_hour == 6 || D_587f_hour == 12 || D_587f_hour == 18)
         {
-            ULTIMA_3f54_DecreaseInt(&D_57a8_food, local_4_ab);
+            ULTIMA_3f54_DecreaseInt(&D_57a8_food, ableCount_d);
         }
         D_5880_lastHour = D_587f_hour;
     }
@@ -565,19 +565,19 @@ u8 D_5548[12] = { 0 };
 // walkable for normal walk type?
 static bool ULTIMA_2bd4_IsWalkableNormal(byte actorTile, int targetTile)
 {
-    bool local_4;
+    bool walkable;
 
     if ((D_54d4[targetTile >> 3] & (0x80 >> (targetTile & 7))) != 0)
-        local_4 = 0;
+        walkable = 0;
     else
-        local_4 = 1;
+        walkable = 1;
 
     if ((((actorTile & 0xfe) != TILE_ACTOR_AVATAR) && ((actorTile & 0xf0) != TILE_ACTOR_WIZARD)) && (((byte)targetTile & 0xfc) == TILE_MAP_CHAIR_90))
     {
-        local_4 = 0;
+        walkable = 0;
     }
 
-    return local_4;
+    return walkable;
 }
 
 // is walkable water tile? (walkable/passable for sea monster / flying / ghost)
@@ -652,20 +652,20 @@ int ULTIMA_2c4c_IsWalkableTile(int actorTile, int targetTile)
 
 // CHECKED
 // select player (zstats, ...)
-// The gotos to one "local_6 = 1;" keep local_6 to three references, so MSC puts local_a in
-// DI and leaves local_6 in memory, as the original does (written out in each case, MSC
-// picks local_6 instead).
+// The gotos to one "done = 1;" keep done to three references, so MSC puts shownRow in
+// DI and leaves done in memory, as the original does (written out in each case, MSC
+// picks done instead).
 // Ask for a party member with the bar in the stats window (1-6, the arrows, Enter). Returns the index, -1 for Esc, or -2 for 0 where `allowNone` is set.
-int ULTIMA_2d7a_SelectPlayerOrNone(int param_1)
+int ULTIMA_2d7a_SelectPlayerOrNone(int allowNone)
 {
-    bool local_6;
-    int local_8;
-    int local_a;
-    s16 local_4_ab;
+    bool done;
+    int key;
+    int shownRow_d;
+    s16 selected_h;
 
-    local_4_ab = 0;
-    local_a = -1;
-    local_6 = 0;
+    selected_h = 0;
+    shownRow_d = -1;
+    done = 0;
     if (D_5893_mapId > 0x7f && (D_ba14_combatants[D_589e_curCombatant].flags & COMBAT_FLAGS_PLAYER) != 0)
     {
         ULTIMA_2a28_InvertPlayerRow(D_ba14_combatants[D_589e_curCombatant].entityIdx);
@@ -678,46 +678,46 @@ int ULTIMA_2d7a_SelectPlayerOrNone(int param_1)
     do
     {
         // 2dbc
-        if (local_a != local_4_ab)
+        if (shownRow_d != selected_h)
         {
-            ULTIMA_2a28_InvertPlayerRow(local_4_ab);
-            local_a = local_4_ab;
+            ULTIMA_2a28_InvertPlayerRow(selected_h);
+            shownRow_d = selected_h;
         }
 
         do
         {
-            local_8 = ULTIMA_266c_GetChar();
-        } while ((uint)local_8 > '7');
+            key = ULTIMA_266c_GetChar();
+        } while ((uint)key > '7');
 
-        if ((uint)local_8 > '0' && (uint)local_8 < '7' && (uint)local_8 - '1' < D_585b_partyCount)
+        if ((uint)key > '0' && (uint)key < '7' && (uint)key - '1' < D_585b_partyCount)
         {
-            local_4_ab = (uint)local_8 - '1';
+            selected_h = (uint)key - '1';
         }
         else
         {
-            switch (local_8)
+            switch (key)
             {
             case U5_KEY_LEFT:
             case U5_KEY_UP:
-                ULTIMA_3f54_DecreaseInt(&local_4_ab, 1);
+                ULTIMA_3f54_DecreaseInt(&selected_h, 1);
                 break;
 
             case U5_KEY_RIGHT:
             case U5_KEY_DOWN:
-                ULTIMA_3f14_IncreaseInt(&local_4_ab, 1, D_585b_partyCount - 1);
+                ULTIMA_3f14_IncreaseInt(&selected_h, 1, D_585b_partyCount - 1);
                 break;
 
             case 0x30:
-                if (param_1 == 0)
+                if (allowNone == 0)
                     break;
 
-                local_4_ab = -2;
+                selected_h = -2;
             L_done:
-                local_6 = 1;
+                done = 1;
                 break;
 
             case U5_KEY_ESC:
-                local_4_ab = -1;
+                selected_h = -1;
                 goto L_done;
 
             case U5_KEY_ENTER:
@@ -726,20 +726,20 @@ int ULTIMA_2d7a_SelectPlayerOrNone(int param_1)
             }
         }
 
-        if (local_a != local_4_ab)
+        if (shownRow_d != selected_h)
         {
-            ULTIMA_2a28_InvertPlayerRow(local_a);
+            ULTIMA_2a28_InvertPlayerRow(shownRow_d);
         }
-    } while (!local_6);
+    } while (!done);
 
     // 2e6e
-    if (-1 < local_4_ab)
+    if (-1 < selected_h)
     {
-        ULTIMA_2a28_InvertPlayerRow(local_4_ab);
+        ULTIMA_2a28_InvertPlayerRow(selected_h);
     }
 
     ULTIMA_4e20_ClearStatsTitle();
-    return local_4_ab;
+    return selected_h;
 }
 
 // Ask for a party member; -1 for Esc.
@@ -801,55 +801,55 @@ void ULTIMA_2e96_SetWindDirection(int direction)
 // CHECKED
 void ULTIMA_2f62_UpdateWindDirectionRandomly(void)
 {
-    int local_4;
+    int newDirection;
     if (ULTIMA_2092_RandomRange(0, 0x3f) == 0)
     {
-        local_4 = ULTIMA_2092_RandomRange(0, 4);
-        while (local_4 == 0 && ULTIMA_2092_RandomRange(0, 0xff) < 0xc0)
+        newDirection = ULTIMA_2092_RandomRange(0, 4);
+        while (newDirection == 0 && ULTIMA_2092_RandomRange(0, 0xff) < 0xc0)
         {
-            local_4 = ULTIMA_2092_RandomRange(0, 4);
+            newDirection = ULTIMA_2092_RandomRange(0, 4);
         }
 
-        ULTIMA_2e96_SetWindDirection(local_4);
+        ULTIMA_2e96_SetWindDirection(newDirection);
     }
 }
 
 // Poison a living party member (the trap effect).
-static void ULTIMA_2fa6_PoisonPlayer(int param_1)
+static void ULTIMA_2fa6_PoisonPlayer(int playerIndex)
 {
-    if (param_1 < D_585b_partyCount && D_55a8_party[param_1].status != STATUS_DEAD)
+    if (playerIndex < D_585b_partyCount && D_55a8_party[playerIndex].status != STATUS_DEAD)
     {
-        D_55a8_party[param_1].status = STATUS_POISONED;
+        D_55a8_party[playerIndex].status = STATUS_POISONED;
         ULTIMA_2900_UpdateVitalsDisplay();
     }
 }
 
 // A trap goes off on a party member: acid, poison, a bomb or gas.
-void ULTIMA_2fd0_SpringTrap(int param_1)
+void ULTIMA_2fd0_SpringTrap(int playerIndex)
 {
-    int local_4b;
-    int local_6a;
+    int trapKind;
+    int playerIndex_j;
 
     ULTIMA_223c_AudioWhiteNoise(0x28, 3000, 500);
 
     if (D_5893_mapId > 0x7f)
     {
-        local_4b = ULTIMA_2092_RandomRange(0, 1);
+        trapKind = ULTIMA_2092_RandomRange(0, 1);
     }
     else
     {
-        local_4b = (uint)D_559e[ULTIMA_2092_RandomRange(0, 7)];
+        trapKind = (uint)D_559e[ULTIMA_2092_RandomRange(0, 7)];
     }
 
-    switch (local_4b)
+    switch (trapKind)
     {
     case 0:
         ULTIMA_1850_PrintString(_TEXT(0x5581, "ACID!\n"));
-        ULTIMA_2a52_DamagePlayer(param_1, ULTIMA_3abe_Random1To30());
+        ULTIMA_2a52_DamagePlayer(playerIndex, ULTIMA_3abe_Random1To30());
         break;
     case 1:
         ULTIMA_1850_PrintString(_TEXT(0x5588, "POISON!\n"));
-        ULTIMA_2fa6_PoisonPlayer(param_1);
+        ULTIMA_2fa6_PoisonPlayer(playerIndex);
         break;
     case 2:
         ULTIMA_1850_PrintString(_TEXT(0x5591, "BOMB!\n"));
@@ -857,11 +857,11 @@ void ULTIMA_2fd0_SpringTrap(int param_1)
         break;
     case 3:
         ULTIMA_1850_PrintString(_TEXT(0x5598, "GAS!\n"));
-        local_6a = 0;
+        playerIndex_j = 0;
         do
         {
-            ULTIMA_2fa6_PoisonPlayer(local_6a);
-        } while (++local_6a < 6);
+            ULTIMA_2fa6_PoisonPlayer(playerIndex_j);
+        } while (++playerIndex_j < 6);
         break;
     }
 }

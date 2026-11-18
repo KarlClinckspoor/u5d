@@ -19,13 +19,13 @@
 // CHECKED
 void ULTIMA_256e_ReadFileFromDisk(char* fileName, void* addr, u16 size, u16 offset)
 {
-    int local_4 = 0;
+    int done = 0;
 
 #if !defined(TARGET_DOS16)
-    while (local_4 == 0)
+    while (done == 0)
     {
-        local_4 = ULTIMA_7234_ReadFile(fileName, addr, size, offset);
-        if (local_4 == 0)
+        done = ULTIMA_7234_ReadFile(fileName, addr, size, offset);
+        if (done == 0)
         {
             EVT_Yield();
         }
@@ -40,9 +40,9 @@ void ULTIMA_256e_ReadFileFromDisk(char* fileName, void* addr, u16 size, u16 offs
 
     ULTIMA_1eac_SetDefaultDrive(D_a9c8_diskDrives[D_a9bd_curDisk[0]]);
 
-    while (local_4 == 0)
+    while (done == 0)
     {
-        local_4 = ULTIMA_7234_ReadFile(fileName, addr, size, offset);
+        done = ULTIMA_7234_ReadFile(fileName, addr, size, offset);
     }
 }
 
@@ -52,8 +52,8 @@ static void FAR ULTIMA_25ca_WriteError(void)
     ULTIMA_1dda_WaitForKeystroke(0);
 }
 
-// D_a9c8_diskDrives[D_a9bd_curDisk[0]] rather than D_a9c8_diskDrives[local_6]: the repeated D_a9bd_curDisk[0] is what MSC keeps
-// in SI (a common subexpression), besides storing it in local_6.
+// D_a9c8_diskDrives[D_a9bd_curDisk[0]] rather than D_a9c8_diskDrives[savedDisk]: the repeated D_a9bd_curDisk[0] is what MSC keeps
+// in SI (a common subexpression), besides storing it in savedDisk.
 void ULTIMA_25d8_WriteFileToDisk(char* fileName, void* addr, u16 size)
 {
 #if !defined(TARGET_DOS16)
@@ -61,12 +61,12 @@ void ULTIMA_25d8_WriteFileToDisk(char* fileName, void* addr, u16 size)
     return;
 #endif
 
-    int local_6;
-    int local_4_b;
+    int savedDisk;
+    int done_j;
 
-    local_4_b = 0;
+    done_j = 0;
 
-    local_6 = D_a9bd_curDisk[0];
+    savedDisk = D_a9bd_curDisk[0];
     if (D_a9bd_curDisk[0] == 3 && D_a9c8_diskDrives[D_a9bd_curDisk[0]] == 0xff)
     {
         ULTIMA_2322_DiskSwapMessage(); // in another object: a far call
@@ -74,17 +74,17 @@ void ULTIMA_25d8_WriteFileToDisk(char* fileName, void* addr, u16 size)
 
     ULTIMA_1eac_SetDefaultDrive(D_a9c8_diskDrives[D_a9bd_curDisk[0]]);
 
-    while (local_4_b == 0)
+    while (done_j == 0)
     {
         while (ULTIMA_1674_TestOpenFile(fileName) == 0) {}
 
         D_5394_diskSwapFn = ULTIMA_25ca_WriteError;
 
-        local_4_b = ULTIMA_7296_WriteFile(fileName, addr, size);
+        done_j = ULTIMA_7296_WriteFile(fileName, addr, size);
 
         D_5394_diskSwapFn = ULTIMA_2322_DiskSwapMessage;
     }
 
-    D_a9bd_curDisk[0] = local_6;
+    D_a9bd_curDisk[0] = savedDisk;
     ULTIMA_1eac_SetDefaultDrive(D_a9c8_diskDrives[D_a9bd_curDisk[0]]);
 }
