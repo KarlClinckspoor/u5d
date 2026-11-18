@@ -1,0 +1,135 @@
+# SHOPPES (shoppes.c): the provisioner, the reagent shop, the armourer, the stables, the healer.
+# The helpers TALK and SHOPPES3 call (PrintShopText, Greet, Farewell, ...) were named in the pilot.
+# functions
+SHOPPES_02ba SHOPPES_02ba_OfferProvision          # price, sales talk, "Interested?"; keys, gems or torches; -1 when the party cannot pay
+SHOPPES_03f6 SHOPPES_03f6_ProvisionMenu           # a Keys, b Gems, c Torches
+SHOPPES_04a2 SHOPPES_04a2_Provisioner             # the shop of keys, gems and torches
+SHOPPES_0502 SHOPPES_0502_OfferReagent            # the choice-th reagent this shop sells (D_3a32), in lots (D_3a5a)
+SHOPPES_0666 SHOPPES_0666_ReagentMenu             # the lettered list of reagents
+SHOPPES_075e SHOPPES_075e_Reagents                # the reagent shop
+SHOPPES_09ac SHOPPES_09ac_OfferArm                # price, sales talk, buy an item of arms or armour (D_3a82 price)
+SHOPPES_0b30 SHOPPES_0b30_BuyMenu                 # the lettered list of what this shop stocks (D_3ae2)
+SHOPPES_0c58 SHOPPES_0c58_HasEquipment            # does the party own anything
+SHOPPES_0c80 SHOPPES_0c80_DrawSellList            # the party's equipment list for selling, cursor inverted; returns the cursor's row
+SHOPPES_0e76 SHOPPES_0e76_SellItem                # the shop buys one item from the party (3% of the price per intelligence point)
+SHOPPES_0f64 SHOPPES_0f64_SellMenu                # the cursor list of what the party sells
+SHOPPES_12b2 SHOPPES_12b2_Armourer                # the shop of arms and armour: Buy or Sell
+SHOPPES_137c SHOPPES_137c_ChoosePatient           # "Who needs my aid?"; the one member of a party of one
+SHOPPES_13b0 SHOPPES_13b0_HealingFlash            # the screen flashes red and white, with sounds
+SHOPPES_146a SHOPPES_146a_AskPayment              # "for N gold. Wilt thou pay?"; 1 when refused or too poor
+# SHOPPES_02ba
+shoppes.c:SHOPPES_02ba param_1 member
+shoppes.c:SHOPPES_02ba param_2 item
+shoppes.c:SHOPPES_02ba param_3 outcome
+shoppes.c:SHOPPES_02ba local_4 key
+# SHOPPES_03f6
+shoppes.c:SHOPPES_03f6 param_1 member
+shoppes.c:SHOPPES_03f6 local_6 done
+shoppes.c:SHOPPES_03f6 local_8 outcome
+shoppes.c:SHOPPES_03f6 local_4_ab key
+# SHOPPES_04a2
+shoppes.c:SHOPPES_04a2 param_1 member
+shoppes.c:SHOPPES_04a2 local_6 done
+shoppes.c:SHOPPES_04a2 local_4_ab key
+shoppes.c:SHOPPES_04a2 local_8 outcome
+# SHOPPES_0502
+shoppes.c:SHOPPES_0502 param_1 member
+shoppes.c:SHOPPES_0502 param_2 choice
+shoppes.c:SHOPPES_0502 param_3 outcome
+shoppes.c:SHOPPES_0502 local_8 reagent
+shoppes.c:SHOPPES_0502 local_6 listed
+shoppes.c:SHOPPES_0502 local_4_ab key
+# SHOPPES_0666
+shoppes.c:SHOPPES_0666 param_1 member
+shoppes.c:SHOPPES_0666 local_6 done
+shoppes.c:SHOPPES_0666 local_a result
+shoppes.c:SHOPPES_0666 local_e_am outcome
+shoppes.c:SHOPPES_0666 local_c letter
+shoppes.c:SHOPPES_0666 local_8 reagent
+shoppes.c:SHOPPES_0666 local_4_ab key
+# SHOPPES_075e
+shoppes.c:SHOPPES_075e param_1 member
+shoppes.c:SHOPPES_075e local_6 done
+shoppes.c:SHOPPES_075e local_4_ab key
+shoppes.c:SHOPPES_075e local_8 outcome
+# SHOPPES_07be_Stables
+shoppes.c:SHOPPES_07be param_1 member
+shoppes.c:SHOPPES_07be local_14_am tile
+shoppes.c:SHOPPES_07be local_12_ab_am outcome
+shoppes.c:SHOPPES_07be local_10_ad_am freeActor
+shoppes.c:SHOPPES_07be local_e_am y
+shoppes.c:SHOPPES_07be local_c i
+shoppes.c:SHOPPES_07be local_a x
+shoppes.c:SHOPPES_07be local_8 done
+shoppes.c:SHOPPES_07be local_6 horse
+shoppes.c:SHOPPES_07be local_4_ab key
+# SHOPPES_09ac
+shoppes.c:SHOPPES_09ac param_1 member
+shoppes.c:SHOPPES_09ac param_2 item
+shoppes.c:SHOPPES_09ac param_3 outcome
+shoppes.c:SHOPPES_09ac local_4 key
+# SHOPPES_0b30
+shoppes.c:SHOPPES_0b30 param_1 member
+shoppes.c:SHOPPES_0b30 local_6 done
+shoppes.c:SHOPPES_0b30 local_c item
+shoppes.c:SHOPPES_0b30 local_8 rows
+shoppes.c:SHOPPES_0b30 local_a outcome
+shoppes.c:SHOPPES_0b30 local_4_ab key
+# SHOPPES_0c58
+shoppes.c:SHOPPES_0c58 local_4 item
+# SHOPPES_0c80
+shoppes.c:SHOPPES_0c80 param_1 first
+shoppes.c:SHOPPES_0c80 param_2 cursor
+shoppes.c:SHOPPES_0c80 local_6 row
+shoppes.c:SHOPPES_0c80 local_a arrows
+shoppes.c:SHOPPES_0c80 local_8 item
+shoppes.c:SHOPPES_0c80 local_4_ab cursorRow
+# SHOPPES_0e76
+shoppes.c:SHOPPES_0e76 param_1 member
+shoppes.c:SHOPPES_0e76 param_2 item
+shoppes.c:SHOPPES_0e76 local_4 key
+# SHOPPES_0f64
+shoppes.c:SHOPPES_0f64 param_1 member
+shoppes.c:SHOPPES_0f64 local_14_am neighbor
+shoppes.c:SHOPPES_0f64 local_12_ab_am sold
+shoppes.c:SHOPPES_0f64 local_10_ad_am cursor
+shoppes.c:SHOPPES_0f64 local_e_am i
+shoppes.c:SHOPPES_0f64 local_c cursorRow
+shoppes.c:SHOPPES_0f64 local_a done
+shoppes.c:SHOPPES_0f64 local_8 key
+shoppes.c:SHOPPES_0f64 local_6 first
+shoppes.c:SHOPPES_0f64 local_4_ab steps
+# SHOPPES_12b2
+shoppes.c:SHOPPES_12b2 param_1 member
+shoppes.c:SHOPPES_12b2 local_6_an outcome
+shoppes.c:SHOPPES_12b2 local_4 key
+# SHOPPES_137c
+shoppes.c:SHOPPES_137c local_4 patient
+# SHOPPES_146a
+shoppes.c:SHOPPES_146a local_6_an refused
+shoppes.c:SHOPPES_146a local_4 key
+# SHOPPES_14f8_Healer
+shoppes.c:SHOPPES_14f8 local_6 done
+shoppes.c:SHOPPES_14f8 local_4_ab key
+shoppes.c:SHOPPES_14f8 local_8 patient
+# globals used only by the shops group (those that translate.c also declares stay)
+D_3a32 D_3a32_reagentPrices           # [shop][reagent], 0: not sold
+D_3a5a D_3a5a_reagentLots             # how many reagents a sale gives
+D_3a82 D_3a82_itemBasePrices          # by item (equipment index), 0: not sold
+D_3ae2 D_3ae2_armsStock               # [shop][8]: the items a shop of arms stocks, 0xff ends
+D_3b2a D_3b2a_greetTexts              # [shop kind][4] SHOPPE.DAT offsets
+D_3b6a D_3b6a_farewellTexts           # outcome 0
+D_3baa D_3baa_farewellTexts1          # outcome 1
+D_3bea D_3bea_provisionPrices         # [shop][item]
+D_3c0a D_3c0a_provisionTexts
+D_3c10 D_3c10_reagentTexts
+D_3c30 D_3c30_horsePrices
+D_3c38 D_3c38_stableDx                # the four neighbours, where the horse may appear
+D_3c40 D_3c40_stableDy
+D_3c48 D_3c48_armsTexts
+D_3cbe D_3cbe_buybackTexts
+D_3d86 D_3d86_healPrices
+D_3d8e D_3d8e_curePrices
+D_3d96 D_3d96_raisePrices
+D_b11a D_b11a_shopQuantity            # the '^' of the shop texts
+D_b7fa D_b7fa_shopTextOut             # where PrintShopText assembles the text

@@ -117,7 +117,7 @@ typedef struct NpcFmt
 	s16 x; // 2 / 5f60 x
 	s16 y; // 4 / 5f62 y
 	u16 z; // 6 / 5f64 z
-	u16 _8;   // 8 / 5f66
+	u16 npcType;   // 8 / 5f66
 	u16 _a;   // a / 5f68
 	u16 actorIdx;   // c / 5f6a; the NPC's slot in D_5c5a_actors   // TODO: s16?
 	u16 scheduleIdx;   // e / 5f6c; which entry of the NPC's schedule is in force

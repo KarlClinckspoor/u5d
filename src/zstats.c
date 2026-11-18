@@ -9,24 +9,25 @@
 
 
 
-static int ZSTATS_0000(int param_1)
+// Choose the party member a command acts on: in combat the acting player, else ask "Player:". Returns the index, -1 for none, -2 for the whole party (key 0, when allowAll).
+static int ZSTATS_0000_ChoosePlayer(int allowAll)
 {
-    int local_4;
+    int player;
 
-    local_4 = -1;
+    player = -1;
 
     if (D_5893_mapId > 0x80 && (D_ba14_combatants[D_589e_curCombatant].flags & COMBAT_FLAGS_PLAYER) != 0)
     {
-        local_4 = D_ba14_combatants[D_589e_curCombatant].entityIdx;
+        player = D_ba14_combatants[D_589e_curCombatant].entityIdx;
     }
     else
     {
         // 202e
         ULTIMA_1850_PrintString(_TEXT(0x96b4, "Player: "));
-        local_4 = ULTIMA_2d7a_SelectPlayerOrNone(param_1); // Select player
-        if (local_4 >= 0)
+        player = ULTIMA_2d7a_SelectPlayerOrNone(allowAll); // Select player
+        if (player >= 0)
         {
-            ULTIMA_1850_PrintString(D_55a8_party[local_4].name);
+            ULTIMA_1850_PrintString(D_55a8_party[player].name);
             if (ULTIMA_1f12_GetCurrentTextX() != 0)
             {
                 ULTIMA_16ba_PrintChar('\n');
@@ -35,96 +36,99 @@ static int ZSTATS_0000(int param_1)
     }
 
     // 205b
-    if (local_4 == -1)
+    if (player == -1)
     {
         ULTIMA_1850_PrintString(_TEXT(0x96be, "None!\n"));
     }
     // 206a
-    else if (local_4 == -2)
+    else if (player == -2)
     {
         ULTIMA_16ba_PrintChar('\n');
     }
 
     // 2077
-    return local_4;
+    return player;
 }
 
-static void ZSTATS_0082(int param_1)
+// Z command, first page of a member: name, class, level, status, Str/Int/Dex, HP, HM, Ex, Magic.
+static void ZSTATS_0082_ShowPlayerStats(int member)
 {
-    int local_6;
-    int local_8;
-    int local_a;
-    S_55a8* local_4_ab;
+    int classIdx_e;
+    int pad;
+    int statusIdx;
+    S_55a8* player_c;
 
     ULTIMA_4daa_HideScrollArrow();
 
-    local_4_ab = &D_55a8_party[param_1];
+    player_c = &D_55a8_party[member];
 
-    ULTIMA_4e50_ShowStatsTitle(local_4_ab->name);
+    ULTIMA_4e50_ShowStatsTitle(player_c->name);
     ULTIMA_1c22_SetTextWindowSize(1, 0x18, 1, 0x26, 9);
     ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
     ULTIMA_1c22_SetTextWindowSize(1, 0x18, 1, 0x27, 9);
 
-    local_6 = ULTIMA_4d76_FindIndex(_TEXT(0x96c6, CLASS_LIST), local_4_ab->cls);
-    local_a = ULTIMA_4d76_FindIndex(_TEXT(0x96d0, STATUS_LIST), local_4_ab->status);
+    classIdx_e = ULTIMA_4d76_FindIndex(_TEXT(0x96c6, CLASS_LIST), player_c->cls);
+    statusIdx = ULTIMA_4d76_FindIndex(_TEXT(0x96d0, STATUS_LIST), player_c->status);
 
-    for (local_8 = 0; local_8 < D_1a58[local_6]; local_8++)
+    for (pad = 0; pad < D_1a58[classIdx_e]; pad++)
     {
         ULTIMA_16ba_PrintChar(' ');
     }
 
-    ULTIMA_16ba_PrintChar(local_4_ab->gender);
+    ULTIMA_16ba_PrintChar(player_c->gender);
     ULTIMA_1850_PrintString(_TEXT(0x96d6, " Lv-"));
-    ULTIMA_1a3e_PrintNumber(local_4_ab->level, 1, 0x20);
+    ULTIMA_1a3e_PrintNumber(player_c->level, 1, 0x20);
     ULTIMA_16ba_PrintChar(' ');
-    ULTIMA_1850_PrintString(D_1a44_classNames[local_6]);
+    ULTIMA_1850_PrintString(D_1a44_classNames[classIdx_e]);
     ULTIMA_1c22_SetTextWindowSize(1, 0x18, 1, 0x26, 9);
     ULTIMA_1bf2_SetTextPosition(0, 1);
     ULTIMA_16ba_PrintChar(CTRL_CHAR_CENTER_TEXT);
-    ULTIMA_1850_PrintString(D_1a6a_statusNames[local_a]);
+    ULTIMA_1850_PrintString(D_1a6a_statusNames[statusIdx]);
     ULTIMA_1c22_SetTextWindowSize(1, 0x18, 1, 0x27, 9);
     ULTIMA_1bf2_SetTextPosition(0, 3);
     ULTIMA_16ba_PrintChar(CTRL_CHAR_UNCENTER_TEXT);
     ULTIMA_1850_PrintString(_TEXT(0x96dc, "Str="));
-    ULTIMA_1a3e_PrintNumber(local_4_ab->str, 2, 0x30);
+    ULTIMA_1a3e_PrintNumber(player_c->str, 2, 0x30);
     ULTIMA_1850_PrintString(_TEXT(0x96e2, "  HP:"));
-    ULTIMA_1a3e_PrintNumber(local_4_ab->hp, 4, 0x20);
+    ULTIMA_1a3e_PrintNumber(player_c->hp, 4, 0x20);
     ULTIMA_1850_PrintString(_TEXT(0x96e8, "\nInt="));
-    ULTIMA_1a3e_PrintNumber(local_4_ab->intel, 2, 0x30);
+    ULTIMA_1a3e_PrintNumber(player_c->intel, 2, 0x30);
     ULTIMA_1850_PrintString(_TEXT(0x96ee, "  HM:"));
-    ULTIMA_1a3e_PrintNumber(local_4_ab->maxHp, 4, 0x20);
+    ULTIMA_1a3e_PrintNumber(player_c->maxHp, 4, 0x20);
     ULTIMA_1850_PrintString(_TEXT(0x96f4, "\nDex="));
-    ULTIMA_1a3e_PrintNumber(local_4_ab->dex, 2, 0x30);
+    ULTIMA_1a3e_PrintNumber(player_c->dex, 2, 0x30);
     ULTIMA_1850_PrintString(_TEXT(0x96fa, "  Ex:"));
-    ULTIMA_1a3e_PrintNumber(local_4_ab->exp, 4, 0x20);
+    ULTIMA_1a3e_PrintNumber(player_c->exp, 4, 0x20);
     ULTIMA_1850_PrintString(_TEXT(0x9700, "\n\n    Magic:"));
-    ULTIMA_1a3e_PrintNumber(local_4_ab->mag, 2, 0x20);
+    ULTIMA_1a3e_PrintNumber(player_c->mag, 2, 0x20);
 }
 
-static bool ZSTATS_0278(int param_1)
+// Print one equipped item as a line of the Arms page; returns 0 for an empty slot (0xff).
+static bool ZSTATS_0278_PrintArm(int item)
 {
-    if (param_1 == 0xff)
+    if (item == 0xff)
     {
         return 0;
     }
     else
     {
         ULTIMA_16ba_PrintChar(' ');
-        ULTIMA_1850_PrintString(D_1962_equipShortNames[param_1]);
+        ULTIMA_1850_PrintString(D_1962_equipShortNames[item]);
         ULTIMA_16ba_PrintChar('\n');
         return 1;
     }
 }
 
-static void ZSTATS_02a8(int param_1)
+// Z command, second page of a member: the "Arms" he or she has readied ("(None ready)" if empty).
+static void ZSTATS_02a8_ShowPlayerArms(int member)
 {
-    S_55a8* local_6_an;
-    int local_4;
+    S_55a8* player;
+    int shown;
 
     ULTIMA_4daa_HideScrollArrow();
 
-    local_6_an = &D_55a8_party[param_1];
-    ULTIMA_4e50_ShowStatsTitle(local_6_an->name);
+    player = &D_55a8_party[member];
+    ULTIMA_4e50_ShowStatsTitle(player->name);
     ULTIMA_1c22_SetTextWindowSize(1, 0x18, 1, 0x26, 9);
     ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
     ULTIMA_16ba_PrintChar(CTRL_CHAR_CENTER_TEXT);
@@ -133,14 +137,14 @@ static void ZSTATS_02a8(int param_1)
     ULTIMA_16ba_PrintChar(CTRL_CHAR_UNCENTER_TEXT);
     ULTIMA_16ba_PrintChar(CTRL_CHAR_TOGGLE_UNDERLINE);
 
-    local_4 = ZSTATS_0278(local_6_an->equips[0]);
-    local_4 += ZSTATS_0278(local_6_an->equips[1]);
-    local_4 += ZSTATS_0278(local_6_an->equips[2]);
-    local_4 += ZSTATS_0278(local_6_an->equips[3]);
-    local_4 += ZSTATS_0278(local_6_an->equips[4]);
-    local_4 += ZSTATS_0278(local_6_an->equips[5]);
+    shown = ZSTATS_0278_PrintArm(player->equips[0]);
+    shown += ZSTATS_0278_PrintArm(player->equips[1]);
+    shown += ZSTATS_0278_PrintArm(player->equips[2]);
+    shown += ZSTATS_0278_PrintArm(player->equips[3]);
+    shown += ZSTATS_0278_PrintArm(player->equips[4]);
+    shown += ZSTATS_0278_PrintArm(player->equips[5]);
 
-    if (local_4 == 0)
+    if (shown == 0)
     {
         ULTIMA_1bf2_SetTextPosition(0, 4);
         ULTIMA_16ba_PrintChar(CTRL_CHAR_CENTER_TEXT);
@@ -151,7 +155,8 @@ static void ZSTATS_02a8(int param_1)
     ULTIMA_1c22_SetTextWindowSize(1, 0x18, 1, 0x27, 9);
 }
 
-static void ZSTATS_039c(void)
+// Z command, the party page: food, gold, keys, gems, torches and the grappling hook.
+static void ZSTATS_039c_ShowSupplies(void)
 {
     ULTIMA_4daa_HideScrollArrow();
     ULTIMA_4e50_ShowStatsTitle(_TEXT(0x9724, "Equipment"));
@@ -175,34 +180,35 @@ static void ZSTATS_039c(void)
     }
 }
 
-void ZSTATS_045e(int param_1)
+// Draw the bordered list box (graphic characters 0x10-0x17) used by the item lists, lastRow rows high.
+void ZSTATS_045e_DrawListFrame(int lastRow)
 {
-    int local_4;
+    int i;
 
-    ULTIMA_1c22_SetTextWindowSize(1, 0x18, 1, 0x26, param_1 + 1);
+    ULTIMA_1c22_SetTextWindowSize(1, 0x18, 1, 0x26, lastRow + 1);
     ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
     ULTIMA_1c22_SetTextWindowSize(1, 0x18, 1, 0x27, 9);
     ULTIMA_16ba_PrintChar(0x10);
 
-    for (local_4 = 0; local_4 < 0xd; local_4++)
+    for (i = 0; i < 0xd; i++)
     {
         ULTIMA_16ba_PrintChar(0x11);
     }
 
     ULTIMA_16ba_PrintChar(0x13);
 
-    for (local_4 = 1; local_4 != param_1; local_4++)
+    for (i = 1; i != lastRow; i++)
     {
-        ULTIMA_1bf2_SetTextPosition(0, local_4);
+        ULTIMA_1bf2_SetTextPosition(0, i);
         ULTIMA_16ba_PrintChar(0x17);
-        ULTIMA_1bf2_SetTextPosition(0xe, local_4);
+        ULTIMA_1bf2_SetTextPosition(0xe, i);
         ULTIMA_16ba_PrintChar(0x17);
     }
 
     ULTIMA_16ba_PrintChar('\n');
     ULTIMA_16ba_PrintChar(0x14);
 
-    for (local_4 = 0; local_4 < 0xd; local_4++)
+    for (i = 0; i < 0xd; i++)
     {
         ULTIMA_16ba_PrintChar(0x15);
     }
@@ -210,30 +216,32 @@ void ZSTATS_045e(int param_1)
     ULTIMA_16ba_PrintChar(0x16);
 }
 
-static int ZSTATS_0518(int param_1, uint param_2)
+// 1 when the member has the item among the six equipped slots.
+static int ZSTATS_0518_IsEquipped(int member, uint item)
 {
-    S_55a8* local_4 = &D_55a8_party[param_1];
+    S_55a8* player = &D_55a8_party[member];
 
-    return local_4->equips[0] == param_2 || local_4->equips[1] == param_2 || local_4->equips[2] == param_2 ||
-           local_4->equips[3] == param_2 || local_4->equips[4] == param_2 || local_4->equips[5] == param_2;
+    return player->equips[0] == item || player->equips[1] == item || player->equips[2] == item ||
+           player->equips[3] == item || player->equips[4] == item || player->equips[5] == item;
 }
 
-int ZSTATS_056c(int param_1, int notused, byte* param_3, int param_4)
+// The item before index with a count (or, when member is not 0xff, worn by the member); -1 if none.
+int ZSTATS_056c_PrevItem(int index, int notused, byte* counts, int member)
 {
     while (1)
     {
-        if (--param_1 >= 0)
+        if (--index >= 0)
         {
-            if (param_3[param_1] == 0)
+            if (counts[index] == 0)
             {
-                if (param_4 == 0xff)
+                if (member == 0xff)
                     continue;
 
-                if (ZSTATS_0518(param_4, param_1) == 0)
+                if (ZSTATS_0518_IsEquipped(member, index) == 0)
                     continue;
             }
 
-            return param_1;
+            return index;
         }
 
         break;
@@ -242,21 +250,22 @@ int ZSTATS_056c(int param_1, int notused, byte* param_3, int param_4)
     return -1;
 }
 
-int ZSTATS_05a4(int param_1, int param_2, byte* param_3, int param_4)
+// The item after index with a count (or worn by the member), below count; -1 if none.
+int ZSTATS_05a4_NextItem(int index, int count, byte* counts, int member)
 {
     while (1)
     {
-        if (++param_1 < param_2)
+        if (++index < count)
         {
-            if (param_3[param_1] == 0)
+            if (counts[index] == 0)
             {
-                if (param_4 == 0xff)
+                if (member == 0xff)
                     continue;
-                if (ZSTATS_0518(param_4, param_1) == 0)
+                if (ZSTATS_0518_IsEquipped(member, index) == 0)
                     continue;
             }
 
-            return param_1;
+            return index;
         }
 
         break;
@@ -265,64 +274,65 @@ int ZSTATS_05a4(int param_1, int param_2, byte* param_3, int param_4)
     return -1;
 }
 
+// Print one row of an item list: count ("--" when worn), marker, name (a leading '*', '!' or '(' in the name selects a special form), padded to 14 columns.
 // show inven count
-void ZSTATS_05e2(int param_1, byte* param_2, char** param_3, uint param_4)
+void ZSTATS_05e2_PrintItemRow(int index, byte* counts, char** names, uint marker)
 {
-    char local_6_an;
-    int local_4;
+    char owned;
+    int column_n;
 
-    local_6_an = (char)param_2[param_1];
-    if (local_6_an != -1)
+    owned = (char)counts[index];
+    if (owned != -1)
     {
-        if (local_6_an != 0)
+        if (owned != 0)
         {
-            ULTIMA_1a3e_PrintNumber((byte)local_6_an, 2, 0x20);
+            ULTIMA_1a3e_PrintNumber((byte)owned, 2, 0x20);
         }
         else
         {
             ULTIMA_1850_PrintString(_TEXT(0x9778, "--"));
         }
 
-        if (param_4 < 0x20)
+        if (marker < 0x20)
         {
             ULTIMA_1c9e_SelectCharset(1);
         }
 
-        ULTIMA_16ba_PrintChar(param_4);
+        ULTIMA_16ba_PrintChar(marker);
         ULTIMA_1c9e_SelectCharset(0);
     }
 
-    if (param_3[param_1][0] == '*')
+    if (names[index][0] == '*')
     {
         ULTIMA_1c9e_SelectCharset(1);
         ULTIMA_1850_PrintString(_TEXT(0x977c, "\x1c + "));
-        ULTIMA_1850_PrintString(&param_3[param_1][1]);
+        ULTIMA_1850_PrintString(&names[index][1]);
         ULTIMA_1c9e_SelectCharset(0);
     }
-    else if (param_3[param_1][0] == '!')
+    else if (names[index][0] == '!')
     {
         ULTIMA_1c9e_SelectCharset(1);
         ULTIMA_1850_PrintString(_TEXT(0x9782, "\x1d + "));
         ULTIMA_1c9e_SelectCharset(0);
-        ULTIMA_1850_PrintString(D_1962_equipShortNames[40 + param_1]);
+        ULTIMA_1850_PrintString(D_1962_equipShortNames[40 + index]);
     }
-    else if (param_3[param_1][0] == '(')
+    else if (names[index][0] == '(')
     {
         ULTIMA_1850_PrintString(_TEXT(0x9788, "Moonstone "));
         ULTIMA_1c9e_SelectCharset(1);
-        ULTIMA_16ba_PrintChar((byte)param_3[param_1][1]);
+        ULTIMA_16ba_PrintChar((byte)names[index][1]);
         ULTIMA_1c9e_SelectCharset(0);
     }
     else
     {
-        ULTIMA_1850_PrintString(param_3[param_1]);
+        ULTIMA_1850_PrintString(names[index]);
     }
 
-    local_4 = ULTIMA_1f12_GetCurrentTextX();
-    if (local_4 < 0xe)
+    column_n = ULTIMA_1f12_GetCurrentTextX();
+    if (column_n < 0xe)
     {
-        register int si = 0xe - local_4;
-        local_4 += si;
+        register int si = 0xe - column_n;
+        column_n += si;
 
         do
         {
@@ -336,6 +346,7 @@ void ZSTATS_05e2(int param_1, byte* param_2, char** param_3, uint param_4)
 #if defined(TARGET_DOS16)
 #pragma loop_opt(off)
 #endif
+// Scrolling list of the Z command (reagents, spells, items, armaments); arrows scroll, Esc/space/1-6/0 leave. Returns the key that ended it.
 // CHECKED: the selection loop is written with gotos. The original places the loop test
 // (with the window setup that starts the next pass) right after the END case, which falls
 // into it, and the return after the switch's dispatch. A while loop's test block floats
@@ -345,23 +356,23 @@ void ZSTATS_05e2(int param_1, byte* param_2, char** param_3, uint param_4)
 // label after the switch, the layout is the original's. "break" to a return after the switch
 // instead of "goto L_exit" lets the return block float up behind the test (107 bytes). The END
 // loop is a do-while entered at its test, with != 0xffff for the original's "cmp ax,0FFFFh".
-static int ZSTATS_06e8(char* param_1, int param_2, byte* param_3, char** param_4)
+static int ZSTATS_06e8_BrowseList(char* title, int count, byte* counts, char** names)
 {
-    int local_10_aa;
-    int local_e_am;
-    int local_c;
-    int local_a;
-    bool local_8;
-    int local_6;
-    int local_4_ab;
+    int arrows;
+    int key;
+    int last;
+    int step_d;
+    bool leave_c;
+    int first_h;
+    int steps;
 
-    ULTIMA_4e50_ShowStatsTitle(param_1);
-    ZSTATS_045e(8);
-    local_8 = false;
-    local_6 = ZSTATS_05a4(-1, param_2, param_3, 0xff);
-    if (local_6 == -1)
+    ULTIMA_4e50_ShowStatsTitle(title);
+    ZSTATS_045e_DrawListFrame(8);
+    leave_c = false;
+    first_h = ZSTATS_05a4_NextItem(-1, count, counts, 0xff);
+    if (first_h == -1)
     {
-        ZSTATS_045e(8);
+        ZSTATS_045e_DrawListFrame(8);
         ULTIMA_1bf2_SetTextPosition(1, 4);
         ULTIMA_1850_PrintString(_TEXT(0x9794, "(None owned!)"));
         ULTIMA_4daa_HideScrollArrow();
@@ -374,11 +385,11 @@ static int ZSTATS_06e8(char* param_1, int param_2, byte* param_3, char** param_4
     {
     L_list:
         // -> 0756
-        for (local_c = local_6; local_c != -1;
+        for (last = first_h; last != -1;
              // 0746
-             local_c = ZSTATS_05a4(local_c, param_2, param_3, 0xff))
+             last = ZSTATS_05a4_NextItem(last, count, counts, 0xff))
         {
-            ZSTATS_05e2(local_c, param_3, param_4, 0x2d);
+            ZSTATS_05e2_PrintItemRow(last, counts, names, 0x2d);
 
             ULTIMA_1bf2_SetTextPosition(1, ULTIMA_1cee_GetCurrentTextY());
             if (ULTIMA_1cee_GetCurrentTextY() == 8)
@@ -386,20 +397,20 @@ static int ZSTATS_06e8(char* param_1, int param_2, byte* param_3, char** param_4
         }
 
         // 077f
-        local_10_aa = 0;
-        if (ZSTATS_056c(local_6, param_2, param_3, 0xff) != -1)
+        arrows = 0;
+        if (ZSTATS_056c_PrevItem(first_h, count, counts, 0xff) != -1)
         {
-            local_10_aa = 2;
+            arrows = 2;
         }
 
         // 079c
-        if (local_c != -1 && ZSTATS_05a4(local_c, param_2, param_3, 0xff) != -1)
+        if (last != -1 && ZSTATS_05a4_NextItem(last, count, counts, 0xff) != -1)
         {
-            local_10_aa++;
+            arrows++;
         }
 
         // 07b8
-        switch (local_10_aa)
+        switch (arrows)
         {
         case 0:
             // 07d0
@@ -423,26 +434,26 @@ static int ZSTATS_06e8(char* param_1, int param_2, byte* param_3, char** param_4
 
         // 07d3
         ULTIMA_1b94_SelectTextWindow(2);
-        local_e_am = ULTIMA_266c_GetChar();
-        switch (local_e_am)
+        key = ULTIMA_266c_GetChar();
+        switch (key)
         {
         case U5_KEY_UP:
         case U5_KEY_PGUP:
             // 081c
-            if (local_e_am == U5_KEY_PGUP)
+            if (key == U5_KEY_PGUP)
             {
-                local_4_ab = 7;
+                steps = 7;
             }
             else
             {
-                local_4_ab = 1;
+                steps = 1;
             }
 
-            for (local_a = 0; local_a < local_4_ab; local_a++)
+            for (step_d = 0; step_d < steps; step_d++)
             {
-                if (ZSTATS_056c(local_6, param_2, param_3, 0xff) != -1)
+                if (ZSTATS_056c_PrevItem(first_h, count, counts, 0xff) != -1)
                 {
-                    local_6 = ZSTATS_056c(local_6, param_2, param_3, 0xff);
+                    first_h = ZSTATS_056c_PrevItem(first_h, count, counts, 0xff);
                 }
             }
             goto L_test;
@@ -450,44 +461,44 @@ static int ZSTATS_06e8(char* param_1, int param_2, byte* param_3, char** param_4
         case U5_KEY_DOWN:
         case U5_KEY_PGDN:
             // 086c
-            if (local_e_am == U5_KEY_PGDN)
+            if (key == U5_KEY_PGDN)
             {
-                local_4_ab = 7;
+                steps = 7;
             }
             else
             {
-                local_4_ab = 1;
+                steps = 1;
             }
 
-            for (local_a = 0; local_a < local_4_ab; local_a++)
+            for (step_d = 0; step_d < steps; step_d++)
             {
-                if (local_c != -1 && ZSTATS_05a4(local_c, param_2, param_3, 0xff) != -1)
+                if (last != -1 && ZSTATS_05a4_NextItem(last, count, counts, 0xff) != -1)
                 {
-                    local_6 = ZSTATS_05a4(local_6, param_2, param_3, 0xff);
-                    local_c = ZSTATS_05a4(local_c, param_2, param_3, 0xff);
+                    first_h = ZSTATS_05a4_NextItem(first_h, count, counts, 0xff);
+                    last = ZSTATS_05a4_NextItem(last, count, counts, 0xff);
                 }
             }
             goto L_test;
 
         case U5_KEY_HOME:
             // 08d6
-            local_6 = ZSTATS_05a4(-1, param_2, param_3, 0xff);
+            first_h = ZSTATS_05a4_NextItem(-1, count, counts, 0xff);
             goto L_test;
 
         case U5_KEY_END:
             // 08ec
-            local_6 = ZSTATS_056c(param_2, param_2, param_3, 0xff);
+            first_h = ZSTATS_056c_PrevItem(count, count, counts, 0xff);
             // 090f
-            local_a = 0;
+            step_d = 0;
             goto L_end_test;
             do
             {
-                local_6 = local_c;
-                local_a++;
+                first_h = last;
+                step_d++;
             L_end_test:;
-            } while (local_a < 6 && (local_c = ZSTATS_056c(local_6, param_2, param_3, 0xff)) != 0xffff);
+            } while (step_d < 6 && (last = ZSTATS_056c_PrevItem(first_h, count, counts, 0xff)) != 0xffff);
         L_test:
-            if (local_8)
+            if (leave_c)
                 goto L_exit;
             ULTIMA_1b94_SelectTextWindow(1);
             ULTIMA_1bf2_SetTextPosition(1, 1);
@@ -505,7 +516,7 @@ static int ZSTATS_06e8(char* param_1, int param_2, byte* param_3, char** param_4
         case 0x35:
         case 0x36:
             // 0948
-            local_8 = 1;
+            leave_c = 1;
             goto L_test;
         default:
             goto L_test;
@@ -513,119 +524,121 @@ static int ZSTATS_06e8(char* param_1, int param_2, byte* param_3, char** param_4
     }
 
 L_exit:
-    return local_e_am;
+    return key;
 }
 
 #if defined(TARGET_DOS16)
 #pragma loop_opt(on)
 #endif
+// Copy the saved game's scrolls, potions and quest items into the D_b9ee table of owned item counts (the Use list).
 // 099A
-void ZSTATS_099a(void)
+void ZSTATS_099a_FillItemCounts(void)
 {
-    int local_4;
+    int i;
 
-    local_4 = 0;
+    i = 0;
     do
     {
-        D_b9ee[local_4] = D_5820_scrolls[local_4];
-        D_b9f6[local_4] = D_5828_potions[local_4];
-        D_ba03[local_4] = D_5840_moonstoneMap[local_4] == 0xff ? 0xff : 0;
-    } while (++local_4 < 8);
+        D_b9ee[i] = D_5820_scrolls[i];
+        D_b9f6_potionCounts[i] = D_5828_potions[i];
+        D_ba03_moonstoneFlags[i] = D_5840_moonstoneMap[i] == 0xff ? 0xff : 0;
+    } while (++i < 8);
 
-    D_b9fe = D_57b0_carpets;
-    D_b9ff = D_57b1_skullKeys;
-    D_ba00 = D_57b3_amulet;
-    D_ba01 = D_57b4_crown;
-    D_ba02 = D_57b5_sceptre;
+    D_b9fe_carpetCount = D_57b0_carpets;
+    D_b9ff_skullKeyCount = D_57b1_skullKeys;
+    D_ba00_amuletOwned = D_57b3_amulet;
+    D_ba01_crownOwned = D_57b4_crown;
+    D_ba02_sceptreOwned = D_57b5_sceptre;
 
-    for (local_4 = 0; local_4 < 3; local_4++)
+    for (i = 0; i < 3; i++)
     {
-        D_ba0b[local_4] = D_57b6_shards[local_4];
+        D_ba0b_shardFlags[i] = D_57b6_shards[i];
     }
 
-    D_ba0e = D_57ba_spyglasses;
-    D_ba0f = D_57bb_hmsCapePlans != 0 ? 0xff : 0;
-    D_ba10 = D_57bc_sextants;
-    D_ba11 = D_57bd_pocketWatch;
-    D_ba12 = D_57be_blackBadge;
-    D_ba13 = D_57bf_sandalwoodBox;
+    D_ba0e_spyglassCount = D_57ba_spyglasses;
+    D_ba0f_capePlansOwned = D_57bb_hmsCapePlans != 0 ? 0xff : 0;
+    D_ba10_sextantCount = D_57bc_sextants;
+    D_ba11_pocketWatchOwned = D_57bd_pocketWatch;
+    D_ba12_blackBadgeOwned = D_57be_blackBadge;
+    D_ba13_sandalwoodBoxOwned = D_57bf_sandalwoodBox;
 }
 
+// Z command: flip through the party's stats pages (member stats and arms, supplies, reagents, spells, items, armaments).
 // CHECKED
 void ZSTATS_0a3a_ZstatsCmd(void)
 {
-    int local_8;
-    byte local_6;
-    int local_4_ab;
+    int member;
+    byte key;
+    int page_c;
 
-    local_8 = ZSTATS_0000(1);
-    if (local_8 == -2)
+    member = ZSTATS_0000_ChoosePlayer(1);
+    if (member == -2)
     {
-        local_8 = 6;
+        member = 6;
     }
-    else if (local_8 < 0)
+    else if (member < 0)
     {
         return;
     }
 
     // ec3f
     ULTIMA_1850_PrintString(_TEXT(0x97a2, "\nStatus: "));
-    ZSTATS_099a();
+    ZSTATS_099a_FillItemCounts();
     ULTIMA_4efc_OpenStatsDivider();
-    local_4_ab = local_8 << 1;
-    local_6 = 0;
+    page_c = member << 1;
+    key = 0;
 
     // ec58
     while (true)
     {
         // 0a78
-        if (local_6 == U5_KEY_SPACE || local_6 == U5_KEY_ESC)
+        if (key == U5_KEY_SPACE || key == U5_KEY_ESC)
         {
             break;
         }
 
-        switch (local_6)
+        switch (key)
         {
         case U5_KEY_UP:
         case U5_KEY_LEFT:
             // 0aa6
-            if (local_4_ab == 0xc)
+            if (page_c == 0xc)
             {
-                local_4_ab = D_585b_partyCount * 2 - 1;
+                page_c = D_585b_partyCount * 2 - 1;
             }
-            else if (local_4_ab > 0)
+            else if (page_c > 0)
             {
-                local_4_ab--;
+                page_c--;
             }
             else
             {
-                local_4_ab = 0x10;
+                page_c = 0x10;
             }
             break;
 
         case U5_KEY_RIGHT:
         case U5_KEY_DOWN:
             // 0aea
-            if (D_585b_partyCount * 2 - 1 == local_4_ab)
+            if (D_585b_partyCount * 2 - 1 == page_c)
             {
-                local_4_ab = 0xc;
+                page_c = 0xc;
             }
             else
             {
-                if (local_4_ab < 0x10)
+                if (page_c < 0x10)
                 {
-                    local_4_ab++;
+                    page_c++;
                 }
                 else
                 {
-                    local_4_ab = 0;
+                    page_c = 0;
                 }
             }
             break;
 
         case 0x30:
             // 0af7
-            local_4_ab = 0xc;
+            page_c = 0xc;
             break;
 
         case 0x31:
@@ -635,55 +648,55 @@ void ZSTATS_0a3a_ZstatsCmd(void)
         case 0x35:
         case 0x36:
             // 0b12 (NOT MATCHING)
-            if (local_6 - 0x31 < D_585b_partyCount)
+            if (key - 0x31 < D_585b_partyCount)
             {
-                local_4_ab = local_6 * 2 - 0x62;
+                page_c = key * 2 - 0x62;
             }
             break;
         }
 
         // ecab
         ULTIMA_1b94_SelectTextWindow(1);
-        if (local_4_ab < 0xc)
+        if (page_c < 0xc)
         {
-            if ((local_4_ab & 1) != 0)
+            if ((page_c & 1) != 0)
             {
-                ZSTATS_02a8(local_4_ab >> 1);
+                ZSTATS_02a8_ShowPlayerArms(page_c >> 1);
             }
             else
             {
-                ZSTATS_0082(local_4_ab >> 1);
+                ZSTATS_0082_ShowPlayerStats(page_c >> 1);
             }
 
             // ed3f
             ULTIMA_1b94_SelectTextWindow(2);
-            local_6 = ULTIMA_266c_GetChar();
+            key = ULTIMA_266c_GetChar();
         }
-        else if (local_4_ab == 0xc)
+        else if (page_c == 0xc)
         {
-            ZSTATS_039c();
+            ZSTATS_039c_ShowSupplies();
 
             // ed3f
             ULTIMA_1b94_SelectTextWindow(2);
-            local_6 = ULTIMA_266c_GetChar();
+            key = ULTIMA_266c_GetChar();
         }
         else
         {
             // 0b70
-            switch (local_4_ab)
+            switch (page_c)
             {
             case 0xd:
                 // ed6a
-                local_6 = ZSTATS_06e8(_TEXT(0x97ac, "Reagents"), 8, D_5850_reagents, D_19d2_reagentNames);
+                key = ZSTATS_06e8_BrowseList(_TEXT(0x97ac, "Reagents"), 8, D_5850_reagents, D_19d2_reagentNames);
                 break;
             case 0xe:
-                local_6 = ZSTATS_06e8(_TEXT(0x97b6, "Spells"), 0x30, D_57f0_mixedSpells, D_19e2_spellNames);
+                key = ZSTATS_06e8_BrowseList(_TEXT(0x97b6, "Spells"), 0x30, D_57f0_mixedSpells, D_19e2_spellNames);
                 break;
             case 0xf:
-                local_6 = ZSTATS_06e8(_TEXT(0x97be, "Items"), 0x26, D_b9ee, D_1916);
+                key = ZSTATS_06e8_BrowseList(_TEXT(0x97be, "Items"), 0x26, D_b9ee, D_1916);
                 break;
             case 0x10:
-                local_6 = ZSTATS_06e8(_TEXT(0x97c4, "Armaments"), 0x30, D_57c0_equipment, D_1962_equipShortNames);
+                key = ZSTATS_06e8_BrowseList(_TEXT(0x97c4, "Armaments"), 0x30, D_57c0_equipment, D_1962_equipShortNames);
                 break;
             }
         }
@@ -697,26 +710,28 @@ void ZSTATS_0a3a_ZstatsCmd(void)
     ULTIMA_1850_PrintString(_TEXT(0x97ce, "Done\n"));
 }
 
-static void ZSTATS_0bee(char* param_1)
+// Print a refusal message and the "Item:" prompt again.
+static void ZSTATS_0bee_PrintEquipRefusal(char* message)
 {
     ULTIMA_1850_PrintString(_TEXT(0x97d4, "\n\n"));
-    ULTIMA_1850_PrintString(param_1);
+    ULTIMA_1850_PrintString(message);
     ULTIMA_1850_PrintString(_TEXT(0x97d8, "\n\nItem: "));
 }
 
-static int ZSTATS_0c0a(int param_1)
+// Which hand is free: 2 both, 0 the first (equips[2]), 1 the second (equips[3], when the first holds a one-handed item), 0xff none.
+static int ZSTATS_0c0a_FreeHandSlot(int member)
 {
-    S_55a8* s = &D_55a8_party[param_1];
+    S_55a8* player = &D_55a8_party[member];
 
-    if ((s->equips[2] == 0xff) && (s->equips[3] == 0xff))
+    if ((player->equips[2] == 0xff) && (player->equips[3] == 0xff))
     {
         return 2;
     }
-    else if (s->equips[2] == 0xff)
+    else if (player->equips[2] == 0xff)
     {
         return 0;
     }
-    else if ((s->equips[3] == 0xff) && (D_1a7e[s->equips[2]] != 0x30))
+    else if ((player->equips[3] == 0xff) && (D_1a7e[player->equips[2]] != 0x30))
     {
         return 1;
     }
@@ -726,240 +741,242 @@ static int ZSTATS_0c0a(int param_1)
     }
 }
 
+// Ready or unready an item for a member, with the rules of the original (no armour change in battle, ammunition, strength, one helm, one ring, one amulet, hands). Returns 1 when a magic ring vanished.
 // CLEAN ROOM (written from the disassembly). param_1: party member, param_2: item.
 // Returns 1 when the ring vanished. An else-if chain with one final return 0 (so the
 // armour message jumps forward into the ammunition one), early returns inside the
 // switch, and the strength test as "if (strong) goto L_wear; message; return 0;": the
 // goto puts the message block after the last case, ahead of the ring's tile change.
-static int ZSTATS_0c5c_EquipItem(int param_1, int param_2)
+static int ZSTATS_0c5c_EquipOrRemove(int member, int item)
 {
-    byte* local_10_aa;
-    int local_e_am;
-    int local_c;
-    int local_a;
-    int local_8;
-    ActorFmt* local_6;
-    uint local_4_aa;
+    byte* slot_i;
+    int strongEnough_g;
+    int hand;
+    int i;
+    int classIdx_e;
+    ActorFmt* actor_g;
+    uint load;
 
     if (D_5893_mapId > 0x7f)
     {
-        local_6 = &D_5c5a_actors[D_ba14_combatants[D_589e_curCombatant].actorIdx];
+        actor_g = &D_5c5a_actors[D_ba14_combatants[D_589e_curCombatant].actorIdx];
     }
 
-    if (param_2 == 0x1b || param_2 == 0x1d)
+    if (item == 0x1b || item == 0x1d)
     {
         return 0;
     }
-    if (param_2 >= 9 && param_2 <= 0xf && D_5893_mapId > 0x7f && D_58a3_combatOver == 0)
+    if (item >= 9 && item <= 0xf && D_5893_mapId > 0x7f && D_58a3_combatOver == 0)
     {
-        ZSTATS_0bee(_TEXT(0x97e2, "Thou canst not change armour in heated battle!"));
+        ZSTATS_0bee_PrintEquipRefusal(_TEXT(0x97e2, "Thou canst not change armour in heated battle!"));
     }
-    else if (ZSTATS_0518(param_1, param_2) != 0)
+    else if (ZSTATS_0518_IsEquipped(member, item) != 0)
     {
-        ULTIMA_6e60_Unequip(param_1, param_2);
-        if (D_57c0_equipment[param_2] < 99)
+        ULTIMA_6e60_Unequip(member, item);
+        if (D_57c0_equipment[item] < 99)
         {
-            D_57c0_equipment[param_2]++;
+            D_57c0_equipment[item]++;
         }
 
-        if (D_5893_mapId > 0x7f && param_2 == 0x2a)
+        if (D_5893_mapId > 0x7f && item == 0x2a)
         {
-            local_8 = ULTIMA_4d76_FindIndex(_TEXT(0x9812, "AMBFDTPRS"), D_55a8_party[param_1].cls);
-            local_6->tile = local_6->animTile = D_1ade[local_8];
+            classIdx_e = ULTIMA_4d76_FindIndex(_TEXT(0x9812, "AMBFDTPRS"), D_55a8_party[member].cls);
+            actor_g->tile = actor_g->animTile = D_1ade[classIdx_e];
         }
     }
-    else if (((param_2 == 0x1a || param_2 == 0x24) && D_57db_arrows == 0) || (param_2 == 0x1c && D_57dd_quarrels == 0))
+    else if (((item == 0x1a || item == 0x24) && D_57db_arrows == 0) || (item == 0x1c && D_57dd_quarrels == 0))
     {
-        ZSTATS_0bee(_TEXT(0x981c, "Thou hast no ammunition for that weapon!"));
+        ZSTATS_0bee_PrintEquipRefusal(_TEXT(0x981c, "Thou hast no ammunition for that weapon!"));
     }
     else
     {
-        local_4_aa = 0;
-        local_10_aa = D_55a8_party[param_1].equips;
-        for (local_a = 0; local_a < 6; local_a++)
+        load = 0;
+        slot_i = D_55a8_party[member].equips;
+        for (i = 0; i < 6; i++)
         {
-            if (*local_10_aa != 0xff)
+            if (*slot_i != 0xff)
             {
-                local_4_aa += D_1aae[*local_10_aa];
+                load += D_1aae[*slot_i];
             }
-            local_10_aa++;
+            slot_i++;
         }
 
-        local_e_am = D_1aae[param_2] + local_4_aa <= D_55a8_party[param_1].str;
+        strongEnough_g = D_1aae[item] + load <= D_55a8_party[member].str;
 
-        switch (D_1a7e[param_2])
+        switch (D_1a7e[item])
         {
         case 0x80:
-            if (D_55a8_party[param_1].equips[0] != 0xff)
+            if (D_55a8_party[member].equips[0] != 0xff)
             {
-                ZSTATS_0bee(_TEXT(0x9846, "Remove first thy present helm!"));
+                ZSTATS_0bee_PrintEquipRefusal(_TEXT(0x9846, "Remove first thy present helm!"));
                 return 0;
             }
-            local_10_aa = &D_55a8_party[param_1].equips[0];
+            slot_i = &D_55a8_party[member].equips[0];
             break;
         case 0x40:
-            if (D_55a8_party[param_1].equips[1] != 0xff)
+            if (D_55a8_party[member].equips[1] != 0xff)
             {
-                ZSTATS_0bee(_TEXT(0x9866, "Thou must first remove thine other armour!"));
+                ZSTATS_0bee_PrintEquipRefusal(_TEXT(0x9866, "Thou must first remove thine other armour!"));
                 return 0;
             }
-            local_10_aa = &D_55a8_party[param_1].equips[1];
+            slot_i = &D_55a8_party[member].equips[1];
             break;
         case 0x20:
-            local_c = ZSTATS_0c0a(param_1);
-            if (local_c == 0xff)
+            hand = ZSTATS_0c0a_FreeHandSlot(member);
+            if (hand == 0xff)
             {
-                ZSTATS_0bee(_TEXT(0x9892, "Thou must free one of thy hands first!"));
+                ZSTATS_0bee_PrintEquipRefusal(_TEXT(0x9892, "Thou must free one of thy hands first!"));
                 return 0;
             }
-            if (local_c == 2)
+            if (hand == 2)
             {
-                local_c = 0;
+                hand = 0;
             }
-            local_10_aa = &D_55a8_party[param_1].equips[local_c + 2];
+            slot_i = &D_55a8_party[member].equips[hand + 2];
             break;
         case 0x30:
-            local_c = ZSTATS_0c0a(param_1);
-            if (local_c != 2)
+            hand = ZSTATS_0c0a_FreeHandSlot(member);
+            if (hand != 2)
             {
-                ZSTATS_0bee(_TEXT(0x98ba, "Both hands must be free before thou canst wield that!"));
+                ZSTATS_0bee_PrintEquipRefusal(_TEXT(0x98ba, "Both hands must be free before thou canst wield that!"));
                 return 0;
             }
-            local_10_aa = &D_55a8_party[param_1].equips[2];
+            slot_i = &D_55a8_party[member].equips[2];
             break;
         case 4:
-            if (D_55a8_party[param_1].equips[5] != 0xff)
+            if (D_55a8_party[member].equips[5] != 0xff)
             {
-                ZSTATS_0bee(_TEXT(0x98f0, "Thou must remove thine other amulet!"));
+                ZSTATS_0bee_PrintEquipRefusal(_TEXT(0x98f0, "Thou must remove thine other amulet!"));
                 return 0;
             }
-            local_10_aa = &D_55a8_party[param_1].equips[5];
+            slot_i = &D_55a8_party[member].equips[5];
             break;
         case 2:
-            if (D_55a8_party[param_1].equips[4] != 0xff)
+            if (D_55a8_party[member].equips[4] != 0xff)
             {
-                ZSTATS_0bee(_TEXT(0x9916, "Only one magic ring may be worn at a time!"));
+                ZSTATS_0bee_PrintEquipRefusal(_TEXT(0x9916, "Only one magic ring may be worn at a time!"));
                 return 0;
             }
-            local_10_aa = &D_55a8_party[param_1].equips[4];
+            slot_i = &D_55a8_party[member].equips[4];
             break;
         }
 
-        if (local_e_am != 0)
+        if (strongEnough_g != 0)
         {
             goto L_wear;
         }
-        ZSTATS_0bee(_TEXT(0x9942, "Thou art not strong enough!"));
+        ZSTATS_0bee_PrintEquipRefusal(_TEXT(0x9942, "Thou art not strong enough!"));
         return 0;
 
 L_wear:
-        *local_10_aa = param_2;
-        D_57c0_equipment[param_2]--;
+        *slot_i = item;
+        D_57c0_equipment[item]--;
 
-        if ((param_2 == 0x2a || param_2 == 0x2c) && ULTIMA_2092_RandomRange(0, 0xf) == 0)
+        if ((item == 0x2a || item == 0x2c) && ULTIMA_2092_RandomRange(0, 0xf) == 0)
         {
             ULTIMA_1850_PrintString(_TEXT(0x995e, "\n\nRing vanishes!\n"));
-            D_55a8_party[param_1].equips[4] = 0xff;
+            D_55a8_party[member].equips[4] = 0xff;
             ULTIMA_43ae_AudioSweepTone(0x4b0, 0x7d0, 1, 0x28);
             return 1;
         }
 
-        if (param_2 == 0x2a && D_5893_mapId > 0x7f)
+        if (item == 0x2a && D_5893_mapId > 0x7f)
         {
-            local_6->tile = local_6->animTile = 0x1d;
+            actor_g->tile = actor_g->animTile = 0x1d;
         }
     }
     return 0;
 }
 
+// The cursor list of Ready (mode 0x52) and Use: arrows move, Enter/space select. Returns the item chosen, -1 for Esc.
 // CHECKED: the two page loops (UP, DOWN) keep their trip counts in two temporaries
 // (bp-1Ah, bp-1Ch) only when the DOWN loop sits in a block that declares a local.
 // The listing loop is a for whose increment shares its store with the init, the 0518 test
 // reads "!= 0" first, and HOME/END come before ENTER/ESC.
 // select item: used in use, ready
-int ZSTATS_0f2e(int param_1, int param_2, int param_3)
+int ZSTATS_0f2e_SelectItem(int first, int member, int mode)
 {
-    int local_1a_ac;
-    int local_18_al;
-    int local_16_an;
-    byte* local_14_ap; // equipments
-    int local_12_ab;
-    int local_10_ad;
-    int local_e_a;
-    int local_c_ac;
-    int local_a_ae;
-    int local_8_an;
-    int local_6;
-    int local_4_ab;
+    int selected_f;
+    int arrows_b;
+    int key_g;
+    byte* counts_d; // equipments
+    int item_a;
+    int cursorRow_i;
+    int step_d;
+    int marker_n;
+    int count_g;
+    int leave_c;
+    int steps;
+    int rows_e;
 
 #if !defined(MATCHING_BUILD)
-    local_1a_ac = 0;
+    selected_f = 0;
 #endif
 
     // f10e
-    local_8_an = 0;
-    local_10_ad = 1;
+    leave_c = 0;
+    cursorRow_i = 1;
 
-    if (param_3 == 0x52)
+    if (mode == 0x52)
     {
-        local_14_ap = D_57c0_equipment;
-        local_a_ae = 0x30;
+        counts_d = D_57c0_equipment;
+        count_g = 0x30;
     }
     else
     {
-        local_14_ap = D_b9ee;
-        local_a_ae = 0x26;
+        counts_d = D_b9ee;
+        count_g = 0x26;
     }
 
     // f142
-    while (local_8_an == 0)
+    while (leave_c == 0)
     {
         ULTIMA_1b94_SelectTextWindow(1);
         ULTIMA_1bf2_SetTextPosition(1, 1);
 
-        local_4_ab = 0;
+        rows_e = 0;
         // f159 -> f20b
-        for (local_12_ab = param_1; local_12_ab != -1; local_12_ab = ZSTATS_05a4(local_12_ab, local_a_ae, local_14_ap, param_2))
+        for (item_a = first; item_a != -1; item_a = ZSTATS_05a4_NextItem(item_a, count_g, counts_d, member))
         {
             // f213
-            local_4_ab++;
+            rows_e++;
 
-            if (ULTIMA_1cee_GetCurrentTextY() == local_10_ad)
+            if (ULTIMA_1cee_GetCurrentTextY() == cursorRow_i)
             {
                 ULTIMA_16ba_PrintChar(CTRL_CHAR_TOGGLE_INVERSION);
-                local_1a_ac = local_12_ab;
+                selected_f = item_a;
             }
 
             // f22b
-            if (param_3 == 0x52)
+            if (mode == 0x52)
             {
                 // f234
-                if (ZSTATS_0518(param_2, local_12_ab) != 0)
+                if (ZSTATS_0518_IsEquipped(member, item_a) != 0)
                 {
                     // f244
-                    local_c_ac = D_1ae8[local_12_ab];
+                    marker_n = D_1ae8[item_a];
                 }
                 else
                 {
                     // f15c
-                    local_c_ac = 0x20;
+                    marker_n = 0x20;
                 }
 
                 // f161..f17e
                 // Equipments
-                ZSTATS_05e2(local_12_ab, local_14_ap, D_1962_equipShortNames, local_c_ac);
+                ZSTATS_05e2_PrintItemRow(item_a, counts_d, D_1962_equipShortNames, marker_n);
             }
             else
             {
                 // f170..f17e
                 // Scrolls
-                ZSTATS_05e2(local_12_ab, local_14_ap, D_1916, 0x20);
+                ZSTATS_05e2_PrintItemRow(item_a, counts_d, D_1916, 0x20);
             }
 
             // f181
             ULTIMA_1bf2_SetTextPosition(1, ULTIMA_1cee_GetCurrentTextY());
 
-            if (ULTIMA_1cee_GetCurrentTextY() - 1 == local_10_ad)
+            if (ULTIMA_1cee_GetCurrentTextY() - 1 == cursorRow_i)
             {
                 ULTIMA_16ba_PrintChar(CTRL_CHAR_TOGGLE_INVERSION);
             }
@@ -972,23 +989,23 @@ int ZSTATS_0f2e(int param_1, int param_2, int param_3)
         }
 
         // f1a4
-        local_18_al = 0;
-        if (ZSTATS_056c(param_1, local_a_ae, local_14_ap, param_2) != -1)
+        arrows_b = 0;
+        if (ZSTATS_056c_PrevItem(first, count_g, counts_d, member) != -1)
         {
-            local_18_al = 2;
+            arrows_b = 2;
         }
 
         // f1c0
-        if (local_12_ab != -1)
+        if (item_a != -1)
         {
-            if (ZSTATS_05a4(local_12_ab, local_a_ae, local_14_ap, param_2) != -1)
+            if (ZSTATS_05a4_NextItem(item_a, count_g, counts_d, member) != -1)
             {
-                local_18_al++;
+                arrows_b++;
             }
         }
 
         // f1db
-        switch (local_18_al)
+        switch (arrows_b)
         {
         case 0:
             // f254
@@ -1011,42 +1028,42 @@ int ZSTATS_0f2e(int param_1, int param_2, int param_3)
         // L_1077
         // f257
         ULTIMA_1b94_SelectTextWindow(2);
-        local_16_an = ULTIMA_266c_GetChar();
+        key_g = ULTIMA_266c_GetChar();
 
-        switch (local_16_an)
+        switch (key_g)
         {
         case U5_KEY_LEFT:
         case U5_KEY_UP:
         case U5_KEY_PGUP:
             // 10c0
-            if (local_16_an == U5_KEY_PGUP)
-                local_6 = 7;
+            if (key_g == U5_KEY_PGUP)
+                steps = 7;
             else
-                local_6 = 1;
+                steps = 1;
 
-            for (local_e_a = 0; local_e_a < local_6; local_e_a++)
+            for (step_d = 0; step_d < steps; step_d++)
             {
-                if (local_10_ad == 4 || local_10_ad == 1)
+                if (cursorRow_i == 4 || cursorRow_i == 1)
                 {
                     // 10fa
-                    if (ZSTATS_056c(param_1, local_a_ae, local_14_ap, param_2) != -1)
+                    if (ZSTATS_056c_PrevItem(first, count_g, counts_d, member) != -1)
                     {
-                        param_1 = ZSTATS_056c(param_1, local_a_ae, local_14_ap, param_2);
+                        first = ZSTATS_056c_PrevItem(first, count_g, counts_d, member);
                     }
                     else
                     {
                         // 111c
-                        if (local_10_ad == 4)
+                        if (cursorRow_i == 4)
                         {
                             // 1121
-                            local_10_ad--;
+                            cursorRow_i--;
                         }
                     }
                 }
                 else
                 {
                     // 1121
-                    local_10_ad--;
+                    cursorRow_i--;
                 }
                 // 1122
             }
@@ -1056,39 +1073,39 @@ int ZSTATS_0f2e(int param_1, int param_2, int param_3)
         case U5_KEY_DOWN:
         case U5_KEY_PGDN:
             // 1130
-            if (local_16_an == U5_KEY_PGDN)
-                local_6 = 7;
+            if (key_g == U5_KEY_PGDN)
+                steps = 7;
             else
-                local_6 = 1;
+                steps = 1;
 
             // A block with a declaration gives this loop its own trip-count temporary
             // (bp-1Ch); without it both page loops share bp-1Ah. The local is unused.
             {
                 int local_x;
 
-                for (local_e_a = 0; local_e_a < local_6; local_e_a++)
+                for (step_d = 0; step_d < steps; step_d++)
                 {
-                    if (local_10_ad == 4 || local_10_ad == 7 || local_10_ad >= local_4_ab)
+                    if (cursorRow_i == 4 || cursorRow_i == 7 || cursorRow_i >= rows_e)
                     {
                         // 116f
-                        if (local_12_ab != -1 && ZSTATS_05a4(local_12_ab, local_a_ae, local_14_ap, param_2) != -1)
+                        if (item_a != -1 && ZSTATS_05a4_NextItem(item_a, count_g, counts_d, member) != -1)
                         {
-                            param_1 = ZSTATS_05a4(param_1, local_a_ae, local_14_ap, param_2);
-                            local_12_ab = ZSTATS_05a4(local_12_ab, local_a_ae, local_14_ap, param_2);
+                            first = ZSTATS_05a4_NextItem(first, count_g, counts_d, member);
+                            item_a = ZSTATS_05a4_NextItem(item_a, count_g, counts_d, member);
                         }
                         else
                         {
                             // 11a8
-                            if (local_10_ad == 4 && local_4_ab > 4)
+                            if (cursorRow_i == 4 && rows_e > 4)
                             {
-                                local_10_ad++;
+                                cursorRow_i++;
                             }
                         }
                     }
                     else
                     {
                         // 11b3
-                        local_10_ad++;
+                        cursorRow_i++;
                     }
                     // 11b4
                 }
@@ -1098,28 +1115,28 @@ int ZSTATS_0f2e(int param_1, int param_2, int param_3)
         case U5_KEY_HOME:
             // 11C0
             // f3a0
-            param_1 = ZSTATS_05a4(-1, local_a_ae, local_14_ap, param_2);
-            local_10_ad = 1;
+            first = ZSTATS_05a4_NextItem(-1, count_g, counts_d, member);
+            cursorRow_i = 1;
             // -> f462
             break;
         case U5_KEY_END:
             // f3bc
             // L_11dc
-            param_1 = ZSTATS_056c(local_a_ae, local_a_ae, local_14_ap, param_2);
+            first = ZSTATS_056c_PrevItem(count_g, count_g, counts_d, member);
 
-            for (local_10_ad = 1; local_10_ad < 7; local_10_ad++)
+            for (cursorRow_i = 1; cursorRow_i < 7; cursorRow_i++)
             {
                 // f3d1
                 // L_11f1
-                local_1a_ac = ZSTATS_056c(param_1, local_a_ae, local_14_ap, param_2);
-                if (local_1a_ac == -1)
+                selected_f = ZSTATS_056c_PrevItem(first, count_g, counts_d, member);
+                if (selected_f == -1)
                 {
                     // L_1207
                     break;
                 }
                 // f3e7
                 // L_1210
-                param_1 = local_1a_ac;
+                first = selected_f;
             }
             // -> f462
             break;
@@ -1127,22 +1144,22 @@ int ZSTATS_0f2e(int param_1, int param_2, int param_3)
         case U5_KEY_SPACE:
             // -> 121c;
             // f3fc
-            if (param_3 == 0x52)
+            if (mode == 0x52)
             {
-                local_8_an = ZSTATS_0c5c_EquipItem(param_2, local_1a_ac);
+                leave_c = ZSTATS_0c5c_EquipOrRemove(member, selected_f);
             }
             else
             {
                 // f410
-                local_8_an = 1;
+                leave_c = 1;
             }
             // -> f462
             break;
         case U5_KEY_ESC:
             // 1238
-            ULTIMA_1850_PrintString(param_3 == 0x52 ? _TEXT(0x9970, "Done\n") : _TEXT(0x9976, "None!\n"));
-            local_8_an = 1;
-            local_1a_ac = -1;
+            ULTIMA_1850_PrintString(mode == 0x52 ? _TEXT(0x9970, "Done\n") : _TEXT(0x9976, "None!\n"));
+            leave_c = 1;
+            selected_f = -1;
 
             // -> f462
             break;
@@ -1150,21 +1167,22 @@ int ZSTATS_0f2e(int param_1, int param_2, int param_3)
         // f462
     }
 
-    return local_1a_ac;
+    return selected_f;
 }
 
+// R command: ready weapons and armour for a party member.
 void ZSTATS_1296_ReadyCmd(void)
 {
-    int local_6_an;
-    int local_4;
+    int member;
+    int first;
 
-    local_6_an = ZSTATS_0000(0);
+    member = ZSTATS_0000_ChoosePlayer(0);
 
-    if (local_6_an < 0)
+    if (member < 0)
         return;
 
-    local_4 = ZSTATS_05a4(-1, 0x30, D_57c0_equipment, local_6_an);
-    if (local_4 == -1)
+    first = ZSTATS_05a4_NextItem(-1, 0x30, D_57c0_equipment, member);
+    if (first == -1)
     {
         ULTIMA_1850_PrintString(_TEXT(0x997e, "Thou art empty-\nhanded!\n"));
         return;
@@ -1174,11 +1192,11 @@ void ZSTATS_1296_ReadyCmd(void)
     ULTIMA_4efc_OpenStatsDivider();
     ULTIMA_1b94_SelectTextWindow(1);
 
-    ULTIMA_4e50_ShowStatsTitle(D_55a8_party[local_6_an].name);
+    ULTIMA_4e50_ShowStatsTitle(D_55a8_party[member].name);
 
-    ZSTATS_045e(0x08);
+    ZSTATS_045e_DrawListFrame(0x08);
 
-    ZSTATS_0f2e(local_4, local_6_an, 0x52);
+    ZSTATS_0f2e_SelectItem(first, member, 0x52);
 
     ULTIMA_4daa_HideScrollArrow();
     ULTIMA_4e20_ClearStatsTitle();

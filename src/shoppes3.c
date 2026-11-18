@@ -150,12 +150,12 @@ static int SHOPPES3_0072_Rest(int intelligence, int gender, int outcome)
                     ULTIMA_4f7c_AdvanceTime(9);
                     if (D_587f_hour == 0x14 || D_587f_hour == 0x05)
                     {
-                        TOWN_0170();
+                        TOWN_0170_SwapDayNightTiles();
                     }
                 }
 
                 ULTIMA_1850_PrintString(_TEXT(0x4e51, "Morning!\n"));
-                TOWN_1694();
+                TOWN_1694_PlaceActors();
 
                 // e3e0
                 for (member = 0; member < D_585b_partyCount; member++)
@@ -514,7 +514,7 @@ static int SHOPPES3_04e6_PickUpCompanion(int intelligence, int outcome)
             if (D_57aa_gold < D_b118_shopPrice)
             {
                 SHOPPES_017a_PrintShopFileText(0x275a);
-                TOWN_0958();
+                TOWN_0958_RaiseAlarm();
                 outcome = -1;
             }
             else

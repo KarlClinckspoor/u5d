@@ -129,22 +129,22 @@ static void TALK_00e6_TalkToMerchant(int merchantCode)
         switch (D_b116_shopKind)
         {
         case 0:
-            SHOPPES_12b2(playerIndex);
+            SHOPPES_12b2_Armourer(playerIndex);
             break;
         case 1:
-            SHOPPES2_066c(playerIndex);
+            SHOPPES2_066c_Pub(playerIndex);
             break;
         case 2:
             SHOPPES_07be_Stables(playerIndex);
             break;
         case 3:
-            SHOPPES2_0abc(playerIndex);
+            SHOPPES2_0abc_Shipwright(playerIndex);
             break;
         case 4:
-            SHOPPES_075e(playerIndex);
+            SHOPPES_075e_Reagents(playerIndex);
             break;
         case 5:
-            SHOPPES_04a2(playerIndex);
+            SHOPPES_04a2_Provisioner(playerIndex);
             break;
         case 6:
             SHOPPES_14f8_Healer(playerIndex);
@@ -327,9 +327,9 @@ L_join:
         if (dialogNumber_f == 0xfe)
         {
 #if !defined(MATCHING_BUILD)
-            TOWN_10da(npcIndex); // TODO: validate param (reference apple?)
+            TOWN_10da_ShoutBegone(npcIndex); // TODO: validate param (reference apple?)
 #else
-            TOWN_10da(); // BUG: TOWN_10da(unaff_SI)
+            TOWN_10da_ShoutBegone(); // BUG: TOWN_10da_ShoutBegone(unaff_SI)
 #endif
             return 0;
         }
@@ -339,7 +339,7 @@ L_join:
             return TALK_01e2_GuardDemandsTribute();
         }
 
-        if ((npc->scheduleIdx & 1) != 0 && (NPC_12e0(D_bcdc_talkNpcIndex, D_587f_hour) & 1) != 0)
+        if ((npc->scheduleIdx & 1) != 0 && (NPC_12e0_ScheduleSlot(D_bcdc_talkNpcIndex, D_587f_hour) & 1) != 0)
         {
             TALK_00e6_TalkToMerchant(dialogNumber_f);
             return 0;
@@ -383,7 +383,7 @@ int TALK_041c_TalkCmd(void)
     }
     else
     {
-        npcIndex_f = TOWN_011e(D_5876_tempX);
+        npcIndex_f = TOWN_011e_FindNpcByActor(D_5876_tempX);
         switch (*ULTIMA_4402_GetTileAddr(x_i, y_o))
         {
         case TILE_MAP_BED:
@@ -1384,7 +1384,7 @@ static int TALK_0f32_ProcessChar(byte code)
         return 0; // -> 0f5e
     case 0x8b:    // call guards
         // 0ff8
-        TOWN_0958();
+        TOWN_0958_RaiseAlarm();
         return 0; // -> 0f5e
     case 0x8e:    // rune
         // 0ffe

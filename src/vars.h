@@ -149,14 +149,14 @@ STUB char* D_25ea_fileNames[30]; // ~2626) compressed file name table
 
 STUB char* D_2652[4]; // town dat names
 
-STUB u8 D_2742[4]; // town
+STUB u8 D_2742_drunkDirs[4]; // town
 STUB u16 D_2746[0xa]; // town: harpsichord audio freqs
-STUB u8 D_275a[0xd]; // town:harpsichord notes
-STUB u8 D_2767; // town
+STUB u8 D_275a_secretTune[0xd]; // town:harpsichord notes
+STUB u8 D_2767_tuneStep; // town
 
 STUB char* D_27dc[3]; // town
 
-STUB u32 D_28c6[0x20]; // ~2946) town
+STUB u32 D_28c6_npcValueMask[0x20]; // ~2946) town
 
 // 2946~: code strings
 
@@ -251,7 +251,7 @@ STUB char* D_3666[8];
 // ^intro
 
 // npc
-STUB u8 D_367e[0x20]; // TODO: size ~369e)
+STUB u8 D_367e_npcBlockedTiles[0x20]; // TODO: size ~369e)
 
 // blckthrn
 STUB u8 D_369e[0x3c]; // TODO: size
@@ -292,33 +292,33 @@ STUB u8 D_3a0a[4];
 STUB u8 D_3a0e[3];
 
 STUB u16 D_3a26[6];
-STUB u8 D_3a32[5][8];
-STUB u8 D_3a5a[5][8];
+STUB u8 D_3a32_reagentPrices[5][8];
+STUB u8 D_3a5a_reagentLots[5][8];
 
-STUB u16 D_3a82[0x30]; // TODO: int (FMT)
+STUB u16 D_3a82_itemBasePrices[0x30]; // TODO: int (FMT)
 
-STUB u8 D_3ae2[9][8]; // ~3b2a)
+STUB u8 D_3ae2_armsStock[9][8]; // ~3b2a)
 
-STUB u16 D_3b2a[8][4]; // int (FMT: 4byte)
-STUB u16 D_3b6a[8][4]; // ~3baa)
-STUB u16 D_3baa[8][4]; // ~3bea)
+STUB u16 D_3b2a_greetTexts[8][4]; // int (FMT: 4byte)
+STUB u16 D_3b6a_farewellTexts[8][4]; // ~3baa)
+STUB u16 D_3baa_farewellTexts1[8][4]; // ~3bea)
 
-STUB u16 D_3bea[4][4];
-STUB u16 D_3c0a[3];
-STUB u16 D_3c10[8];    // string offset table. type: int (FMT: 4bytes)
+STUB u16 D_3bea_provisionPrices[4][4];
+STUB u16 D_3c0a_provisionTexts[3];
+STUB u16 D_3c10_reagentTexts[8];    // string offset table. type: int (FMT: 4bytes)
 
 STUB char* D_3c20[8];
 
-STUB u16 D_3c30[4];
-STUB s16 D_3c38[4]; // 3c38..3c40)
-STUB s16 D_3c40[4]; // 3c40..3c48)
-STUB s16 D_3c48[0x2f]; // 3c40..3ca6)? shop item description TODO: size
+STUB u16 D_3c30_horsePrices[4];
+STUB s16 D_3c38_stableDx[4]; // 3c38..3c40)
+STUB s16 D_3c40_stableDy[4]; // 3c40..3c48)
+STUB s16 D_3c48_armsTexts[0x2f]; // 3c40..3ca6)? shop item description TODO: size
 
 STUB char* D_3ca6[4];
 STUB char* D_3cae[4];
 STUB char* D_3cb6[4];
 
-STUB u16 D_3cbe[8]; // string offset table. type: int (FMT: 4bytes)
+STUB u16 D_3cbe_buybackTexts[8]; // string offset table. type: int (FMT: 4bytes)
 
 STUB char* D_3cce[0x30];
 
@@ -332,9 +332,9 @@ STUB char* D_3d52[4];
 
 STUB char D_3d5a[]; // "\n\n\"Thou hast no need of this art!\"\nsays $."
 
-STUB u8 D_3d86[8];
-STUB u8 D_3d8e[8];
-STUB u16 D_3d96[8];
+STUB u8 D_3d86_healPrices[8];
+STUB u8 D_3d8e_curePrices[8];
+STUB u16 D_3d96_raisePrices[8];
 
 STUB Pair D_3da6[6];
 STUB Pair2 D_3db2[6];
@@ -435,30 +435,30 @@ STUB u16 D_4bf4[7];
 STUB u16 D_4c02[7];
 STUB u16 D_4c10[7];
 
-STUB char D_4c1e[5];
-STUB char D_4c24[5];
-STUB char D_4c2a[5];
-STUB char D_4c30[5];
+STUB char D_4c1e_foodKeys[5];
+STUB char D_4c24_drinkKeys[5];
+STUB char D_4c2a_rationKeys[5];
+STUB char D_4c30_gossipKeys[5];
 
-STUB u16 D_4c36[9]; // TODO: size
-STUB u16 D_4c48[6]; // TODO: size
-STUB u16 D_4c54[9]; // TODO: size
-STUB u16 D_4c66[7]; // TODO: size
+STUB u16 D_4c36_mealPrices[9]; // TODO: size
+STUB u16 D_4c48_winePrices[6]; // TODO: size
+STUB u16 D_4c54_rationPrices[9]; // TODO: size
+STUB u16 D_4c66_rationTexts[7]; // TODO: size
 
 STUB char* D_4c74[26];
 STUB char* D_4ca8[26];
-STUB u8  D_4cdc[26];
+STUB u8  D_4cdc_gossipPlaceIdx[26];
 STUB char* D_4cf6[13];
 
-STUB u16 D_4d10[0x1a]; // TODO: size
-STUB u16 D_4d44[4];
-STUB u8  D_4d4c[0xa]; // TODO: size
-STUB u16 D_4d56[4];
-STUB u16 D_4d5e[4];
-STUB u16 D_4d66[4];
-STUB u16 D_4d6e[4];
-STUB u8  D_4d76[4];
-STUB u8  D_4d7a[4];
+STUB u16 D_4d10_gossipPrices[0x1a]; // TODO: size
+STUB u16 D_4d44_gossipTexts[4];
+STUB u8  D_4d4c_pubKindByShop[0xa]; // TODO: size
+STUB u16 D_4d56_pubOrderTexts[4];
+STUB u16 D_4d5e_pubMoreTexts[4];
+STUB u16 D_4d66_frigatePrices[4];
+STUB u16 D_4d6e_skiffPrices[4];
+STUB u8  D_4d76_shipX[4];
+STUB u8  D_4d7a_shipY[4];
 STUB u8  D_4d7e_innRates[6]; // the inn's rate (per person and night; times 10 per month)
 
 STUB u8 D_4dc4_innRooms[6]; // how many companions the inn can keep
@@ -723,7 +723,7 @@ STUB u8  D_5954_boughtShipY; // +0x3AE
 STUB u8  D_5955_sailDir; // +0x3AF
 STUB u8  D_5956_newPrompt; // +0x3B0
 STUB u8  D_5957_drunkTurns; // +0x3B1
-STUB u8  D_5958_townShadowlord; // which of the three shadowlords (D_58c8_shadowlordTowns) is in this town, 0xff none (TOWN_02ae)
+STUB u8  D_5958_townShadowlord; // which of the three shadowlords (D_58c8_shadowlordTowns) is in this town, 0xff none (TOWN_02ae_SetupShadowlord)
 STUB u8  D_5959;
 STUB u8 D_595a_dungeonMap[0x200]; // +0x3B4
 // 5b00
@@ -819,7 +819,7 @@ STUB u8 D_6aa8[0x24];
 // order, by their sizes (tools/u5.py, COMMUNALS). The few that no code refers to (D_bbd2,
 // D_bcb0, D_bd14, D_bd3a, D_bd3b) are declared so that the others land where they are.
 
-BSS u8  D_a9bc;
+BSS u8  D_a9bc_townJustEntered;
 BSS u8 D_a9bd_curDisk[1]; // the disk wanted (ULTIMA_251e_SwitchDisks)
 BSS u8 D_a9be; // two bytes on an odd address would have been put on an even one
 BSS u8* D_a9c0; // loaded image pointer
@@ -850,9 +850,9 @@ BSS ActorFmt D_a9fc_savedActors[0x20]; // D_5c5a_actors during combat
 BSS char* D_aafc_shopName; // current shop name
 BSS char* D_aafe_shopOwner; // current shop owner
 
-BSS char* D_ab00;
+BSS char* D_ab00_itemName;
 BSS u8 D_ab02_viewTiles[0x160]; // the 11x11 view, 0x20 bytes a row: 0 an actor (in D_ac64_viewActors), 0xff hidden
-BSS char* D_ac62;
+BSS char* D_ac62_placeName;
 
 BSS u8 D_ac64_viewActors[0xb0]; // actor map / misc map [0x10 * b] (from 51b8)
 
@@ -863,7 +863,7 @@ BSS u8 D_ad14_combatMap[32 * 32]; // the combat map; outside combat the 32x32 li
 BSS s16 D_b114_shopIndex; // s16 (FMT MOVSX); the shop's column in D_21ca_shopNames..., 0-15
 BSS s16 D_b116_shopKind; // s16 (FMT MOVSX); 0-7, the merchant's dialog number - 0x81
 BSS s16 D_b118_shopPrice; // s16 (FMT MOVSX); the % of a shop text
-BSS u16 D_b11a;
+BSS u16 D_b11a_shopQuantity;
 
 BSS u8* D_b11c;
 BSS u8 D_b11e_tileFrames[0x100]; // the tile drawn for each map tile (animation)
@@ -877,28 +877,28 @@ BSS u8 D_b11e_tileFrames[0x100]; // the tile drawn for each map tile (animation)
 BSS u8 D_b21e_scratch[SCRATCH_SIZE]; // scratch buffer ~b9ee)
 
 #define D_b31e (D_b21e_scratch + 0x100)
-#define D_b7fa (D_b21e_scratch + 1500)
+#define D_b7fa_shopTextOut (D_b21e_scratch + 1500)
 
 // b900
 
 BSS u8  D_b9ee[0x26]; // owned item counts
 // [8]
-#define D_b9f6 (D_b9ee + 8)
-#define D_b9fe D_b9ee[0x10]
-#define D_b9ff D_b9ee[0x11]
-#define D_ba00 D_b9ee[0x12]
-#define D_ba01 D_b9ee[0x13]
-#define D_ba02 D_b9ee[0x14]
+#define D_b9f6_potionCounts (D_b9ee + 8)
+#define D_b9fe_carpetCount D_b9ee[0x10]
+#define D_b9ff_skullKeyCount D_b9ee[0x11]
+#define D_ba00_amuletOwned D_b9ee[0x12]
+#define D_ba01_crownOwned D_b9ee[0x13]
+#define D_ba02_sceptreOwned D_b9ee[0x14]
 // [8]
-#define D_ba03 (D_b9ee + 0x15)
+#define D_ba03_moonstoneFlags (D_b9ee + 0x15)
 // [3]
-#define D_ba0b (D_b9ee + 0x1d)
-#define D_ba0e D_b9ee[0x20]
-#define D_ba0f D_b9ee[0x21]
-#define D_ba10 D_b9ee[0x22]
-#define D_ba11 D_b9ee[0x23]
-#define D_ba12 D_b9ee[0x24]
-#define D_ba13 D_b9ee[0x25]
+#define D_ba0b_shardFlags (D_b9ee + 0x1d)
+#define D_ba0e_spyglassCount D_b9ee[0x20]
+#define D_ba0f_capePlansOwned D_b9ee[0x21]
+#define D_ba10_sextantCount D_b9ee[0x22]
+#define D_ba11_pocketWatchOwned D_b9ee[0x23]
+#define D_ba12_blackBadgeOwned D_b9ee[0x24]
+#define D_ba13_sandalwoodBoxOwned D_b9ee[0x25]
 
 BSS CombatEntity D_ba14_combatants[32]; // combat entities
 
@@ -934,14 +934,14 @@ BSS char D_bd08[12];
 BSS u8 D_bd14; // no code refers to it
 
 BSS u8 D_bd15;
-BSS u8 D_bd16;
-BSS s16 D_bd18; // int?
-BSS int D_bd1a; // int
-BSS int D_bd1c; // int
-BSS int D_bd1e; // int
-BSS s16 D_bd20; // int?
-BSS s16 D_bd22;
-BSS s16 D_bd24;
+BSS u8 D_bd16_pubKind;
+BSS s16 D_bd18_boughtSomething; // int?
+BSS int D_bd1a_dinersFed; // int
+BSS int D_bd1c_dinerCount; // int
+BSS int D_bd1e_tableTile; // int
+BSS s16 D_bd20_drinksBought; // int?
+BSS s16 D_bd22_thrownOut;
+BSS s16 D_bd24_shipSold;
 
 BSS u8 D_bd26;
 BSS u8 D_bd27;

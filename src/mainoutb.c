@@ -455,7 +455,7 @@ static void MAINOUT_16fc(int param_1)
 }
 
 // The original stores the constants to param_2 through AX ("mov ax,1; mov [bp+4],ax"), MSC's
-// form for a chained assignment (see SHOPPES2_00ac): param_2 = param_2 = 1 gives it.
+// form for a chained assignment (see SHOPPES2_00ac_PrintHonorific): param_2 = param_2 = 1 gives it.
 #if defined(TARGET_DOS16)
 #define P2_SET(v) param_2 = param_2 = (v) // two stores between sequence points: DOS build only
 #else

@@ -973,7 +973,7 @@ void SJOG_0d4a_JimmyCmd(void)
         // cdf6
         if (D_5893_mapId < 0x7f)
         {
-            if ((local_4_ab = TOWN_011e(local_4_ab)) == -1)
+            if ((local_4_ab = TOWN_011e_FindNpcByActor(local_4_ab)) == -1)
             {
                 // -> ccf0
                 ULTIMA_1850_PrintString(_TEXT(0x8b1c, "Couldn't find this npc\n\n"));
@@ -1651,8 +1651,8 @@ static void SJOG_1458_GetObject(int param_1, int param_2, int param_3)
     case TILE_ACTOR_CROWN:
         D_57b4_crown = 0xff;
         ULTIMA_1850_PrintString(_TEXT(0x8d3a, "The Crown of Lord British!\n"));
-        TOWN_0052_SetNpcKilled(TOWN_011e(param_3));
-        TOWN_00b0_DespawnNpc(TOWN_011e(param_3));
+        TOWN_0052_SetNpcKilled(TOWN_011e_FindNpcByActor(param_3));
+        TOWN_00b0_DespawnNpc(TOWN_011e_FindNpcByActor(param_3));
         break;
 
     case TILE_ACTOR_SCEPTRE:

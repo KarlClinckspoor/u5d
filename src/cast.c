@@ -1586,7 +1586,7 @@ static void CAST_15b4_UseGemShard(int param_1)
     if (ULTIMA_368e_FindActorTileAtPos(D_5896_mapX, D_5897_mapY - 1, D_5895_mapLevel) == TILE_ACTOR_SHADOWLORD &&
         param_1 == D_58cb)
     {
-        TOWN_00b0_DespawnNpc(TOWN_011e(D_5876_tempX));
+        TOWN_00b0_DespawnNpc(TOWN_011e_FindNpcByActor(D_5876_tempX));
 
         for (local_4 = 0; local_4 < 7; local_4++)
         {
@@ -1650,9 +1650,9 @@ void CAST_1792_UseCmd(void)
     int local_4_ab;
 
     local_c = 1;
-    ZSTATS_099a();
+    ZSTATS_099a_FillItemCounts();
 
-    local_6 = ZSTATS_05a4(-1, 0x26, D_b9ee, 0xff);
+    local_6 = ZSTATS_05a4_NextItem(-1, 0x26, D_b9ee, 0xff);
     if (local_6 == -1)
     {
         ULTIMA_1850_PrintString(_TEXT(0x489f, "No usable items!\n"));
@@ -1663,9 +1663,9 @@ void CAST_1792_UseCmd(void)
     ULTIMA_4efc_OpenStatsDivider();
     ULTIMA_1b94_SelectTextWindow(1);
     ULTIMA_4e50_ShowStatsTitle(_TEXT(0x48b8, "Items:"));
-    ZSTATS_045e(8);
+    ZSTATS_045e_DrawListFrame(8);
 
-    local_14 = ZSTATS_0f2e(local_6, 0xff, 0x55);
+    local_14 = ZSTATS_0f2e_SelectItem(local_6, 0xff, 0x55);
     ULTIMA_4daa_HideScrollArrow();
     ULTIMA_4e20_ClearStatsTitle();
     ULTIMA_4f3c_DrawStatsDivider();

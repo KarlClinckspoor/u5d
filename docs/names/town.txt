@@ -1,0 +1,146 @@
+# TOWN (town.c, town2.c): the rest: the town map, party movement, alarm, shadowlords, the main loop.
+# (TOWN_0000, 0052, 00b0 and the named commands were named in the pilot.)
+# functions
+TOWN_011e TOWN_011e_FindNpcByActor          # the NPC slot whose actor is the given one; -1 none
+TOWN_0170 TOWN_0170_SwapDayNightTiles       # lamps (tile 0x87) get the tile below toggled; the annotated tiles (0x48/0x49) show at 5 o'clock, else water
+TOWN_0212 TOWN_0212_BlightLand              # with a shadowlord in town most trees and crops are cut (a fixed random sequence by the day)
+TOWN_02ae TOWN_02ae_SetupShadowlord         # which shadowlord haunts this town, and his actor and NPC slot
+TOWN_0408 TOWN_0408_LoadTownMap             # loads the map of this level, lists the annotations and beacons, night tiles, the light map
+TOWN_052e TOWN_052e_TakeStairs              # the stairs just stepped on go up or down, by the facing
+TOWN_057c TOWN_057c_SetPartyIcon            # the party's tile by the way it faces, with the "Ride/Fly/Row" word
+TOWN_0600 TOWN_0600_MoveParty               # a step in a direction (the town's version); returns 1 when the party leaves the map
+TOWN_085e TOWN_085e_SetPursue               # schedule: no times, type 6 or 7 (pursue the Avatar)
+TOWN_08d4 TOWN_08d4_SetFlee                 # a villager (type 0x40-0x73): schedule type 3 (flee), dialog 0xfd
+TOWN_0958 TOWN_0958_RaiseAlarm              # guards, shadowlords and the like pursue; other NPCs flee half the time
+TOWN_09bc TOWN_09bc_FightNpc                # the NPC is marked killed, the party fights its actor, the town is rebuilt
+TOWN_0c4a TOWN_0c4a_IsTileA2Or43            # horses do not wander next to these tiles
+TOWN_0c78 TOWN_0c78_WanderHorses            # the loose horses of the town take a random step
+TOWN_0dc4 TOWN_0dc4_GetTownKey              # update the screen, read a key; a drunk party staggers (Hic!)
+TOWN_0e34 TOWN_0e34_NumberKey               # 1-6 at the instrument tile 0x8d plays a note (a tune opens a way); else selects the player
+TOWN_0f02 TOWN_0f02_TileEffects             # the tile stood on: sleepers wake, trapdoor, swamp poison, fire; ends the turn
+TOWN_10da TOWN_10da_ShoutBegone             # "Begone, vermin!": the party is damaged, the NPC flees
+TOWN_10f2 TOWN_10f2_PickNpcForAlarm         # a villager with a schedule time, half the time
+TOWN_1156 TOWN_1156_ShadowlordEffect        # hatred: NPCs pursue (dialog 0xfe); cowardice: they flee (0xfd)
+TOWN_11b8 TOWN_11b8_PrintAirOf              # "An air of falsehood/hatred/cowardice doth surround thee..."
+TOWN_12ae TOWN_12ae_Arrest                  # "Thou art under arrest!": comes quietly (jail) or fights; 1 when fighting
+TOWN_1352 TOWN_1352_NpcApproaches           # an NPC next to the Avatar attacks, talks, or arrests him
+TOWN_1694 TOWN_1694_PlaceActors             # clears the NPC actors and puts each NPC on its place by the hour
+TOWN_1726 TOWN_1726_PlaceNpcActor           # the NPC's actor on this level, or none on another; its position
+# TOWN_011e
+town.c:TOWN_011e param_1 actorIdx
+town.c:TOWN_011e local_4 npc
+town.c:TOWN_011e local_2 found
+# TOWN_0000, 0052
+town.c:TOWN_0000 param_1 npc
+town.c:TOWN_0052 param_1 npc
+town.c:TOWN_0052 local_4 type
+town.c:TOWN_00b0 param_1 npc
+# TOWN_0170
+town.c:TOWN_0170 local_6_an y
+town.c:TOWN_0170 local_4 i
+# TOWN_0212
+town.c:TOWN_0212 local_6_an y
+town.c:TOWN_0212 local_4 x
+# TOWN_02ae
+town.c:TOWN_02ae local_a actorSlot
+town.c:TOWN_02ae local_8 i
+town.c:TOWN_02ae local_6 actor
+town.c:TOWN_02ae local_4_ab npcSlot
+# TOWN_0408
+town.c:TOWN_0408 param_1 placeNpcs
+town.c:TOWN_0408 local_8_al y
+town.c:TOWN_0408 local_6_an mapRecord
+town.c:TOWN_0408 local_4 x
+town.c:TOWN_0408 local_2 fileName
+# TOWN_052e, 057c
+town.c:TOWN_052e param_1 facing
+town.c:TOWN_052e param_2 tile
+town.c:TOWN_057c param_1 facing
+# TOWN_0600
+town.c:TOWN_0600 param_1 direction
+town.c:TOWN_0600 local_10_ad tile
+town.c:TOWN_0600 local_e dy
+town.c:TOWN_0600 local_c dx
+town.c:TOWN_0600 local_a actorThere
+town.c:TOWN_0600 local_8 atEdge
+town.c:TOWN_0600 local_6 free
+town.c:TOWN_0600 local_4_ab key
+# TOWN_085e, 08d4, 0958, 09bc
+town.c:TOWN_085e param_1 npc
+town.c:TOWN_085e i_ae i
+town.c:TOWN_085e local_4 type
+town.c:TOWN_08d4 param_1 npc
+town.c:TOWN_08d4 local_6 hasTimes
+town.c:TOWN_08d4 local_8 i
+town.c:TOWN_0958 local_6_an type
+town.c:TOWN_0958 local_4 npc
+town.c:TOWN_09bc param_1 npc
+# TOWN_09e6_AttackCmd
+town.c:TOWN_09e6 local_12_ab actorTile
+town.c:TOWN_09e6 local_10_ad actorIdx
+town.c:TOWN_09e6 local_e pitch
+town.c:TOWN_09e6 local_c y
+town.c:TOWN_09e6 local_a x
+town.c:TOWN_09e6 local_8 nothing
+town.c:TOWN_09e6 local_6 turnUsed
+town.c:TOWN_09e6 local_4_ab npc
+# TOWN_0b82_KlimbCmd
+town.c:TOWN_0b82 local_6_an tile
+town.c:TOWN_0b82 local_4 done
+# TOWN_0c4a, 0c78
+town.c:TOWN_0c4a param_1 x
+town.c:TOWN_0c4a param_2 y
+town.c:TOWN_0c78 local_6 x
+town.c:TOWN_0c78 local_4_c actor
+town.c:TOWN_0c78 local_8 y
+town.c:TOWN_0c78 local_a i
+town.c:TOWN_0c78 local_c step
+town.c:TOWN_0c78 local_e tile
+# TOWN_0dc4, 0e34
+town.c:TOWN_0dc4 param_1 prompt
+town.c:TOWN_0dc4 local_4 key
+town.c:TOWN_0e34 param_1 key
+town.c:TOWN_0e34 local_4 result
+# TOWN_0f02
+town.c:TOWN_0f02 local_a tile
+town.c:TOWN_0f02 local_8 savedIcon
+town.c:TOWN_0f02 local_6 i
+town.c:TOWN_0f02 local_4_ab again
+# town2.c
+town2.c:TOWN_10da param_1 npc
+town2.c:TOWN_10f2 param_1 npc
+town2.c:TOWN_10f2 local_8 type
+town2.c:TOWN_10f2 local_6 i
+town2.c:TOWN_10f2 local_4_ab picked
+town2.c:TOWN_1156 local_4 npc
+town2.c:TOWN_11b8 param_1 shadowlord
+town2.c:TOWN_11f0 param_1 fresh
+town2.c:TOWN_11f0 local_4 i
+town2.c:TOWN_12ae local_6_an fight
+town2.c:TOWN_12ae local_4 key
+town2.c:TOWN_1352 param_1 forced
+town2.c:TOWN_1352 local_6_p actor
+town2.c:TOWN_1352 local_4 attacked
+town2.c:TOWN_141e local_12_ab hourBefore
+town2.c:TOWN_141e local_10_ad quickToggle
+town2.c:TOWN_141e local_e leave
+town2.c:TOWN_141e local_c turn
+town2.c:TOWN_141e local_a leader
+town2.c:TOWN_141e local_8 key
+town2.c:TOWN_141e local_6 mountToggle
+town2.c:TOWN_141e local_4_ab prompt
+town2.c:TOWN_1694 local_6_an slot
+town2.c:TOWN_1694 local_4 npc
+town2.c:TOWN_1726 param_1 npc
+town2.c:TOWN_1726 param_2 x
+town2.c:TOWN_1726 param_3 y
+town2.c:TOWN_1726 param_4 z
+town2.c:TOWN_1726 local_6 actorSlot
+town2.c:TOWN_1726 local_8 value
+town2.c:TOWN_1726 local_4_c npcRec
+# globals only the town uses
+D_2742 D_2742_drunkDirs             # the direction keys a drunk party staggers into
+D_275a D_275a_secretTune            # the 13 notes
+D_2767 D_2767_tuneStep              # how far the tune has been played
+D_28c6 D_28c6_npcValueMask          # per map, the NPCs whose actor gets value 0xff
+D_a9bc D_a9bc_townJustEntered       # set on entering a town: the moongate check is skipped once
