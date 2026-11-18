@@ -637,9 +637,8 @@ int INTRO_12ea_ScaleU4Stat(int stat)
 // The GOG (1992) DOS build takes INTRO_132a from src/asm/AINTRO2.ASM (assembly written from
 // the original's bytes, linked after this object), with its strings (DS:3345-3655): the 1992
 // patch changed the function in place, so its bytes are no compiler's output. This C is
-// compiled for the native build (with the 1992 patch, GOG_BUILD) and for the 1988 build
-// (RELEASE_1988), where it is EXACT against the October 1988 INTRO.OVL (match.py with
-// U5_GAMEDATA=../gamedata-1988; the DOS build has no GOG_BUILD, so the #else parts are 1988's).
+// compiled for the 1988 build (RELEASE_1988), where it is EXACT against the October 1988
+// INTRO.OVL (match.py --target 1988).
 // What matched it (it was 2796 bytes against 2808):
 // - the frame is 12h: the drive letter and the Y/N answers are one variable (key, bp-10h),
 //   and ten bytes nearest BP are never used (unusedBuf; one array or several locals, the

@@ -27,11 +27,9 @@ void far ULTIMA_2320_NoDiskSwapMessage(void)
 
 #if defined(RELEASE_1988)
 // The 1988 release's function, EXACT against the 1988 ULTIMA.EXE. The GOG DOS build does not
-// compile it: it has ULTIMA_2322 from src/asm/A2322.ASM (above). The GOG_BUILD parts are the
-// 1992 patch written as gotos, kept for reference (never compiled: the DOS build has no
-// GOG_BUILD); the patched bytes are not compiler output.
+// compile it: it has ULTIMA_2322 from src/asm/A2322.ASM (above), as the 1992 patch left it
+// (it skips the drive selection; the patched bytes are not compiler output).
 // What matched it: D_545e_lastDisk as a plain char (vars.h). With u8 it was 506 bytes against 508.
-// 1992 patched: skip drive selection
 void far ULTIMA_2322_DiskSwapMessage(void)
 {
     byte drive;

@@ -74,8 +74,8 @@ u8 D_51fc_cardX[8] = {0x28, 0x30, 0x30, 0x28, 0x28, 0x30, 0x28, 0x30};
 u8 D_5204_cardY[8] = {0x05, 0x07, 0x04, 0x0a, 0x08, 0x00, 0x05, 0x06};
 
 // The DOS build takes FONT_0000_DrawJustifiedText from src/asm/AFONT0.ASM (assembly written from the
-// original's bytes, linked before this object): the C below does not match yet, so it is
-// compiled for the native build only.
+// original's bytes, linked before this object): its C reconstruction does not match yet
+// (670 of 674 bytes) and is kept in research/font0000.c.
 
 // Draws one cell of the scene strip: the map tile, or else the actor's tile that FONT_02fc_AnimateScene left
 // under it.
