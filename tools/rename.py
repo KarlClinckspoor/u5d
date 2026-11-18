@@ -55,6 +55,7 @@ import slots  # noqa: E402
 import u5  # noqa: E402
 
 SIGNIFICANT = 31
+STUB_NAME = 26        # STUB_<26 characters>: the overlay call stubs of PLTAB.ASM
 TOKEN = re.compile(r'//[^\n]*|/\*.*?\*/|"(?:\\.|[^"\\\n])*"|\'(?:\\.|[^\'\\\n])*\'|[A-Za-z_]\w*', re.S)
 ADDRESSED = re.compile(r'^([A-Z][A-Z0-9]*_[0-9A-Fa-f]{4})(?:_|$)')
 KEYWORDS = set('''auto break case char const continue default do double else enum extern float for
@@ -393,6 +394,10 @@ def rename_global(ch, old, new, a):
                 ch.length[os.path.basename(p)] = ch.length.get(os.path.basename(p), 0) + len(new) - len(old)
         elif kind == 'asm':
             t, n = sub_word(t, up_old, up_new, re.I)
+            # an overlay function's call stub is STUB_ + 26 characters of its name
+            # (src/asm/PLTAB.ASM; tools/u5link.py looks it up by that name)
+            t, k = sub_word(t, 'STUB_' + old.upper()[:STUB_NAME], 'STUB_' + new.upper()[:STUB_NAME], re.I)
+            n += k
         else:
             t, n = sub_word(t, old, new)
             for o, w in {(old.upper(), new.upper()), (up_old, up_new)}:

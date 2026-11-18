@@ -223,6 +223,12 @@ class Linker:
                 st = self.publics.get('STUB_' + name[:26])
                 if st:
                     return st[0], st[1]
+                # a call into another overlay with no stub would be linked straight to the
+                # function: say so (a function renamed without its STUB_ name in PLTAB.ASM)
+                note = '%s is called from %s but has no stub STUB_%s (src/asm/PLTAB.ASM)' % (
+                    name, src.name, name[:26])
+                if note not in self.notes:
+                    self.notes.append(note)
             return kind, addr
         a = u5.name_address(name)
         if a:
