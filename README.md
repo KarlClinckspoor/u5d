@@ -2,32 +2,55 @@
 
 ## Introduction
 
-This is an ongoing decompilation project of Ultima V: Warriors of Destiny.
+A decompilation of Ultima V: Warriors of Destiny (MS-DOS) into C and assembly that rebuilds
+the original game files **byte for byte** with the original toolchain.
 
-Inspired by [u4-decompiled](https://github.com/ergonomy-joe/u4-decompiled), I started this project as a personal challenge to better understand the original game and its codebase.
-
-## Goals
-
-- Create a functionally equivalent version of the original game that can run on modern platforms.
-
-- Match as much of the original code (v1.16 for MS-DOS) as possible.
-
-Since the original linker (an unknown version of PLINK86) has not been found, perfect binary matching is currently impossible. Instead, the project focuses on assembly-level semantic matching.
-
-When necessary, disassemblies from other platforms such as FM-TOWNS are also used as references.
+Inspired by [u4-decompiled](https://github.com/ergonomy-joe/u4-decompiled), the project was
+started by wonst719 as a personal challenge to understand the game and its code; this fork
+carries it to an exact rebuild.
 
 ## Current Status
 
-### Matching Progress
+- **Byte-identical rebuild of two releases**, chosen by a target switch:
+  - `gog`: the GOG release (a January 1992 patch of v1.16), the default;
+  - `1988`: the original October 1988 release, v1.16 for 720K disks.
+- All 25 files of each are identical: `ULTIMA.EXE`, the 23 code overlays, `FLAMES.OVL` and
+  `DATA.OVL` (`tools/check.py`: "targets gog PASS, 1988 PASS").
+- Every C function compiles to the original's bytes (594 in the GOG build, 596 in the 1988
+  build) with Microsoft C 5.1 or 5.0, the compiler the original used for each file, except
+  FONT_0000, which is built from assembly in both. The routines that were hand-written
+  assembly in the original are assembly here too.
+- The code has readable names throughout; the measured rules behind them (a local's name
+  decides its stack slot, name lengths use the optimizer's memory) are in `docs/MATCHING.md`.
+- The original was linked with Phoenix PLINK86plus 2.24. u5d links with its own small OMF
+  linker (`tools/u5link.py`) from a link script (`src/u5d.lnk`), and computes the EXE
+  checksum by PLINK's rule.
 
-- `ULTIMA.EXE`: approximately 95% matched, excluding assembly functions
-- `*.OVL`: approximately 95% matched
+`docs/MATCHING.md` explains the tools, the method and what was learned about the binary;
+`docs/PLAN.md` has the state and what is left.
 
-### Playability
+The game also runs on modern platforms through a native port (Windows/SDL, DJGPP), built from
+the same sources. The port is not part of the byte-matching work.
 
-The game can be played through to the ending using the original data files. However, major and minor bugs may still remain throughout the game.
+## Building the original files
 
-## Building
+You need the game files to compare with (they are never committed), Microsoft C 5.1 and 5.0
+(disk images or the `.7z` archives holding them), MASM 4.0 (`build/masm/MASM.EXE`),
+DOSBox-X and Python 3.11 or later. `docs/MATCHING.md`, "What you need", has the details.
+
+```sh
+python -m venv .venv
+.venv/Scripts/pip install -r tools/requirements.txt          # Linux/macOS: .venv/bin/pip
+python tools/setup_msc51.py "path/to/Microsoft C 5.1 Optimizing Compiler (5.25).7z"   # -> build/msc51
+python tools/setup_msc51.py "path/to/Microsoft C Compiler 5.0 (1987) (5.25-360k).7z"   # -> build/msc50
+.venv/Scripts/python tools/check.py          # build both releases and compare (make check)
+```
+
+Game files are looked for in `gamedata/` (GOG) and `gamedata-1988/` (1988), in this
+repository or beside it, or where `--gamedata`, `$U5_GAMEDATA_GOG`, `$U5_GAMEDATA_1988` or
+`$U5_GAMEDATA` say. Every tool takes `--target gog|1988` (or `$U5_TARGET`).
+
+## Building the native port
 
 ### Windows Target
 
@@ -39,16 +62,9 @@ Run `make` on a machine with DJGPP installed.
 
 Depending on the environment, you may need to adjust the `CROSS_CC_PREFIX` value in the `Makefile`.
 
-### MS-DOS Target (Original Toolchain)
-
-Run `src\build.bat` on a machine or virtual machine with Microsoft C 5.1 installed.
-
-The compiler installation path is `C:\MSC51`.
-
-Note: executable linking is currently not possible. This target is used only for disassembly matching.
-
 ## Credits
 
+- wonst719, for the decompilation this fork builds on
 - [Ultima Codex Wiki](https://wiki.ultimacodex.com/wiki/Ultima_V_internal_formats) - for game data and save-file formats
 - [Exodus Project](https://github.com/mcmagi/ultima-exodus) - for the annotated disassembly
 - The original Ultima V was created by Origin Systems and Lord British.
