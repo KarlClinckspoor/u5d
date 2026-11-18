@@ -129,7 +129,7 @@ static void TALK_00e6_TalkToMerchant(int merchantCode)
         switch (D_b116_shopKind)
         {
         case 0:
-            SHOPPES_12b2(playerIndex);
+            SHOPPES_12b2_Armourer(playerIndex);
             break;
         case 1:
             SHOPPES2_066c_Pub(playerIndex);
@@ -141,10 +141,10 @@ static void TALK_00e6_TalkToMerchant(int merchantCode)
             SHOPPES2_0abc_Shipwright(playerIndex);
             break;
         case 4:
-            SHOPPES_075e(playerIndex);
+            SHOPPES_075e_Reagents(playerIndex);
             break;
         case 5:
-            SHOPPES_04a2(playerIndex);
+            SHOPPES_04a2_Provisioner(playerIndex);
             break;
         case 6:
             SHOPPES_14f8_Healer(playerIndex);

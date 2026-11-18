@@ -292,33 +292,33 @@ STUB u8 D_3a0a[4];
 STUB u8 D_3a0e[3];
 
 STUB u16 D_3a26[6];
-STUB u8 D_3a32[5][8];
-STUB u8 D_3a5a[5][8];
+STUB u8 D_3a32_reagentPrices[5][8];
+STUB u8 D_3a5a_reagentLots[5][8];
 
-STUB u16 D_3a82[0x30]; // TODO: int (FMT)
+STUB u16 D_3a82_itemBasePrices[0x30]; // TODO: int (FMT)
 
-STUB u8 D_3ae2[9][8]; // ~3b2a)
+STUB u8 D_3ae2_armsStock[9][8]; // ~3b2a)
 
-STUB u16 D_3b2a[8][4]; // int (FMT: 4byte)
-STUB u16 D_3b6a[8][4]; // ~3baa)
-STUB u16 D_3baa[8][4]; // ~3bea)
+STUB u16 D_3b2a_greetTexts[8][4]; // int (FMT: 4byte)
+STUB u16 D_3b6a_farewellTexts[8][4]; // ~3baa)
+STUB u16 D_3baa_farewellTexts1[8][4]; // ~3bea)
 
-STUB u16 D_3bea[4][4];
-STUB u16 D_3c0a[3];
-STUB u16 D_3c10[8];    // string offset table. type: int (FMT: 4bytes)
+STUB u16 D_3bea_provisionPrices[4][4];
+STUB u16 D_3c0a_provisionTexts[3];
+STUB u16 D_3c10_reagentTexts[8];    // string offset table. type: int (FMT: 4bytes)
 
 STUB char* D_3c20[8];
 
-STUB u16 D_3c30[4];
-STUB s16 D_3c38[4]; // 3c38..3c40)
-STUB s16 D_3c40[4]; // 3c40..3c48)
-STUB s16 D_3c48[0x2f]; // 3c40..3ca6)? shop item description TODO: size
+STUB u16 D_3c30_horsePrices[4];
+STUB s16 D_3c38_stableDx[4]; // 3c38..3c40)
+STUB s16 D_3c40_stableDy[4]; // 3c40..3c48)
+STUB s16 D_3c48_armsTexts[0x2f]; // 3c40..3ca6)? shop item description TODO: size
 
 STUB char* D_3ca6[4];
 STUB char* D_3cae[4];
 STUB char* D_3cb6[4];
 
-STUB u16 D_3cbe[8]; // string offset table. type: int (FMT: 4bytes)
+STUB u16 D_3cbe_buybackTexts[8]; // string offset table. type: int (FMT: 4bytes)
 
 STUB char* D_3cce[0x30];
 
@@ -332,9 +332,9 @@ STUB char* D_3d52[4];
 
 STUB char D_3d5a[]; // "\n\n\"Thou hast no need of this art!\"\nsays $."
 
-STUB u8 D_3d86[8];
-STUB u8 D_3d8e[8];
-STUB u16 D_3d96[8];
+STUB u8 D_3d86_healPrices[8];
+STUB u8 D_3d8e_curePrices[8];
+STUB u16 D_3d96_raisePrices[8];
 
 STUB Pair D_3da6[6];
 STUB Pair2 D_3db2[6];
@@ -863,7 +863,7 @@ BSS u8 D_ad14_combatMap[32 * 32]; // the combat map; outside combat the 32x32 li
 BSS s16 D_b114_shopIndex; // s16 (FMT MOVSX); the shop's column in D_21ca_shopNames..., 0-15
 BSS s16 D_b116_shopKind; // s16 (FMT MOVSX); 0-7, the merchant's dialog number - 0x81
 BSS s16 D_b118_shopPrice; // s16 (FMT MOVSX); the % of a shop text
-BSS u16 D_b11a;
+BSS u16 D_b11a_shopQuantity;
 
 BSS u8* D_b11c;
 BSS u8 D_b11e_tileFrames[0x100]; // the tile drawn for each map tile (animation)
@@ -877,7 +877,7 @@ BSS u8 D_b11e_tileFrames[0x100]; // the tile drawn for each map tile (animation)
 BSS u8 D_b21e_scratch[SCRATCH_SIZE]; // scratch buffer ~b9ee)
 
 #define D_b31e (D_b21e_scratch + 0x100)
-#define D_b7fa (D_b21e_scratch + 1500)
+#define D_b7fa_shopTextOut (D_b21e_scratch + 1500)
 
 // b900
 
