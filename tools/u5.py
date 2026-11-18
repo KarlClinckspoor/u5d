@@ -287,39 +287,7 @@ def object_parts(target=None):
 # original reaches the overworld map through a name of its own for DS:6608 (vars.h); which
 # object defined it is not known.
 LINK_DEFINES = {'D_6608_OVERWORLD': 'D_6608_MAP'}
-# cmds.c knows 27 names by their short forms (the note at its top: CMDS_0000_HoleUpRest's pass-2 memory)
-LINK_DEFINES.update({
-    'D_5876': 'D_5876_TEMPX',
-    'D_5878': 'D_5878_TEMPY',
-    'D_587A': 'D_587A_STATUSICON',
-    'D_587D': 'D_587D_MONTH',
-    'D_588C': 'D_588C_CAMPHEALWAIT',
-    'D_588E': 'D_588E_PROTECTTURNS',
-    'D_5894': 'D_5894_SAVEDMAPID',
-    'D_589E': 'D_589E_CURCOMBATANT',
-    'D_1734': 'D_1734_AMBUSHENEMIES',
-    'D_588D': 'D_588D_APPARITIONMONTH',
-    'D_6A08': 'D_6A08_SONGPOS',
-    'D_595A': 'D_595A_DUNGEONMAP',
-    'D_5C5A': 'D_5C5A_ACTORS',
-    'D_A9CE': 'D_A9CE_SOUNDON',
-    'D_BA14': 'D_BA14_COMBATANTS',
-    'COMBAT_0000': 'COMBAT_0000_ISCELLFREE',
-    'STUB_COMBAT_0000': 'STUB_COMBAT_0000_ISCELLFREE',    # the overlay call stub (PLTAB) has the long name
-    'DNGLOOK_117E': 'DNGLOOK_117E_PLACECOMBATANTS',
-    'STUB_DNGLOOK_117E': 'STUB_DNGLOOK_117E_PLACECOMBATAN',
-    'OUTSUBS_0658': 'OUTSUBS_0658_APPARITION',
-    'STUB_OUTSUBS_0658': 'STUB_OUTSUBS_0658_APPARITION',
-    'ULTIMA_3AE6': 'ULTIMA_3AE6_WAITFRAMES',
-    'ULTIMA_400C': 'ULTIMA_400C_RINGREGENERATION',
-    'ULTIMA_4A84': 'ULTIMA_4A84_DRAWSUNANDMOONS',
-    'ULTIMA_4F7C': 'ULTIMA_4F7C_ADVANCETIME',
-    'ULTIMA_6800': 'ULTIMA_6800_WAKECOMBATANT',
-    'ULTIMA_6880': 'ULTIMA_6880_SLEEPIFNOTPOISONED',
-    'ULTIMA_6936': 'ULTIMA_6936_INITCOMBATANTS',
-    'ULTIMA_6BC2': 'ULTIMA_6BC2_SETUPCOMBAT',
-    'ULTIMA_6D82': 'ULTIMA_6D82_ISINVIEW',
-})
+
 
 # The uninitialised (communal) variables, in the order PLINK86 allocated them from the end of
 # the BSS segments (DS:a9bc) to _end (DS:bd40); tools/u5link.py allocates them by their

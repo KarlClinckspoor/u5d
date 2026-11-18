@@ -1,40 +1,4 @@
 #include "common/common.h"
-// CMDS_0000_HoleUpRest sits at a limit of pass 2's memory, which the names of the globals this object
-// declares and uses count against: with the readable names of the 27 below (found by taking
-// the new names one at a time) it loses its loop optimization. So this object alone knows
-// them by their short names; the source below uses the readable ones, and the link
-// resolves the short ones by the address they carry. After common.h, which defines
-// TARGET_DOS16 and declares none of them. If a later rename breaks CMDS_0000_HoleUpRest again, add
-// its name here (docs/MATCHING.md, "Readable names").
-#if defined(TARGET_DOS16)
-#define D_5876_tempX D_5876
-#define D_5878_tempY D_5878
-#define D_587a_statusIcon D_587a
-#define D_587d_month D_587d
-#define D_588c_campHealWait D_588c
-#define D_588e_protectTurns D_588e
-#define D_5894_savedMapId D_5894
-#define D_589e_curCombatant D_589e
-#define D_595a_dungeonMap D_595a
-#define D_1734_ambushEnemies D_1734
-#define D_588d_apparitionMonth D_588d
-#define D_6a08_songPos D_6a08
-#define D_5c5a_actors D_5c5a
-#define D_a9ce_soundOn D_a9ce
-#define D_ba14_combatants D_ba14
-#define COMBAT_0000_IsCellFree COMBAT_0000
-#define DNGLOOK_117e_PlaceCombatants DNGLOOK_117e
-#define OUTSUBS_0658_Apparition OUTSUBS_0658
-#define ULTIMA_3ae6_WaitFrames ULTIMA_3ae6
-#define ULTIMA_400c_RingRegeneration ULTIMA_400c
-#define ULTIMA_4a84_DrawSunAndMoons ULTIMA_4a84
-#define ULTIMA_4f7c_AdvanceTime ULTIMA_4f7c
-#define ULTIMA_6800_WakeCombatant ULTIMA_6800
-#define ULTIMA_6880_SleepIfNotPoisoned ULTIMA_6880
-#define ULTIMA_6936_InitCombatants ULTIMA_6936
-#define ULTIMA_6bc2_SetUpCombat ULTIMA_6bc2
-#define ULTIMA_6d82_IsInView ULTIMA_6d82
-#endif
 #include "funcs.h"
 #include "vars.h"
 #include "macros.h"
@@ -57,6 +21,17 @@ int MAINOUT_105c_IsMovingActor(int tile);
 // The rest itself of Hole up and camp: sleeps the party for the hours (a bard on watch plays and a watcher
 // stays awake), moving the sun and moons; in 1 of 64 hours an ambush starts a combat (returns 1), else the
 // party heals (once per 14 hours, with a chance of an apparition outside dungeons).
+// CMDS_0000_HoleUpRest sits at a limit of pass 2's memory: its loop optimization runs out of
+// memory unless the module's global symbols take about 72 * (22 + 8) bytes more than u5d's
+// readable names give (MATCHING.md, "What pass 2 counts, measured"). The original had
+// something there that u5d does not; what it was is not known. The stand-in: 72 dead
+// references (never compiled to code, never defined; the object lists them as externals
+// without a fixup, as TOWN_0f02's fill) on one line in CMDS_0000. Exact for 64 to 80 of
+// them: names cmds.c uses may grow or shrink by about 240 characters before the window
+// moves; if CMDS_0000 breaks after a rename, change the count (one reference is 30 bytes).
+#if defined(TARGET_DOS16)
+extern int Q0000000, Q0000001, Q0000002, Q0000003, Q0000004, Q0000005, Q0000006, Q0000007, Q0000008, Q0000009, Q0000010, Q0000011, Q0000012, Q0000013, Q0000014, Q0000015, Q0000016, Q0000017, Q0000018, Q0000019, Q0000020, Q0000021, Q0000022, Q0000023, Q0000024, Q0000025, Q0000026, Q0000027, Q0000028, Q0000029, Q0000030, Q0000031, Q0000032, Q0000033, Q0000034, Q0000035, Q0000036, Q0000037, Q0000038, Q0000039, Q0000040, Q0000041, Q0000042, Q0000043, Q0000044, Q0000045, Q0000046, Q0000047, Q0000048, Q0000049, Q0000050, Q0000051, Q0000052, Q0000053, Q0000054, Q0000055, Q0000056, Q0000057, Q0000058, Q0000059, Q0000060, Q0000061, Q0000062, Q0000063, Q0000064, Q0000065, Q0000066, Q0000067, Q0000068, Q0000069, Q0000070, Q0000071;
+#endif
 // CHECKED
 int CMDS_0000_HoleUpRest(int mode, int watchIdx, int hours)
 {
@@ -74,6 +49,9 @@ int CMDS_0000_HoleUpRest(int mode, int watchIdx, int hours)
     int poisoned_k[8];
     int bardSlot;
     ActorFmt* bardActor; // not read
+#if defined(TARGET_DOS16)
+    if (0) { Q0000000 = 0; Q0000001 = 0; Q0000002 = 0; Q0000003 = 0; Q0000004 = 0; Q0000005 = 0; Q0000006 = 0; Q0000007 = 0; Q0000008 = 0; Q0000009 = 0; Q0000010 = 0; Q0000011 = 0; Q0000012 = 0; Q0000013 = 0; Q0000014 = 0; Q0000015 = 0; Q0000016 = 0; Q0000017 = 0; Q0000018 = 0; Q0000019 = 0; Q0000020 = 0; Q0000021 = 0; Q0000022 = 0; Q0000023 = 0; Q0000024 = 0; Q0000025 = 0; Q0000026 = 0; Q0000027 = 0; Q0000028 = 0; Q0000029 = 0; Q0000030 = 0; Q0000031 = 0; Q0000032 = 0; Q0000033 = 0; Q0000034 = 0; Q0000035 = 0; Q0000036 = 0; Q0000037 = 0; Q0000038 = 0; Q0000039 = 0; Q0000040 = 0; Q0000041 = 0; Q0000042 = 0; Q0000043 = 0; Q0000044 = 0; Q0000045 = 0; Q0000046 = 0; Q0000047 = 0; Q0000048 = 0; Q0000049 = 0; Q0000050 = 0; Q0000051 = 0; Q0000052 = 0; Q0000053 = 0; Q0000054 = 0; Q0000055 = 0; Q0000056 = 0; Q0000057 = 0; Q0000058 = 0; Q0000059 = 0; Q0000060 = 0; Q0000061 = 0; Q0000062 = 0; Q0000063 = 0; Q0000064 = 0; Q0000065 = 0; Q0000066 = 0; Q0000067 = 0; Q0000068 = 0; Q0000069 = 0; Q0000070 = 0; Q0000071 = 0; }
+#endif
 
 #if !defined(MATCHING_BUILD)
     watcher = 0;
