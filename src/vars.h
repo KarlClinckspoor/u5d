@@ -594,7 +594,14 @@ STUB u16 D_5448; // current timer value
 STUB u16 D_544a; // timer tick count to wait
 // far D_544c; // far addr of original int 1c handler
 
+// The disk last selected. A plain char in the DOS build: with it, 1988's ULTIMA_2322 compares
+// it with the disk wanted as "mov al,bl; cmp D_545e,al" (u8: "mov al,D_545e; cmp bl,al").
+// The other modules only store 0xff into it, the same code for both types.
+#if defined(TARGET_DOS16)
+STUB char D_545e;
+#else
 STUB u8 D_545e;
+#endif
 
 // ...54d2: strings
 
