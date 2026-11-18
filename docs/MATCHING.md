@@ -339,6 +339,167 @@ The other tools that use objects (`slots.py`, `permute.py`, `asmbuild.py`, `u5li
 What is still shared inside one checkout: `src/` itself and git. So edit and commit only in
 your own worktree.
 
+## Readable names
+
+Everything matches, so the code can now get names that say what it does. Names are not
+free here: three things in the compiled code depend on them, and every rename goes through
+`tools/rename.py`, which knows the first two and checks the third.
+
+1. **A local's name decides its stack slot** ("Stack slots of locals: a name hash" below; MSC
+   5.0 has its own hash). Only the *order* of a function's locals counts: a name is free as
+   long as the buckets still rise in the same order.
+2. **MSC keeps 31 characters** of an identifier (warning C4011, which the build does not show).
+   Two names that agree that far are one symbol. Public names reach the assembly and the
+   linker in upper case, cut at 31 (`ULTIMA_0892_INITIALIZEVIDEODRIV`).
+3. **Pass 2's memory depends on the length of the global names a module references or
+   defines** (statics too; "the optimizer's capacity" below). A longer name can change a
+   function that sits near a limit. This cannot be predicted, only compiled and compared.
+   Comment lines *inside* a function body are pool units too.
+
+### The convention
+
+| What | Form | Example |
+|---|---|---|
+| function | `MODULE_addr_UpperCamel`; the address stays, in the hex case it has | `TALK_0b04_AskInterest` |
+| global | `D_addr_lowerCamel` | `D_bcde_talkPtr`, `D_57aa_gold` |
+| local, parameter | `lowerCamel`; a local may carry a slot suffix | `npcIndex`, `matchPos_a` |
+| struct field | `lowerCamel` (`_17` while unknown) | `maxHp` |
+| macro, enum constant | `UPPER_SNAKE` | `TILE_MAP_DESK` |
+
+- **The address prefix stays** (`MODULE_addr`, `D_addr`): it ties the source to the binary,
+  and the tools read it (`u5.name_address`: match.py's fixup check, u5link). Add or improve
+  the part after it. `S_0x....` string arrays and `local_N` names not yet understood stay
+  as they are; so do the `F_xxxx` names in town.c (below).
+- **At most 31 characters**, so that the name in the source is the name in the object.
+  `SHOPPES2_` plus an address leaves 17.
+- **Slot suffixes.** When a local's readable name would change the slot order, it gets `_`
+  and one lower-case letter or digit (two if one does not do): `matchPos_a`, `barY_l`. The
+  suffix means nothing; it is there for the hash. rename.py chooses it, and solves all the
+  locals renamed in one function together, so that as many as possible need none. Before
+  adding a suffix by hand, try a synonym (`--suggest`, `--hash`). Never edit a local's name
+  with a text editor: use the tool.
+- **Existing snake_case globals** (`D_5896_map_x`, ten of them) stay until someone renames
+  them through the tool; new names are lowerCamel, like the other 25.
+- **Only what the code shows.** A name says what the function does or the variable holds,
+  as its strings, its callers and its uses show. Where that is a guess, the name stays
+  neutral and the comment says "probably" or carries `/* ? */`. Sources other than the code
+  are named in the comment (the Ultima Codex's "Ultima V internal formats" page, `u5tech`).
+- **Comments** go *above* a function (and after declarations in headers) freely: lines
+  outside function bodies cost nothing. Inside a body a comment line is a pool unit: add,
+  remove or split one only with the module recompiled (`match.py FILE.c --compile`) and the
+  gate at the end. Trailing comments on existing lines add no line and are safe. The
+  `// c469`-style address comments in the bodies are part of the count: leave them.
+
+### `rename.py`
+
+```sh
+P=.venv/Scripts/python
+$P tools/rename.py TALK_0b04 TALK_0b04_AskInterest --match        # a function, global, macro, type
+$P tools/rename.py talk.c:TALK_0b04 local_8 matchPos --match      # a local or parameter of one function
+$P tools/rename.py --field _17 monthsAtInn                        # a struct field
+$P tools/rename.py --batch names.txt --match --bisect             # many at once
+$P tools/rename.py --hash talk.c:TALK_0b04                        # the locals, their buckets, the slot order
+$P tools/rename.py --suggest talk.c:TALK_0b04 local_8 matchPos    # the name a rename would use
+$P tools/rename.py -n ...                                         # dry run
+```
+
+- A **global** rename (function, variable, macro, type) is whole-word in every C file and
+  header of `src/` (the native build's folders too), in upper case and cut at 31 in
+  `src/asm/*.ASM`, and both ways in `src/u5d.lnk` and `tools/*.py` (`u5.COMMUNALS`,
+  `u5.LINK_DEFINES`); `--docs` adds `docs/*.md`. String literals are left alone, comments are
+  renamed, `.name` and `->name` are not (a field of the same name). Line endings are kept.
+  An overlay function's call stub is renamed with it (`STUB_` and 26 characters of the
+  name, in `PLTAB.ASM`).
+- A **local** rename applies inside the one function (`FILE.c:FUNCTION`; the address prefix
+  alone finds it: `talk.c:TALK_0b04`). The new name is used as given when the slot order
+  stays, else with a suffix; the report says which. `--exact` forces the name and reports
+  "THE SLOT ORDER CHANGES". A **parameter** takes any name (its place is fixed); the
+  function's prototypes are renamed with it.
+- It **refuses** a name that is already used in the scope, that agrees with another in 31
+  characters (ignoring case for globals), that is longer than 31, that drops the address
+  prefix, or (for a local) that is a macro or a global of `vars.h`. `--force` overrides the
+  last three.
+- `--match` recompiles and compares the modules whose text changed (and runs `asmbuild.py`
+  when an `.ASM` changed). If a function is no longer EXACT, **every file is put back**
+  (`--keep` leaves them for a look). `--bisect` then finds the entries of a batch that break
+  the match, by halving, leaves them out and applies the rest. `--gate` runs `check.py` at
+  the end, and puts the files back if it fails.
+- A batch file has one rename per line, `OLD NEW`, `FILE.c:FUNCTION OLD NEW` or
+  `field OLD NEW`; `#` starts a comment. Keep the batch file of a module while working on
+  it: it is the list of what was named and why.
+- The report ends with the **change in the length of the global names each module uses**.
+  That is what moves pass 2's memory; if a module stops matching after a batch of global
+  renames, this is the number to make up for.
+
+### What it costs (the pilot)
+
+The pilot named TALK (all 39 functions), SHOPPES3 (all 8), the SHOPPES helpers they call
+and the state they share: 37 functions, 39 globals (6 of them used by up to 30 modules:
+gold, food, party size, karma, hour, active player), 79 locals and 36 parameters, with a
+comment above each function.
+
+- **Slots.** Renamed one at a time with the plain name, about half of the locals would have
+  moved a slot (25 of TALK's 47). Solved per function, 48 of the 79 took the name as given
+  and 31 (39%) needed a suffix; none moved. Parameters never matter (36 renamed, any
+  names). A forced bad name (`--exact`) gave `SLOTS` at once and was put back.
+- **Pool windows.** None moved: 76 global renames lengthened the names used by talk.c by
+  more than 550 characters and those of 29 other modules by 5 to about 60 each (town.c by
+  22), and all 594 functions stayed EXACT. The windows are wider than a few dozen
+  characters of names; they are not infinitely wide, so `--match` stays on.
+- **The call stubs** were the one thing that went wrong, and only the gate saw it. The
+  linker finds an overlay function's stub by name (`STUB_<name>`); the first version of the
+  tool renamed the function in `PLTAB.ASM` but not its stub, so calls from other overlays
+  were linked straight to the function: every function EXACT in `match.py`, every assembly
+  module identical, and three overlays different in `check.py`. The tool now renames the
+  stub, and `u5link.py` reports a call into another overlay that finds no stub. **`match.py`
+  is not enough after a rename: run the gate.**
+- **TOWN_0f02** was the one known hazard: its fill of 266 dead references named 266 globals
+  of other modules, so that naming any of them (TALK's eight state bytes were among them)
+  would have moved its window. The fill now has names of its own (`F_xxxx` in town.c, same
+  types and lengths as when it was measured, never defined: the object lists them as
+  externals without a fixup). If a rename of globals town.c really uses ever moves the
+  window, take the reported number of characters off those names (or add them).
+- **Time.** A module takes about 1.5 minutes to recompile and compare in DOSBox-X, whatever
+  the number of renames, so rename in batches: one batch of locals per module, one of
+  globals. The full gate is about 6 minutes, `match.py --compile` of everything about the
+  same.
+
+### How to go on
+
+One worker per module group in a worktree (`worktree.py`), each with a batch file per
+module. A worker reads the module, writes the batch (locals and parameters of every
+function, the module's functions, the globals only that module group uses), runs it with
+`--match --bisect`, adds the comments above the functions, and runs the gate before each
+commit. Globals used across groups are the conflict surface: `vars.h`, `tools/u5.py` and
+every module that mentions the global change. So:
+
+1. **First, alone: the shared vocabulary.** One worker names the globals of `vars.h` that
+   many modules use and whose meaning is already in its comments (the savegame block
+   DS:55a8-5c5a with the Codex's offsets, the map and actor tables, the text and video
+   state), the struct fields of `structs.h` (free: fields are not in the object), and the
+   resident functions every overlay calls (`ULTIMA_xxxx` without a suffix in 2000.c-7000.c
+   and the `r*.c` files). Merge it before the others start.
+2. **Then in parallel, at most four** (DOSBox-X instances share the machine), each group
+   owning its modules' functions, locals and private globals:
+   - shops and talk: SHOPPES, SHOPPES2 (+ shoppe2b), ZSTATS, the rest of TOWN (+ town2), NPC;
+   - magic and combat: CAST (+ castb), CAST2, COMBAT, COMSUBS;
+   - world: MAINOUT (+ b), OUTSUBS (+ b), DUNGEON (+ b), DNGLOOK, LOOKOBJ, SJOG, BLCKTHRN;
+   - commands and the rest: CMDS (+ cmds2, cmdsb), INTRO (four objects), ENDGAME, FONT.
+
+   About 150 functions and 2,000 to 2,500 lines of bodies per worker session is a sensible
+   size (the pilot was 47 functions, 2,300 lines); the big groups take two sessions.
+3. **Resident code last** (2000.c-7000.c, the `r*.c` files, with the assembly's names):
+   its functions are called from everywhere, so each rename touches many modules, and
+   ULTIMA_1850 (comment-line padding), town.c and the 5.0 modules with sharp limits
+   (SHOPPES2_08a8) are where a pool window is most likely to move. Rename there in small
+   batches with `--match --bisect`.
+
+Merging: a module group's branch touches its own `.c` files plus one-line changes in
+`vars.h` and the callers; conflicts are ordinary and small if step 1 went first. After each
+merge run the gate again, since two branches can each lengthen the names one module uses.
+`tools/slots.py --apply` takes its target order from `local_N` names and has nothing to
+say about a renamed function; `rename.py --hash` shows the order instead.
+
 ## The layout of the binary
 
 These are measured from the GOG files. `tools/u5.py` holds them, and the tools check them on
