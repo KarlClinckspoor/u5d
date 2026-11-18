@@ -32,14 +32,14 @@ void OUTSUBS_0658(void)
         ULTIMA_2192_AudioPulse(D_3a26[local_8], 1, 5000, 200, 0xd);
     }
 
-    local_ptr = &D_5c5a[10];
+    local_ptr = &D_5c5a_actors[10];
     
-    D_5c5a[10].x = D_5c5a[10].y = 5;
-    D_5c5a[10].tile = D_5c5a[10].animTile = TILE_ACTOR_CIRCLE;
+    D_5c5a_actors[10].x = D_5c5a_actors[10].y = 5;
+    D_5c5a_actors[10].tile = D_5c5a_actors[10].animTile = TILE_ACTOR_CIRCLE;
 
-    ULTIMA_1068(0x174, 5, 5);
+    ULTIMA_1068_RevealTile(0x174, 5, 5);
 
-    D_5c5a[10].tile = D_5c5a[10].animTile = TILE_ACTOR_74;
+    D_5c5a_actors[10].tile = D_5c5a_actors[10].animTile = TILE_ACTOR_74;
 
     for (local_8 = 0; local_8 < D_585b_partyCount; local_8++)
     {
@@ -50,9 +50,9 @@ void OUTSUBS_0658(void)
 
             for (local_a = 0; local_a < 32; local_a++)
             {
-                if (D_ba14[local_a].entityIdx == local_8)
+                if (D_ba14_combatants[local_a].entityIdx == local_8)
                 {
-                    local_ptr = &D_5c5a[D_ba14[local_a].actorIdx];
+                    local_ptr = &D_5c5a_actors[D_ba14_combatants[local_a].actorIdx];
                     break;
                 }
             }
@@ -60,9 +60,9 @@ void OUTSUBS_0658(void)
             local_6_aa = ULTIMA_4d76_FindIndex(_TEXT(0x7760, CLASS_LIST), D_55a8_party[local_8].cls);
             local_ptr->tile = local_ptr->animTile = D_1ade[local_6_aa];
 
-            D_5c5a[10].animState = 0;
+            D_5c5a_actors[10].animState = 0;
 
-            ULTIMA_3ae6(1);
+            ULTIMA_3ae6_WaitFrames(1);
             ULTIMA_2192_AudioPulse(5500, 1, 5000, 200, 13);
             ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
             ULTIMA_0b86_GRAP_XorFillRect(8, 8, 0xb7, 0xb7);
@@ -70,8 +70,8 @@ void OUTSUBS_0658(void)
 
             for (local_a = 0; local_a < 3; local_a++)
             {
-                D_5c5a[10].animState = 1;
-                ULTIMA_3ae6(1);
+                D_5c5a_actors[10].animState = 1;
+                ULTIMA_3ae6_WaitFrames(1);
             }
 
             local_e_am = 1;
@@ -134,24 +134,24 @@ void OUTSUBS_0658(void)
     local_c = D_5888_karma / 20;
     if (local_c < 4)
     {
-        ULTIMA_256e_ReadFileFromDisk(_TEXT(0x77e4, "KARMA.DAT"), D_b21e, 2000, D_1a74[local_c]);
+        ULTIMA_256e_ReadFileFromDisk(_TEXT(0x77e4, "KARMA.DAT"), D_b21e_scratch, 2000, D_1a74[local_c]);
     }
     else
     {
-        ULTIMA_256e_ReadFileFromDisk(_TEXT(0x77ee, "KARMA.DAT"), D_b21e, 2000, 0x29f);
+        ULTIMA_256e_ReadFileFromDisk(_TEXT(0x77ee, "KARMA.DAT"), D_b21e_scratch, 2000, 0x29f);
     }
 
-    ULTIMA_1850_PrintString(D_b21e);
+    ULTIMA_1850_PrintString(D_b21e_scratch);
     ULTIMA_16ba_PrintChar('\"');
     ULTIMA_266c_GetChar();
     ULTIMA_1850_PrintString(_TEXT(0x77f8, "\n\nThe strangely familiar old man vanishes...\n"));
 
-    D_5c5a[10].tile = D_5c5a[10].animTile = TILE_ACTOR_CIRCLE;
+    D_5c5a_actors[10].tile = D_5c5a_actors[10].animTile = TILE_ACTOR_CIRCLE;
 
-    ULTIMA_1068(GetCombatMap(5, 5), 5, 5);
+    ULTIMA_1068_RevealTile(GetCombatMap(5, 5), 5, 5);
 
-    D_5c5a[10].tile = D_5c5a[10].animTile = 0;
+    D_5c5a_actors[10].tile = D_5c5a_actors[10].animTile = 0;
 
-    ULTIMA_3ae6(1);
-    ULTIMA_4f7c(0);
+    ULTIMA_3ae6_WaitFrames(1);
+    ULTIMA_4f7c_AdvanceTime(0);
 }

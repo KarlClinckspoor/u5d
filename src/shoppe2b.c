@@ -45,8 +45,8 @@ static bool SHOPPES2_080e(int param_1, int param_2, int param_3)
     if (param_1 != 0)
     {
         SHOPPES_017a_PrintShopFileText(0x19ab);
-        D_5953 = D_4d76[D_b114_shopIndex];
-        D_5954 = D_4d7a[D_b114_shopIndex];
+        D_5953_boughtShipX = D_4d76[D_b114_shopIndex];
+        D_5954_boughtShipY = D_4d7a[D_b114_shopIndex];
     }
 
     if (param_2 != 0)
@@ -107,7 +107,7 @@ static void SHOPPES2_08a8(int param_1)
         case 0x46:
             ULTIMA_1850_PrintString(_TEXT(0x9fe4, "F\n\n"));
             local_4_ab = 1;
-            if ((D_6605 & 0xc0) != 0)
+            if ((D_6605_boughtShip & 0xc0) != 0)
             {
                 SHOPPES_017a_PrintShopFileText(0x19f2);
 
@@ -147,7 +147,7 @@ static void SHOPPES2_08a8(int param_1)
                         goto L_end;
                     }
 
-                    D_6605 = 0x82;
+                    D_6605_boughtShip = 0x82;
                     local_4_ab = SHOPPES2_080e(1, 1, param_1);
                 }
                 else
@@ -181,18 +181,18 @@ static void SHOPPES2_08a8(int param_1)
                     goto L_end;
                 }
 
-                if ((D_6605 & 0xc0) == 0)
+                if ((D_6605_boughtShip & 0xc0) == 0)
                 {
-                    D_6605 = 0x40;
+                    D_6605_boughtShip = 0x40;
                     local_4_ab = SHOPPES2_080e(1, 1, param_1);
                 }
-                else if ((D_6605 & 0x80) != 0)
+                else if ((D_6605_boughtShip & 0x80) != 0)
                 {
                     SHOPPES_017a_PrintShopFileText(0x193b);
-                    D_6605++;
+                    D_6605_boughtShip++;
                     local_4_ab = SHOPPES2_080e(0, 1, param_1);
                 }
-                else if ((D_6605 & 0x40) != 0)
+                else if ((D_6605_boughtShip & 0x40) != 0)
                 {
                     SHOPPES_017a_PrintShopFileText(0x195f);
                     local_4_ab = SHOPPES2_080e(0, 0, param_1);

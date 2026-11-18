@@ -224,7 +224,7 @@ static void FONT_02a2(int param_1, int param_2)
     local_4_ab = GetMap(param_1, param_2);
     if (local_4_ab != 0)
     {
-        ULTIMA_10e0_GRAP_51_PutTile(D_b11e[local_4_ab], param_1, param_2 + 7);
+        ULTIMA_10e0_GRAP_51_PutTile(D_b11e_tileFrames[local_4_ab], param_1, param_2 + 7);
         return;
     }
     else
@@ -256,7 +256,7 @@ int FONT_02fc(int param_1)
 
         for (local_6 = 0; local_6 < 32; local_6++)
         {
-            local_4_ab = &D_5c5a[local_6];
+            local_4_ab = &D_5c5a_actors[local_6];
 
             if (local_4_ab->tile != 0)
             {
@@ -334,7 +334,7 @@ static void FONT_0418(int param_1)
     {
         for (local_6_an = 0; local_6_an < 4; local_6_an++)
         {
-            GetCopiedMap(local_4_ab, local_6_an) = GetMap(local_4_ab, local_6_an) = D_b21e[param_1 * 0x80 + local_4_ab + local_6_an * 0x20];
+            GetCopiedMap(local_4_ab, local_6_an) = GetMap(local_4_ab, local_6_an) = D_b21e_scratch[param_1 * 0x80 + local_4_ab + local_6_an * 0x20];
         }
     }
 
@@ -377,10 +377,10 @@ void FONT_04a4(void)
     ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
     ULTIMA_0b10_GRAP_Line(0x78, 0x7f, 199, 0x7f);
 
-    if (D_5893_map_id != 0x42)
+    if (D_5893_mapId != 0x42)
     {
-        ULTIMA_256e_ReadFileFromDisk(_TEXT(0xa044, "MISCMAPS.DAT"), D_b21e, 2000, 0x2c0);
-        if (D_5893_map_id == 0x40)
+        ULTIMA_256e_ReadFileFromDisk(_TEXT(0xa044, "MISCMAPS.DAT"), D_b21e_scratch, 2000, 0x2c0);
+        if (D_5893_mapId == 0x40)
         {
             FONT_0e52();
             while (ULTIMA_0ff4_LoadTileset(*D_25f0) == 0) {}
@@ -388,50 +388,50 @@ void FONT_04a4(void)
         }
     }
 
-    D_5893_map_id = 0x42;
+    D_5893_mapId = 0x42;
 
     for (local_e_am = 0x200; local_e_am < 2000; local_e_am++)
     {
-        switch (D_b21e[local_e_am])
+        switch (D_b21e_scratch[local_e_am])
         {
         case 0:
-            local_c = &D_5c5a[D_b21e[++local_e_am]];
-            local_c->tile = local_c->animTile = D_b21e[++local_e_am];
-            local_c->x = D_b21e[++local_e_am];
-            local_c->y = D_b21e[++local_e_am];
+            local_c = &D_5c5a_actors[D_b21e_scratch[++local_e_am]];
+            local_c->tile = local_c->animTile = D_b21e_scratch[++local_e_am];
+            local_c->x = D_b21e_scratch[++local_e_am];
+            local_c->y = D_b21e_scratch[++local_e_am];
             local_c->animState = 0;
             break;
 
         case 1:
-            local_c = &D_5c5a[D_b21e[++local_e_am]];
+            local_c = &D_5c5a_actors[D_b21e_scratch[++local_e_am]];
             local_c->tile = local_c->animTile = local_c->animState = 0;
 
             GetMap(local_c->x, local_c->y) = GetCopiedMap(local_c->x, local_c->y);
             break;
 
         case 2:
-            local_c = &D_5c5a[D_b21e[++local_e_am]];
-            local_18_ai = D_b21e[++local_e_am];
+            local_c = &D_5c5a_actors[D_b21e_scratch[++local_e_am]];
+            local_18_ai = D_b21e_scratch[++local_e_am];
             GetMap(local_c->x, local_c->y) = GetCopiedMap(local_c->x, local_c->y);
-            local_c->x += D_24d6[local_18_ai];
-            local_c->y += D_24de[local_18_ai];
+            local_c->x += D_24d6_facingDx[local_18_ai];
+            local_c->y += D_24de_facingDy[local_18_ai];
             break;
 
         case 3:
-            if (FONT_02fc(D_b21e[++local_e_am]) != 0)
+            if (FONT_02fc(D_b21e_scratch[++local_e_am]) != 0)
             {
                 return;
             }
             break;
 
         case 4:
-            local_6 = D_b21e[++local_e_am];
-            local_8 = D_b21e[++local_e_am];
+            local_6 = D_b21e_scratch[++local_e_am];
+            local_8 = D_b21e_scratch[++local_e_am];
             GetMap(local_6, local_8) = GetCopiedMap(local_6, local_8) = TILE_MAP_FE;
 
             for (local_10_aa = 1; local_10_aa < 0x10; local_10_aa++)
             {
-                ULTIMA_1112_GRAP_60(local_10_aa, local_6, local_8 + 7);
+                ULTIMA_1112_GRAP_60_Moongate(local_10_aa, local_6, local_8 + 7);
                 if (FONT_02fc(1) != 0)
                 {
                     return;
@@ -451,7 +451,7 @@ void FONT_04a4(void)
             local_10_aa = 0xf;
             do
             {
-                ULTIMA_1112_GRAP_60(local_10_aa, local_6, local_8 + 7);
+                ULTIMA_1112_GRAP_60_Moongate(local_10_aa, local_6, local_8 + 7);
                 if (FONT_02fc(1) != 0)
                 {
                     return;
@@ -467,16 +467,16 @@ void FONT_04a4(void)
             break;
 
         case 6:
-            FONT_0418(D_b21e[++local_e_am]);
+            FONT_0418(D_b21e_scratch[++local_e_am]);
             break;
 
         case 7:
-            local_c = &D_5c5a[D_b21e[++local_e_am]];
+            local_c = &D_5c5a_actors[D_b21e_scratch[++local_e_am]];
             local_a = local_c->tile;
 
             local_c->tile = local_c->animTile = TILE_ACTOR_CIRCLE;
 
-            if (ULTIMA_1068(0x100 + local_a, local_c->x, local_c->y + 7) != 0)
+            if (ULTIMA_1068_RevealTile(0x100 + local_a, local_c->x, local_c->y + 7) != 0)
             {
                 return;
             }
@@ -484,14 +484,14 @@ void FONT_04a4(void)
             break;
 
         case 8:
-            local_c = &D_5c5a[D_b21e[++local_e_am]];
+            local_c = &D_5c5a_actors[D_b21e_scratch[++local_e_am]];
             local_12 = local_c->x;
             local_14_am = local_c->y;
             local_a = local_c->tile;
 
             local_c->tile = local_c->animTile = TILE_ACTOR_CIRCLE;
 
-            if (ULTIMA_1068(GetCopiedMap(local_12, local_14_am), local_12, local_14_am + 7) != 0)
+            if (ULTIMA_1068_RevealTile(GetCopiedMap(local_12, local_14_am), local_12, local_14_am + 7) != 0)
             {
                 return;
             }
@@ -504,9 +504,9 @@ void FONT_04a4(void)
             break;
 
         case 10:
-            local_a = D_b21e[++local_e_am];
-            local_12 = D_b21e[++local_e_am];
-            local_14_am = D_b21e[++local_e_am];
+            local_a = D_b21e_scratch[++local_e_am];
+            local_12 = D_b21e_scratch[++local_e_am];
+            local_14_am = D_b21e_scratch[++local_e_am];
             GetCopiedMap(local_12, local_14_am) = local_a;
             GetMap(local_12, local_14_am) = local_a;
             break;
@@ -531,7 +531,7 @@ void FONT_04a4(void)
 
             local_e_am++;
             local_e_am++;
-            local_c = &D_5c5a[D_b21e[local_e_am]];
+            local_c = &D_5c5a_actors[D_b21e_scratch[local_e_am]];
             ULTIMA_10e0_GRAP_51_PutTile(0, local_c->x, local_c->y + 7);
             ULTIMA_223c_AudioWhiteNoise(1, 0x4b0, 4000);
             if (FONT_02fc(3) != 0)
@@ -543,16 +543,16 @@ void FONT_04a4(void)
         case 0xc:
             for (local_10_aa = 0; local_10_aa < 0x20; local_10_aa++)
             {
-                D_5c5a[local_10_aa].animTile = D_5c5a[local_10_aa].tile = D_5c5a[local_10_aa].animState = 0;
+                D_5c5a_actors[local_10_aa].animTile = D_5c5a_actors[local_10_aa].tile = D_5c5a_actors[local_10_aa].animState = 0;
             }
             break;
 
         case 0xd:
-            local_c = &D_5c5a[D_b21e[++local_e_am]];
-            local_18_ai = D_b21e[++local_e_am];
+            local_c = &D_5c5a_actors[D_b21e_scratch[++local_e_am]];
+            local_18_ai = D_b21e_scratch[++local_e_am];
             GetMap(local_c->x, local_c->y) = GetCopiedMap(local_c->x, local_c->y);
-            local_c->x += D_24d6[local_18_ai];
-            local_c->y += D_24de[local_18_ai];
+            local_c->x += D_24d6_facingDx[local_18_ai];
+            local_c->y += D_24de_facingDy[local_18_ai];
             if (FONT_02fc(7) != 0)
             {
                 return;
@@ -560,7 +560,7 @@ void FONT_04a4(void)
             break;
 
         case 0xe:
-            local_16_ak = D_b21e[++local_e_am];
+            local_16_ak = D_b21e_scratch[++local_e_am];
             local_4_aa = local_e_am;
             break;
 
@@ -631,8 +631,8 @@ static void FONT_09c8(byte* param_1, byte* param_2)
 
     ULTIMA_0d4c_GRAP_4b_PutImage(param_2, local_e_am + 2, D_51fc[local_e_am], D_5204[local_e_am], 0);
     ULTIMA_0d4c_GRAP_4b_PutImage(param_2, local_10_ad_am + 2, D_51fc[local_10_ad_am] + 0xb8, D_5204[local_10_ad_am], 0);
-    ULTIMA_256e_ReadFileFromDisk(_TEXT(0xa052, "QUESTION.DAT"), D_b21e, 2000, D_517c[local_6][local_8]);
-    FONT_0000(param_1, (char*)D_b21e);
+    ULTIMA_256e_ReadFileFromDisk(_TEXT(0xa052, "QUESTION.DAT"), D_b21e_scratch, 2000, D_517c[local_6][local_8]);
+    FONT_0000(param_1, (char*)D_b21e_scratch);
     ULTIMA_0f6e_GRAP_1b_TransferFullscreen(1, 0);
 
     do
@@ -663,7 +663,7 @@ void FONT_0b0a(void)
     byte* local_6;
     byte local_4_ab;
 
-    if (D_5893_map_id != 64)
+    if (D_5893_mapId != 64)
     {
         ULTIMA_102e_UnloadTileset();
     }
@@ -672,18 +672,18 @@ void FONT_0b0a(void)
 
     do
     {
-        local_a = ULTIMA_0fae_LoadResourceFile(D_25ea[0]);
+        local_a = ULTIMA_0fae_LoadResourceFile(D_25ea_fileNames[0]);
     } while (local_a == 0);
 
     do
     {
-        local_6 = ULTIMA_0bae_LoadImageFile(D_25ea[0x10]);
+        local_6 = ULTIMA_0bae_LoadImageFile(D_25ea_fileNames[0x10]);
     } while (local_6 == 0);
 
 #if !defined(TARGET_DOS16)
     FILE_ReadSavegameFile(_TEXT(0xa060, "INIT.GAM"));
 #else
-    ULTIMA_256e_ReadFileFromDisk(_TEXT(0xa060, "INIT.GAM"), &D_55a6, (int)&D_6606 - (int)&D_55a6, 0);
+    ULTIMA_256e_ReadFileFromDisk(_TEXT(0xa060, "INIT.GAM"), &D_55a6_saveStart, (int)&D_6606_saveEnd - (int)&D_55a6_saveStart, 0);
 #endif
     ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b2_blueColor);
     ULTIMA_0aa6_GRAP_3f_FillRect(0x78, 0x78, 200, 0x7e);
@@ -733,13 +733,13 @@ void FONT_0b0a(void)
         AUDIO_StopBgm();
 #endif
 
-        ULTIMA_256e_ReadFileFromDisk(_TEXT(0xa0a6, "QUESTION.DAT"), D_b21e, 2000, 0);
+        ULTIMA_256e_ReadFileFromDisk(_TEXT(0xa0a6, "QUESTION.DAT"), D_b21e_scratch, 2000, 0);
 
         ULTIMA_0c22_GRAP_0f_SelectPage(1);
         D_a9be = 2;
         ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
         ULTIMA_0d4c_GRAP_4b_PutImage(local_6, 0, 0, 0x60, 0);
-        FONT_0000(local_a, D_b21e);
+        FONT_0000(local_a, D_b21e_scratch);
         ULTIMA_0f6e_GRAP_1b_TransferFullscreen(1, 0);
 
         D_5150 = 200;
@@ -783,12 +783,12 @@ void FONT_0b0a(void)
         D_514c[1] = 0xa6;
         D_5154 = 4;
 
-        ULTIMA_256e_ReadFileFromDisk(_TEXT(0xa0b4, "QUESTION.DAT"), D_b21e, 2000, 0x322);
+        ULTIMA_256e_ReadFileFromDisk(_TEXT(0xa0b4, "QUESTION.DAT"), D_b21e_scratch, 2000, 0x322);
         ULTIMA_0c22_GRAP_0f_SelectPage(1);
         ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
         ULTIMA_0d4c_GRAP_4b_PutImage(local_6, 10, 0xa8, 100, 0);
 
-        FONT_0000(local_a, D_b21e);
+        FONT_0000(local_a, D_b21e_scratch);
         D_5154 = 5;
         ULTIMA_0f6e_GRAP_1b_TransferFullscreen(1, 0);
 
@@ -814,22 +814,22 @@ void FONT_0b0a(void)
         ULTIMA_251e_SwitchDisks(3);
 
         // NOT MATCHING: sub al, al vs sub ax, ax
-        memset(D_b21e, 0, 0x100);
+        memset(D_b21e_scratch, 0, 0x100);
 
-        ULTIMA_25d8_WriteFileToDisk(_TEXT(0xa0cc, "SAVED.OOL"), D_b21e, 0x200);
+        ULTIMA_25d8_WriteFileToDisk(_TEXT(0xa0cc, "SAVED.OOL"), D_b21e_scratch, 0x200);
 #if !defined(TARGET_DOS16)
         FILE_WriteSavegameFile(_TEXT(0xa0d6, "SAVED.GAM"));
 #else
-        ULTIMA_25d8_WriteFileToDisk(_TEXT(0xa0d6, "SAVED.GAM"), &D_55a6, (int)&D_6606 - (int)&D_55a6);
+        ULTIMA_25d8_WriteFileToDisk(_TEXT(0xa0d6, "SAVED.GAM"), &D_55a6_saveStart, (int)&D_6606_saveEnd - (int)&D_55a6_saveStart);
 #endif
     }
 
     ULTIMA_251e_SwitchDisks(0);
-    D_5893_map_id = 0x40;
+    D_5893_mapId = 0x40;
 }
 
 #if !defined(TARGET_DOS16) // assembly in the original: src/asm/AFONT.ASM
-// The original saves the first 0x3000 bytes of the video page buffer (segment D_5354) into
+// The original saves the first 0x3000 bytes of the video page buffer (segment D_5354_pageSegment) into
 // overlay area 2 before the tile set is changed, and restores them after; nothing to do here.
 void FONT_0e52(void) {}
 

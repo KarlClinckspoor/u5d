@@ -26,7 +26,7 @@ void ULTIMA_207e_srand(uint param_1)
 #if !defined(TARGET_DOS16)
     srand(param_1);
 #else
-    D_5420 = param_1;
+    D_5420_randomSeed = param_1;
 #endif
 }
 #endif
@@ -35,8 +35,8 @@ void ULTIMA_207e_srand(uint param_1)
 // range: [min..max]
 int ULTIMA_2092_RandomRange(int param_1, int param_2) // inclusive_min, inclusive_max
 {
-    // the original (src/asm/A2056.ASM): D_5420 = ror(D_5420 + 0x9248, 3) ^ 0x9248 + 0x11,
-    // then (D_5420 & 0x7fff) % (max - min + 1) + min
+    // the original (src/asm/A2056.ASM): D_5420_randomSeed = ror(D_5420_randomSeed + 0x9248, 3) ^ 0x9248 + 0x11,
+    // then (D_5420_randomSeed & 0x7fff) % (max - min + 1) + min
     ASSERT(param_1 <= param_2);
 
     return rand() % ((param_2 - param_1) + 1) + param_1;
@@ -46,7 +46,8 @@ int ULTIMA_2092_RandomRange(int param_1, int param_2) // inclusive_min, inclusiv
 #if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 // some busy-wait delay?
-void ULTIMA_20c8_SomeDelay(int param_1, int param_2)
+// Busy-wait: `count` loops of the calibrated length shifted by D_5426[shift].
+void ULTIMA_20c8_Delay(int param_1, int param_2)
 {
     // FMT: empty
 #if defined(ENABLE_SPEED_FIX)
@@ -63,7 +64,7 @@ void ULTIMA_20c8_SomeDelay(int param_1, int param_2)
 #else
     register uint ax, cx;
 
-    ax = D_5356; // timer calibration
+    ax = D_5356_timerCalibration; // timer calibration
     cx = D_5426[param_1];
 
     if (cx != 0)
@@ -138,12 +139,12 @@ void ULTIMA_22c0_AudioTone(uint freq, uint dur)
     return;
 #endif
 
-    if (D_a9ce != 0)
+    if (D_a9ce_soundOn != 0)
     {
         ULTIMA_22e2_PcspkOn(freq);
     }
 
-    ULTIMA_20c8_SomeDelay(1, dur);
+    ULTIMA_20c8_Delay(1, dur);
     ULTIMA_230e_PcspkOff();
 }
 #endif
@@ -153,7 +154,7 @@ void ULTIMA_22c0_AudioTone(uint freq, uint dur)
 // FMT: dummy
 void ULTIMA_22e2_PcspkOn(uint freq)
 {
-    if (D_a9ce != 0)
+    if (D_a9ce_soundOn != 0)
     {
         // start tone
         // NOTE / REF: https://fragglet.github.io/dos-help-files/alang.hlp/x_at_L848b.html
@@ -175,15 +176,15 @@ int ULTIMA_266c_GetChar(void)
 {
     int local_4;
 
-    if (D_52c8 == 2)
+    if (D_52c8_videoDriver == 2)
     {
-        D_5891 = 0xff;
+        D_5891_animate = 0xff;
     }
 
     do
     {
         local_4 = ULTIMA_2032_ToUpper(ULTIMA_1b38_PollKeyWithCursor());
-        if ((local_4 == 0) && (D_5893_map_id < 0x21 || 0x7f < D_5893_map_id))
+        if ((local_4 == 0) && (D_5893_mapId < 0x21 || 0x7f < D_5893_mapId))
         {
             ULTIMA_5910_UpdateFrame();
         }
@@ -247,8 +248,8 @@ static void ULTIMA_2726(int param_1)
     }
 
     // 2758
-    local2_4 = &D_ba14[D_589e];
-    if (D_5893_map_id > 0x7f && D_589e != 0xff && (local2_4->flags & COMBAT_FLAGS_PLAYER) != 0 && local2_4->entityIdx == param_1)
+    local2_4 = &D_ba14_combatants[D_589e_curCombatant];
+    if (D_5893_mapId > 0x7f && D_589e_curCombatant != 0xff && (local2_4->flags & COMBAT_FLAGS_PLAYER) != 0 && local2_4->entityIdx == param_1)
     {
         ULTIMA_16ba_PrintChar(CTRL_CHAR_TOGGLE_INVERSION);
     }
@@ -283,11 +284,11 @@ static void ULTIMA_2726(int param_1)
     // 27fd
     ULTIMA_1a3e_PrintNumber(D_55a8_party[param_1].hp, 4, 0x20);
 
-    if (D_5893_map_id > 0x7f)
+    if (D_5893_mapId > 0x7f)
     {
-        if ((D_ba14[param_1].flags & (COMBAT_FLAGS_PLAYER | COMBAT_FLAGS_MONSTER | COMBAT_FLAGS_DEAD | COMBAT_FLAGS_CHARMED)) ==
+        if ((D_ba14_combatants[param_1].flags & (COMBAT_FLAGS_PLAYER | COMBAT_FLAGS_MONSTER | COMBAT_FLAGS_DEAD | COMBAT_FLAGS_CHARMED)) ==
             (COMBAT_FLAGS_PLAYER | COMBAT_FLAGS_CHARMED) &&
-            D_ba14[param_1].entityIdx == param_1)
+            D_ba14_combatants[param_1].entityIdx == param_1)
         {
             // -> 2849
             ULTIMA_16ba_PrintChar('C');
@@ -298,7 +299,7 @@ static void ULTIMA_2726(int param_1)
             ULTIMA_16ba_PrintChar(D_55a8_party[param_1].status);
         }
 
-        if (D_589e != 0xff && (local2_4->flags & COMBAT_FLAGS_PLAYER) != 0)
+        if (D_589e_curCombatant != 0xff && (local2_4->flags & COMBAT_FLAGS_PLAYER) != 0)
         {
             if (local2_4->entityIdx == param_1)
             {
@@ -318,7 +319,7 @@ void ULTIMA_2884_UpdateGoldDisplay(void)
 {
     int local_2;
 
-    local_2 = D_5386_current_text_window_idx;
+    local_2 = D_5386_textWindowIndex;
     ULTIMA_1b94_SelectTextWindow(1);
     ULTIMA_1bf2_SetTextPosition(8, 7);
     if (D_57aa_gold < 1000)
@@ -367,12 +368,12 @@ void ULTIMA_2900_UpdateVitalsDisplay(void)
         ULTIMA_16ba_PrintChar(' ');
     }
 
-    if ((D_5893_map_id < 0x80) && ((D_587c_partyTile & 0xf8) == TILE_ACTOR_FRIGATE_20))
+    if ((D_5893_mapId < 0x80) && ((D_587c_partyTile & 0xf8) == TILE_ACTOR_FRIGATE_20))
     {
         // ship
         ULTIMA_1850_PrintString(_TEXT(0x54bd, "Ship:"));
-        ULTIMA_1a3e_PrintNumber(D_5c5a[0].value, 1, ' ');
-        if (D_5c5a[0].value < 10)
+        ULTIMA_1a3e_PrintNumber(D_5c5a_actors[0].value, 1, ' ');
+        if (D_5c5a_actors[0].value < 10)
         {
             ULTIMA_16ba_PrintChar(' ');
         }
@@ -384,17 +385,17 @@ void ULTIMA_2900_UpdateVitalsDisplay(void)
 
     ULTIMA_1850_PrintString(_TEXT(0x54c3, "\n   "));
 
-    if ((D_587d < 10) && (D_587e < 10))
+    if ((D_587d_month < 10) && (D_587e_day < 10))
     {
         ULTIMA_16ba_PrintChar(' ');
     }
 
     // date (m/d/y)
-    ULTIMA_1a3e_PrintNumber(D_587d, 1, ' ');
+    ULTIMA_1a3e_PrintNumber(D_587d_month, 1, ' ');
     ULTIMA_16ba_PrintChar('-');
-    ULTIMA_1a3e_PrintNumber(D_587e, 1, ' ');
+    ULTIMA_1a3e_PrintNumber(D_587e_day, 1, ' ');
     ULTIMA_16ba_PrintChar('-');
-    ULTIMA_1a3e_PrintNumber(D_5874, 3, '0');
+    ULTIMA_1a3e_PrintNumber(D_5874_year, 3, '0');
 
     while (ULTIMA_1f12_GetCurrentTextX() < 0xf)
     {
@@ -404,32 +405,34 @@ void ULTIMA_2900_UpdateVitalsDisplay(void)
     ULTIMA_1bf2_SetTextPosition(6, 6);
 
     // icon?
-    if (D_587a != 0)
+    if (D_587a_statusIcon != 0)
     {
-        ULTIMA_4c2a();
-        ULTIMA_16ba_PrintChar(D_587a);
-        ULTIMA_4cce();
+        ULTIMA_4c2a_PrintLeftCap();
+        ULTIMA_16ba_PrintChar(D_587a_statusIcon);
+        ULTIMA_4cce_PrintRightCap();
     }
     else
     {
-        ULTIMA_4f3c();
+        ULTIMA_4f3c_DrawStatsDivider();
     }
 
     ULTIMA_1b94_SelectTextWindow(2);
 }
 
-void ULTIMA_2a28(int param_1)
+// Invert the party member's row in the stats window (the selection bar, the flash of a hit).
+void ULTIMA_2a28_InvertPlayerRow(int param_1)
 {
     ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
     ULTIMA_0b86_GRAP_XorFillRect(0xc0, param_1 * 8 + 8, 0x137, param_1 * 8 + 0xf);
 }
 
 // process damage (show fx, reduce hp)
-void ULTIMA_2a52(int param_1, uint param_2)
+// Hurt a party member: flash and noise, hit points down by `damage`, dead at 0.
+void ULTIMA_2a52_DamagePlayer(int param_1, uint param_2)
 {
-    ULTIMA_2a28(param_1);
+    ULTIMA_2a28_InvertPlayerRow(param_1);
     ULTIMA_223c_AudioWhiteNoise(10, 0x640, 2000);
-    ULTIMA_2a28(param_1);
+    ULTIMA_2a28_InvertPlayerRow(param_1);
 
     D_55a8_party[param_1].hp -= param_2;
     if (D_55a8_party[param_1].hp <= 0)
@@ -446,14 +449,15 @@ void ULTIMA_2a52(int param_1, uint param_2)
 }
 
 // process party damage
-void ULTIMA_2aa8(void)
+// Hurt every living party member by 1-8 points.
+void ULTIMA_2aa8_DamageParty(void)
 {
     int i;
     for (i = 0; i < 6; i++)
     {
         if (i < D_585b_partyCount && D_55a8_party[i].status != STATUS_DEAD)
         {
-            ULTIMA_2a52(i, ULTIMA_2092_RandomRange(1, 8));
+            ULTIMA_2a52_DamagePlayer(i, ULTIMA_2092_RandomRange(1, 8));
         }
     }
 }
@@ -461,7 +465,8 @@ void ULTIMA_2aa8(void)
 void ULTIMA_3ef0_IncreaseByte(byte* param_1, int param_2, int param_3);
 
 // CHECKED
-void ULTIMA_2ae8(void)
+// The end of a turn: poison, food (three meals a day, starving without), the turn count, the protection spell, the regeneration rings.
+void ULTIMA_2ae8_EndTurn(void)
 {
     int local_6;
     int local_8;
@@ -481,39 +486,39 @@ void ULTIMA_2ae8(void)
         {
             if ((uint)local_8 == STATUS_POISONED)
             {
-                ULTIMA_2a52(local_6, 1);
+                ULTIMA_2a52_DamagePlayer(local_6, 1);
             }
 
             local_4_ab++;
         }
     }
 
-    if (D_587f_hour != D_5880)
+    if (D_587f_hour != D_5880_lastHour)
     {
         if (D_57a8_food == 0)
         {
             ULTIMA_1850_PrintString(_TEXT(0x54c8, "Starving!\n"));
-            ULTIMA_2aa8();
+            ULTIMA_2aa8_DamageParty();
         }
         else if (D_587f_hour == 6 || D_587f_hour == 12 || D_587f_hour == 18)
         {
             ULTIMA_3f54_DecreaseInt(&D_57a8_food, local_4_ab);
         }
-        D_5880 = D_587f_hour;
+        D_5880_lastHour = D_587f_hour;
     }
 
-    ULTIMA_3ef0_IncreaseByte(&D_588b, 1, 0xff);
-    if (D_588e != 0 && D_588e != 0xff)
+    ULTIMA_3ef0_IncreaseByte(&D_588b_turnCount, 1, 0xff);
+    if (D_588e_protectTurns != 0 && D_588e_protectTurns != 0xff)
     {
-        D_588e--;
-        if (D_588e == 0)
+        D_588e_protectTurns--;
+        if (D_588e_protectTurns == 0)
         {
-            D_587a = 0;
+            D_587a_statusIcon = 0;
             ULTIMA_2900_UpdateVitalsDisplay();
         }
     }
 
-    ULTIMA_400c();
+    ULTIMA_400c_RingRegeneration();
 }
 
 // IsWalkableTile's tables, in this module's _DATA between its strings (DS:54d4)
@@ -649,7 +654,8 @@ int ULTIMA_2c4c_IsWalkableTile(int actorTile, int targetTile)
 // The gotos to one "local_6 = 1;" keep local_6 to three references, so MSC puts local_a in
 // DI and leaves local_6 in memory, as the original does (written out in each case, MSC
 // picks local_6 instead).
-int ULTIMA_2d7a(int param_1)
+// Ask for a party member with the bar in the stats window (1-6, the arrows, Enter). Returns the index, -1 for Esc, or -2 for 0 where `allowNone` is set.
+int ULTIMA_2d7a_SelectPlayerOrNone(int param_1)
 {
     bool local_6;
     int local_8;
@@ -659,13 +665,13 @@ int ULTIMA_2d7a(int param_1)
     local_4_ab = 0;
     local_a = -1;
     local_6 = 0;
-    if (D_5893_map_id > 0x7f && (D_ba14[D_589e].flags & COMBAT_FLAGS_PLAYER) != 0)
+    if (D_5893_mapId > 0x7f && (D_ba14_combatants[D_589e_curCombatant].flags & COMBAT_FLAGS_PLAYER) != 0)
     {
-        ULTIMA_2a28(D_ba14[D_589e].entityIdx);
+        ULTIMA_2a28_InvertPlayerRow(D_ba14_combatants[D_589e_curCombatant].entityIdx);
     }
 
     // 2db2
-    ULTIMA_4e50(_TEXT(0x5554, "Select:"));
+    ULTIMA_4e50_ShowStatsTitle(_TEXT(0x5554, "Select:"));
     // ^OK
 
     do
@@ -673,7 +679,7 @@ int ULTIMA_2d7a(int param_1)
         // 2dbc
         if (local_a != local_4_ab)
         {
-            ULTIMA_2a28(local_4_ab);
+            ULTIMA_2a28_InvertPlayerRow(local_4_ab);
             local_a = local_4_ab;
         }
 
@@ -721,43 +727,44 @@ int ULTIMA_2d7a(int param_1)
 
         if (local_a != local_4_ab)
         {
-            ULTIMA_2a28(local_a);
+            ULTIMA_2a28_InvertPlayerRow(local_a);
         }
     } while (!local_6);
 
     // 2e6e
     if (-1 < local_4_ab)
     {
-        ULTIMA_2a28(local_4_ab);
+        ULTIMA_2a28_InvertPlayerRow(local_4_ab);
     }
 
-    ULTIMA_4e20();
+    ULTIMA_4e20_ClearStatsTitle();
     return local_4_ab;
 }
 
-int ULTIMA_2e8e(void)
+// Ask for a party member; -1 for Esc.
+int ULTIMA_2e8e_SelectPlayer(void)
 {
-    return ULTIMA_2d7a(0);
+    return ULTIMA_2d7a_SelectPlayerOrNone(0);
 }
 
 void ULTIMA_2e96_SetWindDirection(int direction)
 {
     if (direction != -1)
     {
-        D_5892_wind_dir = (char)direction;
+        D_5892_windDir = (char)direction;
         D_5883 = 0;
     }
 
-    if (D_5893_map_id >= 0x21 || D_5893_map_id == 0x19)
+    if (D_5893_mapId >= 0x21 || D_5893_mapId == 0x19)
         return;
 
-    if (D_5895_map_level < 0x80) // s8 level >= 0?
+    if (D_5895_mapLevel < 0x80) // s8 level >= 0?
     {
         ULTIMA_1b94_SelectTextWindow(0);
         ULTIMA_1bf2_SetTextPosition(6, 0x17);
-        ULTIMA_4c2a();
+        ULTIMA_4c2a_PrintLeftCap();
 
-        switch (D_5892_wind_dir)
+        switch (D_5892_windDir)
         {
         case 0:
             ULTIMA_1850_PrintString(_TEXT(0x555c, "Calm "));
@@ -777,7 +784,7 @@ void ULTIMA_2e96_SetWindDirection(int direction)
         }
 
         ULTIMA_1850_PrintString(_TEXT(0x557a, " Winds"));
-        ULTIMA_4cce();
+        ULTIMA_4cce_PrintRightCap();
         ULTIMA_1b94_SelectTextWindow(2);
     }
     else
@@ -815,14 +822,15 @@ static void ULTIMA_2fa6(int param_1)
     }
 }
 
-void ULTIMA_2fd0(int param_1)
+// A trap goes off on a party member: acid, poison, a bomb or gas.
+void ULTIMA_2fd0_SpringTrap(int param_1)
 {
     int local_4b;
     int local_6a;
 
     ULTIMA_223c_AudioWhiteNoise(0x28, 3000, 500);
 
-    if (D_5893_map_id > 0x7f)
+    if (D_5893_mapId > 0x7f)
     {
         local_4b = ULTIMA_2092_RandomRange(0, 1);
     }
@@ -835,7 +843,7 @@ void ULTIMA_2fd0(int param_1)
     {
     case 0:
         ULTIMA_1850_PrintString(_TEXT(0x5581, "ACID!\n"));
-        ULTIMA_2a52(param_1, ULTIMA_3abe());
+        ULTIMA_2a52_DamagePlayer(param_1, ULTIMA_3abe_Random1To30());
         break;
     case 1:
         ULTIMA_1850_PrintString(_TEXT(0x5588, "POISON!\n"));
@@ -843,7 +851,7 @@ void ULTIMA_2fd0(int param_1)
         break;
     case 2:
         ULTIMA_1850_PrintString(_TEXT(0x5591, "BOMB!\n"));
-        ULTIMA_2aa8();
+        ULTIMA_2aa8_DamageParty();
         break;
     case 3:
         ULTIMA_1850_PrintString(_TEXT(0x5598, "GAS!\n"));
@@ -856,5 +864,5 @@ void ULTIMA_2fd0(int param_1)
     }
 }
 
-// after the last string (DS:559e), used by ULTIMA_2fd0 above
+// after the last string (DS:559e), used by ULTIMA_2fd0_SpringTrap above
 u8 D_559e[8] = { 0x00, 0x00, 0x00, 0x01, 0x01, 0x02, 0x02, 0x03 };

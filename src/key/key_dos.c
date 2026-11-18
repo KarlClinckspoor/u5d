@@ -206,7 +206,7 @@ int ULTIMA_1d5e_PeekKey(void)
     }
 
     // 1d77
-    if (D_538c != 0)
+    if (D_538c_keyBufferOff != 0)
     {
         //ULTIMA_1b24_ClearKeyboardBufferImpl();
         ClearKeyboardBuffer();

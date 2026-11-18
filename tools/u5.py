@@ -76,7 +76,7 @@ OVERLAYS = list(OVERLAY_BASE)
 # INTRO.OVL's 16-byte header is PLINK86's relocation list for the overlay (the only overlay
 # with relocated words): a dword (CS offset, segment 0) for each word that holds the code
 # segment, the later word first, then zeros. Its two entries are the segment halves of the far
-# pointers to ULTIMA_2320 and ULTIMA_2322 that INTRO_132a stores in D_5394_fn.
+# pointers to ULTIMA_2320 and ULTIMA_2322 that INTRO_132a stores in D_5394_diskSwapFn.
 OVERLAY_HEADER = {'INTRO': 0x10}
 
 
@@ -147,6 +147,30 @@ OBJECT_PARTS = [('R2320', 'A2322', 'R251E'), ('INTRO2', 'AINTRO2'), ('AFONT0', '
 # original reaches the overworld map through a name of its own for DS:6608 (vars.h); which
 # object defined it is not known.
 LINK_DEFINES = {'D_6608_OVERWORLD': 'D_6608_MAP'}
+# cmds.c knows 21 globals by their short names (the note at its top: CMDS_0000's pass-2 memory)
+LINK_DEFINES.update({
+    'D_5876': 'D_5876_TEMPX',
+    'D_5878': 'D_5878_TEMPY',
+    'D_587A': 'D_587A_STATUSICON',
+    'D_587D': 'D_587D_MONTH',
+    'D_588C': 'D_588C_CAMPHEALWAIT',
+    'D_588E': 'D_588E_PROTECTTURNS',
+    'D_5894': 'D_5894_SAVEDMAPID',
+    'D_589E': 'D_589E_CURCOMBATANT',
+    'D_595A': 'D_595A_DUNGEONMAP',
+    'D_5C5A': 'D_5C5A_ACTORS',
+    'D_A9CE': 'D_A9CE_SOUNDON',
+    'D_BA14': 'D_BA14_COMBATANTS',
+    'ULTIMA_3AE6': 'ULTIMA_3AE6_WAITFRAMES',
+    'ULTIMA_400C': 'ULTIMA_400C_RINGREGENERATION',
+    'ULTIMA_4A84': 'ULTIMA_4A84_DRAWSUNANDMOONS',
+    'ULTIMA_4F7C': 'ULTIMA_4F7C_ADVANCETIME',
+    'ULTIMA_6800': 'ULTIMA_6800_WAKECOMBATANT',
+    'ULTIMA_6880': 'ULTIMA_6880_SLEEPIFNOTPOISONED',
+    'ULTIMA_6936': 'ULTIMA_6936_INITCOMBATANTS',
+    'ULTIMA_6BC2': 'ULTIMA_6BC2_SETUPCOMBAT',
+    'ULTIMA_6D82': 'ULTIMA_6D82_ISINVIEW',
+})
 
 # The uninitialised (communal) variables, in the order PLINK86 allocated them from the end of
 # the BSS segments (DS:a9bc) to _end (DS:bd40); tools/u5link.py allocates them by their
@@ -156,8 +180,8 @@ LINK_DEFINES = {'D_6608_OVERWORLD': 'D_6608_MAP'}
 # it first met it; within an object that is MSC's symbol-table order, which depends on names
 # the original's source had and u5d does not (docs/MATCHING.md, "The resident data").
 COMMUNALS = [n.upper() for n in (
-    'D_a9bc D_a9bd D_a9be D_a9c0 D_a9c2 D_a9c4 D_a9c6 D_a9c8 D_a9ce D_a9d0 D_a9fa D_a9fb D_a9fc D_aafc_shopName D_aafe_shopOwner D_ab00 D_ab02 D_ac62 D_ac64 D_ad14 '
-    'D_b114_shopIndex D_b116_shopKind D_b118_shopPrice D_b11a D_b11c D_b11e D_b21e D_b9ee D_ba14 D_bb14 D_bb15 D_bb16 D_bb17 '
+    'D_a9bc D_a9bd_curDisk D_a9be D_a9c0 D_a9c2 D_a9c4 D_a9c6 D_a9c8_diskDrives D_a9ce_soundOn D_a9d0 D_a9fa_vitalsDirty D_a9fb D_a9fc_savedActors D_aafc_shopName D_aafe_shopOwner D_ab00 D_ab02_viewTiles D_ac62 D_ac64_viewActors D_ad14_combatMap '
+    'D_b114_shopIndex D_b116_shopKind D_b118_shopPrice D_b11a D_b11c D_b11e_tileFrames D_b21e_scratch D_b9ee D_ba14_combatants D_bb14 D_bb15 D_bb16 D_bb17 '
     'D_bb18 D_bb1a D_bb1c D_bbd2 D_bc88 D_bcb0 '
     'D_bcb2 D_bcda '
     'D_bcdc_talkNpcIndex D_bcde_talkPtr D_bce0_talkCodeArgs D_bce4_talkWord D_bcf4_talkLabel D_bcf6_talkKeywordIndex D_bcf8_inputText '
@@ -262,7 +286,7 @@ def exe_image(gamedata):
 
 
 # u5d's names carry their addresses: ULTIMA_1850_PrintString is CS:1850, TOWN_0052 is
-# offset 0x52 in TOWN.OVL, D_5893_map_id is DS:5893. With /Gc (Pascal names) the object
+# offset 0x52 in TOWN.OVL, D_5893_mapId is DS:5893. With /Gc (Pascal names) the object
 # files hold them in upper case.
 NAME_RE = re.compile(r'^_?([A-Z][A-Z0-9]*)_([0-9A-Fa-f]{4})(?:_|$)')
 

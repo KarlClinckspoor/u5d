@@ -1,0 +1,63 @@
+# Shared vocabulary, batch 4: the game state outside the saved block, the tables, the text
+# and video state. Names from vars.h's comments and from the uses.
+# tables of ULTIMA.EXE's _DATA
+D_1634 D_1634_equipDefense
+D_16d4 D_16d4_enemyCompanion         # the other kind of enemy that may come with one (ULTIMA_6bc2)
+D_1704 D_1704_combatEnemyX           # where the enemies start on the combat map
+D_1714 D_1714_combatEnemyY
+D_1724 D_1724_combatPartyX           # where the party starts
+D_172c D_172c_combatPartyY
+D_17f6 D_17f6_equipNames
+D_1856 D_1856_enemyNames
+D_18b6 D_18b6_enemyNamesPlural
+D_1962 D_1962_equipShortNames
+D_19d2 D_19d2_reagentNames
+D_19e2 D_19e2_spellNames
+D_1a44 D_1a44_classNames
+D_1a6a D_1a6a_statusNames
+D_1b18 D_1b18_animSequences
+D_1e3a D_1e3a_mapNames
+D_1e8a D_1e8a_placeX                 # where each map's place is in the world
+D_1eb2 D_1eb2_placeY
+D_1eda D_1eda_moonPhases             # for each day of the month: Trammel's, Felucca's
+D_1f4e D_1f4e_virtueNames
+D_1f5e D_1f5e_mantras
+D_217e D_217e_beaconX                # the lighthouse lamp (tile 0x2a in a town, 0x1b outside); -1 none
+D_2180 D_2180_beaconY
+D_2182 D_2182_beacon2X
+D_2184 D_2184_beacon2Y
+D_2186 D_2186_beaconStep
+D_24d6 D_24d6_facingDx               # by facing: north, east, south, west
+D_24de D_24de_facingDy
+D_24e6 D_24e6_viewDirty              # the map view must be built again (bit 1: the light map too)
+D_25ea D_25ea_fileNames
+# video and text
+D_52c4 D_52c4_clipEnabled
+D_52c8 D_52c8_videoDriver
+D_52da_pen_color D_52da_penColor
+D_5350 D_5350_driverEntry            # far pointer into the video driver; the offset is the function number
+D_5354 D_5354_pageSegment
+D_5356 D_5356_timerCalibration
+D_5358 D_5358_memorySize
+D_535c D_535c_dosError
+D_5386_current_text_window_idx D_5386_textWindowIndex
+D_5388_current_charset_idx D_5388_charsetIndex
+D_538c D_538c_keyBufferOff           # Ctrl-B: "Buffer Off/On"
+D_5394_fn D_5394_diskSwapFn
+D_53aa_text_fg_color D_53aa_textFgColor
+D_53ab_text_bg_color D_53ab_textBgColor
+D_5420 D_5420_randomSeed
+D_6a0a D_6a0a_powersOfTen
+D_6a34_u8 D_6a34_ambientTick
+# communal variables
+D_a9bd D_a9bd_curDisk                # the disk wanted (ULTIMA_251e_SwitchDisks)
+D_a9c8 D_a9c8_diskDrives             # the drive of each disk; 0xff: not set
+D_a9ce D_a9ce_soundOn
+D_a9fa D_a9fa_vitalsDirty
+D_a9fc D_a9fc_savedActors            # D_5c5a_actors during combat
+D_ab02 D_ab02_viewTiles              # the 11x11 view, 0x20 bytes a row: 0 an actor (in D_ac64_viewActors), 0xff hidden
+D_ac64 D_ac64_viewActors
+D_ad14 D_ad14_combatMap              # the combat map; outside combat the 32x32 light map
+D_b11e D_b11e_tileFrames             # the tile drawn for each map tile (animation)
+D_b21e D_b21e_scratch
+D_ba14 D_ba14_combatants

@@ -45,21 +45,21 @@ int INTRO_0050_LordBritishAnim(int param_1, int param_2)
     int local_4_ab;
 
 #if !defined(MATCHING_BUILD)
-    local_6 = D_b21e;
+    local_6 = D_b21e_scratch;
     ASSERT(SCRATCH_SIZE >= 2783); // BRITISH.PTH file size
 #define MEM_SIZE SCRATCH_SIZE
 #else
     // DOS: uses savegame area
-    local_6 = &D_55a6;
-#define MEM_SIZE ((byte*)&D_6606 - (byte*)&D_55a6) /*0x1060*/
+    local_6 = &D_55a6_saveStart;
+#define MEM_SIZE ((byte*)&D_6606_saveEnd - (byte*)&D_55a6_saveStart) /*0x1060*/
 #endif
 
     local_e = D_13b0_brightWhiteColor;
 
     ULTIMA_0a70_GRAP_2d_SetPenColor(local_e);
 
-    local_4_ab = D_5356;
-    D_5356 = 0x113;
+    local_4_ab = D_5356_timerCalibration;
+    D_5356_timerCalibration = 0x113;
 
     for (local_8 = D_bb18; local_8 < MEM_SIZE; local_8++)
     {
@@ -97,7 +97,7 @@ int INTRO_0050_LordBritishAnim(int param_1, int param_2)
 
         if (ULTIMA_1d5e_PollKey() != 0)
         {
-            D_5356 = local_4_ab;
+            D_5356_timerCalibration = local_4_ab;
             return 0;
         }
 
@@ -111,7 +111,7 @@ int INTRO_0050_LordBritishAnim(int param_1, int param_2)
     }
 
     D_bb18 = local_8 + 1;
-    D_5356 = local_4_ab;
+    D_5356_timerCalibration = local_4_ab;
 
     return D_bb18;
 #undef MEM_SIZE

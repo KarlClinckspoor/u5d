@@ -209,7 +209,7 @@ void ULTIMA_1850_PrintString(char* param_1)
     if (*param_1 != '\0')
     {
         // 1872
-        local_12 = &D_535e_textWindows[D_5386_current_text_window_idx];
+        local_12 = &D_535e_textWindows[D_5386_textWindowIndex];
         local_1a_ap = local_12->flags & 2;
         local_44_aj = (uint)local_12->right - (uint)local_12->left; // text_window_width = r - l;
 

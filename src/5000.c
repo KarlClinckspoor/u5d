@@ -1,4 +1,4 @@
-// Resident code from CS:51a0 to 5a28: an object of its own, compiled with MSC 5.0 (ULTIMA_5394
+// Resident code from CS:51a0 to 5a28: an object of its own, compiled with MSC 5.0 (ULTIMA_5394_PutActorsInView
 // matches only under 5.0; 5a28, 5d0a and 5e4a only under 5.1, in r5a28.c).
 
 #include "common/common.h"
@@ -17,7 +17,7 @@
 
 static int ULTIMA_51a0(void)
 {
-    if (D_587a == 'T')
+    if (D_587a_statusIcon == 'T')
     {
         return 0;
     }
@@ -154,7 +154,8 @@ static void ULTIMA_51b8(int param_1, int param_2, int param_3, int param_4, int 
 // MSC 5.0 (this object is 5.0, r5a28.c after it 5.1): only 5.0 replaces the loop test with a
 // pointer compare (cmp [bp-26h],5C5Bh; jb) while keeping the dec of local_c; 5.1 gives
 // dec/jns. The loop must be a for: a do-while is never strength-reduced (13 pointer temporaries).
-void ULTIMA_5394(void)
+// Put the party and the actors on their cells of the view (sitting, sleeping and climbing shapes by the tile under them).
+void ULTIMA_5394_PutActorsInView(void)
 {
     int local_e_am;
     int local_c;
@@ -164,24 +165,24 @@ void ULTIMA_5394(void)
     byte local_6;
     byte local_4_ab;
 
-    if (D_5893_map_id < 0x80)
+    if (D_5893_mapId < 0x80)
     {
-        D_5c5a[0].x = D_5896_map_x;
-        D_5c5a[0].y = D_5897_map_y;
-        D_5c5a[0].z = D_5895_map_level;
-        D_5c5a[0].animTile = D_5c5a[0].tile = D_587c_partyTile;
+        D_5c5a_actors[0].x = D_5896_mapX;
+        D_5c5a_actors[0].y = D_5897_mapY;
+        D_5c5a_actors[0].z = D_5895_mapLevel;
+        D_5c5a_actors[0].animTile = D_5c5a_actors[0].tile = D_587c_partyTile;
         
         for (local_e_am = 0; local_e_am < 0xb; local_e_am++)
         {
             for (local_c = 0; local_c < 0xb; local_c++)
             {
                 if (GetMapViewport(local_c, local_e_am) == TILE_MAP_DD &&
-                    ULTIMA_6ff0(local_c, local_e_am) > 5)
+                    ULTIMA_6ff0_DistanceFromCenter(local_c, local_e_am) > 5)
                 {
                     GetMapViewport(local_c, local_e_am) = TILE_MAP_1C;
                 }
                 else if (GetMapViewport(local_c, local_e_am) == TILE_MAP_1C &&
-                    ULTIMA_6ff0(local_c, local_e_am) <= 5)
+                    ULTIMA_6ff0_DistanceFromCenter(local_c, local_e_am) <= 5)
                 {
                     GetMapViewport(local_c, local_e_am) = TILE_MAP_DD;
                 }
@@ -192,65 +193,66 @@ void ULTIMA_5394(void)
     // 542a
     for (local_c = 31; local_c >= 0; local_c--)
     {
-        if (D_5c5a[local_c].tile != 0)
+        if (D_5c5a_actors[local_c].tile != 0)
         {
-            local_8 = local_4_ab = D_5c5a[local_c].x;
-            local_a = local_6 = D_5c5a[local_c].y;
+            local_8 = local_4_ab = D_5c5a_actors[local_c].x;
+            local_a = local_6 = D_5c5a_actors[local_c].y;
 
-            if (D_5893_map_id < 0x80)
+            if (D_5893_mapId < 0x80)
             {
-                local_8 -= D_5896_map_x - 5;
-                local_a -= D_5897_map_y - 5;
-                if (D_5c5a[local_c].z != D_5895_map_level || local_8 > 10 || local_a > 10)
+                local_8 -= D_5896_mapX - 5;
+                local_a -= D_5897_mapY - 5;
+                if (D_5c5a_actors[local_c].z != D_5895_mapLevel || local_8 > 10 || local_a > 10)
                     continue;
             }
 
-            if (D_5c5a[local_c].animTile != 0 &&
+            if (D_5c5a_actors[local_c].animTile != 0 &&
                 GetMapViewport(local_8, local_a) != 0xff &&
                 GetMapViewport(local_8, local_a) != TILE_MAP_87)
             {
-                if ((D_5c5a[local_c].tile & 0xfc) == TILE_ACTOR_E8 || D_5c5a[local_c].tile == TILE_ACTOR_SLEEP || D_5c5a[local_c].tile == TILE_ACTOR_DEAD)
+                if ((D_5c5a_actors[local_c].tile & 0xfc) == TILE_ACTOR_E8 || D_5c5a_actors[local_c].tile == TILE_ACTOR_SLEEP || D_5c5a_actors[local_c].tile == TILE_ACTOR_DEAD)
                 {
                     // 5503
                     if (GetMapViewport(local_8, local_a) != 0)
                     {
-                        GetActorMap(local_8, local_a) = D_5c5a[local_c].animTile;
+                        GetActorMap(local_8, local_a) = D_5c5a_actors[local_c].animTile;
                         GetMapViewport(local_8, local_a) = 0;
                     }
                 }
-                else if (D_5c5a[local_c].animTile == TILE_ACTOR_1D || D_5c5a[local_c].animTile == TILE_ACTOR_SLEEP)
+                else if (D_5c5a_actors[local_c].animTile == TILE_ACTOR_1D || D_5c5a_actors[local_c].animTile == TILE_ACTOR_SLEEP)
                 {
-                    GetActorMap(local_8, local_a) = D_5c5a[local_c].animTile;
+                    GetActorMap(local_8, local_a) = D_5c5a_actors[local_c].animTile;
                     GetMapViewport(local_8, local_a) = 0;
                 }
-                else if (D_5c5a[local_c].tile == TILE_ACTOR_BARD)
+                else if (D_5c5a_actors[local_c].tile == TILE_ACTOR_BARD)
                 {
                     if (GetMapViewport(local_8, local_a) == TILE_MAP_CHAIR_92)
                     {
-                        GetActorMap(local_8, local_a) = D_5c5a[local_c].animTile;
+                        GetActorMap(local_8, local_a) = D_5c5a_actors[local_c].animTile;
                         GetMapViewport(local_8, local_a) = 0;
                     }
                     else
                     {
-                        ULTIMA_51b8(local_8, local_a, local_4_ab, local_6, D_5c5a[local_c].animTile - 8);
+                        ULTIMA_51b8(local_8, local_a, local_4_ab, local_6, D_5c5a_actors[local_c].animTile - 8);
                     }
                 }
                 else
                 {
-                    ULTIMA_51b8(local_8, local_a, local_4_ab, local_6, D_5c5a[local_c].animTile);
+                    ULTIMA_51b8(local_8, local_a, local_4_ab, local_6, D_5c5a_actors[local_c].animTile);
                 }
             }
         }
     }
 }
 
-int ULTIMA_5646(int param_1)
+// Whether a combatant fights against the party: a monster that is not charmed, a party member who is. 0 for the dead.
+int ULTIMA_5646_IsEnemy(int param_1)
 {
     int local1_6;
     int local2_4;
 
-    local1_6 = D_ba14[param_1].flags;
-    local2_4 = D_ba14[param_1].entityIdx;
+    local1_6 = D_ba14_combatants[param_1].flags;
+    local2_4 = D_ba14_combatants[param_1].entityIdx;
 
     if ((local1_6 & COMBAT_FLAGS_DEAD) != 0)
     {
@@ -300,24 +302,24 @@ void ULTIMA_56ac_DrawMap(void)
             }
             else
             {
-                if (GetMapViewport(local_6_an, local_8_al) == TILE_MAP_MOONGATE && D_5887 != 0 && D_5887 < 0x10)
+                if (GetMapViewport(local_6_an, local_8_al) == TILE_MAP_MOONGATE && D_5887_moongateHeight != 0 && D_5887_moongateHeight < 0x10)
                 {
                     // moongate?
-                    ULTIMA_1112_GRAP_60(D_5887, local_6_an, local_8_al);
+                    ULTIMA_1112_GRAP_60_Moongate(D_5887_moongateHeight, local_6_an, local_8_al);
                 }
                 else
                 {
                     // draw map tile
-                    ULTIMA_10e0_GRAP_51_PutTile(D_b11e[GetMapViewport(local_6_an, local_8_al)], local_6_an, local_8_al);
+                    ULTIMA_10e0_GRAP_51_PutTile(D_b11e_tileFrames[GetMapViewport(local_6_an, local_8_al)], local_6_an, local_8_al);
                 }
             }
         }
     }
 
-    if (0x7f < D_5893_map_id && (D_589f = !D_589f) != 0 && D_589e != 0xff && ULTIMA_5646(D_589e) == 0)
+    if (0x7f < D_5893_mapId && (D_589f_focusBlink = !D_589f_focusBlink) != 0 && D_589e_curCombatant != 0xff && ULTIMA_5646_IsEnemy(D_589e_curCombatant) == 0)
     {
-        local_2 = (uint)D_ba14[D_589e].x * 0x10 + 8;
-        local_4 = (uint)D_ba14[D_589e].y * 0x10 + 8;
+        local_2 = (uint)D_ba14_combatants[D_589e_curCombatant].x * 0x10 + 8;
+        local_4 = (uint)D_ba14_combatants[D_589e_curCombatant].y * 0x10 + 8;
 
         ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
 
@@ -330,12 +332,12 @@ void ULTIMA_56ac_DrawMap(void)
             }
         }
 
-        if (D_5898 != 0)
+        if (D_5898_crosshairOn != 0)
         {
             // 5813
             // draw crosshair / focus
-            local_2 = (uint)D_5899 * 0x10 + 8; // cross hair x
-            local_4 = (uint)D_589a * 0x10 + 8; // cross hair y
+            local_2 = (uint)D_5899_crosshairX * 0x10 + 8; // cross hair x
+            local_4 = (uint)D_589a_crosshairY * 0x10 + 8; // cross hair y
 
             // 586a
             for (local_6_an = 0; local_6_an < 2; local_6_an++)
@@ -345,10 +347,10 @@ void ULTIMA_56ac_DrawMap(void)
                     // 5887
                     ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
                     ULTIMA_0b10_GRAP_Line(local_8_al * 0xb + local_2 + 2, local_6_an * 3 + local_4 + 6, local_8_al * 3 + local_2 + 6, local_6_an * 3 + local_4 + 6);
-                    ULTIMA_0f90_GRAP_Pen(local_8_al * 3 + local_2 + 6, local_6_an * 0xb + local_4 + 2);
+                    ULTIMA_0f90_GRAP_LineTo(local_8_al * 3 + local_2 + 6, local_6_an * 0xb + local_4 + 2);
                     ULTIMA_0a70_GRAP_2d_SetPenColor(0);
                     ULTIMA_0b10_GRAP_Line(local_8_al * 0xb + local_2 + 2, local_6_an * 5 + local_4 + 5, local_8_al * 5 + local_2 + 5, local_6_an * 5 + local_4 + 5);
-                    ULTIMA_0f90_GRAP_Pen(local_8_al * 5 + local_2 + 5, local_6_an * 0xb + local_4 + 2);
+                    ULTIMA_0f90_GRAP_LineTo(local_8_al * 5 + local_2 + 5, local_6_an * 0xb + local_4 + 2);
                     ULTIMA_0b10_GRAP_Line(local_8_al * 0xb + local_2 + 2, local_4 + local_6_an + 7, local_8_al * 3 + local_2 + 6, local_4 + local_6_an + 7);
 
                     ULTIMA_0b10_GRAP_Line(local_2 + local_8_al + 7, local_6_an * 3 + local_4 + 6, local_2 + local_8_al + 7, local_6_an * 0xb + local_4 + 2);
@@ -365,32 +367,32 @@ void ULTIMA_5910_UpdateFrame(void)
     int local_4;
 
     D_545e = 0xff;
-    if (D_587a == 'T')
+    if (D_587a_statusIcon == 'T')
     {
-        D_5891 = 0;
+        D_5891_animate = 0;
     }
-    if (D_58a4 != 0)
+    if (D_58a4_viewOn != 0)
     {
-        if (D_5891 != 0) // animate flag
+        if (D_5891_animate != 0) // animate flag
         {
-            if (D_5891 != 0xff)
+            if (D_5891_animate != 0xff)
             {
                 ULTIMA_4552_AnimateActors();
             }
             ULTIMA_2f62_UpdateWindDirectionRandomly();
-            if (D_5893_map_id < 0x80)
+            if (D_5893_mapId < 0x80)
             {
-                ULTIMA_475a();
-                ULTIMA_70a6();
+                ULTIMA_475a_UpdateMoongates();
+                ULTIMA_70a6_AnimateLighthouse();
             }
         }
 
-        if (D_5893_map_id < 0x80)
+        if (D_5893_mapId < 0x80)
         {
-            if (D_24e6 != 0)
+            if (D_24e6_viewDirty != 0)
             {
-                ULTIMA_5d0a(D_58a5, (uint)D_5896_map_x - (uint)D_589b, (uint)D_5897_map_y - (uint)D_589c, 0xb);
-                D_24e6 = 0;
+                ULTIMA_5d0a_BuildView(D_58a5_lightLevel, (uint)D_5896_mapX - (uint)D_589b_mapOriginX, (uint)D_5897_mapY - (uint)D_589c_mapOriginY, 0xb);
+                D_24e6_viewDirty = 0;
             }
             else
             {
@@ -401,7 +403,7 @@ void ULTIMA_5910_UpdateFrame(void)
                         if (GetMapViewport(local_2, local_4) == 0)
                         {
                             GetMapViewport(local_2, local_4) =
-                                *ULTIMA_4402_GetTileAddr((byte)local_2 + (uint)D_5896_map_x - 5, (byte)local_4 + (uint)D_5897_map_y - 5);
+                                *ULTIMA_4402_GetTileAddr((byte)local_2 + (uint)D_5896_mapX - 5, (byte)local_4 + (uint)D_5897_mapY - 5);
                         }
                     }
                 }
@@ -409,16 +411,16 @@ void ULTIMA_5910_UpdateFrame(void)
         }
         else // map_id >= 0x80; combat?
         {
-            memcpy(D_ab02, D_ad14, 0x160);
+            memcpy(D_ab02_viewTiles, D_ad14_combatMap, 0x160);
         }
 
-        ULTIMA_5394();
+        ULTIMA_5394_PutActorsInView();
         ULTIMA_56ac_DrawMap();
-        if (D_5891 != 0)
+        if (D_5891_animate != 0)
         {
             ULTIMA_4102_AudioPlayAmbientSfx();
         }
     }
 
-    D_5891 = 1;
+    D_5891_animate = 1;
 }

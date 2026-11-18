@@ -60,7 +60,7 @@ static int OUTSUBS_0000(uint param_1)
     {
         if (D_3866[local2_4] == param_1)
         {
-            local1_6 = D_58d0[local2_4] == 0;
+            local1_6 = D_58d0_dungeonOpen[local2_4] == 0;
             break;
         }
     }
@@ -80,7 +80,7 @@ static int OUTSUBS_004a(int param_1)
         // 0063
         if (D_386e[local2_4] == param_1)
         {
-            local1_6 = 0x7f < D_58d8[local2_4];
+            local1_6 = 0x7f < D_58d8_shrineDestroyed[local2_4];
             break;
         }
     }
@@ -115,7 +115,7 @@ static void OUTSUBS_0098(char* param_1/*file_name*/, int param_2/*layer?*/, int 
     }
 
     // 00e2
-    if (D_5895_map_level != 0)
+    if (D_5895_mapLevel != 0)
     {
         ULTIMA_251e_SwitchDisks(5);
     }
@@ -161,9 +161,9 @@ void OUTSUBS_01b4(int param_1, int param_2)
     int local_6;
     char* local_4_ab;
 
-    local_a = D_589b * 0x10 + D_589c * 0x100;
+    local_a = D_589b_mapOriginX * 0x10 + D_589c_mapOriginY * 0x100;
 
-    if (D_589b == 0xf0)
+    if (D_589b_mapOriginX == 0xf0)
     {
         local_6 = -0xf00; // 0xf100?
     }
@@ -174,7 +174,7 @@ void OUTSUBS_01b4(int param_1, int param_2)
     }
 
     // 01e1
-    if (D_5895_map_level > 0x7f)
+    if (D_5895_mapLevel > 0x7f)
     {
         local_4_ab = /*0x3976*/ "UNDER.DAT";
     }
@@ -208,21 +208,21 @@ void OUTSUBS_01b4(int param_1, int param_2)
     local_8 = memchr(D_6608, 0x1b, 0x400);
     if (local_8 == 0)
     {
-        D_217e = D_2180 = -1;
+        D_217e_beaconX = D_2180_beaconY = -1;
     }
     else
     {
         // 028c
         local_c = (int)(local_8 - D_6608);
-        D_217e = local_c & 0xf;
-        D_2180 = ((byte)local_c & 0xf0) >> 4;
+        D_217e_beaconX = local_c & 0xf;
+        D_2180_beaconY = ((byte)local_c & 0xf0) >> 4;
         if ((local_c & 0x100) != 0)
         {
-            D_217e += 0x10;
+            D_217e_beaconX += 0x10;
         }
         if ((local_c & 0x200) != 0)
         {
-            D_2180 += 0x10;
+            D_2180_beaconY += 0x10;
         }
     }
 }
@@ -249,7 +249,7 @@ void OUTSUBS_02c8(int param_1, int param_2)
 char* OUTSUBS_0368_GetWorldSavefile(void)
 {
     char* local_4;
-    if (D_5895_map_level == 0)
+    if (D_5895_mapLevel == 0)
     {
         local_4 = /*0x3989*/ "BRIT.OOL";
     }
@@ -272,7 +272,7 @@ int OUTSUBS_0388_EnterTown(char* param_1)
 
     for (local_6_an = 0; local_6_an < 0x20; local_6_an++)
     {
-        if (D_1e8a[local_6_an] == D_5896_map_x && (D_1eb2[local_6_an] == D_5897_map_y))
+        if (D_1e8a_placeX[local_6_an] == D_5896_mapX && (D_1eb2_placeY[local_6_an] == D_5897_mapY))
             break;
     }
 
@@ -282,12 +282,12 @@ int OUTSUBS_0388_EnterTown(char* param_1)
         {
             ULTIMA_1850_PrintString(_TEXT(0x399c, "\n\n"));
             ULTIMA_16ba_PrintChar(CTRL_CHAR_CENTER_TEXT);
-            ULTIMA_1850_PrintString(D_1e3a[local_6_an]);
+            ULTIMA_1850_PrintString(D_1e3a_mapNames[local_6_an]);
             ULTIMA_16ba_PrintChar(CTRL_CHAR_UNCENTER_TEXT);
         }
 
         ULTIMA_16ba_PrintChar('\n');
-        if (D_a9bd[0] != 1)
+        if (D_a9bd_curDisk[0] != 1)
         {
             ULTIMA_251e_SwitchDisks(1);
 
@@ -295,11 +295,11 @@ int OUTSUBS_0388_EnterTown(char* param_1)
                 ;
         }
 
-        ULTIMA_25d8_WriteFileToDisk(OUTSUBS_0368_GetWorldSavefile(), D_5c5a, 0x100);
-        D_5893_map_id = local_6_an + 1;
-        D_5895_map_level = 0;
-        D_5896_map_x = 0xf;
-        D_5897_map_y = 0x1e;
+        ULTIMA_25d8_WriteFileToDisk(OUTSUBS_0368_GetWorldSavefile(), D_5c5a_actors, 0x100);
+        D_5893_mapId = local_6_an + 1;
+        D_5895_mapLevel = 0;
+        D_5896_mapX = 0xf;
+        D_5897_mapY = 0x1e;
         local_4 = 0;
     }
     else
@@ -327,27 +327,27 @@ void OUTSUBS_0458_Falls(void)
 
     ULTIMA_1850_PrintString(_TEXT(0x39b5, "F-A-L-L-S!!!\n"));
     MAINOUT_0354(0, 1);
-    ULTIMA_3ae6(1);
+    ULTIMA_3ae6_WaitFrames(1);
     MAINOUT_0354(0, 1);
     ULTIMA_43ae_AudioSweepTone(0x9c4, 800, 1, 300);
 
     local_6_an = D_587c_partyTile;
     D_587c_partyTile = 0;
 
-    ULTIMA_3ae6(1);
+    ULTIMA_3ae6_WaitFrames(1);
 
     for (local_4 = 0; local_4 < D_585b_partyCount; local_4++)
     {
-        if (D_55a8_party[local_4].status != STATUS_DEAD && D_55a8_party[local_4].dex <= ULTIMA_3abe())
+        if (D_55a8_party[local_4].status != STATUS_DEAD && D_55a8_party[local_4].dex <= ULTIMA_3abe_Random1To30())
         {
-            ULTIMA_2a52(local_4, 1);
+            ULTIMA_2a52_DamagePlayer(local_4, 1);
         }
     }
 
-    ULTIMA_3ae6(2);
+    ULTIMA_3ae6_WaitFrames(2);
     D_587c_partyTile = local_6_an;
 
-    if (D_5896_map_x == 0x36 && D_5897_map_y == 0x8a)
+    if (D_5896_mapX == 0x36 && D_5897_mapY == 0x8a)
     {
         ULTIMA_1850_PrintString(_TEXT(0x39c3, "Falling into underworld!!\n"));
 
@@ -355,16 +355,16 @@ void OUTSUBS_0458_Falls(void)
         AUDIO_StopBgm();
 #endif
 
-        D_5895_map_level = 0xff;
+        D_5895_mapLevel = 0xff;
 
-        ULTIMA_25d8_WriteFileToDisk(/*0x39de*/ "BRIT.OOL", D_5c5a, 0x100);
-        ULTIMA_256e_ReadFileFromDisk(/*0x39e7*/ "UNDER.OOL", D_5c5a, 0x100, 0);
+        ULTIMA_25d8_WriteFileToDisk(/*0x39de*/ "BRIT.OOL", D_5c5a_actors, 0x100);
+        ULTIMA_256e_ReadFileFromDisk(/*0x39e7*/ "UNDER.OOL", D_5c5a_actors, 0x100, 0);
         ULTIMA_251e_SwitchDisks(5);
 
         while (ULTIMA_1674_TestOpenFile(/*0x39f1*/ "UNDER.DAT") == 0)
             ;
 
-        ULTIMA_25d8_WriteFileToDisk(/*0x39fb*/ "UNDER.OOL", D_5c5a, 0x100);
+        ULTIMA_25d8_WriteFileToDisk(/*0x39fb*/ "UNDER.OOL", D_5c5a_actors, 0x100);
         MAINOUT_0000(); // THUNK 7b7e
 
 #if defined(ENABLE_BGM)
@@ -378,12 +378,12 @@ void OUTSUBS_0566(void)
     int local1_6;
     ActorFmt* local2_4;
 
-    if (D_5895_map_level != 0)
+    if (D_5895_mapLevel != 0)
     {
-        if (D_57b3 == 0)
+        if (D_57b3_amulet == 0)
         {
-            // D_5c5a[28] == 5d3a
-            local2_4 = &D_5c5a[28];
+            // D_5c5a_actors[28] == 5d3a
+            local2_4 = &D_5c5a_actors[28];
             local2_4->tile = local2_4->animTile = TILE_ACTOR_AMULET_LB;
             local2_4->x = 0x69;
             local2_4->y = 0xe1;
@@ -394,10 +394,10 @@ void OUTSUBS_0566(void)
         // 059d
         for (local1_6 = 0; local1_6 < 3; local1_6++)
         {
-            if (D_57b6[local1_6] == 0 && D_58c8[local1_6] < 0x80)
+            if (D_57b6_shards[local1_6] == 0 && D_58c8_shadowlordTowns[local1_6] < 0x80)
             {
-                // D_5c5a[29] == 5d42
-                local2_4 = &D_5c5a[local1_6 + 29];
+                // D_5c5a_actors[29] == 5d42
+                local2_4 = &D_5c5a_actors[local1_6 + 29];
                 local2_4->tile = local2_4->animTile = TILE_ACTOR_SHARD;
                 local2_4->x = D_3a06[local1_6];
                 local2_4->y = D_3a0a[local1_6];
@@ -413,7 +413,7 @@ void OUTSUBS_05ee_StepOnBurningTile(void)
 {
     ULTIMA_5910_UpdateFrame();
     ULTIMA_1850_PrintString(_TEXT(0x3a11, "Burning!\n"));
-    ULTIMA_2aa8();
+    ULTIMA_2aa8_DamageParty();
 }
 
 // step on poison tile

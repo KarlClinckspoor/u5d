@@ -390,7 +390,7 @@ class Linker:
             else:
                 continue
             # 5: an offset the loader may resolve, which MSC writes for the address of a far
-            # function (D_5394_fn = ULTIMA_2322_DiskSwapMessage); it is placed as an offset
+            # function (D_5394_diskSwapFn = ULTIMA_2322_DiskSwapMessage); it is placed as an offset
             if fx.kind in (omf.LOC_OFFSET, 5):
                 if fx.self_rel:
                     v = taddr + fx.disp - (loc + 2)

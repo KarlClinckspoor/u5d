@@ -40,13 +40,13 @@ DGROUP	GROUP	CONST, _BSS, _DATA
 	EXTRN	ULTIMA_256E_READFILEFROMDISK:NEAR
 	EXTRN	ULTIMA_25D8_WRITEFILETODISK:NEAR
 	EXTRN	D_3304:WORD
-	EXTRN	D_5394_FN:WORD
+	EXTRN	D_5394_DISKSWAPFN:WORD
 	EXTRN	ULTIMA_2320_NODISKSWAPMESSAGE:FAR
 	EXTRN	ULTIMA_2322_DISKSWAPMESSAGE:FAR
 	EXTRN	D_55A8_PARTY:BYTE
-	EXTRN	D_5893_MAP_ID:BYTE
-	EXTRN	D_A9BD:BYTE
-	EXTRN	D_A9C8:BYTE
+	EXTRN	D_5893_MAPID:BYTE
+	EXTRN	D_A9BD_CURDISK:BYTE
+	EXTRN	D_A9C8_DISKDRIVES:BYTE
 
 ; this module's own data in DGROUP (DS:3345-3655)
 _DATA	SEGMENT
@@ -216,10 +216,10 @@ INTRO_132A_TRANSFERFROMU4:
 	push di
 	push si
 ; GOG (to 134d): a map id of 42h becomes 41h, as in 1.16, and both U4 drives (D_a9cb,
-; D_a9cc) are the program's drive D_a9c8 (1.16: 0ffh, to be asked for)
-	mov al,BYTE PTR D_5893_MAP_ID
+; D_a9cc) are the program's drive D_A9C8_DISKDRIVES (1.16: 0ffh, to be asked for)
+	mov al,BYTE PTR D_5893_MAPID
 L_1335:
-	mov BYTE PTR D_5893_MAP_ID,al
+	mov BYTE PTR D_5893_MAPID,al
 	cmp al,42h
 	jne	L_1340
 	mov al,41h
@@ -227,9 +227,9 @@ L_1335:
 L_1340:
 	db	030h, 0e4h	; xor ah,ah
 	mov [bp-0ch],ax
-	mov al,BYTE PTR D_A9C8
-	mov BYTE PTR D_A9C8+3,al
-	mov BYTE PTR D_A9C8+4,al
+	mov al,BYTE PTR D_A9C8_DISKDRIVES
+	mov BYTE PTR D_A9C8_DISKDRIVES+3,al
+	mov BYTE PTR D_A9C8_DISKDRIVES+4,al
 	mov ax,OFFSET DGROUP:D_3345
 	push ax
 	mov ax,55a6h
@@ -266,7 +266,7 @@ L_1340:
 	call	ULTIMA_16BA_PRINTCHAR
 ; GOG (to 1399): the drive is the program's, and the prompt below is skipped (in 1.16:
 ; mov ax,4; push ax; mov ax,0ch; push ax, the arguments of the call at 139a)
-	mov al,BYTE PTR D_A9C8
+	mov al,BYTE PTR D_A9C8_DISKDRIVES
 	mov [bp-10h],al
 	jmp	SHORT L_1402
 ; from here to 1401 only the GOG release's jump at 1398 skips over
@@ -299,8 +299,8 @@ L_139a:
 	mov ax,OFFSET DGROUP:D_33B8
 	push ax
 	call	ULTIMA_1850_PRINTSTRING
-	mov WORD PTR D_5394_FN,OFFSET ULTIMA_2320_NODISKSWAPMESSAGE
-	mov	WORD PTR D_5394_FN+2,_TEXT
+	mov WORD PTR D_5394_DISKSWAPFN,OFFSET ULTIMA_2320_NODISKSWAPMESSAGE
+	mov	WORD PTR D_5394_DISKSWAPFN+2,_TEXT
 	mov si,[bp-0ch]
 L_13e8:
 	sub ax,ax
@@ -313,7 +313,7 @@ L_13e8:
 	jne	L_1402
 	mov ax,si
 L_13fb:
-	mov BYTE PTR D_5893_MAP_ID,al
+	mov BYTE PTR D_5893_MAPID,al
 	jmp	NEAR PTR L_1e1c
 	db	090h
 L_1402:
@@ -323,8 +323,8 @@ L_1402:
 	call	ULTIMA_1EAC_SETDEFAULTDRIVE
 	or ax,ax
 	je	L_13e8
-	mov WORD PTR D_5394_FN,OFFSET ULTIMA_2322_DISKSWAPMESSAGE
-	mov	WORD PTR D_5394_FN+2,_TEXT
+	mov WORD PTR D_5394_DISKSWAPFN,OFFSET ULTIMA_2322_DISKSWAPMESSAGE
+	mov	WORD PTR D_5394_DISKSWAPFN+2,_TEXT
 	call	INTRO_1016_CONVERTU4SAVEGAME
 	or ax,ax
 	je	L_1428
@@ -1480,8 +1480,8 @@ L_1da1:
 	push ax
 	call	ULTIMA_251E_SWITCHDISKS
 	mov al,[bp-0ch]
-	mov BYTE PTR D_5893_MAP_ID,al
-	mov BYTE PTR D_A9BD+1,0
+	mov BYTE PTR D_5893_MAPID,al
+	mov BYTE PTR D_A9BD_CURDISK+1,0
 L_1e1c:
 	pop si
 	pop di

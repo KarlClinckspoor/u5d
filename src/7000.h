@@ -3,11 +3,11 @@
 
 // Game cont.
 
-void ULTIMA_70a6(void);
+void ULTIMA_70a6_AnimateLighthouse(void);
 
 // Grap cont.
 
-void ULTIMA_71aa(void);
+void ULTIMA_71aa_UpdateClockTiles(void);
 void ULTIMA_71ca_DRV_27_ScrollTextWindow1(int param_1, int param_2, int param_3, int param_4, int param_5);
 void ULTIMA_7200_DRV_27_ScrollTextWindow2(int param_1, int param_2, int param_3, int param_4, int param_5);
 

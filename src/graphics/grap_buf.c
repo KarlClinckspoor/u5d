@@ -213,13 +213,13 @@ static void DisplayDebugMessages(void)
     _debugPenX = 0;
     _debugPenY = 0;
 
-    PrintDebugOverlayStringFmt("P: X%d Y%d", D_5c5a[0].x, D_5c5a[0].y);
-    PrintDebugOverlayStringFmt("Map: %d", D_5893_map_id);
-    PrintDebugOverlayStringFmt("Time: %02d-%02d %02d:%02d", D_587d, D_587e, D_587f_hour, D_5881);
+    PrintDebugOverlayStringFmt("P: X%d Y%d", D_5c5a_actors[0].x, D_5c5a_actors[0].y);
+    PrintDebugOverlayStringFmt("Map: %d", D_5893_mapId);
+    PrintDebugOverlayStringFmt("Time: %02d-%02d %02d:%02d", D_587d_month, D_587e_day, D_587f_hour, D_5881_minute);
 #endif
     return;
 
-    if (D_5893_map_id > 0)
+    if (D_5893_mapId > 0)
     {
         PrintDebugOverlayString("NPC:");
 
@@ -231,8 +231,8 @@ static void DisplayDebugMessages(void)
                 break;
             }
 
-            PrintDebugOverlayStringFmt("%2x: %d X%d Y%d %d %d %d %d %d", i, D_5f5e[i].mode, D_5f5e[i].x, D_5f5e[i].y,
-                                       D_5f5e[i].z, D_5f5e[i]._8, D_5f5e[i]._a, D_5f5e[i].actorIdx, D_5f5e[i].scheduleIdx);
+            PrintDebugOverlayStringFmt("%2x: %d X%d Y%d %d %d %d %d %d", i, D_5f5e_npcs[i].mode, D_5f5e_npcs[i].x, D_5f5e_npcs[i].y,
+                                       D_5f5e_npcs[i].z, D_5f5e_npcs[i]._8, D_5f5e_npcs[i]._a, D_5f5e_npcs[i].actorIdx, D_5f5e_npcs[i].scheduleIdx);
         }
     }
     else
@@ -246,9 +246,9 @@ static void DisplayDebugMessages(void)
                 PrintDebugOverlayString("...");
                 break;
             }
-            PrintDebugOverlayStringFmt("%2x: T%02x A%02x X%d Y%d Z%d %d %d %d", i, D_5c5a[i].tile, D_5c5a[i].animTile,
-                                       D_5c5a[i].x, D_5c5a[i].y, D_5c5a[i].z, D_5c5a[i].value, D_5c5a[i].animState,
-                                       D_5c5a[i].extra);
+            PrintDebugOverlayStringFmt("%2x: T%02x A%02x X%d Y%d Z%d %d %d %d", i, D_5c5a_actors[i].tile, D_5c5a_actors[i].animTile,
+                                       D_5c5a_actors[i].x, D_5c5a_actors[i].y, D_5c5a_actors[i].z, D_5c5a_actors[i].value, D_5c5a_actors[i].animState,
+                                       D_5c5a_actors[i].extra);
         }
     }
 }

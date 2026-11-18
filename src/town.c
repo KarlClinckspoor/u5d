@@ -26,9 +26,9 @@ char* D_2652[4] =
 // check npc killed flag
 int TOWN_0000_CheckNpcKilled(int param_1)
 {
-    if (D_659e[param_1] == TILE_ACTOR_SANDALWOOD_BOX || D_659e[param_1] >= TILE_ACTOR_WIZARD)
+    if (D_659e_npcTypes[param_1] == TILE_ACTOR_SANDALWOOD_BOX || D_659e_npcTypes[param_1] >= TILE_ACTOR_WIZARD)
     {
-        return ((*(u32*)&D_5b5a[(D_5893_map_id - 1) * 4]) & ((u32)1 << (byte)param_1)) != 0;
+        return ((*(u32*)&D_5b5a_npcKilled[(D_5893_mapId - 1) * 4]) & ((u32)1 << (byte)param_1)) != 0;
     }
 
     return 0;
@@ -42,25 +42,25 @@ void TOWN_0052_SetNpcKilled(int param_1)
     if (param_1 < 0 || param_1 > 0x1f)
         return;
 
-    local_4 = D_659e[param_1] & 0xfc;
+    local_4 = D_659e_npcTypes[param_1] & 0xfc;
 
     if ((local_4 != TILE_ACTOR_GUARD && local_4 < TILE_ACTOR_80) || local_4 == TILE_ACTOR_SHARD)
     {
         // 0084
-        (*(u32*)&D_5b5a[(D_5893_map_id - 1) * 4]) |= ((u32)1 << (byte)param_1);
+        (*(u32*)&D_5b5a_npcKilled[(D_5893_mapId - 1) * 4]) |= ((u32)1 << (byte)param_1);
     }
 }
 
 // despawn npc
 void TOWN_00b0_DespawnNpc(int param_1)
 {
-    ActorFmt* actor = &D_5c5a[D_5f5e[param_1].actorIdx];
+    ActorFmt* actor = &D_5c5a_actors[D_5f5e_npcs[param_1].actorIdx];
 
-    actor->tile = actor->animTile = actor->x = actor->y = actor->z = actor->animState = actor->extra = D_5f5e[param_1].mode =
-        D_5f5e[param_1].x = D_5f5e[param_1].y = D_5f5e[param_1].z = D_5f5e[param_1]._a = 0;
-    D_5d5e[param_1].type[0] = D_5d5e[param_1].type[1] = D_5d5e[param_1].type[2] = 0;
-    D_659e[param_1] = 0;
-    D_24e6 |= 2;
+    actor->tile = actor->animTile = actor->x = actor->y = actor->z = actor->animState = actor->extra = D_5f5e_npcs[param_1].mode =
+        D_5f5e_npcs[param_1].x = D_5f5e_npcs[param_1].y = D_5f5e_npcs[param_1].z = D_5f5e_npcs[param_1]._a = 0;
+    D_5d5e_npcSchedules[param_1].type[0] = D_5d5e_npcSchedules[param_1].type[1] = D_5d5e_npcSchedules[param_1].type[2] = 0;
+    D_659e_npcTypes[param_1] = 0;
+    D_24e6_viewDirty |= 2;
 }
 
 int TOWN_011e(int param_1)
@@ -70,7 +70,7 @@ int TOWN_011e(int param_1)
 
     for (local_4 = 0; local_4 < 0x20; local_4++)
     {
-        if ((int)D_5f5e[local_4].actorIdx == param_1 && D_659e[local_4] != 0 && D_5f5e[local_4].mode != 0)
+        if ((int)D_5f5e_npcs[local_4].actorIdx == param_1 && D_659e_npcTypes[local_4] != 0 && D_5f5e_npcs[local_4].mode != 0)
         {
             local_2 = local_4;
             break;
@@ -96,22 +96,22 @@ void TOWN_0170(void)
         }
     }
 
-    if ((*ULTIMA_4402_GetTileAddr(D_5896_map_x, D_5897_map_y) & 0xfe) != TILE_MAP_48)
+    if ((*ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY) & 0xfe) != TILE_MAP_48)
     {
-        for (local_4 = 0; local_4 < D_594e; local_4++)
+        for (local_4 = 0; local_4 < D_594e_annotCount; local_4++)
         {
             if (D_587f_hour == 5)
             {
-                *ULTIMA_4402_GetTileAddr(D_58ee[local_4], D_590e[local_4]) = D_592e[local_4];
+                *ULTIMA_4402_GetTileAddr(D_58ee_annotX[local_4], D_590e_annotY[local_4]) = D_592e_annotTile[local_4];
             }
             else
             {
-                *ULTIMA_4402_GetTileAddr(D_58ee[local_4], D_590e[local_4]) = TILE_MAP_WATER_3;
+                *ULTIMA_4402_GetTileAddr(D_58ee_annotX[local_4], D_590e_annotY[local_4]) = TILE_MAP_WATER_3;
             }
         }
     }
 
-    D_24e6 |= 2;
+    D_24e6_viewDirty |= 2;
 }
 
 static void TOWN_0212(void)
@@ -121,7 +121,7 @@ static void TOWN_0212(void)
 
     if (D_5958_townShadowlord != 0xff)
     {
-        ULTIMA_207e_srand(D_587e);
+        ULTIMA_207e_srand(D_587e_day);
 
         for (local_6_an = 0; local_6_an < 0x20; local_6_an++)
         {
@@ -145,7 +145,7 @@ static void TOWN_0212(void)
             }
         }
 
-        D_24e6 |= 2;
+        D_24e6_viewDirty |= 2;
 
         ULTIMA_207e_srand(ULTIMA_2056_GetTime());
     }
@@ -160,11 +160,11 @@ void TOWN_02ae(void)
     int local_4_ab;
 
     D_5958_townShadowlord = 0xff;
-    if (D_5897_map_y != 4)
+    if (D_5897_mapY != 4)
     {
         for (local_8 = 0; local_8 < 3; local_8++)
         {
-            if (D_58c8[local_8] == D_5893_map_id)
+            if (D_58c8_shadowlordTowns[local_8] == D_5893_mapId)
             {
                 D_5958_townShadowlord = local_8;
                 break;
@@ -178,52 +178,52 @@ void TOWN_02ae(void)
         TOWN_0212();
         for (local_8 = 0; local_8 < 0x20; local_8++)
         {
-            if (D_5c5a[local_8].tile == TILE_ACTOR_SHADOWLORD)
+            if (D_5c5a_actors[local_8].tile == TILE_ACTOR_SHADOWLORD)
             {
                 return;
             }
         }
 
-        local_a = ULTIMA_38e4();
+        local_a = ULTIMA_38e4_FindActorSlot();
 
-        local_6 = &D_5c5a[local_a];
+        local_6 = &D_5c5a_actors[local_a];
 
         local_4_ab = 0x1f;
         for (local_8 = 0x1f; local_8 >= 0; local_8--)
         {
-            if (D_659e[local_8] == 0)
+            if (D_659e_npcTypes[local_8] == 0)
             {
                 local_4_ab = local_8;
                 break;
             }
         }
 
-        ASSERT(D_5893_map_id > 0 && D_5893_map_id <= 8);
+        ASSERT(D_5893_mapId > 0 && D_5893_mapId <= 8);
 
-        D_5f5e[local_4_ab].mode = 1;
-        D_5f5e[local_4_ab].actorIdx = local_a;
+        D_5f5e_npcs[local_4_ab].mode = 1;
+        D_5f5e_npcs[local_4_ab].actorIdx = local_a;
         
-        D_5f5e[local_4_ab].x = local_6->x = 0xf;
-        D_5f5e[local_4_ab].y = local_6->y = D_13a6[D_5893_map_id - 1];
-        D_5f5e[local_4_ab].z = local_6->animState = local_6->value = local_6->z = local_6->extra = 0;
+        D_5f5e_npcs[local_4_ab].x = local_6->x = 0xf;
+        D_5f5e_npcs[local_4_ab].y = local_6->y = D_13a6[D_5893_mapId - 1];
+        D_5f5e_npcs[local_4_ab].z = local_6->animState = local_6->value = local_6->z = local_6->extra = 0;
         local_6->tile = local_6->animTile = TILE_ACTOR_SHADOWLORD;
 
         for (local_8 = 0; local_8 < 4; local_8++)
         {
             // npc time
-            D_5d5e[local_4_ab].time[local_8] = 0;
+            D_5d5e_npcSchedules[local_4_ab].time[local_8] = 0;
         }
 
         for (local_8 = 0; local_8 < 3; local_8++)
         {
             // setup npc schedules
-            D_5d5e[local_4_ab].type[local_8] = 6;
-            D_5d5e[local_4_ab].x[local_8] = 0xf;
-            D_5d5e[local_4_ab].y[local_8] = local_6->y;
-            D_5d5e[local_4_ab].z[local_8] = 0;
+            D_5d5e_npcSchedules[local_4_ab].type[local_8] = 6;
+            D_5d5e_npcSchedules[local_4_ab].x[local_8] = 0xf;
+            D_5d5e_npcSchedules[local_4_ab].y[local_8] = local_6->y;
+            D_5d5e_npcSchedules[local_4_ab].z[local_8] = 0;
         }
 
-        D_659e[local_4_ab] = 0xfc;
+        D_659e_npcTypes[local_4_ab] = 0xfc;
     }
 }
 
@@ -234,24 +234,24 @@ void TOWN_0408(int param_1)
     int local_4;
     char* local_2;
 
-    ULTIMA_4be8();
-    ULTIMA_4a84();
+    ULTIMA_4be8_ClearSky();
+    ULTIMA_4a84_DrawSunAndMoons();
     ULTIMA_2e96_SetWindDirection(-1);
 
-    D_594f = 0;
-    D_589b = D_589c = 0;
+    D_594f_openDoorTile = 0;
+    D_589b_mapOriginX = D_589c_mapOriginY = 0;
 
-    local_2 = D_2652[(D_5893_map_id - 1) >> 3];
-    local_6_an = (uint)D_1e1a[D_5893_map_id - 1] + (uint)D_5895_map_level;
-    if (D_5895_map_level > 0x7f)
+    local_2 = D_2652[(D_5893_mapId - 1) >> 3];
+    local_6_an = (uint)D_1e1a[D_5893_mapId - 1] + (uint)D_5895_mapLevel;
+    if (D_5895_mapLevel > 0x7f)
     {
         local_6_an -= 0x100;
     }
 
     ULTIMA_256e_ReadFileFromDisk(local_2, D_6608, 0x400, local_6_an << 10);
 
-    D_594e = 0;
-    D_217e = D_2180 = D_2182 = D_2184 = -1;
+    D_594e_annotCount = 0;
+    D_217e_beaconX = D_2180_beaconY = D_2182_beacon2X = D_2184_beacon2Y = -1;
 
     for (local_4 = 0; local_4 < 0x20; local_4++)
     {
@@ -259,22 +259,22 @@ void TOWN_0408(int param_1)
         {
             if ((*ULTIMA_4402_GetTileAddr(local_4, local_8_al) & 0xfe) == TILE_MAP_48)
             {
-                D_58ee[D_594e] = (char)local_4;
-                D_590e[D_594e] = (char)local_8_al;
-                D_592e[D_594e] = *ULTIMA_4402_GetTileAddr(local_4, local_8_al);
-                D_594e++;
+                D_58ee_annotX[D_594e_annotCount] = (char)local_4;
+                D_590e_annotY[D_594e_annotCount] = (char)local_8_al;
+                D_592e_annotTile[D_594e_annotCount] = *ULTIMA_4402_GetTileAddr(local_4, local_8_al);
+                D_594e_annotCount++;
             }
             if (*ULTIMA_4402_GetTileAddr(local_4, local_8_al) == TILE_MAP_2A)
             {
-                if (D_217e == -1)
+                if (D_217e_beaconX == -1)
                 {
-                    D_217e = local_4;
-                    D_2180 = local_8_al;
+                    D_217e_beaconX = local_4;
+                    D_2180_beaconY = local_8_al;
                 }
                 else
                 {
-                    D_2182 = local_4;
-                    D_2184 = local_8_al;
+                    D_2182_beacon2X = local_4;
+                    D_2184_beacon2Y = local_8_al;
                 }
             }
         }
@@ -285,8 +285,8 @@ void TOWN_0408(int param_1)
         TOWN_0170();
     }
 
-    ULTIMA_5e4a();
-    ULTIMA_4f7c(0);
+    ULTIMA_5e4a_BuildLightMap();
+    ULTIMA_4f7c_AdvanceTime(0);
     TOWN_0212();
 
     if (param_1 != 0)
@@ -294,7 +294,7 @@ void TOWN_0408(int param_1)
         TOWN_1694();
     }
 
-    D_24e6 = 1;
+    D_24e6_viewDirty = 1;
 }
 
 static void TOWN_052e(int param_1, int param_2)
@@ -304,12 +304,12 @@ static void TOWN_052e(int param_1, int param_2)
         ULTIMA_5910_UpdateFrame();
         if (param_2 - TILE_MAP_STAIR == param_1)
         {
-            D_5895_map_level++;
+            D_5895_mapLevel++;
             ULTIMA_1850_PrintString(_TEXT(0x265a, "Up!\n"));
         }
         else if (param_2 - TILE_MAP_STAIR == (param_1 ^ 2))
         {
-            D_5895_map_level--;
+            D_5895_mapLevel--;
             ULTIMA_1850_PrintString(_TEXT(0x265f, "Down!\n"));
         }
         else
@@ -387,7 +387,7 @@ bool TOWN_0600(int param_1)
     case DIR_UP:
         // 0648
         local_e--;
-        if (D_5897_map_y < 1)
+        if (D_5897_mapY < 1)
             local_8 = 1;
         // 0657
         param_1 = 0;
@@ -398,7 +398,7 @@ bool TOWN_0600(int param_1)
     case DIR_DOWN:
         // 06f8
         local_e++;
-        if (D_5897_map_y > 0x1e)
+        if (D_5897_mapY > 0x1e)
             local_8 = 1;
         param_1 = 2;
         TOWN_057c(2);
@@ -408,7 +408,7 @@ bool TOWN_0600(int param_1)
     case DIR_RIGHT:
         // 071a
         local_c++;
-        if (0x1e < D_5896_map_x)
+        if (0x1e < D_5896_mapX)
             local_8 = 1;
         param_1 = 1;
         TOWN_057c(1);
@@ -418,7 +418,7 @@ bool TOWN_0600(int param_1)
     case DIR_LEFT:
         // 073c
         local_c--;
-        if (D_5896_map_x < 1)
+        if (D_5896_mapX < 1)
             local_8 = 1;
         param_1 = 3;
         TOWN_057c(3);
@@ -429,7 +429,7 @@ bool TOWN_0600(int param_1)
     // 0669
     local_6 = 1;
     local_10_ad = GetMapViewport(local_c + 5, local_e + 5); // 0xaba7
-    local_a = ULTIMA_368e_FindActorTileAtPos(local_c + (uint)D_5896_map_x, local_e + (uint)D_5897_map_y, D_5895_map_level);
+    local_a = ULTIMA_368e_FindActorTileAtPos(local_c + (uint)D_5896_mapX, local_e + (uint)D_5897_mapY, D_5895_mapLevel);
     if (local_a != 0)
     {
         // 06a9
@@ -473,23 +473,23 @@ bool TOWN_0600(int param_1)
             if (local_4_ab == 'Y')
             {
                 ULTIMA_1850_PrintString(_TEXT(0x26ab, "Yes\n\nExit to\n"));
-                if (D_5893_map_id == 0x19)
+                if (D_5893_mapId == 0x19)
                 {
                     ULTIMA_1850_PrintString(_TEXT(0x26b9, "Underworld!\n"));
-                    D_5895_map_level = 0xff;
+                    D_5895_mapLevel = 0xff;
                 }
                 else
                 {
                     // 07da
                     ULTIMA_1850_PrintString(_TEXT(0x26c6, "Britannia!\n"));
-                    D_5895_map_level = 0;
+                    D_5895_mapLevel = 0;
                 }
 
                 // 07e6
-                D_594f = 0;
-                D_5896_map_x = D_1e8a[D_5893_map_id - 1];
-                D_5897_map_y = D_1eb2[D_5893_map_id - 1];
-                D_5893_map_id = 0;
+                D_594f_openDoorTile = 0;
+                D_5896_mapX = D_1e8a_placeX[D_5893_mapId - 1];
+                D_5897_mapY = D_1eb2_placeY[D_5893_mapId - 1];
+                D_5893_mapId = 0;
             }
             else
             {
@@ -501,9 +501,9 @@ bool TOWN_0600(int param_1)
         else
         {
             // 0810
-            D_5896_map_x += local_c;
-            D_5897_map_y += local_e;
-            D_24e6 = 1;
+            D_5896_mapX += local_c;
+            D_5897_mapY += local_e;
+            D_24e6_viewDirty = 1;
             if ((D_587c_partyTile & 0xfe) == TILE_ACTOR_RIDING_HORSE)
             {
                 ULTIMA_433e_AudioFootstep();
@@ -530,7 +530,7 @@ void TOWN_085e(int param_1)
     int i_ae;
     int local_4;
 
-    if (D_659e[param_1] >= 0x2f)
+    if (D_659e_npcTypes[param_1] >= 0x2f)
     {
         local_4 = 7;
     }
@@ -541,12 +541,12 @@ void TOWN_085e(int param_1)
 
     for (i_ae = 0; i_ae < 4; i_ae++)
     {
-        D_5d5e[param_1].time[i_ae] = 0;
+        D_5d5e_npcSchedules[param_1].time[i_ae] = 0;
     }
 
     for (i_ae = 0; i_ae < 3; i_ae++)
     {
-        D_5d5e[param_1].type[i_ae] = local_4;
+        D_5d5e_npcSchedules[param_1].type[i_ae] = local_4;
     }
 }
 
@@ -560,19 +560,19 @@ void TOWN_08d4(int param_1)
 
     for (local_8 = 0; local_8 < 4; local_8++)
     {
-        if (D_5d5e[param_1].time[local_8] != 0)
+        if (D_5d5e_npcSchedules[param_1].time[local_8] != 0)
         {
             local_6 = 1;
         }
     }
 
-    if (D_659e[param_1] < 0x74 && D_659e[param_1] >= 0x40 && (D_5f5e[param_1]._a == 0xfe || local_6))
+    if (D_659e_npcTypes[param_1] < 0x74 && D_659e_npcTypes[param_1] >= 0x40 && (D_5f5e_npcs[param_1]._a == 0xfe || local_6))
     {
-        D_5f5e[param_1]._a = 0xfd;
+        D_5f5e_npcs[param_1]._a = 0xfd;
 
         for (local_8 = 0; local_8 < 3; local_8++)
         {
-            D_5d5e[param_1].type[local_8] = 3;
+            D_5d5e_npcSchedules[param_1].type[local_8] = 3;
         }
     }
 }
@@ -585,9 +585,9 @@ void TOWN_0958(void)
 
     for (local_4 = 0; local_4 < 0x20; local_4++)
     {
-        if (D_5f5e[local_4].mode != 0)
+        if (D_5f5e_npcs[local_4].mode != 0)
         {
-            local_6_an = D_659e[local_4];
+            local_6_an = D_659e_npcTypes[local_4];
             if (local_6_an == TILE_ACTOR_SHADOWLORD || local_6_an == TILE_ACTOR_D8 || local_6_an == TILE_ACTOR_GUARD)
             {
                 TOWN_085e(local_4);
@@ -607,7 +607,7 @@ void TOWN_0958(void)
 void TOWN_09bc(int param_1)
 {
     TOWN_0052_SetNpcKilled(param_1);
-    ULTIMA_6150_Combat(D_5f5e[param_1].actorIdx);
+    ULTIMA_6150_Combat(D_5f5e_npcs[param_1].actorIdx);
     TOWN_00b0_DespawnNpc(param_1);
     TOWN_0408(0);
     TOWN_02ae();
@@ -626,15 +626,15 @@ int TOWN_09e6_AttackCmd(void)
 
     ULTIMA_1850_PrintString(_TEXT(0x26e0, "Attack-"));
 
-    if (*ULTIMA_4402_GetTileAddr(D_5896_map_x, D_5897_map_y) < TILE_MAP_POISON && D_587c_partyTile != TILE_ACTOR_AVATAR)
+    if (*ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY) < TILE_MAP_POISON && D_587c_partyTile != TILE_ACTOR_AVATAR)
     {
         ULTIMA_1850_PrintString(_TEXT(0x26e8, "On foot!\n"));
         local_6 = 0;
     }
     else if (ULTIMA_35ec_SelectDirection() != 0)
     {
-        local_a = (uint)D_5896_map_x + D_5876;
-        local_c = (uint)D_5897_map_y + D_5878;
+        local_a = (uint)D_5896_mapX + D_5876_tempX;
+        local_c = (uint)D_5897_mapY + D_5878_tempY;
         if (*ULTIMA_4402_GetTileAddr(local_a, local_c) == TILE_MAP_MIRROR)
         {
             *ULTIMA_4402_GetTileAddr(local_a, local_c) = TILE_MAP_MIRROR_BROKEN;
@@ -645,15 +645,15 @@ int TOWN_09e6_AttackCmd(void)
                 ULTIMA_223c_AudioWhiteNoise(0x28, 0x78, local_e);
             }
 
-            D_24e6 |= 2;
+            D_24e6_viewDirty |= 2;
         }
         else
         {
-            local_12_ab = ULTIMA_368e_FindActorTileAtPos(local_a, local_c, D_5895_map_level);
+            local_12_ab = ULTIMA_368e_FindActorTileAtPos(local_a, local_c, D_5895_mapLevel);
             local_8 = 1;
             if (local_12_ab != 0)
             {
-                local_10_ad = D_5876;
+                local_10_ad = D_5876_tempX;
                 local_4_ab = TOWN_011e(local_10_ad);
                 if (local_12_ab >= TILE_ACTOR_WIZARD && (local_12_ab < TILE_ACTOR_E8 || local_12_ab >= TILE_ACTOR_F0) && (local_12_ab & 0xfc) != TILE_ACTOR_SHARD)
                 {
@@ -693,7 +693,7 @@ int TOWN_09e6_AttackCmd(void)
                     {
                         ULTIMA_1850_PrintString(_TEXT(0x2718, "Murdered!\n"));
                         ULTIMA_3f36_DecreaseByte(&D_5888_karma, 5);
-                        ULTIMA_3522(local_a, local_c);
+                        ULTIMA_3522_HitEffectAt(local_a, local_c);
 
                         if (local_4_ab >= 0)
                         {
@@ -736,7 +736,7 @@ int TOWN_0b82_KlimbCmd(void)
     else
     {
         // 0ba8
-        switch (*ULTIMA_4402_GetTileAddr(D_5896_map_x, D_5897_map_y))
+        switch (*ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY))
         {
         case TILE_MAP_LADDER_UP:
             // 0bce..0bd0
@@ -757,13 +757,13 @@ int TOWN_0b82_KlimbCmd(void)
         {
             if (ULTIMA_35ec_SelectDirection() != 0)
             {
-                local_6_an = *ULTIMA_4402_GetTileAddr(D_5896_map_x + D_5876, D_5897_map_y + D_5878);
+                local_6_an = *ULTIMA_4402_GetTileAddr(D_5896_mapX + D_5876_tempX, D_5897_mapY + D_5878_tempY);
                 if (local_6_an == TILE_MAP_4C || local_6_an == TILE_MAP_CA || local_6_an == TILE_MAP_CB)
                 {
                     // 0c19
-                    D_5896_map_x += D_5876;
-                    D_5897_map_y += D_5878;
-                    D_24e6 = 1;
+                    D_5896_mapX += D_5876_tempX;
+                    D_5897_mapY += D_5878_tempY;
+                    D_24e6_viewDirty = 1;
                     ULTIMA_5910_UpdateFrame();
                     local_4 = 1;
                 }
@@ -807,10 +807,10 @@ void TOWN_0c78(void)
 
     for (local_a = 0; local_a < 0x20; local_a++)
     {
-        local_4_c = &D_5c5a[local_a];
+        local_4_c = &D_5c5a_actors[local_a];
 
         local_e = local_4_c->tile;
-        if (((byte)local_e & 0xfe) != TILE_ACTOR_HORSE || local_4_c->z != D_5895_map_level ||
+        if (((byte)local_e & 0xfe) != TILE_ACTOR_HORSE || local_4_c->z != D_5895_mapLevel ||
             ULTIMA_2092_RandomRange(0, 1) != 0)
             continue;
         {
@@ -845,12 +845,12 @@ void TOWN_0c78(void)
                 if (local_6 <= 0x1f && local_8 <= 0x1f && 0 <= local_6 && 0 <= local_8)
                 {
                     if ((ULTIMA_2c4c_IsWalkableTile(TILE_ACTOR_HORSE, *ULTIMA_4402_GetTileAddr(local_6, local_8)) != 0) &&
-                        (ULTIMA_3702(local_6, local_8, D_5895_map_level) == 0))
+                        (ULTIMA_3702_FindLastActorTileAt(local_6, local_8, D_5895_mapLevel) == 0))
                     {
                         local_4_c->tile = local_4_c->animTile = local_e;
                         local_4_c->x = (byte)local_6;
                         local_4_c->y = (byte)local_8;
-                        D_24e6 |= 2;
+                        D_24e6_viewDirty |= 2;
                     }
                 }
             }
@@ -884,23 +884,23 @@ uint TOWN_0dc4(int param_1)
     if (param_1 != 0)
     {
         ULTIMA_5910_UpdateFrame(); // update_map?
-        if (D_a9fa != 0)
+        if (D_a9fa_vitalsDirty != 0)
         {
             ULTIMA_2900_UpdateVitalsDisplay();
-            D_a9fa = 0;
+            D_a9fa_vitalsDirty = 0;
         }
         ULTIMA_16ba_PrintChar('\n');
-        ULTIMA_4c2a();
+        ULTIMA_4c2a_PrintLeftCap();
     }
 
     local_4 = ULTIMA_266c_GetChar();
 
-    if (D_5957 != 0)
+    if (D_5957_drunkTurns != 0)
     {
         if (ULTIMA_2092_RandomRange(0, 1) != 0)
         {
             TOWN_0958();
-            D_5957--;
+            D_5957_drunkTurns--;
             ULTIMA_1850_PrintString(_TEXT(0x273c, "Hic!\n"));
             local_4 = D_2742[ULTIMA_2092_RandomRange(0, 3)];
         }
@@ -917,7 +917,7 @@ int TOWN_0e34(int param_1)
     if (GetMapViewport(5, 6) == 0x8d) // abc7
     {
         param_1 -= 0x30;
-        if (D_a9ce != 0)
+        if (D_a9ce_soundOn != 0)
         {
             ULTIMA_2192_AudioPulse(D_2746[param_1], 1, 4000, 20000, -4);
         }
@@ -927,11 +927,11 @@ int TOWN_0e34(int param_1)
             if (D_2767 == 0xd)
             {
                 D_2767 = 0;
-                if (D_5893_map_id == 0x11 && D_5895_map_level == 0x02)
+                if (D_5893_mapId == 0x11 && D_5895_mapLevel == 0x02)
                 {
                     GetMap(0x11, 0xd) ^= 0xb; // 67b9
                     ULTIMA_3072_ShakeScreen();
-                    D_24e6 = 1;
+                    D_24e6_viewDirty = 1;
                 }
             }
         }
@@ -954,7 +954,7 @@ int TOWN_0e34(int param_1)
     }
     else
     {
-        local_4 = ULTIMA_4080(param_1);
+        local_4 = ULTIMA_4080_SetActivePlayer(param_1);
     }
 
     return local_4;
@@ -1217,23 +1217,8 @@ extern int F_52f1_forceTandy;
 extern int F_52f3_forceHerc;
 extern int F_52f6;
 extern int F_52f8;
-extern int F_52fa;
-extern int F_52fc;
-extern int F_52fe;
-extern int F_5300;
-extern int F_5304;
 extern int F_5306[7];
 extern int F_5314[7];
-extern u16 F_5354;
-extern u16 F_5356;
-extern u16 F_5358;
-extern u16 F_535a;
-extern u16 F_535c;
-extern u16 F_5386_current_text_window_idx;
-extern u16 F_5388_current_charset_idx;
-extern u16 F_538a;
-extern u16 F_538c;
-extern u16 F_538e;
 #endif
 
 // CLEAN ROOM (written from the disassembly). Party status effects of the tile stood on:
@@ -1242,9 +1227,10 @@ extern u16 F_538e;
 // loop (index recomputed each pass as i * 32 in SI, the for's plain layout): MSC 5.1's
 // pass 2 had run out of memory for loop optimization by then. Every global symbol a module
 // references costs pass 2 memory (more for longer names), and the original's names are not
-// known, so the DOS build makes up the difference with 266 dead references ("if (0)") to
+// known, so the DOS build makes up the difference with 251 dead references ("if (0)") to
 // names town.c does not otherwise use (the F_xxxx above): pass 1 drops the code, the symbols stay. The
-// window is exact (265 and 267 give other code). The memory stays used for the rest of the
+// window is narrow, and moves with the names town.c uses: it was 266 exactly before the
+// shared globals got their readable names, and is 248 to 251 with them (MATCHING.md). The memory stays used for the rest of the
 // object, which is why the object ends here: the functions from TOWN_10da are town2.c.
 void TOWN_0f02(void)
 {
@@ -1506,23 +1492,8 @@ void TOWN_0f02(void)
         F_52f3_forceHerc = 0;
         F_52f6 = 0;
         F_52f8 = 0;
-        F_52fa = 0;
-        F_52fc = 0;
-        F_52fe = 0;
-        F_5300 = 0;
-        F_5304 = 0;
         F_5306[0] = 0;
         F_5314[0] = 0;
-        F_5354 = 0;
-        F_5356 = 0;
-        F_5358 = 0;
-        F_535a = 0;
-        F_535c = 0;
-        F_5386_current_text_window_idx = 0;
-        F_5388_current_charset_idx = 0;
-        F_538a = 0;
-        F_538c = 0;
-        F_538e = 0;
     }
 #endif
     for (local_6 = 0; local_6 < (uint)D_585b_partyCount; local_6++)
@@ -1536,28 +1507,28 @@ void TOWN_0f02(void)
     do
     {
         local_4_ab = 0;
-        local_a = *ULTIMA_4402_GetTileAddr(D_5896_map_x, D_5897_map_y);
+        local_a = *ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY);
         if (local_a == 0x8c && (D_587c_partyTile & 0xfe) != 0x14)
         {
             ULTIMA_1850_PrintString(_TEXT(0x2768, "A TRAPDOOR!\n"));
             local_8 = D_587c_partyTile;
             D_587c_partyTile = 0;
             ULTIMA_5910_UpdateFrame();
-            ULTIMA_2aa8();
+            ULTIMA_2aa8_DamageParty();
             D_587c_partyTile = local_8;
-            if (D_5893_map_id == 0x1d)
+            if (D_5893_mapId == 0x1d)
             {
                 ULTIMA_0a70_GRAP_2d_SetPenColor(0);
                 ULTIMA_0aa6_GRAP_3f_FillRect(8, 8, 0xb7, 0xb7);
                 for (local_6 = 1000; local_6 > 250; local_6--)
                 {
                     ULTIMA_22e2_PcspkOn(local_6);
-                    ULTIMA_20c8_SomeDelay(1, 0x28);
+                    ULTIMA_20c8_Delay(1, 0x28);
                 }
                 ULTIMA_230e_PcspkOff();
                 memset(D_6608, 0x8f, 0x400);
-                D_24e6 = 1;
-                memset(D_5c5a, 0, 0x100);
+                D_24e6_viewDirty = 1;
+                memset(D_5c5a_actors, 0, 0x100);
                 for (local_6 = 0; local_6 < (uint)D_585b_partyCount; local_6++)
                 {
                     D_55a8_party[local_6].hp = 0;
@@ -1568,7 +1539,7 @@ void TOWN_0f02(void)
             }
             else
             {
-                D_5895_map_level--;
+                D_5895_mapLevel--;
                 TOWN_0408(1);
                 local_4_ab = 1;
             }
@@ -1590,9 +1561,9 @@ void TOWN_0f02(void)
         {
             ULTIMA_5910_UpdateFrame();
             ULTIMA_1850_PrintString(_TEXT(0x2780, "Burning!\n"));
-            ULTIMA_2aa8();
+            ULTIMA_2aa8_DamageParty();
         }
     } while (local_4_ab != 0);
 
-    ULTIMA_2ae8();
+    ULTIMA_2ae8_EndTurn();
 }

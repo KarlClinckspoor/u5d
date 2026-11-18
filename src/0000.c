@@ -293,7 +293,7 @@ void ULTIMA_0a70_GRAP_2d_SetPenColor(int param_1)
 		param_1 &= D_52ba_vdp.videoDriver == VDP_VIDEO_CGA ? 3 : 0xf;
 	}
 
-	D_52da_pen_color = param_1;
+	D_52da_penColor = param_1;
 
 	if (param_1 != -1)
 	{
@@ -435,7 +435,7 @@ void* ULTIMA_0bae_LoadImageFile(char* file_name)
 	// if (error)
     //     if (ret == 0) ax = -1;
     //     D_535c_dosErrorCode = ax
-	//     D_5394_fn(); // disk swap message
+	//     D_5394_diskSwapFn(); // disk swap message
 	// else
 	//     DRV_42(); // prepare image data for ega (swizzle)
 }
@@ -454,9 +454,10 @@ void ULTIMA_0be4_FreeImage(void* ptr)
 #if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 // put image (forced hflip)
-void ULTIMA_0bfc_GRAP_63(byte* param_1, int param_2, int param_3, int param_4, int param_5)
+// Driver function 63: put an image mirrored (the dungeon view's walls).
+void ULTIMA_0bfc_GRAP_63_PutMirrored(byte* param_1, int param_2, int param_3, int param_4, int param_5)
 {
-    //debug("ULTIMA_0bfc_GRAP_63(ptr,%d,%d,%d,%d)", param_2, param_3, param_4, param_5);
+    //debug("ULTIMA_0bfc_GRAP_63_PutMirrored(ptr,%d,%d,%d,%d)", param_2, param_3, param_4, param_5);
 
     DRV_63(param_1, param_2, param_3, param_4, param_5);
 }
@@ -473,7 +474,8 @@ void ULTIMA_0c22_GRAP_0f_SelectPage(int a)
 #if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
 // set clip window coord
-void ULTIMA_0c3c(int a, int b, int c, int d)
+// Set the clip window (x1, y1, x2, y2); D_52c4_clipEnabled switches it on.
+void ULTIMA_0c3c_SetClipWindow(int a, int b, int c, int d)
 {
     D_52ba_vdp.clipX1 = a;
     D_52ba_vdp.clipY1 = b;
@@ -489,7 +491,7 @@ void ULTIMA_0c64_GRAP_30_Pset(int param_1, int param_2)
     D_52ba_vdp.penX = param_1;
     D_52ba_vdp.penY = param_2;
 
-	if (D_52da_pen_color != -1)
+	if (D_52da_penColor != -1)
     {
         if (D_52ba_vdp.clipEnabled != 0 && ULTIMA_08ca_InsideClipWindow(param_1, param_2))
         {
@@ -649,7 +651,8 @@ void ULTIMA_0f6e_GRAP_1b_TransferFullscreen(int from, int to)
 
 #if !defined(TARGET_DOS16) // assembly in the original: src/asm
 // ASM
-void ULTIMA_0f90_GRAP_Pen(int x, int y)
+// Draw a line from the pen position to (x, y).
+void ULTIMA_0f90_GRAP_LineTo(int x, int y)
 {
 	ULTIMA_0b2d_GRAP_Line(D_52ba_vdp.penX, D_52ba_vdp.penY, x, y, 0);
 }
@@ -666,8 +669,8 @@ byte* ULTIMA_0fae_LoadResourceFile(char* file_name)
 	mem = (byte*)ULTIMA_125d_LoadResourceFileImpl(file_name);
 	if (!mem)
 	{
-		D_535c = 1;
-	    D_5394_fn();
+		D_535c_dosError = 1;
+	    D_5394_diskSwapFn();
 	}
 
 	// if error (cf == 1)

@@ -58,24 +58,24 @@ static void TRS_PatchTable(char** table, int count)
 
 void TRS_Initialize(void)
 {
-    TRS_PatchTable(D_17f6, ARRAYSIZE(D_17f6));
-    TRS_PatchTable(D_1856, ARRAYSIZE(D_1856));
-    TRS_PatchTable(D_18b6, ARRAYSIZE(D_18b6));
+    TRS_PatchTable(D_17f6_equipNames, ARRAYSIZE(D_17f6_equipNames));
+    TRS_PatchTable(D_1856_enemyNames, ARRAYSIZE(D_1856_enemyNames));
+    TRS_PatchTable(D_18b6_enemyNamesPlural, ARRAYSIZE(D_18b6_enemyNamesPlural));
     TRS_PatchTable(D_1916, ARRAYSIZE(D_1916));
-    TRS_PatchTable(D_1962, ARRAYSIZE(D_1962));
-    TRS_PatchTable(D_19d2, ARRAYSIZE(D_19d2));
-    TRS_PatchTable(D_19e2, ARRAYSIZE(D_19e2));
-    TRS_PatchTable(D_1a44, ARRAYSIZE(D_1a44));
-    TRS_PatchTable(D_1a6a, ARRAYSIZE(D_1a6a));
+    TRS_PatchTable(D_1962_equipShortNames, ARRAYSIZE(D_1962_equipShortNames));
+    TRS_PatchTable(D_19d2_reagentNames, ARRAYSIZE(D_19d2_reagentNames));
+    TRS_PatchTable(D_19e2_spellNames, ARRAYSIZE(D_19e2_spellNames));
+    TRS_PatchTable(D_1a44_classNames, ARRAYSIZE(D_1a44_classNames));
+    TRS_PatchTable(D_1a6a_statusNames, ARRAYSIZE(D_1a6a_statusNames));
     TRS_PatchTable(D_1bfc, ARRAYSIZE(D_1bfc));
     TRS_PatchTable(D_1c30, ARRAYSIZE(D_1c30));
-    TRS_PatchTable(D_1e3a, ARRAYSIZE(D_1e3a));
-    TRS_PatchTable(D_1f4e, ARRAYSIZE(D_1f4e));
-    TRS_PatchTable(D_1f5e, ARRAYSIZE(D_1f5e));
+    TRS_PatchTable(D_1e3a_mapNames, ARRAYSIZE(D_1e3a_mapNames));
+    TRS_PatchTable(D_1f4e_virtueNames, ARRAYSIZE(D_1f4e_virtueNames));
+    TRS_PatchTable(D_1f5e_mantras, ARRAYSIZE(D_1f5e_mantras));
     TRS_PatchTable((char**)D_21ca_shopNames, 8 * 16);
     TRS_PatchTable((char**)D_22ca_shopOwners, 8 * 16);
     TRS_PatchTable(D_24ea_wordTable, ARRAYSIZE(D_24ea_wordTable));
-    //TRS_PatchTable(D_25ea, ARRAYSIZE(D_25ea));
+    //TRS_PatchTable(D_25ea_fileNames, ARRAYSIZE(D_25ea_fileNames));
     //TRS_PatchTable(D_2652, ARRAYSIZE(D_2652));
     TRS_PatchTable(D_27dc, ARRAYSIZE(D_27dc));
     TRS_PatchTable(D_2e10, ARRAYSIZE(D_2e10));

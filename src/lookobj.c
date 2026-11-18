@@ -9,7 +9,7 @@
 #include "lookobj.h"
 
 void ULTIMA_0c64_GRAP_30_Pset(int param_1, int param_2);
-int ULTIMA_2e8e();
+int ULTIMA_2e8e_SelectPlayer();
 void ULTIMA_56ac_DrawMap(void);
 
 static void LOOKOBJ_0000(int param_1)
@@ -56,11 +56,11 @@ static void LOOKOBJ_0042(byte param_1, byte param_2, byte param_3)
             return;
         }
 
-        if (ULTIMA_6f1e(_TEXT(0x7242, "Corvette"), local_10) > -1 || ULTIMA_6f1e(_TEXT(0x724c, "Ferrari"), local_10) > -1 ||
-            ULTIMA_6f1e(_TEXT(0x7254, "Lamborghini"), local_10) > -1 || ULTIMA_6f1e(_TEXT(0x7260, "Lotus"), local_10) > -1 ||
-            ULTIMA_6f1e(_TEXT(0x7266, "Porsche"), local_10) > -1 || ULTIMA_6f1e(_TEXT(0x726e, "Horse"), local_10) > -1)
+        if (ULTIMA_6f1e_CompareWord(_TEXT(0x7242, "Corvette"), local_10) > -1 || ULTIMA_6f1e_CompareWord(_TEXT(0x724c, "Ferrari"), local_10) > -1 ||
+            ULTIMA_6f1e_CompareWord(_TEXT(0x7254, "Lamborghini"), local_10) > -1 || ULTIMA_6f1e_CompareWord(_TEXT(0x7260, "Lotus"), local_10) > -1 ||
+            ULTIMA_6f1e_CompareWord(_TEXT(0x7266, "Porsche"), local_10) > -1 || ULTIMA_6f1e_CompareWord(_TEXT(0x726e, "Horse"), local_10) > -1)
         {
-            if (D_5893_map_id != 0x16 && D_5893_map_id != 0x1f)
+            if (D_5893_mapId != 0x16 && D_5893_mapId != 0x1f)
             {
                 ULTIMA_1850_PrintString(_TEXT(0x7274, "\nNo effect...\n"));
             }
@@ -68,8 +68,8 @@ static void LOOKOBJ_0042(byte param_1, byte param_2, byte param_3)
             {
                 ULTIMA_1850_PrintString(_TEXT(0x7284, "\nPoof!\n"));
                 ULTIMA_223c_AudioWhiteNoise(10, 3000, 2000);
-                local_12 = ULTIMA_38e4();
-                ULTIMA_3a74(TILE_ACTOR_HORSE, TILE_ACTOR_HORSE, param_1 + 1, param_2, param_3, 0, local_12);
+                local_12 = ULTIMA_38e4_FindActorSlot();
+                ULTIMA_3a74_SetActor(TILE_ACTOR_HORSE, TILE_ACTOR_HORSE, param_1 + 1, param_2, param_3, 0, local_12);
             }
         }
         else
@@ -87,7 +87,7 @@ static void LOOKOBJ_0162(void)
     ULTIMA_1850_PrintString(_TEXT(0x729c, "a gurgling fountain!\n\n"));
     ULTIMA_1850_PrintString(_TEXT(0x72b4, "Who will drink?\n"));
 
-    if ((local_4 = ULTIMA_2e8e()) == -1)
+    if ((local_4 = ULTIMA_2e8e_SelectPlayer()) == -1)
     {
         ULTIMA_1850_PrintString(_TEXT(0x72c6, "None!\n"));
     }
@@ -200,15 +200,15 @@ void LOOKOBJ_0366(void)
         ULTIMA_1850_PrintString(_TEXT(0x72f0, "the sun!\n"));
         if (D_587b_activePlayer == 0xff && ULTIMA_39fc_GetFirstActivePartyMember() == 0)
         {
-            D_587b_activePlayer = D_5876;
+            D_587b_activePlayer = D_5876_tempX;
         }
 
-        ULTIMA_2a52(D_587b_activePlayer, 1);
+        ULTIMA_2a52_DamagePlayer(D_587b_activePlayer, 1);
         ULTIMA_2900_UpdateVitalsDisplay();
     }
     else
     {
-        D_24e6 = 1;
+        D_24e6_viewDirty = 1;
         for (local_6 = 0; local_6 < 0xb; local_6++)
         {
             // memset?
@@ -229,9 +229,9 @@ void LOOKOBJ_0366(void)
 
         for (local_12_a = 0; local_12_a < 8; local_12_a++)
         {
-            local_10_aa = (int)D_5874 % 100;
-            local_14_am = D_587d;
-            local_16_ak = D_587e;
+            local_10_aa = (int)D_5874_year % 100;
+            local_14_am = D_587d_month;
+            local_16_ak = D_587e_day;
             local_4_ab = D_3750[local_12_a];
             while (local_10_aa > 0x27 || (local_10_aa == 0x27 && local_14_am > 4) || (local_10_aa == 0x27 && local_14_am == 4 && local_16_ak > 5))
             {
@@ -264,7 +264,7 @@ void LOOKOBJ_0366(void)
             local_8--;
             for (local_a = 0; local_a < 3; local_a++)
             {
-                if (D_58c8[local_a] == local_12_a + 1)
+                if (D_58c8_shadowlordTowns[local_a] == local_12_a + 1)
                 {
                     LOOKOBJ_024c(local_8, local_e_am);
                 }
@@ -309,7 +309,7 @@ static void LOOKOBJ_0502(int param_1, int param_2, int param_3)
     }
     else if (param_1 == TILE_MAP_WELL)
     {
-        LOOKOBJ_0042(D_5896_map_x, D_5897_map_y, D_5895_map_level);
+        LOOKOBJ_0042(D_5896_mapX, D_5897_mapY, D_5895_mapLevel);
     }
     else if ((param_1 & 0xfc) == TILE_MAP_FOUNTAIN)
     {
@@ -328,7 +328,7 @@ static void LOOKOBJ_0502(int param_1, int param_2, int param_3)
 
             ULTIMA_1a3e_PrintNumber(local_4, 1, 0x20);
             ULTIMA_16ba_PrintChar(':');
-            ULTIMA_1a3e_PrintNumber(D_5881, 2, 0x30);
+            ULTIMA_1a3e_PrintNumber(D_5881_minute, 2, 0x30);
 
             if (D_587f_hour > 0xb)
             {
@@ -341,7 +341,7 @@ static void LOOKOBJ_0502(int param_1, int param_2, int param_3)
         }
         else if (param_1 == TILE_MAP_DE)
         {
-            switch (D_5893_map_id)
+            switch (D_5893_mapId)
             {
             case 0x1e:
                 ULTIMA_1850_PrintString(_TEXT(0x7316, "Truth\n"));
@@ -487,13 +487,13 @@ static void LOOKOBJ_06f8(int param_1)
     }
     else
     {
-        for (param_1 = param_1 + 4; D_b21e[param_1] == '\n'; param_1 += 6)
+        for (param_1 = param_1 + 4; D_b21e_scratch[param_1] == '\n'; param_1 += 6)
         {
         }
 
         do
         {
-            local_6_an = D_b21e[param_1];
+            local_6_an = D_b21e_scratch[param_1];
             if (local_6_an & 0x80)
             {
                 ULTIMA_1c9e_SelectCharset(0);
@@ -524,7 +524,7 @@ static void LOOKOBJ_06f8(int param_1)
             {
                 ULTIMA_16ba_PrintChar(local_6_an & 0x7f);
             }
-        } while (D_b21e[++param_1] != 0);
+        } while (D_b21e_scratch[++param_1] != 0);
 
         ULTIMA_1c9e_SelectCharset(0);
 
@@ -542,7 +542,7 @@ static void LOOKOBJ_07e4(byte param_1, byte param_2, byte param_3)
     int local_4_ab;
 
     local_4_ab = 0;
-    if (D_5893_map_id == 0x4 && param_1 == 0 && param_2 == 0x11 && param_3 == 0x15)
+    if (D_5893_mapId == 0x4 && param_1 == 0 && param_2 == 0x11 && param_3 == 0x15)
     {
         ULTIMA_1c9e_SelectCharset(1);
         ULTIMA_1850_PrintString(_TEXT(0x7492, "abbbbbbbbbbbbbc\ng   "));
@@ -578,8 +578,8 @@ static void LOOKOBJ_07e4(byte param_1, byte param_2, byte param_3)
     else
     {
         ULTIMA_256e_ReadFileFromDisk(_TEXT(0x74e6, "signs.dat"), local_48, 0x42, 0);
-        local_6 = local_48[D_5893_map_id];
-        memset(D_b21e, 0xff, SCRATCH_SIZE);
+        local_6 = local_48[D_5893_mapId];
+        memset(D_b21e_scratch, 0xff, SCRATCH_SIZE);
 
         if (local_6 == 0)
         {
@@ -587,13 +587,13 @@ static void LOOKOBJ_07e4(byte param_1, byte param_2, byte param_3)
         }
         else
         {
-            ULTIMA_256e_ReadFileFromDisk(_TEXT(0x74f0, "signs.dat"), D_b21e, SCRATCH_SIZE, local_6);
+            ULTIMA_256e_ReadFileFromDisk(_TEXT(0x74f0, "signs.dat"), D_b21e_scratch, SCRATCH_SIZE, local_6);
             local_6 = 0;
             // di = local_4_ab
             // si = local_6
             do
             {
-                if (D_b21e[local_6 + 1] == param_1 && D_b21e[local_6 + 2] == param_2 && D_b21e[local_6 + 3] == param_3)
+                if (D_b21e_scratch[local_6 + 1] == param_1 && D_b21e_scratch[local_6 + 2] == param_2 && D_b21e_scratch[local_6 + 3] == param_3)
                 {
                     LOOKOBJ_06f8(local_6);
                     local_4_ab++;
@@ -604,17 +604,17 @@ static void LOOKOBJ_07e4(byte param_1, byte param_2, byte param_3)
 #if !defined(MATCHING_BUILD)
                     for (; local_6 < SCRATCH_SIZE; )
                     {
-                        if (D_b21e[local_6++] == 0)
+                        if (D_b21e_scratch[local_6++] == 0)
                             break;
                     }
 
                     local_4_ab = local_6 == SCRATCH_SIZE;
 #else
-                    while (D_b21e[local_6++] != 0)
+                    while (D_b21e_scratch[local_6++] != 0)
                     {
                     }
 
-                    local_4_ab = D_b21e[local_6] == 0xff ? 1 : 0;
+                    local_4_ab = D_b21e_scratch[local_6] == 0xff ? 1 : 0;
 #endif
 
                     if (local_4_ab)
@@ -640,13 +640,13 @@ void LOOKOBJ_099c_LookCmd(void)
         return;
     }
 
-    local_8 = D_5896_map_x + D_5876;
-    local_a = D_5897_map_y + D_5878;
+    local_8 = D_5896_mapX + D_5876_tempX;
+    local_a = D_5897_mapY + D_5878_tempY;
     local_4_ab = *ULTIMA_4402_GetTileAddr(local_8, local_a);
-    local_6 = ULTIMA_368e_FindActorTileAtPos(local_8, local_a, D_5895_map_level);
+    local_6 = ULTIMA_368e_FindActorTileAtPos(local_8, local_a, D_5895_mapLevel);
     if (local_4_ab == TILE_MAP_29)
     {
-        if ((local_c = ULTIMA_4988()) == -1)
+        if ((local_c = ULTIMA_4988_GetActingPlayer()) == -1)
         {
             return;
         }
@@ -654,12 +654,12 @@ void LOOKOBJ_099c_LookCmd(void)
         if (D_55a8_party[local_c].intel <= ULTIMA_2092_RandomRange(1, 0x1e))
         {
             ULTIMA_1850_PrintString(_TEXT(0x74fa, "Death vision!\n"));
-            ULTIMA_2a52(local_c, 1);
+            ULTIMA_2a52_DamagePlayer(local_c, 1);
             ULTIMA_2900_UpdateVitalsDisplay();
             return;
         }
         ULTIMA_1850_PrintString(_TEXT(0x750a, "Strange vision!\n"));
-        LOOKOBJ_10fc_ViewCmd(D_5896_map_x, D_5897_map_y);
+        LOOKOBJ_10fc_ViewCmd(D_5896_mapX, D_5897_mapY);
         return;
     }
 
@@ -678,7 +678,7 @@ void LOOKOBJ_099c_LookCmd(void)
     case TILE_MAP_A4:
     case TILE_MAP_SIGN_F8:
         ULTIMA_1850_PrintString(_TEXT(0x752c, "\n"));
-        LOOKOBJ_07e4(D_5895_map_level, local_8, local_a);
+        LOOKOBJ_07e4(D_5895_mapLevel, local_8, local_a);
         break;
 
     default:
@@ -689,71 +689,71 @@ void LOOKOBJ_099c_LookCmd(void)
 
 static void LOOKOBJ_0a9c(int param_1, int param_2)
 {
-    D_5876 = param_1 * 4 + 0x20;
-    D_5878 = param_2 * 4 + 0x20;
+    D_5876_tempX = param_1 * 4 + 0x20;
+    D_5878_tempY = param_2 * 4 + 0x20;
 }
 
 static void LOOKOBJ_0abe(void)
 {
     ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b4_greenColor + 8);
-    ULTIMA_0c64_GRAP_30_Pset(D_5876 + 1, D_5878);
-    ULTIMA_0c64_GRAP_30_Pset(D_5876 + 1, D_5878 + 2);
-    ULTIMA_0c64_GRAP_30_Pset(D_5876 + 3, D_5878 + 1);
-    ULTIMA_0c64_GRAP_30_Pset(D_5876 + 3, D_5878 + 3);
+    ULTIMA_0c64_GRAP_30_Pset(D_5876_tempX + 1, D_5878_tempY);
+    ULTIMA_0c64_GRAP_30_Pset(D_5876_tempX + 1, D_5878_tempY + 2);
+    ULTIMA_0c64_GRAP_30_Pset(D_5876_tempX + 3, D_5878_tempY + 1);
+    ULTIMA_0c64_GRAP_30_Pset(D_5876_tempX + 3, D_5878_tempY + 3);
 }
 
 static void LOOKOBJ_0b04(void)
 {
     ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b4_greenColor + 8);
-    ULTIMA_0aa6_GRAP_3f_FillRect(D_5876, D_5878, D_5876 + 3, D_5878 + 3);
+    ULTIMA_0aa6_GRAP_3f_FillRect(D_5876_tempX, D_5878_tempY, D_5876_tempX + 3, D_5878_tempY + 3);
 }
 
 static void LOOKOBJ_0b28(void)
 {
     ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
-    ULTIMA_0b10_GRAP_Line(D_5876, D_5878, D_5876, D_5878 + 3);
-    ULTIMA_0b10_GRAP_Line(D_5876 + 2, D_5878, D_5876 + 2, D_5878 + 3);
+    ULTIMA_0b10_GRAP_Line(D_5876_tempX, D_5878_tempY, D_5876_tempX, D_5878_tempY + 3);
+    ULTIMA_0b10_GRAP_Line(D_5876_tempX + 2, D_5878_tempY, D_5876_tempX + 2, D_5878_tempY + 3);
 }
 
 static void LOOKOBJ_0b60(void)
 {
     ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
-    ULTIMA_0b10_GRAP_Line(D_5876, D_5878, D_5876 + 3, D_5878);
-    ULTIMA_0b10_GRAP_Line(D_5876, D_5878 + 3, D_5876 + 3, D_5878 + 3);
+    ULTIMA_0b10_GRAP_Line(D_5876_tempX, D_5878_tempY, D_5876_tempX + 3, D_5878_tempY);
+    ULTIMA_0b10_GRAP_Line(D_5876_tempX, D_5878_tempY + 3, D_5876_tempX + 3, D_5878_tempY + 3);
 }
 
 static void LOOKOBJ_0b98(void)
 {
     ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
-    ULTIMA_0b10_GRAP_Line(D_5876 + 1, D_5878 + 1, D_5876 + 2, D_5878 + 1);
-    ULTIMA_0b10_GRAP_Line(D_5876 + 1, D_5878 + 2, D_5876 + 2, D_5878 + 2);
+    ULTIMA_0b10_GRAP_Line(D_5876_tempX + 1, D_5878_tempY + 1, D_5876_tempX + 2, D_5878_tempY + 1);
+    ULTIMA_0b10_GRAP_Line(D_5876_tempX + 1, D_5878_tempY + 2, D_5876_tempX + 2, D_5878_tempY + 2);
 }
 
 static void LOOKOBJ_0bd0(void)
 {
     ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
-    ULTIMA_0b10_GRAP_Line(D_5876, D_5878, D_5876 + 3, D_5878);
-    ULTIMA_0b10_GRAP_Line(D_5876, D_5878 + 3, D_5876 + 3, D_5878 + 3);
-    ULTIMA_0b10_GRAP_Line(D_5876, D_5878 + 1, D_5876, D_5878 + 2);
-    ULTIMA_0b10_GRAP_Line(D_5876 + 3, D_5878 + 1, D_5876 + 3, D_5878 + 2);
+    ULTIMA_0b10_GRAP_Line(D_5876_tempX, D_5878_tempY, D_5876_tempX + 3, D_5878_tempY);
+    ULTIMA_0b10_GRAP_Line(D_5876_tempX, D_5878_tempY + 3, D_5876_tempX + 3, D_5878_tempY + 3);
+    ULTIMA_0b10_GRAP_Line(D_5876_tempX, D_5878_tempY + 1, D_5876_tempX, D_5878_tempY + 2);
+    ULTIMA_0b10_GRAP_Line(D_5876_tempX + 3, D_5878_tempY + 1, D_5876_tempX + 3, D_5878_tempY + 2);
 }
 
 static void LOOKOBJ_0c36(void)
 {
     ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b8_brightYellowColor);
-    ULTIMA_0b10_GRAP_Line(D_5876, D_5878, D_5876 + 1, D_5878);
-    ULTIMA_0b10_GRAP_Line(D_5876, D_5878 + 1, D_5876 + 1, D_5878 + 1);
-    ULTIMA_0b10_GRAP_Line(D_5876 + 2, D_5878 + 2, D_5876 + 3, D_5878 + 2);
-    ULTIMA_0b10_GRAP_Line(D_5876 + 2, D_5878 + 3, D_5876 + 3, D_5878 + 3);
+    ULTIMA_0b10_GRAP_Line(D_5876_tempX, D_5878_tempY, D_5876_tempX + 1, D_5878_tempY);
+    ULTIMA_0b10_GRAP_Line(D_5876_tempX, D_5878_tempY + 1, D_5876_tempX + 1, D_5878_tempY + 1);
+    ULTIMA_0b10_GRAP_Line(D_5876_tempX + 2, D_5878_tempY + 2, D_5876_tempX + 3, D_5878_tempY + 2);
+    ULTIMA_0b10_GRAP_Line(D_5876_tempX + 2, D_5878_tempY + 3, D_5876_tempX + 3, D_5878_tempY + 3);
 }
 
 static void LOOKOBJ_0c9c(void)
 {
     ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b4_greenColor + 8);
-    ULTIMA_0b10_GRAP_Line(D_5876, D_5878, D_5876 + 3, D_5878);
-    ULTIMA_0b10_GRAP_Line(D_5876, D_5878 + 2, D_5876 + 3, D_5878 + 2);
-    ULTIMA_0c64_GRAP_30_Pset(D_5876 + 2, D_5878 + 1);
-    ULTIMA_0c64_GRAP_30_Pset(D_5876, D_5878 + 3);
+    ULTIMA_0b10_GRAP_Line(D_5876_tempX, D_5878_tempY, D_5876_tempX + 3, D_5878_tempY);
+    ULTIMA_0b10_GRAP_Line(D_5876_tempX, D_5878_tempY + 2, D_5876_tempX + 3, D_5878_tempY + 2);
+    ULTIMA_0c64_GRAP_30_Pset(D_5876_tempX + 2, D_5878_tempY + 1);
+    ULTIMA_0c64_GRAP_30_Pset(D_5876_tempX, D_5878_tempY + 3);
 }
 
 // CHECKED
@@ -772,7 +772,7 @@ static void LOOKOBJ_0cf4(int param_1)
         {
             local_a[local_c] = D_13b4_greenColor + 8;
         }
-        else if (D_52c8 == 0 || D_52c8 == 3)
+        else if (D_52c8_videoDriver == 0 || D_52c8_videoDriver == 3)
         {
             local_a[local_c] = D_13b6_magentaColor;
         }
@@ -785,18 +785,18 @@ static void LOOKOBJ_0cf4(int param_1)
     }
 
     ULTIMA_0a70_GRAP_2d_SetPenColor(local_a[0]);
-    ULTIMA_0c64_GRAP_30_Pset(D_5876 + 1, D_5878);
+    ULTIMA_0c64_GRAP_30_Pset(D_5876_tempX + 1, D_5878_tempY);
     ULTIMA_0a70_GRAP_2d_SetPenColor(local_a[1]);
-    ULTIMA_0c64_GRAP_30_Pset(D_5876 + 3, D_5878 + 1);
+    ULTIMA_0c64_GRAP_30_Pset(D_5876_tempX + 3, D_5878_tempY + 1);
     ULTIMA_0a70_GRAP_2d_SetPenColor(local_a[2]);
-    ULTIMA_0c64_GRAP_30_Pset(D_5876 + 1, D_5878 + 2);
+    ULTIMA_0c64_GRAP_30_Pset(D_5876_tempX + 1, D_5878_tempY + 2);
     ULTIMA_0a70_GRAP_2d_SetPenColor(local_a[3]);
-    ULTIMA_0c64_GRAP_30_Pset(D_5876 + 3, D_5878 + 3);
+    ULTIMA_0c64_GRAP_30_Pset(D_5876_tempX + 3, D_5878_tempY + 3);
 }
 
 static void LOOKOBJ_0dda(void)
 {
-    if (D_52c8 == 0 || D_52c8 == 3)
+    if (D_52c8_videoDriver == 0 || D_52c8_videoDriver == 3)
     {
         ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b6_magentaColor);
     }
@@ -805,17 +805,17 @@ static void LOOKOBJ_0dda(void)
         ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b2_blueColor + 8);
     }
 
-    ULTIMA_0c64_GRAP_30_Pset(D_5876, D_5878);
-    ULTIMA_0c64_GRAP_30_Pset(D_5876 + 2, D_5878 + 2);
+    ULTIMA_0c64_GRAP_30_Pset(D_5876_tempX, D_5878_tempY);
+    ULTIMA_0c64_GRAP_30_Pset(D_5876_tempX + 2, D_5878_tempY + 2);
 }
 
 static void LOOKOBJ_0e16(void)
 {
     ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b4_greenColor + 8);
-    ULTIMA_0c64_GRAP_30_Pset(D_5876 + 1, D_5878);
-    ULTIMA_0c64_GRAP_30_Pset(D_5876 + 3, D_5878 + 1);
+    ULTIMA_0c64_GRAP_30_Pset(D_5876_tempX + 1, D_5878_tempY);
+    ULTIMA_0c64_GRAP_30_Pset(D_5876_tempX + 3, D_5878_tempY + 1);
 
-    if ((D_52c8 == 0) || (D_52c8 == 3))
+    if ((D_52c8_videoDriver == 0) || (D_52c8_videoDriver == 3))
     {
         ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b6_magentaColor);
     }
@@ -824,8 +824,8 @@ static void LOOKOBJ_0e16(void)
         ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b2_blueColor + 8);
     }
 
-    ULTIMA_0c64_GRAP_30_Pset(D_5876, D_5878 + 2);
-    ULTIMA_0c64_GRAP_30_Pset(D_5876 + 2, D_5878 + 3);
+    ULTIMA_0c64_GRAP_30_Pset(D_5876_tempX, D_5878_tempY + 2);
+    ULTIMA_0c64_GRAP_30_Pset(D_5876_tempX + 2, D_5878_tempY + 3);
 }
 
 static void LOOKOBJ_0e7a(int param_1)
@@ -834,25 +834,25 @@ static void LOOKOBJ_0e7a(int param_1)
 
     LOOKOBJ_0abe();
     ULTIMA_0a70_GRAP_2d_SetPenColor(D_13ae_redColor);
-    ULTIMA_0aa6_GRAP_3f_FillRect(D_5876 + 1, D_5878 + 1, D_5876 + 2, D_5878 + 2);
+    ULTIMA_0aa6_GRAP_3f_FillRect(D_5876_tempX + 1, D_5878_tempY + 1, D_5876_tempX + 2, D_5878_tempY + 2);
 
     // param_1: 0x20 ~ 0x26 (LOOKOBJ_0f7e -> D_1d1a -> val == 0x10)
     local_4 = D_3832[param_1 - 0x20];
     if ((local_4 & 8) != 0)
     {
-        ULTIMA_0b10_GRAP_Line(D_5876 + 1, D_5878, D_5876 + 2, D_5878);
+        ULTIMA_0b10_GRAP_Line(D_5876_tempX + 1, D_5878_tempY, D_5876_tempX + 2, D_5878_tempY);
     }
     if ((local_4 & 4) != 0)
     {
-        ULTIMA_0b10_GRAP_Line(D_5876 + 3, D_5878 + 1, D_5876 + 3, D_5878 + 2);
+        ULTIMA_0b10_GRAP_Line(D_5876_tempX + 3, D_5878_tempY + 1, D_5876_tempX + 3, D_5878_tempY + 2);
     }
     if ((local_4 & 2) != 0)
     {
-        ULTIMA_0b10_GRAP_Line(D_5876 + 1, D_5878 + 3, D_5876 + 2, D_5878 + 3);
+        ULTIMA_0b10_GRAP_Line(D_5876_tempX + 1, D_5878_tempY + 3, D_5876_tempX + 2, D_5878_tempY + 3);
     }
     if ((local_4 & 1) != 0)
     {
-        ULTIMA_0b10_GRAP_Line(D_5876, D_5878 + 1, D_5876, D_5878 + 2);
+        ULTIMA_0b10_GRAP_Line(D_5876_tempX, D_5878_tempY + 1, D_5876_tempX, D_5878_tempY + 2);
     }
 
     ULTIMA_0a70_GRAP_2d_SetPenColor(0);
@@ -860,19 +860,19 @@ static void LOOKOBJ_0e7a(int param_1)
     switch (param_1)
     {
     case 0x22:
-        ULTIMA_0c64_GRAP_30_Pset(D_5876 + 1, D_5878 + 2);
+        ULTIMA_0c64_GRAP_30_Pset(D_5876_tempX + 1, D_5878_tempY + 2);
         break;
 
     case 0x23:
-        ULTIMA_0c64_GRAP_30_Pset(D_5876 + 1, D_5878 + 1);
+        ULTIMA_0c64_GRAP_30_Pset(D_5876_tempX + 1, D_5878_tempY + 1);
         break;
 
     case 0x24:
-        ULTIMA_0c64_GRAP_30_Pset(D_5876 + 2, D_5878 + 1);
+        ULTIMA_0c64_GRAP_30_Pset(D_5876_tempX + 2, D_5878_tempY + 1);
         break;
 
     case 0x25:
-        ULTIMA_0c64_GRAP_30_Pset(D_5876 + 2, D_5878 + 2);
+        ULTIMA_0c64_GRAP_30_Pset(D_5876_tempX + 2, D_5878_tempY + 2);
         break;
     }
 }
@@ -896,7 +896,7 @@ static void LOOKOBJ_0f7e(int param_1, int param_2, int param_3)
         break;
     case 3: // 0fc6
         ULTIMA_0a70_GRAP_2d_SetPenColor(D_13ae_redColor);
-        ULTIMA_0aa6_GRAP_3f_FillRect(D_5876, D_5878, D_5876 + 3, D_5878 + 3);
+        ULTIMA_0aa6_GRAP_3f_FillRect(D_5876_tempX, D_5878_tempY, D_5876_tempX + 3, D_5878_tempY + 3);
         break;
     case 4: // 0fea
         LOOKOBJ_0b60();
@@ -909,7 +909,7 @@ static void LOOKOBJ_0f7e(int param_1, int param_2, int param_3)
         break;
     case 7: // 0ffc -> 0fca
         ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
-        ULTIMA_0aa6_GRAP_3f_FillRect(D_5876, D_5878, D_5876 + 3, D_5878 + 3);
+        ULTIMA_0aa6_GRAP_3f_FillRect(D_5876_tempX, D_5878_tempY, D_5876_tempX + 3, D_5878_tempY + 3);
         break;
     case 8: // 1002
         LOOKOBJ_0c36();
@@ -924,7 +924,7 @@ static void LOOKOBJ_0f7e(int param_1, int param_2, int param_3)
         LOOKOBJ_0dda();
         break;
     case 12: // 101e
-        if ((D_52c8 == 0) || (D_52c8 == 3))
+        if ((D_52c8_videoDriver == 0) || (D_52c8_videoDriver == 3))
         {
             ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b6_magentaColor);
         }
@@ -932,26 +932,26 @@ static void LOOKOBJ_0f7e(int param_1, int param_2, int param_3)
         {
             ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b2_blueColor + 8);
         }
-        ULTIMA_0c64_GRAP_30_Pset(D_5876 + 2, D_5878 + 2);
+        ULTIMA_0c64_GRAP_30_Pset(D_5876_tempX + 2, D_5878_tempY + 2);
         break;
     case 13: // 1050
         LOOKOBJ_0e16();
         break;
     case 14: // 1056
         ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
-        ULTIMA_0b10_GRAP_Line(D_5876 + 1, D_5878, D_5876 + 1, D_5878 + 3);
-        ULTIMA_0b10_GRAP_Line(D_5876 + 2, D_5878, D_5876 + 2, D_5878 + 3);
+        ULTIMA_0b10_GRAP_Line(D_5876_tempX + 1, D_5878_tempY, D_5876_tempX + 1, D_5878_tempY + 3);
+        ULTIMA_0b10_GRAP_Line(D_5876_tempX + 2, D_5878_tempY, D_5876_tempX + 2, D_5878_tempY + 3);
         break;
     case 15: // 108c
         ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b2_blueColor + 8);
-        ULTIMA_0aa6_GRAP_3f_FillRect(D_5876, D_5878, D_5876 + 3, D_5878 + 3);
+        ULTIMA_0aa6_GRAP_3f_FillRect(D_5876_tempX, D_5878_tempY, D_5876_tempX + 3, D_5878_tempY + 3);
         break;
     case 16: // 1096
         LOOKOBJ_0e7a(param_1);
         break;
     case 90: // 0ffc
         ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
-        ULTIMA_0aa6_GRAP_3f_FillRect(D_5876, D_5878, D_5876 + 3, D_5878 + 3);
+        ULTIMA_0aa6_GRAP_3f_FillRect(D_5876_tempX, D_5878_tempY, D_5876_tempX + 3, D_5878_tempY + 3);
         break;
     }
 }
@@ -961,8 +961,8 @@ void LOOKOBJ_10fc_ViewCmd(int param_1, int param_2)
     int local_6_an;
     int local_4;
 
-    param_1 -= D_589b;
-    param_2 -= D_589c;
+    param_1 -= D_589b_mapOriginX;
+    param_2 -= D_589c_mapOriginY;
     param_1 &= 0xff;
     param_2 &= 0xff;
 
@@ -974,7 +974,7 @@ void LOOKOBJ_10fc_ViewCmd(int param_1, int param_2)
     {
         for (local_6_an = 0; local_6_an < 0x20; local_6_an++)
         {
-            LOOKOBJ_0f7e(*ULTIMA_4402_GetTileAddr((uint)D_589b + local_6_an, (uint)D_589c + local_4),
+            LOOKOBJ_0f7e(*ULTIMA_4402_GetTileAddr((uint)D_589b_mapOriginX + local_6_an, (uint)D_589c_mapOriginY + local_4),
                            local_6_an, local_4);
         }
     }
@@ -991,7 +991,7 @@ void LOOKOBJ_10fc_ViewCmd(int param_1, int param_2)
         {
             local_4 = 0;
             ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
-            ULTIMA_0b86_GRAP_XorFillRect(D_5876, D_5878, D_5876 + 3, D_5878 + 3);
+            ULTIMA_0b86_GRAP_XorFillRect(D_5876_tempX, D_5878_tempY, D_5876_tempX + 3, D_5878_tempY + 3);
         }
     }
 

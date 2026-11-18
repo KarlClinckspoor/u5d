@@ -41,26 +41,26 @@ void DNGLOOK_0000_LookCmdInDungeon(void)
     byte local_6;
     int local_4_ab;
 
-    if ((local_e_am = ULTIMA_4988()) + 1 == 0)
+    if ((local_e_am = ULTIMA_4988_GetActingPlayer()) + 1 == 0)
     {
         return;
     }
 
-    if (D_58a7 == 0 && D_58a6 == 0)
+    if (D_58a7_torchTurns == 0 && D_58a6_lightSpellTurns == 0)
     {
         ULTIMA_1850_PrintString(_TEXT(0x752e, "You see:\ndarkness.\n"));
         return;
     }
 
-    if (SJOG_006c(D_6603) == 0)
+    if (SJOG_006c(D_6603_dungeonFacing) == 0)
     {
         return;
     }
 
-    local_8 = D_5876;
-    local_a = D_5878;
+    local_8 = D_5876_tempX;
+    local_a = D_5878_tempY;
 
-    local_c = GetDungeonMap(local_8 & 7, local_a & 7, D_5895_map_level);
+    local_c = GetDungeonMap(local_8 & 7, local_a & 7, D_5895_mapLevel);
 
     ULTIMA_1850_PrintString(_TEXT(0x7542, "You see:\n"));
 
@@ -97,7 +97,7 @@ void DNGLOOK_0000_LookCmdInDungeon(void)
 
     if ((local_c & 0xf0) == 0xc0)
     {
-        local_4_ab = D_6604 & 0xf;
+        local_4_ab = D_6604_dungeonStyle & 0xf;
         if (local_4_ab == 1)
         {
             ULTIMA_1850_PrintString(_TEXT(0x75aa, "a dripping stalactite.\n"));
@@ -216,7 +216,7 @@ void DNGLOOK_0000_LookCmdInDungeon(void)
 
             default:
                 ULTIMA_1850_PrintString(_TEXT(0x7744, "Bad taste.\n"));
-                ULTIMA_2a52(local_e_am, ULTIMA_2092_RandomRange(0, 7));
+                ULTIMA_2a52_DamagePlayer(local_e_am, ULTIMA_2092_RandomRange(0, 7));
                 break;
             }
         }
@@ -254,14 +254,14 @@ static int DNGLOOK_0340(int param_1, int param_2)
         return 0;
     }
 
-    if (D_ad14[param_2 * 0x20 + param_1] != 0)
+    if (D_ad14_combatMap[param_2 * 0x20 + param_1] != 0)
     {
         local_8 = 1;
-        D_ad14[param_2 * 0x20 + param_1] = 0;
+        D_ad14_combatMap[param_2 * 0x20 + param_1] = 0;
 
-        local_4_ab = (param_1 + D_5896_map_x - 0xb) & 7;
-        local_6 = (param_2 + D_5897_map_y - 0xb) & 7;
-        local_a = GetDungeonMap(local_4_ab, local_6, D_5895_map_level);
+        local_4_ab = (param_1 + D_5896_mapX - 0xb) & 7;
+        local_6 = (param_2 + D_5897_mapY - 0xb) & 7;
+        local_a = GetDungeonMap(local_4_ab, local_6, D_5895_mapLevel);
         local_a >>= 4;
 
         ULTIMA_1bf2_SetTextPosition(param_1 + 1, param_2 + 1);
@@ -274,7 +274,7 @@ static int DNGLOOK_0340(int param_1, int param_2)
         switch (local_a)
         {
         case 0:
-            if ((GetDungeonMap(local_4_ab, local_6, D_5895_map_level) & 8) != 0)
+            if ((GetDungeonMap(local_4_ab, local_6, D_5895_mapLevel) & 8) != 0)
             {
                 ULTIMA_1cca_SetTextForegroundColor(D_13ba_lightGrayColor);
                 ULTIMA_16ba_PrintChar(0x18);
@@ -323,7 +323,7 @@ static int DNGLOOK_0340(int param_1, int param_2)
             // a7e4
             ULTIMA_1cca_SetTextForegroundColor(D_13ba_lightGrayColor);
             
-            switch (GetDungeonMap(local_4_ab, local_6, (uint)D_5895_map_level))
+            switch (GetDungeonMap(local_4_ab, local_6, (uint)D_5895_mapLevel))
             {
             case 96:
                 ULTIMA_16ba_PrintChar(0x19);
@@ -357,7 +357,7 @@ static int DNGLOOK_0340(int param_1, int param_2)
             break;
 
         case 0xb:
-            if (GetDungeonMap(local_4_ab, local_6, (uint)D_5895_map_level) == 0xb0)
+            if (GetDungeonMap(local_4_ab, local_6, (uint)D_5895_mapLevel) == 0xb0)
             {
                 ULTIMA_16ba_PrintChar(0x7f);
             }
@@ -379,11 +379,11 @@ static int DNGLOOK_0340(int param_1, int param_2)
 
         case 0xd:
             ULTIMA_1c9e_SelectCharset(1);
-            if (D_52c8 == 0)
+            if (D_52c8_videoDriver == 0)
             {
                 ULTIMA_1f26_SetTextBackgroundColor(D_13b2_blueColor);
             }
-            else if (D_52c8 == 1 || D_52c8 == 2)
+            else if (D_52c8_videoDriver == 1 || D_52c8_videoDriver == 2)
             {
                 ULTIMA_1f26_SetTextBackgroundColor(D_13ba_lightGrayColor);
             }
@@ -427,7 +427,7 @@ void DNGLOOK_06a8_ViewCmd(void)
     local_6 = local_10_aa = D_a628;
     local_8 = &D_a528[0xff];
 
-    memset(D_ad14, 0xff, 0x2e0);
+    memset(D_ad14_combatMap, 0xff, 0x2e0);
 
     *local_4_ab = 0xb;
     local_4_ab++;
@@ -435,14 +435,14 @@ void DNGLOOK_06a8_ViewCmd(void)
     local_6++;
     local_12_a = 0x60;
     local_14_am = 0x60;
-    D_ad14[0x16b] = 0;
+    D_ad14_combatMap[0x16b] = 0;
 
     ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
     ULTIMA_1b94_SelectTextWindow(0);
     ULTIMA_1bf2_SetTextPosition(0xc, 0xc);
     ULTIMA_1c9e_SelectCharset(1);
     ULTIMA_1cca_SetTextForegroundColor(D_13b4_greenColor + 8);
-    if (D_52c8 == 3)
+    if (D_52c8_videoDriver == 3)
     {
         ULTIMA_1cca_SetTextForegroundColor(D_13b0_brightWhiteColor);
     }
@@ -541,13 +541,13 @@ void DNGLOOK_0844(int param_1)
 
     for (local_6 = 0; local_6 < D_3840; local_6++)
     {
-        if (D_383a[local_6] == (D_5893_map_id & 0xf) * 0x10 + param_1)
+        if (D_383a[local_6] == (D_5893_mapId & 0xf) * 0x10 + param_1)
         {
             return; // nop NOT MATCHING
         }
     }
 
-    local_4_ab = D_5893_map_id - 0x21;
+    local_4_ab = D_5893_mapId - 0x21;
     if (local_4_ab >= 1)
     {
         local_4_ab--;
@@ -555,7 +555,7 @@ void DNGLOOK_0844(int param_1)
 
     local_a = param_1 + local_4_ab * 0x10;
     local_8 = local_a / 8;
-    D_58e0[local_8] |= 1 << ((byte)local_a & 7);
+    D_58e0_roomsCleared[local_8] |= 1 << ((byte)local_a & 7);
 }
 
 static int DNGLOOK_08d4(int param_1)
@@ -566,7 +566,7 @@ static int DNGLOOK_08d4(int param_1)
     u8 local_8;
     u8 local_4_ab;
 
-    local_6 = (int)D_5893_map_id - 0x21;
+    local_6 = (int)D_5893_mapId - 0x21;
     if (local_6 >= 1) {
         local_6--;
     }
@@ -574,7 +574,7 @@ static int DNGLOOK_08d4(int param_1)
     // 08ed
     local_c = local_6 * 0x10 + param_1;
     local_a = local_c / 8;
-    local_4_ab = D_58e0[local_a];
+    local_4_ab = D_58e0_roomsCleared[local_a];
     local_8 = 1 << (local_c & 7);
 
     if (local_8 & local_4_ab)
@@ -595,7 +595,7 @@ void DNGLOOK_093a(void)
     int local_6;
     byte local_4_ab;
 
-    local_a = D_595a;
+    local_a = D_595a_dungeonMap;
 
     for (local_6 = 0; local_6 < 0x200; local_6++)
     {
@@ -762,8 +762,8 @@ static void DNGLOOK_0b9e(int param_1)
     int local_6;
     int local_4_ab;
 
-    local_4_ab = D_5896_map_x;
-    local_6 = D_5897_map_y;
+    local_4_ab = D_5896_mapX;
+    local_6 = D_5897_mapY;
     switch (param_1)
     {
     case 0:
@@ -783,7 +783,7 @@ static void DNGLOOK_0b9e(int param_1)
         break;
     }
 
-    local_8 = GetDungeonMap(local_4_ab & 7, local_6 & 7, D_5895_map_level);
+    local_8 = GetDungeonMap(local_4_ab & 7, local_6 & 7, D_5895_mapLevel);
     local_8 &= 0xf0;
     if (local_8 < 0xa0)
     {
@@ -792,7 +792,7 @@ static void DNGLOOK_0b9e(int param_1)
 
     if (local_8 == 0xb0 || local_8 == 0xc0 || local_8 == 0xd0)
     {
-        DNGLOOK_097e(GetDungeonMap(D_5896_map_x, D_5897_map_y, D_5895_map_level) & 0xf0, param_1);
+        DNGLOOK_097e(GetDungeonMap(D_5896_mapX, D_5897_mapY, D_5895_mapLevel) & 0xf0, param_1);
         // nop
     }
     else
@@ -823,7 +823,7 @@ void DNGLOOK_0c6c(void)
 
     GetCombatMap(0, 0) = GetCombatMap(10, 0) = GetCombatMap(0, 10) = GetCombatMap(10, 10) = 0xff;
 
-    local_8 = GetDungeonMap(D_5896_map_x, D_5897_map_y, D_5895_map_level);
+    local_8 = GetDungeonMap(D_5896_mapX, D_5897_mapY, D_5895_mapLevel);
     local_8 &= 0xf0;
     if (local_8 != 0 && local_8 < 0x80)
     {
@@ -839,7 +839,7 @@ void DNGLOOK_0c6c(void)
         if (local_8 == 3)
         {
             D_bb16 = 1;
-            ULTIMA_6fbc(0);
+            ULTIMA_6fbc_TilesetMode(0);
         }
         else
         {
@@ -873,7 +873,7 @@ void DNGLOOK_0d3e(void)
         memset(local_34_ak, D_bb15, 0xb);
     }
 
-    if ((D_58a1 & 4) != 0)
+    if ((D_58a1_combatFlags & 4) != 0)
     {
         GetCombatMap(5, 5) = 0xb3;
     }
@@ -893,7 +893,7 @@ void DNGLOOK_0d3e(void)
 
     for (local_30_a = 0; local_30_a < 6; local_30_a++)
     {
-        if ((D_58a1 & 4) != 0)
+        if ((D_58a1_combatFlags & 4) != 0)
         {
             *local_34_ak = *local_a = *local_6 = *local_e_am = D_2452[local_30_a];
             // nop
@@ -914,7 +914,7 @@ void DNGLOOK_0d3e(void)
     // OK
     for (local_30_a = 0; local_30_a < 6; local_30_a++)
     {
-        if ((D_58a1 & 4) != 0)
+        if ((D_58a1_combatFlags & 4) != 0)
         {
             *local_34_ak = *local_a = *local_6 = *local_e_am = D_2458[local_30_a];
         }
@@ -939,7 +939,7 @@ void DNGLOOK_0d3e(void)
     for (local_30_a = 0; local_30_a < 0x10; local_30_a++)
     {
         // b0f8
-        if ((D_58a1 & 4) != 0)
+        if ((D_58a1_combatFlags & 4) != 0)
         {
             *local_c = D_24c6[local_30_a];
             *local_8 = D_24b6[local_30_a];
@@ -947,7 +947,7 @@ void DNGLOOK_0d3e(void)
         else
         {
             // b10e
-            switch (D_6603)
+            switch (D_6603_dungeonFacing)
             {
             case 0:
                 *local_8 = D_2476[local_30_a];
@@ -990,13 +990,13 @@ void DNGLOOK_0d3e(void)
     }
 
     // b1cf OK
-    if ((D_58a1 & 4) != 0)
+    if ((D_58a1_combatFlags & 4) != 0)
     {
         local_32_am = D_173c[ULTIMA_2092_RandomRange(0, 7)];
     }
     else
     {
-        local_32_am = D_5c5a[1].value;
+        local_32_am = D_5c5a_actors[1].value;
     }
 
     local_4_ab = ULTIMA_2092_RandomRange(1, D_13bc_enemyStats[local_32_am].maxEncounterCount);
@@ -1014,66 +1014,66 @@ void DNGLOOK_0d3e(void)
 
 void DNGLOOK_0fda(void)
 {
-    switch (D_58a0)
+    switch (D_58a0_combatExitDir)
     {
     case DIR_UP:
-        D_5897_map_y--;
-        D_6602 = D_6603 = 0;
-        if (7 < D_5897_map_y)
+        D_5897_mapY--;
+        D_6602 = D_6603_dungeonFacing = 0;
+        if (7 < D_5897_mapY)
         {
-            D_5897_map_y = 7;
+            D_5897_mapY = 7;
         }
         break;
 
     case DIR_RIGHT:
-        D_5896_map_x++;
-        D_6602 = D_6603 = 1;
-        if (7 < D_5896_map_x)
+        D_5896_mapX++;
+        D_6602 = D_6603_dungeonFacing = 1;
+        if (7 < D_5896_mapX)
         {
-            D_5896_map_x = 0;
+            D_5896_mapX = 0;
         }
         break;
 
     case DIR_DOWN:
-        D_5897_map_y++;
-        D_6602 = D_6603 = 2;
-        if (7 < D_5897_map_y)
+        D_5897_mapY++;
+        D_6602 = D_6603_dungeonFacing = 2;
+        if (7 < D_5897_mapY)
         {
-            D_5897_map_y = 0;
+            D_5897_mapY = 0;
         }
         break;
 
     case DIR_LEFT:
-        D_5896_map_x--;
-        D_6602 = D_6603 = 3;
-        if (7 < D_5896_map_x)
+        D_5896_mapX--;
+        D_6602 = D_6603_dungeonFacing = 3;
+        if (7 < D_5896_mapX)
         {
-            D_5896_map_x = 7;
+            D_5896_mapX = 7;
         }
         break;
 
     case 5:
-        if (D_5895_map_level == 0)
+        if (D_5895_mapLevel == 0)
         {
             DUNGEON_1d08_Exit();
-            D_5893_map_id = 0;
+            D_5893_mapId = 0;
         }
         else
         {
-            D_5895_map_level--;
+            D_5895_mapLevel--;
             D_6602 = 4;
         }
         break;
 
     case 6:
-        if (D_5895_map_level == 7)
+        if (D_5895_mapLevel == 7)
         {
             DUNGEON_1d08_Exit();
-            D_5893_map_id = 0;
+            D_5893_mapId = 0;
         }
         else
         {
-            D_5895_map_level++;
+            D_5895_mapLevel++;
             D_6602 = 5;
         }
         break;
@@ -1082,7 +1082,7 @@ void DNGLOOK_0fda(void)
 
 void DNGLOOK_109e(int param_1)
 {
-    if (D_5893_map_id != 0)
+    if (D_5893_mapId != 0)
     {
         if ((D_bb17 & 2) != 0)
         {
@@ -1093,20 +1093,20 @@ void DNGLOOK_109e(int param_1)
         {
             do
             {
-                D_a9c0 = ULTIMA_0bae_LoadImageFile(D_25ea[4 + D_6604]); // DNGn.16
+                D_a9c0 = ULTIMA_0bae_LoadImageFile(D_25ea_fileNames[4 + D_6604_dungeonStyle]); // DNGn.16
             } while (D_a9c0 == 0);
 
             do
             {
-                D_a9c4 = ULTIMA_0bae_LoadImageFile(D_25ea[4]); // ITEMS.16
+                D_a9c4 = ULTIMA_0bae_LoadImageFile(D_25ea_fileNames[4]); // ITEMS.16
             } while (D_a9c4 == 0);
         }
 
         D_bb17 = 1;
         if (param_1 != 0)
         {
-            D_5c5a[1].tile = D_5c5a[1].animTile = 0;
-            D_5c5a[1].value = D_5c5a[1].x = D_5c5a[1].y = 0xff;
+            D_5c5a_actors[1].tile = D_5c5a_actors[1].animTile = 0;
+            D_5c5a_actors[1].value = D_5c5a_actors[1].x = D_5c5a_actors[1].y = 0xff;
         }
 
         ULTIMA_0a70_GRAP_2d_SetPenColor(0);
@@ -1126,7 +1126,7 @@ void DNGLOOK_1130(void)
 
     if ((D_bb17 & 1) != 0)
     {
-        if (D_5c5a[1].value != 0xff)
+        if (D_5c5a_actors[1].value != 0xff)
         {
             ULTIMA_0be4_FreeImage(D_a9c6);
         }
@@ -1143,7 +1143,7 @@ void DNGLOOK_1130(void)
 
     if ((D_bb17 & 4) == 0)
     {
-        ULTIMA_6f9e(0);
+        ULTIMA_6f9e_TilesetModePlus3(0);
     }
 
     D_bb17 = 6;
@@ -1169,7 +1169,7 @@ void DNGLOOK_117e(int param_1, int param_2)
     if (param_2 != 1)
     {
         // b42e
-        switch (D_6603)
+        switch (D_6603_dungeonFacing)
         {
         case 0:
         case 5:
@@ -1187,12 +1187,12 @@ void DNGLOOK_117e(int param_1, int param_2)
         }
 
         // b451
-        ULTIMA_6936();
+        ULTIMA_6936_InitCombatants();
 
         for (local_10_aa = 0; local_10_aa < D_585b_partyCount; local_10_aa++)
         {
-            D_ba14[local_10_aa].x = D_5c5a[local_10_aa].x = GetCombatMapSpecial(local_4_ab, local_c);
-            D_ba14[local_10_aa].y = D_5c5a[local_10_aa].y = GetCombatMapSpecial(local_4_ab, local_e_am);
+            D_ba14_combatants[local_10_aa].x = D_5c5a_actors[local_10_aa].x = GetCombatMapSpecial(local_4_ab, local_c);
+            D_ba14_combatants[local_10_aa].y = D_5c5a_actors[local_10_aa].y = GetCombatMapSpecial(local_4_ab, local_e_am);
             local_c++;
             local_e_am++;
         }
@@ -1234,24 +1234,24 @@ void DNGLOOK_117e(int param_1, int param_2)
                 }
 
                 // b58e
-                local_12_a = ULTIMA_6506(local_16_ak, local_14_am, GetCombatMapSpecial(COMBAT_MAP_SPECIAL_MONSTER_X, local_c),
-                                       GetCombatMapSpecial(COMBAT_MAP_SPECIAL_MONSTER_Y, local_e_am), D_5895_map_level);
+                local_12_a = ULTIMA_6506_PlaceCombatant(local_16_ak, local_14_am, GetCombatMapSpecial(COMBAT_MAP_SPECIAL_MONSTER_X, local_c),
+                                       GetCombatMapSpecial(COMBAT_MAP_SPECIAL_MONSTER_Y, local_e_am), D_5895_mapLevel);
                 if (local_14_am == 2)
                 {
                     if (local_16_ak == 1)
                     {
-                        D_5c5a[local_12_a].value = D_5895_map_level * 3 + 7;
+                        D_5c5a_actors[local_12_a].value = D_5895_mapLevel * 3 + 7;
                         // nop
                     }
                     else if (local_16_ak == 2)
                     {
-                        D_5c5a[local_12_a].value = ULTIMA_2092_RandomRange(1, D_5895_map_level * 10 + 10);
+                        D_5c5a_actors[local_12_a].value = ULTIMA_2092_RandomRange(1, D_5895_mapLevel * 10 + 10);
                     }
                     else if (local_16_ak < 0x10)
                     {
                         ASSERT(local_16_ak != 0);
                         // TODO: offset
-                        D_5c5a[local_12_a].value = D_3850[local_16_ak - 3] + ULTIMA_2092_RandomRange(0, D_3842[local_16_ak - 3] - 1);
+                        D_5c5a_actors[local_12_a].value = D_3850[local_16_ak - 3] + ULTIMA_2092_RandomRange(0, D_3842[local_16_ak - 3] - 1);
                     }
                 }
             }

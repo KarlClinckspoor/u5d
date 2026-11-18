@@ -25,7 +25,7 @@ u8 D_4596[4] = {0x82, 0x81, 0x80, 0x83};
 
 int CAST_0000(int param_1)
 {
-    int local_4 = D_ba14[param_1].entityIdx;
+    int local_4 = D_ba14_combatants[param_1].entityIdx;
     if (local_4 == 47 || local_4 == 0xe || local_4 == 0xf)
     {
         return 1;
@@ -38,8 +38,8 @@ int CAST_0000(int param_1)
 
 static void CAST_0032(int param_1)
 {
-    D_589d = param_1;
-    COMSUBS_0c52(D_589e, param_1);
+    D_589d_attackWeapon = param_1;
+    COMSUBS_0c52(D_589e_curCombatant, param_1);
 }
 
 static int CAST_004c(int param_1)
@@ -49,27 +49,27 @@ static int CAST_004c(int param_1)
     int local_6;
     int local_4_ab;
 
-    if (D_5893_map_id < 0x80)
+    if (D_5893_mapId < 0x80)
     {
         CAST2_0000_CastEffect(param_1 == 3 ? 4 : 3);
-        local_4_ab = (D_24d6[D_6603] + D_5896_map_x) & 7;
-        local_6 = (D_24de[D_6603] + D_5897_map_y) & 7;
+        local_4_ab = (D_24d6_facingDx[D_6603_dungeonFacing] + D_5896_mapX) & 7;
+        local_6 = (D_24de_facingDy[D_6603_dungeonFacing] + D_5897_mapY) & 7;
 
-        local_a = GetDungeonMap(local_4_ab, local_6, D_5895_map_level);
+        local_a = GetDungeonMap(local_4_ab, local_6, D_5895_mapLevel);
         if ((local_a & 0xf7) != 0)
         {
             local_8 = 0;
         }
         else
         {
-            GetDungeonMap(local_4_ab, local_6, D_5895_map_level) = (local_a & 8) | D_4596[param_1];
+            GetDungeonMap(local_4_ab, local_6, D_5895_mapLevel) = (local_a & 8) | D_4596[param_1];
             local_8 = -1;
         }
     }
     else
     {
-        D_589d = D_4592[param_1];
-        COMSUBS_0c52(D_589e, D_589d);
+        D_589d_attackWeapon = D_4592[param_1];
+        COMSUBS_0c52(D_589e_curCombatant, D_589d_attackWeapon);
         local_8 = -1;
     }
 
@@ -90,15 +90,15 @@ static int CAST_0114_AnZu(void)
     else if (D_55a8_party[local_8].status == STATUS_SLEEP)
     {
         D_55a8_party[local_8].status = STATUS_GOOD;
-        if (D_5893_map_id > 0x7f)
+        if (D_5893_mapId > 0x7f)
         {
             for (local_6 = 0; local_6 < 0x20; local_6++)
             {
-                if ((D_ba14[local_6].flags & (COMBAT_FLAGS_PLAYER | COMBAT_FLAGS_MONSTER | COMBAT_FLAGS_DEAD | COMBAT_FLAGS_ASLEEP)) ==
+                if ((D_ba14_combatants[local_6].flags & (COMBAT_FLAGS_PLAYER | COMBAT_FLAGS_MONSTER | COMBAT_FLAGS_DEAD | COMBAT_FLAGS_ASLEEP)) ==
                     (COMBAT_FLAGS_PLAYER | COMBAT_FLAGS_ASLEEP) &&
-                    D_ba14[local_6].entityIdx == local_8)
+                    D_ba14_combatants[local_6].entityIdx == local_8)
                 {
-                    ULTIMA_6800(local_6);
+                    ULTIMA_6800_WakeCombatant(local_6);
                     break;
                 }
             }
@@ -111,7 +111,7 @@ static int CAST_0114_AnZu(void)
 
         CAST2_0000_CastEffect(1);
         local_4_ab = -1;
-        D_a9fa = 1;
+        D_a9fa_vitalsDirty = 1;
     }
     else
     {
@@ -137,7 +137,7 @@ static int CAST_01ae_AnNox(void)
         {
             D_55a8_party[local_6_an].status = STATUS_GOOD;
             CAST2_0000_CastEffect(1);
-            D_a9fa = 1;
+            D_a9fa_vitalsDirty = 1;
             local_4 = 1;
         }
         else
@@ -183,7 +183,7 @@ static int CAST_0230_AnYlem(void)
     }
 
     CAST2_0000_CastEffect(1);
-    local_4 = ULTIMA_4402_GetTileAddr(D_5876, D_5878);
+    local_4 = ULTIMA_4402_GetTileAddr(D_5876_tempX, D_5878_tempY);
     switch (*local_4)
     {
     case TILE_MAP_5B:
@@ -201,7 +201,7 @@ static int CAST_0230_AnYlem(void)
     case TILE_MAP_TRUNK:
         *local_4 = TILE_MAP_44;
         ULTIMA_1850_PrintString(_TEXT(0x459a, "POOF!\n"));
-        D_24e6 |= 2;
+        D_24e6_viewDirty |= 2;
         ULTIMA_5910_UpdateFrame();
         ULTIMA_43ae_AudioSweepTone(0x4b0, 2000, 1, 0x28);
         local_6_an = -1;
@@ -224,19 +224,19 @@ static int CAST_02d2_AnSanct(void)
     int local_c;
     int local_e;
 
-    if (D_5893_map_id > 0x20 && D_5893_map_id < 0x80)
+    if (D_5893_mapId > 0x20 && D_5893_mapId < 0x80)
     {
         CAST2_0000_CastEffect(2);
 
-        local_c = D_24d6[D_6603];
-        local_e = D_24de[D_6603];
+        local_c = D_24d6_facingDx[D_6603_dungeonFacing];
+        local_e = D_24de_facingDy[D_6603_dungeonFacing];
 
-        local_4_c = &GetDungeonMap(D_5896_map_x, D_5897_map_y, D_5895_map_level);
+        local_4_c = &GetDungeonMap(D_5896_mapX, D_5897_mapY, D_5895_mapLevel);
 
         if ((*local_4_c & 0xf0) != 0x40)
         {
             local_4_c =
-                &GetDungeonMap((local_c + D_5896_map_x) & 7, (local_e + D_5897_map_y) & 7, D_5895_map_level);
+                &GetDungeonMap((local_c + D_5896_mapX) & 7, (local_e + D_5897_mapY) & 7, D_5895_mapLevel);
         }
 
         if ((*local_4_c & 0xf0) == 0x40)
@@ -266,13 +266,13 @@ static int CAST_02d2_AnSanct(void)
 
         local_8 = 0;
 
-        local_4_c = ULTIMA_4402_GetTileAddr(D_5876, D_5878);
+        local_4_c = ULTIMA_4402_GetTileAddr(D_5876_tempX, D_5878_tempY);
 
         if (*local_4_c == TILE_MAP_DOOR_B9 || *local_4_c == TILE_MAP_DOOR_BB)
         {
             --*local_4_c;
 
-            D_24e6 |= 2;
+            D_24e6_viewDirty |= 2;
 
             CAST2_0000_CastEffect(2);
 
@@ -282,10 +282,10 @@ static int CAST_02d2_AnSanct(void)
         {
             for (local_a = 0; local_a < 0x20; local_a++)
             {
-                local_6 = &D_5c5a[local_a];
+                local_6 = &D_5c5a_actors[local_a];
 
-                if (local_6->tile == TILE_ACTOR_CHEST && local_6->x == D_5876 && local_6->y == D_5878 &&
-                    (D_5893_map_id > 0x7f || local_6->z == D_5895_map_level))
+                if (local_6->tile == TILE_ACTOR_CHEST && local_6->x == D_5876_tempX && local_6->y == D_5878_tempY &&
+                    (D_5893_mapId > 0x7f || local_6->z == D_5895_mapLevel))
                 {
                     local_6->value &= 0x7f;
 
@@ -310,11 +310,11 @@ static void CAST_043e_AnCorpXen(void)
 
     for (local_6_p = 0; local_6_p < 0x20; local_6_p++)
     {
-        local_4 = &D_ba14[local_6_p];
+        local_4 = &D_ba14_combatants[local_6_p];
         if (CAST_0000(local_6_p) == 0 && (local_4->flags & (COMBAT_FLAGS_PLAYER | COMBAT_FLAGS_MONSTER)) == COMBAT_FLAGS_MONSTER &&
             ((byte)D_153c_enemyFlags[local_4->entityIdx] & ENEMY_FLAG_UNDEAD) != 0)
         {
-            if (COMSUBS_0000(D_589e, local_6_p, 0) == 0)
+            if (COMSUBS_0000(D_589e_curCombatant, local_6_p, 0) == 0)
             {
                 local_4->hp = 1;
                 local_4->flags |= COMBAT_FLAGS_2;
@@ -371,28 +371,28 @@ static int CAST_04b0_KalXen(void)
     // 0522
     while (local_c < 8)
     {
-        if (COMBAT_120e() == 0 || COMBAT_0000(TILE_ACTOR_90, D_5876, D_5878) == 0)
+        if (COMBAT_120e() == 0 || COMBAT_0000(TILE_ACTOR_90, D_5876_tempX, D_5878_tempY) == 0)
         {
             local_c++;
             continue;
         }
 
-        local_8 = ULTIMA_6506(local_4_c, 0, D_5876, D_5878, D_5895_map_level);
+        local_8 = ULTIMA_6506_PlaceCombatant(local_4_c, 0, D_5876_tempX, D_5878_tempY, D_5895_mapLevel);
         if (local_8 < 0)
         {
             break;
         }
 
-        local_6 = &D_5c5a[D_ba14[local_8].actorIdx];
+        local_6 = &D_5c5a_actors[D_ba14_combatants[local_8].actorIdx];
 
         // 056c
         local_6->animTile = local_6->tile = TILE_ACTOR_CIRCLE;
 
         // 0588
-        ULTIMA_1068(local_10_ad, D_5876, D_5878);
+        ULTIMA_1068_RevealTile(local_10_ad, D_5876_tempX, D_5878_tempY);
 
         local_6->animTile = local_6->tile = local_e;
-        D_ba14[local_8].flags |= COMBAT_FLAGS_CHARMED;
+        D_ba14_combatants[local_8].flags |= COMBAT_FLAGS_CHARMED;
 
         local_a = 1;
         break;
@@ -405,7 +405,7 @@ static int CAST_05b4_InManiXen(void)
 {
     CAST2_0000_CastEffect(2);
     ULTIMA_3f14_IncreaseInt(&D_57a8_food, ULTIMA_2092_RandomRange(1, 3), 9999);
-    D_a9fa = 1;
+    D_a9fa_vitalsDirty = 1;
     return 1;
 }
 
@@ -422,10 +422,10 @@ static int CAST_05dc_InPor(void)
     ActorFmt* local_4_c;
 
     local_c = 0;
-    if (D_5893_map_id > 0x7f)
+    if (D_5893_mapId > 0x7f)
     {
-        local_4_c = &D_5c5a[D_ba14[D_589e].actorIdx];
-        if ((D_58a1 & 2) != 0)
+        local_4_c = &D_5c5a_actors[D_ba14_combatants[D_589e_curCombatant].actorIdx];
+        if ((D_58a1_combatFlags & 2) != 0)
         {
             local_c = 0;
         }
@@ -437,11 +437,11 @@ static int CAST_05dc_InPor(void)
                 if (COMBAT_120e() == 0)
                     continue;
 
-                if (COMBAT_0000(local_4_c->tile, D_5876, D_5878) == 0)
+                if (COMBAT_0000(local_4_c->tile, D_5876_tempX, D_5878_tempY) == 0)
                     continue;
 
-                local_4_c->x = D_ba14[D_589e].x = D_5876;
-                local_4_c->y = D_ba14[D_589e].y = D_5878;
+                local_4_c->x = D_ba14_combatants[D_589e_curCombatant].x = D_5876_tempX;
+                local_4_c->y = D_ba14_combatants[D_589e_curCombatant].y = D_5878_tempY;
 
                 local_c = 1;
                 break;
@@ -460,16 +460,16 @@ static int CAST_05dc_InPor(void)
             // 068e
             CAST2_0000_CastEffect(3);
 
-            local_12_ab = D_5876 - D_5896_map_x;
-            local_14 = D_5878 - D_5897_map_y;
+            local_12_ab = D_5876_tempX - D_5896_mapX;
+            local_14 = D_5878_tempY - D_5897_mapY;
 
-            local_e = D_589b + 0x20;
+            local_e = D_589b_mapOriginX + 0x20;
             if (local_e > 0x100)
             {
                 local_e = 0x100;
             }
 
-            local_10_ad = D_589c + 0x20;
+            local_10_ad = D_589c_mapOriginY + 0x20;
             if (local_10_ad > 0x100)
             {
                 local_10_ad = 0x100;
@@ -477,16 +477,16 @@ static int CAST_05dc_InPor(void)
 
             // 06d9
             local_c = 0;
-            local_8 = (byte)D_5876;
-            for (local_a = (byte)D_5878; D_589b <= local_8 && local_8 < local_e && D_589c <= local_a && local_a < local_10_ad;
+            local_8 = (byte)D_5876_tempX;
+            for (local_a = (byte)D_5878_tempY; D_589b_mapOriginX <= local_8 && local_8 < local_e && D_589c_mapOriginY <= local_a && local_a < local_10_ad;
                  local_a += local_14)
             {
                 if (*ULTIMA_4402_GetTileAddr(local_8, local_a) == TILE_MAP_GRASS)
                 {
                     local_c = -1;
-                    D_5896_map_x = local_8;
-                    D_5897_map_y = local_a;
-                    D_24e6 = 1;
+                    D_5896_mapX = local_8;
+                    D_5897_mapY = local_a;
+                    D_24e6_viewDirty = 1;
                 }
                 local_8 += local_12_ab;
             }
@@ -510,15 +510,15 @@ static void CAST_074c_QuasWis(void)
 
     for (local_6_p = 0; local_6_p < 0x20; local_6_p++)
     {
-        if (D_ba14[local_6_p].flags != 0 &&
-            (D_ba14[local_6_p].flags & COMBAT_FLAGS_PLAYER) == 0 &&
-            (D_ba14[local_6_p].flags & COMBAT_FLAGS_INVISIBLE) != 0)
+        if (D_ba14_combatants[local_6_p].flags != 0 &&
+            (D_ba14_combatants[local_6_p].flags & COMBAT_FLAGS_PLAYER) == 0 &&
+            (D_ba14_combatants[local_6_p].flags & COMBAT_FLAGS_INVISIBLE) != 0)
         {
-            D_ba14[local_6_p].flags &= ~COMBAT_FLAGS_INVISIBLE;
-            local_4 = &D_5c5a[D_ba14[local_6_p].actorIdx];
+            D_ba14_combatants[local_6_p].flags &= ~COMBAT_FLAGS_INVISIBLE;
+            local_4 = &D_5c5a_actors[D_ba14_combatants[local_6_p].actorIdx];
             local_4->animTile = local_4->tile;
 
-            ULTIMA_5394();
+            ULTIMA_5394_PutActorsInView();
             ULTIMA_56ac_DrawMap();
         }
     }
@@ -537,7 +537,7 @@ static int CAST_07b4_BetInXen(void)
     // 07c7
     for (local_8 = 0; local_8 < 8; local_8++)
     {
-        if (COMBAT_120e() == 0 || COMBAT_0000(TILE_ACTOR_BC, D_5876, D_5878) == 0)
+        if (COMBAT_120e() == 0 || COMBAT_0000(TILE_ACTOR_BC, D_5876_tempX, D_5878_tempY) == 0)
             continue;
 
         local_6 = 1;
@@ -550,13 +550,13 @@ static int CAST_07b4_BetInXen(void)
 
         for (local_8 = 0; local_8 < 4; local_8++)
         {
-            local_4_ab = ULTIMA_6506(0x1f, 0, D_5876, D_5878, D_5895_map_level);
+            local_4_ab = ULTIMA_6506_PlaceCombatant(0x1f, 0, D_5876_tempX, D_5878_tempY, D_5895_mapLevel);
             if (local_4_ab < 0)
             {
                 break;
             }
 
-            D_ba14[local_4_ab].flags |= COMBAT_FLAGS_CHARMED;
+            D_ba14_combatants[local_4_ab].flags |= COMBAT_FLAGS_CHARMED;
             local_6 = 1;
         }
     }
@@ -576,7 +576,7 @@ static int CAST_0846_AnExPor(void)
     else
     {
         CAST2_0000_CastEffect(5);
-        local_4 = ULTIMA_4402_GetTileAddr(D_5876, D_5878);
+        local_4 = ULTIMA_4402_GetTileAddr(D_5876_tempX, D_5878_tempY);
         local_6_an = 0;
         switch (*local_4)
         {
@@ -584,14 +584,14 @@ static int CAST_0846_AnExPor(void)
         case TILE_MAP_DOOR_B9:
             *local_4 = TILE_MAP_97;
             local_6_an = 1;
-            D_24e6 |= 2;
+            D_24e6_viewDirty |= 2;
             break;
 
         case TILE_MAP_DOOR_BA:
         case TILE_MAP_DOOR_BB:
             *local_4 = TILE_MAP_98;
             local_6_an = 1;
-            D_24e6 |= 2;
+            D_24e6_viewDirty |= 2;
             break;
         }
 
@@ -609,11 +609,11 @@ static int CAST_08ac_ManiVas(void)
     {
         local_4 = -1;
     }
-    else if (D_55a8_party[local_6_an].status == STATUS_DEAD || (D_5893_map_id > 0x7f && D_58a3 == 0))
+    else if (D_55a8_party[local_6_an].status == STATUS_DEAD || (D_5893_mapId > 0x7f && D_58a3_combatOver == 0))
     {
         local_4 = 0;
     }
-    else if (D_5893_map_id > 0x7f && D_58a3 == 0) // sic
+    else if (D_5893_mapId > 0x7f && D_58a3_combatOver == 0) // sic
     {
         local_4 = 0;
     }
@@ -621,7 +621,7 @@ static int CAST_08ac_ManiVas(void)
     {
         D_55a8_party[local_6_an].hp = D_55a8_party[local_6_an].maxHp;
         CAST2_0000_CastEffect(5);
-        D_a9fa = 1;
+        D_a9fa_vitalsDirty = 1;
         local_4 = 1;
     }
 
@@ -636,15 +636,15 @@ static void CAST_091e_InPorVasYlem(int param_1)
     ULTIMA_3072_ShakeScreen();
     for (local_4 = 0; local_4 < 0x20; local_4++)
     {
-        if (D_ba14[local_4].flags != 0)
+        if (D_ba14_combatants[local_4].flags != 0)
         {
-            if (ULTIMA_5646(local_4) != 0)
+            if (ULTIMA_5646_IsEnemy(local_4) != 0)
             {
-                if (COMBAT_13e2(local_4, QUERY_STAT_DEX) <= ULTIMA_3abe())
+                if (COMBAT_13e2(local_4, QUERY_STAT_DEX) <= ULTIMA_3abe_Random1To30())
                 {
-                    ULTIMA_3564(local_4);
+                    ULTIMA_3564_HitEffectOnActor(local_4);
                     ULTIMA_3f14_IncreaseInt(&D_55a8_party[param_1].exp, COMBAT_1574(local_4, ULTIMA_2092_RandomRange(1, 0x14)), 9999); // FMT: &local_8 ??
-                    COMSUBS_0312(local_4, D_589e);
+                    COMSUBS_0312(local_4, D_589e_curCombatant);
                 }
             }
         }
@@ -656,27 +656,27 @@ static int CAST_09a0_AnExXen(void)
     int local_4;
 
     ULTIMA_1850_PrintString(_TEXT(0x45bb, "Creature: "));
-    if (COMSUBS_0504(D_589e, 0xf) == 0)
+    if (COMSUBS_0504(D_589e_curCombatant, 0xf) == 0)
     {
         return -1;
     }
 
     // 09c6
     CAST2_0000_CastEffect(6);
-    if ((*ULTIMA_4402_GetTileAddr(D_5899, D_589a) & 0xfe) == TILE_MAP_84)
+    if ((*ULTIMA_4402_GetTileAddr(D_5899_crosshairX, D_589a_crosshairY) & 0xfe) == TILE_MAP_84)
     {
         return 0;
     }
 
-    local_4 = COMSUBS_0748(D_5899, D_589a);
+    local_4 = COMSUBS_0748(D_5899_crosshairX, D_589a_crosshairY);
     if (local_4 >= 0)
     {
-        if (CAST_0000(local_4) == 0 && ULTIMA_5646(local_4) != 0 && COMSUBS_0000(D_589e, local_4, 0) == 0)
+        if (CAST_0000(local_4) == 0 && ULTIMA_5646_IsEnemy(local_4) != 0 && COMSUBS_0000(D_589e_curCombatant, local_4, 0) == 0)
         {
-            D_ba14[local_4].flags ^= COMBAT_FLAGS_CHARMED;
-            if ((D_ba14[local_4].flags & COMBAT_FLAGS_PLAYER) != 0)
+            D_ba14_combatants[local_4].flags ^= COMBAT_FLAGS_CHARMED;
+            if ((D_ba14_combatants[local_4].flags & COMBAT_FLAGS_PLAYER) != 0)
             {
-                D_55a8_party[D_ba14[local_4].entityIdx].status = STATUS_GOOD;
+                D_55a8_party[D_ba14_combatants[local_4].entityIdx].status = STATUS_GOOD;
                 ULTIMA_2900_UpdateVitalsDisplay();
             }
 
@@ -697,25 +697,25 @@ static int CAST_0a5c_BetRelXen(void)
     int local_4_ab;
 
     ULTIMA_1850_PrintString(_TEXT(0x45d1, "Creature: "));
-    if (COMSUBS_0504(D_589e, 0xf) == 0)
+    if (COMSUBS_0504(D_589e_curCombatant, 0xf) == 0)
     {
         return -1;
     }
 
     // 0a82
     CAST2_0000_CastEffect(6);
-    local_4_ab = COMSUBS_0748(D_5899, D_589a);
+    local_4_ab = COMSUBS_0748(D_5899_crosshairX, D_589a_crosshairY);
     if (local_4_ab < 0)
     {
         return 0;
     }
 
-    if (CAST_0000(local_4_ab) == 0 && COMSUBS_0000(D_589e, local_4_ab, 0) == 0)
+    if (CAST_0000(local_4_ab) == 0 && COMSUBS_0000(D_589e_curCombatant, local_4_ab, 0) == 0)
     {
-        local_6 = D_ba14[local_4_ab].x;
-        local_8 = D_ba14[local_4_ab].y;
+        local_6 = D_ba14_combatants[local_4_ab].x;
+        local_8 = D_ba14_combatants[local_4_ab].y;
         COMBAT_1236(-local_4_ab - 1);
-        ULTIMA_6506(0x14, 0, local_6, local_8, D_5895_map_level);
+        ULTIMA_6506_PlaceCombatant(0x14, 0, local_6, local_8, D_5895_mapLevel);
         return 1;
     }
 
@@ -724,8 +724,8 @@ static int CAST_0a5c_BetRelXen(void)
 
 static int CAST_0afe_LorSanct(void)
 {
-    D_5c5a[D_ba14[D_589e].actorIdx].animTile = TILE_ACTOR_1D;
-    D_ba14[D_589e].flags |= COMBAT_FLAGS_INVISIBLE;
+    D_5c5a_actors[D_ba14_combatants[D_589e_curCombatant].actorIdx].animTile = TILE_ACTOR_1D;
+    D_ba14_combatants[D_589e_curCombatant].flags |= COMBAT_FLAGS_INVISIBLE;
     CAST2_0000_CastEffect(7);
     return 1;
 }
@@ -739,13 +739,13 @@ static int CAST_0b28_InQuasXen(void)
     int local_4_ab;
 
     ULTIMA_1850_PrintString(_TEXT(0x45dc, "Creature: "));
-    if (COMSUBS_0504(D_589e, 0xf) == 0)
+    if (COMSUBS_0504(D_589e_curCombatant, 0xf) == 0)
     {
         return -1;
     }
 
     CAST2_0000_CastEffect(7);
-    local_6 = COMSUBS_0748(D_5899, D_589a);
+    local_6 = COMSUBS_0748(D_5899_crosshairX, D_589a_crosshairY);
     if (local_6 < 0)
     {
         local_8 = 0;
@@ -756,7 +756,7 @@ static int CAST_0b28_InQuasXen(void)
         local_4_ab = local_c = 0xff;
         for (local_a = 0; local_a < 0x20; local_a++)
         {
-            if (D_5c5a[local_a].tile == 0)
+            if (D_5c5a_actors[local_a].tile == 0)
             {
                 local_c = local_a;
                 break;
@@ -767,7 +767,7 @@ static int CAST_0b28_InQuasXen(void)
         {
             for (local_a = 0; local_a < 0x20; local_a++)
             {
-                if (D_ba14[local_a].flags == 0)
+                if (D_ba14_combatants[local_a].flags == 0)
                 {
                     local_4_ab = local_a;
                     break;
@@ -777,22 +777,22 @@ static int CAST_0b28_InQuasXen(void)
             if (local_4_ab != 0xff)
             {
                 // 0bbc
-                D_ba14[local_4_ab] = D_ba14[local_6];
+                D_ba14_combatants[local_4_ab] = D_ba14_combatants[local_6];
                 
-                D_ba14[local_4_ab].actorIdx = local_c;
+                D_ba14_combatants[local_4_ab].actorIdx = local_c;
 
-                D_5c5a[local_c] = D_5c5a[D_ba14[local_6].actorIdx];
+                D_5c5a_actors[local_c] = D_5c5a_actors[D_ba14_combatants[local_6].actorIdx];
 
                 do
                 {
-                    if (COMBAT_120e() == 0 || COMBAT_0000(TILE_ACTOR_AVATAR, D_5876, D_5878) == 0)
+                    if (COMBAT_120e() == 0 || COMBAT_0000(TILE_ACTOR_AVATAR, D_5876_tempX, D_5878_tempY) == 0)
                     {
                         local_8 = 0;
                     }
                     else
                     {
-                        D_5c5a[local_c].x = D_ba14[local_4_ab].x = D_5876;
-                        D_5c5a[local_c].y = D_ba14[local_4_ab].y = D_5878;
+                        D_5c5a_actors[local_c].x = D_ba14_combatants[local_4_ab].x = D_5876_tempX;
+                        D_5c5a_actors[local_c].y = D_ba14_combatants[local_4_ab].y = D_5878_tempY;
                         local_8 = 1;
                     }
                 } while (local_8 == 0);
@@ -812,12 +812,12 @@ static void CAST_0c98_CorpInQuas(void)
 
     for (local_6_p = 0; local_6_p < 0x20; local_6_p++)
     {
-        local_4 = &D_ba14[local_6_p];
+        local_4 = &D_ba14_combatants[local_6_p];
         if ((local_4->flags & (COMBAT_FLAGS_PLAYER | COMBAT_FLAGS_MONSTER)) == COMBAT_FLAGS_MONSTER)
         {
             if (CAST_0000(local_6_p) == 0)
             {
-                if (COMSUBS_0000(D_589e, local_6_p, 0) == 0)
+                if (COMSUBS_0000(D_589e_curCombatant, local_6_p, 0) == 0)
                 {
                     local_4->hp = 1;
                     local_4->flags |= COMBAT_FLAGS_2;
@@ -846,7 +846,7 @@ static int CAST_0cf0_PorRelVas(void)
         {
             local_4 -= 0x31;
             CAST2_0000_CastEffect(8);
-            if (ULTIMA_47f4(local_4) != 0)
+            if (ULTIMA_47f4_GoToMoonstone(local_4) != 0)
             {
                 return -1;
             }
@@ -866,7 +866,7 @@ static int CAST_0d4c_AnTym(void)
 
     for (local_4 = 0; local_4 < 0x20; local_4++)
     {
-        if (D_5c5a[local_4].tile == TILE_ACTOR_SHADOWLORD)
+        if (D_5c5a_actors[local_4].tile == TILE_ACTOR_SHADOWLORD)
         {
             ULTIMA_1850_PrintString(_TEXT(0x45f2, "Magic absorbed!\n"));
             ULTIMA_2192_AudioPulse(0x2648, 1, 28000, 1000, 2);
@@ -877,8 +877,8 @@ static int CAST_0d4c_AnTym(void)
 
     if (local_6_an != 0)
     {
-        D_587a = 0x54;
-        D_588e = 10;
+        D_587a_statusIcon = 0x54;
+        D_588e_protectTurns = 10;
         ULTIMA_2900_UpdateVitalsDisplay();
     }
 
@@ -903,7 +903,7 @@ int CAST_0dba_CastSpellCmd(void)
 
     local_c = local_e = D_5890 = D_588f = local_8 = 1;
 
-    local_6 = ULTIMA_4988();
+    local_6 = ULTIMA_4988_GetActingPlayer();
     if (local_6 < 0)
     {
         return local_6;
@@ -933,14 +933,14 @@ int CAST_0dba_CastSpellCmd(void)
 
     D_588f = local_a = local_4_ab / 6 + 1;
 
-    if (D_5893_map_id == 0)
+    if (D_5893_mapId == 0)
     {
         if ((D_1c90[local_4_ab] & 8) == 0)
         {
             local_e = 0;
         }
     }
-    else if (D_5893_map_id > 0x7f)
+    else if (D_5893_mapId > 0x7f)
     {
         if ((D_1c90[local_4_ab] & 1) == 0)
         {
@@ -949,7 +949,7 @@ int CAST_0dba_CastSpellCmd(void)
     }
     else
     {
-        if (((D_5893_map_id == 0x12) && (D_57b4 == 0)) || (D_5893_map_id == 0x1d)) // LB crown / at STONEGATE
+        if (((D_5893_mapId == 0x12) && (D_57b4_crown == 0)) || (D_5893_mapId == 0x1d)) // LB crown / at STONEGATE
         {
             ULTIMA_1850_PrintString(_TEXT(0x4624, "Absorbed!\n"));
             ULTIMA_2192_AudioPulse(0x2648, 1, 28000, 1000, 2);
@@ -960,7 +960,7 @@ int CAST_0dba_CastSpellCmd(void)
 #endif
         }
 
-        if (D_5893_map_id < 0x21)
+        if (D_5893_mapId < 0x21)
         {
             if ((D_1c90[local_4_ab] & 4) == 0)
             {
@@ -987,7 +987,7 @@ int CAST_0dba_CastSpellCmd(void)
 #endif
     }
 
-    if (D_57f0[local_4_ab] == 0)
+    if (D_57f0_mixedSpells[local_4_ab] == 0)
     {
         ULTIMA_1850_PrintString(_TEXT(0x463a, "None mixed!\n"));
 #if !defined(MATCHING_BUILD)
@@ -997,7 +997,7 @@ int CAST_0dba_CastSpellCmd(void)
 #endif
     }
 
-    D_57f0[local_4_ab]--;
+    D_57f0_mixedSpells[local_4_ab]--;
     if (D_55a8_party[local_6].mag < local_a)
     {
         ULTIMA_1850_PrintString(_TEXT(0x4647, "M.P. too low!\n"));
@@ -1082,7 +1082,7 @@ int CAST_0dba_CastSpellCmd(void)
                 local_c = CAST_004c(3);
                 break;
             case 0x15: // PU
-                if (D_5893_map_id == 40)
+                if (D_5893_mapId == 40)
                 {
                     local_c = 0;
                     break;
@@ -1095,7 +1095,7 @@ int CAST_0dba_CastSpellCmd(void)
                 }
                 break;
             case 0x16: // DP
-                if (D_5893_map_id == 40)
+                if (D_5893_mapId == 40)
                 {
                     local_c = 0;
                     break;
@@ -1126,7 +1126,7 @@ int CAST_0dba_CastSpellCmd(void)
                 local_c = CAST_08ac_ManiVas();
                 break;
             case 0x1c: // IZ
-                CAST_1f60(D_589e, 1, D_13b6_magentaColor);
+                CAST_1f60(D_589e_curCombatant, 1, D_13b6_magentaColor);
                 break;
             case 0x1d: // RT
                 CAST2_08f8(0x51, 0x1e, 5);
@@ -1161,9 +1161,9 @@ int CAST_0dba_CastSpellCmd(void)
                 break;
             case 0x27: // IQW view?
                 CAST2_0000_CastEffect(7);
-                if (D_5893_map_id < 0x21)
+                if (D_5893_mapId < 0x21)
                 {
-                    LOOKOBJ_10fc_ViewCmd(D_5896_map_x, D_5897_map_y);
+                    LOOKOBJ_10fc_ViewCmd(D_5896_mapX, D_5897_mapY);
                 }
                 else
                 {
@@ -1171,7 +1171,7 @@ int CAST_0dba_CastSpellCmd(void)
                 }
                 break;
             case 0x28: // HIN
-                CAST_1f60(D_589e, 2, D_13b4_greenColor);
+                CAST_1f60(D_589e_curCombatant, 2, D_13b4_greenColor);
                 break;
             case 0x29: // CIQ
                 CAST_0c98_CorpInQuas();
@@ -1184,10 +1184,10 @@ int CAST_0dba_CastSpellCmd(void)
                 local_c = CAST2_04c2(0);
                 break;
             case 0x2c: // CGIV
-                CAST_1f60(D_589e, 4, D_13b2_blueColor);
+                CAST_1f60(D_589e_curCombatant, 4, D_13b2_blueColor);
                 break;
             case 0x2d: // FHI
-                CAST_1f60(D_589e, 3, D_13ae_redColor);
+                CAST_1f60(D_589e_curCombatant, 3, D_13ae_redColor);
                 break;
             case 0x2e: // PRV
                 local_c = CAST_0cf0_PorRelVas();
@@ -1222,7 +1222,7 @@ static int CAST_11de_UseScroll(int param_1)
     int local_6_an;
     int local_4 = 1;
 
-    D_5820[param_1]--;
+    D_5820_scrolls[param_1]--;
     ULTIMA_1850_PrintString(_XTEXT(0x466a, "Scroll\n\n"));
     switch (param_1)
     {
@@ -1235,7 +1235,7 @@ static int CAST_11de_UseScroll(int param_1)
     case 1:
         ULTIMA_1850_PrintString(_TEXT(0x467b, "Wind change!\n"));
         local_6_an = CAST2_0306();
-        if (D_5893_map_id < 0x21)
+        if (D_5893_mapId < 0x21)
         {
             CAST2_040a_ChangeWindDirection(local_6_an, 1);
             break;
@@ -1256,7 +1256,7 @@ static int CAST_11de_UseScroll(int param_1)
     case 4:
         // 1278
         ULTIMA_1850_PrintString(_TEXT(0x46a5, "View!\n"));
-        if (D_5893_map_id > 0x7f)
+        if (D_5893_mapId > 0x7f)
         {
             ULTIMA_1850_PrintString(_TEXT(0x46ac, "Not here!\n"));
             break;
@@ -1265,9 +1265,9 @@ static int CAST_11de_UseScroll(int param_1)
         {
             // 1290
             CAST2_0000_CastEffect(4);
-            if (D_5893_map_id < 0x21)
+            if (D_5893_mapId < 0x21)
             {
-                LOOKOBJ_10fc_ViewCmd(D_5896_map_x, D_5897_map_y);
+                LOOKOBJ_10fc_ViewCmd(D_5896_mapX, D_5897_mapY);
                 break;
             }
             DNGLOOK_06a8_ViewCmd();
@@ -1277,7 +1277,7 @@ static int CAST_11de_UseScroll(int param_1)
     case 5:
         // 12b4
         ULTIMA_1850_PrintString(_TEXT(0x46b7, "Summon Daemon!\n"));
-        if (D_5893_map_id > 0x7f)
+        if (D_5893_mapId > 0x7f)
         {
             local_4 = CAST2_04c2(1);
             break;
@@ -1291,7 +1291,7 @@ static int CAST_11de_UseScroll(int param_1)
     case 6:
         // 12d2
         ULTIMA_1850_PrintString(_TEXT(0x46d2, "Resurrection!\n"));
-        if (D_5893_map_id < 0x80)
+        if (D_5893_mapId < 0x80)
         {
             local_4 = CAST2_05e0_Resurrect(CAST2_009e_OnWho(), 1);
             ULTIMA_2900_UpdateVitalsDisplay();
@@ -1301,7 +1301,7 @@ static int CAST_11de_UseScroll(int param_1)
         break;
 
     case 7:
-        if ((D_5893_map_id == 0x1d) || (D_5893_map_id == 0x28))
+        if ((D_5893_mapId == 0x1d) || (D_5893_mapId == 0x28))
         {
             ULTIMA_1850_PrintString(_TEXT(0x46ec, "No effect!\n"));
             ULTIMA_43ae_AudioSweepTone(800, 2000, 1, 0x32);
@@ -1329,11 +1329,11 @@ static int CAST_135a_UsePotion(int param_1)
     int local_a;
 
     local_8 = 1;
-    D_5828[param_1]--;
+    D_5828_potions[param_1]--;
     ULTIMA_1850_PrintString(_TEXT(0x4706, "Potion\n"));
-    if (D_5893_map_id > 0x7f)
+    if (D_5893_mapId > 0x7f)
     {
-        local_a = D_ba14[D_589e].entityIdx;
+        local_a = D_ba14_combatants[D_589e_curCombatant].entityIdx;
     }
     else
     {
@@ -1363,14 +1363,14 @@ static int CAST_135a_UsePotion(int param_1)
         {
             D_55a8_party[local_a].status = STATUS_GOOD;
 
-            if (D_5893_map_id > 0x7f)
+            if (D_5893_mapId > 0x7f)
             {
-                if (local_a == D_ba14[D_589e].entityIdx)
+                if (local_a == D_ba14_combatants[D_589e_curCombatant].entityIdx)
                 {
-                    if ((D_ba14[D_589e].flags & (COMBAT_FLAGS_PLAYER | COMBAT_FLAGS_MONSTER | COMBAT_FLAGS_DEAD | COMBAT_FLAGS_ASLEEP)) ==
+                    if ((D_ba14_combatants[D_589e_curCombatant].flags & (COMBAT_FLAGS_PLAYER | COMBAT_FLAGS_MONSTER | COMBAT_FLAGS_DEAD | COMBAT_FLAGS_ASLEEP)) ==
                         (COMBAT_FLAGS_PLAYER | COMBAT_FLAGS_ASLEEP))
                     {
-                        ULTIMA_6800(D_589e);
+                        ULTIMA_6800_WakeCombatant(D_589e_curCombatant);
                     }
                     else
                     {
@@ -1433,13 +1433,13 @@ static int CAST_135a_UsePotion(int param_1)
     case 4:
         if (D_55a8_party[local_a].status == STATUS_GOOD)
         {
-            if (D_5893_map_id < 0x80)
+            if (D_5893_mapId < 0x80)
             {
                 D_55a8_party[local_a].status = STATUS_SLEEP;
             }
             else
             {
-                ULTIMA_68ae(local_a);
+                ULTIMA_68ae_PutToSleep(local_a);
             }
 
             ULTIMA_1850_PrintString(_TEXT(0x4731, "Slept!\n"));
@@ -1452,10 +1452,10 @@ static int CAST_135a_UsePotion(int param_1)
         break;
 
     case 5:
-        if (D_5893_map_id > 0x7f)
+        if (D_5893_mapId > 0x7f)
         {
             ULTIMA_1850_PrintString(_TEXT(0x4739, "Poof!\n"));
-            local_6 = &D_5c5a[D_ba14[D_589e].actorIdx];
+            local_6 = &D_5c5a_actors[D_ba14_combatants[D_589e_curCombatant].actorIdx];
             local_6->tile = local_6->animTile = TILE_ACTOR_90;
         }
         else
@@ -1465,10 +1465,10 @@ static int CAST_135a_UsePotion(int param_1)
         break;
 
     case 6:
-        if (D_5893_map_id > 0x7f)
+        if (D_5893_mapId > 0x7f)
         {
-            D_ba14[D_589e].flags |= COMBAT_FLAGS_INVISIBLE;
-            local_6 = &D_5c5a[D_ba14[D_589e].actorIdx];
+            D_ba14_combatants[D_589e_curCombatant].flags |= COMBAT_FLAGS_INVISIBLE;
+            local_6 = &D_5c5a_actors[D_ba14_combatants[D_589e_curCombatant].actorIdx];
             ULTIMA_1850_PrintString(_TEXT(0x4740, "Invisible!\n"));
             local_6->tile = local_6->animTile = TILE_ACTOR_1D;
         }
@@ -1479,7 +1479,7 @@ static int CAST_135a_UsePotion(int param_1)
         break;
 
     case 7:
-        if (D_5893_map_id < 0x21)
+        if (D_5893_mapId < 0x21)
         {
             CAST2_046c();
         }
@@ -1498,15 +1498,15 @@ static void CAST_153c_UseMoonstone(int param_1)
 {
     int local_4;
 
-    local_4 = *ULTIMA_4402_GetTileAddr(D_5896_map_x, D_5897_map_y);
+    local_4 = *ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY);
     ULTIMA_1850_PrintString(_TEXT(0x4768, "Moonstone "));
-    if (D_5893_map_id < 0x21 && (local_4 == TILE_MAP_CROPS_PICKED || local_4 == TILE_MAP_CROPS || (local_4 > TILE_MAP_WATER_3 && local_4 < TILE_MAP_B)))
+    if (D_5893_mapId < 0x21 && (local_4 == TILE_MAP_CROPS_PICKED || local_4 == TILE_MAP_CROPS || (local_4 > TILE_MAP_WATER_3 && local_4 < TILE_MAP_B)))
     {
         ULTIMA_1850_PrintString(_TEXT(0x4773, "buried!\n"));
-        D_5830[param_1] = D_5896_map_x;
-        D_5838[param_1] = D_5897_map_y;
-        D_5840[param_1] = D_5893_map_id;
-        D_5848[param_1] = D_5895_map_level;
+        D_5830_moonstoneX[param_1] = D_5896_mapX;
+        D_5838_moonstoneY[param_1] = D_5897_mapY;
+        D_5840_moonstoneMap[param_1] = D_5893_mapId;
+        D_5848_moonstoneZ[param_1] = D_5895_mapLevel;
     }
     else
     {
@@ -1555,15 +1555,15 @@ static void CAST_15b4_UseGemShard(int param_1)
         ULTIMA_2192_AudioPulse(0xa50, 1, 200, local_4, 0);
     }
 
-    if (D_4882[param_1] != D_5896_map_x || D_4886[param_1] != D_5897_map_y || D_488a[param_1] != D_5893_map_id ||
-        D_488e[param_1] != D_5895_map_level)
+    if (D_4882[param_1] != D_5896_mapX || D_4886[param_1] != D_5897_mapY || D_488a[param_1] != D_5893_mapId ||
+        D_488e[param_1] != D_5895_mapLevel)
     {
         ULTIMA_1850_PrintString(_TEXT(0x47f0, "\n\nNo effect!\n"));
         ULTIMA_43ae_AudioSweepTone(800, 2000, 1, 0x32);
         return;
     }
 
-    ULTIMA_3ae6(7);
+    ULTIMA_3ae6_WaitFrames(7);
     ULTIMA_1850_PrintString(_TEXT(0x47fe, "\n\n...and cast it into the Flame of "));
     switch (param_1)
     {
@@ -1581,22 +1581,22 @@ static void CAST_15b4_UseGemShard(int param_1)
     ULTIMA_3072_ShakeScreen();
     ULTIMA_3072_ShakeScreen();
     ULTIMA_3072_ShakeScreen();
-    ULTIMA_3ae6(3);
+    ULTIMA_3ae6_WaitFrames(3);
 
-    if (ULTIMA_368e_FindActorTileAtPos(D_5896_map_x, D_5897_map_y - 1, D_5895_map_level) == TILE_ACTOR_SHADOWLORD &&
+    if (ULTIMA_368e_FindActorTileAtPos(D_5896_mapX, D_5897_mapY - 1, D_5895_mapLevel) == TILE_ACTOR_SHADOWLORD &&
         param_1 == D_58cb)
     {
-        TOWN_00b0_DespawnNpc(TOWN_011e(D_5876));
+        TOWN_00b0_DespawnNpc(TOWN_011e(D_5876_tempX));
 
         for (local_4 = 0; local_4 < 7; local_4++)
         {
-            ULTIMA_3522(D_5896_map_x, D_5897_map_y - 1);
+            ULTIMA_3522_HitEffectAt(D_5896_mapX, D_5897_mapY - 1);
         }
 
-        D_58c8[param_1] = 0xff;
-        D_57b6[param_1] = 0;
+        D_58c8_shadowlordTowns[param_1] = 0xff;
+        D_57b6_shards[param_1] = 0;
 
-        *(u32*)&D_5b5a[0x70] |= D_4892[param_1];
+        *(u32*)&D_5b5a_npcKilled[0x70] |= D_4892[param_1];
 
         ULTIMA_1850_PrintString(_TEXT(0x483b, "\nThe doom of the Shadowlord "));
         switch (param_1)
@@ -1620,12 +1620,12 @@ static void CAST_15b4_UseGemShard(int param_1)
 // remove item
 static bool CAST_1764(int param_1)
 {
-    if (param_1 == D_587a)
+    if (param_1 == D_587a_statusIcon)
     {
         ULTIMA_1850_PrintString(_TEXT(0x4895, "Removed!\n"));
 
-        D_587a = D_588e = 0;
-        D_a9fa = 1;
+        D_587a_statusIcon = D_588e_protectTurns = 0;
+        D_a9fa_vitalsDirty = 1;
 
         return 0;
     }
@@ -1660,15 +1660,15 @@ void CAST_1792_UseCmd(void)
     }
 
     ULTIMA_1850_PrintString(_TEXT(0x48b1, "Item: "));
-    ULTIMA_4efc();
+    ULTIMA_4efc_OpenStatsDivider();
     ULTIMA_1b94_SelectTextWindow(1);
-    ULTIMA_4e50(_TEXT(0x48b8, "Items:"));
+    ULTIMA_4e50_ShowStatsTitle(_TEXT(0x48b8, "Items:"));
     ZSTATS_045e(8);
 
     local_14 = ZSTATS_0f2e(local_6, 0xff, 0x55);
-    ULTIMA_4daa();
-    ULTIMA_4e20();
-    ULTIMA_4f3c();
+    ULTIMA_4daa_HideScrollArrow();
+    ULTIMA_4e20_ClearStatsTitle();
+    ULTIMA_4f3c_DrawStatsDivider();
     ULTIMA_2900_UpdateVitalsDisplay();
     if (local_14 < 0)
     {
@@ -1693,13 +1693,13 @@ void CAST_1792_UseCmd(void)
         {
         case 0x10:
             ULTIMA_1850_PrintString(_TEXT(0x48bf, "Carpet\n\n"));
-            if (D_5893_map_id < 0x21 && *ULTIMA_4402_GetTileAddr(D_5896_map_x, D_5897_map_y) != TILE_MAP_C)
+            if (D_5893_mapId < 0x21 && *ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY) != TILE_MAP_C)
             {
                 if (D_587c_partyTile == TILE_ACTOR_AVATAR)
                 {
                     ULTIMA_1850_PrintString(_TEXT(0x48c8, "Boarded!\n"));
                     D_587c_partyTile = ULTIMA_2092_RandomRange(0, 1) + TILE_ACTOR_FLYING_CARPET;
-                    D_57b0--;
+                    D_57b0_carpets--;
                 }
                 else if ((D_587c_partyTile & 0xf8) == TILE_ACTOR_FRIGATE_20)
                 {
@@ -1717,14 +1717,14 @@ void CAST_1792_UseCmd(void)
             break;
 
         case 0x11:
-            D_57b1--;
+            D_57b1_skullKeys--;
             ULTIMA_1850_PrintString(_TEXT(0x48fe, "Skull Key\n"));
-            if (D_5893_map_id < 0x21 || 0x7f < D_5893_map_id)
+            if (D_5893_mapId < 0x21 || 0x7f < D_5893_mapId)
             {
                 local_c = CAST2_0768();
-                if (local_c != 0 && D_5893_map_id < 0x80)
+                if (local_c != 0 && D_5893_mapId < 0x80)
                 {
-                    ULTIMA_3522(D_5876, D_5878);
+                    ULTIMA_3522_HitEffectAt(D_5876_tempX, D_5878_tempY);
                 }
                 break;
             }
@@ -1759,13 +1759,13 @@ void CAST_1792_UseCmd(void)
             ULTIMA_2192_AudioPulse(0x1450, 1, 50000, 5000, 1);
 
             local_4_ab = 0;
-            if (D_5893_map_id < 0x21 || D_5893_map_id > 0x28)
+            if (D_5893_mapId < 0x21 || D_5893_mapId > 0x28)
             {
                 for (local_e = -1; local_e <= 1; local_e++)
                 {
                     for (local_12_ab = -1; local_12_ab <= 1; local_12_ab++)
                     {
-                        local_8 = ULTIMA_4402_GetTileAddr(local_e + D_5896_map_x, local_12_ab + D_5897_map_y);
+                        local_8 = ULTIMA_4402_GetTileAddr(local_e + D_5896_mapX, local_12_ab + D_5897_mapY);
                         if ((*local_8 & 0xf0) == TILE_MAP_70)
                         {
                             *local_8 = TILE_MAP_GRASS;
@@ -1799,7 +1799,7 @@ void CAST_1792_UseCmd(void)
 
         case 0x20:
             ULTIMA_1850_PrintString(_TEXT(0x498d, "Spyglass\n\n"));
-            if (D_5893_map_id < 0x21 && D_5895_map_level < 0x80)
+            if (D_5893_mapId < 0x21 && D_5895_mapLevel < 0x80)
             {
                 if (D_587f_hour < 6 || 0x12 < D_587f_hour)
                 {
@@ -1820,7 +1820,7 @@ void CAST_1792_UseCmd(void)
             ULTIMA_1850_PrintString(_TEXT(0x49ba, "Plans\n\n"));
             if ((D_587c_partyTile & 0xf8) == TILE_ACTOR_FRIGATE_20)
             {
-                D_57bb |= 0x80;
+                D_57bb_hmsCapePlans |= 0x80;
                 ULTIMA_1850_PrintString(_TEXT(0x49c2, "Ship rigged for double speed!\n"));
             }
             else
@@ -1831,7 +1831,7 @@ void CAST_1792_UseCmd(void)
 
         case 0x22:
             ULTIMA_1850_PrintString(_TEXT(0x49fc, "Sextant\n\n"));
-            if (D_5895_map_level > 0x7f || D_5893_map_id != 0)
+            if (D_5895_mapLevel > 0x7f || D_5893_mapId != 0)
             {
                 ULTIMA_1850_PrintString(_TEXT(0x4a06, "Only outdoors!\n"));
             }
@@ -1859,7 +1859,7 @@ void CAST_1792_UseCmd(void)
 
             ULTIMA_1a3e_PrintNumber(local_10_ad, 1, 0x20);
             ULTIMA_16ba_PrintChar(':');
-            ULTIMA_1a3e_PrintNumber(D_5881, 2, 0x30);
+            ULTIMA_1a3e_PrintNumber(D_5881_minute, 2, 0x30);
             if (D_587f_hour > 0xb)
             {
                 ULTIMA_1850_PrintString(_TEXT(0x4a4f, " PM.\n"));
@@ -1875,9 +1875,9 @@ void CAST_1792_UseCmd(void)
             if (CAST_1764(0x1d) != 0)
             {
                 ULTIMA_1850_PrintString(_TEXT(0x4a63, "Badge worn!\n"));
-                D_587a = 0x1d;
-                D_588e = 0xff;
-                D_a9fa = 1;
+                D_587a_statusIcon = 0x1d;
+                D_588e_protectTurns = 0xff;
+                D_a9fa_vitalsDirty = 1;
             }
             break;
 
@@ -1899,7 +1899,7 @@ int CAST_1bb0(int x, int y, int penColor)
 {
     if (x < 8 || x > 0xb6 || y < 8 || y > 0xb6)
     {
-        D_5876 = D_5878 = -1;
+        D_5876_tempX = D_5878_tempY = -1;
         return 0;
     }
     else
@@ -1911,10 +1911,10 @@ int CAST_1bb0(int x, int y, int penColor)
 
         if ((y & 1) != 0)
         {
-            ULTIMA_3fb4(x, y);
-            if (D_5876 >= 0 && D_5878 >= 0)
+            ULTIMA_3fb4_PixelToViewCell(x, y);
+            if (D_5876_tempX >= 0 && D_5878_tempY >= 0)
             {
-                return ULTIMA_3f6e(D_5876, D_5878);
+                return ULTIMA_3f6e_TestViewTileFlag(D_5876_tempX, D_5878_tempY);
             }
 
             return 0;

@@ -1,0 +1,102 @@
+# Shared vocabulary, batch 2: the saved game, DS:55a6-6606 (SAVED.GAM is this block, +0 at DS:55a6).
+# Offsets and meanings: Ultima Codex, "Ultima V internal formats", SAVED.GAM; checked against the code.
+D_55a6 D_55a6_saveStart            # +0: two bytes of unknown use; the block is read and written from here
+D_57ac D_57ac_keys                 # +206
+D_57ad D_57ad_gems                 # +207
+D_57ae D_57ae_torches              # +208
+D_57af D_57af_grapple              # +209
+D_57b0 D_57b0_carpets              # +20A magic carpets
+D_57b1 D_57b1_skullKeys            # +20B
+D_57b2 D_57b2_skullKeysDay         # +20C the day Minoc's skull keys were last taken
+D_57b3 D_57b3_amulet               # +20D Lord British's
+D_57b4 D_57b4_crown                # +20E
+D_57b5 D_57b5_sceptre              # +20F
+D_57b6 D_57b6_shards               # +210
+D_57ba D_57ba_spyglasses           # +214
+D_57bb D_57bb_hmsCapePlans         # +215
+D_57bc D_57bc_sextants             # +216
+D_57bd D_57bd_pocketWatch          # +217
+D_57be D_57be_blackBadge           # +218
+D_57bf D_57bf_sandalwoodBox        # +219
+D_57c0 D_57c0_equipment            # +21A how many of each piece of equipment the party owns
+D_57db D_57db_arrows               # +235 (a place in D_57c0_equipment)
+D_57dd D_57dd_quarrels             # +237
+D_57f0 D_57f0_mixedSpells          # +24A
+D_5820 D_5820_scrolls              # +27A
+D_5828 D_5828_potions              # +282
+D_5830 D_5830_moonstoneX           # +28A
+D_5838 D_5838_moonstoneY           # +292
+D_5840 D_5840_moonstoneMap         # +29A the map it is buried in (0 Britannia); 0xff: carried
+D_5848 D_5848_moonstoneZ           # +2A2
+D_5850 D_5850_reagents             # +2AA
+D_5858 D_5858_harvestDay           # +2B2
+D_585c D_585c_takenItemFlags       # +2B6 the Codex's "non-regenerating object flags" (SJOG sets a bit per find)
+D_5874 D_5874_year                 # +2CE
+D_5876 D_5876_tempX                # +2D0 scratch: a direction chosen, a position, the actor found
+D_5878 D_5878_tempY                # +2D2
+D_587a D_587a_statusIcon           # +2D4 the letter between the party and the food line: 'T', 'Q', 'P', 'N'...
+D_587d D_587d_month                # +2D7
+D_587e D_587e_day                  # +2D8
+D_5880 D_5880_lastHour             # +2DA
+D_5881 D_5881_minute               # +2DB
+D_5884 D_5884_clockChimes          # +2DE strokes the clock has still to chime
+D_5885 D_5885_trammelPhase         # +2DF
+D_5886 D_5886_feluccaPhase         # +2E0
+D_5887 D_5887_moongateHeight       # +2E1
+D_588b D_588b_turnCount            # +2E5
+D_588c D_588c_campHealWait         # +2E6 hours until camping heals again (the Codex)
+D_588e D_588e_protectTurns         # +2E8
+D_5891 D_5891_animate              # +2EB 0, 1 or 0xff
+D_5892_wind_dir D_5892_windDir     # +2EC
+D_5893_map_id D_5893_mapId         # +2ED
+D_5894 D_5894_savedMapId           # +2EE the map while D_5893_mapId is a combat map
+D_5895_map_level D_5895_mapLevel   # +2EF
+D_5896_map_x D_5896_mapX           # +2F0
+D_5897_map_y D_5897_mapY           # +2F1
+D_5898 D_5898_crosshairOn          # +2F2
+D_5899 D_5899_crosshairX           # +2F3
+D_589a D_589a_crosshairY           # +2F4
+D_589b D_589b_mapOriginX           # +2F5 the map buffer's upper left corner in the world
+D_589c D_589c_mapOriginY           # +2F6
+D_589d D_589d_attackWeapon         # +2F7
+D_589e D_589e_curCombatant         # +2F8 the entry of D_ba14_combatants whose turn it is; 0xff none
+D_589f D_589f_focusBlink           # +2F9 toggled each frame: the frame around the combatant
+D_58a0 D_58a0_combatExitDir        # +2FA
+D_58a1 D_58a1_combatFlags          # +2FB
+D_58a3 D_58a3_combatOver           # +2FD the Codex's "no more enemies"
+D_58a4 D_58a4_viewOn               # +2FE the map view is updated and animated
+D_58a5 D_58a5_lightLevel           # +2FF
+D_58a6 D_58a6_lightSpellTurns      # +300
+D_58a7 D_58a7_torchTurns           # +301
+D_58c8 D_58c8_shadowlordTowns      # +322
+D_58cc D_58cc_questsOrdained       # +326
+D_58ce D_58ce_questsDone           # +328
+D_58d0 D_58d0_dungeonOpen          # +32A 0 sealed, 0x80 open
+D_58d8 D_58d8_shrineDestroyed      # +332 bit 7
+D_58e0 D_58e0_roomsCleared         # +33A
+D_58ee D_58ee_annotX               # +348 the Codex's "annotations" (TOWN lists the tiles 0x48/0x49 of the map here)
+D_590e D_590e_annotY               # +368
+D_592e D_592e_annotTile            # +388
+D_594e D_594e_annotCount           # +3A8
+D_594f D_594f_openDoorTile         # +3A9
+D_5950 D_5950_openDoorX            # +3AA
+D_5951 D_5951_openDoorY            # +3AB
+D_5952 D_5952_openDoorTurns        # +3AC
+D_5953 D_5953_boughtShipX          # +3AD
+D_5954 D_5954_boughtShipY          # +3AE
+D_5955 D_5955_sailDir              # +3AF
+D_5956 D_5956_newPrompt            # +3B0
+D_5957 D_5957_drunkTurns           # +3B1
+D_595a D_595a_dungeonMap           # +3B4
+D_5b5a D_5b5a_npcKilled            # +5B4
+D_5bda D_5bda_npcMet               # +634
+D_5c5a D_5c5a_actors               # +6B4
+D_5d5e D_5d5e_npcSchedules         # +7B8
+D_5f5e D_5f5e_npcs                 # +9B8
+D_615e D_615e_moveLists            # +BB8
+D_655e D_655e_moveListPos          # +FB8
+D_659e D_659e_npcTypes             # +FF8
+D_6603 D_6603_dungeonFacing        # +105D 0 north, 1 east, 2 south, 3 west
+D_6604 D_6604_dungeonStyle         # +105E 1 cave, 2 mine, 3 dungeon
+D_6605 D_6605_boughtShip           # +105F 0x40 a skiff; 0x80 + n a frigate with n skiffs
+D_6606 D_6606_saveEnd              # +1060: the end of the block

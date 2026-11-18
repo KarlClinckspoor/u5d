@@ -1,6 +1,6 @@
 ; AINTRO.ASM: INTRO.OVL 2090-20c7, hand-written assembly in the original.
 ; The last two routines of INTRO.OVL, linked after introb.c: calls of the video driver's
-; function 69h ("Warriors of Destiny" animation) through the far pointer at D_5350, the way
+; function 69h ("Warriors of Destiny" animation) through the far pointer at D_5350_DRIVERENTRY, the way
 ; A0878.ASM calls the driver. Carry clear: animate one step; carry set: AX is the image to
 ; show. INTRO_20AE returns with a plain RET, leaving its argument to the caller.
 ; Written by hand from the original bytes; tools/asmbuild.py checks it.
@@ -17,7 +17,7 @@ _BSS	ENDS
 DGROUP	GROUP	CONST, _BSS, _DATA
 	ASSUME	CS: _TEXT, DS: DGROUP, SS: DGROUP, ES: DGROUP
 
-	EXTRN	D_5350:WORD
+	EXTRN	D_5350_DRIVERENTRY:WORD
 	EXTRN	ULTIMA_20FA_WAITTICKS:NEAR
 
 _TEXT	SEGMENT
@@ -33,8 +33,8 @@ INTRO_2090_ANIMATEWD:
 	push ax
 	call ULTIMA_20FA_WAITTICKS
 	clc
-	mov WORD PTR D_5350,69h
-	call DWORD PTR D_5350
+	mov WORD PTR D_5350_DRIVERENTRY,69h
+	call DWORD PTR D_5350_DRIVERENTRY
 	pop ds
 	pop di
 	pop si
@@ -52,8 +52,8 @@ INTRO_20AE_SHOWWD:
 	push ds
 	mov ax,[bp+4]
 	stc
-	mov WORD PTR D_5350,69h
-	call DWORD PTR D_5350
+	mov WORD PTR D_5350_DRIVERENTRY,69h
+	call DWORD PTR D_5350_DRIVERENTRY
 	pop ds
 	pop di
 	pop si
