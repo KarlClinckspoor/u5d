@@ -179,7 +179,7 @@ Next, in order:
    - DATA.OVL's header: the three far pointers in DGROUP, as 0f68:<DS-0x40> (the paragraph
      where `_DATA` starts).
    - No reference is resolved by the address in its name: the communal variables are
-     allocated by size in PLINK86's order (now the command file's `communals`), the statics
+     allocated by size in PLINK86's order (since step 8 C: COMDEF record order), the statics
      are in `_BSS`, and `D_6608_overworld` is a linker definition (now a `define` line).
 5. **The gate** *(done)*. `tools/check.py`; `make check`.
 6. **The link script** *(done)*. `src/u5d.lnk` holds every placement (each module's code
@@ -281,7 +281,22 @@ Next, in order:
         `SEG_076C`, a number inside it), with `$OVLYV` public for the stubs; PLSTART stays.
      Still open: how Origin's command file put the resident objects after the library and
      in the root.
-   Gate: `check.py` for both targets throughout; A changes no source byte, B none either.
+   - **C. The facts left** *(done as far as they go: MATCHING.md, "Phase C")*:
+     1. The communal order is a rule: u5link allocates in COMDEF record order (the
+        `communals` lines are gone); ultima.c defines the 33 shared communals, each overlay
+        module its own, each group declared after common.h in address order (MSC's slot walk
+        keeps it). No code byte changed.
+     2. The overlay table's status word is the record's first word as OVLYV reads it (6000:
+        the pre-loaded DATA's; ffff ends the table); PLMGR's data is a segment of its own,
+        OVDATA, whose paragraph (076c) the rule places.
+     3. Still facts: the processing order (the residents as a second library land in the
+        root after the runtime, as in the original, but PLINK pulls them breadth first, and
+        ULTIMA's main names BACKSPC and none of LOGO..A1EAC), the stub order inside a turn
+        (EXTDEFs in the slot walk; TOWN's and INTRO's turns interleave objects u5d splits)
+        and the wrapper's stack (PLSTART takes the real CS:IP and SS:SP from the key disk and
+        needs no particular stack of its own).
+   Gate: `check.py` for both targets throughout; A changes no source byte, B none either,
+   C none either.
 
 ## What is left
 
@@ -292,16 +307,14 @@ from a rule or from source, each named where it lives:
 
 - **Placement** is computed by u5link from the link command file (`src/u5d.lnk`) by
   PLINK86plus's rules (step 8). Its facts: the processing order (the order the evidence
-  gives; how Origin's command file achieved it is not known), the stack of Origin's wrapper,
-  the order of the call stubs inside each turn (the original objects' record order) and the
-  order of the communals.
-- **The order of the communal variables** (the command file's `communals`, 70 names) is a fact, and no rule
-  was found (MATCHING.md, "The uninitialised data"). At the level of objects the part from
-  DS:bb18 is first-seen in link order (INTRO0, INTRO2, ENDGAME, TALK, CAST2, SHOPPES2,
-  SHOPPE2B, FONT); inside an object the order is neither the order of first reference nor
-  u5d's EXTDEF order, and the 33 shared ones are in the symbol-table order of one object
-  that declared them all. Both depend on the original's names. Five (D_bbd2, D_bcb0,
-  D_bd14, D_bd3a, D_bd3b) are referenced by no code and declared only to fill the layout.
+  gives; how Origin's command file achieved it is not known), the stack of Origin's wrapper
+  (the protection tool's choice) and the order of the call stubs inside each turn (the
+  original objects' record order).
+- **The order of the communal variables** follows from the sources (step 8 C): ultima.c
+  defines the 33 shared ones, the overlay modules their own, and u5link allocates them in
+  COMDEF record order. Each group's declaration order is still chosen to give the
+  original's (address) order. Five (D_bbd2, D_bcb0, D_bd14, D_bd3a, D_bd3b) are referenced
+  by no code and declared only to fill the layout.
 - **`D_6608_overworld`** is a linker definition (a `define` line); which object defined the
   second name is not known.
 - **The EXE checksum** is computed (u5link: PLINK86's MZ checksum of the program without
