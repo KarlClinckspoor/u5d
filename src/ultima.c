@@ -1,6 +1,43 @@
 #include <stdlib.h>
 
 #include "common/common.h"
+#include "structs.h"
+
+// the communal variables several modules use (vars.h, DS:a9bc): ULTIMA is linked first
+u8  D_a9bc_townJustEntered;
+u8 D_a9bd_curDisk[1]; // the disk wanted (ULTIMA_251e_SwitchDisks)
+u8 D_a9be_promptMode; // two bytes on an odd address would have been put on an even one
+u8* D_a9c0_wallImage; // loaded image pointer
+u8 D_a9c2_floppyCount;
+u8* D_a9c4_itemsImage; // loaded image pointer
+u8* D_a9c6_monsterImage; // loaded image pointer
+u8 D_a9c8_diskDrives[6]; // the drive of each disk; 0xff: not set
+u8 D_a9ce_soundOn; // use sound effect?
+u16 D_a9d0_rayBalance[0x15];
+u8 D_a9fa_vitalsDirty; // dirty flag for vital
+u8 D_a9fb_stepVolume; // footstep sfx duration in dungeon
+ActorFmt D_a9fc_savedActors[0x20]; // D_5c5a_actors during combat
+char* D_aafc_shopName; // current shop name
+char* D_aafe_shopOwner; // current shop owner
+char* D_ab00_itemName;
+u8 D_ab02_viewTiles[0x160]; // the 11x11 view, 0x20 bytes a row: 0 an actor (in D_ac64_viewActors), 0xff hidden
+char* D_ac62_placeName;
+u8 D_ac64_viewActors[0xb0]; // actor map / misc map [0x10 * b] (from 51b8)
+u8 D_ad14_combatMap[32 * 32]; // the combat map; outside combat the 32x32 light map
+s16 D_b114_shopIndex; // s16 (FMT MOVSX); the shop's column in D_21ca_shopNames..., 0-15
+s16 D_b116_shopKind; // s16 (FMT MOVSX); 0-7, the merchant's dialog number - 0x81
+s16 D_b118_shopPrice; // s16 (FMT MOVSX); the % of a shop text
+u16 D_b11a_shopQuantity;
+u8* D_b11c_searchGrid;
+u8 D_b11e_tileFrames[0x100]; // the tile drawn for each map tile (animation)
+u8 D_b21e_scratch[2000]; // scratch buffer ~b9ee)
+u8  D_b9ee_itemCounts[0x26]; // owned item counts
+CombatEntity D_ba14_combatants[32]; // combat entities
+u8  D_bb14_wallTile; // pos?
+u8  D_bb15_floorTile; // pos?
+u8  D_bb16_altTileset;
+u8  D_bb17_loadFlags;
+
 #include "vars.h"
 #include "funcs.h"
 #include "tiles.h"

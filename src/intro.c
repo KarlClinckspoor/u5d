@@ -18,6 +18,8 @@
 
 #include <string.h>
 
+extern void* D_bb1a_titleImage;
+
 // defined in introb.c, the part of INTRO.OVL built with MSC 5.0
 void INTRO_2090_AnimateWD(void);
 

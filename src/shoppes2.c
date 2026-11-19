@@ -1,4 +1,13 @@
 #include "common/common.h"
+
+// this module's communal variables (vars.h, DS:a9bc)
+u8 D_bd16_pubKind;
+s16 D_bd18_boughtSomething; // int?
+int D_bd1a_dinersFed; // int
+int D_bd1c_dinerCount; // int
+int D_bd1e_tableTile; // int
+s16 D_bd20_drinksBought; // int?
+
 #include "funcs.h"
 #include "vars.h"
 #include "macros.h"
@@ -6,6 +15,8 @@
 
 #include "shoppes.h"
 #include "shoppes2.h"
+
+extern char D_bcf8_inputText[16];
 
 // Pub: count the living party members (the diners and the food they get); the price is pricePerHead times that. Prints two newlines.
 static void SHOPPES2_0000_CountDiners(short pricePerHead)

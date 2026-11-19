@@ -4,10 +4,10 @@
 	TITLE	PLMGR
 PLMGR_TEXT	SEGMENT  PARA PUBLIC 'CODE'
 PLMGR_TEXT	ENDS
+OVDATA	SEGMENT  PARA PUBLIC 'CODE'
+OVDATA	ENDS
 PLTAB	SEGMENT  PARA PUBLIC 'CODE'
 PLTAB	ENDS
-SEG_076C	SEGMENT  PARA PUBLIC 'MARK'
-SEG_076C	ENDS
 _DATA	SEGMENT  WORD PUBLIC 'DATA'
 _DATA	ENDS
 CONST	SEGMENT  WORD PUBLIC 'CONST'
@@ -95,7 +95,7 @@ L_7351:
 L_735b:
 	push ds
 	push bx
-	mov	bx,SEG_076C
+	mov	bx,OVDATA
 	mov ds,bx
 	test word ptr ds:[8ch],0ffffh
 	je	L_737c
@@ -326,7 +326,7 @@ L_7515:
 	call	L_72f0
 	push cx
 	popf
-	mov	ax,SEG_076C
+	mov	ax,OVDATA
 	mov ds,ax
 	ret
 L_7526:
@@ -381,7 +381,7 @@ L_7577:
 	push bp
 	push ds
 	push es
-	mov	bx,SEG_076C
+	mov	bx,OVDATA
 	mov ds,bx
 	mov	bx,PLTAB
 	mov es,bx
@@ -440,7 +440,7 @@ L_75cc:
 	mov si,[bp+14h]
 	add word ptr [bp+14h],2
 	mov cx,[si]
-	mov	ax,SEG_076C
+	mov	ax,OVDATA
 	mov ds,ax
 	mov ah,0
 	db	09ah, 092h, 002h
@@ -477,7 +477,7 @@ L_7602:
 	push ds
 	push es
 	mov cs:[6eh],es
-	mov	ax,SEG_076C
+	mov	ax,OVDATA
 	mov ds,ax
 	call	L_76a1
 	mov	ax,PLTAB
@@ -560,6 +560,11 @@ L_76b4:
 	mov ah,4ch
 	int 21h
 	ret
+
+PLMGR_TEXT	ENDS
+
+; OVLYV's and OVUSERM's data (OVERLAY.LIB's segment OVDATA): its own paragraph, after the code
+OVDATA	SEGMENT
 	db	000h, 000h, 000h, 000h, 000h, 000h, 000h, 000h
 	db	000h, 000h, 000h, 000h, 000h, 000h, 000h, 000h
 	db	000h, 000h, 000h, 000h, 000h, 000h, 000h, 000h
@@ -585,5 +590,5 @@ L_76b4:
 	db	024h, 000h, 000h, 000h, 000h, 000h, 000h, 000h
 	db	000h, 000h, 000h, 000h, 000h, 000h, 000h, 000h
 
-PLMGR_TEXT	ENDS
+OVDATA	ENDS
 	END

@@ -2,9 +2,9 @@
 
 #include "tiles.h"
 
-// DOS build: this object holds no data, only the communal (uninitialised) variables
-// (vars.h, BSS); every initialised variable is defined by the module that owns it.
-#define BSS
+// This object holds nothing: it is the one file of the pre-loaded section (DGROUP, DATA.OVL;
+// src/u5d.lnk). Every initialised variable is defined by the module that owns it, every
+// communal (uninitialised) one by ultima.c or the overlay module that uses it (vars.h, DS:a9bc).
 #include "vars.h"
 
 #include "macros.h"

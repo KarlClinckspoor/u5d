@@ -1,5 +1,11 @@
 #include "common/common.h"
 
+// this module's communal variables (vars.h, DS:a9bc)
+char D_bd08_answer[12];
+u8 D_bd14_unused; // no code refers to it
+u8 D_bd15_savedMapId;
+
+
 #include "funcs.h"
 #include "vars.h"
 #include "macros.h"

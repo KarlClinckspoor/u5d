@@ -1,4 +1,12 @@
 #include "common/common.h"
+#include "structs.h"
+
+// this module's communal variables (vars.h, DS:a9bc)
+S_bb1c D_bb1c_u4Virtues;
+u8 D_bbd2_unused[0xb6]; // no code refers to it; as large as D_bb1c_u4Virtues
+S_bc88_U4Party D_bc88_u4Member;
+u16 D_bcb0_unused; // no code refers to it
+
 #include "funcs.h"
 #include "vars.h"
 #include "macros.h"
@@ -9,6 +17,8 @@
 #include "intro.h"
 
 #include <string.h>
+
+extern u16 D_bb18_pathPos;
 
 // INTRO.OVL's MSC 5.1 code is three objects: intro0.c (INTRO_0010_PutBackdropStrips, INTRO_0050), intro.c
 // (INTRO_014e-INTRO_094e) and this one, from INTRO_0986_Main. Compiled after the first part's functions, INTRO_0986 loses

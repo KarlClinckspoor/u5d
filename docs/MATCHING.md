@@ -141,20 +141,31 @@ and no Phoenix file to link. `--map` prints what it placed where.
     paragraph after area 4 (f640): DATA.OVL, its header and DGROUP to `_end`.
   - *Linker symbols:* `_edata` where the first BSS segment starts (a524), `_end` at the end
     of the communals, word aligned (bd40); crt0's STACK follows at the paragraph.
-  - *Communals:* after the last BSS segment, by u5link's rule (size, even address for two
-    bytes or more), in the command file's order (a fact, "The uninitialised data").
+  - *Communals:* after the last BSS segment, by PLINK86plus's rule: in COMDEF record order,
+    object by object in processing order, a name allocated once, a variable of two bytes or
+    more on an even address. ultima.c declares the 33 shared ones, each overlay module its
+    own ("The uninitialised data").
   - *The overlay table and stubs* (`Linker.make_table`, PLINK's `$OVTB$`, 0xa46 bytes at
     7780; `src/asm/PLTAB.ASM` and `tools/plinkgen.py` are gone): a header (the loader's
-    paragraph 072e as a number, 0, the paragraph where memory ends 1bb8, relocated, 0);
-    a 16-byte record per section (its number of relocated words, its start and end
-    paragraphs, relocated, the offset of its file name, a zero dword for its place in the
-    file, its length in paragraphs, a status word: 0, 6000 for the section before the
-    pre-loaded one and ffff for the last, as PLINK writes them in every link measured, 6000
-    unexplained); the names (`ULTIMA.EXE`, then each `NAME.OVL`); then a 12-byte stub per
+    paragraph 072e as a number, 0, the paragraph where memory ends 1bb8, relocated); a
+    16-byte record per section, as the loader reads it (its status word, its number of
+    relocated words, its start and end paragraphs, relocated, the offset of its file name,
+    a zero dword for its place in the file, its length in paragraphs); the word ffff, where
+    the loader's walk over the records ends; the names (`ULTIMA.EXE`, then each
+    `NAME.OVL`); then a 12-byte stub per
     function another section calls (`call far $OVLYV`, PLMGR's entry, now a public of
     PLMGR.ASM; the overlay number; `jmp far` the function), in the command file's order.
+  - *The status word* (OVLYV, PLMGR.ASM, reads the record at the table's offset 6 + 16 n,
+    status first: earlier notes put the status last, so 6000 seemed to belong to the section
+    before the pre-loaded one): bit 15 is set while the section is loaded, bit 14 marks a
+    section the start-up loop loads (pre-loaded), the low 13 bits name the section to load
+    before it (0, the root). PLINK writes 0 for an overlay and 6000 for the pre-loaded
+    DATA; bit 13 is never tested by OVLYV.
+  - *The loader's data* (OVLYV's and OVUSERM's, OVERLAY.LIB's segment OVDATA) is a
+    paragraph-aligned segment of PLMGR.ASM after its code, so its paragraph (076c, which
+    the code loads into DS) is placed by the rule, no longer a number in the source.
   - *The wrapper* (PLSTART) at the end of the program PLINK wrote; the EXE's SS:SP are its
-    facts (the `wrapper` line).
+    facts (the `wrapper` line; see "Origin's wrapper" below).
   - u5link notes it when the overlay bases, header lengths and numbers or DGROUP's paragraph
     in `tools/u5.py` (which the names' addresses rest on) are not what it computes.
 - **Resolution** is by rule: a name is the public that defines it (in its first 31
@@ -352,11 +363,12 @@ DGROUP as DATA.OVL at f640, and the PLINK header's SS:SP 1b38:0800 and minimum a
   (the `XTEXT` rename only stood in for it). How Origin's file got that order with the
   resident code in the root is open: files after the last END go to a new level-0 section,
   `SEARCH` still reads the libraries last, `FILE x.LIB` loads the whole library, the
-  resident objects as a library come in PLINK's pull order, `CLASS` moves whole classes.
+  resident objects as a library come in PLINK's pull order, `CLASS` moves whole classes
+  (and below, "The processing order, phase C").
 - **The communals** come in COMDEF record order (research/RULES.md): with all 70 in
   VARS.OBJ the 64-slot wrap puts none at its original address (C_COMMON 1385 bytes against
   1384); the original's order needs the declarations spread over the objects as Origin had
-  them.
+  them (done since: below).
 - **Byte for byte** (both targets): the root code 26,145 (gog) / 26,127 (1988) of 29,408
   bytes in place, the loader 1,182 of 1,184, the table and stubs 2,168 of 2,640 (the 164
   stubs are the original's set in another order: PLINK makes them in the order it meets the
@@ -383,7 +395,71 @@ DGROUP as DATA.OVL at f640, and the PLINK header's SS:SP 1b38:0800 and minimum a
   EXTDEF/PUBDEF order, which MSC writes in symbol-table order, and objects that u5d splits,
   TOWN/TOWN2 and INTRO/INTRO2 interleave). So the order stays a fact of the command file.
 - **The communals** stay a fact: VARS.OBJ alone gives the 64-slot walk, not the original's
-  order (research/RULES.md, section 2).
+  order (research/RULES.md, section 2). (A rule since: below.)
+
+#### Phase C: the facts left
+
+- **The communal order is a rule.** u5link allocates the communals in COMDEF record order,
+  object by object in processing order (PLINK86plus's rule, research/RULES.md); the
+  `communals` lines are gone. The declarations are where Origin's modules had them: the 33
+  shared ones are defined (no `extern`) at the top of ultima.c, the first object linked; the
+  others at the top of the one overlay module that uses each (intro0.c, intro2.c, endgame.c,
+  talk.c, cast2.c, shoppes2.c, shoppe2b.c, font.c; D_bb18 and D_bb1a in intro0.c, the first
+  of their two users, D_bcf8 in talk.c), the five no code names among them; vars.h keeps the
+  `extern` declarations of the shared ones only, VARS.OBJ holds nothing. Each group is
+  declared right after common.h, in address order, and comes out of MSC's slot walk in that
+  order (no group crosses slot 63; ultima.c's 33 start at a low slot), so the allocation is
+  the original's, 70 of 70, with no padding. No function's code changed (594 and 596 EXACT):
+  the cost of a defined global (22 + L from its definition) hit no function at a limit.
+  The order is still chosen to fit (the declaration order of each group), but it now follows
+  from the sources as in Origin's build.
+- **The overlay table's status word** is explained (above, "The link"): the record begins at
+  the table's offset 6 with it, so 6000 is the pre-loaded DATA's (bit 14, pre-loaded, which
+  OVLYV's start-up loop tests, and bit 13, which it does not), and ffff ends the table.
+- **The loader's data paragraph** (PLMGR's `SEG_076C`) is a rule: PLMGR.ASM puts the data in
+  a segment OVDATA of its own (as OVERLAY.LIB's OVLYV does), paragraph-aligned after the
+  code, which ends at 76c0; asmbuild compares the module's code segments laid out the same.
+- **The processing order** stays a fact. Measured with PLINK86plus (u5d's objects):
+  - The resident objects as a second library (`LIBRARY SLIBCE.LIB, U5ROOT.LIB`) go into the
+    root after SLIBCE's 17 modules, code from 0878 and data from DS:52ba: Origin's layout.
+    Every library module the residents need is already pulled by ULTIMA and the overlays (in
+    the same order), so a second library changes nothing in SLIBCE's part.
+  - But PLINK pulls U5ROOT.LIB's modules breadth first by first-met name, the DEFINEs'
+    names first (measured: A0878 and COMMANDS first, through the DEFINEs that name
+    `ULTIMA_0ACE_GRAP_18_TRANSFERARE` and `D_6608_MAP`, then exactly u5link's rule for the
+    other 24), not in library order. Address order would need the first-met names to hit the
+    modules in address order. ULTIMA's main (EXACT, fixups included) names A0878, A0DE0,
+    BACKSPC, A2322, SWDISKS, FILEIO, PARTY and COMMANDS and none of LOGO, PRINT, A1B16,
+    POLLKEY, A1B94, WAITKEY, A1EAC: whatever its EXTDEF order, BACKSPC would come before
+    those seven. Only names met before ULTIMA's (DEFINEs, which are read first, or an object
+    before ULTIMA with no segments) could order them, and a DEFINE of D_6608_map would pull
+    COMMANDS first. So a library explains the layout only together with a list that states
+    the order.
+  - `FILE U5ROOT.LIB` in the root loads the modules there, in library order, before the
+    overlays (as files); a library without its dictionary makes PLINK hang; `MODULE` names in
+    the root do not change the pull order (phase A's `mz2`).
+- **The stub order within a turn** stays a fact. MSC writes EXTDEFs in the same slot walk as
+  COMDEFs (serial mod 64, then the name's sum; measured: 100 prototypes come out the same
+  whatever the order of the calls), for the names an object references and the functions it
+  defines; every one of the 164 stubs enters PLINK's table through an EXTDEF. With u5d's
+  objects 6 of the 18 turns are already in the original's order (the count moves with the
+  headers: 5 before the communals moved out of vars.h). TOWN's and INTRO's are not
+  reachable at all: the original's order interleaves names that enter through TOWN2 with
+  names that enter through TOWN (and INTRO2 with INTRO), and under the rule every name of
+  TOWN.OBJ comes before TOWN2's. The other turns could be fitted by reordering the
+  prototypes in the shared headers (which changes no code byte but every object's walk), a
+  fit across all objects that would still leave the two split turns as facts.
+- **Origin's wrapper and its stack** stays a fact, now understood. PLSTART decrypts itself
+  (XOR dc over its bytes 12-1f1) and checks the protected track 6 (of the current drive if
+  it is A: or B:, else of A: and B:, once more after asking for the original disk; int 13h
+  verify: four 1024-byte sectors from sector 2, then the 512-byte sector bb). It reads
+  sector 1 of that track (512 bytes) into its own bytes at 318-518 and takes the real
+  program's CS:IP and SS:SP from offset 100 of it: 072e:0322 and 1b38:0800 are on the key
+  disk, not in the EXE. Until it jumps there it runs on the header's stack, which it uses
+  for a few pushes, near calls and the DOS and BIOS calls; nothing in it sets a stack or
+  uses memory past its own end (86f0). So the code asks for no particular SS:SP: 0100
+  paragraphs past the image and SP 0064 are the protection tool's choice (inside the
+  program's minimum allocation), not derivable.
 
 ### Two targets
 
@@ -413,7 +489,7 @@ u5d builds the GOG release (`gog`, the default) and the October 1988 release v1.
 
 ### The link script: `src/u5d.lnk`
 
-The link is described by a command file in PLINK's spirit, `src/u5d.lnk` (187 lines, each
+The link is described by a command file in PLINK's spirit, `src/u5d.lnk` (166 lines, each
 kind of line explained by a comment above it): the files in the order the linker processes
 them, the overlay areas and their sections, the library line, the DEFINEs; then what no rule
 settles, marked as facts. u5link computes every placement from it (above).
@@ -432,7 +508,6 @@ loader   PLMGR
 table
 section  DATA     VARS
 wrapper  PLSTART  stackgap=0100 sp=0064
-communals D_a9bc_townJustEntered D_a9bd_curDisk ...
 stubs    DUNGEON_0e2e_MainLoop OUTSUBS_0368_GetWorldSavefile ...
 ```
 
@@ -445,8 +520,8 @@ stubs    DUNGEON_0e2e_MainLoop OUTSUBS_0368_GetWorldSavefile ...
 - Facts: the processing order itself (how Origin's command file got the resident objects
   after the library and still in the root is not known: in PLINK, files after the last END
   make a section of their own; here they are the root's), `wrapper` (Origin's wrapper and its
-  stack), `communals` (their order) and `stubs` (their order). Inside PLMGR.ASM, its data
-  paragraph (`SEG_076C`) is a number too, as the module is one where OVERLAY.LIB has three.
+  stack) and `stubs` (their order). The communal order is a rule since phase C (the
+  declarations in their modules), and so is PLMGR's data paragraph (its segment OVDATA).
 - Today's script against the old one (156 lines, 115 of them facts with 269 values): every
   value of the old `object`, `library`, `overlay`, `dgroup`, `define` and `exe` lines is
   computed (267), but the wrapper's stack (2); `fixed` and `word1c` are PLINK86plus's header
@@ -463,9 +538,9 @@ a C object's code where its first function's name says, an assembly module's whe
 line says, every data segment where the code's references into it point in the original (or,
 with no reference, where its bytes are), `_edata` and `_end` from the runtime's code, the
 sections from the original's overlay table, the overlay files' lengths. It compares each
-placement with what u5link computes, and the facts with the files (the stubs with the
-original's stubs, the communals with their names' addresses, the wrapper's stack with the
-EXE header), and reports per kind: computed and equal, or a fact. The gate runs the same
+placement with what u5link computes (the communals with their names' addresses), and the
+facts with the files (the stubs with the original's stubs, the wrapper's stack with the EXE
+header), and reports per kind: computed and equal, or a fact. The gate runs the same
 check when the game files are there.
 
 ### The gate: `check.py`
@@ -665,7 +740,7 @@ $P tools/rename.py -n ...                                         # dry run
 
 - A **global** rename (function, variable, macro, type) is whole-word in every C file and
   header of `src/`, in upper case and cut at 31 in
-  `src/asm/*.ASM`, and both ways in `src/u5d.lnk` (the `communals`, `stubs` and `define`
+  `src/asm/*.ASM`, and both ways in `src/u5d.lnk` (the `stubs` and `define`
   lines) and `tools/*.py`; `--docs` adds `docs/*.md`. String literals are left alone,
   comments are renamed, `.name` and `->name` are not (a field of the same name). Line
   endings are kept. An overlay function's call stub is renamed with it (`STUB_` and 26
@@ -1041,7 +1116,7 @@ of class BSS, in this order:
 |---|---|---|
 | a524-a9bc | `_BSS`: the objects' `static` variables, in link order | `mainout.c` (D_a524), `mainoutb.c` (D_a526, D_a527), `dnglook.c` (D_a528, D_a628), `comsubs.c` (D_a728, D_a872) |
 | a9bc | the runtime's `XOB`/`XO`/`XOE` (empty) | crt0dat |
-| a9bc-bd40 | `c_common`: the communal variables | `vars.c` (vars.h, `BSS`) |
+| a9bc-bd40 | `c_common`: the communal variables | `ultima.c` (the shared ones), then the overlay modules that use the others |
 
 - *Statics.* MSC puts an uninitialised `static` in the object's `_BSS`; where the runtime's
   code names `XOB` (DS:a9bc) shows where `_BSS` ends. The seven names below it are each
@@ -1054,10 +1129,11 @@ of class BSS, in this order:
 - *Communals.* An uninitialised variable without `static` is a COMDEF record, a name and a
   size, in every object that declares it without `extern`; the linker gives it a place. u5link
   allocates them one after the other from the end of the BSS segments, a variable of two
-  bytes or more on an even address, in the order of the link command file's `communals`
-  lines (formerly `u5.COMMUNALS`), and reports any that does not land on the address in its
+  bytes or more on an even address, in COMDEF record order, object by object in link order
+  (PLINK86plus's rule; until phase C in the order of the link command file's `communals`
+  lines, formerly `u5.COMMUNALS`), and reports any that does not land on the address in its
   name. All 70 land.
-- *The order is a fact* (looked for a rule, none found; below). The shared variables come first (DS:a9bc-bb18), then those only
+- *The order* ("Phase C" above has how it became a rule). The shared variables come first (DS:a9bc-bb18), then those only
   INTRO uses, ENDGAME, TALK, CAST2, SHOPPES2, FONT: link order, so PLINK86 allocated a
   communal when it first met it. Within an object MSC writes COMDEF records in symbol-table
   order (`VARS.OBJ`: runs 64 declarations apart, interleaved), which depends on the
@@ -1076,7 +1152,8 @@ of class BSS, in this order:
   address would have been aligned). Five places hold variables no code names: D_bbd2 (0xb6
   bytes, the size of D_bb1c), D_bcb0 (2), D_bd14 (1), D_bd3a and D_bd3b (1 each). They are
   declared so that the rest lands.
-- `vars.c` defines the communal variables (`#define BSS`), and nothing else.
+- `vars.c` holds nothing: ultima.c defines the shared communals, each overlay module its own
+  (phase C); vars.h declares the shared ones `extern`.
 
 **A 5.0 module's own data.** u5d first had these modules' strings as generated char arrays
 (`tools/strings.py`, a stand-in for 5.0's aligned literals) and their tables in `vars.c`.
@@ -1700,10 +1777,10 @@ into slot serial mod 64; COMDEF records are written slot 0 to 63, within a slot 
 `c & 0xDF` over the name mod 256, the later declared first on ties. u5d's VARS.OBJ is
 predicted exactly. PLINK86plus 2.24 then allocates communals in record order, object by
 object in link order, skipping names already allocated, 2-byte and larger ones on even
-addresses: u5link's rule. The communal order (`src/u5d.lnk`'s `communals`) could be made to follow from the sources (record
-order in u5link, the module-only communals declared in their modules, the shared ones
-declared consecutively from slot 0-31 in the header the first object sees), but the order
-would still be fitted, not derived.
+addresses: u5link's rule. The communal order now follows from the sources that way (record
+order in u5link, the module-only communals declared in their modules, the shared ones in
+ultima.c, the first object, each group consecutive within one turn of the 64 slots; phase
+C), though each group's declaration order is still fitted, not derived.
 
 **Shapes.** Every `register` local takes a stack slot (5.0 and 5.1, any type); the two-step SI
 build of DUNGEON_1952 and SJOG_0514 comes only from two statements into a register variable,
@@ -1742,8 +1819,8 @@ seems to be the longest account of them.
   MASM 5.10, LINK 5.01, byte-identical. Its notes ("Building the same executable") say that
   identifier spelling "can affect local-variable allocation and the order of uninitialized
   global storage", and keep awkward names for it; no mechanism is given. That is the name
-  hash, for locals and for communals: u5d's communal order (the link command file's) is still copied
-  and may follow from the names the same way. Two large modules are compiled as
+  hash, for locals and for communals: u5d's communal order follows from where and in what
+  order the variables are declared (the slot walk; the names only break ties in a slot). Two large modules are compiled as
   `loadfix -192 cl ...`, because "available memory can affect the code Microsoft C 5.1
   emits" there; the makefile says one function then gives "the original C4063 code" (too
   large for the post-optimizer). That is pass 2's memory above, applied to the whole of CL

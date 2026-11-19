@@ -89,6 +89,21 @@ def original_bytes(gamedata, place):
     return u5.read_file(gamedata, ovl + '.OVL')[a:b]     # file offsets, as u5d's names
 
 
+def code_image(obj):
+    """(bytes, offsets under fixups): the module's code segments (class CODE, in order, each on
+    its alignment, as the link places them: PLMGR's OVDATA after its code) from the first."""
+    data, masked = bytearray(), set()
+    for s in obj.segs[1:]:
+        if s.cls != 'CODE' or not s.length:
+            continue
+        if data:
+            a = {3: 16, 2: 2, 4: 256}.get(s.align, 1)
+            data += bytes(-len(data) % a)
+        masked |= {len(data) + k for fx in s.fixups for k in range(fx.loc, fx.loc + fx.size)}
+        data += s.data[:s.length]
+    return bytes(data), masked
+
+
 def assemble_patch_base(paths, dosbox=None):
     """For a target that is another's link patched afterwards (u5.PATCH_OF: gog), assemble
     the modules of the list that differ by target for that other target too, into its folder
@@ -117,14 +132,13 @@ def main():
             print('%-14s MASM failed:\n%s' % (os.path.basename(p), log))
             bad += 1
             continue
-        seg = next(s for s in obj.segs[1:] if s.cls == 'CODE' and s.length)
+        data, masked = code_image(obj)
         orig = original_bytes(gd, r)
-        masked = {k for fx in seg.fixups for k in range(fx.loc, fx.loc + fx.size)}
-        diffs = [k for k in range(min(len(orig), seg.length)) if k not in masked and seg.data[k] != orig[k]]
-        same = not diffs and seg.length == len(orig)
+        diffs = [k for k in range(min(len(orig), len(data))) if k not in masked and data[k] != orig[k]]
+        same = not diffs and len(data) == len(orig)
         where = 'CS:%04x-%04x' % r[1:] if r[0] is None else '%s.OVL %04x-%04x' % r
         print('%-14s %-22s %5d bytes  %s' % (os.path.basename(p), where, len(orig),
-                                                    'identical' if same else '%d differ, length %d' % (len(diffs), seg.length)))
+                                                    'identical' if same else '%d differ, length %d' % (len(diffs), len(data))))
         bad += not same
     extra = assemble_patch_base(paths)
     if extra:

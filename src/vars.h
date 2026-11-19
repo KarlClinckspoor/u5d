@@ -4,10 +4,6 @@
 #ifndef STUB
 #define STUB extern
 #endif
-// an uninitialised (communal) variable: see DS:a9bc below
-#ifndef BSS
-#define BSS STUB
-#endif
 
 // ref: u5tech
 // Savegame ref: https://wiki.ultimacodex.com/wiki/Ultima_V_internal_formats#SAVED.GAM_and_RAM
@@ -805,20 +801,25 @@ STUB u8 D_6aa8_viewDist2[0x24];
 // a900
 
 // From DS:a9bc (where the runtime's empty XOB/XO/XOE segments are) to _end: communal
-// variables, declared with BSS. vars.c defines them; the link allocates them in PLINK86's
-// order, by their sizes (tools/u5.py, COMMUNALS). The few that no code refers to (D_bbd2_unused,
-// D_bcb0_unused, D_bd14_unused, D_bd3a_unused, D_bd3b_unused) are declared so that the others land where they are.
+// (uninitialised) variables. These, used by several modules, are defined (without extern)
+// at the top of ultima.c; the others by the one overlay module that uses them, at its top
+// (intro0.c, intro2.c, endgame.c, talk.c, cast2.c, shoppes2.c, shoppe2b.c, font.c). PLINK86
+// allocates them in COMDEF record order, object by object in link order (ULTIMA first), and
+// MSC writes an object's records in its symbol table's order (research/RULES.md, section 2):
+// declared consecutively, each group comes out in declaration order, which is address order.
+// The five no code refers to (D_bbd2, D_bcb0 in intro2.c, D_bd14 in cast2.c, D_bd3a, D_bd3b in
+// font.c) are declared so that the others land where they are.
 
-BSS u8  D_a9bc_townJustEntered;
-BSS u8 D_a9bd_curDisk[1]; // the disk wanted (ULTIMA_251e_SwitchDisks)
-BSS u8 D_a9be_promptMode; // two bytes on an odd address would have been put on an even one
-BSS u8* D_a9c0_wallImage; // loaded image pointer
-BSS u8 D_a9c2_floppyCount;
-BSS u8* D_a9c4_itemsImage; // loaded image pointer
-BSS u8* D_a9c6_monsterImage; // loaded image pointer
+STUB u8  D_a9bc_townJustEntered;
+STUB u8 D_a9bd_curDisk[1]; // the disk wanted (ULTIMA_251e_SwitchDisks)
+STUB u8 D_a9be_promptMode; // two bytes on an odd address would have been put on an even one
+STUB u8* D_a9c0_wallImage; // loaded image pointer
+STUB u8 D_a9c2_floppyCount;
+STUB u8* D_a9c4_itemsImage; // loaded image pointer
+STUB u8* D_a9c6_monsterImage; // loaded image pointer
 
 // disk drive table
-BSS u8 D_a9c8_diskDrives[6]; // the drive of each disk; 0xff: not set
+STUB u8 D_a9c8_diskDrives[6]; // the drive of each disk; 0xff: not set
 
 #define D_a9c9 D_a9c8_diskDrives[1]
 #define D_a9ca D_a9c8_diskDrives[2]
@@ -827,47 +828,47 @@ BSS u8 D_a9c8_diskDrives[6]; // the drive of each disk; 0xff: not set
 #define D_a9cd D_a9c8_diskDrives[5]
 
 // used in intro
-BSS u8 D_a9ce_soundOn; // use sound effect?
+STUB u8 D_a9ce_soundOn; // use sound effect?
 
-BSS u16 D_a9d0_rayBalance[0x15];
+STUB u16 D_a9d0_rayBalance[0x15];
 
-BSS u8 D_a9fa_vitalsDirty; // dirty flag for vital
-BSS u8 D_a9fb_stepVolume; // footstep sfx duration in dungeon
+STUB u8 D_a9fa_vitalsDirty; // dirty flag for vital
+STUB u8 D_a9fb_stepVolume; // footstep sfx duration in dungeon
 
 // combat?
-BSS ActorFmt D_a9fc_savedActors[0x20]; // D_5c5a_actors during combat
+STUB ActorFmt D_a9fc_savedActors[0x20]; // D_5c5a_actors during combat
 
-BSS char* D_aafc_shopName; // current shop name
-BSS char* D_aafe_shopOwner; // current shop owner
+STUB char* D_aafc_shopName; // current shop name
+STUB char* D_aafe_shopOwner; // current shop owner
 
-BSS char* D_ab00_itemName;
-BSS u8 D_ab02_viewTiles[0x160]; // the 11x11 view, 0x20 bytes a row: 0 an actor (in D_ac64_viewActors), 0xff hidden
-BSS char* D_ac62_placeName;
+STUB char* D_ab00_itemName;
+STUB u8 D_ab02_viewTiles[0x160]; // the 11x11 view, 0x20 bytes a row: 0 an actor (in D_ac64_viewActors), 0xff hidden
+STUB char* D_ac62_placeName;
 
-BSS u8 D_ac64_viewActors[0xb0]; // actor map / misc map [0x10 * b] (from 51b8)
+STUB u8 D_ac64_viewActors[0xb0]; // actor map / misc map [0x10 * b] (from 51b8)
 
-BSS u8 D_ad14_combatMap[32 * 32]; // the combat map; outside combat the 32x32 light map
+STUB u8 D_ad14_combatMap[32 * 32]; // the combat map; outside combat the 32x32 light map
 
 // b100
 
-BSS s16 D_b114_shopIndex; // s16 (FMT MOVSX); the shop's column in D_21ca_shopNames..., 0-15
-BSS s16 D_b116_shopKind; // s16 (FMT MOVSX); 0-7, the merchant's dialog number - 0x81
-BSS s16 D_b118_shopPrice; // s16 (FMT MOVSX); the % of a shop text
-BSS u16 D_b11a_shopQuantity;
+STUB s16 D_b114_shopIndex; // s16 (FMT MOVSX); the shop's column in D_21ca_shopNames..., 0-15
+STUB s16 D_b116_shopKind; // s16 (FMT MOVSX); 0-7, the merchant's dialog number - 0x81
+STUB s16 D_b118_shopPrice; // s16 (FMT MOVSX); the % of a shop text
+STUB u16 D_b11a_shopQuantity;
 
-BSS u8* D_b11c_searchGrid;
-BSS u8 D_b11e_tileFrames[0x100]; // the tile drawn for each map tile (animation)
+STUB u8* D_b11c_searchGrid;
+STUB u8 D_b11e_tileFrames[0x100]; // the tile drawn for each map tile (animation)
 
 #define SCRATCH_SIZE 2000
 
-BSS u8 D_b21e_scratch[SCRATCH_SIZE]; // scratch buffer ~b9ee)
+STUB u8 D_b21e_scratch[SCRATCH_SIZE]; // scratch buffer ~b9ee)
 
 #define D_b31e (D_b21e_scratch + 0x100)
 #define D_b7fa_shopTextOut (D_b21e_scratch + 1500)
 
 // b900
 
-BSS u8  D_b9ee_itemCounts[0x26]; // owned item counts
+STUB u8  D_b9ee_itemCounts[0x26]; // owned item counts
 // [8]
 #define D_b9f6_potionCounts (D_b9ee_itemCounts + 8)
 #define D_b9fe_carpetCount D_b9ee_itemCounts[0x10]
@@ -886,59 +887,22 @@ BSS u8  D_b9ee_itemCounts[0x26]; // owned item counts
 #define D_ba12_blackBadgeOwned D_b9ee_itemCounts[0x24]
 #define D_ba13_sandalwoodBoxOwned D_b9ee_itemCounts[0x25]
 
-BSS CombatEntity D_ba14_combatants[32]; // combat entities
+STUB CombatEntity D_ba14_combatants[32]; // combat entities
 
-BSS u8  D_bb14_wallTile; // pos?
-BSS u8  D_bb15_floorTile; // pos?
-BSS u8  D_bb16_altTileset;
-BSS u8  D_bb17_loadFlags;
-BSS u16 D_bb18_pathPos; // "lord british" index
-BSS void* D_bb1a_titleImage; // pointer
+STUB u8  D_bb14_wallTile; // pos?
+STUB u8  D_bb15_floorTile; // pos?
+STUB u8  D_bb16_altTileset;
+STUB u8  D_bb17_loadFlags;
 
-BSS S_bb1c D_bb1c_u4Virtues;
-BSS u8 D_bbd2_unused[0xb6]; // no code refers to it; as large as D_bb1c_u4Virtues
 
-BSS S_bc88_U4Party D_bc88_u4Member;
-BSS u16 D_bcb0_unused; // no code refers to it
 
-BSS char D_bcb2_lineBuf[0x27 + 1];
 
-BSS u8 D_bd2a_virtueOffered[8];
-BSS u8 D_bd32_virtueRejected[8];
 
-BSS u8 D_bcda_lineLen;
 
-BSS u16 D_bcdc_talkNpcIndex; // the slot of the NPC talked to
-BSS u8* D_bcde_talkPtr; // the place in the NPC's script
-BSS u8 D_bce0_talkCodeArgs[4]; // the bytes after a script code (TALK_0dbe_ProcessCodeArgument)
-BSS char D_bce4_talkWord[0x10]; // the word being collected, printed at its end (word wrap)
-BSS u8 D_bcf4_talkLabel; // the label being asked, 0x91-0x9f
-BSS u16 D_bcf6_talkKeywordIndex; // the NPC's keyword that matched
-BSS char D_bcf8_inputText[16]; // what the player typed
 
-BSS char D_bd08_answer[12];
-BSS u8 D_bd14_unused; // no code refers to it
 
-BSS u8 D_bd15_savedMapId;
-BSS u8 D_bd16_pubKind;
-BSS s16 D_bd18_boughtSomething; // int?
-BSS int D_bd1a_dinersFed; // int
-BSS int D_bd1c_dinerCount; // int
-BSS int D_bd1e_tableTile; // int
-BSS s16 D_bd20_drinksBought; // int?
-BSS s16 D_bd22_thrownOut;
-BSS s16 D_bd24_shipSold;
 
-BSS u8 D_bd26_stripLeft;
-BSS u8 D_bd27_stripRight;
-BSS u8 D_bd28_stripWiden;
-BSS u8 D_bd29_sceneNo;
 
-BSS u8 D_bd3a_unused; // no code refers to it
-BSS u8 D_bd3b_unused; // no code refers to it
-BSS u8 D_bd3c_newInt;
-BSS u8 D_bd3d_newDex;
-BSS u8 D_bd3e_newStr;
 
 // ..bd3f]
 

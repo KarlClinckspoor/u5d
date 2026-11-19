@@ -169,7 +169,7 @@ So u5link's rule (sizes, alignment, first seen) is PLINK86plus's, and the order 
 is the compiler's slot walk. (PLINK86 1.28 does not know COMDEF records at all, `q2_plink.py`:
 "Warning: unknown record type B0H".)
 
-### Could u5.COMMUNALS be derived?
+### Could u5.COMMUNALS be derived? (Done, docs/MATCHING.md "Phase C")
 
 Not from the names: the names decide only collisions inside a slot. It is decided by how many
 symbol-table entries precede each communal in the object that declares it first. For the
@@ -188,6 +188,13 @@ it would take in u5d:
    cross slot 63 comes out in declaration order).
 Then `u5.COMMUNALS` becomes a check instead of a fact. The order would still be chosen to fit the
 original, not derived from it; the gain is only that the list follows from the sources.
+
+Done that way (MATCHING.md, "Phase C"), with no padding: each group is declared right after
+common.h (ultima.c's 33 shared ones, then each overlay module's own), and every group falls
+within one turn of the 64 slots, so its COMDEFs come out in declaration (address) order. The
+command file's `communals` lines are gone; u5link allocates in record order. MSC writes EXTDEFs
+in the same walk (100 prototypes, called in any order: the same EXTDEF order), for the names an
+object references and the functions it defines.
 
 ## 3. C shapes for patterns u5d cannot spell naturally
 

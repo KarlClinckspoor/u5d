@@ -23,11 +23,12 @@ placement, the measurement with u5link's computation, and the facts with the fil
                     their bytes occur in DGROUP (once), or at FIXED_DATA; _edata and _end where
                     the runtime's code uses them; the overlay table's records (each section's
                     paragraphs, length, relocation count); each .OVL file's length and header;
-                    DGROUP's length; the length of the resident image; the stubs;
+                    DGROUP's length; the length of the resident image; the stubs; the
+                    communal variables, each where its name says (the names' addresses are
+                    the original's: match.py checks every reference to them);
   computed          every placement u5link computes (Linker.place, Linker.link);
-  facts             the stub order (against the original's stubs), the communal order (each
-                    variable at the address its name gives), the wrapper's stack (against the
-                    EXE header); the processing order is the command file's input.
+  facts             the stub order (against the original's stubs), the wrapper's stack (against
+                    the EXE header); the processing order is the command file's input.
 
 Every placement is reported as computed or a fact, with the counts. It exits 1 when anything
 differs (--check, the default); tools/check.py runs the same check when the game files are
@@ -101,7 +102,7 @@ def gather(gd, notes):
         if n not in have:
             notes.append('%s: no object' % n)
             continue
-        if kind == 'data':                # no code or data of its own: communal variables
+        if kind == 'data':                # no code or data of its own
             m = Module(n, omf.Object(have[n]), 'data')
             m.cfile = None
             mods.append(m)
@@ -327,6 +328,8 @@ def check(gd, verbose=False):
         ('_edata', defines.get('_edata'), lk.publics['_edata'][1]),
         ('_end', defines.get('_end'), lk.publics['_end'][1]),
         ('resident image length', len(u5.exe_image(gd)), len(root))])
+    r.compare('DGROUP offsets of the communal variables', [
+        (n, (u5.name_address(n) or (None, None))[1], at) for n, at in lk.communal_at.items()])
     computed = sum(n for k, n, b in r.kinds)
     # the facts
     img = u5.exe_image(gd)
@@ -350,10 +353,6 @@ def check(gd, verbose=False):
     stack_ok = (gap, sp) == (sc.wrapper_stack.get('stackgap'), sc.wrapper_stack.get('sp'))
     if not stack_ok:
         r.problems.append('the wrapper\'s stack: SS %04x paragraphs past the image, SP %04x, in the original' % (gap, sp))
-    comm_ok = sum(1 for n in sc.communals if u5link.exported(n) in lk.communal_at and u5.name_address(n)
-                  and u5.name_address(n)[1] == lk.communal_at[u5link.exported(n)])
-    if comm_ok != len(sc.communals):
-        r.problems.append('the communals: %d of %d at the address their names give' % (comm_ok, len(sc.communals)))
     files = sum(1 for k, n, s in sc.order if k == 'file')
     L = ['%s against the original files (%s):' % (os.path.relpath(u5link.script_path(), u5.ROOT),
                                                   u5.TARGET_TITLE[u5.TARGET]),
@@ -366,8 +365,6 @@ def check(gd, verbose=False):
           '    %-46s %d, %d in the original\'s order (the rule gives the set, and the sections\' '
           'turns: %s)' % ('the order of the call stubs', len(fact_stubs), stubs_ok,
                           'in processing order' if len(turns) == len(set(turns)) else 'NOT in processing order'),
-          '    %-46s %d, %d at the addresses their names give' % ('the order of the communal variables',
-                                                                  len(sc.communals), comm_ok),
           '    %-46s SS %04x paragraphs past the image, SP %04x: %s' % (
               'the wrapper\'s stack', gap, sp, 'the original\'s' if stack_ok else 'DIFFERS')]
     if verbose:
