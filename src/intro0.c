@@ -5,6 +5,11 @@
 // exact. These two use no strings and no data of their own, so this object's _DATA is empty
 // and intro.c's starts at DS:2f30 as before.
 #include "common/common.h"
+
+// this module's communal variables (vars.h, DS:a9bc)
+u16 D_bb18_pathPos; // "lord british" index
+void* D_bb1a_titleImage; // pointer
+
 #include "funcs.h"
 #include "vars.h"
 #include "macros.h"

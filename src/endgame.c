@@ -1,4 +1,9 @@
 #include "common/common.h"
+
+// this module's communal variables (vars.h, DS:a9bc)
+char D_bcb2_lineBuf[0x27 + 1];
+u8 D_bcda_lineLen;
+
 #include "funcs.h"
 #include "vars.h"
 #include "macros.h"

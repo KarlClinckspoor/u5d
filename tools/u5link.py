@@ -23,9 +23,10 @@ from build/msc51/LIB) alone: no game file is opened to link, and no Phoenix file
                        paragraph where the root ends, each as large as its largest section,
                        every section at its area's base; DGROUP from the paragraph after the
                        last area (DATA.OVL, the pre-loaded section);
-                     - the communal variables after the last BSS segment (in the order the
-                       command file states: a fact), _edata where class BSS starts, _end at
-                       its end (word aligned);
+                     - the communal variables after the last BSS segment, in the order of the
+                       objects' COMDEF records, object by object in processing order (a name
+                       allocated once), _edata where class BSS starts, _end at its end (word
+                       aligned);
                      - the overlay table and call stubs (PLINK's $OVTB$, Linker.make_table),
                        an overlay's relocation header, DATA.OVL's header;
                      - Origin's copy-protection wrapper (PLSTART) appended at the end of the
@@ -44,9 +45,8 @@ from build/msc51/LIB) alone: no game file is opened to link, and no Phoenix file
                      every name was defined.
 
 What no rule settles is a fact of the command file, marked there: the processing order
-itself, the order of the call stubs and of the communal variables, and the stack of Origin's
-wrapper. tools/linkscript.py --check compares every placement u5link computes with the
-original files. --map prints them.
+itself, the order of the call stubs, and the stack of Origin's wrapper. tools/linkscript.py
+--check compares every placement u5link computes with the original files. --map prints them.
 
 The target (--target, else $U5_TARGET, else gog) chooses the objects (build/obj or
 build/obj-1988, or $U5_OBJ), the command file's lines (those marked target= for another
@@ -85,10 +85,13 @@ DOSSEG = 0x9e                                    # COMENT class: DOSSEG segment 
 # PLINK86plus 2.24's own EXE header fields (both Nantucket editions write them so): the
 # relocation table at 0x1e, the word 1 at 0x1c.
 PLINK_RELOC_TABLE, PLINK_WORD_1C = 0x1e, 0x0001
-# The overlay table ($OVTB$). PLINK writes 6000 into the status word (the record's last) of the
-# section before the pre-loaded one, and ffff into the last record's (the loader's walk over
-# the records ends there): so in every PLINK86plus link measured; what 6000 means is not known.
-STATUS_BEFORE_PRELOADED, STATUS_LAST = 0x6000, 0xffff
+# The overlay table ($OVTB$): a section's record starts with its status word, as the loader
+# (OVLYV, src/asm/PLMGR.ASM) reads it: bit 15 set while the section is loaded, bit 14 for a
+# section loaded at start-up (its start-up loop loads those), the low 13 bits the section to
+# load before it (0: the root). PLINK writes 6000 for the pre-loaded section (bit 13 too,
+# which OVLYV never tests) and 0 for an overlay; ffff after the last record ends the
+# loader's walk over the records.
+STATUS_PRELOADED, STATUS_END = 0x6000, 0xffff
 STUB = 12                                        # call far $OVLYV; dw overlay; jmp far function
 STUB_NAME = 26                                   # STUB_ and 26 characters of the function's name
 TABLE = 'PLTAB'                                  # the generated table's module and segment
@@ -127,7 +130,7 @@ class Script:
         self.areas = []           # [[sections]]
         self.defines = {}         # name -> the name of the place it stands for
         self.wrapper, self.wrapper_stack = None, {}
-        self.stubs, self.communals = [], []
+        self.stubs = []
         if not os.path.exists(self.path):
             raise SystemExit('the link command file %s is missing' % self.path)
         section, in_area = None, False
@@ -181,8 +184,6 @@ class Script:
                     self.wrapper_stack = {k: int(v, 16) for k, v in kw.items()}
                 elif w[0] == 'stubs':
                     self.stubs += names
-                elif w[0] == 'communals':
-                    self.communals += names
                 else:
                     raise ValueError('unknown kind of line')
             except (ValueError, KeyError, IndexError) as e:
@@ -227,6 +228,7 @@ class Module:
         self.name, self.obj, self.kind, self.section = name, obj, kind, section
         self.overlay = section if kind == 'ovl' else None
         self.code = None          # (segment, CS address)
+        self.more_code = []       # its other segments outside DGROUP: [(segment, CS address)] (PLMGR's OVDATA)
         self.data = {}            # segment name -> DS address
         self.relocs = []          # addresses of its code's relocated words, in fixup order
         self.data_relocs = []     # (DS address, segment name) of its data's relocated words
@@ -401,6 +403,8 @@ class Linker:
                 self.seg_start.setdefault(s.name, a)
             if s is code_segment(m.obj):
                 m.code = (s, a)
+            elif s.length:
+                m.more_code.append((s, a))
         for cls, name in self.segment_order(modules, False):
             at = self.place_segment(modules, name, at, record)
         return at
@@ -409,6 +413,7 @@ class Linker:
         """Where everything goes, by PLINK's rules (the module docstring)."""
         sc = self.script
         for m in self.modules:
+            m.more_code = []
             for g, segs in m.obj.groups.items():
                 if g == 'DGROUP':
                     self.dgroup_segs |= set(segs)
@@ -461,36 +466,32 @@ class Linker:
         """Uninitialised variables (MSC's COMDEF records: a name and a size, in every object
         that declares the variable without extern) that no object defines otherwise get their
         place here, in the segment c_common after the last segment of class BSS (the modules'
-        _BSS, their static variables, then the runtime's empty XOB/XO/XOE): one after the other,
-        a variable of two bytes or more on an even address (PLINK86plus's rule). PLINK takes
-        them in the order of the COMDEF records, object by object; the order is the command
-        file's (a fact): MSC writes an object's records in the order of its symbol table, which
-        depends on the original's declarations (research/RULES.md, section 2). _end is the
-        end, word aligned."""
+        _BSS, their static variables, then the runtime's empty XOB/XO/XOE), by PLINK86plus's
+        rule: in the order of the COMDEF records, object by object in processing order, a name
+        already allocated skipped; one after the other, a variable of two bytes or more on an
+        even address. (MSC writes an object's COMDEF records in the order of its symbol table,
+        research/RULES.md, section 2: ultima.c declares the shared ones, each overlay module its
+        own.) _end is the end, word aligned."""
         defined = set()
         for m in self.modules:
             defined |= module_publics(m.obj)
-        sizes = {}
+        sizes, order = {}, []
         for m in self.modules:
             for n, size in m.obj.comdefs.items():
                 if n not in defined:
                     if sizes.get(n, size) != size:
                         self.notes.append('%s: communal %s has %d bytes here, %d elsewhere' % (m.name, n, size, sizes[n]))
+                    if n not in sizes:
+                        order.append(n)
                     sizes[n] = max(size, sizes.get(n, 0))
-        for name in self.script.communals:
-            n = exported(name)
-            if n not in sizes:
-                self.notes.append('communal %s (the command file) is declared by no object' % name)
-                continue
+        for n in order:
             if sizes[n] >= 2:
                 at += at & 1
             self.communal_at[n] = at
             a = u5.name_address(n)
             if a and a[1] != at:
-                self.notes.append('communal %s is allocated at DS:%04x' % (name, at))
-            at += sizes.pop(n)
-        for n in sorted(sizes):
-            self.notes.append('communal %s is not in the command file\'s communals: not allocated' % n)
+                self.notes.append('communal %s is allocated at DS:%04x' % (n, at))
+            at += sizes[n]
         at += at & 1
         self.dgroup_size = at
         return at
@@ -615,9 +616,9 @@ class Linker:
 
     def frame(self, target, m):
         """The paragraph a segment reference stands for: DGROUP's, 0 for _TEXT (overlays are
-        loaded into it too) and for a function, a root segment's own (PLMGR_TEXT, PLTAB,
-        PLSTART_TEXT), or the one an empty MARK segment SEG_xxxx names (a paragraph that is no
-        segment's: PLMGR's data, inside its one module)."""
+        loaded into it too) and for a function, a root segment's own (PLMGR_TEXT, OVDATA,
+        PLTAB, PLSTART_TEXT), or the one an empty MARK segment SEG_xxxx names (asmgen.py's
+        drafts: a paragraph that is no segment's)."""
         kind, name = target
         if (kind == 'grp' and name == 'DGROUP') or name == 'DGROUP' or name in self.dgroup_segs:
             return self.dgroup_para
@@ -776,12 +777,13 @@ class Linker:
         OVLYV, reads it):
           a header: the loader's paragraph (its segment OVCODE, PLMGR_TEXT here; a number, not
             relocated), 0, the paragraph where memory ends (the pre-loaded section's end,
-            relocated), 0;
+            relocated);
           a record of 16 bytes per section, in order (an overlay's number is its place, from
-            1): the number of its relocated words (its header's entries), the paragraphs where
-            it starts and ends in memory (relocated), the offset of its file name in the table,
-            0 and 0 (a dword: where it starts in its file), its length in the file in
-            paragraphs (without the header), and a status word (0; see STATUS_*);
+            1): its status word (0 for an overlay, STATUS_PRELOADED), the number of its
+            relocated words (its header's entries), the paragraphs where it starts and ends in
+            memory (relocated), the offset of its file name in the table, 0 and 0 (a dword:
+            where it starts in its file), its length in the file in paragraphs (without the
+            header); then STATUS_END;
           the file names: the program's (the output line's), then each section's NAME.OVL;
           a stub per function called from another section, in the command file's order: call
             far $OVLYV (the loader; its segment relocated), the overlay's number, jmp far the
@@ -800,14 +802,12 @@ class Linker:
         word(self.seg_start.get(loader.code[0].name, 0) >> 4 if loader else 0)
         word(0)
         word(memory_end, True)
-        word(0)
         name_at = 8 + 16 * len(sc.sections) + len(sc.output) + 1
         secs = list(sc.sections)
-        for k, sec in enumerate(secs):
+        for sec in secs:
             s = self.sections[sec]
             count = len(self.data_entries()) if sec == sc.preloaded else len(overlay_relocs.get(sec, ()))
-            status = STATUS_LAST if k == len(secs) - 1 else \
-                STATUS_BEFORE_PRELOADED if k + 1 < len(secs) and secs[k + 1] == sc.preloaded else 0
+            word(STATUS_PRELOADED if sec == sc.preloaded else 0)
             word(count)
             word(s['base'] >> 4, True)
             word((s['base'] + s['memory']) >> 4, True)
@@ -815,8 +815,8 @@ class Linker:
             word(0)
             word(0)
             word(paragraph(s['size']) >> 4)
-            word(status)
             name_at += len(sec) + 5
+        word(STATUS_END)
         out += sc.output.encode('ascii') + b'\0'
         for sec in secs:
             out += sec.encode('ascii') + b'.OVL\0'
@@ -905,11 +905,11 @@ class Linker:
             dgroup[:len(orig)] = orig[:len(dgroup)]
         for m in self.modules:
             if m.code and m is not self.table:
-                seg, base = m.code
-                if m.kind == 'ovl':
-                    self.apply(m, seg, base, code[m.overlay], self.sections[m.overlay]['base'])
-                else:
-                    self.apply(m, seg, base, root, 0)
+                for seg, base in [m.code] + m.more_code:
+                    if m.kind == 'ovl':
+                        self.apply(m, seg, base, code[m.overlay], self.sections[m.overlay]['base'])
+                    else:
+                        self.apply(m, seg, base, root, 0)
             for sname, dsbase in m.data.items():
                 s = m.obj.seg(sname)
                 if s and s.length and sname not in SKIP_SEGMENTS:

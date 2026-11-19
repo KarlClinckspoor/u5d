@@ -6,7 +6,8 @@
 # them, the overlay areas and their sections, the libraries, the DEFINEs. u5link places
 # everything from that by PLINK's rules (its docstring lists them): every code address, every
 # DGROUP offset, the library modules and their order, the areas, the overlays' and DATA.OVL's
-# headers, the overlay table and stubs. What no rule settles is stated here and marked "fact".
+# headers, the overlay table and stubs, the communal variables. What no rule settles is stated
+# here and marked "fact".
 # "tools/linkscript.py --check" compares what u5link computes with the original files.
 # A '#' starts a comment. A line that ends in target=gog or target=1988 holds for that target
 # only (the 1992 patch's assembly, A2322 and AINTRO2, is the gog target's).
@@ -22,8 +23,9 @@ define   D_6608_overworld=D_6608_map
 # The processing order (fact). The order the evidence gives (the DGROUP layout, the library
 # order): ULTIMA, the overlays, the library, then the other resident objects in address order.
 # How Origin's command file got that order with the resident objects in the root is not known
-# (in PLINK, files after the last END would make a section of their own): here a file after
-# an END belongs to the root again.
+# (in PLINK, files after the last END would make a section of their own; as a second library
+# they land in the root after the runtime, but PLINK pulls them breadth first, not in this
+# order: docs/MATCHING.md, "Phase C"): here a file after an END belongs to the root again.
 #
 # file NAME...: objects, build/obj/NAME.OBJ (compiled from src/NAME.c, or assembled from
 # src/asm/NAME.ASM), in the root (before the first area, and after an END).
@@ -79,46 +81,23 @@ file     SWDISKS FILEIO PARTY COMMANDS WORLD VIEW VISIBLE BATTLE A6F1E LIGHTHSE 
 # loader NAME: the overlay loader, OVERLAY.LIB's DUMMY and OVLYV and Origin's OVUSERM, as one
 # assembly module (src/asm/PLMGR.ASM). In Origin's link a reference to DUMMY brought it in
 # first, so its class (OVLOADER) came before the table's (LOADER); here both are class CODE,
-# met in this order.
+# met in this order. Its data is a segment of its own, OVDATA (as OVERLAY.LIB's), on the
+# paragraph after its code.
 loader   PLMGR
 
 # table: the overlay table and the call stubs (PLINK's $OVTB$), which u5link makes.
 table
 
 # section NAME FILE... after the areas: the pre-loaded section, DGROUP, written to NAME.OVL.
-# VARS.OBJ declares the communal variables (which object Origin put here is not known).
+# VARS.OBJ holds nothing (which object Origin put here is not known). The communal variables
+# are allocated by the rule (u5link), in COMDEF record order object by object in processing
+# order: ultima.c declares the shared ones, each overlay module its own.
 section  DATA     VARS
 
 # wrapper NAME stackgap=N sp=N: Origin's copy-protection wrapper (src/asm/PLSTART.ASM), appended
 # to the program PLINK wrote; it took the entry point. Its stack (fact): SS stackgap paragraphs
 # past the end of the image, SP sp (hexadecimal).
 wrapper  PLSTART  stackgap=0100 sp=0064
-
-# communals NAME...: the communal variables, in the order PLINK allocated them (fact; u5link
-# allocates them in this order by the rule). PLINK takes them in COMDEF record order, object by
-# object in processing order; MSC writes an object's records in the order of its symbol table
-# (research/RULES.md, section 2), and with all 70 in VARS.OBJ that order is not the original's.
-# The original's: the shared ones, then those first met in INTRO0, INTRO2, ENDGAME, TALK, CAST2,
-# SHOPPES2, SHOPPE2B and FONT.
-communals D_a9bc_townJustEntered D_a9bd_curDisk D_a9be_promptMode D_a9c0_wallImage
-communals D_a9c2_floppyCount D_a9c4_itemsImage D_a9c6_monsterImage D_a9c8_diskDrives
-communals D_a9ce_soundOn D_a9d0_rayBalance D_a9fa_vitalsDirty D_a9fb_stepVolume
-communals D_a9fc_savedActors D_aafc_shopName D_aafe_shopOwner D_ab00_itemName D_ab02_viewTiles
-communals D_ac62_placeName D_ac64_viewActors D_ad14_combatMap
-communals D_b114_shopIndex D_b116_shopKind D_b118_shopPrice D_b11a_shopQuantity
-communals D_b11c_searchGrid D_b11e_tileFrames D_b21e_scratch D_b9ee_itemCounts D_ba14_combatants
-communals D_bb14_wallTile D_bb15_floorTile D_bb16_altTileset D_bb17_loadFlags
-communals D_bb18_pathPos D_bb1a_titleImage D_bb1c_u4Virtues D_bbd2_unused D_bc88_u4Member
-communals D_bcb0_unused
-communals D_bcb2_lineBuf D_bcda_lineLen
-communals D_bcdc_talkNpcIndex D_bcde_talkPtr D_bce0_talkCodeArgs D_bce4_talkWord
-communals D_bcf4_talkLabel D_bcf6_talkKeywordIndex D_bcf8_inputText
-communals D_bd08_answer D_bd14_unused D_bd15_savedMapId
-communals D_bd16_pubKind D_bd18_boughtSomething D_bd1a_dinersFed D_bd1c_dinerCount
-communals D_bd1e_tableTile D_bd20_drinksBought D_bd22_thrownOut D_bd24_shipSold
-communals D_bd26_stripLeft D_bd27_stripRight D_bd28_stripWiden D_bd29_sceneNo
-communals D_bd2a_virtueOffered D_bd32_virtueRejected D_bd3a_unused D_bd3b_unused D_bd3c_newInt
-communals D_bd3d_newDex D_bd3e_newStr
 
 # stubs NAME...: the functions called from another section, in the order of their call stubs
 # in the table (fact). Which functions get one is the rule (u5link checks this list against

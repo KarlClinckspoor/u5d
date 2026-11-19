@@ -1,4 +1,14 @@
 #include "common/common.h"
+
+// this module's communal variables (vars.h, DS:a9bc)
+u16 D_bcdc_talkNpcIndex; // the slot of the NPC talked to
+u8* D_bcde_talkPtr; // the place in the NPC's script
+u8 D_bce0_talkCodeArgs[4]; // the bytes after a script code (TALK_0dbe_ProcessCodeArgument)
+char D_bce4_talkWord[0x10]; // the word being collected, printed at its end (word wrap)
+u8 D_bcf4_talkLabel; // the label being asked, 0x91-0x9f
+u16 D_bcf6_talkKeywordIndex; // the NPC's keyword that matched
+char D_bcf8_inputText[16]; // what the player typed
+
 #include "funcs.h"
 #include "vars.h"
 #include "macros.h"

@@ -1,4 +1,18 @@
 #include "common/common.h"
+
+// this module's communal variables (vars.h, DS:a9bc)
+u8 D_bd26_stripLeft;
+u8 D_bd27_stripRight;
+u8 D_bd28_stripWiden;
+u8 D_bd29_sceneNo;
+u8 D_bd2a_virtueOffered[8];
+u8 D_bd32_virtueRejected[8];
+u8 D_bd3a_unused; // no code refers to it
+u8 D_bd3b_unused; // no code refers to it
+u8 D_bd3c_newInt;
+u8 D_bd3d_newDex;
+u8 D_bd3e_newStr;
+
 #include "funcs.h"
 #include "vars.h"
 #include "macros.h"

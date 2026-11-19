@@ -1,4 +1,9 @@
 #include "common/common.h"
+
+// this module's communal variables (vars.h, DS:a9bc)
+s16 D_bd22_thrownOut;
+s16 D_bd24_shipSold;
+
 #include "funcs.h"
 #include "vars.h"
 #include "macros.h"
