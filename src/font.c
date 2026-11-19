@@ -1,17 +1,17 @@
 #include "common/common.h"
 
 // this module's communal variables (vars.h, DS:a9bc)
-u8 D_bd26_stripLeft;
-u8 D_bd27_stripRight;
-u8 D_bd28_stripWiden;
-u8 D_bd29_sceneNo;
-u8 D_bd2a_virtueOffered[8];
-u8 D_bd32_virtueRejected[8];
+u8 stripLeft;
+u8 stripRight;
+u8 stripWiden;
+u8 sceneNo;
+u8 virtueOffered[8];
+u8 virtueRejected[8];
 u8 D_bd3a_unused; // no code refers to it
 u8 D_bd3b_unused; // no code refers to it
-u8 D_bd3c_newInt;
-u8 D_bd3d_newDex;
-u8 D_bd3e_newStr;
+u8 newInt;
+u8 newDex;
+u8 newStr;
 
 #include "funcs.h"
 #include "vars.h"
@@ -23,8 +23,8 @@ u8 D_bd3e_newStr;
 #include "intro.h"
 #include "tiles.h"
 
-// glyph widths from ' ' (never read: spaces are D_5154_spaceWidth wide) to 'z'
-u8 D_50ea_glyphWidths[0x5b] =
+// glyph widths from ' ' (never read: spaces are spaceWidth wide) to 'z'
+u8 glyphWidths[0x5b] =
 {
     0x00,
     0x02, 0x06, 0x07, 0x07, 0x07, 0x07, 0x03, 0x04,
@@ -41,23 +41,23 @@ u8 D_50ea_glyphWidths[0x5b] =
     0x05, 0x04
 };
 
-u16 D_5146_textLeftX[2] = {0, 0};
+u16 textLeftX[2] = {0, 0};
 u16 D_514a_unused = 0; // no code refers to it
 
-u16 D_514c_textRightX[2] = {0x0140, 0x0140};
+u16 textRightX[2] = {0x0140, 0x0140};
 
 u16 D_5150_regionTop = 0x00c8;
 
 u16 D_5152_regionBottom = 0x00c8;
 
-u16 D_5154_spaceWidth = 5;
+u16 spaceWidth = 5;
 
 u16 D_5156_penX = 0;
 
 u16 D_5158_penY = 0x003c;
-u16 D_515a_toneStep = 0;
+u16 toneStep = 0;
 
-char* D_515c_sceneCaptions[4] =
+char* sceneCaptions[4] =
 {
     /*0xa010*/ "The Summoning",
     /*0xa01e*/ "The Journey",
@@ -65,13 +65,13 @@ char* D_515c_sceneCaptions[4] =
     /*0xa036*/ "The Welcoming"
 };
 
-u8 D_5164_intBonus[8] = {0x02, 0x00, 0x00, 0x01, 0x00, 0x01, 0x01, 0x00};
+u8 intBonus[8] = {0x02, 0x00, 0x00, 0x01, 0x00, 0x01, 0x01, 0x00};
 
-u8 D_516c_dexBonus[8] = {0x00, 0x02, 0x00, 0x01, 0x01, 0x00, 0x01, 0x00};
+u8 dexBonus[8] = {0x00, 0x02, 0x00, 0x01, 0x01, 0x00, 0x01, 0x00};
 
-u8 D_5174_strBonus[8] = {0x00, 0x00, 0x02, 0x00, 0x01, 0x01, 0x01, 0x00};
+u8 strBonus[8] = {0x00, 0x00, 0x02, 0x00, 0x01, 0x01, 0x01, 0x00};
 
-u16 D_517c_questionOffset[8][8] =
+u16 questionOffset[8][8] =
 {
     0x0000, 0x06c2, 0x07a7, 0x088c, 0x0960, 0x0a47, 0x0b2d, 0x0c11,
     0x06c2, 0x0000, 0x0cda, 0x0d8f, 0x0e77, 0x0f56, 0x1039, 0x111b,
@@ -83,24 +83,24 @@ u16 D_517c_questionOffset[8][8] =
     0x0c11, 0x111b, 0x14ed, 0x185b, 0x1b00, 0x1cbb, 0x1d87, 0x0000
 };
 
-u8 D_51fc_cardX[8] = {0x28, 0x30, 0x30, 0x28, 0x28, 0x30, 0x28, 0x30};
+u8 cardX[8] = {0x28, 0x30, 0x30, 0x28, 0x28, 0x30, 0x28, 0x30};
 
-u8 D_5204_cardY[8] = {0x05, 0x07, 0x04, 0x0a, 0x08, 0x00, 0x05, 0x06};
+u8 cardY[8] = {0x05, 0x07, 0x04, 0x0a, 0x08, 0x00, 0x05, 0x06};
 
-// The DOS build takes FONT_0000_DrawJustifiedText from src/asm/AFONT0.ASM (assembly written from the
+// The DOS build takes DrawJustifiedText from src/asm/AFONT0.ASM (assembly written from the
 // original's bytes, linked before this object): its C reconstruction does not match yet
 // (670 of 674 bytes) and is kept in research/font0000.c.
 
-// Draws one cell of the scene strip: the map tile, or else the actor's tile that FONT_02fc_AnimateScene left
+// Draws one cell of the scene strip: the map tile, or else the actor's tile that AnimateScene left
 // under it.
-static void FONT_02a2_DrawStripCell(int x, int y)
+static void DrawStripCell(int x, int y)
 {
     byte tile;
 
     tile = GetMap(x, y);
     if (tile != 0)
     {
-        ULTIMA_10e0_GRAP_51_PutTile(D_b11e_tileFrames[tile], x, y + 7);
+        GRAP_51_PutTile(tileFrames[tile], x, y + 7);
         return;
     }
     else
@@ -111,7 +111,7 @@ static void FONT_02a2_DrawStripCell(int x, int y)
             return;
         }
 
-        ULTIMA_10e0_GRAP_51_PutTile(0x100 + tile, x, y + 7);
+        GRAP_51_PutTile(0x100 + tile, x, y + 7);
     }
 }
 
@@ -121,7 +121,7 @@ static void FONT_02a2_DrawStripCell(int x, int y)
 // The decompiler's lineWidth (x + y * 0x20, stored at bp-0Ah and never read) is MSC's common
 // subexpression temporary: the source indexes D_6608 with the whole expression twice. As a
 // local it took bp-8, a slot of its own before the loops' reserved temporaries.
-int FONT_02fc_AnimateScene(int frames)
+int AnimateScene(int frames)
 {
     int row;
     int index_h;
@@ -129,8 +129,8 @@ int FONT_02fc_AnimateScene(int frames)
 
     do
     {
-        ULTIMA_4552_AnimateActors();
-        INTRO_2090_AnimateWD();
+        AnimateActors();
+        AnimateWD();
 
         for (index_h = 0; index_h < 32; index_h++)
         {
@@ -143,52 +143,52 @@ int FONT_02fc_AnimateScene(int frames)
             }
         }
 
-        for (index_h = D_bd26_stripLeft; index_h <= D_bd27_stripRight; index_h++)
+        for (index_h = stripLeft; index_h <= stripRight; index_h++)
         {
             for (row = 0; row < 4; row++)
             {
                 if (GetMap(index_h, row) != 0xfe)
                 {
-                    FONT_02a2_DrawStripCell(index_h, row);
+                    DrawStripCell(index_h, row);
                 }
             }
         }
 
-        if (D_bd26_stripLeft != 0 && D_bd28_stripWiden != 0)
+        if (stripLeft != 0 && stripWiden != 0)
         {
-            D_bd26_stripLeft -= 1;
-            D_bd27_stripRight += 1;
+            stripLeft -= 1;
+            stripRight += 1;
         }
 
-        D_bd28_stripWiden = !D_bd28_stripWiden;
+        stripWiden = !stripWiden;
 
-        if (ULTIMA_1d5e_PollKey() != 0)
+        if (PollKey() != 0)
         {
             return 1;
         }
 
         if (frames != 0)
         {
-            ULTIMA_20fa_WaitTicks(1);
+            WaitTicks(1);
         }
 
-        if (D_bd29_sceneNo == 2)
+        if (sceneNo == 2)
         {
             ULTIMA_223c_AudioWhiteNoise(0x14, 0x3c, 10000);
         }
-        else if (D_bd29_sceneNo == 3)
+        else if (sceneNo == 3)
         {
-            D_515a_toneStep++;
-            if ((int)D_515a_toneStep > 7)
+            toneStep++;
+            if ((int)toneStep > 7)
             {
-                D_515a_toneStep = 0;
+                toneStep = 0;
             }
 
-            if (D_515a_toneStep == 0)
+            if (toneStep == 0)
             {
                 ULTIMA_22c0_AudioTone(3000, 3);
             }
-            else if (D_515a_toneStep == 4)
+            else if (toneStep == 4)
             {
                 ULTIMA_22c0_AudioTone(2000, 3);
             }
@@ -200,29 +200,29 @@ int FONT_02fc_AnimateScene(int frames)
 
 // Starts a scene: prints its title and copies its four rows of map from the scratch buffer.
 // CHECKED
-static void FONT_0418_LoadSceneStrip(int scene)
+static void LoadSceneStrip(int scene)
 {
     int row;
     int col_b;
 
-    INTRO_043e_PrintCaptionBar(D_515c_sceneCaptions[scene]);
+    PrintCaptionBar(sceneCaptions[scene]);
 
     for (col_b = 0; col_b < 0x13; col_b++)
     {
         for (row = 0; row < 4; row++)
         {
-            GetCopiedMap(col_b, row) = GetMap(col_b, row) = D_b21e_scratch[scene * 0x80 + col_b + row * 0x20];
+            GetCopiedMap(col_b, row) = GetMap(col_b, row) = scratch[scene * 0x80 + col_b + row * 0x20];
         }
     }
 
-    D_bd26_stripLeft = D_bd27_stripRight = 9;
-    D_bd28_stripWiden = 0;
-    D_bd29_sceneNo = scene;
+    stripLeft = stripRight = 9;
+    stripWiden = 0;
+    sceneNo = scene;
 }
 
 // assembly in the original (src/asm/AFONT.ASM): save and restore the video page buffer
-void FONT_0e52_SaveVideoPage(void);
-void FONT_0e7b_RestoreVideoPage(void);
+void SaveVideoPage(void);
+void RestoreVideoPage(void);
 
 // The introduction's story ("view"): draws the strip and plays the script at 0x200 of MISCMAPS.DAT (place,
 // remove and move actors, moongates opening and closing, lightning, repeats); a key ends it.
@@ -232,7 +232,7 @@ void FONT_0e7b_RestoreVideoPage(void);
 // original's 28h (0xc at bp-24h..28h, the middle one in memory). The source steps
 // region/local_14 with += in case 0xb (the decompiler's scan * 9 / * 3 gave MSC's
 // closed form instead); += in a for header moves the counter's increment first.
-void FONT_04a4_PlayIntroStory(void)
+void PlayIntroStory(void)
 {
     int dir;
     int repeat_k;
@@ -246,23 +246,23 @@ void FONT_04a4_PlayIntroStory(void)
     int gateX;
     int loopStart;
 
-    D_52ba_vdp.tileYOffset = 0x10;
-    D_bd26_stripLeft = D_bd27_stripRight = 9;
-    D_bd28_stripWiden = 0;
+    vdp.tileYOffset = 0x10;
+    stripLeft = stripRight = 9;
+    stripWiden = 0;
 
-    ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b2_blueColor);
+    ULTIMA_0a70_GRAP_2d_SetPenColor(blueColor);
     ULTIMA_0aa6_GRAP_3f_FillRect(0x78, 0x78, 199, 0x7e);
-    ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
-    ULTIMA_0b10_GRAP_Line(0x78, 0x7f, 199, 0x7f);
+    ULTIMA_0a70_GRAP_2d_SetPenColor(brightWhiteColor);
+    GRAP_Line(0x78, 0x7f, 199, 0x7f);
 
     if (D_5893_mapId != 0x42)
     {
-        ULTIMA_256e_ReadFileFromDisk(/*0xa044*/ "MISCMAPS.DAT", D_b21e_scratch, 2000, 0x2c0);
+        ULTIMA_256e_ReadFileFromDisk(/*0xa044*/ "MISCMAPS.DAT", scratch, 2000, 0x2c0);
         if (D_5893_mapId == 0x40)
         {
-            FONT_0e52_SaveVideoPage();
-            while (ULTIMA_0ff4_LoadTileset(*D_25f0_tilesFileName) == 0) {}
-            FONT_0e7b_RestoreVideoPage();
+            SaveVideoPage();
+            while (LoadTileset(*tilesFileName) == 0) {}
+            RestoreVideoPage();
         }
     }
 
@@ -270,54 +270,54 @@ void FONT_04a4_PlayIntroStory(void)
 
     for (pos_h = 0x200; pos_h < 2000; pos_h++)
     {
-        switch (D_b21e_scratch[pos_h])
+        switch (scratch[pos_h])
         {
         case 0:
-            actor = &D_5c5a_actors[D_b21e_scratch[++pos_h]];
-            actor->tile = actor->animTile = D_b21e_scratch[++pos_h];
-            actor->x = D_b21e_scratch[++pos_h];
-            actor->y = D_b21e_scratch[++pos_h];
+            actor = &D_5c5a_actors[scratch[++pos_h]];
+            actor->tile = actor->animTile = scratch[++pos_h];
+            actor->x = scratch[++pos_h];
+            actor->y = scratch[++pos_h];
             actor->animState = 0;
             break;
 
         case 1:
-            actor = &D_5c5a_actors[D_b21e_scratch[++pos_h]];
+            actor = &D_5c5a_actors[scratch[++pos_h]];
             actor->tile = actor->animTile = actor->animState = 0;
 
             GetMap(actor->x, actor->y) = GetCopiedMap(actor->x, actor->y);
             break;
 
         case 2:
-            actor = &D_5c5a_actors[D_b21e_scratch[++pos_h]];
-            dir = D_b21e_scratch[++pos_h];
+            actor = &D_5c5a_actors[scratch[++pos_h]];
+            dir = scratch[++pos_h];
             GetMap(actor->x, actor->y) = GetCopiedMap(actor->x, actor->y);
-            actor->x += D_24d6_facingDx[dir];
-            actor->y += D_24de_facingDy[dir];
+            actor->x += facingDx[dir];
+            actor->y += facingDy[dir];
             break;
 
         case 3:
-            if (FONT_02fc_AnimateScene(D_b21e_scratch[++pos_h]) != 0)
+            if (AnimateScene(scratch[++pos_h]) != 0)
             {
                 return;
             }
             break;
 
         case 4:
-            gateX = D_b21e_scratch[++pos_h];
-            gateY_p = D_b21e_scratch[++pos_h];
+            gateX = scratch[++pos_h];
+            gateY_p = scratch[++pos_h];
             GetMap(gateX, gateY_p) = GetCopiedMap(gateX, gateY_p) = TILE_MAP_FE;
 
             for (step = 1; step < 0x10; step++)
             {
-                ULTIMA_1112_GRAP_60_Moongate(step, gateX, gateY_p + 7);
-                if (FONT_02fc_AnimateScene(1) != 0)
+                GRAP_60_Moongate(step, gateX, gateY_p + 7);
+                if (AnimateScene(1) != 0)
                 {
                     return;
                 }
             }
 
             GetMap(gateX, gateY_p) = GetCopiedMap(gateX, gateY_p) = TILE_MAP_MOONGATE;
-            if (FONT_02fc_AnimateScene(2) != 0)
+            if (AnimateScene(2) != 0)
             {
                 return;
             }
@@ -329,8 +329,8 @@ void FONT_04a4_PlayIntroStory(void)
             step = 0xf;
             do
             {
-                ULTIMA_1112_GRAP_60_Moongate(step, gateX, gateY_p + 7);
-                if (FONT_02fc_AnimateScene(1) != 0)
+                GRAP_60_Moongate(step, gateX, gateY_p + 7);
+                if (AnimateScene(1) != 0)
                 {
                     return;
                 }
@@ -338,18 +338,18 @@ void FONT_04a4_PlayIntroStory(void)
             } while (step > 0);
 
             GetMap(gateX, gateY_p) = GetCopiedMap(gateX, gateY_p) = TILE_MAP_GRASS;
-            if (FONT_02fc_AnimateScene(2) != 0)
+            if (AnimateScene(2) != 0)
             {
                 return;
             }
             break;
 
         case 6:
-            FONT_0418_LoadSceneStrip(D_b21e_scratch[++pos_h]);
+            LoadSceneStrip(scratch[++pos_h]);
             break;
 
         case 7:
-            actor = &D_5c5a_actors[D_b21e_scratch[++pos_h]];
+            actor = &D_5c5a_actors[scratch[++pos_h]];
             tile_l = actor->tile;
 
             actor->tile = actor->animTile = TILE_ACTOR_CIRCLE;
@@ -362,7 +362,7 @@ void FONT_04a4_PlayIntroStory(void)
             break;
 
         case 8:
-            actor = &D_5c5a_actors[D_b21e_scratch[++pos_h]];
+            actor = &D_5c5a_actors[scratch[++pos_h]];
             argX_j = actor->x;
             argY_i = actor->y;
             tile_l = actor->tile;
@@ -382,9 +382,9 @@ void FONT_04a4_PlayIntroStory(void)
             break;
 
         case 10:
-            tile_l = D_b21e_scratch[++pos_h];
-            argX_j = D_b21e_scratch[++pos_h];
-            argY_i = D_b21e_scratch[++pos_h];
+            tile_l = scratch[++pos_h];
+            argX_j = scratch[++pos_h];
+            argY_i = scratch[++pos_h];
             GetCopiedMap(argX_j, argY_i) = tile_l;
             GetMap(argX_j, argY_i) = tile_l;
             break;
@@ -395,13 +395,13 @@ void FONT_04a4_PlayIntroStory(void)
             step = 0;
             while (step < 5)
             {
-                if (FONT_02fc_AnimateScene(1) != 0)
+                if (AnimateScene(1) != 0)
                 {
                     return;
                 }
-                ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
-                ULTIMA_0b10_GRAP_Line(argX_j + 0x80, argY_i + 0x98, argX_j + 0x89, argY_i + 0x9b);
-                ULTIMA_0b10_GRAP_Line(argX_j + 0x80, argY_i + 0x99, argX_j + 0x89, argY_i + 0x9c);
+                ULTIMA_0a70_GRAP_2d_SetPenColor(brightWhiteColor);
+                GRAP_Line(argX_j + 0x80, argY_i + 0x98, argX_j + 0x89, argY_i + 0x9b);
+                GRAP_Line(argX_j + 0x80, argY_i + 0x99, argX_j + 0x89, argY_i + 0x9c);
                 argX_j += 9;
                 argY_i += 3;
                 step++;
@@ -409,10 +409,10 @@ void FONT_04a4_PlayIntroStory(void)
 
             pos_h++;
             pos_h++;
-            actor = &D_5c5a_actors[D_b21e_scratch[pos_h]];
-            ULTIMA_10e0_GRAP_51_PutTile(0, actor->x, actor->y + 7);
+            actor = &D_5c5a_actors[scratch[pos_h]];
+            GRAP_51_PutTile(0, actor->x, actor->y + 7);
             ULTIMA_223c_AudioWhiteNoise(1, 0x4b0, 4000);
-            if (FONT_02fc_AnimateScene(3) != 0)
+            if (AnimateScene(3) != 0)
             {
                 return;
             }
@@ -426,19 +426,19 @@ void FONT_04a4_PlayIntroStory(void)
             break;
 
         case 0xd:
-            actor = &D_5c5a_actors[D_b21e_scratch[++pos_h]];
-            dir = D_b21e_scratch[++pos_h];
+            actor = &D_5c5a_actors[scratch[++pos_h]];
+            dir = scratch[++pos_h];
             GetMap(actor->x, actor->y) = GetCopiedMap(actor->x, actor->y);
-            actor->x += D_24d6_facingDx[dir];
-            actor->y += D_24de_facingDy[dir];
-            if (FONT_02fc_AnimateScene(7) != 0)
+            actor->x += facingDx[dir];
+            actor->y += facingDy[dir];
+            if (AnimateScene(7) != 0)
             {
                 return;
             }
             break;
 
         case 0xe:
-            repeat_k = D_b21e_scratch[++pos_h];
+            repeat_k = scratch[++pos_h];
             loopStart = pos_h;
             break;
 
@@ -451,7 +451,7 @@ void FONT_04a4_PlayIntroStory(void)
             break;
         }
 
-        if (ULTIMA_1d5e_PollKey() != 0)
+        if (PollKey() != 0)
         {
             return;
         }
@@ -461,23 +461,23 @@ void FONT_04a4_PlayIntroStory(void)
 // 0998 ~ 0b0a: character creation
 
 // A random virtue (0 to 7) that was not offered yet and has not lost a question; marks it offered.
-static int FONT_0998_PickVirtue(void)
+static int PickVirtue(void)
 {
     int virtue;
 
     do
     {
         virtue = ULTIMA_2092_RandomRange(0, 7);
-    } while (D_bd2a_virtueOffered[virtue] != 0 || D_bd32_virtueRejected[virtue] != 0);
+    } while (virtueOffered[virtue] != 0 || virtueRejected[virtue] != 0);
 
-    D_bd2a_virtueOffered[virtue] = 1;
+    virtueOffered[virtue] = 1;
 
     return virtue;
 }
 
 // One of the gypsy's questions: two virtues are shown, A or B adds the chosen one's bonuses to the new
 // intelligence, dexterity and strength, and the other virtue is out.
-static void FONT_09c8_AskVirtueQuestion(byte* fontImage, byte* cardImage)
+static void AskVirtueQuestion(byte* fontImage, byte* cardImage)
 {
     int rightCard;
     int leftCard;
@@ -487,16 +487,16 @@ static void FONT_09c8_AskVirtueQuestion(byte* fontImage, byte* cardImage)
     int virtueA;
     byte key_g;
 
-    ULTIMA_0c22_GRAP_0f_SelectPage(1);
+    GRAP_0f_SelectPage(1);
     ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
-    ULTIMA_0d4c_GRAP_4b_PutImage(cardImage, 1, 0x10, 0, 0);
-    ULTIMA_0d4c_GRAP_4b_PutImage(cardImage, 1, 200, 0, 0);
+    GRAP_4b_PutImage(cardImage, 1, 0x10, 0, 0);
+    GRAP_4b_PutImage(cardImage, 1, 200, 0, 0);
 
     D_5156_penX = 0;
     D_5158_penY = 0x98;
 
-    virtueA = FONT_0998_PickVirtue();
-    virtueB_o = FONT_0998_PickVirtue();
+    virtueA = PickVirtue();
+    virtueB_o = PickVirtue();
     if (virtueA > virtueB_o)
     {
         leftCard = virtueB_o;
@@ -510,15 +510,15 @@ static void FONT_09c8_AskVirtueQuestion(byte* fontImage, byte* cardImage)
         firstKey = 'A';
     }
 
-    ULTIMA_0d4c_GRAP_4b_PutImage(cardImage, leftCard + 2, D_51fc_cardX[leftCard], D_5204_cardY[leftCard], 0);
-    ULTIMA_0d4c_GRAP_4b_PutImage(cardImage, rightCard + 2, D_51fc_cardX[rightCard] + 0xb8, D_5204_cardY[rightCard], 0);
-    ULTIMA_256e_ReadFileFromDisk(/*0xa052*/ "QUESTION.DAT", D_b21e_scratch, 2000, D_517c_questionOffset[virtueA][virtueB_o]);
-    FONT_0000_DrawJustifiedText(fontImage, (char*)D_b21e_scratch);
-    ULTIMA_0f6e_GRAP_1b_TransferFullscreen(1, 0);
+    GRAP_4b_PutImage(cardImage, leftCard + 2, cardX[leftCard], cardY[leftCard], 0);
+    GRAP_4b_PutImage(cardImage, rightCard + 2, cardX[rightCard] + 0xb8, cardY[rightCard], 0);
+    ULTIMA_256e_ReadFileFromDisk(/*0xa052*/ "QUESTION.DAT", scratch, 2000, questionOffset[virtueA][virtueB_o]);
+    DrawJustifiedText(fontImage, (char*)scratch);
+    GRAP_1b_TransferFullscreen(1, 0);
 
     do
     {
-        key_g = ULTIMA_2032_ToUpper(ULTIMA_1d5e_PollKey());
+        key_g = ToUpperChar(PollKey());
         if (key_g == 'A')
             break;
     } while (key_g != 'B');
@@ -530,16 +530,16 @@ static void FONT_09c8_AskVirtueQuestion(byte* fontImage, byte* cardImage)
         virtueB_o = swap_f;
     }
 
-    D_bd3c_newInt += D_5164_intBonus[virtueA];
-    D_bd3d_newDex += D_516c_dexBonus[virtueA];
-    D_bd3e_newStr += D_5174_strBonus[virtueA];
-    D_bd32_virtueRejected[virtueB_o] = 1;
+    newInt += intBonus[virtueA];
+    newDex += dexBonus[virtueA];
+    newStr += strBonus[virtueA];
+    virtueRejected[virtueB_o] = 1;
 }
 
 // Character creation: asks the name and sex, the gypsy's seven questions (4, 2 and 1), then sets the stats
 // and writes the new saved game (SAVED.GAM).
 // CHECKED
-void FONT_0b0a_CreateCharacter(void)
+void CreateCharacter(void)
 {
     byte* fontImage;
     byte round;
@@ -548,43 +548,43 @@ void FONT_0b0a_CreateCharacter(void)
 
     if (D_5893_mapId != 64)
     {
-        ULTIMA_102e_UnloadTileset();
+        UnloadTileset();
     }
 
     D_a9cb = 0xff;
 
     do
     {
-        fontImage = ULTIMA_0fae_LoadResourceFile(D_25ea_fileNames[0]);
+        fontImage = LoadResourceFile(fileNames[0]);
     } while (fontImage == 0);
 
     do
     {
-        gypsyImage = ULTIMA_0bae_LoadImageFile(D_25ea_fileNames[0x10]);
+        gypsyImage = LoadImageFile(fileNames[0x10]);
     } while (gypsyImage == 0);
 
-    ULTIMA_256e_ReadFileFromDisk(/*0xa060*/ "INIT.GAM", &D_55a6_saveStart, (int)&D_6606_saveEnd - (int)&D_55a6_saveStart, 0);
-    ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b2_blueColor);
+    ULTIMA_256e_ReadFileFromDisk(/*0xa060*/ "INIT.GAM", &saveStart, (int)&saveEnd - (int)&saveStart, 0);
+    ULTIMA_0a70_GRAP_2d_SetPenColor(blueColor);
     ULTIMA_0aa6_GRAP_3f_FillRect(0x78, 0x78, 200, 0x7e);
-    ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
-    ULTIMA_0b10_GRAP_Line(0x78, 0x7f, 200, 0x7f);
+    ULTIMA_0a70_GRAP_2d_SetPenColor(brightWhiteColor);
+    GRAP_Line(0x78, 0x7f, 200, 0x7f);
     ULTIMA_0a70_GRAP_2d_SetPenColor(0);
     ULTIMA_0aa6_GRAP_3f_FillRect(8, 0x80, 0x137, 0xbf);
-    ULTIMA_1bf2_SetTextPosition(3, 0x11);
+    SetTextPosition(3, 0x11);
 
     ULTIMA_1850_PrintString(/*0xa06a*/ "By what name shalt thou be known?");
-    ULTIMA_1bf2_SetTextPosition(0xe, 0x13);
+    SetTextPosition(0xe, 0x13);
     ULTIMA_16ba_PrintChar(':');
-    ULTIMA_1e38_IntroGetString(D_55a8_party[0].name, 8);
+    IntroGetString(D_55a8_party[0].name, 8);
 
     if (D_55a8_party[0].name[0] != 0)
     {
-        ULTIMA_1bf2_SetTextPosition(8, 0x15);
+        SetTextPosition(8, 0x15);
         ULTIMA_1850_PrintString(/*0xa08c*/ "Art thou Male or Female? ");
 
         do
         {
-            key_g = ULTIMA_2032_ToUpper(ULTIMA_1dda_WaitForKeystroke(0));
+            key_g = ToUpperChar(WaitForKeystroke(0));
             if (key_g == 'M')
                 break;
         } while (key_g != 'F');
@@ -601,101 +601,101 @@ void FONT_0b0a_CreateCharacter(void)
 
         D_5156_penX = 0;
         D_5158_penY = 9;
-        D_5146_textLeftX[0] = 0;
-        D_514c_textRightX[0] = 0x140;
-        D_5146_textLeftX[1] = 0xaf;
-        D_514c_textRightX[1] = 0x140;
+        textLeftX[0] = 0;
+        textRightX[0] = 0x140;
+        textLeftX[1] = 0xaf;
+        textRightX[1] = 0x140;
         D_5150_regionTop = 0x59;
         D_5152_regionBottom = 200;
 
-        ULTIMA_256e_ReadFileFromDisk(/*0xa0a6*/ "QUESTION.DAT", D_b21e_scratch, 2000, 0);
+        ULTIMA_256e_ReadFileFromDisk(/*0xa0a6*/ "QUESTION.DAT", scratch, 2000, 0);
 
-        ULTIMA_0c22_GRAP_0f_SelectPage(1);
-        D_a9be_promptMode = 2;
+        GRAP_0f_SelectPage(1);
+        promptMode = 2;
         ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
-        ULTIMA_0d4c_GRAP_4b_PutImage(gypsyImage, 0, 0, 0x60, 0);
-        FONT_0000_DrawJustifiedText(fontImage, D_b21e_scratch);
-        ULTIMA_0f6e_GRAP_1b_TransferFullscreen(1, 0);
+        GRAP_4b_PutImage(gypsyImage, 0, 0, 0x60, 0);
+        DrawJustifiedText(fontImage, scratch);
+        GRAP_1b_TransferFullscreen(1, 0);
 
         D_5150_regionTop = 200;
 
-        while (ULTIMA_1d5e_PollKey() == 0) {}
+        while (PollKey() == 0) {}
 
-        D_bd3c_newInt = D_55a8_party[0].intel;
-        D_bd3d_newDex = D_55a8_party[0].dex;
-        D_bd3e_newStr = D_55a8_party[0].str;
+        newInt = D_55a8_party[0].intel;
+        newDex = D_55a8_party[0].dex;
+        newStr = D_55a8_party[0].str;
 
         for (round = 0; round < 8; round++)
         {
-            D_bd2a_virtueOffered[round] = D_bd32_virtueRejected[round] = 0;
+            virtueOffered[round] = virtueRejected[round] = 0;
         }
 
         for (round = 0; round < 4; round++)
         {
-            FONT_09c8_AskVirtueQuestion(fontImage, gypsyImage);
+            AskVirtueQuestion(fontImage, gypsyImage);
         }
 
         for (round = 0; round < 8; round++)
         {
-            D_bd2a_virtueOffered[round] = 0;
+            virtueOffered[round] = 0;
         }
 
         for (round = 0; round < 2; round++)
         {
-            FONT_09c8_AskVirtueQuestion(fontImage, gypsyImage);
+            AskVirtueQuestion(fontImage, gypsyImage);
         }
 
         for (round = 0; round < 8; round++)
         {
-            D_bd2a_virtueOffered[round] = 0;
+            virtueOffered[round] = 0;
         }
 
-        FONT_09c8_AskVirtueQuestion(fontImage, gypsyImage);
+        AskVirtueQuestion(fontImage, gypsyImage);
 
         D_5156_penX = D_5158_penY = 0;
         D_5150_regionTop = 0x5a;
-        D_5146_textLeftX[1] = 0;
-        D_514c_textRightX[1] = 0xa6;
-        D_5154_spaceWidth = 4;
+        textLeftX[1] = 0;
+        textRightX[1] = 0xa6;
+        spaceWidth = 4;
 
-        ULTIMA_256e_ReadFileFromDisk(/*0xa0b4*/ "QUESTION.DAT", D_b21e_scratch, 2000, 0x322);
-        ULTIMA_0c22_GRAP_0f_SelectPage(1);
+        ULTIMA_256e_ReadFileFromDisk(/*0xa0b4*/ "QUESTION.DAT", scratch, 2000, 0x322);
+        GRAP_0f_SelectPage(1);
         ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
-        ULTIMA_0d4c_GRAP_4b_PutImage(gypsyImage, 10, 0xa8, 100, 0);
+        GRAP_4b_PutImage(gypsyImage, 10, 0xa8, 100, 0);
 
-        FONT_0000_DrawJustifiedText(fontImage, D_b21e_scratch);
-        D_5154_spaceWidth = 5;
-        ULTIMA_0f6e_GRAP_1b_TransferFullscreen(1, 0);
+        DrawJustifiedText(fontImage, scratch);
+        spaceWidth = 5;
+        GRAP_1b_TransferFullscreen(1, 0);
 
-        while (ULTIMA_1d5e_PollKey() == 0)
+        while (PollKey() == 0)
         {}
 
-        ULTIMA_0be4_FreeImage(gypsyImage);
-        ULTIMA_0fdc_FreeBitImage(fontImage);
+        FreeImage(gypsyImage);
+        FreeBitImage(fontImage);
 
-        ULTIMA_0c22_GRAP_0f_SelectPage(1);
+        GRAP_0f_SelectPage(1);
         ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
-        ULTIMA_0c22_GRAP_0f_SelectPage(0);
+        GRAP_0f_SelectPage(0);
 
-        D_a9be_promptMode = 0;
+        promptMode = 0;
         
-        D_55a8_party[0].mag = D_55a8_party[0].intel = D_bd3c_newInt;
-        D_55a8_party[0].dex = D_bd3d_newDex;
-        //D_55a8_party[0].actorIdx = (D_bd3e_newStr - 0x14 & ~-(D_bd3e_newStr < 0x14)) + 0x14;
-        D_55a8_party[0].str = D_bd3e_newStr <= 0x14 ? 0x14 : D_bd3e_newStr;
+        D_55a8_party[0].mag = D_55a8_party[0].intel = newInt;
+        D_55a8_party[0].dex = newDex;
+        //D_55a8_party[0].actorIdx = (newStr - 0x14 & ~-(newStr < 0x14)) + 0x14;
+        D_55a8_party[0].str = newStr <= 0x14 ? 0x14 : newStr;
         ULTIMA_256e_ReadFileFromDisk(/*0xa0c2*/ "INIT.OOL", D_b31e, 0x100, 0);
         ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
-        ULTIMA_1bf2_SetTextPosition(0, 10);
-        ULTIMA_251e_SwitchDisks(3);
+        SetTextPosition(0, 10);
+        SwitchDisks(3);
 
         // NOT MATCHING: sub al, al vs sub ax, ax
-        memset(D_b21e_scratch, 0, 0x100);
+        memset(scratch, 0, 0x100);
 
-        ULTIMA_25d8_WriteFileToDisk(/*0xa0cc*/ "SAVED.OOL", D_b21e_scratch, 0x200);
-        ULTIMA_25d8_WriteFileToDisk(/*0xa0d6*/ "SAVED.GAM", &D_55a6_saveStart, (int)&D_6606_saveEnd - (int)&D_55a6_saveStart);
+        WriteFileToDisk(/*0xa0cc*/ "SAVED.OOL", scratch, 0x200);
+        WriteFileToDisk(/*0xa0d6*/ "SAVED.GAM", &saveStart, (int)&saveEnd - (int)&saveStart);
     }
 
-    ULTIMA_251e_SwitchDisks(0);
+    SwitchDisks(0);
     D_5893_mapId = 0x40;
 }
 

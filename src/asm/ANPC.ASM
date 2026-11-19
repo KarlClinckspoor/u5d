@@ -1,5 +1,5 @@
 ; ANPC.ASM: NPC.OVL 12e0-132a, hand-written assembly in the original.
-; The last routine of NPC.OVL, linked after npc.c. NPC_12E0_SCHEDULESLOT(npc, hour): of the four times
+; The last routine of NPC.OVL, linked after npc.c. SCHEDULESLOT(npc, hour): of the four times
 ; in the NPC's schedule (D_5D5E_NPCSCHEDULES[npc].time, 16-byte entries, field at +0Ch), which one the
 ; hour is nearest after, counting back in byte arithmetic. The answer for the fourth time is
 ; 1, not 3, in the original.
@@ -21,9 +21,9 @@ DGROUP	GROUP	CONST, _BSS, _DATA
 
 _TEXT	SEGMENT
 
-; int pascal NPC_12E0_SCHEDULESLOT(int npc [bp+6], char hour [bp+4])
-	PUBLIC	NPC_12E0_SCHEDULESLOT
-NPC_12E0_SCHEDULESLOT:
+; int pascal SCHEDULESLOT(int npc [bp+6], char hour [bp+4])
+	PUBLIC	SCHEDULESLOT
+SCHEDULESLOT:
 	push bp
 	mov bp,sp
 	push si

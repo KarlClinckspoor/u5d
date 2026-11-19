@@ -7,15 +7,15 @@
 #include "outsubs.h"
 #include "town.h"
 
-void MAINOUT_0000_SetUpOverworld(void);
-u8 D_6a34_ambientTick = 0;
+void SetUpOverworld(void);
+u8 ambientTick = 0;
 
-u16 D_6a36_banjoFreq[9] =
+u16 banjoFreq[9] =
 {
     0x0da9, 0x0f56, 0x1136, 0x123c, 0x1478, 0x16fa, 0x1857, 0x19ca, 0x1b53
 };
 
-u8 D_6a48_banjoSong[0x36] = // 53 used
+u8 banjoSong[0x36] = // 53 used
 {
     0x01, 0x04, 0x04, 0x00, 0x00, 0x01, 0x05, 0x05,
     0x00, 0x00, 0x04, 0x09, 0x06, 0x09, 0x07, 0x04,
@@ -26,12 +26,12 @@ u8 D_6a48_banjoSong[0x36] = // 53 used
     0x05, 0x04, 0x03, 0x02, 0x01
 };
 
-u8 D_6a7e_tileAnimTick = 0;
+u8 tileAnimTick = 0;
 
-u8 D_6a80_lightSlope[6] = { 0x02, 0x05, 0x0A, 0x14, 0x22, 0x31 };
+u8 lightSlope[6] = { 0x02, 0x05, 0x0A, 0x14, 0x22, 0x31 };
 
 // Each living member who wears a ring of regeneration (0x2c) gains a hit point one time in eight.
-void ULTIMA_400c_RingRegeneration(void)
+void RingRegeneration(void)
 {
     int member;
     for (member = 0; member < D_585b_partyCount; member++)
@@ -40,7 +40,7 @@ void ULTIMA_400c_RingRegeneration(void)
 		{
 			if (ULTIMA_2092_RandomRange(0, 7) == 7)
 			{
-				ULTIMA_3f14_IncreaseInt(&D_55a8_party[member].hp, 1, D_55a8_party[member].maxHp);
+				IncreaseInt(&D_55a8_party[member].hp, 1, D_55a8_party[member].maxHp);
 				D_a9fa_vitalsDirty = 1;
 			}
 		}
@@ -61,7 +61,7 @@ int ULTIMA_4080_SetActivePlayer(int key)
     if (key == 0x30)
     {
         ULTIMA_1850_PrintString(/*0xa3a8*/ "None!\n");
-        D_587b_activePlayer = 0xff;
+        activePlayer = 0xff;
 
 		ULTIMA_2900_UpdateVitalsDisplay();
 		result = 0;
@@ -70,7 +70,7 @@ int ULTIMA_4080_SetActivePlayer(int key)
     {
         if (D_585b_partyCount > index && D_55a8_party[index].status != STATUS_DEAD && D_55a8_party[index].status != STATUS_SLEEP)
         {
-            D_587b_activePlayer = index;
+            activePlayer = index;
 
             ULTIMA_1850_PrintString(D_55a8_party[index].name);
             ULTIMA_16ba_PrintChar('\n');
@@ -88,7 +88,7 @@ int ULTIMA_4080_SetActivePlayer(int key)
 }
 
 // CHECKED
-void ULTIMA_4102_AudioPlayAmbientSfx(void)
+void AudioPlayAmbientSfx(void)
 {
     int viewY_j;
 	int tile;
@@ -156,17 +156,17 @@ void ULTIMA_4102_AudioPlayAmbientSfx(void)
 	{
     case 1:
 		// clock
-        if (D_5884_clockChimes != 0 && (D_6a34_ambientTick == 0 || D_6a34_ambientTick == 4))
+        if (clockChimes != 0 && (ambientTick == 0 || ambientTick == 4))
         {
             ULTIMA_2192_AudioPulse(0xc2c, 1, 2000, 20000, -10);
         }
         else
         {
-            if (D_6a34_ambientTick == 0)
+            if (ambientTick == 0)
             {
                 ULTIMA_22c0_AudioTone(3000, 3);
             }
-            else if (D_6a34_ambientTick == 4)
+            else if (ambientTick == 4)
             {
                 ULTIMA_22c0_AudioTone(2000, 3);
             }
@@ -184,27 +184,27 @@ void ULTIMA_4102_AudioPlayAmbientSfx(void)
         break;
 
     case 4:
-        if (D_6a48_banjoSong[D_6a08_songPos] != 0)
+        if (banjoSong[songPos] != 0)
         {
-            ULTIMA_2192_AudioPulse(D_6a36_banjoFreq[D_6a48_banjoSong[D_6a08_songPos] - 1], 1, 2000, 20000, -10);
+            ULTIMA_2192_AudioPulse(banjoFreq[banjoSong[songPos] - 1], 1, 2000, 20000, -10);
         }
 
-        D_6a08_songPos++;
-        if (D_6a08_songPos >= 0x35)
+        songPos++;
+        if (songPos >= 0x35)
         {
-            D_6a08_songPos = 0;
+            songPos = 0;
         }
         break;
 	}
 
-    if (D_5884_clockChimes != 0 && (D_6a34_ambientTick == 0 || D_6a34_ambientTick == 4))
+    if (clockChimes != 0 && (ambientTick == 0 || ambientTick == 4))
 	{
-		D_5884_clockChimes--;
+		clockChimes--;
 	}
 
-	if (++D_6a34_ambientTick > 7)
+	if (++ambientTick > 7)
 	{
-		D_6a34_ambientTick = 0;
+		ambientTick = 0;
 	}
 }
 
@@ -215,7 +215,7 @@ void ULTIMA_433e_AudioFootstep(void)
 	ULTIMA_223c_AudioWhiteNoise(1, 0x19, 1500);
 }
 
-void ULTIMA_4368_AudioVictoryTune(void)
+void AudioVictoryTune(void)
 {
     int i;
 
@@ -227,7 +227,7 @@ void ULTIMA_4368_AudioVictoryTune(void)
     ULTIMA_2192_AudioPulse(0x17d4, 1, 0x5460, 300, 3);
 }
 
-void ULTIMA_43ae_AudioSweepTone(int startFreq, int endFreq, int stepTime, int duration)
+void AudioSweepTone(int startFreq, int endFreq, int stepTime, int duration)
 {
 	int elapsed_l;
 	int freqStep;
@@ -285,7 +285,7 @@ byte* ULTIMA_4402_GetTileAddr(int x, int y)
 	else if (x < 0 || y < 0 || x > 0x1f || y > 0x1f) // 447e
 	{
 		// 4496
-		addr_e = &D_6a07_dummyCell;
+		addr_e = &dummyCell;
 	}
 	else
 	{
@@ -296,59 +296,59 @@ byte* ULTIMA_4402_GetTileAddr(int x, int y)
 	return addr_e;
 }
 
-static void ULTIMA_44b8_AnimateTiles(void)
+static void AnimateTiles(void)
 {
 	int i;
 
 	for (i = 0xd4; i < 0xd8; i++)
 	{
-		D_b11e_tileFrames[i]++;
-		if (D_b11e_tileFrames[i] == 0xd8)
+		tileFrames[i]++;
+		if (tileFrames[i] == 0xd8)
 		{
-			D_b11e_tileFrames[i] = 0xd4;
+			tileFrames[i] = 0xd4;
 		}
 	}
 
 	for (i = 0xd8; i < 0xdc; i++)
 	{
-		D_b11e_tileFrames[i]++;
-		if (D_b11e_tileFrames[i] == 0xdc)
+		tileFrames[i]++;
+		if (tileFrames[i] == 0xdc)
 		{
-			D_b11e_tileFrames[i] = 0xd8;
+			tileFrames[i] = 0xd8;
 		}
 	}
 
-	if ((D_6a7e_tileAnimTick & 1) != 0)
+	if ((tileAnimTick & 1) != 0)
 	{
         for (i = 0x80; i < 0x84; i++)
 		{
-			D_b11e_tileFrames[i] ^= 1;
+			tileFrames[i] ^= 1;
 		}
 
 		for (i = 0xec; i < 0xf0; i++)
 		{
-			D_b11e_tileFrames[i]++;
-			if (D_b11e_tileFrames[i] == 0xf0)
+			tileFrames[i]++;
+			if (tileFrames[i] == 0xf0)
 			{
-				D_b11e_tileFrames[i] = 0xec;
+				tileFrames[i] = 0xec;
 			}
 		}
 
-		if ((D_6a7e_tileAnimTick & 2) != 0)
+		if ((tileAnimTick & 2) != 0)
 		{
             for (i = 0xfa; i < 0xfe; i++)
 			{
-				D_b11e_tileFrames[i] ^= 1;
+				tileFrames[i] ^= 1;
 			}
 		}
 	}
 
-	D_6a7e_tileAnimTick++;
+	tileAnimTick++;
 }
 
 // CHECKED
 // animate_actors
-void ULTIMA_4552_AnimateActors(void)
+void AnimateActors(void)
 {
 	int step;
 	byte* sequence;
@@ -371,8 +371,8 @@ void ULTIMA_4552_AnimateActors(void)
         delay = actor_g->animState & 0xf;
         step = actor_g->animState >> 4;
         baseTile_g = actor_g->tile & 0xfc;
-        sequenceIndex = D_1b18_animSequences[((baseTile_g - 0x34) >> 2) + 0xb0];
-		sequence = &D_1b18_animSequences[sequenceIndex * 0x10];
+        sequenceIndex = animSequences[((baseTile_g - 0x34) >> 2) + 0xb0];
+		sequence = &animSequences[sequenceIndex * 0x10];
 
 		if (delay == 0xf)
 		{
@@ -469,12 +469,12 @@ void ULTIMA_4552_AnimateActors(void)
         } while (!moved_e);
     }
 
-	ULTIMA_44b8_AnimateTiles();
-    ULTIMA_6fd6_GRAP_AnimateTiles();
+	AnimateTiles();
+    GRAP_AnimateTiles();
 }
 
 // True when moonstone stoneIndex is buried on this map and level (outdoors: inside the 32x32 map buffer).
-static int ULTIMA_4702_IsMoonstoneInView(int stoneIndex)
+static int IsMoonstoneInView(int stoneIndex)
 {
 	int viewY;
 	int viewX;
@@ -482,7 +482,7 @@ static int ULTIMA_4702_IsMoonstoneInView(int stoneIndex)
 
 	inView = 0;
 
-	if (D_5840_moonstoneMap[stoneIndex] == D_5893_mapId && D_5848_moonstoneZ[stoneIndex] == D_5895_mapLevel)
+	if (moonstoneMap[stoneIndex] == D_5893_mapId && moonstoneZ[stoneIndex] == D_5895_mapLevel)
 	{
 		if (D_5893_mapId != 0)
 		{
@@ -490,8 +490,8 @@ static int ULTIMA_4702_IsMoonstoneInView(int stoneIndex)
 		}
 		else
 		{
-			viewX = (byte)(D_5830_moonstoneX[stoneIndex] - D_589b_mapOriginX);
-			viewY = (byte)(D_5838_moonstoneY[stoneIndex] - D_589c_mapOriginY);
+			viewX = (byte)(moonstoneX[stoneIndex] - D_589b_mapOriginX);
+			viewY = (byte)(moonstoneY[stoneIndex] - D_589c_mapOriginY);
 
 			if (viewX < 0x20 && viewY < 0x20)
 			{
@@ -504,7 +504,7 @@ static int ULTIMA_4702_IsMoonstoneInView(int stoneIndex)
 }
 
 // Raise the moongates at night and lower them by day, and put their tile on the map where a moonstone is buried.
-void ULTIMA_475a_UpdateMoongates(void)
+void UpdateMoongates(void)
 {
 	int gateTile_l;
 	int changed;
@@ -514,12 +514,12 @@ void ULTIMA_475a_UpdateMoongates(void)
 	gateTile_l = 0xdc;
 	if (D_587f_hour >= 0x14 || D_587f_hour < 5)
 	{
-        ULTIMA_3ef0_IncreaseByte(&D_5887_moongateHeight, 1, 0x10);
+        IncreaseByte(&moongateHeight, 1, 0x10);
     }
 	else
 	{
-        ULTIMA_3f36_DecreaseByte(&D_5887_moongateHeight, 1);
-        if (D_5887_moongateHeight == 0)
+        ULTIMA_3f36_DecreaseByte(&moongateHeight, 1);
+        if (moongateHeight == 0)
         {
             gateTile_l = 5;
         }
@@ -527,9 +527,9 @@ void ULTIMA_475a_UpdateMoongates(void)
 
 	for (stone = 0; stone < 8; stone++)
 	{
-		if (ULTIMA_4702_IsMoonstoneInView(stone) != 0)
+		if (IsMoonstoneInView(stone) != 0)
 		{
-			cell = ULTIMA_4402_GetTileAddr(D_5830_moonstoneX[stone], D_5838_moonstoneY[stone]);
+			cell = ULTIMA_4402_GetTileAddr(moonstoneX[stone], moonstoneY[stone]);
 			changed = *cell != gateTile_l;
 			*cell = gateTile_l;
 			D_24e6_viewDirty |= 2;
@@ -542,40 +542,40 @@ void ULTIMA_475a_UpdateMoongates(void)
 }
 
 // Take the party to where moonstone `index` is buried; 0 when it is not buried.
-int ULTIMA_47f4_GoToMoonstone(int stoneIndex)
+int GoToMoonstone(int stoneIndex)
 {
 	int oldMapId;
 
-	if (D_5840_moonstoneMap[stoneIndex] == 0xff)
+	if (moonstoneMap[stoneIndex] == 0xff)
 	{
 		return 0;
 	}
 
     if (D_5893_mapId == 0)
     {
-        ULTIMA_251e_SwitchDisks(1);
+        SwitchDisks(1);
 
-        while (ULTIMA_1674_TestOpenFile(/*0xa3ba*/ "BRIT.DAT") == 0) {}
+        while (TestOpenFile(/*0xa3ba*/ "BRIT.DAT") == 0) {}
 
-        ULTIMA_25d8_WriteFileToDisk(OUTSUBS_0368_GetWorldSavefile(), &D_5c5a_actors[0].tile, 0x100);
+        WriteFileToDisk(GetWorldSavefile(), &D_5c5a_actors[0].tile, 0x100);
     }
 
     oldMapId = D_5893_mapId;
-    D_5893_mapId = D_5840_moonstoneMap[stoneIndex];
-    D_5896_mapX = D_5830_moonstoneX[stoneIndex];
-    D_5897_mapY = D_5838_moonstoneY[stoneIndex];
-    D_5895_mapLevel = D_5848_moonstoneZ[stoneIndex];
+    D_5893_mapId = moonstoneMap[stoneIndex];
+    D_5896_mapX = moonstoneX[stoneIndex];
+    D_5897_mapY = moonstoneY[stoneIndex];
+    D_5895_mapLevel = moonstoneZ[stoneIndex];
 
     if (D_5893_mapId != 0 && oldMapId != 0 && D_5893_mapId < 0x21 && oldMapId < 0x21)
     {
-        TOWN_11f0_Entry(1);
+        TownEntry(1);
     }
     else
     {
         if (D_5893_mapId == 0 && oldMapId == 0)
         {
-            ULTIMA_256e_ReadFileFromDisk(OUTSUBS_0368_GetWorldSavefile(), &D_5c5a_actors[0].tile, 0x100, 0);
-            MAINOUT_0000_SetUpOverworld();
+            ULTIMA_256e_ReadFileFromDisk(GetWorldSavefile(), &D_5c5a_actors[0].tile, 0x100, 0);
+            SetUpOverworld();
         }
     }
 
@@ -583,7 +583,7 @@ int ULTIMA_47f4_GoToMoonstone(int stoneIndex)
 }
 
 // On a moongate: the party sinks into it and comes out at the moonstone of the moon's phase. Returns 1 instead in the first ten minutes after midnight (for the caller to act on), else 0.
-int ULTIMA_48a8_EnterMoongate(void)
+int EnterMoongate(void)
 {
 	int midnight;
 	int unused; // unused
@@ -592,32 +592,32 @@ int ULTIMA_48a8_EnterMoongate(void)
 	midnight = 0;
 	if (*ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY) == TILE_MAP_MOONGATE)
 	{
-		ULTIMA_3ae6_WaitFrames(1);
+		WaitFrames(1);
 		ULTIMA_2192_AudioPulse(0x170c, 1, 30000, 2000, 2);
 		savedTile = D_587c_partyTile;
 		D_587c_partyTile = TILE_ACTOR_CIRCLE;
 		ULTIMA_1068_RevealTile(0xdc, 5, 5);
 		D_587c_partyTile = 0;
-		ULTIMA_3ae6_WaitFrames(1);
+		WaitFrames(1);
 
-		for (D_5887_moongateHeight = 0xf; D_5887_moongateHeight != 0; D_5887_moongateHeight--)
+		for (moongateHeight = 0xf; moongateHeight != 0; moongateHeight--)
 		{
-			ULTIMA_1112_GRAP_60_Moongate(D_5887_moongateHeight, 5, 5);
-			ULTIMA_20fa_WaitTicks(2);
+			GRAP_60_Moongate(moongateHeight, 5, 5);
+			WaitTicks(2);
 		}
 
 		*ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY) = TILE_MAP_GRASS;
 
 		D_24e6_viewDirty |= 2;
 
-		ULTIMA_10e0_GRAP_51_PutTile(5, 5, 5);
-		if (D_587f_hour == 0 && D_5881_minute < 10)
+		GRAP_51_PutTile(5, 5, 5);
+		if (D_587f_hour == 0 && minute < 10)
 		{
 			midnight = 1;
 		}
 		else
 		{
-			ULTIMA_47f4_GoToMoonstone((D_587f_hour < 0xc ? D_5885_trammelPhase : D_5886_feluccaPhase) - 0x30);
+			GoToMoonstone((D_587f_hour < 0xc ? trammelPhase : feluccaPhase) - 0x30);
 		}
 
 		D_587c_partyTile = savedTile;
@@ -627,7 +627,7 @@ int ULTIMA_48a8_EnterMoongate(void)
 }
 
 // The party member who acts: the combatant whose turn it is, else the active player, else the only able one, else ask ("Player: "). -1 none.
-int ULTIMA_4988_GetActingPlayer(void)
+int GetActingPlayer(void)
 {
     int player;
     int ableCount;
@@ -637,11 +637,11 @@ int ULTIMA_4988_GetActingPlayer(void)
     player = -1;
     if (D_5893_mapId > 0x80)
     {
-        player = D_ba14_combatants[D_589e_curCombatant].entityIdx;
+        player = combatants[curCombatant].entityIdx;
     }
-    else if (D_587b_activePlayer != 0xff)
+    else if (activePlayer != 0xff)
     {
-        player = D_587b_activePlayer;
+        player = activePlayer;
     }
     else
     {
@@ -661,7 +661,7 @@ int ULTIMA_4988_GetActingPlayer(void)
             while (!chosen)
             {
                 ULTIMA_1850_PrintString(/*0xa3c4*/ "Player: ");
-                player = ULTIMA_2e8e_SelectPlayer();
+                player = SelectPlayer();
                 if (player < 0)
                 {
                     chosen = 1;
@@ -671,7 +671,7 @@ int ULTIMA_4988_GetActingPlayer(void)
                     if (D_55a8_party[player].status == STATUS_GOOD || D_55a8_party[player].status == STATUS_POISONED)
                     {
                         ULTIMA_1850_PrintString(D_55a8_party[player].name);
-                        if (ULTIMA_1f12_GetCurrentTextX() != 0)
+                        if (GetCurrentTextX() != 0)
                         {
                             ULTIMA_16ba_PrintChar('\n');
                         }
@@ -700,7 +700,7 @@ int ULTIMA_4988_GetActingPlayer(void)
 }
 
 // draw moon phase
-// Draw the sun and the two moons in the top border for the hour and the day (D_1eda_moonPhases); blank underground.
+// Draw the sun and the two moons in the top border for the hour and the day (moonPhases); blank underground.
 void ULTIMA_4a84_DrawSunAndMoons(void)
 {
 	u16 savedWindow;
@@ -717,9 +717,9 @@ void ULTIMA_4a84_DrawSunAndMoons(void)
 		}
 
 		skyRow[12] = 0;
-		savedWindow = D_5386_textWindowIndex;
-		ULTIMA_1b94_SelectTextWindow(0);
-		ULTIMA_1c9e_SelectCharset(1);
+		savedWindow = textWindowIndex;
+		SelectTextWindow(0);
+		SelectCharset(1);
 
 		// 4ac3
 		pos_n = -((int)D_587f_hour - 17);
@@ -729,7 +729,7 @@ void ULTIMA_4a84_DrawSunAndMoons(void)
 		}
 
 		// 4adf
-		D_5885_trammelPhase = D_1eda_moonPhases[(D_587e_day - 1) * 2];
+		trammelPhase = moonPhases[(D_587e_day - 1) * 2];
 		pos_n = -(D_587f_hour - 8);
 		if (pos_n < -12)
 		{
@@ -739,11 +739,11 @@ void ULTIMA_4a84_DrawSunAndMoons(void)
 		// 4b04
 		if (pos_n < 12 && pos_n >= 0)
 		{
-			skyRow[pos_n] = D_5885_trammelPhase;
+			skyRow[pos_n] = trammelPhase;
 		}
 
 		// 4b19
-		D_5886_feluccaPhase = D_1eda_moonPhases[(D_587e_day - 1) * 2 + 1];
+		feluccaPhase = moonPhases[(D_587e_day - 1) * 2 + 1];
 		pos_n = -(D_587f_hour - 2);
 		if (pos_n < -12)
 		{
@@ -753,11 +753,11 @@ void ULTIMA_4a84_DrawSunAndMoons(void)
 		// 4b3e
 		if (pos_n < 12 && pos_n >= 0)
 		{
-			skyRow[pos_n] = D_5886_feluccaPhase;
+			skyRow[pos_n] = feluccaPhase;
 		}
 
 		// 4b53
-		ULTIMA_1bf2_SetTextPosition(6, 0);
+		SetTextPosition(6, 0);
 		if (D_5893_mapId != 0x19 && D_5895_mapLevel < 0x80)
 		{
 			for (i = 0; skyRow[i] != 0;)
@@ -765,31 +765,31 @@ void ULTIMA_4a84_DrawSunAndMoons(void)
 				if (skyRow[i] == 0x2a)
 				{
 					// -> 4b74
-					ULTIMA_1cca_SetTextForegroundColor(D_13b8_brightYellowColor);
+					SetTextForegroundColor(brightYellowColor);
 				}
 				else
 				{
 					// 4b70
-					ULTIMA_1cca_SetTextForegroundColor(D_13ba_lightGrayColor);
+					SetTextForegroundColor(lightGrayColor);
 				}
 
 				ULTIMA_16ba_PrintChar(skyRow[i++]);
 			}
 
-			ULTIMA_1cca_SetTextForegroundColor(D_13b0_brightWhiteColor);
+			SetTextForegroundColor(brightWhiteColor);
 		}
 		else
 		{
 			// 4ba2
-			ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b2_blueColor);
+			ULTIMA_0a70_GRAP_2d_SetPenColor(blueColor);
 			ULTIMA_0aa6_GRAP_3f_FillRect(0x28, 0, 0x98, 6);
-			ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
-			ULTIMA_0b10_GRAP_Line(0x28, 7, 0x98, 7);
+			ULTIMA_0a70_GRAP_2d_SetPenColor(brightWhiteColor);
+			GRAP_Line(0x28, 7, 0x98, 7);
 		}
 
 		// 4bd5
-		ULTIMA_1b94_SelectTextWindow(savedWindow);
-		ULTIMA_1c9e_SelectCharset(0);
+		SelectTextWindow(savedWindow);
+		SelectCharset(0);
 	}
 }
 
@@ -799,18 +799,18 @@ void ULTIMA_4be8_ClearSky(void)
 {
 	int savedWindow;
 
-	savedWindow = D_5386_textWindowIndex;
-	ULTIMA_1b94_SelectTextWindow(0);
+	savedWindow = textWindowIndex;
+	SelectTextWindow(0);
 
 	if (D_5893_mapId != 0x19 && D_5895_mapLevel < 0x80)
 	{
-		ULTIMA_1bf2_SetTextPosition(5, 0);
+		SetTextPosition(5, 0);
 		ULTIMA_4c2a_PrintLeftCap();
 		ULTIMA_1850_PrintString(/*0xa3e2*/ "            ");
-		ULTIMA_4cce_PrintRightCap();
+		PrintRightCap();
 	}
 
-	ULTIMA_1b94_SelectTextWindow(savedWindow);
+	SelectTextWindow(savedWindow);
 }
 
 // print >
@@ -822,50 +822,50 @@ void ULTIMA_4c2a_PrintLeftCap(void)
 	int savedColors_g;
 	TextWindow* win;
 
-	win = &D_535e_textWindows[D_5386_textWindowIndex];
+	win = &textWindows[textWindowIndex];
 
-	pixelX_d = ((uint)win->left + ULTIMA_1f12_GetCurrentTextX()) * 8;
-	pixelY_c = ((uint)win->top + ULTIMA_1cee_GetCurrentTextY()) * 8;
+	pixelX_d = ((uint)win->left + GetCurrentTextX()) * 8;
+	pixelY_c = ((uint)win->top + GetCurrentTextY()) * 8;
 
 	savedColors_g = (uint)win->colors;
-	ULTIMA_1cca_SetTextForegroundColor(D_13b2_blueColor);
-	ULTIMA_1f26_SetTextBackgroundColor(0);
+	SetTextForegroundColor(blueColor);
+	SetTextBackgroundColor(0);
 	ULTIMA_16ba_PrintChar(2);
-	ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
-	ULTIMA_0b10_GRAP_Line(pixelX_d, pixelY_c, pixelX_d + 5, pixelY_c + 3);
-	ULTIMA_0b10_GRAP_Line(pixelX_d + 5, pixelY_c + 4, pixelX_d, pixelY_c + 7);
-	ULTIMA_1cca_SetTextForegroundColor(savedColors_g & 0xf);
-	ULTIMA_1f26_SetTextBackgroundColor(savedColors_g >> 4);
+	ULTIMA_0a70_GRAP_2d_SetPenColor(brightWhiteColor);
+	GRAP_Line(pixelX_d, pixelY_c, pixelX_d + 5, pixelY_c + 3);
+	GRAP_Line(pixelX_d + 5, pixelY_c + 4, pixelX_d, pixelY_c + 7);
+	SetTextForegroundColor(savedColors_g & 0xf);
+	SetTextBackgroundColor(savedColors_g >> 4);
 }
 
 // print <
 // Print the right end cap of a title in a border.
-void ULTIMA_4cce_PrintRightCap(void)
+void PrintRightCap(void)
 {
 	int pixelY_c;
 	int pixelX_d;
 	int savedColors_g;
 	TextWindow* win;
 
-	win = &D_535e_textWindows[D_5386_textWindowIndex];
+	win = &textWindows[textWindowIndex];
 
-	pixelX_d = ((uint)win->left + ULTIMA_1f12_GetCurrentTextX()) * 8;
-	pixelY_c = ((uint)win->top + ULTIMA_1cee_GetCurrentTextY()) * 8;
+	pixelX_d = ((uint)win->left + GetCurrentTextX()) * 8;
+	pixelY_c = ((uint)win->top + GetCurrentTextY()) * 8;
 
 	savedColors_g = (uint)win->colors;
-	ULTIMA_1cca_SetTextForegroundColor(D_13b2_blueColor);
-	ULTIMA_1f26_SetTextBackgroundColor(0);
+	SetTextForegroundColor(blueColor);
+	SetTextBackgroundColor(0);
 	ULTIMA_16ba_PrintChar(1);
-	ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
-	ULTIMA_0b10_GRAP_Line(pixelX_d + 7, pixelY_c, pixelX_d + 2, pixelY_c + 3);
-	ULTIMA_0b10_GRAP_Line(pixelX_d + 2, pixelY_c + 4, pixelX_d + 7, pixelY_c + 7);
-	ULTIMA_1cca_SetTextForegroundColor(savedColors_g & 0xf);
-	ULTIMA_1f26_SetTextBackgroundColor(savedColors_g >> 4);
+	ULTIMA_0a70_GRAP_2d_SetPenColor(brightWhiteColor);
+	GRAP_Line(pixelX_d + 7, pixelY_c, pixelX_d + 2, pixelY_c + 3);
+	GRAP_Line(pixelX_d + 2, pixelY_c + 4, pixelX_d + 7, pixelY_c + 7);
+	SetTextForegroundColor(savedColors_g & 0xf);
+	SetTextBackgroundColor(savedColors_g >> 4);
 }
 
 // CHECKED
 // find index
-int ULTIMA_4d76_FindIndex(char* str, int ch)
+int FindIndex(char* str, int ch)
 {
 	int index;
 
@@ -880,80 +880,80 @@ int ULTIMA_4d76_FindIndex(char* str, int ch)
 }
 
 // Remove the scroll arrow from the border under the stats window.
-void ULTIMA_4daa_HideScrollArrow(void)
+void HideScrollArrow(void)
 {
-	ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b2_blueColor);
+	ULTIMA_0a70_GRAP_2d_SetPenColor(blueColor);
 	ULTIMA_0aa6_GRAP_3f_FillRect(0xf0, 0x51, 0x107, 0x56);
-	ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
-	ULTIMA_0c9c_GRAP_39_HorizLine(0xf0, 0x50, 0x107);
-	ULTIMA_0c9c_GRAP_39_HorizLine(0xf0, 0x57, 0x107);
+	ULTIMA_0a70_GRAP_2d_SetPenColor(brightWhiteColor);
+	GRAP_39_HorizLine(0xf0, 0x50, 0x107);
+	GRAP_39_HorizLine(0xf0, 0x57, 0x107);
 }
 
 // Show a scroll arrow (character 0x18, 0x19 or 0x12) in the border under the stats window.
-void ULTIMA_4dea_ShowScrollArrow(int arrowChar)
+void ShowScrollArrow(int arrowChar)
 {
 	int savedWindow;
 
-	savedWindow = D_5386_textWindowIndex;
-	ULTIMA_1b94_SelectTextWindow(0);
-	ULTIMA_1bf2_SetTextPosition(0x1e, 10);
+	savedWindow = textWindowIndex;
+	SelectTextWindow(0);
+	SetTextPosition(0x1e, 10);
 	ULTIMA_4c2a_PrintLeftCap();
 	ULTIMA_16ba_PrintChar(arrowChar);
-	ULTIMA_4cce_PrintRightCap();
-	ULTIMA_1b94_SelectTextWindow(savedWindow);
+	PrintRightCap();
+	SelectTextWindow(savedWindow);
 }
 
 // Remove the title from the top border of the stats window.
-void ULTIMA_4e20_ClearStatsTitle(void)
+void ClearStatsTitle(void)
 {
-	ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b2_blueColor);
+	ULTIMA_0a70_GRAP_2d_SetPenColor(blueColor);
 	ULTIMA_0aa6_GRAP_3f_FillRect(0xc0, 0, 0x137, 0x6);
-	ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
-	ULTIMA_0c9c_GRAP_39_HorizLine(0xc0, 0x7, 0x137);
+	ULTIMA_0a70_GRAP_2d_SetPenColor(brightWhiteColor);
+	GRAP_39_HorizLine(0xc0, 0x7, 0x137);
 }
 
 // Show a title centred in the top border of the stats window.
-void ULTIMA_4e50_ShowStatsTitle(char* title)
+void ShowStatsTitle(char* title)
 {
 	int startCol;
 	int savedWindow;
 	int endCol;
 
-	startCol = -(ULTIMA_216c_strlen(title) / 2 - 30);
-	endCol = ULTIMA_216c_strlen(title) + startCol + 2;
-	ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b2_blueColor);
+	startCol = -(StringLength(title) / 2 - 30);
+	endCol = StringLength(title) + startCol + 2;
+	ULTIMA_0a70_GRAP_2d_SetPenColor(blueColor);
 	ULTIMA_0aa6_GRAP_3f_FillRect(192, 0, startCol * 8, 6);
 	ULTIMA_0aa6_GRAP_3f_FillRect(endCol * 8, 0, 311, 6);
-	ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
-	ULTIMA_0c9c_GRAP_39_HorizLine(192, 7, startCol * 8);
-	ULTIMA_0c9c_GRAP_39_HorizLine(endCol * 8, 7, 311);
-	savedWindow = D_5386_textWindowIndex;
-	ULTIMA_1b94_SelectTextWindow(0);
-	ULTIMA_1bf2_SetTextPosition(startCol, 0);
+	ULTIMA_0a70_GRAP_2d_SetPenColor(brightWhiteColor);
+	GRAP_39_HorizLine(192, 7, startCol * 8);
+	GRAP_39_HorizLine(endCol * 8, 7, 311);
+	savedWindow = textWindowIndex;
+	SelectTextWindow(0);
+	SetTextPosition(startCol, 0);
 	ULTIMA_4c2a_PrintLeftCap();
 	ULTIMA_1850_PrintString(title);
-	ULTIMA_4cce_PrintRightCap();
-	ULTIMA_1b94_SelectTextWindow(savedWindow);
+	PrintRightCap();
+	SelectTextWindow(savedWindow);
 }
 
 // Open the divider between the party and the food line, so that a list can use the whole stats window.
-void ULTIMA_4efc_OpenStatsDivider(void)
+void OpenStatsDivider(void)
 {
-	ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
-	ULTIMA_0cf2_GRAP_3c_VertLine(0xbf, 0x38, 0x3f);
-	ULTIMA_0cf2_GRAP_3c_VertLine(0x138, 0x38, 0x3f);
+	ULTIMA_0a70_GRAP_2d_SetPenColor(brightWhiteColor);
+	GRAP_3c_VertLine(0xbf, 0x38, 0x3f);
+	GRAP_3c_VertLine(0x138, 0x38, 0x3f);
 	ULTIMA_0a70_GRAP_2d_SetPenColor(0);
 	ULTIMA_0aa6_GRAP_3f_FillRect(0xc0, 0x38, 0x137, 0x3f);
 }
 
 // Draw the divider between the party and the food line.
-void ULTIMA_4f3c_DrawStatsDivider(void)
+void DrawStatsDivider(void)
 {
-	ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b2_blueColor);
+	ULTIMA_0a70_GRAP_2d_SetPenColor(blueColor);
 	ULTIMA_0aa6_GRAP_3f_FillRect(0xbf, 0x39, 0x138, 0x3e);
-	ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
-	ULTIMA_0c9c_GRAP_39_HorizLine(0xc0, 0x38, 0x137);
-	ULTIMA_0c9c_GRAP_39_HorizLine(0xc0, 0x3f, 0x137);
+	ULTIMA_0a70_GRAP_2d_SetPenColor(brightWhiteColor);
+	GRAP_39_HorizLine(0xc0, 0x38, 0x137);
+	GRAP_39_HorizLine(0xc0, 0x3f, 0x137);
 }
 
 // CHECKED (stack, loop)
@@ -969,25 +969,25 @@ void ULTIMA_4f7c_AdvanceTime(int minutes)
 	if (minutes != 0)
 	{
 		// 4f8d
-		if ((D_587a_statusIcon == 'Q') && (minutes = minutes >> 1, minutes == 0))
+		if ((statusIcon == 'Q') && (minutes = minutes >> 1, minutes == 0))
 		{
 			minutes++;
 		}
 
 		// 4fa0
-		D_5880_lastHour = D_587f_hour;
-		if (D_587a_statusIcon != 'T')
+		lastHour = D_587f_hour;
+		if (statusIcon != 'T')
 		{
-			D_5881_minute += minutes;
-			ULTIMA_3f36_DecreaseByte(&D_58a7_torchTurns, minutes);
-			ULTIMA_3f36_DecreaseByte(&D_58a6_lightSpellTurns, minutes);
+			minute += minutes;
+			ULTIMA_3f36_DecreaseByte(&torchTurns, minutes);
+			ULTIMA_3f36_DecreaseByte(&lightSpellTurns, minutes);
 		}
 		// 4fc8
-		if (D_5881_minute > 59)
+		if (minute > 59)
 		{
 			// 4fd2
-			D_5881_minute -= 60;
-			ULTIMA_3f36_DecreaseByte(&D_588c_campHealWait, 1);
+			minute -= 60;
+			ULTIMA_3f36_DecreaseByte(&campHealWait, 1);
 			D_587f_hour++;
 			if (D_587f_hour > 23)
 			{
@@ -1026,10 +1026,10 @@ void ULTIMA_4f7c_AdvanceTime(int minutes)
 
 				if (D_587e_day > 28)
 				{
-					D_5858_harvestDay[0] = D_5858_harvestDay[1] = D_5858_harvestDay[2] = 0;
-					D_57b2_skullKeysDay = 0;
+					harvestDay[0] = harvestDay[1] = harvestDay[2] = 0;
+					skullKeysDay = 0;
 					D_587e_day = 1;
-					D_5959_fewerEnemies = 0;
+					fewerEnemies = 0;
 
 					// 5077
 					// TODO: loop counter
@@ -1046,7 +1046,7 @@ void ULTIMA_4f7c_AdvanceTime(int minutes)
 					if (0xd < D_587d_month)
 					{
 						D_587d_month = 1;
-						D_5874_year++;
+						year++;
 					}
 				}
 
@@ -1072,12 +1072,12 @@ void ULTIMA_4f7c_AdvanceTime(int minutes)
 			// 50d6
 			if (D_587f_hour == 5)
 			{
-				D_58a5_lightLevel = D_6a80_lightSlope[D_5881_minute / 10];
+				D_58a5_lightLevel = lightSlope[minute / 10];
 			}
 			// 50f4
 			else if (D_587f_hour == 19)
 			{
-				D_58a5_lightLevel = D_6a80_lightSlope[(-(D_5881_minute - 59)) / 10];
+				D_58a5_lightLevel = lightSlope[(-(minute - 59)) / 10];
 			}
 			else
 			{
@@ -1086,12 +1086,12 @@ void ULTIMA_4f7c_AdvanceTime(int minutes)
 		}
 
 		// 5115
-		if (D_58a6_lightSpellTurns != 0 && D_58a5_lightLevel < 0x12)
+		if (lightSpellTurns != 0 && D_58a5_lightLevel < 0x12)
 		{
 			D_58a5_lightLevel = 0x12;
 		}
 		// 5128
-		if (D_58a7_torchTurns != 0 && D_58a5_lightLevel < 10)
+		if (torchTurns != 0 && D_58a5_lightLevel < 10)
 		{
 			D_58a5_lightLevel = 10;
 		}
@@ -1103,7 +1103,7 @@ void ULTIMA_4f7c_AdvanceTime(int minutes)
 	}
 
 	// 514a
-	if (D_587f_hour != D_5880_lastHour)
+	if (D_587f_hour != lastHour)
 	{
 		if (D_5893_mapId < 0x21 && D_5895_mapLevel < 0x80)
 		{
@@ -1113,24 +1113,24 @@ void ULTIMA_4f7c_AdvanceTime(int minutes)
 		// 5164
 		if (D_587f_hour == 0)
 		{
-			D_5884_clockChimes = 0xc;
+			clockChimes = 0xc;
 		}
 		else
 		{
 			// 5172
 			if (D_587f_hour > 0xc)
 			{
-				D_5884_clockChimes = D_587f_hour - 0xc;
+				clockChimes = D_587f_hour - 0xc;
 			}
 			else
 			{
-				D_5884_clockChimes = D_587f_hour;
+				clockChimes = D_587f_hour;
 			}
 		}
 	}
 
 	if (D_5893_mapId != 0 && D_5893_mapId < 0x21)
 	{
-		ULTIMA_71aa_UpdateClockTiles();
+		UpdateClockTiles();
 	}
 }

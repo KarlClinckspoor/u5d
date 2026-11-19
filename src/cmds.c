@@ -13,13 +13,13 @@
 #include "outsubs.h"
 #include "town.h"
 
-void MAINOUT_0354_MoveParty(int stepX, int stepY);
-int MAINOUT_105c_IsMovingActor(int tile);
+void MainoutMoveParty(int stepX, int stepY);
+int IsMovingActor(int tile);
 
 // The rest itself of Hole up and camp: sleeps the party for the hours (a bard on watch plays and a watcher
 // stays awake), moving the sun and moons; in 1 of 64 hours an ambush starts a combat (returns 1), else the
 // party heals (once per 14 hours, with a chance of an apparition outside dungeons).
-// CMDS_0000_HoleUpRest sits at a limit of pass 2's memory: its loop optimization runs out of
+// HoleUpRest sits at a limit of pass 2's memory: its loop optimization runs out of
 // memory unless the module's global symbols take about 72 * (22 + 8) bytes more than u5d's
 // readable names give (MATCHING.md, "What pass 2 counts, measured"). The original had
 // something there that u5d does not; what it was is not known. The stand-in: 72 dead
@@ -29,7 +29,7 @@ int MAINOUT_105c_IsMovingActor(int tile);
 // moves; if CMDS_0000 breaks after a rename, change the count (one reference is 30 bytes).
 extern int Q0000000, Q0000001, Q0000002, Q0000003, Q0000004, Q0000005, Q0000006, Q0000007, Q0000008, Q0000009, Q0000010, Q0000011, Q0000012, Q0000013, Q0000014, Q0000015, Q0000016, Q0000017, Q0000018, Q0000019, Q0000020, Q0000021, Q0000022, Q0000023, Q0000024, Q0000025, Q0000026, Q0000027, Q0000028, Q0000029, Q0000030, Q0000031, Q0000032, Q0000033, Q0000034, Q0000035, Q0000036, Q0000037, Q0000038, Q0000039, Q0000040, Q0000041, Q0000042, Q0000043, Q0000044, Q0000045, Q0000046, Q0000047, Q0000048, Q0000049, Q0000050, Q0000051, Q0000052, Q0000053, Q0000054, Q0000055, Q0000056, Q0000057, Q0000058, Q0000059, Q0000060, Q0000061, Q0000062, Q0000063, Q0000064, Q0000065, Q0000066, Q0000067, Q0000068, Q0000069, Q0000070, Q0000071;
 // CHECKED
-int CMDS_0000_HoleUpRest(int mode, int watchIdx, int hours)
+int HoleUpRest(int mode, int watchIdx, int hours)
 {
     byte oldAnim_k;
     int wakeHour_i;
@@ -50,19 +50,19 @@ int CMDS_0000_HoleUpRest(int mode, int watchIdx, int hours)
     lastHour_m = D_587f_hour;
     bardSlot = -1;
     ambush_o = -1;
-    D_587a_statusIcon = D_588e_protectTurns = 0;
-    oldActive_d = D_587b_activePlayer;
-    D_587b_activePlayer = 0xff;
+    statusIcon = protectTurns = 0;
+    oldActive_d = activePlayer;
+    activePlayer = 0xff;
     if ((mode & 2) != 0)
     {
-        DNGLOOK_117e_PlaceCombatants(GetDungeonMap((uint)D_5896_mapX, (uint)D_5897_mapY, D_5895_mapLevel & 0xff), 0);
+        PlaceCombatants(GetDungeonMap((uint)D_5896_mapX, (uint)D_5897_mapY, D_5895_mapLevel & 0xff), 0);
     }
     else
     {
-        ULTIMA_6936_InitCombatants();
+        InitCombatants();
     }
 
-    D_589e_curCombatant = 0xff;
+    curCombatant = 0xff;
     wakeHour_i = hours + (uint)D_587f_hour;
     if (wakeHour_i > 0x17)
     {
@@ -83,9 +83,9 @@ int CMDS_0000_HoleUpRest(int mode, int watchIdx, int hours)
     {
         for (slot_m = 0; slot_m < 0x20; slot_m++)
         {
-            if (member_g == D_ba14_combatants[slot_m].entityIdx)
+            if (member_g == combatants[slot_m].entityIdx)
             {
-                watcher = &D_ba14_combatants[slot_m];
+                watcher = &combatants[slot_m];
                 break;
             }
         }
@@ -99,7 +99,7 @@ int CMDS_0000_HoleUpRest(int mode, int watchIdx, int hours)
         case STATUS_SLEEP:
             if (member_g != watchIdx)
             {
-                ULTIMA_6880_SleepIfNotPoisoned(slot_m);
+                SleepIfNotPoisoned(slot_m);
             }
 
             if (D_55a8_party[member_g].cls == CLASS_BARD && member_g == watchIdx && D_a9ce_soundOn != 0)
@@ -114,18 +114,18 @@ int CMDS_0000_HoleUpRest(int mode, int watchIdx, int hours)
 
     if (bardSlot != -1)
     {
-        bardActor = &D_5c5a_actors[D_ba14_combatants[bardSlot].actorIdx];
+        bardActor = &D_5c5a_actors[combatants[bardSlot].actorIdx];
         oldTile_b = bardActor->tile;
         oldAnim_k = bardActor->animTile;
         
         bardActor->tile = bardActor->animTile = TILE_ACTOR_5F;
-        D_6a08_songPos = 1;
-        ULTIMA_3ae6_WaitFrames(0x34);
+        songPos = 1;
+        WaitFrames(0x34);
         bardActor->tile = oldTile_b;
         bardActor->animTile = oldAnim_k;
-        if (D_ba14_combatants[bardSlot].entityIdx != watchIdx)
+        if (combatants[bardSlot].entityIdx != watchIdx)
         {
-            ULTIMA_6880_SleepIfNotPoisoned(bardSlot);
+            SleepIfNotPoisoned(bardSlot);
         }
 
         ULTIMA_5910_UpdateFrame();
@@ -137,9 +137,9 @@ int CMDS_0000_HoleUpRest(int mode, int watchIdx, int hours)
     {
         for (slot_m = 0; slot_m < 0x20; slot_m++)
         {
-            if (D_ba14_combatants[slot_m].entityIdx == watchIdx)
+            if (combatants[slot_m].entityIdx == watchIdx)
             {
-                watcher = &D_ba14_combatants[slot_m];
+                watcher = &combatants[slot_m];
                 break;
             }
         }
@@ -155,14 +155,14 @@ int CMDS_0000_HoleUpRest(int mode, int watchIdx, int hours)
         }
 
         ULTIMA_5910_UpdateFrame();
-        ULTIMA_400c_RingRegeneration();
+        RingRegeneration();
         ULTIMA_2900_UpdateVitalsDisplay();
         if (lastHour_m != D_587f_hour)
         {
             if (ULTIMA_2092_RandomRange(0, 0x3f) == 0)
             {
                 ULTIMA_207e_srand(ULTIMA_2056_GetTime());
-                ambush_o = (uint)D_1734_ambushEnemies[ULTIMA_2092_RandomRange(0, 7)];
+                ambush_o = (uint)ambushEnemies[ULTIMA_2092_RandomRange(0, 7)];
                 ULTIMA_1850_PrintString(/*0x41e0*/ "Ambushed!\n\n");
 
                 if (watchIdx > -1)
@@ -171,9 +171,9 @@ int CMDS_0000_HoleUpRest(int mode, int watchIdx, int hours)
                     for (idx_j = 0; idx_j < 6; idx_j++)
                     {
                         // 0283
-                        if ((member_g = D_ba14_combatants[idx_j].entityIdx) >= 0 && member_g < D_585b_partyCount)
+                        if ((member_g = combatants[idx_j].entityIdx) >= 0 && member_g < D_585b_partyCount)
                         {
-                            ULTIMA_6800_WakeCombatant(idx_j);
+                            WakeCombatant(idx_j);
                             if (poisoned_k[member_g] != 0)
                             {
                                 D_55a8_party[member_g].status = STATUS_POISONED;
@@ -189,11 +189,11 @@ int CMDS_0000_HoleUpRest(int mode, int watchIdx, int hours)
                 ULTIMA_2900_UpdateVitalsDisplay();
                 if ((mode & 2) != 0)
                 {
-                    DNGLOOK_117e_PlaceCombatants(GetDungeonMap((uint)D_5896_mapX, (uint)D_5897_mapY, D_5895_mapLevel & 0xff), 1);
+                    PlaceCombatants(GetDungeonMap((uint)D_5896_mapX, (uint)D_5897_mapY, D_5895_mapLevel & 0xff), 1);
                 }
                 else
                 {
-                    ULTIMA_6bc2_SetUpCombat(mode, ambush_o);
+                    SetUpCombat(mode, ambush_o);
                 }
 
                 break;
@@ -202,7 +202,7 @@ int CMDS_0000_HoleUpRest(int mode, int watchIdx, int hours)
 
         lastHour_m = D_587f_hour;
         ULTIMA_4f7c_AdvanceTime(5);
-        ULTIMA_20fa_WaitTicks(1);
+        WaitTicks(1);
         if (D_5894_savedMapId < 0x21)
         {
             D_5893_mapId = D_5894_savedMapId;
@@ -231,7 +231,7 @@ int CMDS_0000_HoleUpRest(int mode, int watchIdx, int hours)
                 break;
             }
 
-            if (ULTIMA_6d82_IsInView(D_5876_tempX, D_5878_tempY) != 0 && COMBAT_0000_IsCellFree(watchTile_g, D_5876_tempX, D_5878_tempY) != 0)
+            if (IsInView(D_5876_tempX, D_5878_tempY) != 0 && IsCellFree(watchTile_g, D_5876_tempX, D_5878_tempY) != 0)
             {
                 watcher->x = D_5c5a_actors[watcher->actorIdx].x = D_5876_tempX;
                 watcher->y = D_5c5a_actors[watcher->actorIdx].y = D_5878_tempY;
@@ -248,13 +248,13 @@ int CMDS_0000_HoleUpRest(int mode, int watchIdx, int hours)
         return 1;
     }
 
-    if (D_588c_campHealWait < 1 && hours > 5)
+    if (campHealWait < 1 && hours > 5)
     {
         ULTIMA_1850_PrintString(/*0x41ec*/ "Party rested!\n");
 
         for (member_g = 0; member_g < D_585b_partyCount; member_g++)
         {
-            if (poisoned_k[member_g] == 0 && D_588c_campHealWait < 1 && hours > 5 && D_55a8_party[member_g].status != STATUS_DEAD && member_g != watchIdx)
+            if (poisoned_k[member_g] == 0 && campHealWait < 1 && hours > 5 && D_55a8_party[member_g].status != STATUS_DEAD && member_g != watchIdx)
             {
                 D_55a8_party[member_g].hp += ULTIMA_2092_RandomRange(1, 0x3f);
                 if (D_55a8_party[member_g].hp > D_55a8_party[member_g].maxHp)
@@ -280,11 +280,11 @@ int CMDS_0000_HoleUpRest(int mode, int watchIdx, int hours)
 
         if ((mode & 0x82) == 0 && ULTIMA_2092_RandomRange(0, 99) < 0x19)
         {
-            D_588d_apparitionMonth = D_587d_month;
-            OUTSUBS_0658_Apparition();
+            apparitionMonth = D_587d_month;
+            Apparition();
         }
 
-        D_588c_campHealWait = 0xe;
+        campHealWait = 0xe;
     }
     else
     {
@@ -299,7 +299,7 @@ int CMDS_0000_HoleUpRest(int mode, int watchIdx, int hours)
         }
     }
 
-    D_587b_activePlayer = oldActive_d;
+    activePlayer = oldActive_d;
     ULTIMA_2900_UpdateVitalsDisplay();
 
     return 0;
@@ -308,7 +308,7 @@ int CMDS_0000_HoleUpRest(int mode, int watchIdx, int hours)
 // The Hole up command: asks for the hours (a digit), lets the town's NPCs move, puts the party to sleep and
 // passes the time (swapping the day and night tiles at hours 20 and 5); an actor on the party's cell throws
 // it out of bed.
-void CMDS_0552_HoleUpCmd(void)
+void CmdsHoleUpCmd(void)
 {
     int lastHour_h;
     int i;
@@ -335,15 +335,15 @@ void CMDS_0552_HoleUpCmd(void)
 
         for (i = 0; i < 0x10; i++)
         {
-            NPC_0db4_MoveNpcs(D_587f_hour);
+            MoveNpcs(D_587f_hour);
             ULTIMA_5910_UpdateFrame();
-            if (D_65be_npcApproach == 0x61)
+            if (npcApproach == 0x61)
             {
                 return;
             }
         }
 
-        savedActive_b = D_587b_activePlayer;
+        savedActive_b = activePlayer;
 
         for (i = 0; i < D_585b_partyCount; i++)
         {
@@ -379,7 +379,7 @@ void CMDS_0552_HoleUpCmd(void)
                 wakeHour = -1;
                 break;
             }
-            ULTIMA_20fa_WaitTicks(1);
+            WaitTicks(1);
         }
 
         if (wakeHour == -1)
@@ -395,7 +395,7 @@ void CMDS_0552_HoleUpCmd(void)
             }
         }
 
-        D_587b_activePlayer = savedActive_b;
+        activePlayer = savedActive_b;
         D_5896_mapX++;
         D_24e6_viewDirty = 1;
         D_5c5a_actors[0].x++;
@@ -406,7 +406,7 @@ void CMDS_0552_HoleUpCmd(void)
 }
 
 // 1 when the party is on foot (the Avatar tile); else prints "On foot" and returns 0.
-static int CMDS_06ee_RequireOnFoot(void)
+static int RequireOnFoot(void)
 {
     if (D_587c_partyTile != TILE_ACTOR_AVATAR && D_587c_partyTile != TILE_ACTOR_1D)
     {
@@ -420,7 +420,7 @@ static int CMDS_06ee_RequireOnFoot(void)
 }
 
 // 1 when the party is on foot, on a carpet or on a skiff; else prints "On foot" and returns 0.
-static int CMDS_070c_CanBoardShip(void)
+static int CanBoardShip(void)
 {
     switch (D_587c_partyTile)
     {
@@ -440,12 +440,12 @@ static int CMDS_070c_CanBoardShip(void)
     }
 }
 
-static int CMDS_0788_IsLandAt(int viewY, int viewX);
+static int IsLandAt(int viewY, int viewX);
 
 // 1 when one of the four cells around the party is land.
-static int CMDS_073e_IsLandNearby(void)
+static int IsLandNearby(void)
 {
-    if (CMDS_0788_IsLandAt(4, 5) == 1 || CMDS_0788_IsLandAt(6, 5) == 1 || CMDS_0788_IsLandAt(5, 6) == 1 || CMDS_0788_IsLandAt(5, 4) == 1)
+    if (IsLandAt(4, 5) == 1 || IsLandAt(6, 5) == 1 || IsLandAt(5, 6) == 1 || IsLandAt(5, 4) == 1)
     {
         return 1;
     }
@@ -456,7 +456,7 @@ static int CMDS_073e_IsLandNearby(void)
 }
 
 // 1 when the cell of the view is land: a walkable tile, or an actor tile of the ground kinds.
-static int CMDS_0788_IsLandAt(int viewY, int viewX)
+static int IsLandAt(int viewY, int viewX)
 {
     int tile;
 
@@ -486,7 +486,7 @@ static int CMDS_0788_IsLandAt(int viewY, int viewX)
 // The Board command: boards the horse, carpet, skiff or frigate that stands on the party's cell (a ship's
 // hull and skiffs are taken over; "Nay!" for a horse that belongs to someone), then the actor is removed; 1
 // when the command was understood.
-int CMDS_07f6_BoardCmd(void)
+int BoardCmd(void)
 {
     byte tile;
     int hull;
@@ -515,7 +515,7 @@ int CMDS_07f6_BoardCmd(void)
             }
         }
 
-        if (CMDS_06ee_RequireOnFoot() == 0)
+        if (RequireOnFoot() == 0)
         {
             return 1;
         }
@@ -526,7 +526,7 @@ int CMDS_07f6_BoardCmd(void)
     }
     else if (tile == TILE_ACTOR_CARPET)
     {
-        if (CMDS_06ee_RequireOnFoot() == 0)
+        if (RequireOnFoot() == 0)
         {
             return 1;
         }
@@ -537,7 +537,7 @@ int CMDS_07f6_BoardCmd(void)
     }
     else if ((tile & 0xfc) == TILE_ACTOR_SKIFF)
     {
-        if (CMDS_06ee_RequireOnFoot() == 0)
+        if (RequireOnFoot() == 0)
         {
             return 1;
         }
@@ -548,7 +548,7 @@ int CMDS_07f6_BoardCmd(void)
     }
     else if ((tile & 0xfc) == TILE_ACTOR_FRIGATE_24)
     {
-        if (CMDS_070c_CanBoardShip() == 0)
+        if (CanBoardShip() == 0)
         {
             return 1;
         }
@@ -566,7 +566,7 @@ int CMDS_07f6_BoardCmd(void)
 
         if ((D_587c_partyTile & 0xfe) == TILE_ACTOR_FLYING_CARPET)
         {
-            D_57b0_carpets++;
+            carpets++;
         }
 
         if ((D_587c_partyTile & 0xfc) == TILE_ACTOR_SKIFF)
@@ -589,7 +589,7 @@ int CMDS_07f6_BoardCmd(void)
         return 0;
     }
 
-    ULTIMA_3a74_SetActor(0, 0, 0, 0, 0, 0, actorSlot_g);
+    SetActor(0, 0, 0, 0, 0, 0, actorSlot_g);
     D_24e6_viewDirty |= 2;
 
     return 1;
@@ -597,7 +597,7 @@ int CMDS_07f6_BoardCmd(void)
 
 // Fire on the overworld: a frigate fires to either side (not ahead or astern), asking the direction; the
 // first moving actor within three cells is hit for 1 to 20 and may be destroyed.
-static void CMDS_0962_FireBroadsides(void)
+static void FireBroadsides(void)
 {
     int y;
     int dirY;
@@ -634,7 +634,7 @@ static void CMDS_0962_FireBroadsides(void)
             // 09b8
             x = D_5896_mapX;
             y = D_5897_mapY;
-            ULTIMA_43ae_AudioSweepTone(1000, 200, 5, 300);
+            AudioSweepTone(1000, 200, 5, 300);
 
             // 09d8
             for (step_e = 0; step_e < 3; step_e++)
@@ -644,14 +644,14 @@ static void CMDS_0962_FireBroadsides(void)
 
                 tile_c = ULTIMA_368e_FindActorTileAtPos(x, y, D_5895_mapLevel);
 
-                if (MAINOUT_105c_IsMovingActor(tile_c) != 0 && (tile_c & 0xfc) != 0xec)
+                if (IsMovingActor(tile_c) != 0 && (tile_c & 0xfc) != 0xec)
                 {
                     // 0a10
                     actorSlot_f = D_5876_tempX;
 
                     targetX_b = D_5c5a_actors[actorSlot_f].x - D_5896_mapX + 5;
                     targetY = D_5c5a_actors[actorSlot_f].y - D_5897_mapY + 5;
-                    hit_l = COMSUBS_12de_FlyMissile(5, 5, targetX_b, targetY, 1);
+                    hit_l = FlyMissile(5, 5, targetX_b, targetY, 1);
                     if (hit_l != 0)
                     {
                         ULTIMA_5910_UpdateFrame();
@@ -660,7 +660,7 @@ static void CMDS_0962_FireBroadsides(void)
                         D_5c5a_actors[actorSlot_f].value -= ULTIMA_2092_RandomRange(1, 0x14);
                         if (D_5c5a_actors[actorSlot_f].value > 0x7f)
                         {
-                            ULTIMA_3a74_SetActor(0, 0, 0, 0, 0, 0, actorSlot_f);
+                            SetActor(0, 0, 0, 0, 0, 0, actorSlot_f);
                             D_24e6_viewDirty |= 2;
                         }
                     }
@@ -671,7 +671,7 @@ static void CMDS_0962_FireBroadsides(void)
 
             targetX_b = dirX * 3 + 5;
             targetY = dirY * 3 + 5;
-            COMSUBS_12de_FlyMissile(5, 5, targetX_b, targetY, 1);
+            FlyMissile(5, 5, targetX_b, targetY, 1);
         }
     }
 }
@@ -679,7 +679,7 @@ static void CMDS_0962_FireBroadsides(void)
 // The Fire command: on the overworld the frigate's broadsides; in a town or keep a cannon beside the party
 // fires four cells along its facing, destroying a door (and the tile 0x44 left) or killing an actor, which
 // costs karma 5 and kills its NPC; or hurts the party.
-void CMDS_0aea_FireCmd(void)
+void FireCmd(void)
 {
     uint cannonTile_e;
     int dirY_h;
@@ -705,11 +705,11 @@ void CMDS_0aea_FireCmd(void)
 
     if (D_5893_mapId == 0)
     {
-        CMDS_0962_FireBroadsides();
+        FireBroadsides();
         return;
     }
 
-    ULTIMA_39cc_SetTile(D_594f_openDoorTile, D_5950_openDoorX, D_5951_openDoorY);
+    SetTile(D_594f_openDoorTile, openDoorX, openDoorY);
 
     if (((cannonTile_e = GetMapViewport(5, 4)) & 0xfc) == 0xb4)
     {
@@ -764,7 +764,7 @@ void CMDS_0aea_FireCmd(void)
     }
 
     ULTIMA_1850_PrintString(/*0x42f2*/ "BOOOM!\n");
-    ULTIMA_43ae_AudioSweepTone(1000, 200, 5, 300);
+    AudioSweepTone(1000, 200, 5, 300);
     TOWN_0958_RaiseAlarm();
 
     hitWall = 0;
@@ -805,7 +805,7 @@ void CMDS_0aea_FireCmd(void)
         }
     }
 
-    COMSUBS_12de_FlyMissile(startX, startY, endX, endY_p, 1);
+    FlyMissile(startX, startY, endX, endY_p, 1);
     if (hitWall || hitActor_b)
     {
         ULTIMA_3522_HitEffectAt(x_h, y_g);
@@ -821,7 +821,7 @@ void CMDS_0aea_FireCmd(void)
 
     if (hitActor_b && target != 0)
     {
-        ULTIMA_3a74_SetActor(0, 0, 0, 0, 0, 0, target);
+        SetActor(0, 0, 0, 0, 0, 0, target);
 
         D_24e6_viewDirty |= 2;
         if (D_5888_karma > 5)
@@ -849,35 +849,35 @@ void CMDS_0aea_FireCmd(void)
 }
 
 // The Ignite torch command: uses a torch; the light lasts 240 turns (a random 112 to 127 more in a dungeon).
-void CMDS_0d98_IgniteTorchCmd(void)
+void IgniteTorchCmd(void)
 {
-    if (D_57ae_torches == 0)
+    if (torches == 0)
     {
         ULTIMA_1850_PrintString(/*0x430b*/ "None owned!\n");
     }
     else
     {
-        D_57ae_torches--;
+        torches--;
         if (D_5893_mapId > 0x20 && D_5893_mapId < 0x29)
         {
-            ULTIMA_3ef0_IncreaseByte(&D_58a7_torchTurns, ULTIMA_2092_RandomRange(0, 0xf) + 0x70, 0xff);
+            IncreaseByte(&torchTurns, ULTIMA_2092_RandomRange(0, 0xf) + 0x70, 0xff);
         }
         else
         {
-            D_58a7_torchTurns = 0xf0;
+            torchTurns = 0xf0;
         }
     }
 }
 
 // The New order command: swaps two party members (the leader cannot be moved).
-void CMDS_0ddc_NewOrderCmd(void)
+void NewOrderCmd(void)
 {
     int first;
     int second;
     S_55a8 swap_f;
 
     ULTIMA_1850_PrintString(/*0x4318*/ "\n\nSwap ");
-    if ((first = ULTIMA_2e8e_SelectPlayer()) == -1)
+    if ((first = SelectPlayer()) == -1)
     {
         ULTIMA_1850_PrintString(/*0x4320*/ "nobody!\n");
         return;
@@ -894,7 +894,7 @@ void CMDS_0ddc_NewOrderCmd(void)
 
     ULTIMA_1850_PrintString(/*0x4339*/ "\nwith ");
 
-    if ((second = ULTIMA_2e8e_SelectPlayer()) == -1)
+    if ((second = SelectPlayer()) == -1)
     {
         ULTIMA_1850_PrintString(/*0x4340*/ "nobody!\n");
         return;
@@ -921,7 +921,7 @@ void CMDS_0ddc_NewOrderCmd(void)
 // The Xit command: leaves the horse, carpet, skiff or ship (onto land only; a ship hands out a skiff or a
 // carpet) and puts the vehicle back as an actor.
 // CHECKED
-void CMDS_0eb4_XitCmd(void)
+void XitCmd(void)
 {
     byte skiffs;
     byte tileUnder_g;
@@ -948,7 +948,7 @@ void CMDS_0eb4_XitCmd(void)
         return;
 
     case TILE_ACTOR_FLYING_CARPET:
-        if (CMDS_073e_IsLandNearby() != 0 || ULTIMA_2c4c_IsWalkableTile(0x1c, tileUnder_g) != 0)
+        if (IsLandNearby() != 0 || ULTIMA_2c4c_IsWalkableTile(0x1c, tileUnder_g) != 0)
         {
             ULTIMA_1850_PrintString(/*0x437d*/ "carpet!\n");
             newTile_i = 0x1b;
@@ -956,7 +956,7 @@ void CMDS_0eb4_XitCmd(void)
             break;
         }
 
-        if (CMDS_073e_IsLandNearby() == 0)
+        if (IsLandNearby() == 0)
         {
             ULTIMA_1850_PrintString(/*0x4386*/ "\nNo land nearby!\n");
             return;
@@ -973,7 +973,7 @@ void CMDS_0eb4_XitCmd(void)
 
     case TILE_ACTOR_SKIFF:
         // cef2
-        if (CMDS_073e_IsLandNearby() == 0)
+        if (IsLandNearby() == 0)
         {
             ULTIMA_1850_PrintString(/*0x43ac*/ "\nNo land nearby!\n");
             return;
@@ -993,7 +993,7 @@ void CMDS_0eb4_XitCmd(void)
     case TILE_ACTOR_FRIGATE_24:
         // cf1c
         ULTIMA_1850_PrintString(/*0x43d2*/ "ship!\n");
-        if (CMDS_073e_IsLandNearby() != 0)
+        if (IsLandNearby() != 0)
         {
             newTile_i = D_587c_partyTile;
             D_587c_partyTile = TILE_ACTOR_AVATAR;
@@ -1006,9 +1006,9 @@ void CMDS_0eb4_XitCmd(void)
             D_587c_partyTile += 4;
             skiffs = D_5c5a_actors[0].extra - 1;
         }
-        else if (D_57b0_carpets != 0)
+        else if (carpets != 0)
         {
-            D_57b0_carpets--;
+            carpets--;
             newTile_i = D_587c_partyTile;
             D_587c_partyTile = TILE_ACTOR_FLYING_CARPET;
 
@@ -1024,12 +1024,12 @@ void CMDS_0eb4_XitCmd(void)
     }
 
     slot = ULTIMA_38e4_FindActorSlot();
-    ULTIMA_3a74_SetActor(newTile_i, newTile_i, D_5896_mapX, D_5897_mapY, D_5895_mapLevel, D_5c5a_actors[0].value, slot);
+    SetActor(newTile_i, newTile_i, D_5896_mapX, D_5897_mapY, D_5895_mapLevel, D_5c5a_actors[0].value, slot);
     D_5c5a_actors[slot].extra = skiffs; // BUG: skiffs NOT INITIALIZED when (D_587c & 0xfc) != 0x24
     ULTIMA_2900_UpdateVitalsDisplay();
 }
 
-char* D_444a_shadowlordNames[3] =
+char* shadowlordNames[3] =
 {
     /*0x43ef*/ "FAULINEI",
     /*0x43f8*/ "ASTAROTH",
@@ -1040,7 +1040,7 @@ char* D_444a_shadowlordNames[3] =
 // as an NPC two cells north (not when one is there, or when it is not allowed); returns 1 when nothing
 // happened, else 0.
 // CHECKED
-int CMDS_1030_YellShadowlord(char* word)
+int YellShadowlord(char* word)
 {
     int slot;
     int which_o;
@@ -1054,7 +1054,7 @@ int CMDS_1030_YellShadowlord(char* word)
     {
         for (which_o = 0; which_o < 3; which_o++)
         {
-            if (ULTIMA_6f1e_CompareWord((byte*)D_444a_shadowlordNames[which_o], word) > -1)
+            if (CompareWord((byte*)shadowlordNames[which_o], word) > -1)
                 break;
         }
 
@@ -1075,9 +1075,9 @@ int CMDS_1030_YellShadowlord(char* word)
                 }
             }
 
-            D_58cb_summonedLord = which_o;
+            summonedLord = which_o;
             slot = ULTIMA_38e4_FindActorSlot();
-            ULTIMA_3a74_SetActor(TILE_ACTOR_SHADOWLORD, TILE_ACTOR_SHADOWLORD, D_5896_mapX, D_5897_mapY - 2, D_5895_mapLevel, 0, slot);
+            SetActor(TILE_ACTOR_SHADOWLORD, TILE_ACTOR_SHADOWLORD, D_5896_mapX, D_5897_mapY - 2, D_5895_mapLevel, 0, slot);
 
             npc = 0x1f;
             for (j_h = 0x1f; j_h >= 0; j_h--)

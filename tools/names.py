@@ -86,8 +86,8 @@ def check():
             problems.append('%s: key' % n)
         if NAME.match(n) and addressed(n) != v:
             problems.append('%s: the row says %r, the name says %r' % (n, v, addressed(n)))
-        if not NAME.match(n) and not re.match(r'^[a-z][A-Za-z0-9]*$', n) and not re.match(r'^[A-Z][A-Za-z0-9]*$', n):
-            problems.append('%s is not a name the table can give (lower or upper camel)' % n)
+        if not NAME.match(n) and not re.match(r'^[A-Za-z][A-Za-z0-9_]*$', n):
+            problems.append('%s is not an identifier the table can give' % n)
     for n in ids:
         a = addressed(n)
         if a and rows.get(n) != a:

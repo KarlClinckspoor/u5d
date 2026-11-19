@@ -701,9 +701,17 @@ free here: three things in the compiled code depend on them, and every rename go
 | struct field | `lowerCamel` (`_17` while unknown) | `maxHp` |
 | macro, enum constant | `UPPER_SNAKE` | `TILE_MAP_DESK` |
 
-- **The address prefix stays** (`MODULE_addr`, `D_addr`): it ties the source to the binary,
-  and the tools read it (`u5.name_address`: match.py's fixup check, u5link). Add or improve
-  the part after it. `S_0x....` string arrays and `local_N` names not yet understood stay
+- **This branch (`natural-names`) drops the prefix** from the functions and globals that had
+  a readable name (`ULTIMA_1850_PrintString` -> `PrintString`, `D_57aa_gold` -> `gold`). The
+  address moves to `tools/names.tsv` (name, kind, module, address; `python tools/names.py`
+  writes it from the sources, `--check` verifies it, and rename.py renames its rows). The
+  tools find an address with `u5.name_info` / `u5.name_address`, which read the table for a
+  name without a prefix and still parse a prefix that remains. A name still carrying its
+  prefix (no readable name yet, a collision, or one the tools refuse) keeps it. The plan is
+  `docs/names/natural.txt`.
+- **The address prefix stays** on `main` (`MODULE_addr`, `D_addr`): it ties the source to the
+  binary, and the tools read it (`u5.name_address`: match.py's fixup check, u5link). Add or
+  improve the part after it. `S_0x....` string arrays and `local_N` names not yet understood stay
   as they are; so do the `F_xxxx` names in town.c (below).
 - **At most 31 characters**, so that the name in the source is the name in the object.
   `SHOPPES2_` plus an address leaves 17.
@@ -788,6 +796,21 @@ comment above each function.
   module identical, and three overlays different in `check.py`. The tool now renames the
   stub, and `u5link.py` reports a call into another overlay that finds no stub. **`match.py`
   is not enough after a rename: run the gate.**
+- **Natural names, measured (this branch).** 1,124 renames, 603 functions and 521 globals (the
+  batch `docs/names/natural.txt`): every function and global whose name had a readable part,
+  minus the names a rename refuses
+  (a local of the same name, or a case-insensitive clash at link: `ULTIMA_1068_RevealTile`
+  beside `revealTile`; `srand`, `strlen`, `ToUpper` clashed with stdlib.h and were given
+  `SeedRandom`, `StringLength`, `ToUpperChar`). Overlay functions that share a name take their
+  module (`DungeonMainLoop`, `TownMainLoop`). Shorter names freed pass 2's memory, which moved
+  the three limits: TOWN_0f02 could not be brought back by the fill (the dead references of
+  TOWN_0f02 changed nothing at any count from 10 to 285 with the names renamed), so the names
+  `town.c` uses (97, functions and globals, `docs/names/natural.txt` leaves them out) keep their
+  prefixes and town.c is the same text as on `main`. CMDS_0000 matches with its 72 dead
+  references (as on `main`). ULTIMA_1850 still matches with its comment lines unchanged.
+  Still prefixed on this branch: 215 names of the 1,339 in `names.tsv` (67 functions, 148
+  globals: the 97 town.c names, the refused and clashing ones, the 31 bare `D_xxxx` globals).
+  The assembly-only labels (`src/asm`, about 580 names) are not in the table and keep theirs.
 - **TOWN_0f02** was the one known hazard: its fill of 266 dead references named 266 globals
   of other modules, so that naming any of them (TALK's eight state bytes were among them)
   would have moved its window. The fill now has names of its own (`F_xxxx` in town.c, same

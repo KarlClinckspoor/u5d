@@ -8,11 +8,11 @@
 
 #include "outsubs.h"
 
-u8 D_3866_dungeonChunks[8] = {0x4F, 0x45, 0xA4, 0x17, 0x19, 0x63, 0xFE, 0x88};
+u8 dungeonChunks[8] = {0x4F, 0x45, 0xA4, 0x17, 0x19, 0x63, 0xFE, 0x88};
 
-u8 D_386e_shrineChunks[8] = {0x4E, 0x58, 0xE2, 0x04, 0x2C, 0xC5, 0x00, 0xDE};
+u8 shrineChunks[8] = {0x4E, 0x58, 0xE2, 0x04, 0x2C, 0xC5, 0x00, 0xDE};
 
-u8 D_3876_chunkFileIndex[0x100] = {
+u8 chunkFileIndex[0x100] = {
     0xFF, 0xFF, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05,
     0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0xFF, 0x0C,
     0xFF, 0x0D, 0x0E, 0x0F, 0x10, 0x11, 0x12, 0x13,
@@ -48,7 +48,7 @@ u8 D_3876_chunkFileIndex[0x100] = {
 };
 
 // the chunk of a dungeon (table D_3866) whose dungeon is sealed (D_58d0 == 0)? 1 when not in the table too
-static int OUTSUBS_0000_DungeonSealedAt(uint chunkWord)
+static int DungeonSealedAt(uint chunkWord)
 {
     int index;
     int sealed = 1;
@@ -57,9 +57,9 @@ static int OUTSUBS_0000_DungeonSealedAt(uint chunkWord)
 
     for (index = 0; index < 8; index++)
     {
-        if (D_3866_dungeonChunks[index] == chunkWord)
+        if (dungeonChunks[index] == chunkWord)
         {
-            sealed = D_58d0_dungeonOpen[index] == 0;
+            sealed = dungeonOpen[index] == 0;
             break;
         }
     }
@@ -68,7 +68,7 @@ static int OUTSUBS_0000_DungeonSealedAt(uint chunkWord)
 }
 
 // the chunk is a shrine's (D_386e) and the shrine is destroyed (bit 7 of D_58d8)
-static int OUTSUBS_004a_ShrineDestroyedAt(int chunkWord)
+static int ShrineDestroyedAt(int chunkWord)
 {
     int index_i;
     int destroyed = 0;
@@ -78,9 +78,9 @@ static int OUTSUBS_004a_ShrineDestroyedAt(int chunkWord)
     for (index_i = 0; index_i < 8; index_i++)
     {
         // 0063
-        if (D_386e_shrineChunks[index_i] == chunkWord)
+        if (shrineChunks[index_i] == chunkWord)
         {
-            destroyed = 0x7f < D_58d8_shrineDestroyed[index_i];
+            destroyed = 0x7f < shrineDestroyed[index_i];
             break;
         }
     }
@@ -89,7 +89,7 @@ static int OUTSUBS_004a_ShrineDestroyedAt(int chunkWord)
 }
 
 // reads one 16x16 chunk into slot 0-3 of D_6608; sealed dungeons and destroyed shrines get their changed tile
-static void OUTSUBS_0098_LoadChunk(char* fileName, int slot, int chunkWord)
+static void LoadChunk(char* fileName, int slot, int chunkWord)
 {
     int row;
     int col_g;
@@ -99,7 +99,7 @@ static void OUTSUBS_0098_LoadChunk(char* fileName, int slot, int chunkWord)
 
     if (*fileName == 'B') // "BRIT.DAT"
     {
-        fileOffset_j = D_3876_chunkFileIndex[(byte)(chunkWord >> 8)];
+        fileOffset_j = chunkFileIndex[(byte)(chunkWord >> 8)];
         if (fileOffset_j == 0xff)
         {
             memset(&D_6608[slot * 0x100], 1, 0x100);
@@ -118,7 +118,7 @@ static void OUTSUBS_0098_LoadChunk(char* fileName, int slot, int chunkWord)
     // 00e2
     if (D_5895_mapLevel != 0)
     {
-        ULTIMA_251e_SwitchDisks(5);
+        SwitchDisks(5);
     }
 
     // 00f0
@@ -137,14 +137,14 @@ static void OUTSUBS_0098_LoadChunk(char* fileName, int slot, int chunkWord)
             case 0x17:
             case 0x18:
                 // 012c
-                if (OUTSUBS_0000_DungeonSealedAt(chunkWord) != 0)
+                if (DungeonSealedAt(chunkWord) != 0)
                 {
                     *ULTIMA_4402_GetTileAddr(col_g + baseX, row + baseY) = TILE_MAP_DF;
                 }
                 break;
             case 0x19:
                 // 017d
-                if (OUTSUBS_004a_ShrineDestroyedAt(chunkWord) != 0)
+                if (ShrineDestroyedAt(chunkWord) != 0)
                 {
                     *ULTIMA_4402_GetTileAddr(col_g + baseX, row + baseY) = TILE_MAP_RUINS;
                 }
@@ -155,7 +155,7 @@ static void OUTSUBS_0098_LoadChunk(char* fileName, int slot, int chunkWord)
 }
 
 // loads the chunks that come into view (-1/1 steps in x and y); finds the lighthouse beacon (tile 0x1b) in the four
-void OUTSUBS_01b4_LoadViewChunks(int stepX, int stepY)
+void LoadViewChunks(int stepX, int stepY)
 {
     int beaconOffset;
     int originWord_k;
@@ -188,22 +188,22 @@ void OUTSUBS_01b4_LoadViewChunks(int stepX, int stepY)
     // 01f5
     if (stepX == -1 || stepY == -1)
     {
-        OUTSUBS_0098_LoadChunk(fileName, 0, originWord_k);
+        LoadChunk(fileName, 0, originWord_k);
     }
     // 020d
     if (stepX == 1 || stepY == -1)
     {
-        OUTSUBS_0098_LoadChunk(fileName, 1, originWord_k + rightStep);
+        LoadChunk(fileName, 1, originWord_k + rightStep);
     }
     // 022a
     if (stepX == -1 || stepY == 1)
     {
-        OUTSUBS_0098_LoadChunk(fileName, 2, originWord_k + 0x1000);
+        LoadChunk(fileName, 2, originWord_k + 0x1000);
     }
     // 0247
     if (stepX == 1 || stepY == 1)
     {
-        OUTSUBS_0098_LoadChunk(fileName, 3, (originWord_k + rightStep) + 0x1000);
+        LoadChunk(fileName, 3, (originWord_k + rightStep) + 0x1000);
     }
 
     // 0267
@@ -230,7 +230,7 @@ void OUTSUBS_01b4_LoadViewChunks(int stepX, int stepY)
 }
 
 // after a scroll, copies the two chunks that stay in view to their new slots
-void OUTSUBS_02c8_ShiftChunks(int stepX, int stepY)
+void ShiftChunks(int stepX, int stepY)
 {
     int srcSlotB;
     int srcSlotA;
@@ -249,7 +249,7 @@ void OUTSUBS_02c8_ShiftChunks(int stepX, int stepY)
 }
 
 // the saved-map file of the level: BRIT.OOL on the surface, UNDER.OOL below
-char* OUTSUBS_0368_GetWorldSavefile(void)
+char* GetWorldSavefile(void)
 {
     char* fileName;
     if (D_5895_mapLevel == 0)
@@ -265,7 +265,7 @@ char* OUTSUBS_0368_GetWorldSavefile(void)
 }
 
 // prints the verb, finds the town at the party's position (D_1e8a/D_1eb2) and enters it: 0, or 1 with "What town?"
-int OUTSUBS_0388_EnterTown(char* verb)
+int EnterTown(char* verb)
 {
     int placeIndex;
     int failed;
@@ -285,20 +285,20 @@ int OUTSUBS_0388_EnterTown(char* verb)
         {
             ULTIMA_1850_PrintString(/*0x399c*/ "\n\n");
             ULTIMA_16ba_PrintChar(CTRL_CHAR_CENTER_TEXT);
-            ULTIMA_1850_PrintString(D_1e3a_mapNames[placeIndex]);
+            ULTIMA_1850_PrintString(mapNames[placeIndex]);
             ULTIMA_16ba_PrintChar(CTRL_CHAR_UNCENTER_TEXT);
         }
 
         ULTIMA_16ba_PrintChar('\n');
-        if (D_a9bd_curDisk[0] != 1)
+        if (curDisk[0] != 1)
         {
-            ULTIMA_251e_SwitchDisks(1);
+            SwitchDisks(1);
 
-            while (ULTIMA_1674_TestOpenFile(/*0x399f*/ "BRIT.DAT") == 0)
+            while (TestOpenFile(/*0x399f*/ "BRIT.DAT") == 0)
                 ;
         }
 
-        ULTIMA_25d8_WriteFileToDisk(OUTSUBS_0368_GetWorldSavefile(), D_5c5a_actors, 0x100);
+        WriteFileToDisk(GetWorldSavefile(), D_5c5a_actors, 0x100);
         D_5893_mapId = placeIndex + 1;
         D_5895_mapLevel = 0;
         D_5896_mapX = 0xf;
@@ -313,41 +313,41 @@ int OUTSUBS_0388_EnterTown(char* verb)
     return failed;
 }
 
-void MAINOUT_0000_SetUpOverworld(void);
-void MAINOUT_0354_MoveParty(int stepX, int stepY);
+void SetUpOverworld(void);
+void MainoutMoveParty(int stepX, int stepY);
 
 u8 D_3a06_shardX[4] = { 0xC0, 0x82, 0xB0 };
 
 u8 D_3a0a_shardY[4] = { 0x50, 0x41, 0xB8 };
 
-u8 D_3a0e_shardValue[3] = { 0xF0, 0xF1, 0xF2 };
+u8 shardValue[3] = { 0xF0, 0xF1, 0xF2 };
 
 // "F-A-L-L-S!!!": hurts the party, and at the one hole (0x36, 0x8a) falls into the underworld
-void OUTSUBS_0458_Falls(void)
+void Falls(void)
 {
     int savedTile;
     int member_i;
 
     ULTIMA_1850_PrintString(/*0x39b5*/ "F-A-L-L-S!!!\n");
-    MAINOUT_0354_MoveParty(0, 1);
-    ULTIMA_3ae6_WaitFrames(1);
-    MAINOUT_0354_MoveParty(0, 1);
-    ULTIMA_43ae_AudioSweepTone(0x9c4, 800, 1, 300);
+    MainoutMoveParty(0, 1);
+    WaitFrames(1);
+    MainoutMoveParty(0, 1);
+    AudioSweepTone(0x9c4, 800, 1, 300);
 
     savedTile = D_587c_partyTile;
     D_587c_partyTile = 0;
 
-    ULTIMA_3ae6_WaitFrames(1);
+    WaitFrames(1);
 
     for (member_i = 0; member_i < D_585b_partyCount; member_i++)
     {
-        if (D_55a8_party[member_i].status != STATUS_DEAD && D_55a8_party[member_i].dex <= ULTIMA_3abe_Random1To30())
+        if (D_55a8_party[member_i].status != STATUS_DEAD && D_55a8_party[member_i].dex <= Random1To30())
         {
-            ULTIMA_2a52_DamagePlayer(member_i, 1);
+            DamagePlayer(member_i, 1);
         }
     }
 
-    ULTIMA_3ae6_WaitFrames(2);
+    WaitFrames(2);
     D_587c_partyTile = savedTile;
 
     if (D_5896_mapX == 0x36 && D_5897_mapY == 0x8a)
@@ -356,27 +356,27 @@ void OUTSUBS_0458_Falls(void)
 
         D_5895_mapLevel = 0xff;
 
-        ULTIMA_25d8_WriteFileToDisk(/*0x39de*/ "BRIT.OOL", D_5c5a_actors, 0x100);
+        WriteFileToDisk(/*0x39de*/ "BRIT.OOL", D_5c5a_actors, 0x100);
         ULTIMA_256e_ReadFileFromDisk(/*0x39e7*/ "UNDER.OOL", D_5c5a_actors, 0x100, 0);
-        ULTIMA_251e_SwitchDisks(5);
+        SwitchDisks(5);
 
-        while (ULTIMA_1674_TestOpenFile(/*0x39f1*/ "UNDER.DAT") == 0)
+        while (TestOpenFile(/*0x39f1*/ "UNDER.DAT") == 0)
             ;
 
-        ULTIMA_25d8_WriteFileToDisk(/*0x39fb*/ "UNDER.OOL", D_5c5a_actors, 0x100);
-        MAINOUT_0000_SetUpOverworld(); // THUNK 7b7e
+        WriteFileToDisk(/*0x39fb*/ "UNDER.OOL", D_5c5a_actors, 0x100);
+        SetUpOverworld(); // THUNK 7b7e
     }
 }
 
 // in the underworld: the Amulet's piece and the shards not yet taken (Shadowlord alive) are actors on the map
-void OUTSUBS_0566_PlaceAmuletShards(void)
+void PlaceAmuletShards(void)
 {
     int index;
     ActorFmt* actor_h;
 
     if (D_5895_mapLevel != 0)
     {
-        if (D_57b3_amulet == 0)
+        if (amulet == 0)
         {
             // D_5c5a_actors[28] == 5d3a
             actor_h = &D_5c5a_actors[28];
@@ -390,7 +390,7 @@ void OUTSUBS_0566_PlaceAmuletShards(void)
         // 059d
         for (index = 0; index < 3; index++)
         {
-            if (D_57b6_shards[index] == 0 && D_58c8_shadowlordTowns[index] < 0x80)
+            if (shards[index] == 0 && D_58c8_shadowlordTowns[index] < 0x80)
             {
                 // D_5c5a_actors[29] == 5d42
                 actor_h = &D_5c5a_actors[index + 29];
@@ -398,14 +398,14 @@ void OUTSUBS_0566_PlaceAmuletShards(void)
                 actor_h->x = D_3a06_shardX[index];
                 actor_h->y = D_3a0a_shardY[index];
                 actor_h->z = 0xff;
-                actor_h->value = D_3a0e_shardValue[index];
+                actor_h->value = shardValue[index];
             }
         }
     }
 }
 
 // "Burning!": the party is damaged
-void OUTSUBS_05ee_StepOnBurningTile(void)
+void StepOnBurningTile(void)
 {
     ULTIMA_5910_UpdateFrame();
     ULTIMA_1850_PrintString(/*0x3a11*/ "Burning!\n");
@@ -413,7 +413,7 @@ void OUTSUBS_05ee_StepOnBurningTile(void)
 }
 
 // each living member may be poisoned (dexterity against a roll of 1 to 30)
-void OUTSUBS_05fc_StepOnPoisonTile(void)
+void StepOnPoisonTile(void)
 {
     int member;
 

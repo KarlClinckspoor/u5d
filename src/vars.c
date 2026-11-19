@@ -13,7 +13,7 @@
 
 // 00 00
 
-// D_535e_textWindows: filled with 0
+// textWindows: filled with 0
 
 //u16 D_5394 = 0x1232;
 

@@ -43,7 +43,7 @@ GAMEDATA_DIR = {'gog': 'gamedata', '1988': 'gamedata-1988'}
 # GOG target's build also builds the 1988 form of the modules that differ, for it.
 PATCH_OF = {'gog': '1988'}
 # Assembly modules a target leaves out, because C stands for them there: the 1988 target
-# compiles ULTIMA_2322 (with D_545e_lastDisk and diskswap.c's strings) from src/diskswap.c and INTRO_132a
+# compiles ULTIMA_2322 (with lastDisk and diskswap.c's strings) from src/diskswap.c and INTRO_132a
 # (with its strings) from src/intro2.c; A2322.ASM and AINTRO2.ASM are the 1992 patch's bytes.
 # The link command file's lines for them carry target=gog (src/u5d.lnk).
 ASM_EXCLUDED = {'gog': (), '1988': ('A2322', 'AINTRO2')}
@@ -213,7 +213,7 @@ OVERLAYS = list(OVERLAY_BASE)
 # INTRO.OVL's 16-byte header is PLINK86's relocation list for the overlay (the only overlay
 # with relocated words): a dword (CS offset, segment 0) for each word that holds the code
 # segment, the later word first, then zeros. Its two entries are the segment halves of the far
-# pointers to ULTIMA_2320 and ULTIMA_2322 that INTRO_132a stores in D_5394_diskSwapFn.
+# pointers to ULTIMA_2320 and ULTIMA_2322 that INTRO_132a stores in diskSwapFn.
 OVERLAY_HEADER = {'INTRO': 0x10}
 
 
@@ -246,20 +246,20 @@ MODULES.update({n + '.c': ('root', None) for n in ('party', 'commands', 'world',
 MODULES['ultima.c'] = ('root', None)
 MODULES.update({n + '.c': ('root', None) for n in ('logo', 'print', 'pollkey', 'waitkey', 'backspc', 'ustrlen',
                                                    'diskswap', 'swdisks', 'fileio')})
-# view.c (MSC 5.0, ULTIMA_51a0_RandomFrame to 5910) is followed by an MSC 5.1 object from 5a28 to 5f86.
+# view.c (MSC 5.0, RandomFrame to 5910) is followed by an MSC 5.1 object from 5a28 to 5f86.
 MODULES['visible.c'] = ('root', None)
 MODULES['vars.c'] = ('data', None)
-# INTRO.OVL's MSC 5.1 code is three objects: intro0.c (INTRO_0010_PutBackdropStrips, INTRO_0050), intro.c (to
+# INTRO.OVL's MSC 5.1 code is three objects: intro0.c (PutBackdropStrips, INTRO_0050), intro.c (to
 # INTRO_094e) and intro2.c (from INTRO_0986_Main), linked in that order before introb.c
 # (docs/MATCHING.md).
 MODULES['intro0.c'] = ('ovl', 'INTRO')
 MODULES['intro2.c'] = ('ovl', 'INTRO')
-# Likewise CMDS.OVL: cmds.c (to CMDS_1030_YellShadowlord), cmds2.c (from CMDS_1202_RestoreShrine), cmdsb.c.
+# Likewise CMDS.OVL: cmds.c (to YellShadowlord), cmds2.c (from RestoreShrine), cmdsb.c.
 MODULES['cmds2.c'] = ('ovl', 'CMDS')
 # TOWN.OVL: town.c (to TOWN_0f02_TileEffects) and town2.c (from TOWN_10da_ShoutBegone).
 MODULES['town2.c'] = ('ovl', 'TOWN')
-# SHOPPES2.OVL is two MSC 5.0 objects: shoppes2.c (to SHOPPES2_066c_Pub) and shoppe2b.c (from
-# SHOPPES2_07e2_CanAfford, the shipwright).
+# SHOPPES2.OVL is two MSC 5.0 objects: shoppes2.c (to Pub) and shoppe2b.c (from
+# CanAfford, the shipwright).
 MODULES['shoppe2b.c'] = ('ovl', 'SHOPPES2')
 
 # The original was built with two compilers. Modules last compiled with MSC 5.0 put their

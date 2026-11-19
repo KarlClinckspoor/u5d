@@ -1,11 +1,11 @@
-; A2322.ASM: ULTIMA.EXE CS:2322-251e, ULTIMA_2322_DiskSwapMessage as the GOG release has it.
+; A2322.ASM: ULTIMA.EXE CS:2322-251e, DISKSWAPMESSAGE as the GOG release has it.
 ; In 1.16 this was MSC 5.1 output, the second function of diskswap.c's object; GOG patched it in
 ; place (2405-240c: the default drive is taken instead of asking for a disk; 24aa-24ac: the
 ; drive letter is no longer echoed), so its bytes are no compiler's output. The DOS build
 ; of the GOG target takes it from here. The 1988 target leaves this module out
 ; (tools/u5.py ASM_EXCLUDED; the link script's lines for it say target=gog) and compiles
-; 1.16's C in src/diskswap.c (RELEASE_1988) instead, with D_545E_LASTDISK and the strings.
-; Its _DATA is the object's: D_545E_LASTDISK (the disk last selected) and the strings, DS:545e-54b6.
+; 1.16's C in src/diskswap.c (RELEASE_1988) instead, with LASTDISK and the strings.
+; Its _DATA is the object's: LASTDISK (the disk last selected) and the strings, DS:545e-54b6.
 ; Drafted from the original bytes by tools/asmgen.py and checked by tools/asmbuild.py.
 
 	TITLE	A2322
@@ -22,25 +22,25 @@ DGROUP	GROUP	CONST, _BSS, _DATA
 
 	EXTRN	ULTIMA_0A70_GRAP_2D_SETPENCOLOR:NEAR
 	EXTRN	ULTIMA_0AA6_GRAP_3F_FILLRECT:NEAR
-	EXTRN	ULTIMA_0C22_GRAP_0F_SELECTPAGE:NEAR
-	EXTRN	ULTIMA_0F6E_GRAP_1B_TRANSFERFUL:NEAR
-	EXTRN	ULTIMA_16A6_GETDEFAULTDRIVE:NEAR
+	EXTRN	GRAP_0F_SELECTPAGE:NEAR
+	EXTRN	GRAP_1B_TRANSFERFULLSCREEN:NEAR
+	EXTRN	GETDEFAULTDRIVE:NEAR
 	EXTRN	ULTIMA_16BA_PRINTCHAR:NEAR
 	EXTRN	ULTIMA_1850_PRINTSTRING:NEAR
-	EXTRN	ULTIMA_1C22_SETTEXTWINDOWSIZE:NEAR
-	EXTRN	ULTIMA_1DDA_WAITFORKEYSTROKE:NEAR
-	EXTRN	ULTIMA_1EAC_SETDEFAULTDRIVE:NEAR
-	EXTRN	ULTIMA_2032_TOUPPER:NEAR
-	EXTRN	D_5394_DISKSWAPFN:WORD
-	EXTRN	ULTIMA_2320_NODISKSWAPMESSAGE:FAR
-	EXTRN	D_A9BD_CURDISK:BYTE
-	EXTRN	D_A9C2_FLOPPYCOUNT:BYTE
-	EXTRN	D_A9C8_DISKDRIVES:BYTE
+	EXTRN	SETTEXTWINDOWSIZE:NEAR
+	EXTRN	WAITFORKEYSTROKE:NEAR
+	EXTRN	SETDEFAULTDRIVE:NEAR
+	EXTRN	TOUPPERCHAR:NEAR
+	EXTRN	DISKSWAPFN:WORD
+	EXTRN	NODISKSWAPMESSAGE:FAR
+	EXTRN	CURDISK:BYTE
+	EXTRN	FLOPPYCOUNT:BYTE
+	EXTRN	DISKDRIVES:BYTE
 
 ; this module's own data in DGROUP (DS:545e-54b6)
 _DATA	SEGMENT
-	PUBLIC	D_545E_LASTDISK
-D_545E_LASTDISK	db	0ffh		; the disk (D_A9BD_CURDISK[0]) last selected, 0ffh: none
+	PUBLIC	LASTDISK
+LASTDISK	db	0ffh		; the disk (CURDISK[0]) last selected, 0ffh: none
 D_545F	db	0ah, 'Please insert the Ultima ', 00h	; printed by 1.16 at 2405
 	PUBLIC	D_547A
 D_547A	db	'V ', 00h
@@ -58,57 +58,57 @@ _DATA	ENDS
 
 _TEXT	SEGMENT
 
-	PUBLIC	ULTIMA_2322_DISKSWAPMESSAGE
-ULTIMA_2322_DISKSWAPMESSAGE:
+	PUBLIC	DISKSWAPMESSAGE
+DISKSWAPMESSAGE:
 	push bp
 	mov bp,sp
 	sub sp,4
 	push si
-	mov WORD PTR D_5394_DISKSWAPFN,OFFSET ULTIMA_2320_NODISKSWAPMESSAGE
-	mov	WORD PTR D_5394_DISKSWAPFN+2,_TEXT
-	mov bl,BYTE PTR D_A9BD_CURDISK
+	mov WORD PTR DISKSWAPFN,OFFSET NODISKSWAPMESSAGE
+	mov	WORD PTR DISKSWAPFN+2,_TEXT
+	mov bl,BYTE PTR CURDISK
 	sub bh,bh
 	mov al,[bx-5638h]
 	mov [bp-4],al
 	cmp al,0ffh
 	je	L_2374
 	mov al,bl
-	cmp BYTE PTR D_545E_LASTDISK,al
+	cmp BYTE PTR LASTDISK,al
 	je	L_2374
-	call	ULTIMA_16A6_GETDEFAULTDRIVE
+	call	GETDEFAULTDRIVE
 	mov cl,[bp-4]
 	sub ch,ch
 	cmp ax,cx
 	je	L_2374
-	mov bl,BYTE PTR D_A9BD_CURDISK
+	mov bl,BYTE PTR CURDISK
 	sub bh,bh
 	mov al,[bx-5638h]
 	sub ah,ah
 	push ax
-	call	ULTIMA_1EAC_SETDEFAULTDRIVE
-	mov al,BYTE PTR D_A9BD_CURDISK
+	call	SETDEFAULTDRIVE
+	mov al,BYTE PTR CURDISK
 L_236d:
-	mov BYTE PTR D_545E_LASTDISK,al
+	mov BYTE PTR LASTDISK,al
 	jmp	NEAR PTR L_250c
 	db	090h
 L_2374:
-	mov al,BYTE PTR D_A9BD_CURDISK
+	mov al,BYTE PTR CURDISK
 	sub ah,ah
 	mov si,ax
 	add si,0a9c8h
 	cmp byte ptr [si],43h
 	jae	L_239d
-	cmp BYTE PTR D_A9C2_FLOPPYCOUNT,1
+	cmp BYTE PTR FLOPPYCOUNT,1
 	jbe	L_239d
 	xor byte ptr [si],3
 	mov al,[si]
 	push ax
-	call	ULTIMA_1EAC_SETDEFAULTDRIVE
-	mov al,BYTE PTR D_A9BD_CURDISK
-	cmp BYTE PTR D_545E_LASTDISK,al
+	call	SETDEFAULTDRIVE
+	mov al,BYTE PTR CURDISK
+	cmp BYTE PTR LASTDISK,al
 	jne	L_236d
 L_239d:
-	mov al,BYTE PTR D_A9BD_CURDISK
+	mov al,BYTE PTR CURDISK
 	sub ah,ah
 	mov si,ax
 	add si,0a9c8h
@@ -119,15 +119,15 @@ L_239d:
 	mov byte ptr [si],41h
 	mov ax,41h
 	push ax
-	call	ULTIMA_1EAC_SETDEFAULTDRIVE
-	mov BYTE PTR D_545E_LASTDISK,0ffh
+	call	SETDEFAULTDRIVE
+	mov BYTE PTR LASTDISK,0ffh
 	jmp	NEAR PTR L_250c
 L_23c4:
-	cmp BYTE PTR D_A9BD_CURDISK+1,2
+	cmp BYTE PTR CURDISK+1,2
 	jne	L_2400
 	sub ax,ax
 	push ax
-	call	ULTIMA_0C22_GRAP_0F_SELECTPAGE
+	call	GRAP_0F_SELECTPAGE
 	sub ax,ax
 	push ax
 	mov ax,6
@@ -138,7 +138,7 @@ L_23c4:
 	push ax
 	mov ax,0dh
 	push ax
-	call	ULTIMA_1C22_SETTEXTWINDOWSIZE
+	call	SETTEXTWINDOWSIZE
 	sub ax,ax
 	push ax
 	call	ULTIMA_0A70_GRAP_2D_SETPENCOLOR
@@ -152,13 +152,13 @@ L_23c4:
 	push ax
 	call	ULTIMA_0AA6_GRAP_3F_FILLRECT
 L_2400:
-	mov BYTE PTR D_545E_LASTDISK,0ffh
+	mov BYTE PTR LASTDISK,0ffh
 ; GOG: the drive is the default one, and no key is read (in 1.16: mov ax,OFFSET D_545F;
 ; push ax; call ULTIMA_1850_PRINTSTRING)
-	call	ULTIMA_16A6_GETDEFAULTDRIVE
+	call	GETDEFAULTDRIVE
 	jmp	SHORT L_247d
 	db	044h, 0f4h	; the rest of 1.16's call ULTIMA_1850_PRINTSTRING
-	cmp BYTE PTR D_A9BD_CURDISK,4
+	cmp BYTE PTR CURDISK,4
 	jne	L_241a
 	mov ax,49h
 	push ax
@@ -167,7 +167,7 @@ L_241a:
 	mov ax,OFFSET DGROUP:D_547A
 	push ax
 	call	ULTIMA_1850_PRINTSTRING
-	mov al,BYTE PTR D_A9BD_CURDISK
+	mov al,BYTE PTR CURDISK
 	sub ah,ah
 	or ax,ax
 	je	L_243c
@@ -188,7 +188,7 @@ L_2443:
 	mov ax,OFFSET DGROUP:D_5496
 	push ax
 	call	ULTIMA_1850_PRINTSTRING
-	mov bl,BYTE PTR D_A9BD_CURDISK
+	mov bl,BYTE PTR CURDISK
 	sub bh,bh
 	cmp byte ptr [bx-5638h],0ffh
 	jne	L_246c
@@ -211,22 +211,22 @@ L_246c:
 L_2473:
 	sub ax,ax
 	push ax
-	call	ULTIMA_1DDA_WAITFORKEYSTROKE
+	call	WAITFORKEYSTROKE
 	push ax
-	call	ULTIMA_2032_TOUPPER
+	call	TOUPPERCHAR
 L_247d:
 	mov [bp-2],al
-	mov bl,BYTE PTR D_A9BD_CURDISK
+	mov bl,BYTE PTR CURDISK
 	sub bh,bh
 	cmp byte ptr [bx-5638h],0ffh
 	jne	L_2497
 	sub ah,ah
 	push ax
-	call	ULTIMA_1EAC_SETDEFAULTDRIVE
+	call	SETDEFAULTDRIVE
 	or ax,ax
 	je	L_2473
 L_2497:
-	mov bl,BYTE PTR D_A9BD_CURDISK
+	mov bl,BYTE PTR CURDISK
 	sub bh,bh
 	cmp byte ptr [bx-5638h],0ffh
 	jne	L_24d4
@@ -239,30 +239,30 @@ L_2497:
 	nop
 	cmp byte ptr [bp-2],42h
 	jne	L_24b8
-	mov BYTE PTR D_A9C2_FLOPPYCOUNT,2
+	mov BYTE PTR FLOPPYCOUNT,2
 L_24b8:
-	mov bl,BYTE PTR D_A9BD_CURDISK
+	mov bl,BYTE PTR CURDISK
 	sub bh,bh
 	mov al,[bp-2]
 	mov [bx-5638h],al
 	cmp bl,3
 	jne	L_24d4
-	cmp BYTE PTR D_A9C8_DISKDRIVES+1,0ffh
+	cmp BYTE PTR DISKDRIVES+1,0ffh
 	jne	L_24d4
-	mov BYTE PTR D_A9C8_DISKDRIVES+1,al
+	mov BYTE PTR DISKDRIVES+1,al
 L_24d4:
-	cmp BYTE PTR D_A9BD_CURDISK+1,0
+	cmp BYTE PTR CURDISK+1,0
 	jne	L_24e4
 	mov ax,0ah
 	push ax
 	call	ULTIMA_16BA_PRINTCHAR
 	jmp	SHORT L_250c
 L_24e4:
-	cmp BYTE PTR D_A9BD_CURDISK+1,2
+	cmp BYTE PTR CURDISK+1,2
 	jne	L_250c
 	mov ax,1
 	push ax
-	call	ULTIMA_0C22_GRAP_0F_SELECTPAGE
+	call	GRAP_0F_SELECTPAGE
 	sub ax,ax
 	push ax
 	push ax
@@ -271,15 +271,15 @@ L_24e4:
 	push ax
 	mov ax,18h
 	push ax
-	call	ULTIMA_1C22_SETTEXTWINDOWSIZE
+	call	SETTEXTWINDOWSIZE
 	mov ax,1
 	push ax
 	sub ax,ax
 	push ax
-	call	ULTIMA_0F6E_GRAP_1B_TRANSFERFUL
+	call	GRAP_1B_TRANSFERFULLSCREEN
 L_250c:
-	mov WORD PTR D_5394_DISKSWAPFN,OFFSET ULTIMA_2322_DISKSWAPMESSAGE
-	mov	WORD PTR D_5394_DISKSWAPFN+2,_TEXT
+	mov WORD PTR DISKSWAPFN,OFFSET DISKSWAPMESSAGE
+	mov	WORD PTR DISKSWAPFN+2,_TEXT
 	pop si
 	mov sp,bp
 	pop bp

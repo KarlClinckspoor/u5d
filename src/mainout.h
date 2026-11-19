@@ -1,13 +1,13 @@
 #ifndef _MAINOUT_H
 #define _MAINOUT_H
 
-void MAINOUT_0000_SetUpOverworld(void);
-void MAINOUT_007a_WaitIfActorNear(void);
-void MAINOUT_0354_MoveParty(int stepX, int stepY);
-int MAINOUT_06ec_AttackCmd(void);
-int MAINOUT_08de_EnterCmd(void);
-void MAINOUT_0d22_Entry(void);
-int MAINOUT_105c_IsMovingActor(int tile);
-int MAINOUT_1a60_MonstersTurn(void);
+void SetUpOverworld(void);
+void WaitIfActorNear(void);
+void MainoutMoveParty(int stepX, int stepY);
+int MainoutAttackCmd(void);
+int EnterCmd(void);
+void MainoutEntry(void);
+int IsMovingActor(int tile);
+int MonstersTurn(void);
 
 #endif

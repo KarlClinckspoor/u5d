@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-int ULTIMA_216c_strlen(char* str)
+int StringLength(char* str)
 {
     int length;
 

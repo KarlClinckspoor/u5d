@@ -21,9 +21,9 @@ uint TOWN_0dc4_GetTownKey(int prompt);
 int TOWN_0e34_NumberKey(int key);
 void TOWN_0f02_TileEffects(void);
 void TOWN_10da_ShoutBegone(int npc);
-void TOWN_11f0_Entry(int fresh);
-void TOWN_141e_MainLoop(void);
+void TownEntry(int fresh);
+void TownMainLoop(void);
 void TOWN_1694_PlaceActors(void);
-void TOWN_1726_PlaceNpcActor(int npc, int x, int y, int z);
+void PlaceNpcActor(int npc, int x, int y, int z);
 
 #endif

@@ -1,4 +1,4 @@
-// INTRO.OVL's MSC 5.1 code is three objects: this one (INTRO_0010_PutBackdropStrips, INTRO_0050), intro.c
+// INTRO.OVL's MSC 5.1 code is three objects: this one (PutBackdropStrips, INTRO_0050), intro.c
 // (INTRO_014e-INTRO_094e) and intro2.c (from INTRO_0986_Main), linked in that order before
 // introb.c. Compiled after these two functions, INTRO_014e's inner do-while is not optimized
 // (pass 2's capacity, docs/MATCHING.md); as the first function of its own object it is
@@ -7,7 +7,7 @@
 #include "common/common.h"
 
 // this module's communal variables (vars.h, DS:a9bc)
-u16 D_bb18_pathPos; // "lord british" index
+u16 pathPos; // "lord british" index
 void* D_bb1a_titleImage; // pointer
 
 #include "funcs.h"
@@ -23,23 +23,23 @@ void* D_bb1a_titleImage; // pointer
 
 // Clears page 1 and puts the four 50-line pictures 1 to 4 of ULTIMA.16 one under the other at x 0x10
 // (probably the backdrop of the menu and story pages).
-void INTRO_0010_PutBackdropStrips(void)
+void PutBackdropStrips(void)
 {
     int band;
 
-    ULTIMA_0c22_GRAP_0f_SelectPage(1);
+    GRAP_0f_SelectPage(1);
     ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
 
     for (band = 0; band < 4; band++)
     {
-        ULTIMA_0d4c_GRAP_4b_PutImage(D_bb1a_titleImage, band + 1, 0x10, band * 0x32, 0);
+        GRAP_4b_PutImage(D_bb1a_titleImage, band + 1, 0x10, band * 0x32, 0);
     }
 }
 
-// Draws Lord British by the path in BRITISH.PTH from its current position (D_bb18_pathPos) up to the next
+// Draws Lord British by the path in BRITISH.PTH from its current position (pathPos) up to the next
 // pen-up, one pen step per byte (3-bit steps in y and x, signs in bits 3 and 7); returns the new position,
 // or 0 when a key was pressed.
-int INTRO_0050_LordBritishAnim(int x, int y)
+int LordBritishAnim(int x, int y)
 {
     int penColor_n;
     int yMove_p;
@@ -49,24 +49,24 @@ int INTRO_0050_LordBritishAnim(int x, int y)
     int savedCalibration;
 
     // DOS: uses savegame area
-    path = &D_55a6_saveStart;
-#define MEM_SIZE ((byte*)&D_6606_saveEnd - (byte*)&D_55a6_saveStart) /*0x1060*/
+    path = &saveStart;
+#define MEM_SIZE ((byte*)&saveEnd - (byte*)&saveStart) /*0x1060*/
 
-    penColor_n = D_13b0_brightWhiteColor;
+    penColor_n = brightWhiteColor;
 
     ULTIMA_0a70_GRAP_2d_SetPenColor(penColor_n);
 
-    savedCalibration = D_5356_timerCalibration;
-    D_5356_timerCalibration = 0x113;
+    savedCalibration = timerCalibration;
+    timerCalibration = 0x113;
 
-    for (pos_l = D_bb18_pathPos; pos_l < MEM_SIZE; pos_l++)
+    for (pos_l = pathPos; pos_l < MEM_SIZE; pos_l++)
     {
         if (penColor_n != 0)
         {
-            ULTIMA_0c64_GRAP_30_Pset(x, y);
+            GRAP_30_Pset(x, y);
         }
 
-        penColor_n = D_13b0_brightWhiteColor;
+        penColor_n = brightWhiteColor;
 
         yMove_p = path[pos_l] & 7;
         if (yMove_p > 2)
@@ -93,24 +93,24 @@ int INTRO_0050_LordBritishAnim(int x, int y)
         x += xMove;
         y += yMove_p;
 
-        if (ULTIMA_1d5e_PollKey() != 0)
+        if (PollKey() != 0)
         {
-            D_5356_timerCalibration = savedCalibration;
+            timerCalibration = savedCalibration;
             return 0;
         }
 
         if ((pos_l & 0x1f) == 0)
         {
-            ULTIMA_20fa_WaitTicks(1);
+            WaitTicks(1);
         }
 
         if (path[pos_l] == 0)
             break;
     }
 
-    D_bb18_pathPos = pos_l + 1;
-    D_5356_timerCalibration = savedCalibration;
+    pathPos = pos_l + 1;
+    timerCalibration = savedCalibration;
 
-    return D_bb18_pathPos;
+    return pathPos;
 #undef MEM_SIZE
 }

@@ -7,7 +7,7 @@
 For the resident image (CS offsets START..END of ULTIMA.EXE), writes src/asm/NAME.ASM:
 MASM 4.0 source in Microsoft C's small-model segments, which tools/asmbuild.py assembles to
 the original bytes. With --ovl, START..END are offsets in OVERLAY.OVL (as u5d's names have
-them: FONT_0000_DrawJustifiedText is offset 0 of FONT.OVL), and the module is an assembly part of that overlay
+them: DrawJustifiedText is offset 0 of FONT.OVL), and the module is an assembly part of that overlay
 (first line "OVERLAY.OVL START-END"; tools/u5link.py places it by its functions' names). The
 code is decoded at the overlay's CS addresses, calls into the resident code name their
 targets, and labels inside it carry file offsets. The source is drafted from the bytes, then

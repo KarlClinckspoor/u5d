@@ -17,7 +17,7 @@
 
 // The reagent list with a cursor for mixing: arrows move, return toggles a reagent, M accepts, Esc aborts;
 // returns the bit mask of the chosen reagents (-1 when aborted).
-static int CMDS_18be_SelectReagents(void)
+static int SelectReagents(void)
 {
     int mask;
     int count;
@@ -38,18 +38,18 @@ static int CMDS_18be_SelectReagents(void)
         }
     }
 
-    ULTIMA_1b94_SelectTextWindow(1);
-    ULTIMA_1c22_SetTextWindowSize(1, 0x18, 1, 0x26, 9);
+    SelectTextWindow(1);
+    SetTextWindowSize(1, 0x18, 1, 0x26, 9);
     ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
-    ULTIMA_1c22_SetTextWindowSize(1, 0x18, 1, 0x27, 9);
-    ULTIMA_4efc_OpenStatsDivider();
-    ULTIMA_4e50_ShowStatsTitle(/*0x8f64*/ "Reagents:");
+    SetTextWindowSize(1, 0x18, 1, 0x27, 9);
+    OpenStatsDivider();
+    ShowStatsTitle(/*0x8f64*/ "Reagents:");
 
     for (i = 0; i != count; i++)
     {
         ULTIMA_16ba_PrintChar('\n');
         ULTIMA_16ba_PrintChar(' ');
-        ULTIMA_1a3e_PrintNumber(D_5850_reagents[owned_l[i]], 2, 0x30);
+        PrintNumber(D_5850_reagents[owned_l[i]], 2, 0x30);
         ULTIMA_16ba_PrintChar(' ');
         ULTIMA_1850_PrintString(D_19d2_reagentNames[owned_l[i]]);
     }
@@ -57,11 +57,11 @@ static int CMDS_18be_SelectReagents(void)
     // d8f2
     cursor_h = mask = 0;
 
-    ULTIMA_2a28_InvertPlayerRow(1);
+    InvertPlayerRow(1);
     done = 0;
     do
     {
-        ULTIMA_1b94_SelectTextWindow(2);
+        SelectTextWindow(2);
         key = ULTIMA_266c_GetChar();
         switch (key)
         {
@@ -70,9 +70,9 @@ static int CMDS_18be_SelectReagents(void)
             // 19b2
             if (cursor_h > 0)
             {
-                ULTIMA_2a28_InvertPlayerRow(cursor_h + 1);
+                InvertPlayerRow(cursor_h + 1);
                 cursor_h--;
-                ULTIMA_2a28_InvertPlayerRow(cursor_h + 1);
+                InvertPlayerRow(cursor_h + 1);
             }
             break;
 
@@ -81,9 +81,9 @@ static int CMDS_18be_SelectReagents(void)
             // 19d0
             if (cursor_h < count + -1)
             {
-                ULTIMA_2a28_InvertPlayerRow(cursor_h + 1);
+                InvertPlayerRow(cursor_h + 1);
                 cursor_h++;
-                ULTIMA_2a28_InvertPlayerRow(cursor_h + 1);
+                InvertPlayerRow(cursor_h + 1);
             }
             break;
 
@@ -98,8 +98,8 @@ static int CMDS_18be_SelectReagents(void)
             // 19ee
             bit_j = 0x80 >> owned_l[cursor_h];
             mask ^= bit_j;
-            ULTIMA_1b94_SelectTextWindow(1);
-            ULTIMA_1bf2_SetTextPosition(3, cursor_h + 1);
+            SelectTextWindow(1);
+            SetTextPosition(3, cursor_h + 1);
             ULTIMA_16ba_PrintChar(CTRL_CHAR_TOGGLE_INVERSION);
             if ((bit_j & mask) != 0)
             {
@@ -123,13 +123,13 @@ static int CMDS_18be_SelectReagents(void)
         }
     } while (done == 0);
 
-    ULTIMA_2a28_InvertPlayerRow(cursor_h + 1);
-    ULTIMA_1b94_SelectTextWindow(2);
+    InvertPlayerRow(cursor_h + 1);
+    SelectTextWindow(2);
     return mask;
 }
 
 // Asks "How much?" until every chosen reagent covers the amount; returns it.
-static int CMDS_1a70_AskMixAmount(int mask)
+static int AskMixAmount(int mask)
 {
     bool enough;
     int amount;
@@ -140,7 +140,7 @@ static int CMDS_1a70_AskMixAmount(int mask)
     {
         enough = 1;
         ULTIMA_1850_PrintString(/*0x8f72*/ "How much? ");
-        amount = ULTIMA_3b9e_GetNumber(2);
+        amount = GetNumber(2);
         if (amount != 0)
         {
             bit = 0x80;
@@ -162,7 +162,7 @@ static int CMDS_1a70_AskMixAmount(int mask)
 
 // The Mix command: asks the spell and the reagents and the amount; a right recipe adds that many mixed
 // spells (up to 99), a wrong one springs a trap on the first active member.
-void CMDS_1ad8_MixCmd(void)
+void MixCmd(void)
 {
     int bit;
     int i;
@@ -183,7 +183,7 @@ void CMDS_1ad8_MixCmd(void)
     }
 
     ULTIMA_1850_PrintString(/*0x8fac*/ "For what spell?\n:");
-    spell = CAST2_00de_SelectSpell();
+    spell = SelectSpell();
     if (spell == -1)
     {
         ULTIMA_1850_PrintString(/*0x8fbe*/ "\nNone!\n");
@@ -200,10 +200,10 @@ void CMDS_1ad8_MixCmd(void)
         ULTIMA_16ba_PrintChar(0x19); // v
         ULTIMA_1850_PrintString(/*0x8fc6*/ " to move,\nRETURN selects.\nType M to mix:");
 
-        mask_d = CMDS_18be_SelectReagents();
+        mask_d = SelectReagents();
         if (mask_d >= 0)
         {
-            amount = CMDS_1a70_AskMixAmount(mask_d);
+            amount = AskMixAmount(mask_d);
             if (amount > 0)
             {
                 if (mask_d != 0)
@@ -211,11 +211,11 @@ void CMDS_1ad8_MixCmd(void)
                     ULTIMA_1850_PrintString(/*0x8ff0*/ "Mixing...\n");
                     if (D_5893_mapId > 0x20)
                     {
-                        ULTIMA_20fa_WaitTicks(10);
+                        WaitTicks(10);
                     }
                     else
                     {
-                        ULTIMA_3ae6_WaitFrames(10);
+                        WaitFrames(10);
                     }
 
                     bit = 0x80;
@@ -228,20 +228,20 @@ void CMDS_1ad8_MixCmd(void)
                         bit >>= 1;
                     }
 
-                    if (spell >= 0 && D_1cc0_spellReagents[spell] == mask_d)
+                    if (spell >= 0 && spellReagents[spell] == mask_d)
                     {
                         ULTIMA_1850_PrintString(/*0x8ffc*/ "\nDone!\n");
-                        D_57f0_mixedSpells[spell] += amount;
-                        if (D_57f0_mixedSpells[spell] > 99)
+                        mixedSpells[spell] += amount;
+                        if (mixedSpells[spell] > 99)
                         {
-                            D_57f0_mixedSpells[spell] = 99;
+                            mixedSpells[spell] = 99;
                         }
                     }
                     else
                     {
                         ULTIMA_16ba_PrintChar('\n');
-                        ULTIMA_39fc_GetFirstActivePartyMember();
-                        ULTIMA_2fd0_SpringTrap(D_5876_tempX);
+                        GetFirstActivePartyMember();
+                        SpringTrap(D_5876_tempX);
                     }
                 }
                 else
@@ -252,14 +252,14 @@ void CMDS_1ad8_MixCmd(void)
         }
     }
 
-    ULTIMA_4e20_ClearStatsTitle();
-    ULTIMA_4f3c_DrawStatsDivider();
+    ClearStatsTitle();
+    DrawStatsDivider();
     ULTIMA_2900_UpdateVitalsDisplay();
 }
 
 // The Klimb command: with the grappling hook, on foot, up a mountain tile (12) in the chosen direction;
 // members with dexterity below a roll fall and are hurt; the party moves there.
-void CMDS_1c20_KlimbCmd(void)
+void CmdsKlimbCmd(void)
 {
     int tile;
     int y_e;
@@ -268,7 +268,7 @@ void CMDS_1c20_KlimbCmd(void)
     int dx;
     int member;
 
-    if (D_57af_grapple == 0)
+    if (grapple == 0)
     {
         ULTIMA_1850_PrintString(/*0x9016*/ "With what?\n");
         return;
@@ -307,10 +307,10 @@ void CMDS_1c20_KlimbCmd(void)
             if (D_55a8_party[member].status != STATUS_DEAD && D_55a8_party[member].dex < ULTIMA_2092_RandomRange(1, 0x1e))
             {
                 ULTIMA_1850_PrintString(/*0x904a*/ "Fell!\n");
-                ULTIMA_2a52_DamagePlayer(member, ULTIMA_2092_RandomRange(1, 5));
+                DamagePlayer(member, ULTIMA_2092_RandomRange(1, 5));
             }
         }
 
-        MAINOUT_0354_MoveParty(dx, dy);
+        MainoutMoveParty(dx, dy);
     }
 }

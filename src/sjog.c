@@ -12,10 +12,10 @@
 
 #include "town.h"
 
-void ULTIMA_6794_ApplyRing(int combatantIndex);
+void ApplyRing(int combatantIndex);
 
 // the last free actor slot (tile 0), counting down from 31; 0 when none
-static int SJOG_0000_FindFreeActor(void)
+static int FindFreeActor(void)
 {
     int slot = 0x20;
 
@@ -29,7 +29,7 @@ static int SJOG_0000_FindFreeActor(void)
 }
 
 // the cell beside (x, y) in a direction (0 north, 1 east, 2 south, 3 west), into D_5876/D_5878
-static void SJOG_002a_StepFromCell(int dir, int fromX, int fromY)
+static void StepFromCell(int dir, int fromX, int fromY)
 {
     D_5876_tempX = fromX;
     D_5878_tempY = fromY;
@@ -52,7 +52,7 @@ static void SJOG_002a_StepFromCell(int dir, int fromX, int fromY)
 }
 
 // "Dir-": a key picks the cell ahead, here, right or left of the facing, into D_5876/D_5878; 0 for Pass
-int SJOG_006c_AskDungeonCell(int facing)
+int AskDungeonCell(int facing)
 {
     byte key;
     int newDir_g;
@@ -73,7 +73,7 @@ int SJOG_006c_AskDungeonCell(int facing)
 
     case U5_KEY_UP:
         ULTIMA_1850_PrintString(/*0x84f2*/ "Ahead\n");
-        SJOG_002a_StepFromCell(facing, D_5896_mapX, D_5897_mapY);
+        StepFromCell(facing, D_5896_mapX, D_5897_mapY);
         break;
 
     case U5_KEY_DOWN:
@@ -86,14 +86,14 @@ int SJOG_006c_AskDungeonCell(int facing)
         ULTIMA_1850_PrintString(/*0x8500*/ "Right\n");
         newDir_g = (facing + 1) % 4;
 
-        SJOG_002a_StepFromCell(newDir_g, D_5896_mapX, D_5897_mapY);
+        StepFromCell(newDir_g, D_5896_mapX, D_5897_mapY);
         break;
 
     case U5_KEY_LEFT:
         ULTIMA_1850_PrintString(/*0x8508*/ "Left\n");
         newDir_g = (facing + 3) % 4;
 
-        SJOG_002a_StepFromCell(newDir_g, D_5896_mapX, D_5897_mapY);
+        StepFromCell(newDir_g, D_5896_mapX, D_5897_mapY);
         break;
     }
 
@@ -101,7 +101,7 @@ int SJOG_006c_AskDungeonCell(int facing)
 }
 
 // "a chest!", "a sack of gold!" ...: what an actor tile is
-static void SJOG_012a_PrintItemName(int tile)
+static void PrintItemName(int tile)
 {
     switch (tile)
     {
@@ -163,11 +163,11 @@ static void SJOG_012a_PrintItemName(int tile)
 }
 
 // searching a body: usually it crumbles to nothing (7 in 8), 1 in 32 a plague poisons the member, else nothing, worms, guts or a bloody pulp; or food or gold under it
-static void SJOG_01f2_SearchBody(int actor, int member)
+static void SearchBody(int actor, int member)
 {
     if (ULTIMA_2092_RandomRange(0, 7) != 0)
     {
-        ULTIMA_3a74_SetActor(0, 0, 0, 0, 0, 0, actor);
+        SetActor(0, 0, 0, 0, 0, 0, actor);
         if (ULTIMA_2092_RandomRange(0, 0x1f) == 0x13)
         {
             ULTIMA_1850_PrintString(/*0x8606*/ "Plague!\n");
@@ -217,7 +217,7 @@ static void SJOG_01f2_SearchBody(int actor, int member)
 }
 
 // searching a chest: the member's intelligence against the chest's trap value tells "no trap", "a simple trap", "a complex trap" or just "a trap"
-static void SJOG_02ea_SearchChestTrap(int chest, int member)
+static void SearchChestTrap(int chest, int member)
 {
     int chance;
     int sensed;
@@ -261,7 +261,7 @@ static void SJOG_02ea_SearchChestTrap(int chest, int member)
 }
 
 // a buried moonstone (the tables D_5830..D_5848) at this place and map becomes an actor; 1 when found
-static int SJOG_03a8_SearchMoonstone(int x, int y, int level)
+static int SearchMoonstone(int x, int y, int level)
 {
     int stone;
     int slot_i;
@@ -274,8 +274,8 @@ static int SJOG_03a8_SearchMoonstone(int x, int y, int level)
     while (--stone >= 0)
     {
         // 03bd
-        if (D_5830_moonstoneX[stone] == x && D_5838_moonstoneY[stone] == y &&
-            D_5848_moonstoneZ[stone] == level && D_5840_moonstoneMap[stone] == D_5893_mapId)
+        if (moonstoneX[stone] == x && moonstoneY[stone] == y &&
+            moonstoneZ[stone] == level && moonstoneMap[stone] == D_5893_mapId)
         {
             // 03e6
             present = 0;
@@ -298,7 +298,7 @@ static int SJOG_03a8_SearchMoonstone(int x, int y, int level)
 
             // 0422
             newSlot = ULTIMA_38e4_FindActorSlot();
-            ULTIMA_3a74_SetActor(TILE_ACTOR_MOONSTONE, TILE_ACTOR_MOONSTONE, x, y, level, stone, newSlot);
+            SetActor(TILE_ACTOR_MOONSTONE, TILE_ACTOR_MOONSTONE, x, y, level, stone, newSlot);
             ULTIMA_1850_PrintString(/*0x8680*/ "a strange rock!\n");
             D_24e6_viewDirty |= 2;
             return 1;
@@ -308,13 +308,13 @@ static int SJOG_03a8_SearchMoonstone(int x, int y, int level)
     // 0450
     return 0;
 }
-u8 D_3e66_harvestX[4] = {0xb6, 0x61, 0x2c, 0x00};
+u8 harvestX[4] = {0xb6, 0x61, 0x2c, 0x00};
 
-u8 D_3e6a_harvestY[4] = {0x36, 0xa5, 0x89, 0x00};
+u8 harvestY[4] = {0x36, 0xa5, 0x89, 0x00};
 
 u8 D_3e6e_harvestReagent[4] = {0x07, 0x07, 0x06, 0x00};
 
-char* D_3e72_harvestNames[3] =
+char* harvestNames[3] =
 {
     /*0x8692*/ "mandrake root!",
     /*0x86a2*/ "mandrake root!",
@@ -322,7 +322,7 @@ char* D_3e72_harvestNames[3] =
 };
 
 // at the three places D_3e66/D_3e6a, at hour 0, once a day: 2 to 15 sprigs of mandrake root or nightshade; 1 when it did
-static int SJOG_045a_HarvestReagent(int x, int y)
+static int HarvestReagent(int x, int y)
 {
     int reagent_n;
     int spot;
@@ -330,12 +330,12 @@ static int SJOG_045a_HarvestReagent(int x, int y)
     char** nameList;
 
     spot = 0;
-    nameList = D_3e72_harvestNames;
+    nameList = harvestNames;
     do
     {
-        if (D_3e66_harvestX[spot] == x && D_3e6a_harvestY[spot] == y && D_587f_hour == 0 && D_5858_harvestDay[spot] != D_587e_day)
+        if (harvestX[spot] == x && harvestY[spot] == y && D_587f_hour == 0 && harvestDay[spot] != D_587e_day)
         {
-            D_5858_harvestDay[spot] = D_587e_day;
+            harvestDay[spot] = D_587e_day;
 
             reagent_n = D_3e6e_harvestReagent[spot];
             amount = ULTIMA_2092_RandomRange(2, 0xf);
@@ -348,11 +348,11 @@ static int SJOG_045a_HarvestReagent(int x, int y)
             // 04ba
             if (amount < 10)
             {
-                ULTIMA_1a3e_PrintNumber(amount, 1, 0x20);
+                PrintNumber(amount, 1, 0x20);
             }
             else
             {
-                ULTIMA_1a3e_PrintNumber(amount, 2, 0x20);
+                PrintNumber(amount, 2, 0x20);
             }
 
             // 04d4
@@ -374,14 +374,14 @@ static int SJOG_045a_HarvestReagent(int x, int y)
 }
 
 // CHECKED
-// The original keeps D_3e78_hiddenTile[local_4_ab] in SI with no stack slot of its own: si shares
+// The original keeps hiddenTile[local_4_ab] in SI with no stack slot of its own: si shares
 // local_a's slot (bp-8). Under MSC 5.0 a register variable takes a slot, and a block's
 // slots are given back for a sibling block only when the block is the body of an if or a
 // for (if (1) here), not a bare { }. local_a is declared in it, so it comes after the
 // function's own locals. (An "extern const" table would also keep the value across the
 // call, but 5.0 then writes fixups to segment index 0.)
 // looks the place up in the table of hidden items (D_3f5c..D_40b2: map, level, x, y, tile, value); a find that is not taken yet becomes an actor, else "nothing of note"
-static void SJOG_0514_FindHiddenItem(int x, int y)
+static void FindHiddenItem(int x, int y)
 {
     int slot;
     int entry_n;
@@ -395,12 +395,12 @@ static void SJOG_0514_FindHiddenItem(int x, int y)
 
         for (entry_n = 0; entry_n < 0x71; entry_n++)
         {
-            if (D_3f5c_hiddenMap[entry_n] == D_5893_mapId && D_3fce_hiddenLevel[entry_n] == D_5895_mapLevel && D_4040_hiddenX[entry_n] == x && D_40b2_hiddenY[entry_n] == y)
+            if (hiddenMap[entry_n] == D_5893_mapId && hiddenLevel[entry_n] == D_5895_mapLevel && hiddenX[entry_n] == x && hiddenY[entry_n] == y)
             {
                 // 0558
-                if ((entry_n == 0xd && D_57ac_keys == 0 && ULTIMA_368e_FindActorTileAtPos(x, y, D_5895_mapLevel) == 0) ||
-                    (entry_n == 0xe && D_587e_day != D_57b2_skullKeysDay) ||
-                    (entry_n == 0xf && D_57c0_equipment[0x27] == 0 && ULTIMA_368e_FindActorTileAtPos(x, y, D_5895_mapLevel) == 0))
+                if ((entry_n == 0xd && keys == 0 && ULTIMA_368e_FindActorTileAtPos(x, y, D_5895_mapLevel) == 0) ||
+                    (entry_n == 0xe && D_587e_day != skullKeysDay) ||
+                    (entry_n == 0xf && equipment[0x27] == 0 && ULTIMA_368e_FindActorTileAtPos(x, y, D_5895_mapLevel) == 0))
                 {
                     found = 1;
                     break;
@@ -408,10 +408,10 @@ static void SJOG_0514_FindHiddenItem(int x, int y)
 
                 // 05f6 (OK)
                 bit_d = 1 << (entry_n & 7);
-                if ((D_585c_takenItemFlags[(entry_n >> 3)] & bit_d) == 0 && (entry_n < 0xd || entry_n > 0xf))
+                if ((takenItemFlags[(entry_n >> 3)] & bit_d) == 0 && (entry_n < 0xd || entry_n > 0xf))
                 {
                     // 061a
-                    D_585c_takenItemFlags[(entry_n >> 3)] |= bit_d;
+                    takenItemFlags[(entry_n >> 3)] |= bit_d;
 
                     // -> 05a1
                     found = 1;
@@ -422,7 +422,7 @@ static void SJOG_0514_FindHiddenItem(int x, int y)
 
         if (entry_n == 0xe)
         {
-            D_57b2_skullKeysDay = D_587e_day;
+            skullKeysDay = D_587e_day;
         }
 
         if (!found)
@@ -433,10 +433,10 @@ static void SJOG_0514_FindHiddenItem(int x, int y)
     {
         register int itemTile_g;
         slot = ULTIMA_38e4_FindActorSlot();
-        itemTile_g = D_3e78_hiddenTile[entry_n];
-        ULTIMA_3a74_SetActor(itemTile_g, itemTile_g, D_4040_hiddenX[entry_n], D_40b2_hiddenY[entry_n], D_3fce_hiddenLevel[entry_n], D_3eea_hiddenValue[entry_n], slot);
+        itemTile_g = hiddenTile[entry_n];
+        SetActor(itemTile_g, itemTile_g, hiddenX[entry_n], hiddenY[entry_n], hiddenLevel[entry_n], hiddenValue[entry_n], slot);
         D_24e6_viewDirty |= 2;
-        SJOG_012a_PrintItemName(itemTile_g);
+        PrintItemName(itemTile_g);
         return;
     }
 L_nothing:
@@ -445,7 +445,7 @@ L_nothing:
 
 // CHECKED
 // Search in a dungeon: what the cell ahead hides: traps (by level and dexterity), pits, bombs, hidden doors, fields, treasure
-static void SJOG_0646_SearchInDungeon(void)
+static void SearchInDungeon(void)
 {
     int member_g;
     int cell_o;
@@ -455,19 +455,19 @@ static void SJOG_0646_SearchInDungeon(void)
     int skill;
     int dex_o;
 
-    if ((member_g = ULTIMA_4988_GetActingPlayer()) + 1 == 0)
+    if ((member_g = GetActingPlayer()) + 1 == 0)
     {
         return;
     }
 
-    if (D_58a7_torchTurns == 0 && D_58a6_lightSpellTurns == 0)
+    if (torchTurns == 0 && lightSpellTurns == 0)
     {
         // 066b
         ULTIMA_1850_PrintString(/*0x86de*/ "\nYou find:\ndarkness.\n");
         return;
     }
 
-    if (SJOG_006c_AskDungeonCell(D_6603_dungeonFacing) == 0)
+    if (AskDungeonCell(dungeonFacing) == 0)
     {
         return;
     }
@@ -550,8 +550,8 @@ static void SJOG_0646_SearchInDungeon(void)
                 GetDungeonMap(lookX & 7, lookY & 7, D_5895_mapLevel + 1) |= 8;
             }
 
-            DUNGEON_1a90_DrawView(1);
-            ULTIMA_0f46_GRAP_66_Reveal(8, 8, 0xb7, 0xb7);
+            DrawView(1);
+            GRAP_66_Reveal(8, 8, 0xb7, 0xb7);
             break;
 
         case 0x62:
@@ -617,7 +617,7 @@ static void SJOG_0646_SearchInDungeon(void)
 
     case 0xc0:
         // 0856
-        switch (D_6604_dungeonStyle & 0xf)
+        switch (dungeonStyle & 0xf)
         {
         case 2:
             // 08b6
@@ -635,8 +635,8 @@ static void SJOG_0646_SearchInDungeon(void)
             ULTIMA_1850_PrintString(/*0x88ea*/ "It crumbles away.\n");
 
             GetDungeonMap(lookX & 7, lookY & 7, D_5895_mapLevel) = (cell_o & 8) - 0x50;
-            DUNGEON_1a90_DrawView(1);
-            ULTIMA_0f46_GRAP_66_Reveal(8, 8, 0xb7, 0xb7);
+            DrawView(1);
+            GRAP_66_Reveal(8, 8, 0xb7, 0xb7);
             break;
         }
         break;
@@ -646,8 +646,8 @@ static void SJOG_0646_SearchInDungeon(void)
         ULTIMA_1850_PrintString(/*0x88fe*/ "A hidden door!\n");
 
         GetDungeonMap(lookX & 7, lookY & 7, D_5895_mapLevel) = (cell_o & 8) - 0x20;
-        DUNGEON_1a90_DrawView(1);
-        ULTIMA_0f46_GRAP_66_Reveal(8, 8, 0xb7, 0xb7);
+        DrawView(1);
+        GRAP_66_Reveal(8, 8, 0xb7, 0xb7);
         break;
 
     case 0xe0:
@@ -660,7 +660,7 @@ static void SJOG_0646_SearchInDungeon(void)
 
 // CHECKED
 // the Search command: in a dungeon its own; else a direction, then a chest's trap, a body, a hidden door, a moonstone, reagents, or an item of the hidden table
-void SJOG_095c_SearchCmd(void)
+void SearchCmd(void)
 {
     int tile_a;
     int member_g;
@@ -674,7 +674,7 @@ void SJOG_095c_SearchCmd(void)
 
     if (D_5893_mapId > 0x20 && D_5893_mapId < 0x29)
     {
-        SJOG_0646_SearchInDungeon();
+        SearchInDungeon();
         return;
     }
 
@@ -685,7 +685,7 @@ void SJOG_095c_SearchCmd(void)
 
     lookX = D_5896_mapX + D_5876_tempX;
     lookY = D_5897_mapY + D_5878_tempY;
-    if ((member_g = ULTIMA_4988_GetActingPlayer()) == -1)
+    if ((member_g = GetActingPlayer()) == -1)
     {
         return;
     }
@@ -706,7 +706,7 @@ void SJOG_095c_SearchCmd(void)
     if (index_h < 0x20)
     {
         ULTIMA_1850_PrintString(/*0x892c*/ "\nThou dost find\n");
-        SJOG_02ea_SearchChestTrap(index_h, member_g);
+        SearchChestTrap(index_h, member_g);
         return;
     }
 
@@ -714,7 +714,7 @@ void SJOG_095c_SearchCmd(void)
     if (actorTile == 0x1f)
     {
         ULTIMA_1850_PrintString(/*0x893e*/ "\nThou dost find\n");
-        SJOG_01f2_SearchBody(D_5876_tempX, member_g);
+        SearchBody(D_5876_tempX, member_g);
         return;
     }
 
@@ -793,20 +793,20 @@ void SJOG_095c_SearchCmd(void)
         }
         D_24e6_viewDirty |= 2;
     }
-    else if ((tile_a == TILE_MAP_MOONGATE || (found_d = SJOG_03a8_SearchMoonstone(lookX, lookY, D_5895_mapLevel)) == 0) && (found_d = SJOG_045a_HarvestReagent(lookX, lookY)) == 0)
+    else if ((tile_a == TILE_MAP_MOONGATE || (found_d = SearchMoonstone(lookX, lookY, D_5895_mapLevel)) == 0) && (found_d = HarvestReagent(lookX, lookY)) == 0)
     {
-        SJOG_0514_FindHiddenItem(lookX, lookY);
+        FindHiddenItem(lookX, lookY);
     }
 }
 
 // picking a chest's lock with a key: a locked one (value >= 0x80) opens by dexterity, else the key is used up
-static void SJOG_0baa_JimmyChest(int chestX, int chestY, int chestLevel, int chest)
+static void JimmyChest(int chestX, int chestY, int chestLevel, int chest)
 {
     int member;
     byte skill;
     byte chestValue_k;
 
-    if ((member = ULTIMA_4988_GetActingPlayer()) != -1)
+    if ((member = GetActingPlayer()) != -1)
     {
         chestValue_k = D_5c5a_actors[chest].value;
         if (chestValue_k < 0x80)
@@ -825,14 +825,14 @@ static void SJOG_0baa_JimmyChest(int chestX, int chestY, int chestLevel, int che
             ULTIMA_1850_PrintString(/*0x8a6e*/ "Key broke!\n");
         }
 
-        ULTIMA_43ae_AudioSweepTone(800, 2000, 1, 0x32);
-        D_57ac_keys--;
+        AudioSweepTone(800, 2000, 1, 0x32);
+        keys--;
     }
 }
 
 // CHECKED
 // Jimmy in a dungeon: a locked chest (0x4?) opens or loses a key, by dexterity and level
-static void SJOG_0c3e_JimmyInDungeon(void)
+static void JimmyInDungeon(void)
 {
     int cell_o;
     int member_g;
@@ -842,7 +842,7 @@ static void SJOG_0c3e_JimmyInDungeon(void)
     int dex_o;
 
     ULTIMA_1850_PrintString(/*0x8a7a*/ "\n");
-    if ((member_g = ULTIMA_4988_GetActingPlayer()) == -1)
+    if ((member_g = GetActingPlayer()) == -1)
     {
         return;
     }
@@ -855,19 +855,19 @@ static void SJOG_0c3e_JimmyInDungeon(void)
 
     if ((cell_o & 0xf7) == 0x40)
     {
-        if (D_57ac_keys == 0)
+        if (keys == 0)
         {
             ULTIMA_1850_PrintString(/*0x8a7c*/ "No keys!\n");
         }
         else
         {
             ULTIMA_1850_PrintString(/*0x8a86*/ "Key broke!\n");
-            D_57ac_keys--;
+            keys--;
         }
     }
     else if ((cell_o & 0xf0) == 0x40)
     {
-        if (D_57ac_keys == 0)
+        if (keys == 0)
         {
             ULTIMA_1850_PrintString(/*0x8a92*/ "No keys!\n");
         }
@@ -881,7 +881,7 @@ static void SJOG_0c3e_JimmyInDungeon(void)
             else
             {
                 ULTIMA_1850_PrintString(/*0x8aac*/ "Key broke!\n");
-                D_57ac_keys--;
+                keys--;
             }
         }
     }
@@ -897,7 +897,7 @@ static void SJOG_0c3e_JimmyInDungeon(void)
 
 // CHECKED
 // the Jimmy command: a key opens a locked door (dexterity), frees a prisoner behind bars (84, 85: karma + 2, the NPC changed), or picks a chest
-void SJOG_0d4a_JimmyCmd(void)
+void JimmyCmd(void)
 {
     int tile_b;
     int npcIndex_f;
@@ -907,11 +907,11 @@ void SJOG_0d4a_JimmyCmd(void)
 
     if (D_5893_mapId > 0x20 && D_5893_mapId < 0x29)
     {
-        SJOG_0c3e_JimmyInDungeon();
+        JimmyInDungeon();
         return;
     }
 
-    if (D_57ac_keys == 0)
+    if (keys == 0)
     {
         // cced, ccf0
         ULTIMA_1850_PrintString(/*0x8ad0*/ "No Keys!\n");
@@ -933,7 +933,7 @@ void SJOG_0d4a_JimmyCmd(void)
     case TILE_MAP_DOOR_B9:
     case TILE_MAP_DOOR_BB:
         // cd48
-        if ((member = ULTIMA_4988_GetActingPlayer()) == -1)
+        if ((member = GetActingPlayer()) == -1)
         {
             break;
         }
@@ -941,7 +941,7 @@ void SJOG_0d4a_JimmyCmd(void)
         if (D_55a8_party[member].dex <= ULTIMA_2092_RandomRange(0, 0x1d))
         {
             ULTIMA_1850_PrintString(/*0x8ada*/ "Key broke!\n");
-            D_57ac_keys--;
+            keys--;
             break;
         }
 
@@ -954,7 +954,7 @@ void SJOG_0d4a_JimmyCmd(void)
     case TILE_MAP_98:
         // cd9c -> cd72
         ULTIMA_1850_PrintString(/*0x8af2*/ "Key broke!\n");
-        D_57ac_keys--;
+        keys--;
         break;
 
     case TILE_MAP_84:
@@ -969,7 +969,7 @@ void SJOG_0d4a_JimmyCmd(void)
 
         // cdc2
         npcIndex_f = D_5876_tempX;
-        if ((member = ULTIMA_4988_GetActingPlayer()) == -1)
+        if ((member = GetActingPlayer()) == -1)
         {
             break;
         }
@@ -978,7 +978,7 @@ void SJOG_0d4a_JimmyCmd(void)
         {
             // cdef -> cd72
             ULTIMA_1850_PrintString(/*0x8b10*/ "Key broke!\n");
-            D_57ac_keys--;
+            keys--;
             break;
         }
 
@@ -1004,7 +1004,7 @@ void SJOG_0d4a_JimmyCmd(void)
                 D_5d5e_npcSchedules[npcIndex_f].type[1] = 5;
                 D_5d5e_npcSchedules[npcIndex_f].type[2] = 5;
                 ULTIMA_1850_PrintString(/*0x8b36*/ "\n\"I thank thee!\"\n");
-                ULTIMA_3ef0_IncreaseByte(&D_5888_karma, 2, 99);
+                IncreaseByte(&D_5888_karma, 2, 99);
             }
 
             // ce5a
@@ -1034,7 +1034,7 @@ void SJOG_0d4a_JimmyCmd(void)
         // cee9
         if (tile_b < 0x20)
         {
-            SJOG_0baa_JimmyChest(targetX_a, targetY_a, D_5895_mapLevel, tile_b);
+            JimmyChest(targetX_a, targetY_a, D_5895_mapLevel, tile_b);
             break;
         }
 
@@ -1044,7 +1044,7 @@ void SJOG_0d4a_JimmyCmd(void)
 }
 
 // puts one item actor of a chest's contents at the place: the amount by kind and level (kinds 1 and 2 random), and what it is is printed
-static void SJOG_0f88_DropItem(int kind, int amount, int x, int y, int z, int level, int* dropped)
+static void DropItem(int kind, int amount, int x, int y, int z, int level, int* dropped)
 {
     int slot;
     int value_c;
@@ -1067,10 +1067,10 @@ static void SJOG_0f88_DropItem(int kind, int amount, int x, int y, int z, int le
         value_c = amount;
     }
 
-    slot = SJOG_0000_FindFreeActor();
+    slot = FindFreeActor();
     if (slot != 0)
     {
-        ULTIMA_3a74_SetActor(kind, kind, x, y, z, value_c, slot);
+        SetActor(kind, kind, x, y, z, value_c, slot);
         if (D_5893_mapId < 0x80)
         {
             D_5c5a_actors[slot].extra = 0;
@@ -1087,12 +1087,12 @@ static void SJOG_0f88_DropItem(int kind, int amount, int x, int y, int z, int le
             ULTIMA_1850_PrintString(/*0x8b5c*/ "Found:\n");
             *dropped = 1;
         }
-        SJOG_012a_PrintItemName(kind);
+        PrintItemName(kind);
     }
 }
 
 // the chest's treasure: each of the eight kinds D_4124 (gold, food, torches, gems, keys...) that the chest's level allows, by a roll
-static void SJOG_1040_DropTreasure(int level, int x, int y, int z, int* dropped)
+static void DropTreasure(int level, int x, int y, int z, int* dropped)
 {
     int index;
     int amount;
@@ -1100,27 +1100,27 @@ static void SJOG_1040_DropTreasure(int level, int x, int y, int z, int* dropped)
     index = 8;
     while (--index >= 0)
     {
-        if (D_412c_treasureMinLevel[index] <= level)
+        if (treasureMinLevel[index] <= level)
         {
-            if (D_412c_treasureMinLevel[index] <= ULTIMA_2092_RandomRange(1, 0x1e))
+            if (treasureMinLevel[index] <= ULTIMA_2092_RandomRange(1, 0x1e))
             {
-                if (D_4134_treasureMaxAmount[index] == 1)
+                if (treasureMaxAmount[index] == 1)
                 {
                     amount = 1;
                 }
                 else
                 {
-                    amount = ULTIMA_2092_RandomRange(1, D_4134_treasureMaxAmount[index]);
+                    amount = ULTIMA_2092_RandomRange(1, treasureMaxAmount[index]);
                 }
 
-                SJOG_0f88_DropItem(D_4124_treasureKind[index], amount, x, y, z, level, dropped);
+                DropItem(treasureKind[index], amount, x, y, z, level, dropped);
             }
         }
     }
 }
 
 // the chest's gear: half its level in tries on the 48 entries of D_413c (weapons, armour, scrolls, potions...) by their level thresholds D_416c
-static void SJOG_10b8_DropGear(int level, int x, int y, int z, int* dropped)
+static void DropGear(int level, int x, int y, int z, int* dropped)
 {
     int pick;
     int tries_i;
@@ -1130,11 +1130,11 @@ static void SJOG_10b8_DropGear(int level, int x, int y, int z, int* dropped)
     {
         pick = ULTIMA_2092_RandomRange(0, 0x2f);
 
-        if (D_416c_gearMinLevel[pick] <= level)
+        if (gearMinLevel[pick] <= level)
         {
-            if (D_416c_gearMinLevel[pick] <= ULTIMA_2092_RandomRange(1, 0x1e))
+            if (gearMinLevel[pick] <= ULTIMA_2092_RandomRange(1, 0x1e))
             {
-                SJOG_0f88_DropItem(D_413c_gearKind[pick], pick, x, y, z, level, dropped);
+                DropItem(gearKind[pick], pick, x, y, z, level, dropped);
             }
         }
     }
@@ -1142,7 +1142,7 @@ static void SJOG_10b8_DropGear(int level, int x, int y, int z, int* dropped)
 
 // CHECKED
 // opens a chest: the trap (value 0x80 up) springs, the treasure and the gear drop; karma falls by 2 in a town
-static void SJOG_112c_OpenChest(int x, int y, int z)
+static void OpenChest(int x, int y, int z)
 {
     int member;
     int dropped_g;
@@ -1173,13 +1173,13 @@ static void SJOG_112c_OpenChest(int x, int y, int z)
         return;
     }
 
-    if ((member = ULTIMA_4988_GetActingPlayer()) == -1)
+    if ((member = GetActingPlayer()) == -1)
     {
         return;
     }
 
     chestValue = D_5c5a_actors[index_h].value;
-    ULTIMA_3a74_SetActor(0, 0, 0, 0, 0, 0, index_h);
+    SetActor(0, 0, 0, 0, 0, 0, index_h);
     D_24e6_viewDirty = D_24e6_viewDirty | 2;
     if (D_5893_mapId >= 1 && D_5893_mapId <= 0x20)
     {
@@ -1197,12 +1197,12 @@ static void SJOG_112c_OpenChest(int x, int y, int z)
     {
         chestValue &= 0x7f;
         ULTIMA_1850_PrintString(/*0x8b7e*/ "Trapped!\n");
-        ULTIMA_2fd0_SpringTrap(member);
+        SpringTrap(member);
         if (D_5893_mapId > 0x7f && D_55a8_party[member].status == STATUS_DEAD)
         {
             for (index_h = 0; index_h < 32; index_h++)
             {
-                combatant_f = &D_ba14_combatants[index_h];
+                combatant_f = &combatants[index_h];
                 if ((combatant_f->flags & COMBAT_FLAGS_PLAYER) != 0 && combatant_f->entityIdx == member)
                 {
                     combatant_f->flags |= COMBAT_FLAGS_DEAD;
@@ -1212,16 +1212,16 @@ static void SJOG_112c_OpenChest(int x, int y, int z)
                 }
             }
 
-            if (member == D_587b_activePlayer)
+            if (member == activePlayer)
             {
-                D_587b_activePlayer = 0xff;
+                activePlayer = 0xff;
             }
             ULTIMA_5910_UpdateFrame();
         }
     }
 
-    SJOG_1040_DropTreasure(chestValue, x, y, z, &dropped_g);
-    SJOG_10b8_DropGear(chestValue, x, y, z, &dropped_g);
+    DropTreasure(chestValue, x, y, z, &dropped_g);
+    DropGear(chestValue, x, y, z, &dropped_g);
     if (dropped_g != 0)
     {
         return;
@@ -1231,7 +1231,7 @@ static void SJOG_112c_OpenChest(int x, int y, int z)
 }
 
 // Open in a dungeon: a chest (0x4?) springs its trap and becomes an open one (0x7?)
-static void SJOG_12d4_OpenInDungeon(void)
+static void OpenInDungeon(void)
 {
     int cell;
     int member_h;
@@ -1239,14 +1239,14 @@ static void SJOG_12d4_OpenInDungeon(void)
     cell = GetDungeonMap2(D_5896_mapX, D_5897_mapY, D_5895_mapLevel);
     if ((cell & 0xf0) == 0x40)
     {
-        if ((member_h = ULTIMA_4988_GetActingPlayer()) == -1)
+        if ((member_h = GetActingPlayer()) == -1)
         {
             return;
         }
 
         if ((cell & 7) != 0)
         {
-            ULTIMA_2fd0_SpringTrap(member_h);
+            SpringTrap(member_h);
         }
 
         GetDungeonMap2(D_5896_mapX, D_5897_mapY, D_5895_mapLevel) = (cell & 8) + 0x70;
@@ -1263,7 +1263,7 @@ static void SJOG_12d4_OpenInDungeon(void)
 }
 
 // the Open command: in a dungeon its own; else a direction, then a door (the open door shuts again after four turns), a trunk, or a chest
-void SJOG_1374_OpenCmd(void)
+void OpenCmd(void)
 {
     int targetY;
     int targetX;
@@ -1271,11 +1271,11 @@ void SJOG_1374_OpenCmd(void)
 
     if (D_5893_mapId > 0x20 && D_5893_mapId < 0x29)
     {
-        SJOG_12d4_OpenInDungeon();
+        OpenInDungeon();
         return;
     }
 
-    ULTIMA_39cc_SetTile(D_594f_openDoorTile, D_5950_openDoorX, D_5951_openDoorY);
+    SetTile(D_594f_openDoorTile, openDoorX, openDoorY);
     if (ULTIMA_35ec_SelectDirection() == 0)
     {
         return;
@@ -1308,9 +1308,9 @@ void SJOG_1374_OpenCmd(void)
     case TILE_MAP_DOOR_BA:
         // 1400
         D_594f_openDoorTile = tile_b;
-        D_5952_openDoorTurns = 4;
-        D_5950_openDoorX = (u8)targetX;
-        D_5951_openDoorY = (u8)targetY;
+        openDoorTurns = 4;
+        openDoorX = (u8)targetX;
+        openDoorY = (u8)targetY;
         *ULTIMA_4402_GetTileAddr(targetX, targetY) = TILE_MAP_44;
         D_24e6_viewDirty = 1;
         ULTIMA_1850_PrintString(/*0x8be0*/ "Opened!\n");
@@ -1318,12 +1318,12 @@ void SJOG_1374_OpenCmd(void)
 
     default:
         // 1444
-        SJOG_112c_OpenChest(targetX, targetY, D_5895_mapLevel);
+        OpenChest(targetX, targetY, D_5895_mapLevel);
         break;
     }
 }
 
-u8 D_3e78_hiddenTile[0x72] =
+u8 hiddenTile[0x72] =
 {
     0x0b, 0x05, 0x0b, 0x05, 0x0b, 0x05, 0x0b, 0x05,
     0x0b, 0x05, 0x0b, 0x05, 0x04, 0x07, 0x07, 0x05,
@@ -1342,7 +1342,7 @@ u8 D_3e78_hiddenTile[0x72] =
     0x04, 0x00
 };
 
-u8 D_3eea_hiddenValue[0x72] =
+u8 hiddenValue[0x72] =
 {
     0x0f, 0x29, 0x0f, 0x29, 0x0f, 0x29, 0x0f, 0x29,
     0x0f, 0x29, 0x0f, 0x29, 0xff, 0x09, 0x85, 0x27,
@@ -1361,7 +1361,7 @@ u8 D_3eea_hiddenValue[0x72] =
     0x07, 0x00
 };
 
-u8 D_3f5c_hiddenMap[0x72] =
+u8 hiddenMap[0x72] =
 {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x15, 0x12, 0x05, 0x00,
@@ -1380,7 +1380,7 @@ u8 D_3f5c_hiddenMap[0x72] =
     0x11, 0x00
 };
 
-u8 D_3fce_hiddenLevel[0x72] =
+u8 hiddenLevel[0x72] =
 {
     0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
     0xff, 0xff, 0xff, 0xff, 0x00, 0xff, 0x00, 0x00,
@@ -1399,7 +1399,7 @@ u8 D_3fce_hiddenLevel[0x72] =
     0x02, 0x00
 };
 
-u8 D_4040_hiddenX[0x72] =
+u8 hiddenX[0x72] =
 {
     0xe9, 0xe9, 0xe9, 0xe9, 0xe9, 0xe9, 0xe9, 0xe9,
     0xe9, 0xe9, 0xe9, 0xe9, 0x0f, 0x08, 0x02, 0x40,
@@ -1418,7 +1418,7 @@ u8 D_4040_hiddenX[0x72] =
     0x0c, 0x00
 };
 
-u8 D_40b2_hiddenY[0x72] =
+u8 hiddenY[0x72] =
 {
     0xe9, 0xe9, 0xe9, 0xe9, 0xe9, 0xe9, 0xe9, 0xe9,
     0xe9, 0xe9, 0xe9, 0xe9, 0x02, 0x06, 0x02, 0x50,
@@ -1437,13 +1437,13 @@ u8 D_40b2_hiddenY[0x72] =
     0x0c, 0x00
 };
 
-u8 D_4124_treasureKind[8] = { 0x01, 0x02, 0x03, 0x04, 0x07, 0x08, 0x0d, 0x0f };
+u8 treasureKind[8] = { 0x01, 0x02, 0x03, 0x04, 0x07, 0x08, 0x0d, 0x0f };
 
-u8 D_412c_treasureMinLevel[8] = { 0x19, 0x03, 0x11, 0x11, 0x09, 0x0f, 0x07, 0x07 };
+u8 treasureMinLevel[8] = { 0x19, 0x03, 0x11, 0x11, 0x09, 0x0f, 0x07, 0x07 };
 
-u8 D_4134_treasureMaxAmount[8] = { 0x0a, 0x5a, 0x08, 0x08, 0x02, 0x02, 0x02, 0x02 };
+u8 treasureMaxAmount[8] = { 0x0a, 0x5a, 0x08, 0x08, 0x02, 0x02, 0x02, 0x02 };
 
-u8 D_413c_gearKind[0x30] =
+u8 gearKind[0x30] =
 {
     0x09, 0x09, 0x09, 0x09, 0x06, 0x06, 0x06, 0x06,
     0x06, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b,
@@ -1453,7 +1453,7 @@ u8 D_413c_gearKind[0x30] =
     0x05, 0x05, 0x0a, 0x0a, 0x0a, 0x0c, 0x0c, 0x0c
 };
 
-u8 D_416c_gearMinLevel[0x30] =
+u8 gearMinLevel[0x30] =
 {
     0x0a, 0x0a, 0x0f, 0x14, 0x0a, 0x0f, 0x14, 0x1c,
     0xff, 0x0f, 0x0f, 0x14, 0x14, 0x14, 0x18, 0xff,
@@ -1463,7 +1463,7 @@ u8 D_416c_gearMinLevel[0x30] =
     0xff, 0xff, 0x17, 0x17, 0x17, 0x17, 0x0f, 0xff
 };
 
-char* D_419c_potionColors[8] =
+char* potionColors[8] =
 {
     /*0x8bea*/ "blue",
     /*0x8bf0*/ "yellow",
@@ -1475,7 +1475,7 @@ char* D_419c_potionColors[8] =
     /*0x8c18*/ "white"
 };
 
-char* D_41ac_scrollRunes[8] =
+char* scrollRunes[8] =
 {
     /*0x8c1e*/ "VL",
     /*0x8c22*/ "RH",
@@ -1487,15 +1487,15 @@ char* D_41ac_scrollRunes[8] =
     /*0x8c3a*/ "AT"
 };
 
-u8 D_41bc_dungeonLootOdds[8] = {0x02, 0x04, 0x05, 0x0a, 0x14, 0x19, 0x19, 0x00};
+u8 dungeonLootOdds[8] = {0x02, 0x04, 0x05, 0x0a, 0x14, 0x19, 0x19, 0x00};
 
-u8 D_41c4_dungeonLootMax[8] = {0x1f, 0x00, 0x03, 0x03, 0x03, 0x07, 0x07, 0x00};
+u8 dungeonLootMax[8] = {0x1f, 0x00, 0x03, 0x03, 0x03, 0x07, 0x07, 0x00};
 
-u8 D_41cc_dungeonLootKind[8] = {0x0f, 0x02, 0x07, 0x08, 0x0d, 0xff, 0xff, 0x00};
+u8 dungeonLootKind[8] = {0x0f, 0x02, 0x07, 0x08, 0x0d, 0xff, 0xff, 0x00};
 
 // CHECKED (nop)
 // takes an object (tile kind, amount, actor slot) into the party's goods: food, gold, torches, gems, keys, scrolls, potions, gear, the shards, crown, sceptre, amulet, a carpet, the sandalwood box; the actor is removed
-static void SJOG_1458_GetObject(int kind, int amount, int slot)
+static void GetObject(int kind, int amount, int slot)
 {
     switch (kind)
     {
@@ -1505,15 +1505,15 @@ static void SJOG_1458_GetObject(int kind, int amount, int slot)
 
     case TILE_ACTOR_MOONSTONE:
         ULTIMA_1850_PrintString(/*0x8c4e*/ "A moonstone!\n");
-        D_5840_moonstoneMap[amount] = 0xff;
+        moonstoneMap[amount] = 0xff;
         break;
 
     case TILE_ACTOR_CARPET:
         ULTIMA_1850_PrintString(/*0x8c5c*/ "A magic carpet!\n");
-        D_57b0_carpets++;
-        if (D_57b0_carpets == 100)
+        carpets++;
+        if (carpets == 100)
         {
-            D_57b0_carpets = 99;
+            carpets = 99;
         }
 
         if (D_5893_mapId != 0x11)
@@ -1523,19 +1523,19 @@ static void SJOG_1458_GetObject(int kind, int amount, int slot)
         break;
 
     case TILE_ACTOR_FOOD:
-        ULTIMA_1a3e_PrintNumber(amount, 1, 0x20);
+        PrintNumber(amount, 1, 0x20);
         ULTIMA_1850_PrintString(/*0x8c6e*/ " food!\n");
-        ULTIMA_3f14_IncreaseInt(&D_57a8_food, amount, 9999);
+        IncreaseInt(&food, amount, 9999);
         break;
 
     case TILE_ACTOR_SANDALWOOD_BOX:
         ULTIMA_1850_PrintString(/*0x8c76*/ "A sandalwood box!\n");
-        D_57bf_sandalwoodBox = 0xff;
+        sandalwoodBox = 0xff;
         D_5b5a_npcKilled[0x43] |= 0x80;
         break;
 
     case TILE_ACTOR_TORCH:
-        ULTIMA_1a3e_PrintNumber(amount, 1, 0x20);
+        PrintNumber(amount, 1, 0x20);
         ULTIMA_1850_PrintString(/*0x8c8a*/ " torch");
         if (amount == 1)
         {
@@ -1545,11 +1545,11 @@ static void SJOG_1458_GetObject(int kind, int amount, int slot)
         {
             ULTIMA_1850_PrintString(/*0x8c96*/ "es!\n");
         }
-        ULTIMA_3ef0_IncreaseByte(&D_57ae_torches, amount, 99);
+        IncreaseByte(&torches, amount, 99);
         break;
 
     case TILE_ACTOR_GEM:
-        ULTIMA_1a3e_PrintNumber(amount, 1, 0x20);
+        PrintNumber(amount, 1, 0x20);
         ULTIMA_1850_PrintString(/*0x8c9c*/ " gem");
         if (amount == 1)
         {
@@ -1560,22 +1560,22 @@ static void SJOG_1458_GetObject(int kind, int amount, int slot)
             ULTIMA_1850_PrintString(/*0x8ca6*/ "s!\n");
         }
 
-        ULTIMA_3ef0_IncreaseByte(&D_57ad_gems, amount, 99);
+        IncreaseByte(&gems, amount, 99);
         break;
 
     case TILE_ACTOR_KEY:
         if (amount > 0x7f)
         {
             amount &= 0x7f;
-            ULTIMA_1a3e_PrintNumber(amount, 1, 0x20);
+            PrintNumber(amount, 1, 0x20);
             ULTIMA_1850_PrintString(/*0x8caa*/ " odd key");
-            ULTIMA_3ef0_IncreaseByte(&D_57b1_skullKeys, amount, 99);
+            IncreaseByte(&skullKeys, amount, 99);
         }
         else
         {
-            ULTIMA_1a3e_PrintNumber(amount, 1, 0x20);
+            PrintNumber(amount, 1, 0x20);
             ULTIMA_1850_PrintString(/*0x8cb4*/ " key");
-            ULTIMA_3ef0_IncreaseByte(&D_57ac_keys, amount, 99);
+            IncreaseByte(&keys, amount, 99);
         }
 
         if (amount == 1)
@@ -1592,37 +1592,37 @@ static void SJOG_1458_GetObject(int kind, int amount, int slot)
         if (amount == 0xff)
         {
             ULTIMA_1850_PrintString(/*0x8cc2*/ "The plans for the HMS Cape!\n");
-            D_57bb_hmsCapePlans = 0xff;
+            hmsCapePlans = 0xff;
         }
         else
         {
             ULTIMA_1850_PrintString(/*0x8ce0*/ "A scroll: ");
-            ULTIMA_1c9e_SelectCharset(1);
-            ULTIMA_1850_PrintString(D_41ac_scrollRunes[amount & 7]);
-            ULTIMA_1c9e_SelectCharset(0);
+            SelectCharset(1);
+            ULTIMA_1850_PrintString(scrollRunes[amount & 7]);
+            SelectCharset(0);
             ULTIMA_1850_PrintString(/*0x8cec*/ "!\n");
-            D_5820_scrolls[amount]++;
-            if (D_5820_scrolls[amount] == 100)
+            scrolls[amount]++;
+            if (scrolls[amount] == 100)
             {
-                D_5820_scrolls[amount] = 99;
+                scrolls[amount] = 99;
             }
         }
         break;
 
     case TILE_ACTOR_GOLD:
-        ULTIMA_1a3e_PrintNumber(amount, 1, 0x20);
+        PrintNumber(amount, 1, 0x20);
         ULTIMA_1850_PrintString(/*0x8cf0*/ " gold!\n");
-        ULTIMA_3f14_IncreaseInt(&D_57aa_gold, amount, 9999);
+        IncreaseInt(&gold, amount, 9999);
         break;
 
     case TILE_ACTOR_POTION:
         ULTIMA_1850_PrintString(/*0x8cf8*/ "A ");
-        ULTIMA_1850_PrintString(D_419c_potionColors[amount]);
+        ULTIMA_1850_PrintString(potionColors[amount]);
         ULTIMA_1850_PrintString(/*0x8cfc*/ " potion!\n");
-        D_5828_potions[amount]++;
-        if (D_5828_potions[amount] == 100)
+        potions[amount]++;
+        if (potions[amount] == 100)
         {
-            D_5828_potions[amount] = 99;
+            potions[amount] = 99;
         }
         break;
 
@@ -1634,23 +1634,23 @@ static void SJOG_1458_GetObject(int kind, int amount, int slot)
     case TILE_ACTOR_AMULET:
         if (amount == 0x1b || amount == 0x1d)
         {
-            ULTIMA_3ef0_IncreaseByte(&D_57c0_equipment[amount], 5, 99);
+            IncreaseByte(&equipment[amount], 5, 99);
         }
         else
         {
-            D_57c0_equipment[amount]++;
-            if (D_57c0_equipment[amount] == 100)
+            equipment[amount]++;
+            if (equipment[amount] == 100)
             {
-                D_57c0_equipment[amount] = 99;
+                equipment[amount] = 99;
             }
         }
 
-        ULTIMA_1850_PrintString(D_17f6_equipNames[amount]);
+        ULTIMA_1850_PrintString(equipNames[amount]);
         ULTIMA_1850_PrintString(/*0x8d06*/ "!\n");
         break;
 
     case TILE_ACTOR_SHARD:
-        D_57b6_shards[amount & 3] = 0xff;
+        shards[amount & 3] = 0xff;
         ULTIMA_1850_PrintString(/*0x8d0a*/ "The Shard of\n");
         switch (amount & 3)
         {
@@ -1667,19 +1667,19 @@ static void SJOG_1458_GetObject(int kind, int amount, int slot)
         break;
 
     case TILE_ACTOR_CROWN:
-        D_57b4_crown = 0xff;
+        crown = 0xff;
         ULTIMA_1850_PrintString(/*0x8d3a*/ "The Crown of Lord British!\n");
         TOWN_0052_SetNpcKilled(TOWN_011e_FindNpcByActor(slot));
         TOWN_00b0_DespawnNpc(TOWN_011e_FindNpcByActor(slot));
         break;
 
     case TILE_ACTOR_SCEPTRE:
-        D_57b5_sceptre = 0xff;
+        sceptre = 0xff;
         ULTIMA_1850_PrintString(/*0x8d56*/ "The Sceptre of Lord British!\n");
         break;
 
     case TILE_ACTOR_AMULET_LB:
-        D_57b3_amulet = 0xff;
+        amulet = 0xff;
         ULTIMA_1850_PrintString(/*0x8d74*/ "The Amulet of Lord British!\n");
         break;
 
@@ -1690,7 +1690,7 @@ static void SJOG_1458_GetObject(int kind, int amount, int slot)
 
     if (slot < 0x20)
     {
-        ULTIMA_3a74_SetActor(0, 0, 0, 0, 0, 0, slot);
+        SetActor(0, 0, 0, 0, 0, 0, slot);
     }
 
     D_24e6_viewDirty |= 2;
@@ -1699,7 +1699,7 @@ static void SJOG_1458_GetObject(int kind, int amount, int slot)
 
 // CHECKED (nop)
 // Get in a dungeon: an open chest (0x7?) gives its treasure, by level
-static void SJOG_179e_GetInDungeon(void)
+static void GetInDungeon(void)
 {
     int cell_i;
     int index;
@@ -1723,17 +1723,17 @@ static void SJOG_179e_GetInDungeon(void)
 
         for (index = 0; index < 7; index++)
         {
-            if (D_41bc_dungeonLootOdds[index] <= ULTIMA_2092_RandomRange(1, D_5895_mapLevel * 4 + 4))
+            if (dungeonLootOdds[index] <= ULTIMA_2092_RandomRange(1, D_5895_mapLevel * 4 + 4))
             {
                 if (index == 5)
                 {
                     gearType = ULTIMA_2092_RandomRange(0, 7);
-                    SJOG_1458_GetObject(3, gearType, 0x20);
+                    GetObject(3, gearType, 0x20);
                 }
                 else if (index == 6)
                 {
                     gearType = ULTIMA_2092_RandomRange(0, 7);
-                    SJOG_1458_GetObject(4, gearType, 0x20);
+                    GetObject(4, gearType, 0x20);
                 }
                 else
                 {
@@ -1743,10 +1743,10 @@ static void SJOG_179e_GetInDungeon(void)
                     }
                     else
                     {
-                        amount_l = ULTIMA_2092_RandomRange(1, D_41c4_dungeonLootMax[index]);
+                        amount_l = ULTIMA_2092_RandomRange(1, dungeonLootMax[index]);
                     }
 
-                    SJOG_1458_GetObject(D_41cc_dungeonLootKind[index], amount_l, 0x20);
+                    GetObject(dungeonLootKind[index], amount_l, 0x20);
                 }
             }
         }
@@ -1759,7 +1759,7 @@ static void SJOG_179e_GetInDungeon(void)
 
 // CHECKED (loop)
 // the Get command: in a dungeon its own; else a direction, then an object there, a torch from a wall, or food from crops and tables
-void SJOG_18ce_GetCmd(void)
+void GetCmd(void)
 {
     int stepY;
     int targetY;
@@ -1771,7 +1771,7 @@ void SJOG_18ce_GetCmd(void)
 
     if (D_5893_mapId > 0x20 && D_5893_mapId < 0x29)
     {
-        SJOG_179e_GetInDungeon();
+        GetInDungeon();
         return;
     }
 
@@ -1802,7 +1802,7 @@ void SJOG_18ce_GetCmd(void)
     if (index_h < 0x20)
     {
         value_c = D_5c5a_actors[index_h].value;
-        SJOG_1458_GetObject(tile_b, value_c, index_h);
+        GetObject(tile_b, value_c, index_h);
         return;
     }
 
@@ -1819,9 +1819,9 @@ void SJOG_18ce_GetCmd(void)
         {
             ULTIMA_5e4a_BuildLightMap();
         }
-        D_58a7_torchTurns = 100;
+        torchTurns = 100;
         ULTIMA_1850_PrintString(/*0x8de8*/ "Borrowed!\n");
-        ULTIMA_43ae_AudioSweepTone(800, 2000, 1, 0x32);
+        AudioSweepTone(800, 2000, 1, 0x32);
         ULTIMA_5910_UpdateFrame();
         break;
 
@@ -1831,7 +1831,7 @@ void SJOG_18ce_GetCmd(void)
         D_24e6_viewDirty |= 2;
         ULTIMA_1850_PrintString(/*0x8df4*/ "Crops picked!\n");
 
-        ULTIMA_3f14_IncreaseInt(&D_57a8_food, 1, 9999);
+        IncreaseInt(&food, 1, 9999);
 
         D_a9fa_vitalsDirty = 1;
 
@@ -1849,7 +1849,7 @@ void SJOG_18ce_GetCmd(void)
             D_24e6_viewDirty |= 2;
             ULTIMA_1850_PrintString(/*0x8e04*/ "Mmmmm...!\n");
 
-            ULTIMA_3f14_IncreaseInt(&D_57a8_food, 1, 9999);
+            IncreaseInt(&food, 1, 9999);
 
             D_a9fa_vitalsDirty = 1;
 
@@ -1873,7 +1873,7 @@ void SJOG_18ce_GetCmd(void)
             D_24e6_viewDirty |= 2;
             ULTIMA_1850_PrintString(/*0x8e24*/ "Mmmmm...!\n");
 
-            ULTIMA_3f14_IncreaseInt(&D_57a8_food, 1, 9999);
+            IncreaseInt(&food, 1, 9999);
             if (D_5888_karma != 0)
             {
                 D_5888_karma--;
@@ -1907,7 +1907,7 @@ void SJOG_18ce_GetCmd(void)
         D_24e6_viewDirty |= 2;
         ULTIMA_1850_PrintString(/*0x8e58*/ "Mmmmm...!\n");
 
-        ULTIMA_3f14_IncreaseInt(&D_57a8_food, 1, 9999);
+        IncreaseInt(&food, 1, 9999);
         if (D_5888_karma != 0)
         {
             D_5888_karma--;
@@ -1923,7 +1923,7 @@ void SJOG_18ce_GetCmd(void)
 }
 
 // takes the item off every party member who has it equipped; how many did
-int SJOG_1b34_UnequipAll(int item)
+int UnequipAll(int item)
 {
     int count;
     int member;
@@ -1932,7 +1932,7 @@ int SJOG_1b34_UnequipAll(int item)
 
     for (member = 0; member < D_585b_partyCount; member++)
     {
-        if (ULTIMA_6e60_Unequip(member, item) != 0)
+        if (Unequip(member, item) != 0)
         {
             count++;
         }
@@ -1942,7 +1942,7 @@ int SJOG_1b34_UnequipAll(int item)
 }
 
 // counts the living combatants: the enemies into D_5876, the party's side into D_5878
-void SJOG_1b6c_CountCombatants(void)
+void CountCombatants(void)
 {
     int isEnemy;
     int index;
@@ -1951,7 +1951,7 @@ void SJOG_1b6c_CountCombatants(void)
 
     for (index = 0; index < 0x20; index++)
     {
-        if (D_ba14_combatants[index].flags != 0 && (D_ba14_combatants[index].flags & COMBAT_FLAGS_DEAD) == 0)
+        if (combatants[index].flags != 0 && (combatants[index].flags & COMBAT_FLAGS_DEAD) == 0)
         {
             isEnemy = ULTIMA_5646_IsEnemy(index);
             if (isEnemy != 0)
@@ -1967,7 +1967,7 @@ void SJOG_1b6c_CountCombatants(void)
 }
 
 // a combatant leaves the field (not on a ship): the first player's direction fixes where the party leaves; 1 when it left
-static int SJOG_1bb2_CombatExit(int combatant, int dir)
+static int CombatExit(int combatant, int dir)
 {
     if ((D_587c_partyTile & 0xf8) == TILE_ACTOR_FRIGATE_20)
     {
@@ -1975,13 +1975,13 @@ static int SJOG_1bb2_CombatExit(int combatant, int dir)
         return 0;
     }
 
-    if ((D_ba14_combatants[combatant].flags & COMBAT_FLAGS_PLAYER) != 0)
+    if ((combatants[combatant].flags & COMBAT_FLAGS_PLAYER) != 0)
     {
-        if (D_58a0_combatExitDir == 0)
+        if (combatExitDir == 0)
         {
-            D_58a0_combatExitDir = dir;
+            combatExitDir = dir;
         }
-        else if (dir != D_58a0_combatExitDir && (D_58a1_combatFlags & 0x80) != 0)
+        else if (dir != combatExitDir && (combatFlags & 0x80) != 0)
         {
             ULTIMA_1850_PrintString(/*0x8e88*/ "\nAll must use the same exit!\n");
             ULTIMA_22c0_AudioTone(0xa5, 200);
@@ -1989,8 +1989,8 @@ static int SJOG_1bb2_CombatExit(int combatant, int dir)
         }
     }
 
-    D_589f_focusBlink = 1;
-    SJOG_1b6c_CountCombatants();
+    focusBlink = 1;
+    CountCombatants();
     if (D_5876_tempX == 0)
     {
         ULTIMA_1850_PrintString(/*0x8ea6*/ "Leave!\n");
@@ -2000,9 +2000,9 @@ static int SJOG_1bb2_CombatExit(int combatant, int dir)
         ULTIMA_1850_PrintString(/*0x8eae*/ "Escape!\n");
     }
 
-    ULTIMA_43ae_AudioSweepTone(0x4b0, 2000, 1, 0x28);
-    D_587b_activePlayer = 0xff;
-    COMBAT_1236_RemoveEntity(-combatant - 1);
+    AudioSweepTone(0x4b0, 2000, 1, 0x28);
+    activePlayer = 0xff;
+    RemoveEntity(-combatant - 1);
     ULTIMA_2900_UpdateVitalsDisplay();
     ULTIMA_5910_UpdateFrame();
 
@@ -2012,7 +2012,7 @@ static int SJOG_1bb2_CombatExit(int combatant, int dir)
 // move player in combat
 // param_1: combat entity idx, param_2: direction
 // moves a combatant of the party one cell in a direction: off the map it leaves; a blocked cell sounds a tone; 1 when it moved
-int SJOG_1c56_CombatMovePlayer(int combatant, int dir)
+int CombatMovePlayer(int combatant, int dir)
 {
     int actorIndex;
     int stepY;
@@ -2021,7 +2021,7 @@ int SJOG_1c56_CombatMovePlayer(int combatant, int dir)
     int destX_h;
 
     stepX = stepY = 0;
-    actorIndex = D_ba14_combatants[combatant].actorIdx;
+    actorIndex = combatants[combatant].actorIdx;
 
     switch (dir)
     {
@@ -2043,22 +2043,22 @@ int SJOG_1c56_CombatMovePlayer(int combatant, int dir)
         break;
     }
 
-    destX_h = D_ba14_combatants[combatant].x + stepX;
-    destY_g = D_ba14_combatants[combatant].y + stepY;
+    destX_h = combatants[combatant].x + stepX;
+    destY_g = combatants[combatant].y + stepY;
     if (destX_h > 0xa || destY_g > 0xa || destX_h < 0 || destY_g < 0)
     {
-        return SJOG_1bb2_CombatExit(combatant, dir);
+        return CombatExit(combatant, dir);
     }
 
-    if (COMBAT_0000_IsCellFree(D_5c5a_actors[actorIndex].tile, destX_h, destY_g) != 0)
+    if (IsCellFree(D_5c5a_actors[actorIndex].tile, destX_h, destY_g) != 0)
     {
-        D_5c5a_actors[actorIndex].x = D_ba14_combatants[combatant].x = destX_h;
-        D_5c5a_actors[actorIndex].y = D_ba14_combatants[combatant].y = destY_g;
+        D_5c5a_actors[actorIndex].x = combatants[combatant].x = destX_h;
+        D_5c5a_actors[actorIndex].y = combatants[combatant].y = destY_g;
 
         ULTIMA_433e_AudioFootstep();
-        if ((D_58a1_combatFlags & 0x82) != 0)
+        if ((combatFlags & 0x82) != 0)
         {
-            COMBAT_111a_FireMapTrigger(destX_h, destY_g);
+            FireMapTrigger(destX_h, destY_g);
         }
 
         return 1;
@@ -2075,7 +2075,7 @@ int SJOG_1c56_CombatMovePlayer(int combatant, int dir)
 // CHECKED
 // klimb in combat
 // Klimb in combat: a ladder up or down leaves the field (up 5, down 6); or one step across a 0x4c tile
-int SJOG_1d6a_CombatKlimb(void)
+int CombatKlimb(void)
 {
     int key;
     int targetY;
@@ -2087,7 +2087,7 @@ int SJOG_1d6a_CombatKlimb(void)
 
     tile_b = *ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY);
 
-    if ((D_58a1_combatFlags & 2) != 0 && tile_b == TILE_MAP_LADDER_UP && D_bb16_altTileset != 0)
+    if ((combatFlags & 2) != 0 && tile_b == TILE_MAP_LADDER_UP && altTileset != 0)
     {
         ULTIMA_1850_PrintString(/*0x8ee6*/ "U/D-");
         do
@@ -2119,14 +2119,14 @@ int SJOG_1d6a_CombatKlimb(void)
     {
         ULTIMA_1850_PrintString(/*0x8eec*/ "Up!\n");
 
-        return SJOG_1bb2_CombatExit(D_589e_curCombatant, 5);
+        return CombatExit(curCombatant, 5);
     }
 
-    if ((tile_b == TILE_MAP_86 && (D_58a1_combatFlags & 0x80) != 0) || tile_b == TILE_MAP_LADDER_DOWN)
+    if ((tile_b == TILE_MAP_86 && (combatFlags & 0x80) != 0) || tile_b == TILE_MAP_LADDER_DOWN)
     {
         ULTIMA_1850_PrintString(/*0x8ef2*/ "Down!\n");
 
-        return SJOG_1bb2_CombatExit(D_589e_curCombatant, 6);
+        return CombatExit(curCombatant, 6);
     }
 
     if (ULTIMA_35ec_SelectDirection() != 0)
@@ -2135,11 +2135,11 @@ int SJOG_1d6a_CombatKlimb(void)
         targetY = D_5897_mapY + D_5878_tempY;
         if (*ULTIMA_4402_GetTileAddr(targetX, targetY) == TILE_MAP_4C && ULTIMA_3702_FindLastActorTileAt(targetX, targetY, 0) == 0)
         {
-            actor_g = &D_5c5a_actors[D_ba14_combatants[D_589e_curCombatant].actorIdx];
-            actor_g->x = D_ba14_combatants[D_589e_curCombatant].x = targetX;
-            actor_g->y = D_ba14_combatants[D_589e_curCombatant].y = targetY;
+            actor_g = &D_5c5a_actors[combatants[curCombatant].actorIdx];
+            actor_g->x = combatants[curCombatant].x = targetX;
+            actor_g->y = combatants[curCombatant].y = targetY;
 
-            COMBAT_111a_FireMapTrigger(targetX, targetY);
+            FireMapTrigger(targetX, targetY);
         }
         else
         {
@@ -2152,29 +2152,29 @@ int SJOG_1d6a_CombatKlimb(void)
 }
 
 // a combatant who steps on the row-2 mirror of the endgame room leaves the field (exit code 0x4d)
-void SJOG_1ea4_CheckMirror(void)
+void CheckMirror(void)
 {
     CombatEntity* combatant;
 
-    combatant = &D_ba14_combatants[D_589e_curCombatant];
+    combatant = &combatants[curCombatant];
 
     if (combatant->flags != 0 && (combatant->flags & COMBAT_FLAGS_DEAD) == 0 && combatant->y == 2 &&
-        (D_ac64_viewActors[combatant->x + 0x10] & 0xfc) == TILE_ACTOR_MIRROR)
+        (viewActors[combatant->x + 0x10] & 0xfc) == TILE_ACTOR_MIRROR)
     {
-        D_58a0_combatExitDir = 0x4d;
+        combatExitDir = 0x4d;
         ULTIMA_16ba_PrintChar('\n');
-        COMSUBS_0094_PrintName(D_589e_curCombatant);
+        PrintName(curCombatant);
         ULTIMA_1850_PrintString(/*0x8f02*/ " is absorbed!\n");
-        ULTIMA_43ae_AudioSweepTone(0x4b0, 2000, 1, 0x28);
-        D_587b_activePlayer = 0xff;
+        AudioSweepTone(0x4b0, 2000, 1, 0x28);
+        activePlayer = 0xff;
         ULTIMA_2900_UpdateVitalsDisplay();
-        COMBAT_1236_RemoveEntity(-D_589e_curCombatant - 1);
+        RemoveEntity(-curCombatant - 1);
         ULTIMA_5910_UpdateFrame();
     }
 }
 
 // a command the world has and combat refuses: prints its word, a message, two tones; always 1
-int SJOG_1f26_CombatMiscCmd(char* word, int kind)
+int CombatMiscCmd(char* word, int kind)
 {
     ULTIMA_1850_PrintString(word);
 
@@ -2199,7 +2199,7 @@ int SJOG_1f26_CombatMiscCmd(char* word, int kind)
 }
 
 // a number key in combat selects that party member as the active player when he or she can act; 1 when it did
-int SJOG_1f7a_CombatSetActivePlayer(int member)
+int CombatSetActivePlayer(int member)
 {
     int canAct;
     int index;
@@ -2210,11 +2210,11 @@ int SJOG_1f7a_CombatSetActivePlayer(int member)
     
     for (index = 0; index < 0x20; index++)
     {
-        flags_c = D_ba14_combatants[index].flags;
+        flags_c = combatants[index].flags;
 
         if ((flags_c & COMBAT_FLAGS_PLAYER) != 0)
         {
-            if (ULTIMA_5646_IsEnemy(index) == 0 && D_ba14_combatants[index].entityIdx == member)
+            if (ULTIMA_5646_IsEnemy(index) == 0 && combatants[index].entityIdx == member)
             {
                 if ((flags_c & (COMBAT_FLAGS_DEAD | COMBAT_FLAGS_ASLEEP | COMBAT_FLAGS_4)) != 0)
                 {
@@ -2232,8 +2232,8 @@ int SJOG_1f7a_CombatSetActivePlayer(int member)
 
     if (canAct != 0)
     {
-        D_587b_activePlayer = member;
-        COMSUBS_0094_PrintName(index);
+        activePlayer = member;
+        PrintName(index);
         ULTIMA_16ba_PrintChar('\n');
         ULTIMA_2900_UpdateVitalsDisplay();
     }
@@ -2246,16 +2246,16 @@ int SJOG_1f7a_CombatSetActivePlayer(int member)
 }
 
 // at a combatant's turn: the ring, fading fields, the protection spell's turns count down
-void SJOG_2012_TurnUpkeep(void)
+void TurnUpkeep(void)
 {
-    ULTIMA_6794_ApplyRing(D_589e_curCombatant);
-    COMSUBS_0056_FadeFields();
+    ApplyRing(curCombatant);
+    FadeFields();
 
-    if (D_588e_protectTurns != 0 && D_588e_protectTurns != 0xff)
+    if (protectTurns != 0 && protectTurns != 0xff)
     {
-        if (--D_588e_protectTurns == 0)
+        if (--protectTurns == 0)
         {
-            D_587a_statusIcon = 0;
+            statusIcon = 0;
             D_a9fa_vitalsDirty = 1;
         }
     }
@@ -2263,29 +2263,29 @@ void SJOG_2012_TurnUpkeep(void)
 
 // CHECKED
 // the combat is over: the actors are put back; the monster's actor is removed (a pirate ship sinks to a wreck); the map id is restored
-void SJOG_203e_EndCombat(int actor)
+void EndCombat(int actor)
 {
     int index;
 
     ActorFmt* monster;
 
-    if (D_58a0_combatExitDir == 0x4d)
+    if (combatExitDir == 0x4d)
     {
-        ENDGAME_0648_EndgameMain();
+        EndgameMain();
     }
 
     for (index = 0; index < 0x20; index++)
     {
-        D_5c5a_actors[index] = D_a9fc_savedActors[index];
+        D_5c5a_actors[index] = savedActors[index];
     }
 
-    if ((D_58a1_combatFlags & 0x82) == 0)
+    if ((combatFlags & 0x82) == 0)
     {
         if (actor < 0x20)
         {
             monster = &D_5c5a_actors[actor];
 
-            if (D_58a3_combatOver != 0 && (monster->tile & 0xfc) == TILE_ACTOR_PIRATE)
+            if (combatOver != 0 && (monster->tile & 0xfc) == TILE_ACTOR_PIRATE)
             {
                 monster->tile -= 8;
                 monster->animTile -= 8;
@@ -2304,17 +2304,17 @@ void SJOG_203e_EndCombat(int actor)
 }
 
 // 1 when the cell (x, y) is not free for the combatant (0 off the map when it may leave)
-int SJOG_20d8_IsCellBlocked(int x, int y, int combatant)
+int IsCellBlocked(int x, int y, int combatant)
 {
     int blocked;
     CombatEntity* entity_c;
 
     blocked = 1;
-    entity_c = &D_ba14_combatants[combatant];
+    entity_c = &combatants[combatant];
 
     if (x > -1 && x < 11 && y > -1 && y < 11)
     {
-        blocked = COMBAT_0000_IsCellFree(D_5c5a_actors[entity_c->actorIdx].tile, x, y);
+        blocked = IsCellFree(D_5c5a_actors[entity_c->actorIdx].tile, x, y);
         blocked = 1 - blocked;
     }
     else
@@ -2330,7 +2330,7 @@ int SJOG_20d8_IsCellBlocked(int x, int y, int combatant)
 
 // CHECKED
 // 1 when all four neighbouring cells of the combatant are blocked (the probing walk is as in the original)
-int SJOG_2148_IsSurrounded(int combatant)
+int IsSurrounded(int combatant)
 {
     int dir;
     int y;
@@ -2339,7 +2339,7 @@ int SJOG_2148_IsSurrounded(int combatant)
     CombatEntity* entity_c;
 
     blockedCount_b = 0;
-    entity_c = &D_ba14_combatants[combatant];
+    entity_c = &combatants[combatant];
 
     x = entity_c->x;
     y = entity_c->y;
@@ -2364,7 +2364,7 @@ int SJOG_2148_IsSurrounded(int combatant)
             break;
         }
 
-        if (SJOG_20d8_IsCellBlocked(x, y, combatant) != 0)
+        if (IsCellBlocked(x, y, combatant) != 0)
         {
             blockedCount_b++;
         }
@@ -2375,21 +2375,21 @@ int SJOG_2148_IsSurrounded(int combatant)
 
 // CHECKED
 // the first charmed party member among the first six is freed: sound, the item 0x23 taken off, put to sleep; the index or -1
-int SJOG_21ce_BreakCharm(void)
+int BreakCharm(void)
 {
     int index;
 
     for (index = 0; index < 6; index++)
     {
-        if ((D_ba14_combatants[index].flags & COMBAT_FLAGS_CHARMED) != 0 && (D_ba14_combatants[index].flags & COMBAT_FLAGS_PLAYER) != 0)
+        if ((combatants[index].flags & COMBAT_FLAGS_CHARMED) != 0 && (combatants[index].flags & COMBAT_FLAGS_PLAYER) != 0)
         {
-            D_ba14_combatants[index].flags &= ~COMBAT_FLAGS_CHARMED;
+            combatants[index].flags &= ~COMBAT_FLAGS_CHARMED;
 
-            ULTIMA_1850_PrintString(D_55a8_party[D_ba14_combatants[index].entityIdx].name);
+            ULTIMA_1850_PrintString(D_55a8_party[combatants[index].entityIdx].name);
             ULTIMA_1850_PrintString(/*0x8f56*/ " passes out!");
             ULTIMA_2192_AudioPulse(0xc1c, 1, 30000, 1000, 2);
-            ULTIMA_6e60_Unequip(D_ba14_combatants[index].entityIdx, 0x23);
-            ULTIMA_68ae_PutToSleep(index);
+            Unequip(combatants[index].entityIdx, 0x23);
+            PutToSleep(index);
             break;
         }
     }

@@ -106,7 +106,7 @@ typedef struct ActorFmt // D_5c5a_actors..
 	u8 y;
 	u8 z; // level
 	u8 value; // by kind: hull of a frigate, hit points of a monster in combat, item or count of an object
-	u8 animState; // low nibble: frames to wait (0xf: never animate); high nibble: place in the tile sequence (ULTIMA_4552_AnimateActors)
+	u8 animState; // low nibble: frames to wait (0xf: never animate); high nibble: place in the tile sequence (AnimateActors)
 	u8 extra; // by kind: skiffs aboard a frigate; 0xff none
 } ActorFmt;
 

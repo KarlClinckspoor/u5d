@@ -1,5 +1,5 @@
 // Resident code from CS:5a28 to 5f86: an object of its own, compiled with MSC 5.1, after the
-// MSC 5.0 object view.c (ULTIMA_51a0_RandomFrame to ULTIMA_5910) and before battle.c. Its data is the two
+// MSC 5.0 object view.c (RandomFrame to ULTIMA_5910) and before battle.c. Its data is the two
 // tables at DS:6a86.
 
 #include "common/common.h"
@@ -13,18 +13,18 @@
 #include "cmds.h"
 #include "combat.h"
 #include "dnglook.h"
-u8 D_6a86_opaqueTiles[0x13] = {
+u8 opaqueTiles[0x13] = {
     0x09, 0x0A, 0x0C, 0x0D, 0x4D, 0x4E, 0x4F, 0x5A,
     0x97, 0xB8, 0xB9, 0xBC, 0xD0, 0xD1, 0xD2, 0xD3,
     0xF8, 0xFE, 0xFF
 };
 
-u8 D_6a9a_lightTiles[10] = {
+u8 lightTiles[10] = {
     0xDC, 0xBD, 0xBE, 0xB2, 0xDE, 0xBF, 0xB0, 0xB1,
     0xB3, 0xBC
 };
 
-static bool ULTIMA_5dfe_IsTransparentTile(byte tile, int distance);
+static bool IsTransparentTile(byte tile, int distance);
 
 // CHECKED
 // The locals' suffixes (_aj, _ab ...) keep the original's slot order (rename.py).
@@ -35,7 +35,7 @@ static bool ULTIMA_5dfe_IsTransparentTile(byte tile, int distance);
 // unused slot at -4 between tail and the queue (cell hashes to bucket 0, declared before
 // tail). As a block variable its slot came after the locals and moved the temporary.
 // generate visibility map (BFS)
-static void ULTIMA_5a28_BuildVisibilityMap(int lightLevel, int originY, int originX, int rowOffset, int colOffset, uint stride, byte* map)
+static void BuildVisibilityMap(int lightLevel, int originY, int originX, int rowOffset, int colOffset, uint stride, byte* map)
 {
     int dir; // -0x216
     byte tile;
@@ -144,18 +144,18 @@ static void ULTIMA_5a28_BuildVisibilityMap(int lightLevel, int originY, int orig
                 {
                     // 5ba5
                     tile = *ULTIMA_4402_GetTileAddr(originX + nextX + (uint)D_589b_mapOriginX, originY + nextY + (uint)D_589c_mapOriginY);
-                    if (ULTIMA_6ff0_DistanceFromCenter(nextX, nextY) >= lightLevel)
+                    if (DistanceFromCenter(nextX, nextY) >= lightLevel)
                     {
                         if (combatMode_h)
                         {
                         L_c:
-                            if (ULTIMA_5dfe_IsTransparentTile(tile, ULTIMA_6ff0_DistanceFromCenter(nextX, nextY)) == 0)
+                            if (IsTransparentTile(tile, DistanceFromCenter(nextX, nextY)) == 0)
                             {
                                 // 5c05
                                 if (
                                     map[fromY_d * 0x20 + fromX_e] == 0 ||
-                                    D_ad14_combatMap[(originY + fromY_d) * 0x20 + originX + fromX_e] == 0 ||
-                                    D_ad14_combatMap[(originY + nextY) * 0x20 + originX + nextX] == 0)
+                                    combatMap[(originY + fromY_d) * 0x20 + originX + fromX_e] == 0 ||
+                                    combatMap[(originY + nextY) * 0x20 + originX + nextX] == 0)
                                 {
                                     tile = *cell = 0xff;
                                 }
@@ -169,7 +169,7 @@ static void ULTIMA_5a28_BuildVisibilityMap(int lightLevel, int originY, int orig
                                 {
                                     *cell = 0;
                                 }
-                                else if (D_ad14_combatMap[(originY + nextY) * 0x20 + originX + nextX] != 0)
+                                else if (combatMap[(originY + nextY) * 0x20 + originX + nextX] != 0)
                                 {
                                 L_5c93:
                                     *cell = tile;
@@ -189,7 +189,7 @@ static void ULTIMA_5a28_BuildVisibilityMap(int lightLevel, int originY, int orig
                         goto L_5c93;
 
                     // 5ca1
-                    if (ULTIMA_5dfe_IsTransparentTile(tile, ULTIMA_6ff0_DistanceFromCenter(nextX, nextY)) != 0)
+                    if (IsTransparentTile(tile, DistanceFromCenter(nextX, nextY)) != 0)
                     {
                         queue_l[tail_g] = nextY;
                         tail_g++;
@@ -214,7 +214,7 @@ static void ULTIMA_5a28_BuildVisibilityMap(int lightLevel, int originY, int orig
 // update map data?
 // light: light intensity
 // Build the 11x11 view around map cell (x, y) for the light level: what the party can see.
-void ULTIMA_5d0a_BuildView(int light, int mapX, int mapY, int size)
+void BuildView(int light, int mapX, int mapY, int size)
 {
     int originX;
     int originY;
@@ -232,8 +232,8 @@ void ULTIMA_5d0a_BuildView(int light, int mapX, int mapY, int size)
 
     if (light > 0)
     {
-        ULTIMA_5a28_BuildVisibilityMap(light, row, col_f, -111, 0, 0x20, D_ab02_viewTiles);
-        cell_c = D_ab02_viewTiles;
+        BuildVisibilityMap(light, row, col_f, -111, 0, 0x20, viewTiles);
+        cell_c = viewTiles;
 
         for (row = 0; row < 0xb; row++)
         {
@@ -268,8 +268,8 @@ void ULTIMA_5d0a_BuildView(int light, int mapX, int mapY, int size)
     }
 }
 
-// Probably: the tile does not block sight (not in D_6a86_opaqueTiles); the door-like tiles only when distance is 1.
-static bool ULTIMA_5dfe_IsTransparentTile(byte tile, int distance)
+// Probably: the tile does not block sight (not in opaqueTiles); the door-like tiles only when distance is 1.
+static bool IsTransparentTile(byte tile, int distance)
 {
     if (tile == TILE_MAP_4B || tile == TILE_MAP_4A || tile == TILE_MAP_DOOR_BA || tile == TILE_MAP_DOOR_BB || tile == TILE_MAP_98)
     {
@@ -280,7 +280,7 @@ static bool ULTIMA_5dfe_IsTransparentTile(byte tile, int distance)
     }
     else
     {
-        if (!memchr(D_6a86_opaqueTiles, tile, 0x13))
+        if (!memchr(opaqueTiles, tile, 0x13))
             return 1;
         else
             return 0;
@@ -301,9 +301,9 @@ void ULTIMA_5e4a_BuildLightMap(void)
     u8* cell;
 
     count = 0;
-    cell = D_ad14_combatMap;
+    cell = combatMap;
 
-    memset(D_ad14_combatMap, 0xff, 0x400);
+    memset(combatMap, 0xff, 0x400);
 
     // 5e72
     for (scanY_c = 0; scanY_c < 0x20; scanY_c++)
@@ -312,7 +312,7 @@ void ULTIMA_5e4a_BuildLightMap(void)
         {
             // 5e78
             tile = *ULTIMA_4402_GetTileAddr(D_589b_mapOriginX + scanX_d, D_589c_mapOriginY + scanY_c);
-            if (memchr(D_6a9a_lightTiles, tile, 10) != 0)
+            if (memchr(lightTiles, tile, 10) != 0)
             {
                 // 5eb0
                 lights_g[count++] = scanY_c;
@@ -345,13 +345,13 @@ void ULTIMA_5e4a_BuildLightMap(void)
             }
 
             // 5f3f
-            ULTIMA_5a28_BuildVisibilityMap(10, lightY, lightX, lightY, lightX, 0x20, D_ad14_combatMap);
+            BuildVisibilityMap(10, lightY, lightX, lightY, lightX, 0x20, combatMap);
             scanY_c++;
         } while (scanY_c < scanX_d);
     }
 
     // 5f65
-    cell = D_ad14_combatMap;
+    cell = combatMap;
 
     for (scanX_d = 0; scanX_d < 0x400; scanX_d++)
     {
@@ -363,6 +363,6 @@ void ULTIMA_5e4a_BuildLightMap(void)
     }
 }
 
-void ULTIMA_6fbc_TilesetMode(int mode);
+void TilesetMode(int mode);
 
-void ULTIMA_6bc2_SetUpCombat(int flags, int enemy);
+void SetUpCombat(int flags, int enemy);

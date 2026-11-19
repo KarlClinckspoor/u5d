@@ -9,22 +9,22 @@
 #include <stdlib.h>
 #include <string.h>
 
-u16 D_540c_cursorFrame = 0; // this module's data (DS:540c)
+u16 cursorFrame = 0; // this module's data (DS:540c)
 
-u16 ULTIMA_1b38_PollKeyWithCursor(void)
+u16 PollKeyWithCursor(void)
 {
     int key;
     int savedFlag_d;
 
-    savedFlag_d = D_538e_cursorAdvance;
-    D_538e_cursorAdvance = 0;
+    savedFlag_d = cursorAdvance;
+    cursorAdvance = 0;
 
-    ULTIMA_16ba_PrintChar(D_5390_cursorFirstChar + D_540c_cursorFrame++); // animate cursor
+    ULTIMA_16ba_PrintChar(cursorFirstChar + cursorFrame++); // animate cursor
 
-    key = ULTIMA_1d5e_PollKey();
-    if ((int)D_540c_cursorFrame >= (int)D_5392_cursorFrameCount)
+    key = PollKey();
+    if ((int)cursorFrame >= (int)cursorFrameCount)
     {
-        D_540c_cursorFrame = 0;
+        cursorFrame = 0;
     }
 
     if (key != 0)
@@ -33,9 +33,9 @@ u16 ULTIMA_1b38_PollKeyWithCursor(void)
     }
     else
     {
-        ULTIMA_20fa_WaitTicks(1);
+        WaitTicks(1);
     }
 
-    D_538e_cursorAdvance = savedFlag_d;
+    cursorAdvance = savedFlag_d;
     return key;
 }

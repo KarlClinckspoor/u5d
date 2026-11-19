@@ -205,7 +205,7 @@ void ULTIMA_1850_PrintString(char* text)
     if (*text != '\0')
     {
         // 1872
-        window_e = &D_535e_textWindows[D_5386_textWindowIndex];
+        window_e = &textWindows[textWindowIndex];
         centered_c = window_e->flags & 2;
         windowWidth_d = (uint)window_e->right - (uint)window_e->left; // text_window_width = r - l;
 
@@ -220,7 +220,7 @@ void ULTIMA_1850_PrintString(char* text)
             // 18a7
             lineLength = breakPending = wrapped_h = skip_f = 0;
             room =
-                windowWidth_d - ULTIMA_1f12_GetCurrentTextX(); // remaining_length = text_window_length - column
+                windowWidth_d - GetCurrentTextX(); // remaining_length = text_window_length - column
 
             for (; text[pos_j] != '\n' && text[pos_j] != '\r' && text[pos_j] != '\0' &&
                               lineLength <= room;
@@ -303,7 +303,7 @@ void ULTIMA_1850_PrintString(char* text)
                     }
 
                     // 19ea
-                    ULTIMA_1bf2_SetTextPosition((room - lineLength) / 2, ULTIMA_1cee_GetCurrentTextY());
+                    SetTextPosition((room - lineLength) / 2, GetCurrentTextY());
                 }
 
                 // 19fd; 1a03: skip_f in CX
@@ -334,7 +334,7 @@ void ULTIMA_1850_PrintString(char* text)
 // print_integer(val, min_len, filler)
 // fillChar is a char: as an int, MSC 5.0 turns the fill loop into "rep stosb" and needs a
 // temporary (frame 0x34); the original's loop stores AL each time.
-void ULTIMA_1a3e_PrintNumber(int value, int minWidth, char fillChar)
+void PrintNumber(int value, int minWidth, char fillChar)
 {
     int index;
     int negative; // is_negative
