@@ -44,7 +44,7 @@ def literal(text):
     """The C literal for a string written as a literal or as a macro naming one."""
     text = text.strip()
     return text if text.startswith('"') else macros().get(text)
-VAR_RE = re.compile(r'^[A-Za-z][\w\s\*]*?\b(D_([0-9a-f]{4})\w*)\s*(\[[^\]]*\])*\s*(=|;)', re.M)
+VAR_RE = re.compile(r'^[A-Za-z][\w\s\*]*?\b(\w+)\s*(\[[^\]]*\])*\s*(=|;)', re.M)
 
 
 def c_string_len(lit):
@@ -99,7 +99,9 @@ def build():
             items.append([a, c_string_len(m.group(2)), 'str', m.group(2)[:40], f, function_at(s, m.start()),
                           m.group(2).strip()])
     for m in VAR_RE.finditer(files['vars.c']):
-        items.append([int(m.group(2), 16), None, 'var', m.group(1), 'vars.c', None, None])
+        info = u5.name_info(m.group(1))             # a global with an address (names.tsv)
+        if info and info[0] == 'D':
+            items.append([info[2], None, 'var', m.group(1), 'vars.c', None, None])
     items.sort(key=lambda x: (x[0], x[2] != 'var'))
     # extents of variables: up to the next item
     for i, it in enumerate(items):

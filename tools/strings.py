@@ -55,7 +55,10 @@ def collect(src):
 def table_defs(src):
     """{addr: definition text} for D_xxxx definitions at file scope in src (outside functions)."""
     out = {}
-    for m in re.finditer(r'^(?:static\s+)?[A-Za-z][\w\s\*]*?\b(D_([0-9a-f]{4})\w*)\s*(\[[^\]]*\])*\s*=', src, re.M):
+    for m in re.finditer(r'^(?:static\s+)?[A-Za-z][\w\s\*]*?\b(\w+)\s*(\[[^\]]*\])*\s*=', src, re.M):
+        info = u5.name_info(m.group(1))
+        if not info or info[0] != 'D':
+            continue
         i, depth = m.start(), 0
         while i < len(src):
             c = src[i]
@@ -67,7 +70,7 @@ def table_defs(src):
                 break
             i += 1
         end = src.index('\n', i) + 1
-        out[int(m.group(2), 16)] = (m.start(), end, src[m.start():end].rstrip())
+        out[info[2]] = (m.start(), end, src[m.start():end].rstrip())
     return out
 
 

@@ -26,9 +26,12 @@ def vars_names():
     """{DS address: (NAME as the objects spell it, is_byte)} from vars.h."""
     h = open(os.path.join(u5.SRC, 'vars.h'), encoding='utf-8').read()
     out = {}
-    for m in re.finditer(r'^STUB\s+([^;]*?)\b(D_([0-9a-f]{4})\w*)\s*((?:\[[^\]]*\])*)\s*;', h, re.M):
+    for m in re.finditer(r'^STUB\s+([^;]*?)\b(\w+)\s*((?:\[[^\]]*\])*)\s*;', h, re.M):
+        info = u5.name_info(m.group(2))
+        if not info or info[0] != 'D':
+            continue
         typ = m.group(1)
-        out[int(m.group(3), 16)] = (m.group(2).upper(), bool(re.search(r'\b(u8|s8|char|byte)\b', typ)) and '*' not in typ)
+        out[info[2]] = (m.group(2).upper(), bool(re.search(r'\b(u8|s8|char|byte)\b', typ)) and '*' not in typ)
     return out
 
 
