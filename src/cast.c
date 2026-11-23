@@ -14,17 +14,17 @@
 #include "town.h"
 #include "zstats.h"
 
-void MAINOUT_0000_SetUpOverworld(void);
+void SetUpOverworld(void);
 
-u8 D_4592_fieldMissileKinds[4] = {0x35, 0x33, 0x34, 0x36};
+u8 fieldMissileKinds[4] = {0x35, 0x33, 0x34, 0x36};
 
-u8 D_4596_dungeonFieldCells[4] = {0x82, 0x81, 0x80, 0x83};
+u8 dungeonFieldCells[4] = {0x82, 0x81, 0x80, 0x83};
 
 
 // 1 for the three who no spell touches: Blackthorn, Lord British and the Shadow Lord.
-int CAST_0000_IsImmuneToSpells(int combatant)
+int IsImmuneToSpells(int combatant)
 {
-    int type = D_ba14_combatants[combatant].entityIdx;
+    int type = combatants[combatant].entityIdx;
     if (type == 47 || type == 0xe || type == 0xf)
     {
         return 1;
@@ -36,26 +36,26 @@ int CAST_0000_IsImmuneToSpells(int combatant)
 }
 
 // A spell that is an attack of its own missile kind (0x30 Grav Por, 0x31 Vas Flam, 0x32 Xen Corp): attacks with it as with a weapon.
-static void CAST_0032_SpellAttack(int missileKind)
+static void SpellAttack(int missileKind)
 {
-    D_589d_attackWeapon = missileKind;
-    COMSUBS_0c52_AttackWith(D_589e_curCombatant, missileKind);
+    attackWeapon = missileKind;
+    AttackWith(curCombatant, missileKind);
 }
 
 // The four field spells (0 fire, 1 poison, 2 sleep, 3 energy; In Flam Grav, In Nox Grav, In Zu Grav, In Sanct Grav): in a dungeon the
 // cell ahead takes the field if it is empty; in combat a missile of the field's kind is fired (COMSUBS_0c52) and lays it.
-static int CAST_004c_FieldSpell(int field)
+static int FieldSpell(int field)
 {
     int cell_p;
     int result;
     int cellY;
     int cellX;
 
-    if (D_5893_mapId < 0x80)
+    if (mapId < 0x80)
     {
-        CAST2_0000_CastEffect(field == 3 ? 4 : 3);
-        cellX = (D_24d6_facingDx[D_6603_dungeonFacing] + D_5896_mapX) & 7;
-        cellY = (D_24de_facingDy[D_6603_dungeonFacing] + D_5897_mapY) & 7;
+        CastEffect(field == 3 ? 4 : 3);
+        cellX = (facingDx[dungeonFacing] + D_5896_mapX) & 7;
+        cellY = (facingDy[dungeonFacing] + D_5897_mapY) & 7;
 
         cell_p = GetDungeonMap(cellX, cellY, D_5895_mapLevel);
         if ((cell_p & 0xf7) != 0)
@@ -64,14 +64,14 @@ static int CAST_004c_FieldSpell(int field)
         }
         else
         {
-            GetDungeonMap(cellX, cellY, D_5895_mapLevel) = (cell_p & 8) | D_4596_dungeonFieldCells[field];
+            GetDungeonMap(cellX, cellY, D_5895_mapLevel) = (cell_p & 8) | dungeonFieldCells[field];
             result = -1;
         }
     }
     else
     {
-        D_589d_attackWeapon = D_4592_fieldMissileKinds[field];
-        COMSUBS_0c52_AttackWith(D_589e_curCombatant, D_589d_attackWeapon);
+        attackWeapon = fieldMissileKinds[field];
+        AttackWith(curCombatant, attackWeapon);
         result = -1;
     }
 
@@ -79,29 +79,29 @@ static int CAST_004c_FieldSpell(int field)
 }
 
 // An Zu: wakes a sleeping party member (in combat the combatant too). 1 done, 0 not asleep, -1 no member.
-static int CAST_0114_AnZu(void)
+static int AnZu(void)
 {
     int member;
     int combatant_h;
     int result_b;
 
-    member = CAST2_009e_OnWho();
+    member = OnWho();
     if (member < 0)
     {
         result_b = -1;
     }
-    else if (D_55a8_party[member].status == STATUS_SLEEP)
+    else if (party[member].status == STATUS_SLEEP)
     {
-        D_55a8_party[member].status = STATUS_GOOD;
-        if (D_5893_mapId > 0x7f)
+        party[member].status = STATUS_GOOD;
+        if (mapId > 0x7f)
         {
             for (combatant_h = 0; combatant_h < 0x20; combatant_h++)
             {
-                if ((D_ba14_combatants[combatant_h].flags & (COMBAT_FLAGS_PLAYER | COMBAT_FLAGS_MONSTER | COMBAT_FLAGS_DEAD | COMBAT_FLAGS_ASLEEP)) ==
+                if ((combatants[combatant_h].flags & (COMBAT_FLAGS_PLAYER | COMBAT_FLAGS_MONSTER | COMBAT_FLAGS_DEAD | COMBAT_FLAGS_ASLEEP)) ==
                     (COMBAT_FLAGS_PLAYER | COMBAT_FLAGS_ASLEEP) &&
-                    D_ba14_combatants[combatant_h].entityIdx == member)
+                    combatants[combatant_h].entityIdx == member)
                 {
-                    ULTIMA_6800_WakeCombatant(combatant_h);
+                    WakeCombatant(combatant_h);
                     break;
                 }
             }
@@ -112,9 +112,9 @@ static int CAST_0114_AnZu(void)
             }
         }
 
-        CAST2_0000_CastEffect(1);
+        CastEffect(1);
         result_b = -1;
-        D_a9fa_vitalsDirty = 1;
+        vitalsDirty = 1;
     }
     else
     {
@@ -125,23 +125,23 @@ static int CAST_0114_AnZu(void)
 }
 
 // An Nox: cures a poisoned member. 1 done, 0 not poisoned, -1 no member.
-static int CAST_01ae_AnNox(void)
+static int AnNox(void)
 {
     int member;
     int result_b;
 
-    member = CAST2_009e_OnWho();
+    member = OnWho();
     if (member < 0)
     {
         result_b = -1;
     }
     else
     {
-        if (D_55a8_party[member].status == STATUS_POISONED)
+        if (party[member].status == STATUS_POISONED)
         {
-            D_55a8_party[member].status = STATUS_GOOD;
-            CAST2_0000_CastEffect(1);
-            D_a9fa_vitalsDirty = 1;
+            party[member].status = STATUS_GOOD;
+            CastEffect(1);
+            vitalsDirty = 1;
             result_b = 1;
         }
         else
@@ -153,43 +153,43 @@ static int CAST_01ae_AnNox(void)
     return result_b;
 }
 
-// Mani: heals a member by 1-30 hit points (CAST2_03c2_HealMember). -1 for no member.
-static int CAST_01fa_Mani(void)
+// Mani: heals a member by 1-30 hit points (HealMember). -1 for no member.
+static int Mani(void)
 {
     int member;
     int result_b;
 
-    member = CAST2_009e_OnWho();
+    member = OnWho();
     if (member < 0)
     {
         result_b = -1;
     }
     else
     {
-        result_b = CAST2_03c2_HealMember(member);
+        result_b = HealMember(member);
     }
 
     if (result_b != 0)
     {
-        CAST2_0000_CastEffect(1);
+        CastEffect(1);
     }
 
     return result_b;
 }
 
 // An Ylem: in a direction, a piece of furniture (chair, desk, barrel, trunk, mirror..) turns to nothing: "POOF!".
-static int CAST_0230_AnYlem(void)
+static int AnYlem(void)
 {
     int result;
     byte* tilePtr;
 
-    if (CAST2_0306_AskDirection() == 0)
+    if (AskDirection() == 0)
     {
         return -1;
     }
 
-    CAST2_0000_CastEffect(1);
-    tilePtr = ULTIMA_4402_GetTileAddr(D_5876_tempX, D_5878_tempY);
+    CastEffect(1);
+    tilePtr = GetTileAddr(tempX, tempY);
     switch (*tilePtr)
     {
     case TILE_MAP_5B:
@@ -206,10 +206,10 @@ static int CAST_0230_AnYlem(void)
     case TILE_MAP_AE:
     case TILE_MAP_TRUNK:
         *tilePtr = TILE_MAP_44;
-        ULTIMA_1850_PrintString(/*0x459a*/ "POOF!\n");
-        D_24e6_viewDirty |= 2;
-        ULTIMA_5910_UpdateFrame();
-        ULTIMA_43ae_AudioSweepTone(0x4b0, 2000, 1, 0x28);
+        PrintString(/*0x459a*/ "POOF!\n");
+        viewDirty |= 2;
+        UpdateFrame();
+        AudioSweepTone(0x4b0, 2000, 1, 0x28);
         result = -1;
         break;
 
@@ -223,7 +223,7 @@ static int CAST_0230_AnYlem(void)
 
 // An Sanct: in a dungeon opens (and disarms) the chest underfoot or ahead; elsewhere opens the locked door (B9, BB) or unlocks the
 // chest actor in the chosen direction.
-static int CAST_02d2_AnSanct(void)
+static int AnSanct(void)
 {
     ActorFmt* actor;
     byte* cellPtr;
@@ -232,12 +232,12 @@ static int CAST_02d2_AnSanct(void)
     int dx;
     int dy;
 
-    if (D_5893_mapId > 0x20 && D_5893_mapId < 0x80)
+    if (mapId > 0x20 && mapId < 0x80)
     {
-        CAST2_0000_CastEffect(2);
+        CastEffect(2);
 
-        dx = D_24d6_facingDx[D_6603_dungeonFacing];
-        dy = D_24de_facingDy[D_6603_dungeonFacing];
+        dx = facingDx[dungeonFacing];
+        dy = facingDy[dungeonFacing];
 
         cellPtr = &GetDungeonMap(D_5896_mapX, D_5897_mapY, D_5895_mapLevel);
 
@@ -251,12 +251,12 @@ static int CAST_02d2_AnSanct(void)
         {
             if ((*cellPtr & 1) != 0)
             {
-                ULTIMA_1850_PrintString(/*0x45a1*/ "Disarmed!\n");
+                PrintString(/*0x45a1*/ "Disarmed!\n");
             }
 
             *cellPtr = (*cellPtr & 8) | 0x70;
 
-            ULTIMA_1850_PrintString(/*0x45ac*/ "Chest opened!\n");
+            PrintString(/*0x45ac*/ "Chest opened!\n");
 
             result_l = -1;
         }
@@ -267,22 +267,22 @@ static int CAST_02d2_AnSanct(void)
     }
     else
     {
-        if (CAST2_0306_AskDirection() == 0)
+        if (AskDirection() == 0)
         {
             return -1;
         }
 
         result_l = 0;
 
-        cellPtr = ULTIMA_4402_GetTileAddr(D_5876_tempX, D_5878_tempY);
+        cellPtr = GetTileAddr(tempX, tempY);
 
         if (*cellPtr == TILE_MAP_DOOR_B9 || *cellPtr == TILE_MAP_DOOR_BB)
         {
             --*cellPtr;
 
-            D_24e6_viewDirty |= 2;
+            viewDirty |= 2;
 
-            CAST2_0000_CastEffect(2);
+            CastEffect(2);
 
             result_l = 1;
         }
@@ -290,14 +290,14 @@ static int CAST_02d2_AnSanct(void)
         {
             for (actorIdx_n = 0; actorIdx_n < 0x20; actorIdx_n++)
             {
-                actor = &D_5c5a_actors[actorIdx_n];
+                actor = &actors[actorIdx_n];
 
-                if (actor->tile == TILE_ACTOR_CHEST && actor->x == D_5876_tempX && actor->y == D_5878_tempY &&
-                    (D_5893_mapId > 0x7f || actor->z == D_5895_mapLevel))
+                if (actor->tile == TILE_ACTOR_CHEST && actor->x == tempX && actor->y == tempY &&
+                    (mapId > 0x7f || actor->z == D_5895_mapLevel))
                 {
                     actor->value &= 0x7f;
 
-                    CAST2_0000_CastEffect(2);
+                    CastEffect(2);
 
                     result_l = 1;
                     break;
@@ -309,21 +309,21 @@ static int CAST_02d2_AnSanct(void)
     return result_l;
 }
 
-// An Xen Corp: every undead monster that does not resist (COMSUBS_0000_TargetResists) is left with 1 hit point and flees.
-static void CAST_043e_AnCorpXen(void)
+// An Xen Corp: every undead monster that does not resist (TargetResists) is left with 1 hit point and flees.
+static void AnCorpXen(void)
 {
     CombatEntity* target;
     int combatant;
 
-    CAST2_0000_CastEffect(2);
+    CastEffect(2);
 
     for (combatant = 0; combatant < 0x20; combatant++)
     {
-        target = &D_ba14_combatants[combatant];
-        if (CAST_0000_IsImmuneToSpells(combatant) == 0 && (target->flags & (COMBAT_FLAGS_PLAYER | COMBAT_FLAGS_MONSTER)) == COMBAT_FLAGS_MONSTER &&
-            ((byte)D_153c_enemyFlags[target->entityIdx] & ENEMY_FLAG_UNDEAD) != 0)
+        target = &combatants[combatant];
+        if (IsImmuneToSpells(combatant) == 0 && (target->flags & (COMBAT_FLAGS_PLAYER | COMBAT_FLAGS_MONSTER)) == COMBAT_FLAGS_MONSTER &&
+            ((byte)enemyFlags[target->entityIdx] & ENEMY_FLAG_UNDEAD) != 0)
         {
-            if (COMSUBS_0000_TargetResists(D_589e_curCombatant, combatant, 0) == 0)
+            if (TargetResists(curCombatant, combatant, 0) == 0)
             {
                 target->hp = 1;
                 target->flags |= COMBAT_FLAGS_2;
@@ -332,16 +332,16 @@ static void CAST_043e_AnCorpXen(void)
     }
 }
 
-// In Wis: prints where the party is (CAST2_06ec_PrintPosition).
-static void CAST_04a4_InWis(void)
+// In Wis: prints where the party is (PrintPosition).
+static void InWis(void)
 {
-    CAST2_0000_CastEffect(2);
-    CAST2_06ec_PrintPosition();
+    CastEffect(2);
+    PrintPosition();
 }
 
 // CHECKED
 // Kal Xen: gates in a charmed animal (a random one of four kinds) on a free cell, from up to 8 tries. 1 when it came.
-static int CAST_04b0_KalXen(void)
+static int KalXen(void)
 {
     int revealTile;
     u8 animalTile_j;
@@ -351,9 +351,9 @@ static int CAST_04b0_KalXen(void)
     ActorFmt* actor;
     int animal;
 
-    CAST2_0000_CastEffect(2);
+    CastEffect(2);
 
-    tries_c = ULTIMA_2092_RandomRange(0, 0xf);
+    tries_c = RandomRange(0, 0xf);
 
     if (tries_c < 6)
     {
@@ -382,28 +382,28 @@ static int CAST_04b0_KalXen(void)
     // 0522
     while (tries_c < 8)
     {
-        if (COMBAT_120e_RandomCell() == 0 || COMBAT_0000_IsCellFree(TILE_ACTOR_90, D_5876_tempX, D_5878_tempY) == 0)
+        if (RandomCell() == 0 || IsCellFree(TILE_ACTOR_90, tempX, tempY) == 0)
         {
             tries_c++;
             continue;
         }
 
-        combatant = ULTIMA_6506_PlaceCombatant(animal, 0, D_5876_tempX, D_5878_tempY, D_5895_mapLevel);
+        combatant = PlaceCombatant(animal, 0, tempX, tempY, D_5895_mapLevel);
         if (combatant < 0)
         {
             break;
         }
 
-        actor = &D_5c5a_actors[D_ba14_combatants[combatant].actorIdx];
+        actor = &actors[combatants[combatant].actorIdx];
 
         // 056c
         actor->animTile = actor->tile = TILE_ACTOR_CIRCLE;
 
         // 0588
-        ULTIMA_1068_RevealTile(revealTile, D_5876_tempX, D_5878_tempY);
+        ULTIMA_1068_RevealTile(revealTile, tempX, tempY);
 
         actor->animTile = actor->tile = animalTile_j;
-        D_ba14_combatants[combatant].flags |= COMBAT_FLAGS_CHARMED;
+        combatants[combatant].flags |= COMBAT_FLAGS_CHARMED;
 
         result_k = 1;
         break;
@@ -413,17 +413,17 @@ static int CAST_04b0_KalXen(void)
 }
 
 // In Xen Mani: 1 to 3 food.
-static int CAST_05b4_InManiXen(void)
+static int InManiXen(void)
 {
-    CAST2_0000_CastEffect(2);
-    ULTIMA_3f14_IncreaseInt(&D_57a8_food, ULTIMA_2092_RandomRange(1, 3), 9999);
-    D_a9fa_vitalsDirty = 1;
+    CastEffect(2);
+    IncreaseInt(&food, RandomRange(1, 3), 9999);
+    vitalsDirty = 1;
     return 1;
 }
 
 // In Por: in combat the caster jumps to a free cell (7 tries, not in the combat that forbids it); outdoors the party jumps along the chosen
 // direction to the last grass cell in view. -1 for no direction, 1 or 0.
-static int CAST_05dc_InPor(void)
+static int InPor(void)
 {
     int stepY_k;
     int stepX_l;
@@ -436,26 +436,26 @@ static int CAST_05dc_InPor(void)
     ActorFmt* actor_h;
 
     result = 0;
-    if (D_5893_mapId > 0x7f)
+    if (mapId > 0x7f)
     {
-        actor_h = &D_5c5a_actors[D_ba14_combatants[D_589e_curCombatant].actorIdx];
-        if ((D_58a1_combatFlags & 2) != 0)
+        actor_h = &actors[combatants[curCombatant].actorIdx];
+        if ((combatFlags & 2) != 0)
         {
             result = 0;
         }
         else
         {
-            CAST2_0000_CastEffect(3);
+            CastEffect(3);
             for (attempt_b = 0; attempt_b < 7; attempt_b++)
             {
-                if (COMBAT_120e_RandomCell() == 0)
+                if (RandomCell() == 0)
                     continue;
 
-                if (COMBAT_0000_IsCellFree(actor_h->tile, D_5876_tempX, D_5878_tempY) == 0)
+                if (IsCellFree(actor_h->tile, tempX, tempY) == 0)
                     continue;
 
-                actor_h->x = D_ba14_combatants[D_589e_curCombatant].x = D_5876_tempX;
-                actor_h->y = D_ba14_combatants[D_589e_curCombatant].y = D_5878_tempY;
+                actor_h->x = combatants[curCombatant].x = tempX;
+                actor_h->y = combatants[curCombatant].y = tempY;
 
                 result = 1;
                 break;
@@ -465,25 +465,25 @@ static int CAST_05dc_InPor(void)
     else
     {
         // 0680
-        if (CAST2_0306_AskDirection() == 0)
+        if (AskDirection() == 0)
         {
             return -1;
         }
         else
         {
             // 068e
-            CAST2_0000_CastEffect(3);
+            CastEffect(3);
 
-            stepX_l = D_5876_tempX - D_5896_mapX;
-            stepY_k = D_5878_tempY - D_5897_mapY;
+            stepX_l = tempX - D_5896_mapX;
+            stepY_k = tempY - D_5897_mapY;
 
-            limitX_i = D_589b_mapOriginX + 0x20;
+            limitX_i = mapOriginX + 0x20;
             if (limitX_i > 0x100)
             {
                 limitX_i = 0x100;
             }
 
-            limitY_h = D_589c_mapOriginY + 0x20;
+            limitY_h = mapOriginY + 0x20;
             if (limitY_h > 0x100)
             {
                 limitY_h = 0x100;
@@ -491,23 +491,23 @@ static int CAST_05dc_InPor(void)
 
             // 06d9
             result = 0;
-            x = (byte)D_5876_tempX;
-            for (y = (byte)D_5878_tempY; D_589b_mapOriginX <= x && x < limitX_i && D_589c_mapOriginY <= y && y < limitY_h;
+            x = (byte)tempX;
+            for (y = (byte)tempY; mapOriginX <= x && x < limitX_i && mapOriginY <= y && y < limitY_h;
                  y += stepY_k)
             {
-                if (*ULTIMA_4402_GetTileAddr(x, y) == TILE_MAP_GRASS)
+                if (*GetTileAddr(x, y) == TILE_MAP_GRASS)
                 {
                     result = -1;
                     D_5896_mapX = x;
                     D_5897_mapY = y;
-                    D_24e6_viewDirty = 1;
+                    viewDirty = 1;
                 }
                 x += stepX_l;
             }
 
             if (result != 0)
             {
-                MAINOUT_0000_SetUpOverworld();
+                SetUpOverworld();
             }
         }
     }
@@ -516,44 +516,44 @@ static int CAST_05dc_InPor(void)
 }
 
 // Wis Quas: every invisible monster shows again.
-static void CAST_074c_QuasWis(void)
+static void QuasWis(void)
 {
     int combatant;
     ActorFmt* actor;
 
-    CAST2_0000_CastEffect(4);
+    CastEffect(4);
 
     for (combatant = 0; combatant < 0x20; combatant++)
     {
-        if (D_ba14_combatants[combatant].flags != 0 &&
-            (D_ba14_combatants[combatant].flags & COMBAT_FLAGS_PLAYER) == 0 &&
-            (D_ba14_combatants[combatant].flags & COMBAT_FLAGS_INVISIBLE) != 0)
+        if (combatants[combatant].flags != 0 &&
+            (combatants[combatant].flags & COMBAT_FLAGS_PLAYER) == 0 &&
+            (combatants[combatant].flags & COMBAT_FLAGS_INVISIBLE) != 0)
         {
-            D_ba14_combatants[combatant].flags &= ~COMBAT_FLAGS_INVISIBLE;
-            actor = &D_5c5a_actors[D_ba14_combatants[combatant].actorIdx];
+            combatants[combatant].flags &= ~COMBAT_FLAGS_INVISIBLE;
+            actor = &actors[combatants[combatant].actorIdx];
             actor->animTile = actor->tile;
 
-            ULTIMA_5394_PutActorsInView();
-            ULTIMA_56ac_DrawMap();
+            PutActorsInView();
+            DrawMap();
         }
     }
 }
 
 // In Bet Xen: up to four charmed swarms of insects (0x1f) on a free cell found in 8 tries.
-static int CAST_07b4_BetInXen(void)
+static int BetInXen(void)
 {
     int attempt;
     int result;
     int swarm;
 
-    CAST2_0000_CastEffect(5);
+    CastEffect(5);
 
     result = 0;
 
     // 07c7
     for (attempt = 0; attempt < 8; attempt++)
     {
-        if (COMBAT_120e_RandomCell() == 0 || COMBAT_0000_IsCellFree(TILE_ACTOR_BC, D_5876_tempX, D_5878_tempY) == 0)
+        if (RandomCell() == 0 || IsCellFree(TILE_ACTOR_BC, tempX, tempY) == 0)
             continue;
 
         result = 1;
@@ -566,13 +566,13 @@ static int CAST_07b4_BetInXen(void)
 
         for (attempt = 0; attempt < 4; attempt++)
         {
-            swarm = ULTIMA_6506_PlaceCombatant(0x1f, 0, D_5876_tempX, D_5878_tempY, D_5895_mapLevel);
+            swarm = PlaceCombatant(0x1f, 0, tempX, tempY, D_5895_mapLevel);
             if (swarm < 0)
             {
                 break;
             }
 
-            D_ba14_combatants[swarm].flags |= COMBAT_FLAGS_CHARMED;
+            combatants[swarm].flags |= COMBAT_FLAGS_CHARMED;
             result = 1;
         }
     }
@@ -581,19 +581,19 @@ static int CAST_07b4_BetInXen(void)
 }
 
 // An Ex Por: in a direction an open door (B8, B9, BA, BB) is locked by magic (tile 97 or 98). -1 for no direction.
-static int CAST_0846_AnExPor(void)
+static int AnExPor(void)
 {
     int result;
     byte* tilePtr;
 
-    if (CAST2_0306_AskDirection() == 0)
+    if (AskDirection() == 0)
     {
         return -1;
     }
     else
     {
-        CAST2_0000_CastEffect(5);
-        tilePtr = ULTIMA_4402_GetTileAddr(D_5876_tempX, D_5878_tempY);
+        CastEffect(5);
+        tilePtr = GetTileAddr(tempX, tempY);
         result = 0;
         switch (*tilePtr)
         {
@@ -601,14 +601,14 @@ static int CAST_0846_AnExPor(void)
         case TILE_MAP_DOOR_B9:
             *tilePtr = TILE_MAP_97;
             result = 1;
-            D_24e6_viewDirty |= 2;
+            viewDirty |= 2;
             break;
 
         case TILE_MAP_DOOR_BA:
         case TILE_MAP_DOOR_BB:
             *tilePtr = TILE_MAP_98;
             result = 1;
-            D_24e6_viewDirty |= 2;
+            viewDirty |= 2;
             break;
         }
 
@@ -617,29 +617,29 @@ static int CAST_0846_AnExPor(void)
 }
 
 // Vas Mani: heals a member to full hit points (not the dead, not in a battle still going). -1 for no member.
-static int CAST_08ac_ManiVas(void)
+static int ManiVas(void)
 {
     int member;
     int result_b;
 
-    member = CAST2_009e_OnWho();
+    member = OnWho();
     if (member < 0)
     {
         result_b = -1;
     }
-    else if (D_55a8_party[member].status == STATUS_DEAD || (D_5893_mapId > 0x7f && D_58a3_combatOver == 0))
+    else if (party[member].status == STATUS_DEAD || (mapId > 0x7f && combatOver == 0))
     {
         result_b = 0;
     }
-    else if (D_5893_mapId > 0x7f && D_58a3_combatOver == 0) // sic
+    else if (mapId > 0x7f && combatOver == 0) // sic
     {
         result_b = 0;
     }
     else
     {
-        D_55a8_party[member].hp = D_55a8_party[member].maxHp;
-        CAST2_0000_CastEffect(5);
-        D_a9fa_vitalsDirty = 1;
+        party[member].hp = party[member].maxHp;
+        CastEffect(5);
+        vitalsDirty = 1;
         result_b = 1;
     }
 
@@ -647,23 +647,23 @@ static int CAST_08ac_ManiVas(void)
 }
 
 // In Vas Por Ylem: the earthquake: every enemy that fails a dexterity roll takes 1 to 20 damage, the caster earns experience for it.
-static void CAST_091e_InPorVasYlem(int caster)
+static void InPorVasYlem(int caster)
 {
     int combatant;
 
-    CAST2_0000_CastEffect(6);
-    ULTIMA_3072_ShakeScreen();
+    CastEffect(6);
+    ShakeScreen();
     for (combatant = 0; combatant < 0x20; combatant++)
     {
-        if (D_ba14_combatants[combatant].flags != 0)
+        if (combatants[combatant].flags != 0)
         {
             if (ULTIMA_5646_IsEnemy(combatant) != 0)
             {
-                if (COMBAT_13e2_QueryStat(combatant, QUERY_STAT_DEX) <= ULTIMA_3abe_Random1To30())
+                if (QueryStat(combatant, QUERY_STAT_DEX) <= Random1To30())
                 {
-                    ULTIMA_3564_HitEffectOnActor(combatant);
-                    ULTIMA_3f14_IncreaseInt(&D_55a8_party[caster].exp, COMBAT_1574_ApplyDamage(combatant, ULTIMA_2092_RandomRange(1, 0x14)), 9999); // FMT: &local_8 ??
-                    COMSUBS_0312_ReportHit(combatant, D_589e_curCombatant);
+                    HitEffectOnActor(combatant);
+                    IncreaseInt(&party[caster].exp, ApplyDamage(combatant, RandomRange(1, 0x14)), 9999); // FMT: &local_8 ??
+                    ReportHit(combatant, curCombatant);
                 }
             }
         }
@@ -671,37 +671,37 @@ static void CAST_091e_InPorVasYlem(int caster)
 }
 
 // An Xen Exe: aims at a creature and charms it (or frees it again) unless it resists. -1 when cancelled.
-static int CAST_09a0_AnExXen(void)
+static int AnExXen(void)
 {
     int target;
 
-    ULTIMA_1850_PrintString(/*0x45bb*/ "Creature: ");
-    if (COMSUBS_0504_AimCrosshair(D_589e_curCombatant, 0xf) == 0)
+    PrintString(/*0x45bb*/ "Creature: ");
+    if (AimCrosshair(curCombatant, 0xf) == 0)
     {
         return -1;
     }
 
     // 09c6
-    CAST2_0000_CastEffect(6);
-    if ((*ULTIMA_4402_GetTileAddr(D_5899_crosshairX, D_589a_crosshairY) & 0xfe) == TILE_MAP_84)
+    CastEffect(6);
+    if ((*GetTileAddr(crosshairX, crosshairY) & 0xfe) == TILE_MAP_84)
     {
         return 0;
     }
 
-    target = COMSUBS_0748_CombatantAt(D_5899_crosshairX, D_589a_crosshairY);
+    target = CombatantAt(crosshairX, crosshairY);
     if (target >= 0)
     {
-        if (CAST_0000_IsImmuneToSpells(target) == 0 && ULTIMA_5646_IsEnemy(target) != 0 && COMSUBS_0000_TargetResists(D_589e_curCombatant, target, 0) == 0)
+        if (IsImmuneToSpells(target) == 0 && ULTIMA_5646_IsEnemy(target) != 0 && TargetResists(curCombatant, target, 0) == 0)
         {
-            D_ba14_combatants[target].flags ^= COMBAT_FLAGS_CHARMED;
-            if ((D_ba14_combatants[target].flags & COMBAT_FLAGS_PLAYER) != 0)
+            combatants[target].flags ^= COMBAT_FLAGS_CHARMED;
+            if ((combatants[target].flags & COMBAT_FLAGS_PLAYER) != 0)
             {
-                D_55a8_party[D_ba14_combatants[target].entityIdx].status = STATUS_GOOD;
-                ULTIMA_2900_UpdateVitalsDisplay();
+                party[combatants[target].entityIdx].status = STATUS_GOOD;
+                UpdateVitalsDisplay();
             }
 
-            COMSUBS_0094_PrintName(target);
-            ULTIMA_1850_PrintString(/*0x45c6*/ " charmed!\n");
+            PrintName(target);
+            PrintString(/*0x45c6*/ " charmed!\n");
 
             return -1;
         }
@@ -711,32 +711,32 @@ static int CAST_09a0_AnExXen(void)
 }
 
 // Bet Rel Xen: aims at a creature and, unless it resists, changes it into a giant rat (0x14) on the same cell. -1 when cancelled.
-static int CAST_0a5c_BetRelXen(void)
+static int BetRelXen(void)
 {
     int targetY_p;
     int targetX;
     int target;
 
-    ULTIMA_1850_PrintString(/*0x45d1*/ "Creature: ");
-    if (COMSUBS_0504_AimCrosshair(D_589e_curCombatant, 0xf) == 0)
+    PrintString(/*0x45d1*/ "Creature: ");
+    if (AimCrosshair(curCombatant, 0xf) == 0)
     {
         return -1;
     }
 
     // 0a82
-    CAST2_0000_CastEffect(6);
-    target = COMSUBS_0748_CombatantAt(D_5899_crosshairX, D_589a_crosshairY);
+    CastEffect(6);
+    target = CombatantAt(crosshairX, crosshairY);
     if (target < 0)
     {
         return 0;
     }
 
-    if (CAST_0000_IsImmuneToSpells(target) == 0 && COMSUBS_0000_TargetResists(D_589e_curCombatant, target, 0) == 0)
+    if (IsImmuneToSpells(target) == 0 && TargetResists(curCombatant, target, 0) == 0)
     {
-        targetX = D_ba14_combatants[target].x;
-        targetY_p = D_ba14_combatants[target].y;
-        COMBAT_1236_RemoveEntity(-target - 1);
-        ULTIMA_6506_PlaceCombatant(0x14, 0, targetX, targetY_p, D_5895_mapLevel);
+        targetX = combatants[target].x;
+        targetY_p = combatants[target].y;
+        RemoveEntity(-target - 1);
+        PlaceCombatant(0x14, 0, targetX, targetY_p, D_5895_mapLevel);
         return 1;
     }
 
@@ -744,16 +744,16 @@ static int CAST_0a5c_BetRelXen(void)
 }
 
 // Sanct Lor: the caster turns invisible.
-static int CAST_0afe_LorSanct(void)
+static int LorSanct(void)
 {
-    D_5c5a_actors[D_ba14_combatants[D_589e_curCombatant].actorIdx].animTile = TILE_ACTOR_1D;
-    D_ba14_combatants[D_589e_curCombatant].flags |= COMBAT_FLAGS_INVISIBLE;
-    CAST2_0000_CastEffect(7);
+    actors[combatants[curCombatant].actorIdx].animTile = TILE_ACTOR_1D;
+    combatants[curCombatant].flags |= COMBAT_FLAGS_INVISIBLE;
+    CastEffect(7);
     return 1;
 }
 
 // In Quas Xen: aims at a creature and makes a copy of it (a free combatant and actor) placed on a free cell. -1 when cancelled.
-static int CAST_0b28_InQuasXen(void)
+static int InQuasXen(void)
 {
     int freeActor;
     int index;
@@ -761,14 +761,14 @@ static int CAST_0b28_InQuasXen(void)
     int target;
     int freeCombatant_f;
 
-    ULTIMA_1850_PrintString(/*0x45dc*/ "Creature: ");
-    if (COMSUBS_0504_AimCrosshair(D_589e_curCombatant, 0xf) == 0)
+    PrintString(/*0x45dc*/ "Creature: ");
+    if (AimCrosshair(curCombatant, 0xf) == 0)
     {
         return -1;
     }
 
-    CAST2_0000_CastEffect(7);
-    target = COMSUBS_0748_CombatantAt(D_5899_crosshairX, D_589a_crosshairY);
+    CastEffect(7);
+    target = CombatantAt(crosshairX, crosshairY);
     if (target < 0)
     {
         result_i = 0;
@@ -779,7 +779,7 @@ static int CAST_0b28_InQuasXen(void)
         freeCombatant_f = freeActor = 0xff;
         for (index = 0; index < 0x20; index++)
         {
-            if (D_5c5a_actors[index].tile == 0)
+            if (actors[index].tile == 0)
             {
                 freeActor = index;
                 break;
@@ -790,7 +790,7 @@ static int CAST_0b28_InQuasXen(void)
         {
             for (index = 0; index < 0x20; index++)
             {
-                if (D_ba14_combatants[index].flags == 0)
+                if (combatants[index].flags == 0)
                 {
                     freeCombatant_f = index;
                     break;
@@ -800,22 +800,22 @@ static int CAST_0b28_InQuasXen(void)
             if (freeCombatant_f != 0xff)
             {
                 // 0bbc
-                D_ba14_combatants[freeCombatant_f] = D_ba14_combatants[target];
+                combatants[freeCombatant_f] = combatants[target];
                 
-                D_ba14_combatants[freeCombatant_f].actorIdx = freeActor;
+                combatants[freeCombatant_f].actorIdx = freeActor;
 
-                D_5c5a_actors[freeActor] = D_5c5a_actors[D_ba14_combatants[target].actorIdx];
+                actors[freeActor] = actors[combatants[target].actorIdx];
 
                 do
                 {
-                    if (COMBAT_120e_RandomCell() == 0 || COMBAT_0000_IsCellFree(TILE_ACTOR_AVATAR, D_5876_tempX, D_5878_tempY) == 0)
+                    if (RandomCell() == 0 || IsCellFree(TILE_ACTOR_AVATAR, tempX, tempY) == 0)
                     {
                         result_i = 0;
                     }
                     else
                     {
-                        D_5c5a_actors[freeActor].x = D_ba14_combatants[freeCombatant_f].x = D_5876_tempX;
-                        D_5c5a_actors[freeActor].y = D_ba14_combatants[freeCombatant_f].y = D_5878_tempY;
+                        actors[freeActor].x = combatants[freeCombatant_f].x = tempX;
+                        actors[freeActor].y = combatants[freeCombatant_f].y = tempY;
                         result_i = 1;
                     }
                 } while (result_i == 0);
@@ -827,21 +827,21 @@ static int CAST_0b28_InQuasXen(void)
 }
 
 // In Quas Corp: every monster that does not resist is left with 1 hit point and flees (fear).
-static void CAST_0c98_CorpInQuas(void)
+static void CorpInQuas(void)
 {
     int combatant;
     CombatEntity* target;
 
-    CAST2_0000_CastEffect(7);
+    CastEffect(7);
 
     for (combatant = 0; combatant < 0x20; combatant++)
     {
-        target = &D_ba14_combatants[combatant];
+        target = &combatants[combatant];
         if ((target->flags & (COMBAT_FLAGS_PLAYER | COMBAT_FLAGS_MONSTER)) == COMBAT_FLAGS_MONSTER)
         {
-            if (CAST_0000_IsImmuneToSpells(combatant) == 0)
+            if (IsImmuneToSpells(combatant) == 0)
             {
-                if (COMSUBS_0000_TargetResists(D_589e_curCombatant, combatant, 0) == 0)
+                if (TargetResists(curCombatant, combatant, 0) == 0)
                 {
                     target->hp = 1;
                     target->flags |= COMBAT_FLAGS_2;
@@ -852,26 +852,26 @@ static void CAST_0c98_CorpInQuas(void)
 }
 
 // Vas Rel Por: asks "To phase:" a moonstone (1-8) and moves the party to its buried place; not aboard a ship.
-static int CAST_0cf0_PorRelVas(void)
+static int PorRelVas(void)
 {
     byte key;
 
-    if ((D_587c_partyTile & 0xf0) != TILE_ACTOR_FRIGATE_20)
+    if ((partyTile & 0xf0) != TILE_ACTOR_FRIGATE_20)
     {
-        ULTIMA_1850_PrintString(/*0x45e7*/ "To phase: ");
-        key = ULTIMA_266c_GetChar();
+        PrintString(/*0x45e7*/ "To phase: ");
+        key = GetChar();
         if (key >= 0x20)
         {
-            ULTIMA_16ba_PrintChar(key);
+            PrintChar(key);
         }
 
-        ULTIMA_16ba_PrintChar('\n');
+        PrintChar('\n');
 
         if (key >= 0x31 && key <= 0x38)
         {
             key -= 0x31;
-            CAST2_0000_CastEffect(8);
-            if (ULTIMA_47f4_GoToMoonstone(key) != 0)
+            CastEffect(8);
+            if (GoToMoonstone(key) != 0)
             {
                 return -1;
             }
@@ -882,20 +882,20 @@ static int CAST_0cf0_PorRelVas(void)
 }
 
 // An Tym: negates time for 10 turns (status T); a Shadow Lord on the map absorbs the magic.
-static int CAST_0d4c_AnTym(void)
+static int AnTym(void)
 {
     int result;
     int actorIdx;
 
-    CAST2_0000_CastEffect(8);
+    CastEffect(8);
     result = -1;
 
     for (actorIdx = 0; actorIdx < 0x20; actorIdx++)
     {
-        if (D_5c5a_actors[actorIdx].tile == TILE_ACTOR_SHADOWLORD)
+        if (actors[actorIdx].tile == TILE_ACTOR_SHADOWLORD)
         {
-            ULTIMA_1850_PrintString(/*0x45f2*/ "Magic absorbed!\n");
-            ULTIMA_2192_AudioPulse(0x2648, 1, 28000, 1000, 2);
+            PrintString(/*0x45f2*/ "Magic absorbed!\n");
+            AudioPulse(0x2648, 1, 28000, 1000, 2);
             result = 0;
             break;
         }
@@ -903,24 +903,24 @@ static int CAST_0d4c_AnTym(void)
 
     if (result != 0)
     {
-        D_587a_statusIcon = 0x54;
-        D_588e_protectTurns = 10;
-        ULTIMA_2900_UpdateVitalsDisplay();
+        statusIcon = 0x54;
+        protectTurns = 10;
+        UpdateVitalsDisplay();
     }
 
     return result;
 }
 
 // defined in castb.c, the part of CAST.OVL built with MSC 5.0
-void CAST_1f60_ConeSpell(int caster, int kind, int color);
+void ConeSpell(int caster, int kind, int color);
 
 static char S_0x466a[] = "Scroll\n\n";
 
-// The Cast command. Asks the acting player, reads the spell (CAST2_00de_SelectSpell), checks that it can be cast here (D_1c90_spellUsability: bit 8 on
+// The Cast command. Asks the acting player, reads the spell (SelectSpell), checks that it can be cast here (spellUsability: bit 8 on
 // the overworld, 4 in a town, 2 in a dungeon, 1 in combat; Absorbed! in Lord British's castle without the crown and at Stonegate),
 // that it is mixed, and that the caster has the magic points and the level for its circle, then calls the spell by its index.
 // Prints Success! or Failed!.
-int CAST_0dba_CastSpellCmd(void)
+int CastSpellCmd(void)
 {
     int allowedHere;
     int result_d;
@@ -929,63 +929,63 @@ int CAST_0dba_CastSpellCmd(void)
     int caster_o;
     int spell;
 
-    result_d = allowedHere = D_5890_spellAttack = D_588f_castCircle = passTurn = 1;
+    result_d = allowedHere = D_5890_spellAttack = castCircle = passTurn = 1;
 
-    caster_o = ULTIMA_4988_GetActingPlayer();
+    caster_o = GetActingPlayer();
     if (caster_o < 0)
     {
         return caster_o;
     }
 
-    ULTIMA_1850_PrintString(/*0x4603*/ "Spell name:\n:");
-    spell = CAST2_00de_SelectSpell();
+    PrintString(/*0x4603*/ "Spell name:\n:");
+    spell = SelectSpell();
     if (spell == -1)
     {
-        ULTIMA_1850_PrintString(/*0x4611*/ "None!\n");
+        PrintString(/*0x4611*/ "None!\n");
         return; // sic
     }
 
     if (spell == -2)
     {
-        ULTIMA_1850_PrintString(/*0x4618*/ "No effect!\n");
+        PrintString(/*0x4618*/ "No effect!\n");
         return; // sic
     }
 
-    D_588f_castCircle = circle = spell / 6 + 1;
+    castCircle = circle = spell / 6 + 1;
 
-    if (D_5893_mapId == 0)
+    if (mapId == 0)
     {
-        if ((D_1c90_spellUsability[spell] & 8) == 0)
+        if ((spellUsability[spell] & 8) == 0)
         {
             allowedHere = 0;
         }
     }
-    else if (D_5893_mapId > 0x7f)
+    else if (mapId > 0x7f)
     {
-        if ((D_1c90_spellUsability[spell] & 1) == 0)
+        if ((spellUsability[spell] & 1) == 0)
         {
             allowedHere = 0;
         }
     }
     else
     {
-        if (((D_5893_mapId == 0x12) && (D_57b4_crown == 0)) || (D_5893_mapId == 0x1d)) // LB crown / at STONEGATE
+        if (((mapId == 0x12) && (crown == 0)) || (mapId == 0x1d)) // LB crown / at STONEGATE
         {
-            ULTIMA_1850_PrintString(/*0x4624*/ "Absorbed!\n");
-            ULTIMA_2192_AudioPulse(0x2648, 1, 28000, 1000, 2);
+            PrintString(/*0x4624*/ "Absorbed!\n");
+            AudioPulse(0x2648, 1, 28000, 1000, 2);
             return; // sic
         }
 
-        if (D_5893_mapId < 0x21)
+        if (mapId < 0x21)
         {
-            if ((D_1c90_spellUsability[spell] & 4) == 0)
+            if ((spellUsability[spell] & 4) == 0)
             {
                 allowedHere = 0;
             }
         }
         else
         {
-            if ((D_1c90_spellUsability[spell] & 2) == 0)
+            if ((spellUsability[spell] & 2) == 0)
             {
                 allowedHere = 0;
             }
@@ -994,218 +994,218 @@ int CAST_0dba_CastSpellCmd(void)
 
     if (allowedHere == 0)
     {
-        ULTIMA_1850_PrintString(/*0x462f*/ "Not here!\n");
-        ULTIMA_43ae_AudioSweepTone(800, 2000, 1, 0x32);
+        PrintString(/*0x462f*/ "Not here!\n");
+        AudioSweepTone(800, 2000, 1, 0x32);
         return; // sic
     }
 
-    if (D_57f0_mixedSpells[spell] == 0)
+    if (mixedSpells[spell] == 0)
     {
-        ULTIMA_1850_PrintString(/*0x463a*/ "None mixed!\n");
+        PrintString(/*0x463a*/ "None mixed!\n");
         return; // sic
     }
 
-    D_57f0_mixedSpells[spell]--;
-    if (D_55a8_party[caster_o].mag < circle)
+    mixedSpells[spell]--;
+    if (party[caster_o].mag < circle)
     {
-        ULTIMA_1850_PrintString(/*0x4647*/ "M.P. too low!\n");
+        PrintString(/*0x4647*/ "M.P. too low!\n");
         result_d = 0;
     }
     else
     {
-        D_55a8_party[caster_o].mag -= circle;
+        party[caster_o].mag -= circle;
         result_d = -1;
-        if (D_55a8_party[caster_o].level < circle)
+        if (party[caster_o].level < circle)
         {
             result_d = 0;
         }
         else
         {
-            // D_1c30_spellCodes idx
+            // spellCodes idx
             switch (spell)
             {
             case 0: // IL
-                CAST2_08ea_SetLightTurns(100);
-                CAST2_0000_CastEffect(1);
+                SetLightTurns(100);
+                CastEffect(1);
                 break;
             case 1: // GP
-                CAST_0032_SpellAttack(0x30);
+                SpellAttack(0x30);
                 break;
             case 2: // AZ
-                result_d = CAST_0114_AnZu();
+                result_d = AnZu();
                 break;
             case 3: // AN
-                result_d = CAST_01ae_AnNox();
+                result_d = AnNox();
                 break;
             case 4: // M
-                result_d = CAST_01fa_Mani();
+                result_d = Mani();
                 break;
             case 5: // AY
-                result_d = CAST_0230_AnYlem();
+                result_d = AnYlem();
                 break;
             case 6: // AS
-                result_d = CAST_02d2_AnSanct();
+                result_d = AnSanct();
                 break;
             case 7: // ACX
-                CAST_043e_AnCorpXen();
+                AnCorpXen();
                 break;
             case 8: // HR
-                CAST2_040a_ChangeWindDirection(CAST2_0306_AskDirection(), 0);
+                ChangeWindDirection(AskDirection(), 0);
                 break;
             case 9: // IW
-                CAST_04a4_InWis();
+                InWis();
                 break;
             case 10: // KX
-                result_d = CAST_04b0_KalXen();
+                result_d = KalXen();
                 break;
             case 0xb: // IMX
-                result_d = CAST_05b4_InManiXen();
+                result_d = InManiXen();
                 break;
             case 0xc: // LV
-                CAST2_08ea_SetLightTurns(0xff);
-                CAST2_0000_CastEffect(3);
+                SetLightTurns(0xff);
+                CastEffect(3);
                 break;
             case 0xd: // FV
-                CAST_0032_SpellAttack(0x31);
+                SpellAttack(0x31);
                 break;
             case 0xe: // FGI
-                result_d = CAST_004c_FieldSpell(0);
+                result_d = FieldSpell(0);
                 break;
             case 0xf: // GIN
-                result_d = CAST_004c_FieldSpell(1);
+                result_d = FieldSpell(1);
                 break;
             case 0x10: // GIZ
-                result_d = CAST_004c_FieldSpell(2);
+                result_d = FieldSpell(2);
                 break;
             case 0x11: // IP
-                result_d = CAST_05dc_InPor();
+                result_d = InPor();
                 break;
             case 0x12: // AG
-                result_d = CAST2_07bc_AnGrav(1);
+                result_d = AnGrav(1);
                 break;
             case 0x13: // IS
-                CAST2_08f8_SetSpellStatus(0x50, 0x14, 4);
+                SetSpellStatus(0x50, 0x14, 4);
                 break;
             case 0x14: // GIS
-                result_d = CAST_004c_FieldSpell(3);
+                result_d = FieldSpell(3);
                 break;
             case 0x15: // PU
-                if (D_5893_mapId == 40)
+                if (mapId == 40)
                 {
                     result_d = 0;
                     break;
                 }
 
-                CAST2_0000_CastEffect(4);
-                if (DUNGEON_1c6a_Klimb(-1, 1) != 0)
+                CastEffect(4);
+                if (Klimb(-1, 1) != 0)
                 {
                     DUNGEON_1d08_Exit();
                 }
                 break;
             case 0x16: // DP
-                if (D_5893_mapId == 40)
+                if (mapId == 40)
                 {
                     result_d = 0;
                     break;
                 }
 
-                CAST2_0000_CastEffect(4);
-                if (DUNGEON_1c6a_Klimb(1, 1) != 0)
+                CastEffect(4);
+                if (Klimb(1, 1) != 0)
                 {
                     DUNGEON_1d08_Exit();
                 }
                 break;
             case 0x17: // QW
-                CAST_074c_QuasWis();
+                QuasWis();
                 break;
             case 0x18: // BIX
-                result_d = CAST_07b4_BetInXen();
+                result_d = BetInXen();
                 break;
             case 0x19: // AEP
-                result_d = CAST_0846_AnExPor();
+                result_d = AnExPor();
                 break;
             case 0x1a: // EIP
-                result_d = CAST2_0768_InExPor();
+                result_d = InExPor();
                 if (result_d == -1)
                     break;
-                CAST2_0000_CastEffect(5);
+                CastEffect(5);
                 break;
             case 0x1b: // MV
-                result_d = CAST_08ac_ManiVas();
+                result_d = ManiVas();
                 break;
             case 0x1c: // IZ
-                CAST_1f60_ConeSpell(D_589e_curCombatant, 1, D_13b6_magentaColor);
+                ConeSpell(curCombatant, 1, magentaColor);
                 break;
             case 0x1d: // RT
-                CAST2_08f8_SetSpellStatus(0x51, 0x1e, 5);
+                SetSpellStatus(0x51, 0x1e, 5);
                 break;
             case 0x1e: // IPVY
-                CAST_091e_InPorVasYlem(caster_o);
+                InPorVasYlem(caster_o);
                 break;
             case 0x1f: // AQW
-                CAST2_08f8_SetSpellStatus(0x43, 0x14, 6);
+                SetSpellStatus(0x43, 0x14, 6);
                 break;
             case 0x20: // AI
-                CAST2_08f8_SetSpellStatus(0x4e, 10, 6);
+                SetSpellStatus(0x4e, 10, 6);
                 break;
             case 0x21: // AWY
-                CAST2_0000_CastEffect(6);
-                CAST2_046c_WisAnYlem();
+                CastEffect(6);
+                WisAnYlem();
                 break;
             case 0x22: // AEX
-                result_d = CAST_09a0_AnExXen();
+                result_d = AnExXen();
                 break;
             case 0x23: // BRX
-                result_d = CAST_0a5c_BetRelXen();
+                result_d = BetRelXen();
                 break;
             case 0x24: // LS
-                result_d = CAST_0afe_LorSanct();
+                result_d = LorSanct();
                 break;
             case 0x25: // CX
-                CAST_0032_SpellAttack(0x32);
+                SpellAttack(0x32);
                 break;
             case 0x26: // IQX
-                result_d = CAST_0b28_InQuasXen();
+                result_d = InQuasXen();
                 break;
             case 0x27: // IQW view?
-                CAST2_0000_CastEffect(7);
-                if (D_5893_mapId < 0x21)
+                CastEffect(7);
+                if (mapId < 0x21)
                 {
-                    LOOKOBJ_10fc_ViewCmd(D_5896_mapX, D_5897_mapY);
+                    LookobjViewCmd(D_5896_mapX, D_5897_mapY);
                 }
                 else
                 {
-                    DNGLOOK_06a8_ViewCmd();
+                    DnglookViewCmd();
                 }
                 break;
             case 0x28: // HIN
-                CAST_1f60_ConeSpell(D_589e_curCombatant, 2, D_13b4_greenColor);
+                ConeSpell(curCombatant, 2, greenColor);
                 break;
             case 0x29: // CIQ
-                CAST_0c98_CorpInQuas();
+                CorpInQuas();
                 break;
             case 0x2a: // CIM
-                result_d = CAST2_05e0_Resurrect(CAST2_009e_OnWho(), 0);
-                ULTIMA_2900_UpdateVitalsDisplay();
+                result_d = Resurrect(OnWho(), 0);
+                UpdateVitalsDisplay();
                 break;
             case 0x2b: // CKX
-                result_d = CAST2_04c2_KalXenCorp(0);
+                result_d = KalXenCorp(0);
                 break;
             case 0x2c: // CGIV
-                CAST_1f60_ConeSpell(D_589e_curCombatant, 4, D_13b2_blueColor);
+                ConeSpell(curCombatant, 4, blueColor);
                 break;
             case 0x2d: // FHI
-                CAST_1f60_ConeSpell(D_589e_curCombatant, 3, D_13ae_redColor);
+                ConeSpell(curCombatant, 3, redColor);
                 break;
             case 0x2e: // PRV
-                result_d = CAST_0cf0_PorRelVas();
+                result_d = PorRelVas();
                 if (result_d != 0)
                 {
                     passTurn = 0;
                 }
                 break;
             case 0x2f: // AT
-                result_d = CAST_0d4c_AnTym();
+                result_d = AnTym();
                 break;
             }
         }
@@ -1213,110 +1213,110 @@ int CAST_0dba_CastSpellCmd(void)
 
     if (result_d == 1)
     {
-        ULTIMA_1850_PrintString(/*0x4656*/ "Success!\n");
+        PrintString(/*0x4656*/ "Success!\n");
     }
     else if (result_d == 0)
     {
-        ULTIMA_1850_PrintString(/*0x4660*/ "Failed!\n");
-        ULTIMA_43ae_AudioSweepTone(800, 2000, 1, 0x32);
+        PrintString(/*0x4660*/ "Failed!\n");
+        AudioSweepTone(800, 2000, 1, 0x32);
     }
 
     return passTurn;
 }
 
 // The Use command on a scroll (0 Light, 1 Wind change, 2 Protection, 3 Negate magic, 4 View, 5 Summon Daemon, 6 Resurrection, 7 Negate time).
-static int CAST_11de_UseScroll(int scroll)
+static int UseScroll(int scroll)
 {
     int direction;
     int result_b = 1;
 
-    D_5820_scrolls[scroll]--;
-    ULTIMA_1850_PrintString(S_0x466a);
+    scrolls[scroll]--;
+    PrintString(S_0x466a);
     switch (scroll)
     {
     case 0:
-        CAST2_08ea_SetLightTurns(0xf0);
-        ULTIMA_1850_PrintString(/*0x4673*/ "Light!\n");
-        CAST2_0000_CastEffect(0);
+        SetLightTurns(0xf0);
+        PrintString(/*0x4673*/ "Light!\n");
+        CastEffect(0);
         break;
 
     case 1:
-        ULTIMA_1850_PrintString(/*0x467b*/ "Wind change!\n");
-        direction = CAST2_0306_AskDirection();
-        if (D_5893_mapId < 0x21)
+        PrintString(/*0x467b*/ "Wind change!\n");
+        direction = AskDirection();
+        if (mapId < 0x21)
         {
-            CAST2_040a_ChangeWindDirection(direction, 1);
+            ChangeWindDirection(direction, 1);
             break;
         }
         result_b = 0;
         break;
 
     case 2:
-        ULTIMA_1850_PrintString(/*0x4689*/ "Protection!\n");
-        CAST2_08f8_SetSpellStatus(0x50, 100, 2);
+        PrintString(/*0x4689*/ "Protection!\n");
+        SetSpellStatus(0x50, 100, 2);
         break;
 
     case 3:
-        ULTIMA_1850_PrintString(/*0x4696*/ "Negate magic!\n");
-        CAST2_08f8_SetSpellStatus(0x4e, 0x14, 3);
+        PrintString(/*0x4696*/ "Negate magic!\n");
+        SetSpellStatus(0x4e, 0x14, 3);
         break;
 
     case 4:
         // 1278
-        ULTIMA_1850_PrintString(/*0x46a5*/ "View!\n");
-        if (D_5893_mapId > 0x7f)
+        PrintString(/*0x46a5*/ "View!\n");
+        if (mapId > 0x7f)
         {
-            ULTIMA_1850_PrintString(/*0x46ac*/ "Not here!\n");
+            PrintString(/*0x46ac*/ "Not here!\n");
             break;
         }
         else
         {
             // 1290
-            CAST2_0000_CastEffect(4);
-            if (D_5893_mapId < 0x21)
+            CastEffect(4);
+            if (mapId < 0x21)
             {
-                LOOKOBJ_10fc_ViewCmd(D_5896_mapX, D_5897_mapY);
+                LookobjViewCmd(D_5896_mapX, D_5897_mapY);
                 break;
             }
-            DNGLOOK_06a8_ViewCmd();
+            DnglookViewCmd();
             break;
         }
 
     case 5:
         // 12b4
-        ULTIMA_1850_PrintString(/*0x46b7*/ "Summon Daemon!\n");
-        if (D_5893_mapId > 0x7f)
+        PrintString(/*0x46b7*/ "Summon Daemon!\n");
+        if (mapId > 0x7f)
         {
-            result_b = CAST2_04c2_KalXenCorp(1);
+            result_b = KalXenCorp(1);
             break;
         }
         else
         {
-            ULTIMA_1850_PrintString(/*0x46c7*/ "Not here!\n");
+            PrintString(/*0x46c7*/ "Not here!\n");
             break;
         }
 
     case 6:
         // 12d2
-        ULTIMA_1850_PrintString(/*0x46d2*/ "Resurrection!\n");
-        if (D_5893_mapId < 0x80)
+        PrintString(/*0x46d2*/ "Resurrection!\n");
+        if (mapId < 0x80)
         {
-            result_b = CAST2_05e0_Resurrect(CAST2_009e_OnWho(), 1);
-            ULTIMA_2900_UpdateVitalsDisplay();
+            result_b = Resurrect(OnWho(), 1);
+            UpdateVitalsDisplay();
             break;
         }
-        ULTIMA_1850_PrintString(/*0x46e1*/ "Not here!\n");
+        PrintString(/*0x46e1*/ "Not here!\n");
         break;
 
     case 7:
-        if ((D_5893_mapId == 0x1d) || (D_5893_mapId == 0x28))
+        if ((mapId == 0x1d) || (mapId == 0x28))
         {
-            ULTIMA_1850_PrintString(/*0x46ec*/ "No effect!\n");
-            ULTIMA_43ae_AudioSweepTone(800, 2000, 1, 0x32);
+            PrintString(/*0x46ec*/ "No effect!\n");
+            AudioSweepTone(800, 2000, 1, 0x32);
             break;
         }
-        ULTIMA_1850_PrintString(/*0x46f8*/ "Negate time!\n");
-        CAST2_08f8_SetSpellStatus(0x54, 0x14, 7);
+        PrintString(/*0x46f8*/ "Negate time!\n");
+        SetSpellStatus(0x54, 0x14, 7);
         break;
     }
 
@@ -1328,7 +1328,7 @@ static char S_0x474c[] = "\nNo noticeable effect now!\n";
 // CHECKED
 // The Use command on a potion: asks on whom (in combat the user); 1 in 16 it is a sleeping draught instead and 1 in 16 a random other.
 // The kinds: 0 awakens, 1 heals, 2 cures poison, 3 poisons, 4 puts to sleep, 5 poof (vanish, in combat), 6 invisible (in combat), 7 X-ray (outdoors).
-static int CAST_135a_UsePotion(int potion)
+static int UsePotion(int potion)
 {
     ActorFmt* actor;
     int roll;
@@ -1336,15 +1336,15 @@ static int CAST_135a_UsePotion(int potion)
     int member_d;
 
     result_l = 1;
-    D_5828_potions[potion]--;
-    ULTIMA_1850_PrintString(/*0x4706*/ "Potion\n");
-    if (D_5893_mapId > 0x7f)
+    potions[potion]--;
+    PrintString(/*0x4706*/ "Potion\n");
+    if (mapId > 0x7f)
     {
-        member_d = D_ba14_combatants[D_589e_curCombatant].entityIdx;
+        member_d = combatants[curCombatant].entityIdx;
     }
     else
     {
-        member_d = CAST2_009e_OnWho();
+        member_d = OnWho();
     }
 
     if (member_d < 0)
@@ -1352,32 +1352,32 @@ static int CAST_135a_UsePotion(int potion)
         return member_d;
     }
 
-    CAST2_0000_CastEffect(potion);
-    roll = ULTIMA_2092_RandomRange(0, 0xf);
+    CastEffect(potion);
+    roll = RandomRange(0, 0xf);
     if (roll == 0)
     {
         potion = 4;
     }
     else if (roll == 1)
     {
-        potion = ULTIMA_2092_RandomRange(0, 7);
+        potion = RandomRange(0, 7);
     }
 
     switch (potion)
     {
     case 0:
-        if (D_55a8_party[member_d].status == STATUS_SLEEP)
+        if (party[member_d].status == STATUS_SLEEP)
         {
-            D_55a8_party[member_d].status = STATUS_GOOD;
+            party[member_d].status = STATUS_GOOD;
 
-            if (D_5893_mapId > 0x7f)
+            if (mapId > 0x7f)
             {
-                if (member_d == D_ba14_combatants[D_589e_curCombatant].entityIdx)
+                if (member_d == combatants[curCombatant].entityIdx)
                 {
-                    if ((D_ba14_combatants[D_589e_curCombatant].flags & (COMBAT_FLAGS_PLAYER | COMBAT_FLAGS_MONSTER | COMBAT_FLAGS_DEAD | COMBAT_FLAGS_ASLEEP)) ==
+                    if ((combatants[curCombatant].flags & (COMBAT_FLAGS_PLAYER | COMBAT_FLAGS_MONSTER | COMBAT_FLAGS_DEAD | COMBAT_FLAGS_ASLEEP)) ==
                         (COMBAT_FLAGS_PLAYER | COMBAT_FLAGS_ASLEEP))
                     {
-                        ULTIMA_6800_WakeCombatant(D_589e_curCombatant);
+                        WakeCombatant(curCombatant);
                     }
                     else
                     {
@@ -1391,7 +1391,7 @@ static int CAST_135a_UsePotion(int potion)
             }
             else
             {
-                ULTIMA_2900_UpdateVitalsDisplay();
+                UpdateVitalsDisplay();
             }
         }
         else
@@ -1401,21 +1401,21 @@ static int CAST_135a_UsePotion(int potion)
         break;
 
     case 1:
-        result_l = CAST2_03c2_HealMember(member_d);
+        result_l = HealMember(member_d);
         if (result_l != 0)
         {
-            ULTIMA_1850_PrintString(/*0x470e*/ "Healed!\n");
-            ULTIMA_2900_UpdateVitalsDisplay();
+            PrintString(/*0x470e*/ "Healed!\n");
+            UpdateVitalsDisplay();
         }
         break;
 
     case 2:
-        if (D_55a8_party[member_d].status == STATUS_POISONED)
+        if (party[member_d].status == STATUS_POISONED)
         {
-            D_55a8_party[member_d].status = STATUS_GOOD;
+            party[member_d].status = STATUS_GOOD;
 
-            ULTIMA_1850_PrintString(/*0x4717*/ "Poison cured!\n");
-            ULTIMA_2900_UpdateVitalsDisplay();
+            PrintString(/*0x4717*/ "Poison cured!\n");
+            UpdateVitalsDisplay();
         }
         else
         {
@@ -1424,12 +1424,12 @@ static int CAST_135a_UsePotion(int potion)
         break;
 
     case 3:
-        if (D_55a8_party[member_d].status == STATUS_GOOD)
+        if (party[member_d].status == STATUS_GOOD)
         {
-            D_55a8_party[member_d].status = STATUS_POISONED;
+            party[member_d].status = STATUS_POISONED;
 
-            ULTIMA_1850_PrintString(/*0x4726*/ "POISONED!\n");
-            ULTIMA_2900_UpdateVitalsDisplay();
+            PrintString(/*0x4726*/ "POISONED!\n");
+            UpdateVitalsDisplay();
         }
         else
         {
@@ -1438,19 +1438,19 @@ static int CAST_135a_UsePotion(int potion)
         break;
 
     case 4:
-        if (D_55a8_party[member_d].status == STATUS_GOOD)
+        if (party[member_d].status == STATUS_GOOD)
         {
-            if (D_5893_mapId < 0x80)
+            if (mapId < 0x80)
             {
-                D_55a8_party[member_d].status = STATUS_SLEEP;
+                party[member_d].status = STATUS_SLEEP;
             }
             else
             {
-                ULTIMA_68ae_PutToSleep(member_d);
+                PutToSleep(member_d);
             }
 
-            ULTIMA_1850_PrintString(/*0x4731*/ "Slept!\n");
-            ULTIMA_2900_UpdateVitalsDisplay();
+            PrintString(/*0x4731*/ "Slept!\n");
+            UpdateVitalsDisplay();
         }
         else
         {
@@ -1459,40 +1459,40 @@ static int CAST_135a_UsePotion(int potion)
         break;
 
     case 5:
-        if (D_5893_mapId > 0x7f)
+        if (mapId > 0x7f)
         {
-            ULTIMA_1850_PrintString(/*0x4739*/ "Poof!\n");
-            actor = &D_5c5a_actors[D_ba14_combatants[D_589e_curCombatant].actorIdx];
+            PrintString(/*0x4739*/ "Poof!\n");
+            actor = &actors[combatants[curCombatant].actorIdx];
             actor->tile = actor->animTile = TILE_ACTOR_90;
         }
         else
         {
-            ULTIMA_1850_PrintString(S_0x474c);
+            PrintString(S_0x474c);
         }
         break;
 
     case 6:
-        if (D_5893_mapId > 0x7f)
+        if (mapId > 0x7f)
         {
-            D_ba14_combatants[D_589e_curCombatant].flags |= COMBAT_FLAGS_INVISIBLE;
-            actor = &D_5c5a_actors[D_ba14_combatants[D_589e_curCombatant].actorIdx];
-            ULTIMA_1850_PrintString(/*0x4740*/ "Invisible!\n");
+            combatants[curCombatant].flags |= COMBAT_FLAGS_INVISIBLE;
+            actor = &actors[combatants[curCombatant].actorIdx];
+            PrintString(/*0x4740*/ "Invisible!\n");
             actor->tile = actor->animTile = TILE_ACTOR_1D;
         }
         else
         {
-            ULTIMA_1850_PrintString(S_0x474c);
+            PrintString(S_0x474c);
         }
         break;
 
     case 7:
-        if (D_5893_mapId < 0x21)
+        if (mapId < 0x21)
         {
-            CAST2_046c_WisAnYlem();
+            WisAnYlem();
         }
         else
         {
-            ULTIMA_1850_PrintString(S_0x474c);
+            PrintString(S_0x474c);
         }
         break;
     }
@@ -1501,23 +1501,23 @@ static int CAST_135a_UsePotion(int potion)
 }
 
 // The Use command on a moonstone: buries it at the party's place when the ground is grass, crops or the like.
-static void CAST_153c_UseMoonstone(int stone)
+static void UseMoonstone(int stone)
 {
     int tile;
 
-    tile = *ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY);
-    ULTIMA_1850_PrintString(/*0x4768*/ "Moonstone ");
-    if (D_5893_mapId < 0x21 && (tile == TILE_MAP_CROPS_PICKED || tile == TILE_MAP_CROPS || (tile > TILE_MAP_WATER_3 && tile < TILE_MAP_B)))
+    tile = *GetTileAddr(D_5896_mapX, D_5897_mapY);
+    PrintString(/*0x4768*/ "Moonstone ");
+    if (mapId < 0x21 && (tile == TILE_MAP_CROPS_PICKED || tile == TILE_MAP_CROPS || (tile > TILE_MAP_WATER_3 && tile < TILE_MAP_B)))
     {
-        ULTIMA_1850_PrintString(/*0x4773*/ "buried!\n");
-        D_5830_moonstoneX[stone] = D_5896_mapX;
-        D_5838_moonstoneY[stone] = D_5897_mapY;
-        D_5840_moonstoneMap[stone] = D_5893_mapId;
-        D_5848_moonstoneZ[stone] = D_5895_mapLevel;
+        PrintString(/*0x4773*/ "buried!\n");
+        moonstoneX[stone] = D_5896_mapX;
+        moonstoneY[stone] = D_5897_mapY;
+        moonstoneMap[stone] = mapId;
+        moonstoneZ[stone] = D_5895_mapLevel;
     }
     else
     {
-        ULTIMA_1850_PrintString(/*0x477c*/ "cannot be buried here!\n");
+        PrintString(/*0x477c*/ "cannot be buried here!\n");
     }
 }
 
@@ -1525,114 +1525,114 @@ u8 D_4882_shardX[4] = {0x0f, 0x0f, 0x0f};
 
 u8 D_4886_shardY[4] = {0x09, 0x03, 0x10};
 
-u8 D_488a_shardMap[4] = {0x1e, 0x1f, 0x20};
+u8 shardMap[4] = {0x1e, 0x1f, 0x20};
 
-u8 D_488e_shardLevel[4] = {0x02, 0x01, 0xff};
+u8 shardLevel[4] = {0x02, 0x01, 0xff};
 
-u8 D_4892_shardKilledBit[3] = {0x02, 0x04, 0x08};
+u8 shardKilledBit[3] = {0x02, 0x04, 0x08};
 
 // CHECKED
 // The Use command on an evil gem shard (0 Falsehood, 1 Hatred, 2 Cowardice): cast into the right flame (D_4882..) in front of its Shadow Lord
 // (Faulinei, Astaroth, Nosfentor), it destroys him.
-static void CAST_15b4_UseGemShard(int shard)
+static void UseGemShard(int shard)
 {
     int index;
 
-    ULTIMA_1850_PrintString(/*0x4794*/ "Gem Shard\n\nThou dost hold above thee the evil Shard of ");
+    PrintString(/*0x4794*/ "Gem Shard\n\nThou dost hold above thee the evil Shard of ");
     switch (shard)
     {
     case 0:
-        ULTIMA_1850_PrintString(/*0x47cc*/ "Falsehood...");
+        PrintString(/*0x47cc*/ "Falsehood...");
         break;
     case 1:
-        ULTIMA_1850_PrintString(/*0x47d9*/ "Hatred...");
+        PrintString(/*0x47d9*/ "Hatred...");
         break;
     case 2:
-        ULTIMA_1850_PrintString(/*0x47e3*/ "Cowardice...");
+        PrintString(/*0x47e3*/ "Cowardice...");
         break;
     }
 
     for (index = 2000; index < 25000; index += 0x32)
     {
-        ULTIMA_2192_AudioPulse(0xa50, 1, 200, index, 0);
+        AudioPulse(0xa50, 1, 200, index, 0);
     }
 
     for (index = 25000; index > 2000; index -= 0x32)
     {
-        ULTIMA_2192_AudioPulse(0xa50, 1, 200, index, 0);
+        AudioPulse(0xa50, 1, 200, index, 0);
     }
 
-    if (D_4882_shardX[shard] != D_5896_mapX || D_4886_shardY[shard] != D_5897_mapY || D_488a_shardMap[shard] != D_5893_mapId ||
-        D_488e_shardLevel[shard] != D_5895_mapLevel)
+    if (D_4882_shardX[shard] != D_5896_mapX || D_4886_shardY[shard] != D_5897_mapY || shardMap[shard] != mapId ||
+        shardLevel[shard] != D_5895_mapLevel)
     {
-        ULTIMA_1850_PrintString(/*0x47f0*/ "\n\nNo effect!\n");
-        ULTIMA_43ae_AudioSweepTone(800, 2000, 1, 0x32);
+        PrintString(/*0x47f0*/ "\n\nNo effect!\n");
+        AudioSweepTone(800, 2000, 1, 0x32);
         return;
     }
 
-    ULTIMA_3ae6_WaitFrames(7);
-    ULTIMA_1850_PrintString(/*0x47fe*/ "\n\n...and cast it into the Flame of ");
+    WaitFrames(7);
+    PrintString(/*0x47fe*/ "\n\n...and cast it into the Flame of ");
     switch (shard)
     {
     case 0:
-        ULTIMA_1850_PrintString(/*0x4822*/ "Truth!\n");
+        PrintString(/*0x4822*/ "Truth!\n");
         break;
     case 1:
-        ULTIMA_1850_PrintString(/*0x482a*/ "Love!\n");
+        PrintString(/*0x482a*/ "Love!\n");
         break;
     case 2:
-        ULTIMA_1850_PrintString(/*0x4831*/ "Courage!\n");
+        PrintString(/*0x4831*/ "Courage!\n");
         break;
     }
 
-    ULTIMA_3072_ShakeScreen();
-    ULTIMA_3072_ShakeScreen();
-    ULTIMA_3072_ShakeScreen();
-    ULTIMA_3ae6_WaitFrames(3);
+    ShakeScreen();
+    ShakeScreen();
+    ShakeScreen();
+    WaitFrames(3);
 
-    if (ULTIMA_368e_FindActorTileAtPos(D_5896_mapX, D_5897_mapY - 1, D_5895_mapLevel) == TILE_ACTOR_SHADOWLORD &&
-        shard == D_58cb_summonedLord)
+    if (FindActorTileAtPos(D_5896_mapX, D_5897_mapY - 1, D_5895_mapLevel) == TILE_ACTOR_SHADOWLORD &&
+        shard == summonedLord)
     {
-        TOWN_00b0_DespawnNpc(TOWN_011e_FindNpcByActor(D_5876_tempX));
+        DespawnNpc(FindNpcByActor(tempX));
 
         for (index = 0; index < 7; index++)
         {
-            ULTIMA_3522_HitEffectAt(D_5896_mapX, D_5897_mapY - 1);
+            HitEffectAt(D_5896_mapX, D_5897_mapY - 1);
         }
 
-        D_58c8_shadowlordTowns[shard] = 0xff;
-        D_57b6_shards[shard] = 0;
+        shadowlordTowns[shard] = 0xff;
+        shards[shard] = 0;
 
-        *(u32*)&D_5b5a_npcKilled[0x70] |= D_4892_shardKilledBit[shard];
+        *(u32*)&npcKilled[0x70] |= shardKilledBit[shard];
 
-        ULTIMA_1850_PrintString(/*0x483b*/ "\nThe doom of the Shadowlord ");
+        PrintString(/*0x483b*/ "\nThe doom of the Shadowlord ");
         switch (shard)
         {
         case 0:
-            ULTIMA_1850_PrintString(/*0x4858*/ "Faulinei");
+            PrintString(/*0x4858*/ "Faulinei");
             break;
         case 1:
-            ULTIMA_1850_PrintString(/*0x4861*/ "Astaroth");
+            PrintString(/*0x4861*/ "Astaroth");
             break;
         case 2:
-            ULTIMA_1850_PrintString(/*0x486a*/ "Nosfentor");
+            PrintString(/*0x486a*/ "Nosfentor");
             break;
         }
 
-        ULTIMA_1850_PrintString(/*0x4874*/ " is wrought!\n");
-        ULTIMA_4368_AudioVictoryTune();
+        PrintString(/*0x4874*/ " is wrought!\n");
+        AudioVictoryTune();
     }
 }
 
 // Wearing an item that sets the status icon: 0 ("Removed!") when the item is already worn and is taken off, 1 otherwise.
-static bool CAST_1764_RemoveWornItem(int icon)
+static bool RemoveWornItem(int icon)
 {
-    if (icon == D_587a_statusIcon)
+    if (icon == statusIcon)
     {
-        ULTIMA_1850_PrintString(/*0x4895*/ "Removed!\n");
+        PrintString(/*0x4895*/ "Removed!\n");
 
-        D_587a_statusIcon = D_588e_protectTurns = 0;
-        D_a9fa_vitalsDirty = 1;
+        statusIcon = protectTurns = 0;
+        vitalsDirty = 1;
 
         return 0;
     }
@@ -1644,7 +1644,7 @@ static char S_0x4a84[] = " of Lord British...\n";
 
 // The Use command: lists the usable items (ZSTATS) and uses the one chosen: scrolls, potions, moonstones, the carpet, skull key,
 // amulet, crown, sceptre, gem shards, spyglass, plans, sextant, watch, badge.
-void CAST_1792_UseCmd(void)
+void UseCmd(void)
 {
     int item;
     int dy;
@@ -1657,26 +1657,26 @@ void CAST_1792_UseCmd(void)
     int cleared;
 
     result_e = 1;
-    ZSTATS_099a_FillItemCounts();
+    FillItemCounts();
 
-    firstItem_j = ZSTATS_05a4_NextItem(-1, 0x26, D_b9ee_itemCounts, 0xff);
+    firstItem_j = NextItem(-1, 0x26, itemCounts, 0xff);
     if (firstItem_j == -1)
     {
-        ULTIMA_1850_PrintString(/*0x489f*/ "No usable items!\n");
+        PrintString(/*0x489f*/ "No usable items!\n");
         return;
     }
 
-    ULTIMA_1850_PrintString(/*0x48b1*/ "Item: ");
-    ULTIMA_4efc_OpenStatsDivider();
-    ULTIMA_1b94_SelectTextWindow(1);
-    ULTIMA_4e50_ShowStatsTitle(/*0x48b8*/ "Items:");
-    ZSTATS_045e_DrawListFrame(8);
+    PrintString(/*0x48b1*/ "Item: ");
+    OpenStatsDivider();
+    SelectTextWindow(1);
+    ShowStatsTitle(/*0x48b8*/ "Items:");
+    DrawListFrame(8);
 
-    item = ZSTATS_0f2e_SelectItem(firstItem_j, 0xff, 0x55);
-    ULTIMA_4daa_HideScrollArrow();
-    ULTIMA_4e20_ClearStatsTitle();
-    ULTIMA_4f3c_DrawStatsDivider();
-    ULTIMA_2900_UpdateVitalsDisplay();
+    item = SelectItem(firstItem_j, 0xff, 0x55);
+    HideScrollArrow();
+    ClearStatsTitle();
+    DrawStatsDivider();
+    UpdateVitalsDisplay();
     if (item < 0)
     {
         return;
@@ -1684,100 +1684,100 @@ void CAST_1792_UseCmd(void)
 
     if (item < 8)
     {
-        result_e = CAST_11de_UseScroll(item);
+        result_e = UseScroll(item);
     }
     else if (item < 0x10)
     {
-        result_e = CAST_135a_UsePotion(item - 8);
+        result_e = UsePotion(item - 8);
     }
     else if (item > 0x14 && item < 0x1d)
     {
-        CAST_153c_UseMoonstone(item - 0x15);
+        UseMoonstone(item - 0x15);
     }
     else
     {
         switch (item)
         {
         case 0x10:
-            ULTIMA_1850_PrintString(/*0x48bf*/ "Carpet\n\n");
-            if (D_5893_mapId < 0x21 && *ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY) != TILE_MAP_C)
+            PrintString(/*0x48bf*/ "Carpet\n\n");
+            if (mapId < 0x21 && *GetTileAddr(D_5896_mapX, D_5897_mapY) != TILE_MAP_C)
             {
-                if (D_587c_partyTile == TILE_ACTOR_AVATAR)
+                if (partyTile == TILE_ACTOR_AVATAR)
                 {
-                    ULTIMA_1850_PrintString(/*0x48c8*/ "Boarded!\n");
-                    D_587c_partyTile = ULTIMA_2092_RandomRange(0, 1) + TILE_ACTOR_FLYING_CARPET;
-                    D_57b0_carpets--;
+                    PrintString(/*0x48c8*/ "Boarded!\n");
+                    partyTile = RandomRange(0, 1) + TILE_ACTOR_FLYING_CARPET;
+                    carpets--;
                 }
-                else if ((D_587c_partyTile & 0xf8) == TILE_ACTOR_FRIGATE_20)
+                else if ((partyTile & 0xf8) == TILE_ACTOR_FRIGATE_20)
                 {
-                    ULTIMA_1850_PrintString(/*0x48d2*/ "X-it ship first!\n");
+                    PrintString(/*0x48d2*/ "X-it ship first!\n");
                 }
                 else
                 {
-                    ULTIMA_1850_PrintString(/*0x48e4*/ "Only on foot!\n");
+                    PrintString(/*0x48e4*/ "Only on foot!\n");
                 }
             }
             else
             {
-                ULTIMA_1850_PrintString(/*0x48f3*/ "Not here!\n");
+                PrintString(/*0x48f3*/ "Not here!\n");
             }
             break;
 
         case 0x11:
-            D_57b1_skullKeys--;
-            ULTIMA_1850_PrintString(/*0x48fe*/ "Skull Key\n");
-            if (D_5893_mapId < 0x21 || 0x7f < D_5893_mapId)
+            skullKeys--;
+            PrintString(/*0x48fe*/ "Skull Key\n");
+            if (mapId < 0x21 || 0x7f < mapId)
             {
-                result_e = CAST2_0768_InExPor();
-                if (result_e != 0 && D_5893_mapId < 0x80)
+                result_e = InExPor();
+                if (result_e != 0 && mapId < 0x80)
                 {
-                    ULTIMA_3522_HitEffectAt(D_5876_tempX, D_5878_tempY);
+                    HitEffectAt(tempX, tempY);
                 }
                 break;
             }
 
-            ULTIMA_1850_PrintString(/*0x4909*/ "Not here!\n");
+            PrintString(/*0x4909*/ "Not here!\n");
             break;
 
         case 0x12:
-            ULTIMA_1850_PrintString(/*0x4914*/ "Amulet\n\n");
-            if (CAST_1764_RemoveWornItem(0xe) == 0)
+            PrintString(/*0x4914*/ "Amulet\n\n");
+            if (RemoveWornItem(0xe) == 0)
                 break;
 
-            ULTIMA_1850_PrintString(/*0x491d*/ "Wearing the Amulet");
-            ULTIMA_1850_PrintString(S_0x4a84);
-            CAST2_08f8_SetSpellStatus(0xe, 0xff, 9);
+            PrintString(/*0x491d*/ "Wearing the Amulet");
+            PrintString(S_0x4a84);
+            SetSpellStatus(0xe, 0xff, 9);
             break;
 
         case 0x13:
-            ULTIMA_1850_PrintString(/*0x4930*/ "Crown\n\n");
-            if (CAST_1764_RemoveWornItem(0x1c) == 0)
+            PrintString(/*0x4930*/ "Crown\n\n");
+            if (RemoveWornItem(0x1c) == 0)
                 break;
 
-            ULTIMA_1850_PrintString(/*0x4938*/ "Thou dost don the Crown");
-            ULTIMA_1850_PrintString(S_0x4a84);
-            CAST2_08f8_SetSpellStatus(0x1c, 0xff, 9);
+            PrintString(/*0x4938*/ "Thou dost don the Crown");
+            PrintString(S_0x4a84);
+            SetSpellStatus(0x1c, 0xff, 9);
             break;
 
         case 0x14:
-            ULTIMA_1850_PrintString(/*0x4950*/ "Sceptre\n\n");
-            ULTIMA_1850_PrintString(/*0x495a*/ "Wielding the Sceptre");
-            ULTIMA_1850_PrintString(S_0x4a84);
-            ULTIMA_2192_AudioPulse(0x1450, 1, 50000, 5000, 1);
+            PrintString(/*0x4950*/ "Sceptre\n\n");
+            PrintString(/*0x495a*/ "Wielding the Sceptre");
+            PrintString(S_0x4a84);
+            AudioPulse(0x1450, 1, 50000, 5000, 1);
 
             cleared = 0;
-            if (D_5893_mapId < 0x21 || D_5893_mapId > 0x28)
+            if (mapId < 0x21 || mapId > 0x28)
             {
                 for (dx = -1; dx <= 1; dx++)
                 {
                     for (dy = -1; dy <= 1; dy++)
                     {
-                        tilePtr_m = ULTIMA_4402_GetTileAddr(dx + D_5896_mapX, dy + D_5897_mapY);
+                        tilePtr_m = GetTileAddr(dx + D_5896_mapX, dy + D_5897_mapY);
                         if ((*tilePtr_m & 0xf0) == TILE_MAP_70)
                         {
                             *tilePtr_m = TILE_MAP_GRASS;
-                            ULTIMA_5910_UpdateFrame();
-                            ULTIMA_223c_AudioWhiteNoise(10, 3000, 2000);
+                            UpdateFrame();
+                            AudioWhiteNoise(10, 3000, 2000);
                             cleared++;
                         }
                     }
@@ -1787,142 +1787,142 @@ void CAST_1792_UseCmd(void)
             if (cleared != 0)
                 break;
 
-            fieldResult = CAST2_07bc_AnGrav(0);
+            fieldResult = AnGrav(0);
             if (fieldResult == 1)
             {
-                ULTIMA_1850_PrintString(/*0x496f*/ "Field dissolved!\n");
+                PrintString(/*0x496f*/ "Field dissolved!\n");
             }
             else if (fieldResult == 0)
             {
-                ULTIMA_1850_PrintString(/*0x4981*/ "No effect!\n");
+                PrintString(/*0x4981*/ "No effect!\n");
             }
             break;
 
         case 0x1d:
         case 0x1e:
         case 0x1f:
-            CAST_15b4_UseGemShard(item - 0x1d);
+            UseGemShard(item - 0x1d);
             break;
 
         case 0x20:
-            ULTIMA_1850_PrintString(/*0x498d*/ "Spyglass\n\n");
-            if (D_5893_mapId < 0x21 && D_5895_mapLevel < 0x80)
+            PrintString(/*0x498d*/ "Spyglass\n\n");
+            if (mapId < 0x21 && D_5895_mapLevel < 0x80)
             {
                 if (D_587f_hour < 6 || 0x12 < D_587f_hour)
                 {
-                    ULTIMA_1850_PrintString(/*0x4998*/ "Looking...\n");
-                    LOOKOBJ_0366_LookSky();
+                    PrintString(/*0x4998*/ "Looking...\n");
+                    LookSky();
                     break;
                 }
 
-                ULTIMA_1850_PrintString(/*0x49a4*/ "No stars!\n");
+                PrintString(/*0x49a4*/ "No stars!\n");
             }
             else
             {
-                ULTIMA_1850_PrintString(/*0x49af*/ "Not here!\n");
+                PrintString(/*0x49af*/ "Not here!\n");
             }
             break;
 
         case 0x21:
-            ULTIMA_1850_PrintString(/*0x49ba*/ "Plans\n\n");
-            if ((D_587c_partyTile & 0xf8) == TILE_ACTOR_FRIGATE_20)
+            PrintString(/*0x49ba*/ "Plans\n\n");
+            if ((partyTile & 0xf8) == TILE_ACTOR_FRIGATE_20)
             {
-                D_57bb_hmsCapePlans |= 0x80;
-                ULTIMA_1850_PrintString(/*0x49c2*/ "Ship rigged for double speed!\n");
+                hmsCapePlans |= 0x80;
+                PrintString(/*0x49c2*/ "Ship rigged for double speed!\n");
             }
             else
             {
-                ULTIMA_1850_PrintString(/*0x49e1*/ "Only usable on shipboard!\n");
+                PrintString(/*0x49e1*/ "Only usable on shipboard!\n");
             }
             break;
 
         case 0x22:
-            ULTIMA_1850_PrintString(/*0x49fc*/ "Sextant\n\n");
-            if (D_5895_mapLevel > 0x7f || D_5893_mapId != 0)
+            PrintString(/*0x49fc*/ "Sextant\n\n");
+            if (D_5895_mapLevel > 0x7f || mapId != 0)
             {
-                ULTIMA_1850_PrintString(/*0x4a06*/ "Only outdoors!\n");
+                PrintString(/*0x4a06*/ "Only outdoors!\n");
             }
             else
             {
                 if (D_587f_hour > 5 && D_587f_hour < 0x13)
                 {
-                    ULTIMA_1850_PrintString(/*0x4a16*/ "Only at night!\n");
+                    PrintString(/*0x4a16*/ "Only at night!\n");
                 }
                 else
                 {
-                    ULTIMA_1850_PrintString(/*0x4a26*/ "Position:");
-                    CAST2_06ec_PrintPosition();
+                    PrintString(/*0x4a26*/ "Position:");
+                    PrintPosition();
                 }
             }
             break;
 
         case 0x23:
-            ULTIMA_1850_PrintString(/*0x4a30*/ "Watch\n\nThe pocket watch reads ");
+            PrintString(/*0x4a30*/ "Watch\n\nThe pocket watch reads ");
             hour12_l = (byte)(D_587f_hour % 0xc);
             if (hour12_l == 0)
             {
                 hour12_l = 0xc;
             }
 
-            ULTIMA_1a3e_PrintNumber(hour12_l, 1, 0x20);
-            ULTIMA_16ba_PrintChar(':');
-            ULTIMA_1a3e_PrintNumber(D_5881_minute, 2, 0x30);
+            PrintNumber(hour12_l, 1, 0x20);
+            PrintChar(':');
+            PrintNumber(minute, 2, 0x30);
             if (D_587f_hour > 0xb)
             {
-                ULTIMA_1850_PrintString(/*0x4a4f*/ " PM.\n");
+                PrintString(/*0x4a4f*/ " PM.\n");
             }
             else
             {
-                ULTIMA_1850_PrintString(/*0x4a55*/ " AM.\n");
+                PrintString(/*0x4a55*/ " AM.\n");
             }
             break;
 
         case 0x24:
-            ULTIMA_1850_PrintString(/*0x4a5b*/ "Badge\n\n");
-            if (CAST_1764_RemoveWornItem(0x1d) != 0)
+            PrintString(/*0x4a5b*/ "Badge\n\n");
+            if (RemoveWornItem(0x1d) != 0)
             {
-                ULTIMA_1850_PrintString(/*0x4a63*/ "Badge worn!\n");
-                D_587a_statusIcon = 0x1d;
-                D_588e_protectTurns = 0xff;
-                D_a9fa_vitalsDirty = 1;
+                PrintString(/*0x4a63*/ "Badge worn!\n");
+                statusIcon = 0x1d;
+                protectTurns = 0xff;
+                vitalsDirty = 1;
             }
             break;
 
         case 0x25:
-            ULTIMA_1850_PrintString(/*0x4a70*/ "Box\n\nHow?\n");
+            PrintString(/*0x4a70*/ "Box\n\nHow?\n");
             break;
         }
     }
 
     if (result_e == 0)
     {
-        ULTIMA_1850_PrintString(/*0x4a7b*/ "Failed!\n");
-        ULTIMA_43ae_AudioSweepTone(800, 2000, 1, 0x32);
+        PrintString(/*0x4a7b*/ "Failed!\n");
+        AudioSweepTone(800, 2000, 1, 0x32);
     }
 }
 
 // Plots a pixel of a spray at (x, y) in a color (and a click): -1 in both D_5876 and D_5878 when off the view; 0 when the cell it is in stops
 // it, else 1.
-int CAST_1bb0_PlotSprayPixel(int x, int y, int penColor)
+int PlotSprayPixel(int x, int y, int penColor)
 {
     if (x < 8 || x > 0xb6 || y < 8 || y > 0xb6)
     {
-        D_5876_tempX = D_5878_tempY = -1;
+        tempX = tempY = -1;
         return 0;
     }
     else
     {
-        ULTIMA_0a70_GRAP_2d_SetPenColor(penColor);
-        ULTIMA_0c64_GRAP_30_Pset(x, y);
-        ULTIMA_0c64_GRAP_30_Pset(x + 1, y);
-        ULTIMA_22e2_PcspkOn(ULTIMA_2092_RandomRange(100, 10000));
+        GRAP_2d_SetPenColor(penColor);
+        GRAP_30_Pset(x, y);
+        GRAP_30_Pset(x + 1, y);
+        PcspkOn(RandomRange(100, 10000));
 
         if ((y & 1) != 0)
         {
-            ULTIMA_3fb4_PixelToViewCell(x, y);
-            if (D_5876_tempX >= 0 && D_5878_tempY >= 0)
+            PixelToViewCell(x, y);
+            if (tempX >= 0 && tempY >= 0)
             {
-                return ULTIMA_3f6e_TestViewTileFlag(D_5876_tempX, D_5878_tempY);
+                return TestViewTileFlag(tempX, tempY);
             }
 
             return 0;

@@ -1,4 +1,4 @@
-; AFONT0.ASM: FONT.OVL 0000-02a2, FONT_0000_DRAWJUSTIFIEDTEXT: MSC 5.0 output in the original (font.c's first
+; AFONT0.ASM: FONT.OVL 0000-02a2, DRAWJUSTIFIEDTEXT: MSC 5.0 output in the original (font.c's first
 ; function), not yet matched in C. It prints justified text: [bp+4] the glyph image, [bp+6]
 ; the text (see the C version in src/font.c, kept for the native build). The C comes within
 ; 56 bytes (670 against 674), so until it matches, the DOS build takes the function from
@@ -18,21 +18,21 @@ _BSS	ENDS
 DGROUP	GROUP	CONST, _BSS, _DATA
 	ASSUME	CS: _TEXT, DS: DGROUP, SS: DGROUP, ES: DGROUP
 
-	EXTRN	ULTIMA_0C22_GRAP_0F_SELECTPAGE:NEAR
-	EXTRN	ULTIMA_1044_GRAP_4E_COPYBITIMAG:NEAR
-	EXTRN	D_50EA_GLYPHWIDTHS:BYTE
-	EXTRN	D_5146_TEXTLEFTX:WORD
-	EXTRN	D_514C_TEXTRIGHTX:WORD
+	EXTRN	GRAP_0F_SELECTPAGE:NEAR
+	EXTRN	GRAP_4E_COPYBITIMAGEINTOPAGE:NEAR
+	EXTRN	GLYPHWIDTHS:BYTE
+	EXTRN	TEXTLEFTX:WORD
+	EXTRN	TEXTRIGHTX:WORD
 	EXTRN	D_5150_REGIONTOP:WORD
 	EXTRN	D_5152_REGIONBOTTOM:WORD
-	EXTRN	D_5154_SPACEWIDTH:WORD
+	EXTRN	SPACEWIDTH:WORD
 	EXTRN	D_5156_PENX:WORD
 	EXTRN	D_5158_PENY:WORD
 
 _TEXT	SEGMENT
 
-	PUBLIC	FONT_0000_DRAWJUSTIFIEDTEXT
-FONT_0000_DRAWJUSTIFIEDTEXT:
+	PUBLIC	DRAWJUSTIFIEDTEXT
+DRAWJUSTIFIEDTEXT:
 	push bp
 	mov bp,sp
 	sub sp,1ch
@@ -40,7 +40,7 @@ FONT_0000_DRAWJUSTIFIEDTEXT:
 	push si
 	mov ax,1
 	push ax
-	call	ULTIMA_0C22_GRAP_0F_SELECTPAGE
+	call	GRAP_0F_SELECTPAGE
 	mov ax,WORD PTR D_5150_REGIONTOP
 	cmp WORD PTR D_5158_PENY,ax
 	jle	L_0026
@@ -55,14 +55,14 @@ L_0028:
 	mov [bp-10h],ax
 	mov si,ax
 	shl si,1
-	mov ax,D_514C_TEXTRIGHTX[si]
-	sub ax,D_5146_TEXTLEFTX[si]
+	mov ax,TEXTRIGHTX[si]
+	sub ax,TEXTLEFTX[si]
 	mov [bp-0ah],ax
 	sub ax,ax
 	mov [bp-4],ax
 	mov [bp-0ch],ax
 	mov ax,WORD PTR D_5156_PENX
-	sub ax,D_5146_TEXTLEFTX[si]
+	sub ax,TEXTLEFTX[si]
 	mov [bp-2],ax
 	jmp	NEAR PTR L_027b
 	db	090h		; nop, as the compiler left it after this jmp
@@ -82,7 +82,7 @@ L_005e:
 	add bx,dx
 	mov bl,[bx]
 	sub bh,bh
-	mov al,D_50EA_GLYPHWIDTHS-20h[bx]
+	mov al,GLYPHWIDTHS-20h[bx]
 	sub ah,ah
 	inc ax
 	add si,ax
@@ -103,14 +103,14 @@ L_0079:
 	add bx,dx
 	cmp byte ptr [bx],20h
 	ja	L_0050
-	add si,WORD PTR D_5154_SPACEWIDTH
+	add si,WORD PTR SPACEWIDTH
 	inc di
 	jmp	SHORT L_0078
 L_00a0:
 	mov [bp-8],di
 	mov [bp-2],si
 	mov [bp-0eh],cx
-	mov al,BYTE PTR D_50EA_GLYPHWIDTHS+0dh	; D_50F7_HYPHENWIDTH, the width of '-'
+	mov al,BYTE PTR GLYPHWIDTHS+0dh	; HYPHENWIDTH, the width of '-'
 	sub ah,ah
 	mov [bp-16h],ax
 	inc ax
@@ -140,7 +140,7 @@ L_00ce:
 	je	L_00e9
 	jmp	NEAR PTR L_016a
 L_00e9:
-	sub si,WORD PTR D_5154_SPACEWIDTH
+	sub si,WORD PTR SPACEWIDTH
 	dec word ptr [bp-8]
 L_00f0:
 	mov [bp-2],si
@@ -170,7 +170,7 @@ L_0123:
 	jbe	L_012f
 	jmp	NEAR PTR L_01b0
 L_012f:
-	mov ax,WORD PTR D_5154_SPACEWIDTH
+	mov ax,WORD PTR SPACEWIDTH
 	add WORD PTR D_5156_PENX,ax
 	cmp word ptr [bp-8],0
 	jne	L_013f
@@ -223,7 +223,7 @@ L_019c:
 	add bx,dx
 	mov bl,[bx]
 	sub bh,bh
-	mov al,D_50EA_GLYPHWIDTHS-20h[bx]
+	mov al,GLYPHWIDTHS-20h[bx]
 	sub ah,ah
 	inc ax
 	sub si,ax
@@ -251,13 +251,13 @@ L_01c0:
 	push ax
 	push WORD PTR D_5156_PENX
 	push WORD PTR D_5158_PENY
-	call	ULTIMA_1044_GRAP_4E_COPYBITIMAG
+	call	GRAP_4E_COPYBITIMAGEINTOPAGE
 L_01eb:
 	mov bx,si
 	add bx,di
 	mov bl,[bx]
 	sub bh,bh
-	mov al,D_50EA_GLYPHWIDTHS-20h[bx]
+	mov al,GLYPHWIDTHS-20h[bx]
 	sub ah,ah
 	inc ax
 	add WORD PTR D_5156_PENX,ax
@@ -284,7 +284,7 @@ L_020a:
 	push ax
 	push WORD PTR D_5156_PENX
 	push WORD PTR D_5158_PENY
-	call	ULTIMA_1044_GRAP_4E_COPYBITIMAG
+	call	GRAP_4E_COPYBITIMAGEINTOPAGE
 L_0239:
 	mov word ptr [bp-2],0
 	add WORD PTR D_5158_PENY,9
@@ -303,9 +303,9 @@ L_025c:
 	shl ax,1
 	mov [bp-1ch],ax
 	mov bx,ax
-	mov ax,D_5146_TEXTLEFTX[bx]
+	mov ax,TEXTLEFTX[bx]
 	mov WORD PTR D_5156_PENX,ax
-	mov ax,D_514C_TEXTRIGHTX[bx]
+	mov ax,TEXTRIGHTX[bx]
 	sub ax,WORD PTR D_5156_PENX
 	mov [bp-0ah],ax
 	inc word ptr [bp-0ch]
@@ -323,7 +323,7 @@ L_027b:
 L_0294:
 	sub ax,ax
 	push ax
-	call	ULTIMA_0C22_GRAP_0F_SELECTPAGE
+	call	GRAP_0F_SELECTPAGE
 	pop si
 	pop di
 	mov sp,bp

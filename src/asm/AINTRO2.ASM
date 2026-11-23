@@ -1,4 +1,4 @@
-; AINTRO2.ASM: INTRO.OVL 132a-1e22, INTRO_132a_TransferFromU4 as the GOG release has it.
+; AINTRO2.ASM: INTRO.OVL 132a-1e22, TRANSFERFROMU4 as the GOG release has it.
 ; In 1.16 this was MSC 5.1 output, the last function of intro2.c's object; GOG patched it in
 ; place (1332-134d: the map id and the drives; 1392-1399: the disk prompt is skipped), so its
 ; bytes are no compiler's output. The DOS build of the GOG target takes it from here, linked
@@ -23,32 +23,32 @@ _BSS	ENDS
 DGROUP	GROUP	CONST, _BSS, _DATA
 	ASSUME	CS: _TEXT, DS: DGROUP, SS: DGROUP, ES: DGROUP
 
-	EXTRN	INTRO_1016_CONVERTU4SAVEGAME:NEAR
-	EXTRN	INTRO_1278_PRINTU4CLASS:NEAR
-	EXTRN	INTRO_12EA_SCALEU4STAT:NEAR
-	EXTRN	INTRO_1E22_PRINTFIELDLABEL:NEAR
-	EXTRN	INTRO_2024_SETUPTRANSFERSCREEN:NEAR
-	EXTRN	ULTIMA_16BA_PRINTCHAR:NEAR
-	EXTRN	ULTIMA_1850_PRINTSTRING:NEAR
-	EXTRN	ULTIMA_1A3E_PRINTNUMBER:NEAR
-	EXTRN	ULTIMA_1B94_SELECTTEXTWINDOW:NEAR
-	EXTRN	ULTIMA_1BF2_SETTEXTPOSITION:NEAR
-	EXTRN	ULTIMA_1C22_SETTEXTWINDOWSIZE:NEAR
-	EXTRN	ULTIMA_1DDA_WAITFORKEYSTROKE:NEAR
-	EXTRN	ULTIMA_1E38_INTROGETSTRING:NEAR
-	EXTRN	ULTIMA_1EAC_SETDEFAULTDRIVE:NEAR
-	EXTRN	ULTIMA_2032_TOUPPER:NEAR
-	EXTRN	ULTIMA_251E_SWITCHDISKS:NEAR
-	EXTRN	ULTIMA_256E_READFILEFROMDISK:NEAR
-	EXTRN	ULTIMA_25D8_WRITEFILETODISK:NEAR
-	EXTRN	D_3304_NOTAVATAR:WORD
-	EXTRN	D_5394_DISKSWAPFN:WORD
-	EXTRN	ULTIMA_2320_NODISKSWAPMESSAGE:FAR
-	EXTRN	ULTIMA_2322_DISKSWAPMESSAGE:FAR
-	EXTRN	D_55A8_PARTY:BYTE
-	EXTRN	D_5893_MAPID:BYTE
-	EXTRN	D_A9BD_CURDISK:BYTE
-	EXTRN	D_A9C8_DISKDRIVES:BYTE
+	EXTRN	CONVERTU4SAVEGAME:NEAR
+	EXTRN	PRINTU4CLASS:NEAR
+	EXTRN	SCALEU4STAT:NEAR
+	EXTRN	PRINTFIELDLABEL:NEAR
+	EXTRN	SETUPTRANSFERSCREEN:NEAR
+	EXTRN	PRINTCHAR:NEAR
+	EXTRN	PRINTSTRING:NEAR
+	EXTRN	PRINTNUMBER:NEAR
+	EXTRN	SELECTTEXTWINDOW:NEAR
+	EXTRN	SETTEXTPOSITION:NEAR
+	EXTRN	SETTEXTWINDOWSIZE:NEAR
+	EXTRN	WAITFORKEYSTROKE:NEAR
+	EXTRN	INTROGETSTRING:NEAR
+	EXTRN	SETDEFAULTDRIVE:NEAR
+	EXTRN	TOUPPERCHAR:NEAR
+	EXTRN	SWITCHDISKS:NEAR
+	EXTRN	READFILEFROMDISK:NEAR
+	EXTRN	WRITEFILETODISK:NEAR
+	EXTRN	NOTAVATAR:WORD
+	EXTRN	DISKSWAPFN:WORD
+	EXTRN	NODISKSWAPMESSAGE:FAR
+	EXTRN	DISKSWAPMESSAGE:FAR
+	EXTRN	PARTY:BYTE
+	EXTRN	MAPID:BYTE
+	EXTRN	CURDISK:BYTE
+	EXTRN	DISKDRIVES:BYTE
 
 ; this module's own data in DGROUP (DS:3345-3655)
 _DATA	SEGMENT
@@ -210,18 +210,18 @@ _DATA	ENDS
 
 _TEXT	SEGMENT
 
-	PUBLIC	INTRO_132A_TRANSFERFROMU4
-INTRO_132A_TRANSFERFROMU4:
+	PUBLIC	TRANSFERFROMU4
+TRANSFERFROMU4:
 	push bp
 	mov bp,sp
 	sub sp,12h
 	push di
 	push si
 ; GOG (to 134d): a map id of 42h becomes 41h, as in 1.16, and both U4 drives (D_a9cb,
-; D_a9cc) are the program's drive D_A9C8_DISKDRIVES (1.16: 0ffh, to be asked for)
-	mov al,BYTE PTR D_5893_MAPID
+; D_a9cc) are the program's drive DISKDRIVES (1.16: 0ffh, to be asked for)
+	mov al,BYTE PTR MAPID
 L_1335:
-	mov BYTE PTR D_5893_MAPID,al
+	mov BYTE PTR MAPID,al
 	cmp al,42h
 	jne	L_1340
 	mov al,41h
@@ -229,9 +229,9 @@ L_1335:
 L_1340:
 	db	030h, 0e4h	; xor ah,ah
 	mov [bp-0ch],ax
-	mov al,BYTE PTR D_A9C8_DISKDRIVES
-	mov BYTE PTR D_A9C8_DISKDRIVES+3,al
-	mov BYTE PTR D_A9C8_DISKDRIVES+4,al
+	mov al,BYTE PTR DISKDRIVES
+	mov BYTE PTR DISKDRIVES+3,al
+	mov BYTE PTR DISKDRIVES+4,al
 	mov ax,OFFSET DGROUP:D_3345
 	push ax
 	mov ax,55a6h
@@ -241,7 +241,7 @@ L_1340:
 	push ax
 	sub ax,ax
 	push ax
-	call	ULTIMA_256E_READFILEFROMDISK
+	call	READFILEFROMDISK
 	mov ax,OFFSET DGROUP:D_334E
 	push ax
 	mov ax,0b31eh
@@ -250,7 +250,7 @@ L_1340:
 	push ax
 	sub ax,ax
 	push ax
-	call	ULTIMA_256E_READFILEFROMDISK
+	call	READFILEFROMDISK
 	sub ax,ax
 	push ax
 	push ax
@@ -259,127 +259,127 @@ L_1340:
 	push ax
 	mov ax,18h
 	push ax
-	call	ULTIMA_1C22_SETTEXTWINDOWSIZE
+	call	SETTEXTWINDOWSIZE
 	sub ax,ax
 	push ax
-	call	ULTIMA_1B94_SELECTTEXTWINDOW
+	call	SELECTTEXTWINDOW
 	mov ax,0ffh
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 ; GOG (to 1399): the drive is the program's, and the prompt below is skipped (in 1.16:
 ; mov ax,4; push ax; mov ax,0ch; push ax, the arguments of the call at 139a)
-	mov al,BYTE PTR D_A9C8_DISKDRIVES
+	mov al,BYTE PTR DISKDRIVES
 	mov [bp-10h],al
 	jmp	SHORT L_1402
 ; from here to 1401 only the GOG release's jump at 1398 skips over
 L_139a:
-	call	ULTIMA_1BF2_SETTEXTPOSITION
+	call	SETTEXTPOSITION
 	mov ax,OFFSET DGROUP:D_3357
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	sub ax,ax
 	push ax
 	mov ax,0fh
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
+	call	SETTEXTPOSITION
 	mov ax,OFFSET DGROUP:D_3379
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	mov ax,8
 	push ax
 	mov ax,10h
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
+	call	SETTEXTPOSITION
 	mov ax,OFFSET DGROUP:D_33A1
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	mov ax,3
 	push ax
 	mov ax,12h
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
+	call	SETTEXTPOSITION
 	mov ax,OFFSET DGROUP:D_33B8
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
-	mov WORD PTR D_5394_DISKSWAPFN,OFFSET ULTIMA_2320_NODISKSWAPMESSAGE
-	mov	WORD PTR D_5394_DISKSWAPFN+2,_TEXT
+	call	PRINTSTRING
+	mov WORD PTR DISKSWAPFN,OFFSET NODISKSWAPMESSAGE
+	mov	WORD PTR DISKSWAPFN+2,_TEXT
 	mov si,[bp-0ch]
 L_13e8:
 	sub ax,ax
 	push ax
-	call	ULTIMA_1DDA_WAITFORKEYSTROKE
+	call	WAITFORKEYSTROKE
 	push ax
-	call	ULTIMA_2032_TOUPPER
+	call	TOUPPERCHAR
 	mov [bp-10h],al
 	cmp al,1bh
 	jne	L_1402
 	mov ax,si
 L_13fb:
-	mov BYTE PTR D_5893_MAPID,al
+	mov BYTE PTR MAPID,al
 	jmp	NEAR PTR L_1e1c
 	db	090h
 L_1402:
 	mov al,[bp-10h]
 	sub ah,ah
 	push ax
-	call	ULTIMA_1EAC_SETDEFAULTDRIVE
+	call	SETDEFAULTDRIVE
 	or ax,ax
 	je	L_13e8
-	mov WORD PTR D_5394_DISKSWAPFN,OFFSET ULTIMA_2322_DISKSWAPMESSAGE
-	mov	WORD PTR D_5394_DISKSWAPFN+2,_TEXT
-	call	INTRO_1016_CONVERTU4SAVEGAME
+	mov WORD PTR DISKSWAPFN,OFFSET DISKSWAPMESSAGE
+	mov	WORD PTR DISKSWAPFN+2,_TEXT
+	call	CONVERTU4SAVEGAME
 	or ax,ax
 	je	L_1428
 	mov al,[bp-0ch]
 	jmp	SHORT L_13fb
 	db	090h
 L_1428:
-	cmp WORD PTR D_3304_NOTAVATAR,0
+	cmp WORD PTR NOTAVATAR,0
 	je	L_1434
-	mov BYTE PTR D_55A8_PARTY+10,41h
+	mov BYTE PTR PARTY+10,41h
 L_1434:
 	mov ax,0ffh
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	sub ax,ax
 	push ax
 	mov ax,0bh
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
+	call	SETTEXTPOSITION
 	mov ax,0fch
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	mov ax,OFFSET DGROUP:D_33D9
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	sub ax,ax
 	push ax
 	mov ax,0ch
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
+	call	SETTEXTPOSITION
 	mov ax,55a8h
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	mov ax,0fbh
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	mov ax,0ch
 	push ax
 	mov ax,0dh
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
+	call	SETTEXTPOSITION
 	mov ax,OFFSET DGROUP:D_33E1
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
-	mov al,BYTE PTR D_55A8_PARTY+22
+	call	PRINTSTRING
+	mov al,BYTE PTR PARTY+22
 	sub ah,ah
 	push ax
 	mov ax,1
 	push ax
 	mov ax,20h
 	push ax
-	call	ULTIMA_1A3E_PRINTNUMBER
-	cmp BYTE PTR D_55A8_PARTY+9,0bh
+	call	PRINTNUMBER
+	cmp BYTE PTR PARTY+9,0bh
 	jne	L_149a
 	mov ax,OFFSET DGROUP:D_33EA
 	jmp	SHORT L_149d
@@ -387,67 +387,67 @@ L_149a:
 	mov ax,OFFSET DGROUP:D_33F1
 L_149d:
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
-	call	INTRO_1278_PRINTU4CLASS
+	call	PRINTSTRING
+	call	PRINTU4CLASS
 	mov ax,11h
 	push ax
 	mov ax,0fh
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
+	call	SETTEXTPOSITION
 	mov ax,OFFSET DGROUP:D_33FA
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
-	mov al,BYTE PTR D_55A8_PARTY+12
+	call	PRINTSTRING
+	mov al,BYTE PTR PARTY+12
 	sub ah,ah
 	push ax
 	mov ax,1
 	push ax
 	mov ax,20h
 	push ax
-	call	ULTIMA_1A3E_PRINTNUMBER
+	call	PRINTNUMBER
 	mov ax,11h
 	push ax
 	mov ax,10h
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
+	call	SETTEXTPOSITION
 	mov ax,OFFSET DGROUP:D_3401
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
-	mov al,BYTE PTR D_55A8_PARTY+13
+	call	PRINTSTRING
+	mov al,BYTE PTR PARTY+13
 	sub ah,ah
 	push ax
 	mov ax,1
 	push ax
 	mov ax,20h
 	push ax
-	call	ULTIMA_1A3E_PRINTNUMBER
+	call	PRINTNUMBER
 	mov ax,11h
 	push ax
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
+	call	SETTEXTPOSITION
 	mov ax,OFFSET DGROUP:D_3408
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
-	mov al,BYTE PTR D_55A8_PARTY+14
+	call	PRINTSTRING
+	mov al,BYTE PTR PARTY+14
 	sub ah,ah
 	push ax
 	mov ax,1
 	push ax
 	mov ax,20h
 	push ax
-	call	ULTIMA_1A3E_PRINTNUMBER
+	call	PRINTNUMBER
 	mov ax,0ah
 	push ax
 	mov ax,14h
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
+	call	SETTEXTPOSITION
 	mov ax,55a8h
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	mov ax,OFFSET DGROUP:D_340F
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
-	cmp WORD PTR D_3304_NOTAVATAR,0
+	call	PRINTSTRING
+	cmp WORD PTR NOTAVATAR,0
 	je	L_1530
 	mov ax,OFFSET DGROUP:D_3414
 	jmp	SHORT L_1533
@@ -456,45 +456,45 @@ L_1530:
 	mov ax,OFFSET DGROUP:D_341F
 L_1533:
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	sub ax,ax
 	push ax
-	call	ULTIMA_1DDA_WAITFORKEYSTROKE
+	call	WAITFORKEYSTROKE
 	mov ax,0ffh
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
-	call	INTRO_2024_SETUPTRANSFERSCREEN
+	call	PRINTCHAR
+	call	SETUPTRANSFERSCREEN
 	sub si,si
 L_1549:
 	push si
-	call	INTRO_1E22_PRINTFIELDLABEL
+	call	PRINTFIELDLABEL
 	inc si
 	cmp si,8
 	jl	L_1549
 	mov [bp-0eh],si
 	sub ax,ax
 	push ax
-	call	ULTIMA_1B94_SELECTTEXTWINDOW
+	call	SELECTTEXTWINDOW
 	sub ax,ax
 	push ax
 	mov ax,3
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
+	call	SETTEXTPOSITION
 	mov ax,0fch
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	mov ax,55a8h
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	mov ax,0fbh
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	mov ax,0ah
 	push ax
 	mov ax,5
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
-	cmp BYTE PTR D_55A8_PARTY+9,0bh
+	call	SETTEXTPOSITION
+	cmp BYTE PTR PARTY+9,0bh
 	jne	L_1592
 	mov ax,OFFSET DGROUP:D_342D
 	jmp	SHORT L_1595
@@ -502,93 +502,93 @@ L_1592:
 	mov ax,OFFSET DGROUP:D_3432
 L_1595:
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	mov ax,0ah
 	push ax
 	mov ax,6
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
-	cmp WORD PTR D_3304_NOTAVATAR,0
+	call	SETTEXTPOSITION
+	cmp WORD PTR NOTAVATAR,0
 	je	L_15b4
 	mov ax,OFFSET DGROUP:D_3439
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	jmp	SHORT L_15b7
 L_15b4:
-	call	INTRO_1278_PRINTU4CLASS
+	call	PRINTU4CLASS
 L_15b7:
 	mov ax,0ah
 	push ax
 	mov ax,8
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
-	push WORD PTR D_55A8_PARTY+20
+	call	SETTEXTPOSITION
+	push WORD PTR PARTY+20
 	mov ax,1
 	push ax
 	mov ax,20h
 	push ax
-	call	ULTIMA_1A3E_PRINTNUMBER
+	call	PRINTNUMBER
 	mov ax,0ah
 	push ax
 	mov ax,9
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
-	mov al,BYTE PTR D_55A8_PARTY+22
+	call	SETTEXTPOSITION
+	mov al,BYTE PTR PARTY+22
 	sub ah,ah
 	push ax
 	mov ax,1
 	push ax
 	mov ax,20h
 	push ax
-	call	ULTIMA_1A3E_PRINTNUMBER
+	call	PRINTNUMBER
 	mov ax,0ah
 	push ax
 	mov ax,0bh
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
-	mov al,BYTE PTR D_55A8_PARTY+12
+	call	SETTEXTPOSITION
+	mov al,BYTE PTR PARTY+12
 	sub ah,ah
 	push ax
 	mov ax,1
 	push ax
 	mov ax,20h
 	push ax
-	call	ULTIMA_1A3E_PRINTNUMBER
+	call	PRINTNUMBER
 	mov ax,0ah
 	push ax
 	mov ax,0ch
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
-	mov al,BYTE PTR D_55A8_PARTY+13
+	call	SETTEXTPOSITION
+	mov al,BYTE PTR PARTY+13
 	sub ah,ah
 	push ax
 	mov ax,1
 	push ax
 	mov ax,20h
 	push ax
-	call	ULTIMA_1A3E_PRINTNUMBER
+	call	PRINTNUMBER
 	mov ax,0ah
 	push ax
 	mov ax,0dh
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
-	mov al,BYTE PTR D_55A8_PARTY+14
+	call	SETTEXTPOSITION
+	mov al,BYTE PTR PARTY+14
 	sub ah,ah
 	push ax
 	mov ax,1
 	push ax
 	mov ax,20h
 	push ax
-	call	ULTIMA_1A3E_PRINTNUMBER
+	call	PRINTNUMBER
 	sub ax,ax
 	push ax
 	mov ax,0fh
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
+	call	SETTEXTPOSITION
 	mov ax,0fch
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
-	cmp WORD PTR D_3304_NOTAVATAR,0
+	call	PRINTCHAR
+	cmp WORD PTR NOTAVATAR,0
 	je	L_165e
 	mov ax,OFFSET DGROUP:D_3440
 	jmp	SHORT L_1661
@@ -596,52 +596,52 @@ L_165e:
 	mov ax,OFFSET DGROUP:D_3447
 L_1661:
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	mov ax,0fbh
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	mov ax,7
 	push ax
 	mov ax,2
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
+	call	SETTEXTPOSITION
 	mov ax,0fdh
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	mov ax,OFFSET DGROUP:D_3452
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	mov ax,1
 	push ax
-	call	ULTIMA_1B94_SELECTTEXTWINDOW
+	call	SELECTTEXTWINDOW
 	mov ax,7
 	push ax
 	mov ax,2
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
+	call	SETTEXTPOSITION
 	mov ax,0fdh
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	mov ax,OFFSET DGROUP:D_3458
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	mov ax,0fdh
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	mov ax,2
 	push ax
-	call	ULTIMA_1B94_SELECTTEXTWINDOW
+	call	SELECTTEXTWINDOW
 	mov ax,0ffh
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	mov ax,0ah
 	push ax
 	sub ax,ax
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
+	call	SETTEXTPOSITION
 	mov ax,OFFSET DGROUP:D_345E
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	jmp	SHORT L_16d4
 	db	090h
 L_16ce:
@@ -650,16 +650,16 @@ L_16ce:
 L_16d4:
 	sub ax,ax
 	push ax
-	call	ULTIMA_1DDA_WAITFORKEYSTROKE
+	call	WAITFORKEYSTROKE
 	push ax
-	call	ULTIMA_2032_TOUPPER
+	call	TOUPPERCHAR
 	mov [bp-10h],al
 	cmp al,59h
 	jne	L_16ce
 L_16e5:
 	mov ax,0ffh
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	cmp byte ptr [bp-10h],4eh
 	jne	L_1715
 L_16f2:
@@ -667,98 +667,98 @@ L_16f2:
 	push ax
 	sub ax,ax
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
+	call	SETTEXTPOSITION
 	mov ax,OFFSET DGROUP:D_346E
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	mov ax,55a8h
 	push ax
 	mov ax,8
 	push ax
-	call	ULTIMA_1E38_INTROGETSTRING
-	cmp BYTE PTR D_55A8_PARTY,0
+	call	INTROGETSTRING
+	cmp BYTE PTR PARTY,0
 	je	L_16f2
 L_1715:
 	mov ax,1
 	push ax
-	call	ULTIMA_1B94_SELECTTEXTWINDOW
+	call	SELECTTEXTWINDOW
 	sub ax,ax
 	push ax
 	mov ax,3
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
+	call	SETTEXTPOSITION
 	mov ax,0fch
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	mov ax,55a8h
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	mov ax,0fbh
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	mov ax,7
 	push ax
 	mov ax,2
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
+	call	SETTEXTPOSITION
 	mov ax,OFFSET DGROUP:D_347F
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	mov ax,5
 	push ax
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
+	call	SETTEXTPOSITION
 	mov ax,0fdh
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	mov ax,OFFSET DGROUP:D_3485
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	mov ax,0fdh
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	sub ax,ax
 	push ax
-	call	ULTIMA_1B94_SELECTTEXTWINDOW
+	call	SELECTTEXTWINDOW
 	mov ax,7
 	push ax
 	mov ax,2
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
+	call	SETTEXTPOSITION
 	mov ax,0fdh
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	mov ax,OFFSET DGROUP:D_348A
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	mov ax,5
 	push ax
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
+	call	SETTEXTPOSITION
 	mov ax,0fdh
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	mov ax,OFFSET DGROUP:D_3490
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	mov ax,0fdh
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	mov ax,2
 	push ax
-	call	ULTIMA_1B94_SELECTTEXTWINDOW
+	call	SELECTTEXTWINDOW
 	mov ax,0ffh
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	mov ax,0fch
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	mov ax,OFFSET DGROUP:D_3495
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	mov ax,0fbh
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	jmp	SHORT L_17d2
 	db	090h
 L_17cc:
@@ -767,114 +767,114 @@ L_17cc:
 L_17d2:
 	sub ax,ax
 	push ax
-	call	ULTIMA_1DDA_WAITFORKEYSTROKE
+	call	WAITFORKEYSTROKE
 	push ax
-	call	ULTIMA_2032_TOUPPER
+	call	TOUPPERCHAR
 	mov [bp-10h],al
 	cmp al,59h
 	jne	L_17cc
 L_17e3:
 	mov ax,1
 	push ax
-	call	ULTIMA_1B94_SELECTTEXTWINDOW
+	call	SELECTTEXTWINDOW
 	mov ax,0ah
 	push ax
 	mov ax,5
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
+	call	SETTEXTPOSITION
 	cmp byte ptr [bp-10h],59h
 	jne	L_1802
-	cmp BYTE PTR D_55A8_PARTY+9,0bh
+	cmp BYTE PTR PARTY+9,0bh
 	je	L_180f
 L_1802:
 	cmp byte ptr [bp-10h],4eh
 	jne	L_181e
-	cmp BYTE PTR D_55A8_PARTY+9,0ch
+	cmp BYTE PTR PARTY+9,0ch
 	jne	L_181e
 L_180f:
 	mov ax,OFFSET DGROUP:D_34A4
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
-	mov BYTE PTR D_55A8_PARTY+9,0bh
+	call	PRINTSTRING
+	mov BYTE PTR PARTY+9,0bh
 	jmp	SHORT L_182a
 	db	090h
 L_181e:
 	mov ax,OFFSET DGROUP:D_34A9
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
-	mov BYTE PTR D_55A8_PARTY+9,0ch
+	call	PRINTSTRING
+	mov BYTE PTR PARTY+9,0ch
 L_182a:
 	mov ax,5
 	push ax
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
+	call	SETTEXTPOSITION
 	mov ax,OFFSET DGROUP:D_34B0
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	mov ax,3
 	push ax
 	mov ax,6
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
+	call	SETTEXTPOSITION
 	mov ax,0fdh
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	mov ax,OFFSET DGROUP:D_34B5
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	mov ax,0fdh
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	mov ax,0ah
 	push ax
 	mov ax,6
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
-	cmp WORD PTR D_3304_NOTAVATAR,0
+	call	SETTEXTPOSITION
+	cmp WORD PTR NOTAVATAR,0
 	je	L_1874
 	mov ax,OFFSET DGROUP:D_34BC
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	jmp	SHORT L_1877
 L_1874:
-	call	INTRO_1278_PRINTU4CLASS
+	call	PRINTU4CLASS
 L_1877:
 	sub ax,ax
 	push ax
-	call	ULTIMA_1B94_SELECTTEXTWINDOW
+	call	SELECTTEXTWINDOW
 	mov ax,5
 	push ax
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
+	call	SETTEXTPOSITION
 	mov ax,OFFSET DGROUP:D_34C3
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	mov ax,3
 	push ax
 	mov ax,6
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
+	call	SETTEXTPOSITION
 	mov ax,0fdh
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	mov ax,OFFSET DGROUP:D_34C8
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	mov ax,0fdh
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	mov ax,2
 	push ax
-	call	ULTIMA_1B94_SELECTTEXTWINDOW
+	call	SELECTTEXTWINDOW
 	mov ax,0ffh
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	mov ax,2
 	push ax
 	sub ax,ax
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
-	cmp WORD PTR D_3304_NOTAVATAR,0
+	call	SETTEXTPOSITION
+	cmp WORD PTR NOTAVATAR,0
 	je	L_18d0
 	mov ax,OFFSET DGROUP:D_34CF
 	jmp	SHORT L_18d3
@@ -882,151 +882,151 @@ L_18d0:
 	mov ax,OFFSET DGROUP:D_34E7
 L_18d3:
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	sub ax,ax
 	push ax
-	call	ULTIMA_1DDA_WAITFORKEYSTROKE
+	call	WAITFORKEYSTROKE
 	sub ax,ax
 	push ax
-	call	ULTIMA_1B94_SELECTTEXTWINDOW
+	call	SELECTTEXTWINDOW
 	mov ax,3
 	push ax
 	mov ax,6
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
+	call	SETTEXTPOSITION
 	mov ax,OFFSET DGROUP:D_34FC
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	mov ax,5
 	push ax
 	mov ax,8
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
+	call	SETTEXTPOSITION
 	mov ax,0fdh
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	mov ax,OFFSET DGROUP:D_3503
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	mov ax,0fdh
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	mov ax,1
 	push ax
-	call	ULTIMA_1B94_SELECTTEXTWINDOW
+	call	SELECTTEXTWINDOW
 	mov ax,3
 	push ax
 	mov ax,6
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
+	call	SETTEXTPOSITION
 	mov ax,OFFSET DGROUP:D_3508
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	mov ax,5
 	push ax
 	mov ax,8
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
+	call	SETTEXTPOSITION
 	mov ax,0fdh
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	mov ax,OFFSET DGROUP:D_350F
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	mov ax,0fdh
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	mov ax,0ah
 	push ax
 	mov ax,8
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
+	call	SETTEXTPOSITION
 	mov cx,0ah
-	mov ax,WORD PTR D_55A8_PARTY+20
+	mov ax,WORD PTR PARTY+20
 	cwd
 	idiv cx
-	mov WORD PTR D_55A8_PARTY+20,ax
+	mov WORD PTR PARTY+20,ax
 	push ax
 	mov ax,1
 	push ax
 	mov ax,20h
 	push ax
-	call	ULTIMA_1A3E_PRINTNUMBER
+	call	PRINTNUMBER
 	mov ax,2
 	push ax
-	call	ULTIMA_1B94_SELECTTEXTWINDOW
+	call	SELECTTEXTWINDOW
 	mov ax,0ffh
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	mov ax,0fch
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	mov ax,OFFSET DGROUP:D_3514
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	mov ax,0fbh
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	sub ax,ax
 	push ax
-	call	ULTIMA_1DDA_WAITFORKEYSTROKE
+	call	WAITFORKEYSTROKE
 	sub ax,ax
 	push ax
-	call	ULTIMA_1B94_SELECTTEXTWINDOW
+	call	SELECTTEXTWINDOW
 	mov ax,5
 	push ax
 	mov ax,8
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
+	call	SETTEXTPOSITION
 	mov ax,OFFSET DGROUP:D_3532
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	mov ax,3
 	push ax
 	mov ax,9
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
+	call	SETTEXTPOSITION
 	mov ax,0fdh
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	mov ax,OFFSET DGROUP:D_3537
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	mov ax,0fdh
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	mov ax,1
 	push ax
-	call	ULTIMA_1B94_SELECTTEXTWINDOW
+	call	SELECTTEXTWINDOW
 	mov ax,5
 	push ax
 	mov ax,8
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
+	call	SETTEXTPOSITION
 	mov ax,OFFSET DGROUP:D_353E
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	mov ax,3
 	push ax
 	mov ax,9
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
+	call	SETTEXTPOSITION
 	mov ax,0fdh
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	mov ax,OFFSET DGROUP:D_3543
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	mov ax,0fdh
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	mov ax,0ah
 	push ax
 	mov ax,9
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
-	mov BYTE PTR D_55A8_PARTY+22,1
-	mov ax,WORD PTR D_55A8_PARTY+20
+	call	SETTEXTPOSITION
+	mov BYTE PTR PARTY+22,1
+	mov ax,WORD PTR PARTY+20
 	cwd
 	mov cx,64h
 	idiv cx
@@ -1035,394 +1035,394 @@ L_18d3:
 	jmp	SHORT L_1a32
 	db	090h
 L_1a2c:
-	inc BYTE PTR D_55A8_PARTY+22
+	inc BYTE PTR PARTY+22
 	sar cx,1
 L_1a32:
 	or cx,cx
 	jg	L_1a2c
 	mov [bp-0eh],cx
 	mov al,1eh
-	mul BYTE PTR D_55A8_PARTY+22
-	mov WORD PTR D_55A8_PARTY+18,ax
-	mov WORD PTR D_55A8_PARTY+16,ax
-	mov al,BYTE PTR D_55A8_PARTY+22
+	mul BYTE PTR PARTY+22
+	mov WORD PTR PARTY+18,ax
+	mov WORD PTR PARTY+16,ax
+	mov al,BYTE PTR PARTY+22
 	sub ah,ah
 	push ax
 	mov ax,1
 	push ax
 	mov ax,20h
 	push ax
-	call	ULTIMA_1A3E_PRINTNUMBER
+	call	PRINTNUMBER
 	mov ax,2
 	push ax
-	call	ULTIMA_1B94_SELECTTEXTWINDOW
+	call	SELECTTEXTWINDOW
 	mov ax,0ffh
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	mov ax,0fch
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	mov ax,OFFSET DGROUP:D_354A
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	mov ax,0fbh
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	sub ax,ax
 	push ax
-	call	ULTIMA_1DDA_WAITFORKEYSTROKE
+	call	WAITFORKEYSTROKE
 	sub ax,ax
 	push ax
-	call	ULTIMA_1B94_SELECTTEXTWINDOW
+	call	SELECTTEXTWINDOW
 	mov ax,3
 	push ax
 	mov ax,9
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
+	call	SETTEXTPOSITION
 	mov ax,OFFSET DGROUP:D_3563
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	mov ax,5
 	push ax
 	mov ax,0bh
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
+	call	SETTEXTPOSITION
 	mov ax,0fdh
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	mov ax,OFFSET DGROUP:D_356A
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	mov ax,0fdh
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	mov ax,1
 	push ax
-	call	ULTIMA_1B94_SELECTTEXTWINDOW
+	call	SELECTTEXTWINDOW
 	mov ax,3
 	push ax
 	mov ax,9
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
+	call	SETTEXTPOSITION
 	mov ax,OFFSET DGROUP:D_356F
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	mov ax,5
 	push ax
 	mov ax,0bh
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
+	call	SETTEXTPOSITION
 	mov ax,0fdh
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	mov ax,OFFSET DGROUP:D_3576
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	mov ax,0fdh
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	mov ax,0ah
 	push ax
 	mov ax,0bh
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
-	mov al,BYTE PTR D_55A8_PARTY+12
+	call	SETTEXTPOSITION
+	mov al,BYTE PTR PARTY+12
 	sub ah,ah
 	mov [bp-12h],ax
 	push ax
-	call	INTRO_12EA_SCALEU4STAT
-	mov BYTE PTR D_55A8_PARTY+12,al
+	call	SCALEU4STAT
+	mov BYTE PTR PARTY+12,al
 	cmp al,14h
 	jae	L_1b13
-	mov BYTE PTR D_55A8_PARTY+12,14h
+	mov BYTE PTR PARTY+12,14h
 L_1b13:
-	mov al,BYTE PTR D_55A8_PARTY+12
+	mov al,BYTE PTR PARTY+12
 	sub ah,ah
 	push ax
 	mov ax,1
 	push ax
 	mov ax,20h
 	push ax
-	call	ULTIMA_1A3E_PRINTNUMBER
+	call	PRINTNUMBER
 	mov ax,2
 	push ax
-	call	ULTIMA_1B94_SELECTTEXTWINDOW
+	call	SELECTTEXTWINDOW
 	mov ax,0ffh
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	mov ax,1
 	push ax
 	sub ax,ax
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
+	call	SETTEXTPOSITION
 	mov ax,OFFSET DGROUP:D_357B
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	push word ptr [bp-12h]
 	mov ax,1
 	push ax
 	mov ax,20h
 	push ax
-	call	ULTIMA_1A3E_PRINTNUMBER
+	call	PRINTNUMBER
 	mov ax,OFFSET DGROUP:D_358A
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
-	mov al,BYTE PTR D_55A8_PARTY+12
+	call	PRINTSTRING
+	mov al,BYTE PTR PARTY+12
 	sub ah,ah
 	push ax
 	mov ax,1
 	push ax
 	mov ax,20h
 	push ax
-	call	ULTIMA_1A3E_PRINTNUMBER
+	call	PRINTNUMBER
 	mov ax,OFFSET DGROUP:D_3595
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	sub ax,ax
 	push ax
-	call	ULTIMA_1DDA_WAITFORKEYSTROKE
+	call	WAITFORKEYSTROKE
 	sub ax,ax
 	push ax
-	call	ULTIMA_1B94_SELECTTEXTWINDOW
+	call	SELECTTEXTWINDOW
 	mov ax,5
 	push ax
 	mov ax,0bh
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
+	call	SETTEXTPOSITION
 	mov ax,OFFSET DGROUP:D_359A
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	mov ax,5
 	push ax
 	mov ax,0ch
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
+	call	SETTEXTPOSITION
 	mov ax,0fdh
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	mov ax,OFFSET DGROUP:D_359F
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	mov ax,0fdh
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	mov ax,1
 	push ax
-	call	ULTIMA_1B94_SELECTTEXTWINDOW
+	call	SELECTTEXTWINDOW
 	mov ax,5
 	push ax
 	mov ax,0bh
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
+	call	SETTEXTPOSITION
 	mov ax,OFFSET DGROUP:D_35A4
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	mov ax,5
 	push ax
 	mov ax,0ch
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
+	call	SETTEXTPOSITION
 	mov ax,0fdh
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	mov ax,OFFSET DGROUP:D_35A9
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	mov ax,0fdh
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	mov ax,0ah
 	push ax
 	mov ax,0ch
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
-	mov al,BYTE PTR D_55A8_PARTY+13
+	call	SETTEXTPOSITION
+	mov al,BYTE PTR PARTY+13
 	sub ah,ah
 	mov [bp-12h],ax
 	push ax
-	call	INTRO_12EA_SCALEU4STAT
-	mov BYTE PTR D_55A8_PARTY+13,al
+	call	SCALEU4STAT
+	mov BYTE PTR PARTY+13,al
 	sub ah,ah
 	push ax
 	mov ax,1
 	push ax
 	mov ax,20h
 	push ax
-	call	ULTIMA_1A3E_PRINTNUMBER
+	call	PRINTNUMBER
 	mov ax,2
 	push ax
-	call	ULTIMA_1B94_SELECTTEXTWINDOW
+	call	SELECTTEXTWINDOW
 	mov ax,0ffh
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	mov ax,1
 	push ax
 	sub ax,ax
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
+	call	SETTEXTPOSITION
 	mov ax,OFFSET DGROUP:D_35AE
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	push word ptr [bp-12h]
 	mov ax,1
 	push ax
 	mov ax,20h
 	push ax
-	call	ULTIMA_1A3E_PRINTNUMBER
+	call	PRINTNUMBER
 	mov ax,OFFSET DGROUP:D_35BE
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
-	mov al,BYTE PTR D_55A8_PARTY+13
+	call	PRINTSTRING
+	mov al,BYTE PTR PARTY+13
 	sub ah,ah
 	push ax
 	mov ax,1
 	push ax
 	mov ax,20h
 	push ax
-	call	ULTIMA_1A3E_PRINTNUMBER
+	call	PRINTNUMBER
 	mov ax,OFFSET DGROUP:D_35C9
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	sub ax,ax
 	push ax
-	call	ULTIMA_1DDA_WAITFORKEYSTROKE
+	call	WAITFORKEYSTROKE
 	sub ax,ax
 	push ax
-	call	ULTIMA_1B94_SELECTTEXTWINDOW
+	call	SELECTTEXTWINDOW
 	mov ax,5
 	push ax
 	mov ax,0ch
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
+	call	SETTEXTPOSITION
 	mov ax,OFFSET DGROUP:D_35CE
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	mov ax,5
 	push ax
 	mov ax,0dh
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
+	call	SETTEXTPOSITION
 	mov ax,0fdh
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	mov ax,OFFSET DGROUP:D_35D3
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	mov ax,0fdh
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	mov ax,1
 	push ax
-	call	ULTIMA_1B94_SELECTTEXTWINDOW
+	call	SELECTTEXTWINDOW
 	mov ax,5
 	push ax
 	mov ax,0ch
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
+	call	SETTEXTPOSITION
 	mov ax,OFFSET DGROUP:D_35D8
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	mov ax,5
 	push ax
 	mov ax,0dh
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
+	call	SETTEXTPOSITION
 	mov ax,0fdh
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	mov ax,OFFSET DGROUP:D_35DD
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	mov ax,0fdh
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	mov ax,0ah
 	push ax
 	mov ax,0dh
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
-	mov al,BYTE PTR D_55A8_PARTY+14
+	call	SETTEXTPOSITION
+	mov al,BYTE PTR PARTY+14
 	sub ah,ah
 	mov [bp-12h],ax
 	push ax
-	call	INTRO_12EA_SCALEU4STAT
-	mov BYTE PTR D_55A8_PARTY+14,al
-	mov BYTE PTR D_55A8_PARTY+15,al
+	call	SCALEU4STAT
+	mov BYTE PTR PARTY+14,al
+	mov BYTE PTR PARTY+15,al
 	sub ah,ah
 	push ax
 	mov ax,1
 	push ax
 	mov ax,20h
 	push ax
-	call	ULTIMA_1A3E_PRINTNUMBER
+	call	PRINTNUMBER
 	mov ax,2
 	push ax
-	call	ULTIMA_1B94_SELECTTEXTWINDOW
+	call	SELECTTEXTWINDOW
 	mov ax,0ffh
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	mov ax,1
 	push ax
 	sub ax,ax
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
+	call	SETTEXTPOSITION
 	mov ax,OFFSET DGROUP:D_35E2
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	push word ptr [bp-12h]
 	mov ax,1
 	push ax
 	mov ax,20h
 	push ax
-	call	ULTIMA_1A3E_PRINTNUMBER
+	call	PRINTNUMBER
 	mov ax,OFFSET DGROUP:D_35F2
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
-	mov al,BYTE PTR D_55A8_PARTY+14
+	call	PRINTSTRING
+	mov al,BYTE PTR PARTY+14
 	sub ah,ah
 	push ax
 	mov ax,1
 	push ax
 	mov ax,20h
 	push ax
-	call	ULTIMA_1A3E_PRINTNUMBER
+	call	PRINTNUMBER
 	mov ax,OFFSET DGROUP:D_35FD
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	sub ax,ax
 	push ax
-	call	ULTIMA_1DDA_WAITFORKEYSTROKE
+	call	WAITFORKEYSTROKE
 	sub ax,ax
 	push ax
-	call	ULTIMA_1B94_SELECTTEXTWINDOW
+	call	SELECTTEXTWINDOW
 	mov ax,5
 	push ax
 	mov ax,0dh
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
+	call	SETTEXTPOSITION
 	mov ax,OFFSET DGROUP:D_3602
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	mov ax,1
 	push ax
-	call	ULTIMA_1B94_SELECTTEXTWINDOW
+	call	SELECTTEXTWINDOW
 	mov ax,5
 	push ax
 	mov ax,0dh
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
+	call	SETTEXTPOSITION
 	mov ax,OFFSET DGROUP:D_3607
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	sub ax,ax
 	push ax
 	mov ax,0fh
 	push ax
-	call	ULTIMA_1BF2_SETTEXTPOSITION
+	call	SETTEXTPOSITION
 	mov ax,0fch
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
-	cmp WORD PTR D_3304_NOTAVATAR,0
+	call	PRINTCHAR
+	cmp WORD PTR NOTAVATAR,0
 	je	L_1d9e
 	mov ax,OFFSET DGROUP:D_360C
 	jmp	SHORT L_1da1
@@ -1431,13 +1431,13 @@ L_1d9e:
 	mov ax,OFFSET DGROUP:D_3613
 L_1da1:
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	mov ax,0fbh
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	mov ax,2
 	push ax
-	call	ULTIMA_1B94_SELECTTEXTWINDOW
+	call	SELECTTEXTWINDOW
 	mov ax,2
 	push ax
 	push ax
@@ -1447,16 +1447,16 @@ L_1da1:
 	push ax
 	mov ax,16h
 	push ax
-	call	ULTIMA_1C22_SETTEXTWINDOWSIZE
+	call	SETTEXTWINDOWSIZE
 	mov ax,0ffh
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	mov ax,3
 	push ax
-	call	ULTIMA_251E_SWITCHDISKS
+	call	SWITCHDISKS
 	mov ax,OFFSET DGROUP:D_361E
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	mov cx,100h
 	mov di,0b21eh
 	mov ax,ds
@@ -1469,7 +1469,7 @@ L_1da1:
 	push ax
 	mov ax,200h
 	push ax
-	call	ULTIMA_25D8_WRITEFILETODISK
+	call	WRITEFILETODISK
 	mov ax,OFFSET DGROUP:D_364B
 	push ax
 	mov ax,55a6h
@@ -1477,13 +1477,13 @@ L_1da1:
 	mov ax,6606h
 	sub ax,55a6h
 	push ax
-	call	ULTIMA_25D8_WRITEFILETODISK
+	call	WRITEFILETODISK
 	sub ax,ax
 	push ax
-	call	ULTIMA_251E_SWITCHDISKS
+	call	SWITCHDISKS
 	mov al,[bp-0ch]
-	mov BYTE PTR D_5893_MAPID,al
-	mov BYTE PTR D_A9BD_CURDISK+1,0
+	mov BYTE PTR MAPID,al
+	mov BYTE PTR CURDISK+1,0
 L_1e1c:
 	pop si
 	pop di

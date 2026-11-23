@@ -4,39 +4,39 @@
 #include "structs.h"
 
 // the communal variables several modules use (vars.h, DS:a9bc): ULTIMA is linked first
-u8  D_a9bc_townJustEntered;
-u8 D_a9bd_curDisk[1]; // the disk wanted (ULTIMA_251e_SwitchDisks)
-u8 D_a9be_promptMode; // two bytes on an odd address would have been put on an even one
-u8* D_a9c0_wallImage; // loaded image pointer
-u8 D_a9c2_floppyCount;
-u8* D_a9c4_itemsImage; // loaded image pointer
-u8* D_a9c6_monsterImage; // loaded image pointer
-u8 D_a9c8_diskDrives[6]; // the drive of each disk; 0xff: not set
-u8 D_a9ce_soundOn; // use sound effect?
-u16 D_a9d0_rayBalance[0x15];
-u8 D_a9fa_vitalsDirty; // dirty flag for vital
-u8 D_a9fb_stepVolume; // footstep sfx duration in dungeon
-ActorFmt D_a9fc_savedActors[0x20]; // D_5c5a_actors during combat
-char* D_aafc_shopName; // current shop name
-char* D_aafe_shopOwner; // current shop owner
-char* D_ab00_itemName;
-u8 D_ab02_viewTiles[0x160]; // the 11x11 view, 0x20 bytes a row: 0 an actor (in D_ac64_viewActors), 0xff hidden
-char* D_ac62_placeName;
-u8 D_ac64_viewActors[0xb0]; // actor map / misc map [0x10 * b] (from 51b8)
-u8 D_ad14_combatMap[32 * 32]; // the combat map; outside combat the 32x32 light map
-s16 D_b114_shopIndex; // s16 (FMT MOVSX); the shop's column in D_21ca_shopNames..., 0-15
-s16 D_b116_shopKind; // s16 (FMT MOVSX); 0-7, the merchant's dialog number - 0x81
-s16 D_b118_shopPrice; // s16 (FMT MOVSX); the % of a shop text
-u16 D_b11a_shopQuantity;
-u8* D_b11c_searchGrid;
-u8 D_b11e_tileFrames[0x100]; // the tile drawn for each map tile (animation)
-u8 D_b21e_scratch[2000]; // scratch buffer ~b9ee)
-u8  D_b9ee_itemCounts[0x26]; // owned item counts
-CombatEntity D_ba14_combatants[32]; // combat entities
-u8  D_bb14_wallTile; // pos?
+u8  townJustEntered;
+u8 curDisk[1]; // the disk wanted (SwitchDisks)
+u8 promptMode; // two bytes on an odd address would have been put on an even one
+u8* wallImage; // loaded image pointer
+u8 floppyCount;
+u8* itemsImage; // loaded image pointer
+u8* monsterImage; // loaded image pointer
+u8 diskDrives[6]; // the drive of each disk; 0xff: not set
+u8 soundOn; // use sound effect?
+u16 rayBalance[0x15];
+u8 vitalsDirty; // dirty flag for vital
+u8 stepVolume; // footstep sfx duration in dungeon
+ActorFmt savedActors[0x20]; // actors during combat
+char* shopName; // current shop name
+char* shopOwner; // current shop owner
+char* itemName;
+u8 viewTiles[0x160]; // the 11x11 view, 0x20 bytes a row: 0 an actor (in viewActors), 0xff hidden
+char* placeName;
+u8 viewActors[0xb0]; // actor map / misc map [0x10 * b] (from 51b8)
+u8 combatMap[32 * 32]; // the combat map; outside combat the 32x32 light map
+s16 shopIndex; // s16 (FMT MOVSX); the shop's column in shopNames..., 0-15
+s16 shopKind; // s16 (FMT MOVSX); 0-7, the merchant's dialog number - 0x81
+s16 shopPrice; // s16 (FMT MOVSX); the % of a shop text
+u16 shopQuantity;
+u8* searchGrid;
+u8 tileFrames[0x100]; // the tile drawn for each map tile (animation)
+u8 scratch[2000]; // scratch buffer ~b9ee)
+u8  itemCounts[0x26]; // owned item counts
+CombatEntity combatants[32]; // combat entities
+u8  wallTile; // pos?
 u8  D_bb15_floorTile; // pos?
-u8  D_bb16_altTileset;
-u8  D_bb17_loadFlags;
+u8  altTileset;
+u8  loadFlags;
 
 #include "vars.h"
 #include "funcs.h"
@@ -49,24 +49,24 @@ u8  D_bb17_loadFlags;
 #include "outsubs.h"
 #include "town.h"
 
-u8 D_13a6_shadowlordStartY[8] =
+u8 shadowlordStartY[8] =
 {
     0x04, 0x09, 0x0f, 0x08, 0x11, 0x0a, 0x0b, 0x0a
 };
 
-u16 D_13ae_redColor = 2;
+u16 redColor = 2;
 
-u16 D_13b0_brightWhiteColor = 3;
+u16 brightWhiteColor = 3;
 
-u16 D_13b2_blueColor = 1;
+u16 blueColor = 1;
 
-u16 D_13b4_greenColor = 1;
+u16 greenColor = 1;
 
-u16 D_13b6_magentaColor = 2;
+u16 magentaColor = 2;
 
-u16 D_13b8_brightYellowColor = 3;
+u16 brightYellowColor = 3;
 
-u16 D_13ba_lightGrayColor = 3;
+u16 lightGrayColor = 3;
 
 EnemyStats D_13bc_enemyStats[0x30] =
 {
@@ -121,7 +121,7 @@ EnemyStats D_13bc_enemyStats[0x30] =
     { 0x19, 0x1e, 0x1e, 0x0a, 0x1e, 0x63, 0x01, 0x00 }  // Shadow Lord
 };
 
-u16 D_153c_enemyFlags[0x30] =
+u16 enemyFlags[0x30] =
 {
     ENEMY_FLAG_MAGIC, // Mage
     ENEMY_FLAG_4000, // Bard
@@ -173,7 +173,7 @@ u16 D_153c_enemyFlags[0x30] =
     ENEMY_FLAG_MAGIC | ENEMY_FLAG_TELEPORT | ENEMY_FLAG_VANISH | ENEMY_FLAG_DISAPPEAR | ENEMY_FLAG_POISON_200 | ENEMY_FLAG_100 | ENEMY_FLAG_CHARM | ENEMY_FLAG_UNDEAD | ENEMY_FLAG_NO_CORPSE // Shadow Lord
 };
 
-u8 D_159c_enemyRange[0x30] =
+u8 enemyRange[0x30] =
 {
     0x07, 0x03, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
     0x01, 0x01, 0x01, 0x01, 0x0f, 0x09, 0x09, 0x09,
@@ -183,7 +183,7 @@ u8 D_159c_enemyRange[0x30] =
     0x01, 0x05, 0x01, 0x01, 0x01, 0x01, 0x01, 0x09
 };
 
-u8 D_15cc_enemyMissile[0x30] =
+u8 enemyMissile[0x30] =
 {
     0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x02, 0x04, 0x03, 0x04,
@@ -193,7 +193,7 @@ u8 D_15cc_enemyMissile[0x30] =
     0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03
 };
 
-u8 D_15fc_weaponAttack[0x38] =
+u8 weaponAttack[0x38] =
 {
     0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x06, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -204,7 +204,7 @@ u8 D_15fc_weaponAttack[0x38] =
     0x10, 0x1e, 0x63, 0x12, 0x00, 0x15, 0x00, 0x00
 };
 
-u8 D_1634_equipDefense[0x30] =
+u8 equipDefense[0x30] =
 {
     0x01, 0x02, 0x03, 0x03, 0x02, 0x03, 0x03, 0x05,
     0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x07, 0x0a,
@@ -214,7 +214,7 @@ u8 D_1634_equipDefense[0x30] =
     0x00, 0x01, 0x00, 0x02, 0x00, 0x00, 0x02, 0x00
 };
 
-u8 D_1664_weaponRange[0x38] =
+u8 weaponRange[0x38] =
 {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -225,7 +225,7 @@ u8 D_1664_weaponRange[0x38] =
     0x0f, 0x0f, 0x0f, 0x0f, 0x0f, 0x0f, 0x0f, 0x00
 };
 
-u8 D_169c_weaponMissile[0x38] =
+u8 weaponMissile[0x38] =
 {
     0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x08, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -236,7 +236,7 @@ u8 D_169c_weaponMissile[0x38] =
     0x04, 0x03, 0x04, 0x05, 0x06, 0x03, 0x04, 0x00
 };
 
-u8 D_16d4_enemyCompanion[0x30] =
+u8 enemyCompanion[0x30] =
 {
     0x21, 0x01, 0x01, 0x03, 0x04, 0x04, 0x04, 0x04,
     0x04, 0x04, 0x0a, 0x04, 0x0c, 0x0d, 0x0e, 0x0f,
@@ -246,27 +246,27 @@ u8 D_16d4_enemyCompanion[0x30] =
     0x28, 0x14, 0x2a, 0x2b, 0x2c, 0x2d, 0x14, 0x26
 };
 
-u8 D_1704_combatEnemyX[0x10] =
+u8 combatEnemyX[0x10] =
 {
     0x02, 0x05, 0x08, 0x04, 0x06, 0x01, 0x05, 0x09,
     0x03, 0x07, 0x00, 0x04, 0x06, 0x0a, 0x02, 0x08
 };
 
-u8 D_1714_combatEnemyY[0x10] =
+u8 combatEnemyY[0x10] =
 {
     0x00, 0x00, 0x00, 0x01, 0x01, 0x02, 0x02, 0x02,
     0x03, 0x03, 0x04, 0x04, 0x04, 0x04, 0x05, 0x05
 };
 
-u8 D_1724_combatPartyX[8] = { 0x05, 0x04, 0x06, 0x03, 0x05, 0x07 };
+u8 combatPartyX[8] = { 0x05, 0x04, 0x06, 0x03, 0x05, 0x07 };
 
-u8 D_172c_combatPartyY[8] = { 0x07, 0x08, 0x08, 0x09, 0x09, 0x09 };
+u8 combatPartyY[8] = { 0x07, 0x08, 0x08, 0x09, 0x09, 0x09 };
 
-u8 D_1734_ambushEnemies[8] = { 0x29, 0x14, 0x15, 0x18, 0x16, 0x19, 0x24, 0x14 };
+u8 ambushEnemies[8] = { 0x29, 0x14, 0x15, 0x18, 0x16, 0x19, 0x24, 0x14 };
 
-u8 D_173c_monsterTypes[8] = {0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1c, 0x1b};
+u8 monsterTypes[8] = {0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1c, 0x1b};
 
-u8 D_1744_monsterAnimStates[8] = {0x60, 0xa0, 0x00, 0x90, 0x80, 0x60, 0x00, 0x00};
+u8 monsterAnimStates[8] = {0x60, 0xa0, 0x00, 0x90, 0x80, 0x60, 0x00, 0x00};
 
 char D_174c[] = "Chain Coif";
 
@@ -309,7 +309,7 @@ char D_17e6[] = "Magic Axe";
 char D_17f0[] = "Ankh";
 
 // TODO: pointer offset
-char* D_17f6_equipNames[0x30] =
+char* equipNames[0x30] =
 {
     /*0x0042*/ "Leather Helm",
     D_174c,
@@ -362,7 +362,7 @@ char* D_17f6_equipNames[0x30] =
 };
 
 // TODO: pointer offset
-char* D_1856_enemyNames[0x30] =
+char* enemyNames[0x30] =
 {
     /*0x01c3*/ "Mage",
     /*0x01c8*/ "Bard",
@@ -414,7 +414,7 @@ char* D_1856_enemyNames[0x30] =
     /*0x030f*/ "Shadow Lord"
 };
 
-char* D_18b6_enemyNamesPlural[0x30] =
+char* enemyNamesPlural[0x30] =
 {
     /*0x031b*/ "WIZARDS",
     /*0x0323*/ "BARD",
@@ -466,7 +466,7 @@ char* D_18b6_enemyNamesPlural[0x30] =
     /*0x0474*/ "SHADOW LORD"
 };
 
-char* D_1916_itemNames[0x26] =
+char* itemNames[0x26] =
 {
     /*0x0480*/ "*VL",
     /*0x0484*/ "*RH",
@@ -508,7 +508,7 @@ char* D_1916_itemNames[0x26] =
     /*0x0557*/ "Wooden Box"
 };
 
-char* D_1962_equipShortNames[56] =
+char* equipShortNames[56] =
 {
     /*0x0562*/ "Leath Helm",
     D_174c,
@@ -580,7 +580,7 @@ char* D_19d2_reagentNames[8] =
     /*0x06f0*/ "Mandrake"
 };
 
-char* D_19e2_spellNames[48 + 1] =
+char* spellNames[48 + 1] =
 {
     /*0x06f9*/ "In Lor",
     /*0x0700*/ "Grav Por",
@@ -633,7 +633,7 @@ char* D_19e2_spellNames[48 + 1] =
     /*0x08b4*/ "Frotz" // UNUSED
 };
 
-char* D_1a44_classNames[10] =
+char* classNames[10] =
 {
     /*0x08ba*/ "Avatar",
     /*0x08c1*/ "Mage",
@@ -647,9 +647,9 @@ char* D_1a44_classNames[10] =
     /*0x08f8*/ "Adept of Woznir"
 };
 
-s16 D_1a58_classNamePad[9] = { 1, 2, 2, 1, 1, 1, 1, 1, 0 };
+s16 classNamePad[9] = { 1, 2, 2, 1, 1, 1, 1, 1, 0 };
 
-char* D_1a6a_statusNames[5] =
+char* statusNames[5] =
 {
     /*0x0908*/ "Good Health",
     /*0x0914*/ "Poisoned",
@@ -658,9 +658,9 @@ char* D_1a6a_statusNames[5] =
     /*0x0929*/ "Charmed",
 };
 
-u16 D_1a74_karmaTextOffsets[5] = { 0, 0x84, 0x10d, 0x19a, 0x222 };
+u16 karmaTextOffsets[5] = { 0, 0x84, 0x10d, 0x19a, 0x222 };
 
-u8 D_1a7e_equipSlotKind[0x30] =
+u8 equipSlotKind[0x30] =
 {
     0x80, 0x80, 0x80, 0x80, 0x20, 0x20, 0x20, 0x20,
     0x20, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40,
@@ -670,7 +670,7 @@ u8 D_1a7e_equipSlotKind[0x30] =
     0x20, 0x30, 0x02, 0x02, 0x02, 0x04, 0x04, 0x04
 };
 
-u8 D_1aae_equipWeight[0x30] =
+u8 equipWeight[0x30] =
 {
     0x00, 0x01, 0x02, 0x03, 0x02, 0x03, 0x04, 0x00,
     0x00, 0x00, 0x02, 0x04, 0x06, 0x0a, 0x0c, 0x00,
@@ -680,14 +680,14 @@ u8 D_1aae_equipWeight[0x30] =
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 };
 
-u8 D_1ade_classTile[9] =
+u8 classTile[9] =
 {
     TILE_ACTOR_4C, TILE_ACTOR_WIZARD, TILE_ACTOR_BARD_44, TILE_ACTOR_FIGHTER,
     TILE_ACTOR_4C, TILE_ACTOR_4C, TILE_ACTOR_4C, TILE_ACTOR_4C,
     TILE_ACTOR_4C
 };
 
-u8 D_1ae8_equipMarker[0x30] =
+u8 equipMarker[0x30] =
 {
     0x01, 0x01, 0x01, 0x01, 0x02, 0x02, 0x02, 0x02,
     0x02, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03,
@@ -697,7 +697,7 @@ u8 D_1ae8_equipMarker[0x30] =
     0x15, 0x15, 0x18, 0x18, 0x18, 0x19, 0x1a, 0x1b
 };
 
-u8 D_1b18_animSequences[0xb0 + 0x33] =
+u8 animSequences[0xb0 + 0x33] =
 {
     0x02, 0x03, 0x04, 0x05, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -730,7 +730,7 @@ u8 D_1b18_animSequences[0xb0 + 0x33] =
     0x08, 0x00, 0x00
 };
 
-char* D_1bfc_mantraWords[26] =
+char* mantraWords[26] =
 {
     /*0x0931*/ "AN",
     /*0x0934*/ "BET",
@@ -760,7 +760,7 @@ char* D_1bfc_mantraWords[26] =
     /*0x0992*/ "ZU"
 };
 
-char* D_1c30_spellCodes[0x30] =
+char* spellCodes[0x30] =
 {
     /*0x0995*/ "IL",
     /*0x0998*/ "GP",
@@ -812,7 +812,7 @@ char* D_1c30_spellCodes[0x30] =
     /*0x0a3a*/ "AT"
 };
 
-u8 D_1c90_spellUsability[0x30] =
+u8 spellUsability[0x30] =
 {
     0x0e, 0x01, 0x0f, 0x0f, 0x0f, 0x05, 0x0f, 0x01,
     0x08, 0x08, 0x01, 0x0f, 0x0e, 0x01, 0x03, 0x03,
@@ -822,7 +822,7 @@ u8 D_1c90_spellUsability[0x30] =
     0x01, 0x01, 0x0e, 0x01, 0x01, 0x01, 0x0e, 0x0f
 };
 
-u8 D_1cc0_spellReagents[0x30] =
+u8 spellReagents[0x30] =
 {
     0x80, 0x84, 0x60, 0x60, 0x50, 0x28, 0x88, 0xa0,
     0x88, 0x02, 0x11, 0x61, 0x81, 0x84, 0x94, 0x16,
@@ -832,14 +832,14 @@ u8 D_1cc0_spellReagents[0x30] =
     0x8a, 0x23, 0xf9, 0x39, 0x83, 0x89, 0x85, 0x29
 };
 
-u16 D_1cf0_raySlopes[0x15] =
+u16 raySlopes[0x15] =
 {
     0x000a, 0x000c, 0x000e, 0x0010, 0x0014, 0x0019, 0x0023, 0x0032,
     0x0050, 0x00be, 0x07d0, 0x00be, 0x0050, 0x0032, 0x0023, 0x0019,
     0x0014, 0x0010, 0x000e, 0x000c, 0x000a
 };
 
-u8 D_1d1a_cellPattern[0x100] =
+u8 cellPattern[0x100] =
 {
     0x00, 0x0c, 0x0b, 0x0a, 0x0d, 0x01, 0x09, 0x03,
     0x09, 0x02, 0x02, 0x08, 0x07, 0x06, 0x08, 0x08,
@@ -875,7 +875,7 @@ u8 D_1d1a_cellPattern[0x100] =
     0x06, 0x06, 0x05, 0x05, 0x05, 0x05, 0x07, 0x00
 };
 
-u8 D_1e1a_townMapOffset[0x20] =
+u8 townMapOffset[0x20] =
 {
     0x0, 0x2, 0x4, 0x7, 0x8, 0xA, 0xC, 0xE,
     0x0, 0x3, 0x6, 0x9, 0xC, 0xD, 0xE, 0xF,
@@ -883,7 +883,7 @@ u8 D_1e1a_townMapOffset[0x20] =
     0x0, 0x2, 0x4, 0x5, 0x6, 0x7, 0xA, 0xE
 };
 
-char* D_1e3a_mapNames[0x28] = {
+char* mapNames[0x28] = {
     /*0x0a3d*/ "MOONGLOW",
     /*0x0a46*/ "BRITAIN",
     /*0x0a4e*/ "JHELOM",
@@ -926,7 +926,7 @@ char* D_1e3a_mapNames[0x28] = {
     /*0x0b83*/ "DOOM"
 };
 
-u8 D_1e8a_placeX[0x28] =
+u8 placeX[0x28] =
 {
     0xE8, 0x51, 0x24, 0x3A, 0x9F, 0x6A, 0x16, 0xBB,
     0x58, 0x98, 0x68, 0xD8, 0x2D, 0xB0, 0xC9, 0x99,
@@ -935,7 +935,7 @@ u8 D_1e8a_placeX[0x28] =
     0xF0, 0x5B, 0x48, 0x7E, 0x9C, 0x3A, 0xEF, 0x80,
 };
 
-u8 D_1eb2_placeY[0x28] =
+u8 placeY[0x28] =
 {
     0x87, 0x6A, 0xDE, 0x2B, 0x14, 0xB8, 0x80, 0xA9,
     0x78, 0x18, 0xD8, 0x78, 0x3E, 0xD0, 0x3B, 0x5B,
@@ -944,7 +944,7 @@ u8 D_1eb2_placeY[0x28] =
     0x49, 0x43, 0xA8, 0x14, 0x1B, 0x66, 0xF0, 0x80
 };
 
-u8 D_1eda_moonPhases[28 * 2] =
+u8 moonPhases[28 * 2] =
 {
     0x30, 0x30, 0x31, 0x30, 0x31, 0x31,	0x32, 0x32,
     0x32, 0x33, 0x33, 0x34, 0x33, 0x35,	0x34, 0x36,
@@ -955,7 +955,7 @@ u8 D_1eda_moonPhases[28 * 2] =
     0x36, 0x35, 0x36, 0x36, 0x37, 0x37,	0x37, 0x30
 };
 
-u8 D_1f12_prisonCellOf[0x30] =
+u8 prisonCellOf[0x30] =
 {
     0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x04, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -965,11 +965,11 @@ u8 D_1f12_prisonCellOf[0x30] =
     0x04, 0x05, 0x03, 0x02, 0x01, 0x00, 0x00, 0x00
 };
 
-u8 D_1f42_prisonCellX[6] = {0x00, 0x01, 0x09, 0x0a, 0x03, 0x07};
+u8 prisonCellX[6] = {0x00, 0x01, 0x09, 0x0a, 0x03, 0x07};
 
-u8 D_1f48_prisonCellY[6] = {0x01, 0x01, 0x01, 0x01, 0x05, 0x05};
+u8 prisonCellY[6] = {0x01, 0x01, 0x01, 0x01, 0x05, 0x05};
 
-char* D_1f4e_virtueNames[8] =
+char* virtueNames[8] =
 {
     /*0x0b88*/ "Honesty",
     /*0x0b90*/ "Compassion",
@@ -981,7 +981,7 @@ char* D_1f4e_virtueNames[8] =
     /*0x0bc7*/ "Humility"
 };
 
-char* D_1f5e_mantras[8] =
+char* mantras[8] =
 {
     /*0x0bd0*/ "Ahm",
     /*0x0bd4*/ "Mu",
@@ -993,11 +993,11 @@ char* D_1f5e_mantras[8] =
     /*0x0bea*/ "Lum"
 };
 
-u8 D_1f6e_shrineX[8] = { 0xe9, 0x80, 0x24, 0x49, 0xcd, 0x51, 0x00, 0xe7 };
+u8 shrineX[8] = { 0xe9, 0x80, 0x24, 0x49, 0xcd, 0x51, 0x00, 0xe7 };
 
-u8 D_1f76_shrineY[8] = { 0x42, 0x5c, 0xe5, 0x0b, 0x2d, 0xcf, 0x00, 0xd8 };
+u8 shrineY[8] = { 0x42, 0x5c, 0xe5, 0x0b, 0x2d, 0xcf, 0x00, 0xd8 };
 
-PairS8 D_1f7e_beamCells[0x100] =
+PairS8 beamCells[0x100] =
 {
     0xff, 0xfe, 0xff, 0xfd, 0xfe, 0xfd, 0xfe, 0xfc,
     0xfe, 0xfb, 0xfe, 0xfa, 0xfe, 0xf9, 0xfd, 0xfb,
@@ -1069,13 +1069,13 @@ s16 D_217e_beaconX = -1;
 
 s16 D_2180_beaconY = -1;
 
-s16 D_2182_beacon2X = -1;
+s16 beacon2X = -1;
 
-s16 D_2184_beacon2Y = -1;
+s16 beacon2Y = -1;
 
-u8 D_2186_beaconStep = 0xff;
+u8 beaconStep = 0xff;
 
-s8 D_2188_missileShapes[0x32] =
+s8 missileShapes[0x32] =
 {
     0xff, 0xfe, 0xff, 0x05, 0x00, 0x00, 0x02, 0x00,
     0x00, 0xff, 0x02, 0xff, 0x01, 0xfe, 0x01, 0x01,
@@ -1086,13 +1086,13 @@ s8 D_2188_missileShapes[0x32] =
     0x04, 0x03
 };
 
-u8 D_21ba_sparkOffsets[0x10] =
+u8 sparkOffsets[0x10] =
 {
     0x00, 0x01, 0x03, 0x00, 0x02, 0x01, 0x02, 0x01,
     0x02, 0x04, 0x01, 0x05, 0x00, 0x03, 0x00, 0x00
 };
 
-char* D_21ca_shopNames[8][16] =
+char* shopNames[8][16] =
 {
     /*0x0bee*/ "Iolo's Bows",
     /*0x0bfa*/ "Naughty Nomaan's",
@@ -1224,7 +1224,7 @@ char* D_21ca_shopNames[8][16] =
     0
 };
 
-char* D_22ca_shopOwners[8][16] =
+char* shopOwners[8][16] =
 {
     /*0x0eea*/ "Gwenneth",
     /*0x0ef3*/ "Nomaan",
@@ -1356,7 +1356,7 @@ char* D_22ca_shopOwners[8][16] =
     0
 };
 
-u8 D_23ca_shopMapIds[8][16] =
+u8 shopMapIds[8][16] =
 {
     0x02, 0x03, 0x04, 0x05, 0x06, 0x11, 0x18, 0x1a,
     0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -1376,67 +1376,67 @@ u8 D_23ca_shopMapIds[8][16] =
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 };
 
-u8 D_244a_centreTiles[8] = {0x00, 0xc8, 0xc9, 0xc8, 0xdc, 0xd8, 0x00, 0x00};
+u8 centreTiles[8] = {0x00, 0xc8, 0xc9, 0xc8, 0xdc, 0xd8, 0x00, 0x00};
 
-u8 D_2452_roomPartyX[6] = {0x05, 0x06, 0x05, 0x04, 0x04, 0x06};
+u8 roomPartyX[6] = {0x05, 0x06, 0x05, 0x04, 0x04, 0x06};
 
-u8 D_2458_roomPartyY[6] = {0x04, 0x05, 0x06, 0x05, 0x04, 0x06};
+u8 roomPartyY[6] = {0x04, 0x05, 0x06, 0x05, 0x04, 0x06};
 
-u8 D_245e_partyLineA[6] = {0x05, 0x04, 0x06, 0x03, 0x05, 0x07};
+u8 partyLineA[6] = {0x05, 0x04, 0x06, 0x03, 0x05, 0x07};
 
-u8 D_2464_partyLineB[6] = {0x06, 0x07, 0x07, 0x08, 0x08, 0x08};
+u8 partyLineB[6] = {0x06, 0x07, 0x07, 0x08, 0x08, 0x08};
 
-u8 D_246a_partyLineC[6] = {0x04, 0x03, 0x03, 0x02, 0x02, 0x02};
+u8 partyLineC[6] = {0x04, 0x03, 0x03, 0x02, 0x02, 0x02};
 
-u8 D_2470_partyLineD[6] = {0x05, 0x04, 0x06, 0x03, 0x05, 0x07};
+u8 partyLineD[6] = {0x05, 0x04, 0x06, 0x03, 0x05, 0x07};
 
-u8 D_2476_monsterLineA[0x10] =
+u8 monsterLineA[0x10] =
 {
     0x05, 0x04, 0x06, 0x03, 0x07, 0x02, 0x08, 0x05,
     0x02, 0x08, 0x03, 0x07, 0x02, 0x04, 0x06, 0x08
 };
 
-u8 D_2486_monsterLineB[0x10] =
+u8 monsterLineB[0x10] =
 {
     0x08, 0x08, 0x08, 0x07, 0x07, 0x06, 0x06, 0x09,
     0x08, 0x08, 0x09, 0x09, 0x0a, 0x0a, 0x0a, 0x0a
 };
 
-u8 D_2496_monsterLineC[0x10] =
+u8 monsterLineC[0x10] =
 {
     0x02, 0x02, 0x02, 0x03, 0x03, 0x04, 0x04, 0x01,
     0x02, 0x02, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00
 };
 
-u8 D_24a6_monsterLineD[0x10] =
+u8 monsterLineD[0x10] =
 {
     0x05, 0x04, 0x06, 0x03, 0x07, 0x02, 0x08, 0x05,
     0x02, 0x08, 0x07, 0x03, 0x02, 0x04, 0x06, 0x08
 };
 
-u8 D_24b6_roomMonsterX[0x10] =
+u8 roomMonsterX[0x10] =
 {
     0x02, 0x02, 0x02, 0x03, 0x03, 0x03, 0x04, 0x05,
     0x05, 0x06, 0x07, 0x07, 0x07, 0x08, 0x08, 0x08
 };
 
-u8 D_24c6_roomMonsterY[0x10] =
+u8 roomMonsterY[0x10] =
 {
     0x04, 0x05, 0x07, 0x02, 0x03, 0x08, 0x08, 0x03,
     0x08, 0x03, 0x04, 0x07, 0x08, 0x03, 0x06, 0x07
 };
 
-s16 D_24d6_facingDx[4] = {0, 1, 0, -1};
+s16 facingDx[4] = {0, 1, 0, -1};
 
-s16 D_24de_facingDy[4] = {-1, 0, 1, 0};
+s16 facingDy[4] = {-1, 0, 1, 0};
 
-u8 D_24e6_viewDirty = 1;
+u8 viewDirty = 1;
 
-u8 D_24e7_stepToggle = 0;
+u8 stepToggle = 0;
 
 u16 D_24e8 = 0; // no code refers to it
 
-char* D_24ea_wordTable[0x80] =
+char* wordTable[0x80] =
 {
     /*0x103c*/ "the",
     /*0x1040*/ "thou",
@@ -1568,7 +1568,7 @@ char* D_24ea_wordTable[0x80] =
     /*0x1285*/ "work"
 };
 
-char* D_25ea_fileNames[30] =
+char* fileNames[30] =
 {
     /*0x128a*/ "PROPORT.PCS",
     /*0x1296*/ "BRITISH.BIT",
@@ -1614,24 +1614,24 @@ int cdecl main(int argc, char** argv/*, char** envp*/)
 
     if (argc > 1)
     {
-        local_4 = ULTIMA_2032_ToUpper((unsigned char)argv[1][0]);
+        local_4 = ToUpperChar((unsigned char)argv[1][0]);
     }
 
     // 0021
-    D_52ba_vdp.forceCga = local_4 == 'C';
-    D_52f3_forceHerc = local_4 == 'H';
-    D_52f1_forceTandy = local_4 == 'T';
-    D_52ef_forceEga = local_4 == 'E';
+    vdp.forceCga = local_4 == 'C';
+    forceHerc = local_4 == 'H';
+    forceTandy = local_4 == 'T';
+    forceEga = local_4 == 'E';
 
     // 0061
-    D_5394_diskSwapFn = ULTIMA_2322_DiskSwapMessage;
+    diskSwapFn = DiskSwapMessage;
 
-    D_a9bd_curDisk[0] = 0;
-    D_a9be_promptMode = 0;
-    D_a9c2_floppyCount = 1;
+    curDisk[0] = 0;
+    promptMode = 0;
+    floppyCount = 1;
 
-    if ((D_a9c8_diskDrives[0] = ULTIMA_16a6_GetDefaultDrive()) >= 'C')
-        local_6_an = D_a9c8_diskDrives[0];
+    if ((diskDrives[0] = GetDefaultDrive()) >= 'C')
+        local_6_an = diskDrives[0];
     else
         local_6_an = 0xff;
 
@@ -1641,11 +1641,11 @@ int cdecl main(int argc, char** argv/*, char** envp*/)
     D_a9c9 = local_6_an;
 
     D_a9cb = 0xff;
-    D_b11c_searchGrid = D_b21e_scratch;
-    D_538c_keyBufferOff = 1;
+    searchGrid = scratch;
+    keyBufferOff = 1;
 
     INTRO_0986_Main(); // 00ad
-    ULTIMA_2900_UpdateVitalsDisplay();
+    UpdateVitalsDisplay();
 
     local_8_al = 0;
 
@@ -1655,50 +1655,50 @@ int cdecl main(int argc, char** argv/*, char** envp*/)
     {
         local_2 = 0;
 
-        if (D_5893_mapId == 0)
+        if (mapId == 0)
         {
-            MAINOUT_0d22_Entry();
+            MainoutEntry();
             local_2 = 1;
             local_8_al = 0;
         }
         
         // 00d1
-        if (D_5893_mapId != 0)
+        if (mapId != 0)
         {
             // 00db
-            if (D_5893_mapId < 0x21)
+            if (mapId < 0x21)
             {
-                TOWN_11f0_Entry(local_2 != 0 || local_8_al != 0);
-                TOWN_141e_MainLoop();
+                TownEntry(local_2 != 0 || local_8_al != 0);
+                TownMainLoop();
                 local_8_al = 0;
             }
             else
             {
                 // 0104
-                ULTIMA_251e_SwitchDisks(2);
-                DUNGEON_0e2e_MainLoop(local_2);
+                SwitchDisks(2);
+                DungeonMainLoop(local_2);
                 local_8_al = 1;
             }
 
             // 0116
             local_2 = 0;
-            ULTIMA_251e_SwitchDisks(1);
+            SwitchDisks(1);
 
             // 0122
-            while (!ULTIMA_1674_TestOpenFile(/*0x1393*/ "BRIT.DAT")) {}
-            ULTIMA_256e_ReadFileFromDisk(OUTSUBS_0368_GetWorldSavefile(), D_5c5a_actors, 0x100, 0);
+            while (!TestOpenFile(/*0x1393*/ "BRIT.DAT")) {}
+            ReadFileFromDisk(GetWorldSavefile(), actors, 0x100, 0);
 
-            if (D_5893_mapId == 0 && D_5895_mapLevel != 0)
+            if (mapId == 0 && D_5895_mapLevel != 0)
             {
-                ULTIMA_251e_SwitchDisks(5);
+                SwitchDisks(5);
 
                 // 0154
-                while (!ULTIMA_1674_TestOpenFile(/*0x139c*/ "UNDER.DAT")) {}
-                ULTIMA_25d8_WriteFileToDisk(OUTSUBS_0368_GetWorldSavefile(), D_5c5a_actors, 0x100);
+                while (!TestOpenFile(/*0x139c*/ "UNDER.DAT")) {}
+                WriteFileToDisk(GetWorldSavefile(), actors, 0x100);
             }
         }
         // 016e
     } while (local_2 == 0);
 
-    ULTIMA_0878_RestoreVideoMode();
+    RestoreVideoMode();
 }

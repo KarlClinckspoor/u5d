@@ -16,43 +16,43 @@ u8 D_bd15_savedMapId;
 
 // The show of a spell going off: a burst of noise, a flash of the map area (inverted twice), two rising and falling
 // tones. The level (the circle of the spell, 1-8) sets the pitch; 0 is the light scroll's, 9 and over a single tone.
-void CAST2_0000_CastEffect(int level)
+void CastEffect(int level)
 {
     if (level < 9)
     {
-        ULTIMA_223c_AudioWhiteNoise(800, level * 0x640 + 8000, 700);
-        ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
-        ULTIMA_0b86_GRAP_XorFillRect(8, 8, 0xb7, 0xb7);
-        ULTIMA_2192_AudioPulse(D_4af6_castFreq[level], 1, level * 4000 + 10000, D_4b08_castParam4Up[level], D_4b2c_castStep[level]);
-        ULTIMA_2192_AudioPulse(D_4af6_castFreq[level], 1, level * 4000 + 10000, D_4b1a_castParam4Down[level], -D_4b2c_castStep[level]);
-        ULTIMA_0b86_GRAP_XorFillRect(8, 8, 0xb7, 0xb7);
+        AudioWhiteNoise(800, level * 0x640 + 8000, 700);
+        GRAP_2d_SetPenColor(brightWhiteColor);
+        GRAP_XorFillRect(8, 8, 0xb7, 0xb7);
+        AudioPulse(castFreq[level], 1, level * 4000 + 10000, castParam4Up[level], castStep[level]);
+        AudioPulse(castFreq[level], 1, level * 4000 + 10000, castParam4Down[level], -castStep[level]);
+        GRAP_XorFillRect(8, 8, 0xb7, 0xb7);
     }
     else
     {
-        ULTIMA_2192_AudioPulse(0x1180, 1, 65000, 300, 1);
+        AudioPulse(0x1180, 1, 65000, 300, 1);
     }
 }
 
 // Asks "On who:" and prints the party member chosen; returns the member, or -1 for none.
-int CAST2_009e_OnWho(void)
+int OnWho(void)
 {
     int member;
 
-    ULTIMA_1850_PrintString(/*0x94f4*/ "On who: ");
+    PrintString(/*0x94f4*/ "On who: ");
 
-    member = ULTIMA_2e8e_SelectPlayer();
+    member = SelectPlayer();
     if (member < 0)
     {
-        ULTIMA_1850_PrintString(/*0x94fe*/ "None!");
+        PrintString(/*0x94fe*/ "None!");
     }
     else
     {
-        ULTIMA_1850_PrintString(D_55a8_party[member].name);
+        PrintString(party[member].name);
     }
 
-    if (ULTIMA_1f12_GetCurrentTextX() != 0)
+    if (GetCurrentTextX() != 0)
     {
-        ULTIMA_16ba_PrintChar('\n');
+        PrintChar('\n');
     }
 
     return member;
@@ -60,8 +60,8 @@ int CAST2_009e_OnWho(void)
 
 // CHECKED
 // Reads a spell name as syllable keys (a letter prints its syllable, J and O are ignored, Backspace takes one back, Esc cancels).
-// The letters are sorted and compared with the 48 spell codes (D_1c30_spellCodes). Returns the spell, -1 for no entry, -2 for no such spell.
-int CAST2_00de_SelectSpell(void)
+// The letters are sorted and compared with the 48 spell codes (spellCodes). Returns the spell, -1 for no entry, -2 for no such spell.
+int SelectSpell(void)
 {
     int nameLength;
     int matches_n;
@@ -81,21 +81,21 @@ int CAST2_00de_SelectSpell(void)
 
     while (done_l == 0)
     {
-        letter_d = ULTIMA_2032_ToUpper(ULTIMA_266c_GetChar());
+        letter_d = ToUpperChar(GetChar());
         if (letter_d == 0x4a || letter_d == 0x4f)
         {}
         else if (letter_d >= 0x41 && letter_d <= 0x5a && count_i < 4)
         {
             letters[count_i] = letter_d;
 
-            if (ULTIMA_1f12_GetCurrentTextX() + ULTIMA_216c_strlen(D_1bfc_mantraWords[letter_d - 'A']) > 0xd)
+            if (GetCurrentTextX() + StringLength(mantraWords[letter_d - 'A']) > 0xd)
             {
-                ULTIMA_16ba_PrintChar('\n');
+                PrintChar('\n');
             }
 
-            columns[count_i] = ULTIMA_1f12_GetCurrentTextX();
-            ULTIMA_1850_PrintString(D_1bfc_mantraWords[letter_d - 'A']);
-            ULTIMA_16ba_PrintChar(' ');
+            columns[count_i] = GetCurrentTextX();
+            PrintString(mantraWords[letter_d - 'A']);
+            PrintChar(' ');
             count_i++;
         }
         else
@@ -107,25 +107,25 @@ int CAST2_00de_SelectSpell(void)
                 if (count_i != 0) // di
                 {
                     count_i--;
-                    if (ULTIMA_1f12_GetCurrentTextX() == 0)
+                    if (GetCurrentTextX() == 0)
                     {
                         // NOTE: FMT
-                        //ULTIMA_16ba_PrintChar(' ');
-                        ULTIMA_1bf2_SetTextPosition(columns[count_i], ULTIMA_1cee_GetCurrentTextY() - 1);
+                        //PrintChar(' ');
+                        SetTextPosition(columns[count_i], GetCurrentTextY() - 1);
                     }
                     else
                     {
-                        ULTIMA_1bf2_SetTextPosition(columns[count_i], ULTIMA_1cee_GetCurrentTextY());
+                        SetTextPosition(columns[count_i], GetCurrentTextY());
                     }
 
-                    nameLength = ULTIMA_216c_strlen(D_1bfc_mantraWords[letters[count_i] - 'A']);
+                    nameLength = StringLength(mantraWords[letters[count_i] - 'A']);
 
                     for (index_l = 0; index_l < nameLength; index_l++)
                     {
-                        ULTIMA_16ba_PrintChar(' ');
+                        PrintChar(' ');
                     }
 
-                    ULTIMA_1bf2_SetTextPosition(columns[count_i], ULTIMA_1cee_GetCurrentTextY());
+                    SetTextPosition(columns[count_i], GetCurrentTextY());
                 }
                 break;
 
@@ -172,7 +172,7 @@ int CAST2_00de_SelectSpell(void)
 
         for (letterPos = codePos_g = 0; letterPos < count_i; letterPos++, codePos_g++)
         {
-            if (D_1c30_spellCodes[index_l][codePos_g] != letters[letterPos])
+            if (spellCodes[index_l][codePos_g] != letters[letterPos])
             {
                 matches_n = 0;
                 break;
@@ -185,7 +185,7 @@ int CAST2_00de_SelectSpell(void)
         }
 
         // e460
-        if (matches_n != 0 && D_1c30_spellCodes[index_l][codePos_g] != '\0')
+        if (matches_n != 0 && spellCodes[index_l][codePos_g] != '\0')
         {
             matches_n = 0;
         }
@@ -205,7 +205,7 @@ int CAST2_00de_SelectSpell(void)
     }
     else
     {
-        ULTIMA_16ba_PrintChar('\n');
+        PrintChar('\n');
         if (spell < 0)
         {
             spell = -2;
@@ -217,51 +217,51 @@ int CAST2_00de_SelectSpell(void)
 }
 
 // "Direction-": reads an arrow key (Space passes). Leaves the cell beside the party (in combat, beside the active combatant)
-// in D_5876_tempX and D_5878_tempY. Returns the key, 0 for Pass.
-int CAST2_0306_AskDirection(void)
+// in tempX and tempY. Returns the key, 0 for Pass.
+int AskDirection(void)
 {
     int key;
     bool chosen;
 
-    if (D_5893_mapId > 0x7f)
+    if (mapId > 0x7f)
     {
-        D_5876_tempX = D_ba14_combatants[D_589e_curCombatant].x;
-        D_5878_tempY = D_ba14_combatants[D_589e_curCombatant].y;
+        tempX = combatants[curCombatant].x;
+        tempY = combatants[curCombatant].y;
     }
     else
     {
-        D_5876_tempX = D_5896_mapX;
-        D_5878_tempY = D_5897_mapY;
+        tempX = D_5896_mapX;
+        tempY = D_5897_mapY;
     }
 
     // 033e
-    ULTIMA_1850_PrintString(/*0x9504*/ "Direction-");
+    PrintString(/*0x9504*/ "Direction-");
     chosen = 0;
 
     do
     {
-        key = ULTIMA_266c_GetChar();
+        key = GetChar();
         chosen = 1;
         switch (key)
         {
         case U5_KEY_UP:
-            ULTIMA_1850_PrintString(/*0x9510*/ "North\n");
-            D_5878_tempY--;
+            PrintString(/*0x9510*/ "North\n");
+            tempY--;
             break;
         case U5_KEY_RIGHT:
-            ULTIMA_1850_PrintString(/*0x9518*/ "East\n");
-            D_5876_tempX++;
+            PrintString(/*0x9518*/ "East\n");
+            tempX++;
             break;
         case U5_KEY_DOWN:
-            ULTIMA_1850_PrintString(/*0x951e*/ "South\n");
-            D_5878_tempY++;
+            PrintString(/*0x951e*/ "South\n");
+            tempY++;
             break;
         case U5_KEY_LEFT:
-            ULTIMA_1850_PrintString(/*0x9526*/ "West\n");
-            D_5876_tempX--;
+            PrintString(/*0x9526*/ "West\n");
+            tempX--;
             break;
         case U5_KEY_SPACE:
-            ULTIMA_1850_PrintString(/*0x952c*/ "Pass\n");
+            PrintString(/*0x952c*/ "Pass\n");
             key = 0;
             break;
         default:
@@ -274,95 +274,95 @@ int CAST2_0306_AskDirection(void)
 }
 
 // Heals a party member by 1 to 30 hit points, up to the maximum. 0 when the member is dead.
-int CAST2_03c2_HealMember(int member)
+int HealMember(int member)
 {
     int healed;
 
-    if (D_55a8_party[member].status == STATUS_DEAD)
+    if (party[member].status == STATUS_DEAD)
     {
         healed = 0;
     }
     else
     {
-        ULTIMA_3f14_IncreaseInt(&D_55a8_party[member].hp, ULTIMA_3abe_Random1To30(), D_55a8_party[member].maxHp);
+        IncreaseInt(&party[member].hp, Random1To30(), party[member].maxHp);
 
         healed = 1;
-        D_a9fa_vitalsDirty = 1;
+        vitalsDirty = 1;
     }
 
     return healed;
 }
 
 // Rel Hur and the wind scroll: sets the wind to a direction (0: none) after the effect.
-void CAST2_040a_ChangeWindDirection(int direction, int fromScroll)
+void ChangeWindDirection(int direction, int fromScroll)
 {
     if (direction != 0 || fromScroll != 0)
     {
         if (fromScroll != 0)
         {
-            CAST2_0000_CastEffect(1);
+            CastEffect(1);
         }
         else
         {
-            CAST2_0000_CastEffect(2);
+            CastEffect(2);
         }
 
         switch (direction)
         {
         case DIR_UP:
             // 0448
-            ULTIMA_2e96_SetWindDirection(1);
+            SetWindDirection(1);
             break;
 
         case DIR_DOWN:
             // 0452
-            ULTIMA_2e96_SetWindDirection(2);
+            SetWindDirection(2);
             break;
 
         case DIR_RIGHT:
             // 0458
-            ULTIMA_2e96_SetWindDirection(3);
+            SetWindDirection(3);
             break;
 
         case DIR_LEFT:
             // 045e
-            ULTIMA_2e96_SetWindDirection(4);
+            SetWindDirection(4);
             break;
 
         case 0:
             // 0464
-            ULTIMA_2e96_SetWindDirection(0);
+            SetWindDirection(0);
             break;
         }
     }
 }
 
 // Wis An Ylem ("AWY"): shows the map with its walls seen through for 20 frames, the actors still moving (unless time is stopped).
-void CAST2_046c_WisAnYlem(void)
+void WisAnYlem(void)
 {
     int frame;
 
-    ULTIMA_5d0a_BuildView(-1, D_5896_mapX - D_589b_mapOriginX, D_5897_mapY - D_589c_mapOriginY, 0x20);
+    BuildView(-1, D_5896_mapX - mapOriginX, D_5897_mapY - mapOriginY, 0x20);
 
     for (frame = 0; frame < 0x14; frame++)
     {
-        if (D_587a_statusIcon != 'T')
+        if (statusIcon != 'T')
         {
-            ULTIMA_4552_AnimateActors();
+            AnimateActors();
         }
 
-        ULTIMA_5394_PutActorsInView();
-        ULTIMA_56ac_DrawMap();
-        ULTIMA_20fa_WaitTicks(1);
+        PutActorsInView();
+        DrawMap();
+        WaitTicks(1);
     }
 
-    ULTIMA_5910_UpdateFrame();
+    UpdateFrame();
 }
 
 // CHECKED (code structure)
 // Kal Xen Corp ("CKX") and the scroll: tries up to 8 random cells for one a daemon (0x26) can stand on and gates it in,
 // charmed; from the spell the caster's intelligence may fail ("Oops...", -1: the daemon is hostile). Returns 1, 0 or -1.
-int CAST2_04c2_KalXenCorp(int fromScroll)
+int KalXenCorp(int fromScroll)
 {
     int result_i;
     int tries;
@@ -373,47 +373,47 @@ int CAST2_04c2_KalXenCorp(int fromScroll)
 
     if (fromScroll != 0)
     {
-        CAST2_0000_CastEffect(5);
+        CastEffect(5);
     }
     else
     {
-        CAST2_0000_CastEffect(8);
+        CastEffect(8);
     }
 
     // 04e1
     tries = 0;
     while (tries < 8)
     {
-        if (COMBAT_120e_RandomCell() == 0 || COMBAT_0000_IsCellFree(TILE_ACTOR_D8, D_5876_tempX, D_5878_tempY) == 0 || *ULTIMA_4402_GetTileAddr(D_5876_tempX, D_5878_tempY) == 0xff)
+        if (RandomCell() == 0 || IsCellFree(TILE_ACTOR_D8, tempX, tempY) == 0 || *GetTileAddr(tempX, tempY) == 0xff)
         {
             tries++;
             continue;
         }
 
         // 0524
-        daemon = ULTIMA_6506_PlaceCombatant(0x26, 0, D_5876_tempX, D_5878_tempY, D_5895_mapLevel);
+        daemon = PlaceCombatant(0x26, 0, tempX, tempY, D_5895_mapLevel);
         if (daemon < 0)
         {
             break;
         }
 
         // 054c
-        ULTIMA_2192_AudioPulse(0xac8, 1, 12000, 500, 5);
-        daemonActor_g = &D_5c5a_actors[D_ba14_combatants[daemon].actorIdx];
+        AudioPulse(0xac8, 1, 12000, 500, 5);
+        daemonActor_g = &actors[combatants[daemon].actorIdx];
         daemonActor_g->tile = daemonActor_g->animTile = TILE_ACTOR_CIRCLE;
-        ULTIMA_1068_RevealTile(0x1d8, D_5876_tempX, D_5878_tempY);
+        ULTIMA_1068_RevealTile(0x1d8, tempX, tempY);
         daemonActor_g->tile = daemonActor_g->animTile = TILE_ACTOR_D8;
 
-        if (fromScroll == 0 && ULTIMA_3abe_Random1To30() >= COMBAT_13e2_QueryStat(D_589e_curCombatant, QUERY_STAT_INTEL))
+        if (fromScroll == 0 && Random1To30() >= QueryStat(curCombatant, QUERY_STAT_INTEL))
         {
             // 05b2
-            ULTIMA_1850_PrintString(/*0x9532*/ "Oops...\n");
+            PrintString(/*0x9532*/ "Oops...\n");
             result_i = -1;
         }
         else
         {
             // 05c0
-            D_ba14_combatants[daemon].flags |= COMBAT_FLAGS_CHARMED;
+            combatants[daemon].flags |= COMBAT_FLAGS_CHARMED;
             result_i = 1;
         }
 
@@ -428,7 +428,7 @@ int CAST2_04c2_KalXenCorp(int fromScroll)
 // Resurrects a dead party member (In Mani Corp, the scroll, the healer): good with 1 hit point, magic restored by class,
 // experience cut by the karma below 98, level and maximum hit points recomputed. Returns 1, 0 when not dead (told unless
 // mode is 0xff), -1 for no member. mode: 0 spell, 1 scroll, 0xff the healer (no show).
-int CAST2_05e0_Resurrect(int memberIdx, int mode)
+int Resurrect(int memberIdx, int mode)
 {
     int expLeft;
     short newLevel_g;
@@ -440,11 +440,11 @@ int CAST2_05e0_Resurrect(int memberIdx, int mode)
     {
         result_k = -1;
     }
-    else if (D_55a8_party[memberIdx].status != STATUS_DEAD)
+    else if (party[memberIdx].status != STATUS_DEAD)
     {
         if (mode != 0)
         {
-            ULTIMA_1850_PrintString(/*0x953c*/ "Not dead!\n");
+            PrintString(/*0x953c*/ "Not dead!\n");
         }
 
         result_k = 0;
@@ -452,7 +452,7 @@ int CAST2_05e0_Resurrect(int memberIdx, int mode)
     else
     {
         // 061a
-        member = &D_55a8_party[memberIdx];
+        member = &party[memberIdx];
 
         member->status = STATUS_GOOD;
         member->hp = 1;
@@ -469,10 +469,10 @@ int CAST2_05e0_Resurrect(int memberIdx, int mode)
             break;
         }
 
-        if (D_5888_karma < 0x62)
+        if (karma < 0x62)
         {
             // NOT MATCHING (pointer)
-            member->exp = member->exp * (s32)D_5888_karma / 100;
+            member->exp = member->exp * (s32)karma / 100;
         }
 
         newLevel_g = 1;
@@ -486,51 +486,51 @@ int CAST2_05e0_Resurrect(int memberIdx, int mode)
 
         if (mode == 1)
         {
-            CAST2_0000_CastEffect(6);
+            CastEffect(6);
         }
         else if (mode == 0)
         {
-            CAST2_0000_CastEffect(8);
+            CastEffect(8);
         }
 
         result_k = 1;
-        D_a9fa_vitalsDirty = 1;
+        vitalsDirty = 1;
     }
 
     return result_k;
 }
 
 // In Wis ("IW"): prints the position as letters in the runic charset, y then x, each a pair 'A' plus a hex digit.
-void CAST2_06ec_PrintPosition(void)
+void PrintPosition(void)
 {
-    ULTIMA_1c9e_SelectCharset(1);
-    ULTIMA_16ba_PrintChar('\n');
-    ULTIMA_16ba_PrintChar(((D_5897_mapY & 0xf0) >> 4) + 0x41);
-    ULTIMA_16ba_PrintChar('\'');
-    ULTIMA_16ba_PrintChar((D_5897_mapY & 0xf) + 0x41);
-    ULTIMA_1850_PrintString(/*0x9548*/ "\", ");
-    ULTIMA_16ba_PrintChar(((D_5896_mapX & 0xf0) >> 4) + 0x41);
-    ULTIMA_16ba_PrintChar('\'');
-    ULTIMA_16ba_PrintChar((D_5896_mapX & 0xf) + 0x41);
-    ULTIMA_16ba_PrintChar('\"');
-    ULTIMA_1c9e_SelectCharset(0);
-    ULTIMA_16ba_PrintChar('\n');
+    SelectCharset(1);
+    PrintChar('\n');
+    PrintChar(((D_5897_mapY & 0xf0) >> 4) + 0x41);
+    PrintChar('\'');
+    PrintChar((D_5897_mapY & 0xf) + 0x41);
+    PrintString(/*0x9548*/ "\", ");
+    PrintChar(((D_5896_mapX & 0xf0) >> 4) + 0x41);
+    PrintChar('\'');
+    PrintChar((D_5896_mapX & 0xf) + 0x41);
+    PrintChar('\"');
+    SelectCharset(0);
+    PrintChar('\n');
 }
 
 // CHECKED (07b2 block)
 // In Ex Por ("EIP") and the Skull Key: in the chosen direction a door locked by magic (tile 97 or 98, An Ex Por) opens; -1 when
 // no direction was given, else 1 or 0.
-int CAST2_0768_InExPor(void)
+int InExPor(void)
 {
     int result;
     byte* tilePtr_k;
 
-    if (CAST2_0306_AskDirection() == 0)
+    if (AskDirection() == 0)
     {
         return -1;
     }
 
-    tilePtr_k = ULTIMA_4402_GetTileAddr(D_5876_tempX, D_5878_tempY);
+    tilePtr_k = GetTileAddr(tempX, tempY);
     result = 0;
 
     switch (*tilePtr_k)
@@ -538,14 +538,14 @@ int CAST2_0768_InExPor(void)
     case TILE_MAP_97:
         // 07a0
         *tilePtr_k = TILE_MAP_DOOR_B8;
-        D_24e6_viewDirty |= 2;
+        viewDirty |= 2;
         result = 1;
         break;
 
     case TILE_MAP_98:
         // 07b2
         *tilePtr_k = TILE_MAP_DOOR_BA;
-        D_24e6_viewDirty |= 2;
+        viewDirty |= 2;
         result = 1;
         break;
     }
@@ -556,7 +556,7 @@ int CAST2_0768_InExPor(void)
 // CHECKED (085d nop)
 // An Grav ("AG"): destroys a field. In a dungeon the field underfoot or the one ahead; elsewhere the field actor (E8-EB) in the
 // chosen direction. Returns -1 or 1 when it did, else 0. withEffect plays the cast effect first.
-int CAST2_07bc_AnGrav(int withEffect)
+int AnGrav(int withEffect)
 {
     int actorIdx_h;
     byte* cellPtr;
@@ -564,15 +564,15 @@ int CAST2_07bc_AnGrav(int withEffect)
     int dx;
     int dy;
 
-    if (D_5893_mapId < 0x80)
+    if (mapId < 0x80)
     {
         if (withEffect != 0)
         {
-            CAST2_0000_CastEffect(4);
+            CastEffect(4);
         }
 
-        dx = D_24d6_facingDx[D_6603_dungeonFacing];
-        dy = D_24de_facingDy[D_6603_dungeonFacing];
+        dx = facingDx[dungeonFacing];
+        dy = facingDy[dungeonFacing];
 
         cellPtr = &GetDungeonMap(D_5896_mapX, D_5897_mapY, D_5895_mapLevel);
         if ((*cellPtr & 0xf0) != 0x80)
@@ -583,7 +583,7 @@ int CAST2_07bc_AnGrav(int withEffect)
         if ((*cellPtr & 0xf0) == 0x80)
         {
             *cellPtr &= 8;
-            ULTIMA_1850_PrintString(/*0x954c*/ "Field destroyed!\n");
+            PrintString(/*0x954c*/ "Field destroyed!\n");
             result_i = -1;
             // NOT MATCHING: 085d: nop (not aligned?)
         }
@@ -595,24 +595,24 @@ int CAST2_07bc_AnGrav(int withEffect)
     else
     {
         // 0866
-        if (CAST2_0306_AskDirection() == 0)
+        if (AskDirection() == 0)
         {
             return -1;
         }
         
         if (withEffect != 0)
         {
-            CAST2_0000_CastEffect(4);
+            CastEffect(4);
         }
 
         result_i = 0;
         for (actorIdx_h = 0; actorIdx_h < 0x20; actorIdx_h++)
         {
-            if ((D_5c5a_actors[actorIdx_h].tile & 0xfc) == TILE_ACTOR_E8 && D_5876_tempX == D_5c5a_actors[actorIdx_h].x &&
-                D_5878_tempY == D_5c5a_actors[actorIdx_h].y)
+            if ((actors[actorIdx_h].tile & 0xfc) == TILE_ACTOR_E8 && tempX == actors[actorIdx_h].x &&
+                tempY == actors[actorIdx_h].y)
             {
                 result_i = 1;
-                ULTIMA_3a74_SetActor(0, 0, 0, 0, 0, 0, actorIdx_h);
+                SetActor(0, 0, 0, 0, 0, 0, actorIdx_h);
                 break;
             }
         }
@@ -622,19 +622,19 @@ int CAST2_07bc_AnGrav(int withEffect)
 }
 
 // Sets the turns of light left (D_58a6).
-void CAST2_08ea_SetLightTurns(int param_1) { D_58a6_lightSpellTurns = param_1; }
+void SetLightTurns(int param_1) { lightSpellTurns = param_1; }
 
 // Sets the party's spell status (icon letter and turns left: P protection, Q quickness, C confusion?, N negate magic,
 // T negate time; 0x0e, 0x1c and 0x1d for the amulet, crown and badge), plays the effect and
 // redraws the party display.
-void CAST2_08f8_SetSpellStatus(int icon, int turns, int level)
+void SetSpellStatus(int icon, int turns, int level)
 {
-    D_587a_statusIcon = icon;
-    D_588e_protectTurns = turns;
+    statusIcon = icon;
+    protectTurns = turns;
 
-    CAST2_0000_CastEffect(level);
+    CastEffect(level);
 
-    ULTIMA_2900_UpdateVitalsDisplay();
+    UpdateVitalsDisplay();
 }
 
 //
@@ -643,31 +643,31 @@ void CAST2_08f8_SetSpellStatus(int icon, int turns, int level)
 
 // Puts count markers (potion tiles) on the Codex map for the party members who are gone (probably their urns), at the
 // positions in the tables D_4b9e and D_4bc2 from the index D_4b96 gives.
-static void CAST2_0914_PlaceUrns(int count)
+static void PlaceUrns(int count)
 {
     int index;
     int position;
 
-    position = D_4b96_urnFirst[count - 1];
+    position = urnFirst[count - 1];
     if (count > 0)
     {
         for (index = 0; index != count; index++)
         {
-            ULTIMA_3a74_SetActor(TILE_ACTOR_POTION, TILE_ACTOR_POTION, D_4b9e_urnX[position], D_4bc2_urnY[position], D_5895_mapLevel, 0, index + 1);
+            SetActor(TILE_ACTOR_POTION, TILE_ACTOR_POTION, urnX[position], urnY[position], D_5895_mapLevel, 0, index + 1);
             position++;
         }
     }
 }
 
-u16 D_4af6_castFreq[9] = {0x226a, 0x1e96, 0x1b94, 0x1996, 0x173e, 0x15c2, 0x143c, 0x12d4, 0x1180};
+u16 castFreq[9] = {0x226a, 0x1e96, 0x1b94, 0x1996, 0x173e, 0x15c2, 0x143c, 0x12d4, 0x1180};
 
-u16 D_4b08_castParam4Up[9] = {0x0a8c, 0x0bb8, 0x03e8, 0x0064, 0x1388, 0x0fa0, 0x09c4, 0x03e8, 0x0001};
+u16 castParam4Up[9] = {0x0a8c, 0x0bb8, 0x03e8, 0x0064, 0x1388, 0x0fa0, 0x09c4, 0x03e8, 0x0001};
 
-u16 D_4b1a_castParam4Down[9] = {0x7fbc, 0x7918, 0x9088, 0xafc8, 0x7918, 0x84d0, 0x8e94, 0x9858, 0xa410};
+u16 castParam4Down[9] = {0x7fbc, 0x7918, 0x9088, 0xafc8, 0x7918, 0x84d0, 0x8e94, 0x9858, 0xa410};
 
-u16 D_4b2c_castStep[9] = {0x0003, 0x0002, 0x0002, 0x0002, 0x0001, 0x0001, 0x0001, 0x0001, 0x0001};
+u16 castStep[9] = {0x0003, 0x0002, 0x0002, 0x0002, 0x0001, 0x0001, 0x0001, 0x0001, 0x0001};
 
-char* D_4b3e_virtueKeywords[8] =
+char* virtueKeywords[8] =
 {
     /*0x955e*/ "hone",
     /*0x9564*/ "comp",
@@ -682,19 +682,19 @@ char* D_4b3e_virtueKeywords[8] =
 // DS:4b4e, referenced by no code
 u16 D_4b4e_unused[8] = {0x0003, 0x0002, 0x0002, 0x0003, 0x0003, 0x0004, 0x0002, 0x0003};
 
-u16 D_4b5e_questTextPos[8] = {0x0000, 0x001b, 0x0039, 0x005f, 0x007b, 0x009f, 0x00b9, 0x00d6};
+u16 questTextPos[8] = {0x0000, 0x001b, 0x0039, 0x005f, 0x007b, 0x009f, 0x00b9, 0x00d6};
 
-u16 D_4b6e_codexTextPos[8] = {0x0100, 0x014e, 0x0189, 0x01d4, 0x022b, 0x027f, 0x02c0, 0x0310};
+u16 codexTextPos[8] = {0x0100, 0x014e, 0x0189, 0x01d4, 0x022b, 0x027f, 0x02c0, 0x0310};
 
-u8 D_4b7e_strengthGain[8] = {0x00, 0x00, 0x01, 0x00, 0x01, 0x01, 0x01, 0x00};
+u8 strengthGain[8] = {0x00, 0x00, 0x01, 0x00, 0x01, 0x01, 0x01, 0x00};
 
-u8 D_4b86_dexterityGain[8] = {0x00, 0x01, 0x00, 0x01, 0x01, 0x00, 0x01, 0x00};
+u8 dexterityGain[8] = {0x00, 0x01, 0x00, 0x01, 0x01, 0x00, 0x01, 0x00};
 
-u8 D_4b8e_intelligenceGain[8] = {0x01, 0x00, 0x00, 0x01, 0x00, 0x01, 0x01, 0x00};
+u8 intelligenceGain[8] = {0x01, 0x00, 0x00, 0x01, 0x00, 0x01, 0x01, 0x00};
 
-u8 D_4b96_urnFirst[8] = {0x00, 0x01, 0x03, 0x06, 0x0a, 0x0f, 0x15, 0x1c};
+u8 urnFirst[8] = {0x00, 0x01, 0x03, 0x06, 0x0a, 0x0f, 0x15, 0x1c};
 
-u8 D_4b9e_urnX[0x24] =
+u8 urnX[0x24] =
 {
     0x05, 0x04, 0x06, 0x04, 0x05, 0x06, 0x03, 0x04,
     0x06, 0x07, 0x03, 0x04, 0x05, 0x06, 0x07, 0x01,
@@ -703,7 +703,7 @@ u8 D_4b9e_urnX[0x24] =
     0x09, 0x09, 0x09, 0x09
 };
 
-u8 D_4bc2_urnY[0x24] =
+u8 urnY[0x24] =
 {
     0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
     0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x02,
@@ -712,20 +712,20 @@ u8 D_4bc2_urnY[0x24] =
     0x02, 0x03, 0x04, 0x05
 };
 
-u16 D_4be6_shrineFreq[7] = {0x0ce4, 0x0f55, 0x0f55, 0x0f55, 0x0f55, 0x0e74, 0x0f55};
+u16 shrineFreq[7] = {0x0ce4, 0x0f55, 0x0f55, 0x0f55, 0x0f55, 0x0e74, 0x0f55};
 
-u16 D_4bf4_shrineParam3[7] = {0x1b58, 0x1770, 0x0bb8, 0x0bb8, 0x0bb8, 0x0bb8, 0x1f40};
+u16 shrineParam3[7] = {0x1b58, 0x1770, 0x0bb8, 0x0bb8, 0x0bb8, 0x0bb8, 0x1f40};
 
-u16 D_4c02_shrineParam4[7] = {0x03e8, 0x03e8, 0x03e8, 0x03e8, 0x03e8, 0x03e8, 0x01f4};
+u16 shrineParam4[7] = {0x03e8, 0x03e8, 0x03e8, 0x03e8, 0x03e8, 0x03e8, 0x01f4};
 
-u16 D_4c10_shrineParam5[7] = {0x0009, 0x000a, 0x0015, 0x0015, 0x0015, 0x0015, 0x0008};
+u16 shrineParam5[7] = {0x0009, 0x000a, 0x0015, 0x0015, 0x0015, 0x0015, 0x0008};
 
 // CHECKED (code structure)
-// The shrine of a virtue: the party kneels, the altar asks for the virtue (D_4b3e_virtueKeywords) and three mantras (D_1f5e_mantras).
+// The shrine of a virtue: the party kneels, the altar asks for the virtue (virtueKeywords) and three mantras (mantras).
 // Wrong answers: "Thine thoughts are unfocused". Right ones: with no quest yet a quest is ordained (to be answered at the
 // Codex); with the quest done at the Codex, the reward (karma, a point of strength, dexterity or intelligence by the
 // virtue); after that the altar takes an offer of gold in hundredweights for karma.
-static void CAST2_0966_ShrineOfVirtue(void)
+static void ShrineOfVirtue(void)
 {
     bool paid_b;
     int step_e;
@@ -738,7 +738,7 @@ static void CAST2_0966_ShrineOfVirtue(void)
     for (virtue_c = 0; virtue_c < 8; virtue_c++) // 0a2e -> 0a37 -> 0982, 0994
     {
         // 0982
-        if (D_5896_mapX == D_1f6e_shrineX[virtue_c] && D_5897_mapY == D_1f76_shrineY[virtue_c])
+        if (D_5896_mapX == shrineX[virtue_c] && D_5897_mapY == shrineY[virtue_c])
             break; // -> 0a2e ??
     }
 
@@ -749,15 +749,15 @@ static void CAST2_0966_ShrineOfVirtue(void)
     }
 
     // 09a1
-    D_5c5a_actors[0].tile = D_5c5a_actors[0].animTile = TILE_ACTOR_BEGGAR;
-    ULTIMA_5910_UpdateFrame();
+    actors[0].tile = actors[0].animTile = TILE_ACTOR_BEGGAR;
+    UpdateFrame();
     // "...and thou dost kneel before the Altar.\n\n"
-    ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x36d]);
-    ULTIMA_3ae6_WaitFrames(10);
+    PrintString((char*)&scratch[0x36d]);
+    WaitFrames(10);
     // "Upon what virtue dost thou meditate?\n\n:"
-    ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x398]);
+    PrintString((char*)&scratch[0x398]);
 
-    ULTIMA_3b1c_GetString(D_bd08_answer, 0xc);
+    GetString(D_bd08_answer, 0xc);
 
     if (D_bd08_answer[0] == '\0')
     {
@@ -766,74 +766,74 @@ static void CAST2_0966_ShrineOfVirtue(void)
     }
 
     // 09d6
-    if (ULTIMA_6f1e_CompareWord(D_4b3e_virtueKeywords[virtue_c], D_bd08_answer) == -1)
+    if (CompareWord(virtueKeywords[virtue_c], D_bd08_answer) == -1)
     {
         allRight = 0;
     }
 
     // 09ee
-    ULTIMA_3ae6_WaitFrames(6);
-    ULTIMA_16ba_PrintChar('\n');
+    WaitFrames(6);
+    PrintChar('\n');
 
     for (step_e = 0; step_e < 3; step_e++)
     {
         // 0a0c
-        ULTIMA_1850_PrintString(/*0x958e*/ "\nMantra:");
-        ULTIMA_3b1c_GetString(D_bd08_answer, 0xc);
+        PrintString(/*0x958e*/ "\nMantra:");
+        GetString(D_bd08_answer, 0xc);
         if (D_bd08_answer[0] == '\0')
         {
             return;
         }
 
         // 0a3a
-        if (ULTIMA_6f1e_CompareWord(D_1f5e_mantras[virtue_c], D_bd08_answer) == -1)
+        if (CompareWord(mantras[virtue_c], D_bd08_answer) == -1)
         {
             allRight = 0;
         }
 
         // 0a4b
-        ULTIMA_3ae6_WaitFrames(0xc);
+        WaitFrames(0xc);
     }
 
     // NOTE: FMT addition
-    //ULTIMA_16ba_PrintChar('\n');
+    //PrintChar('\n');
 
     // 0a5e
     if (!allRight)
     {
         // "\n\nThine thoughts are unfocused.\n"
-        ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x3c0]);
+        PrintString((char*)&scratch[0x3c0]);
     }
     else
     {
         // 0a6c
-        if (((byte)D_58ce_questsDone & (1 << virtue_c)) == 0)
+        if (((byte)questsDone & (1 << virtue_c)) == 0)
         {
             // TODO: 58cc, 58ce: u8?
-            *((byte*)&D_58cc_questsOrdained) |= (1 << virtue_c);
-            ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x3e1]);
+            *((byte*)&questsOrdained) |= (1 << virtue_c);
+            PrintString((char*)&scratch[0x3e1]);
 
-            D_5c5a_actors[0].tile = D_5c5a_actors[0].animTile = TILE_ACTOR_AVATAR;
+            actors[0].tile = actors[0].animTile = TILE_ACTOR_AVATAR;
 
-            ULTIMA_266c_GetChar();
+            GetChar();
             // "\n\nThe Altar speaks and a Quest is ordained! "
-            ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x40e]);
-            ULTIMA_1850_PrintString((char*)&D_b21e_scratch[D_4b5e_questTextPos[virtue_c]]);
-            ULTIMA_1850_PrintString(/*0x9598*/ "\"\n");
-            ULTIMA_266c_GetChar();
+            PrintString((char*)&scratch[0x40e]);
+            PrintString((char*)&scratch[questTextPos[virtue_c]]);
+            PrintString(/*0x9598*/ "\"\n");
+            GetChar();
             // "\n\"Return again when thy Quest is done!\"\n"
-            ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x44b]);
+            PrintString((char*)&scratch[0x44b]);
 
             // 0ac6: a do-while, so the loop ends jb top; jmp end
             step_e = 0;
             do
             {
-                ULTIMA_2192_AudioPulse(D_4be6_shrineFreq[step_e], 1, D_4bf4_shrineParam3[step_e], D_4c02_shrineParam4[step_e], D_4c10_shrineParam5[step_e]);
+                AudioPulse(shrineFreq[step_e], 1, shrineParam3[step_e], shrineParam4[step_e], shrineParam5[step_e]);
                 step_e++;
             } while (step_e < 7);
         }
         // 0b08
-        else if (((byte)D_58cc_questsOrdained & (1 << virtue_c)) == 0)
+        else if (((byte)questsOrdained & (1 << virtue_c)) == 0)
         {
             // 0b1d -> 0b5f
 
@@ -843,28 +843,28 @@ static void CAST2_0966_ShrineOfVirtue(void)
             {
                 // 0b63
                 // "\n\nOffer how many hundredweights gold? "
-                ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x474]);
+                PrintString((char*)&scratch[0x474]);
 
                 // 0b6a
-                while ((unsigned)(hundreds_b = ULTIMA_266c_GetChar()) < 0x30 || (unsigned)hundreds_b > 0x39)
+                while ((unsigned)(hundreds_b = GetChar()) < 0x30 || (unsigned)hundreds_b > 0x39)
                     ;
 
                 // 0b26 (OK)
-                ULTIMA_16ba_PrintChar(hundreds_b);
+                PrintChar(hundreds_b);
                 hundreds_b -= 0x30;
                 if (hundreds_b == 0)
                 {
                     // 0b2f
-                    ULTIMA_1850_PrintString(/*0x959c*/ " gp\n");
+                    PrintString(/*0x959c*/ " gp\n");
                     return; // -> 0d1d
                 }
 
                 // 0b40 (OK)
-                ULTIMA_1850_PrintString(/*0x95a2*/ "00 gp\n\n");
-                if ((int)D_57aa_gold < hundreds_b * 100)
+                PrintString(/*0x95a2*/ "00 gp\n\n");
+                if ((int)gold < hundreds_b * 100)
                 {
                     // "Thou hast not that much gold!"
-                    ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x49b]);
+                    PrintString((char*)&scratch[0x49b]);
                 }
                 else
                 {
@@ -876,189 +876,189 @@ static void CAST2_0966_ShrineOfVirtue(void)
             }
 
             // 0b82 (OK)
-            D_57aa_gold -= hundreds_b * 100;
-            ULTIMA_2900_UpdateVitalsDisplay();
-            D_5888_karma += hundreds_b;
-            if (D_5888_karma > 99)
+            gold -= hundreds_b * 100;
+            UpdateVitalsDisplay();
+            karma += hundreds_b;
+            if (karma > 99)
             {
-                D_5888_karma = 99;
+                karma = 99;
             }
 
             // 0ba1 (OK)
-            ULTIMA_1c9e_SelectCharset(1);
-            ULTIMA_1850_PrintString(/*0x95aa*/ "ALAKAZAM");
-            ULTIMA_1c9e_SelectCharset(0);
-            ULTIMA_1850_PrintString(/*0x95b4*/ "!\n");
-            ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
-            ULTIMA_0b86_GRAP_XorFillRect(8, 8, 0xb7, 0xb7);
+            SelectCharset(1);
+            PrintString(/*0x95aa*/ "ALAKAZAM");
+            SelectCharset(0);
+            PrintString(/*0x95b4*/ "!\n");
+            GRAP_2d_SetPenColor(brightWhiteColor);
+            GRAP_XorFillRect(8, 8, 0xb7, 0xb7);
 
             // 0bd3 (OK)
             for (step_e = 2000; step_e < 25000; step_e += 0x32)
             {
-                ULTIMA_2192_AudioPulse(0xa8c, 1, 200, step_e, 0);
+                AudioPulse(0xa8c, 1, 200, step_e, 0);
             }
 
             // 0bf5 (OK)
             for (step_e = 25000; step_e > 2000; step_e -= 0x32)
             {
-                ULTIMA_2192_AudioPulse(0xa8c, 1, 200, step_e, 0);
+                AudioPulse(0xa8c, 1, 200, step_e, 0);
             }
         }
         else
         {
             // 0c18 (OK)
-            *((byte*)&D_58cc_questsOrdained) &= (1 << virtue_c & (byte)D_58cc_questsOrdained) ^ 0xff;
+            *((byte*)&questsOrdained) &= (1 << virtue_c & (byte)questsOrdained) ^ 0xff;
 
             // "\n\nA thunderous voice booms:\n\n\"WELL DONE!\"\n\n"
-            ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x4b9]);
-            ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
-            ULTIMA_0b86_GRAP_XorFillRect(8, 8, 0xb7, 0xb7);
+            PrintString((char*)&scratch[0x4b9]);
+            GRAP_2d_SetPenColor(brightWhiteColor);
+            GRAP_XorFillRect(8, 8, 0xb7, 0xb7);
 
             // 0c47 (OK)
             for (step_e = 2000; step_e < 25000; step_e += 0x32)
             {
-                ULTIMA_2192_AudioPulse(0xc1c, 1, 0x96, step_e, 0);
+                AudioPulse(0xc1c, 1, 0x96, step_e, 0);
             }
 
             // 0c69 (OK)
             for (step_e = 25000; step_e > 2000; step_e -= 0x32)
             {
-                ULTIMA_2192_AudioPulse(0xc1c, 1, 0x96, step_e, 0);
+                AudioPulse(0xc1c, 1, 0x96, step_e, 0);
             }
 
-            ULTIMA_3072_ShakeScreen();
-            D_5888_karma += 3;
-            if (D_5888_karma > 99)
+            ShakeScreen();
+            karma += 3;
+            if (karma > 99)
             {
-                D_5888_karma = 99;
+                karma = 99;
             }
 
             // 0c9c (OK)
-            if (D_4b7e_strengthGain[virtue_c] != 0)
+            if (strengthGain[virtue_c] != 0)
             {
-                D_55a8_party[0].str++;
-                if (D_55a8_party[0].str > 0x1e)
+                party[0].str++;
+                if (party[0].str > 0x1e)
                 {
-                    D_55a8_party[0].str = 0x1e;
+                    party[0].str = 0x1e;
                 }
 
-                ULTIMA_1850_PrintString(/*0x95b8*/ "Strength +1\n");
+                PrintString(/*0x95b8*/ "Strength +1\n");
             }
 
-            if (D_4b86_dexterityGain[virtue_c] != 0)
+            if (dexterityGain[virtue_c] != 0)
             {
-                D_55a8_party[0].dex++;
-                if (D_55a8_party[0].dex > 0x1e)
+                party[0].dex++;
+                if (party[0].dex > 0x1e)
                 {
-                    D_55a8_party[0].dex = 0x1e;
+                    party[0].dex = 0x1e;
                 }
 
-                ULTIMA_1850_PrintString(/*0x95c6*/ "Dexterity +1\n");
+                PrintString(/*0x95c6*/ "Dexterity +1\n");
             }
 
-            if (D_4b8e_intelligenceGain[virtue_c] != 0)
+            if (intelligenceGain[virtue_c] != 0)
             {
-                D_55a8_party[0].intel++;
-                if (D_55a8_party[0].intel > 0x1e)
+                party[0].intel++;
+                if (party[0].intel > 0x1e)
                 {
-                    D_55a8_party[0].intel = 0x1e;
+                    party[0].intel = 0x1e;
                 }
 
-                ULTIMA_1850_PrintString(/*0x95d4*/ "Intelligence +1\n");
+                PrintString(/*0x95d4*/ "Intelligence +1\n");
             }
 
             if (virtue_c == 7)
             {
-                D_5888_karma += 3;
-                if (D_5888_karma > 99)
+                karma += 3;
+                if (karma > 99)
                 {
-                    D_5888_karma = 99;
+                    karma = 99;
                 }
             }
         }
 
         // 0d16
-        ULTIMA_3ae6_WaitFrames(10);
+        WaitFrames(10);
     }
 }
 
 // The Codex: the voice asks for a virtue's answer; with a quest ordained the Codex gives it and marks it done. With all
 // eight done the final scene is read.
-static void CAST2_0d24_Codex(void)
+static void Codex(void)
 {
     int virtue;
 
-    ULTIMA_266c_GetChar();
-    ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x4e5]);
-    ULTIMA_266c_GetChar();
-    ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x515]);
-    ULTIMA_266c_GetChar();
+    GetChar();
+    PrintString((char*)&scratch[0x4e5]);
+    GetChar();
+    PrintString((char*)&scratch[0x515]);
+    GetChar();
 
     for (virtue = 0; virtue < 8; virtue++)
     {
-        if (((byte)D_58cc_questsOrdained & (1 << virtue)) != 0)
+        if (((byte)questsOrdained & (1 << virtue)) != 0)
             break;
     }
 
     if (virtue == 8)
     {
-        ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x53e]);
+        PrintString((char*)&scratch[0x53e]);
     }
     else
     {
-        *((byte*)&D_58ce_questsDone) |= 1 << virtue;
+        *((byte*)&questsDone) |= 1 << virtue;
 
-        ULTIMA_16ba_PrintChar('\"');
-        ULTIMA_1850_PrintString((char*)&D_b21e_scratch[D_4b6e_codexTextPos[virtue]]);
-        ULTIMA_1850_PrintString(/*0x95e6*/ "\"\n\n");
-        ULTIMA_266c_GetChar();
+        PrintChar('\"');
+        PrintString((char*)&scratch[codexTextPos[virtue]]);
+        PrintString(/*0x95e6*/ "\"\n\n");
+        GetChar();
 
-        if ((byte)D_58ce_questsDone == 0xff)
+        if ((byte)questsDone == 0xff)
         {
-            ULTIMA_0a70_GRAP_2d_SetPenColor(D_13ae_redColor);
-            ULTIMA_0b86_GRAP_XorFillRect(8, 8, 0xb7, 0xb7);
-            ULTIMA_3072_ShakeScreen();
-            ULTIMA_0a70_GRAP_2d_SetPenColor(D_13b0_brightWhiteColor);
-            ULTIMA_0b86_GRAP_XorFillRect(8, 8, 0xb7, 0xb7);
-            ULTIMA_3072_ShakeScreen();
-            ULTIMA_0a70_GRAP_2d_SetPenColor(D_13ae_redColor);
-            ULTIMA_0b86_GRAP_XorFillRect(8, 8, 0xb7, 0xb7);
-            ULTIMA_3072_ShakeScreen();
-            ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x555]);
-            ULTIMA_266c_GetChar();
-            ULTIMA_1850_PrintString(/*0x95ea*/ "Thou dost read:\n\n");
-            ULTIMA_1c9e_SelectCharset(1);
-            ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x57f]);
-            ULTIMA_1c9e_SelectCharset(0);
-            ULTIMA_266c_GetChar();
-            ULTIMA_1c9e_SelectCharset(1);
-            ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x5d1]);
-            ULTIMA_1c9e_SelectCharset(0);
-            ULTIMA_266c_GetChar();
-            ULTIMA_1c9e_SelectCharset(1);
-            ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x60c]);
-            ULTIMA_1c9e_SelectCharset(0);
-            ULTIMA_266c_GetChar();
-            ULTIMA_1c9e_SelectCharset(1);
-            ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x680]);
-            ULTIMA_1c9e_SelectCharset(0);
-            ULTIMA_266c_GetChar();
+            GRAP_2d_SetPenColor(redColor);
+            GRAP_XorFillRect(8, 8, 0xb7, 0xb7);
+            ShakeScreen();
+            GRAP_2d_SetPenColor(brightWhiteColor);
+            GRAP_XorFillRect(8, 8, 0xb7, 0xb7);
+            ShakeScreen();
+            GRAP_2d_SetPenColor(redColor);
+            GRAP_XorFillRect(8, 8, 0xb7, 0xb7);
+            ShakeScreen();
+            PrintString((char*)&scratch[0x555]);
+            GetChar();
+            PrintString(/*0x95ea*/ "Thou dost read:\n\n");
+            SelectCharset(1);
+            PrintString((char*)&scratch[0x57f]);
+            SelectCharset(0);
+            GetChar();
+            SelectCharset(1);
+            PrintString((char*)&scratch[0x5d1]);
+            SelectCharset(0);
+            GetChar();
+            SelectCharset(1);
+            PrintString((char*)&scratch[0x60c]);
+            SelectCharset(0);
+            GetChar();
+            SelectCharset(1);
+            PrintString((char*)&scratch[0x680]);
+            SelectCharset(0);
+            GetChar();
         }
     }
 }
 
 // A step of the walk in the shrine: a pause, the footstep sound, a pause.
-static void CAST2_0e64_Footstep(void)
+static void Footstep(void)
 {
-    ULTIMA_3ae6_WaitFrames(1);
-    ULTIMA_433e_AudioFootstep();
-    ULTIMA_3ae6_WaitFrames(4);
+    WaitFrames(1);
+    AudioFootstep();
+    WaitFrames(4);
 }
 
 // CHECKED (loop)
 // Enters a shrine or the Codex chamber: the world's actors are saved aside, the room (MISCMAPS.DAT) and its texts
 // (MISCMSG.DAT) are read, the party walks to the altar (the avatar alone), the scene plays, then everything is restored.
-void CAST2_0e76_Shrine(void)
+void Shrine(void)
 {
     int column;
     int row;
@@ -1068,45 +1068,45 @@ void CAST2_0e76_Shrine(void)
 
     urnCount_f = 0;
 
-    placeTile = *ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY);
-    D_24e6_viewDirty = 1;
-    D_bd15_savedMapId = D_5893_mapId;
-    D_5893_mapId = 0xff;
-    D_589e_curCombatant = 0xff;
+    placeTile = *GetTileAddr(D_5896_mapX, D_5897_mapY);
+    viewDirty = 1;
+    D_bd15_savedMapId = mapId;
+    mapId = 0xff;
+    curCombatant = 0xff;
 
     // 0eb3: NOT MATCHING
     for (row = 0; row < 0x20; row++)
     {
-        D_a9fc_savedActors[row] = D_5c5a_actors[row];
-        D_5c5a_actors[row].tile = 0;
+        savedActors[row] = actors[row];
+        actors[row].tile = 0;
     }
 
     if (placeTile != TILE_MAP_CODEX)
     {
-        ULTIMA_256e_ReadFileFromDisk(/*0x95fc*/ "MISCMAPS.DAT", D_ac64_viewActors, 0xb0, 0xb0);
+        ReadFileFromDisk(/*0x95fc*/ "MISCMAPS.DAT", viewActors, 0xb0, 0xb0);
     }
     else
     {
-        ULTIMA_256e_ReadFileFromDisk(/*0x960a*/ "MISCMAPS.DAT", D_ac64_viewActors, 0xb0, 0x160);
+        ReadFileFromDisk(/*0x960a*/ "MISCMAPS.DAT", viewActors, 0xb0, 0x160);
     }
 
-    ULTIMA_256e_ReadFileFromDisk(/*0x9618*/ "MISCMSG.DAT", D_b21e_scratch, 2000, 0x3ab);
+    ReadFileFromDisk(/*0x9618*/ "MISCMSG.DAT", scratch, 2000, 0x3ab);
 
     // 0f0c
     for (row = 0; row < 0xb; row++)
     {
         for (column = 0; column < 0xb; column++)
         {
-            GetCombatMap(column, row) = D_ac64_viewActors[row * 0x10 + column];
+            GetCombatMap(column, row) = viewActors[row * 0x10 + column];
         }
     }
 
-    ULTIMA_5910_UpdateFrame();
+    UpdateFrame();
 
     // 0f44 (NOT MATCHING)
     for (row = 1; row < 0x10; row++)
     {
-        if (D_55a8_party[row].innMapId == 0x7f)
+        if (party[row].innMapId == 0x7f)
         {
             urnCount_f++;
         }
@@ -1114,58 +1114,58 @@ void CAST2_0e76_Shrine(void)
 
     if (urnCount_f > 0)
     {
-        CAST2_0914_PlaceUrns(urnCount_f);
+        PlaceUrns(urnCount_f);
     }
 
     // 0f69
     if (placeTile != TILE_MAP_CODEX)
     {
         // "\nThou dost approach the tranquil Shrine...\n\n"
-        ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x6ae]);
+        PrintString((char*)&scratch[0x6ae]);
     }
     else
     {
         // "\nThe Codex of Ultimate Wisdom lies before thee..."
-        ULTIMA_1850_PrintString((char*)&D_b21e_scratch[0x6db]);
+        PrintString((char*)&scratch[0x6db]);
     }
 
     // 0f7b (OK)
     for (row = 0; row < 4; row++)
     {
-        CAST2_0e64_Footstep();
+        Footstep();
     }
 
-    D_5c5a_actors[0].tile = D_5c5a_actors[0].animTile = TILE_ACTOR_AVATAR;
-    D_5c5a_actors[0].x = 5;
-    D_5c5a_actors[0].y = 10;
-    D_5c5a_actors[0].z = D_5895_mapLevel;
+    actors[0].tile = actors[0].animTile = TILE_ACTOR_AVATAR;
+    actors[0].x = 5;
+    actors[0].y = 10;
+    actors[0].z = D_5895_mapLevel;
 
-    CAST2_0e64_Footstep();
+    Footstep();
     if (placeTile == TILE_MAP_CODEX && urnCount_f > 0)
     {
-        ULTIMA_1850_PrintString(/*0x9624*/ "\n\nThou dost see\n");
+        PrintString(/*0x9624*/ "\n\nThou dost see\n");
         if (urnCount_f == 1)
         {
-            ULTIMA_1850_PrintString(/*0x9636*/ "an urn marked:\n\n");
+            PrintString(/*0x9636*/ "an urn marked:\n\n");
         }
         else
         {
-            ULTIMA_1850_PrintString(/*0x9648*/ "urns marked:\n\n");
+            PrintString(/*0x9648*/ "urns marked:\n\n");
         }
 
         // 0fcf (OK)
         for (row = 1; row < 0x10; row++)
         {
-            if (D_55a8_party[row].innMapId == 0x7f)
+            if (party[row].innMapId == 0x7f)
             {
                 column = 0;
-                while (D_55a8_party[row].name[column] != '\0')
+                while (party[row].name[column] != '\0')
                 {
-                    ULTIMA_16ba_PrintChar(ULTIMA_2032_ToUpper((byte)D_55a8_party[row].name[column++]));
+                    PrintChar(ToUpperChar((byte)party[row].name[column++]));
                 }
 
                 // 101f
-                ULTIMA_16ba_PrintChar('\n');
+                PrintChar('\n');
             }
         }
     }
@@ -1176,48 +1176,48 @@ void CAST2_0e76_Shrine(void)
     for (row = 0; row < stepsIn_i; row++)
     {
         // 105c
-        D_5c5a_actors[0].y--;
-        CAST2_0e64_Footstep();
+        actors[0].y--;
+        Footstep();
     }
 
     // 1066
     if (placeTile != TILE_MAP_CODEX)
     {
-        CAST2_0966_ShrineOfVirtue();
+        ShrineOfVirtue();
     }
     else
     {
-        CAST2_0d24_Codex();
+        Codex();
     }
 
     // 1075
-    D_5c5a_actors[0].tile = D_5c5a_actors[0].animTile = TILE_ACTOR_AVATAR;
-    ULTIMA_3ae6_WaitFrames(1);
-    for (row = D_5c5a_actors[0].y; row < 10; row++)
+    actors[0].tile = actors[0].animTile = TILE_ACTOR_AVATAR;
+    WaitFrames(1);
+    for (row = actors[0].y; row < 10; row++)
     {
-        D_5c5a_actors[0].y++;
-        CAST2_0e64_Footstep();
+        actors[0].y++;
+        Footstep();
     }
 
-    D_5c5a_actors[0].tile = D_5c5a_actors[0].x = D_5c5a_actors[0].y = 0;
+    actors[0].tile = actors[0].x = actors[0].y = 0;
 
     for (row = 0; row < 4; row++)
     {
-        CAST2_0e64_Footstep();
+        Footstep();
     }
 
-    ULTIMA_3ae6_WaitFrames(10);
+    WaitFrames(10);
 
     // 10c6 (NOT MATCHING)
     for (row = 0; row < 0x20; row++)
     {
-        D_5c5a_actors[row] = D_a9fc_savedActors[row];
+        actors[row] = savedActors[row];
     }
 
     // 10e7
-    D_5893_mapId = D_bd15_savedMapId;
-    ULTIMA_4f7c_AdvanceTime(0x10);
-    ULTIMA_5e4a_BuildLightMap();
+    mapId = D_bd15_savedMapId;
+    AdvanceTime(0x10);
+    BuildLightMap();
 }
 
 //
@@ -1226,14 +1226,14 @@ void CAST2_0e76_Shrine(void)
 
 // NOTE: IBM version (the original); not compatible with modern platforms
 // The Save game question: with Y the world is written to SAVED.GAM and SAVED.OOL, and UNDER.OOL on the saved disk.
-void CAST2_10fe_SaveGame(void)
+void SaveGame(void)
 {
     byte local_4;
     byte local_6_an;
 
-    ULTIMA_1850_PrintString(/*0x9658*/ "\nSave game? ");
+    PrintString(/*0x9658*/ "\nSave game? ");
 
-    while ((local_6_an = ULTIMA_266c_GetChar()) != 'Y')
+    while ((local_6_an = GetChar()) != 'Y')
     {
         if (local_6_an == 'N')
             break;
@@ -1241,30 +1241,30 @@ void CAST2_10fe_SaveGame(void)
 
     if (local_6_an == 'N')
     {
-        ULTIMA_1850_PrintString(/*0x9666*/ "No\n");
+        PrintString(/*0x9666*/ "No\n");
     }
     else
     {
-        ULTIMA_1850_PrintString(/*0x966a*/ "Yes\nSaving...\n");
-        local_4 = D_a9bd_curDisk[0];
-        if (D_a9bd_curDisk[0] != 5)
+        PrintString(/*0x966a*/ "Yes\nSaving...\n");
+        local_4 = curDisk[0];
+        if (curDisk[0] != 5)
         {
-            ULTIMA_251e_SwitchDisks(1);
+            SwitchDisks(1);
         }
 
-        ULTIMA_256e_ReadFileFromDisk(/*0x967a*/ "UNDER.OOL", D_b21e_scratch + 0x100, 0x100, 0);
-        ULTIMA_251e_SwitchDisks(1);
-        ULTIMA_256e_ReadFileFromDisk(/*0x9684*/ "BRIT.OOL", D_b21e_scratch, 0x100, 0);
+        ReadFileFromDisk(/*0x967a*/ "UNDER.OOL", scratch + 0x100, 0x100, 0);
+        SwitchDisks(1);
+        ReadFileFromDisk(/*0x9684*/ "BRIT.OOL", scratch, 0x100, 0);
         if (local_4 != 1)
         {
-            ULTIMA_25d8_WriteFileToDisk(/*0x968e*/ "UNDER.OOL", D_b21e_scratch + 0x100, 0x100);
+            WriteFileToDisk(/*0x968e*/ "UNDER.OOL", scratch + 0x100, 0x100);
         }
 
-        ULTIMA_251e_SwitchDisks(3);
-        ULTIMA_25d8_WriteFileToDisk(/*0x9698*/ "SAVED.GAM", &D_55a6_saveStart, ((int)&D_6606_saveEnd - (int)&D_55a6_saveStart) /*0x1060*/);
-        ULTIMA_25d8_WriteFileToDisk(/*0x96a2*/ "SAVED.OOL", D_b21e_scratch, 0x200);
-        ULTIMA_251e_SwitchDisks(local_4);
-        ULTIMA_1850_PrintString(/*0x96ac*/ "Done.\n");
+        SwitchDisks(3);
+        WriteFileToDisk(/*0x9698*/ "SAVED.GAM", &saveStart, ((int)&saveEnd - (int)&saveStart) /*0x1060*/);
+        WriteFileToDisk(/*0x96a2*/ "SAVED.OOL", scratch, 0x200);
+        SwitchDisks(local_4);
+        PrintString(/*0x96ac*/ "Done.\n");
     }
 }
 

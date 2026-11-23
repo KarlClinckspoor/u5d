@@ -14,22 +14,22 @@
 #include <stdlib.h>
 #include <time.h>
 
-void ULTIMA_251e_SwitchDisks(int diskNumber)
+void SwitchDisks(int diskNumber)
 {
-    D_5394_diskSwapFn = ULTIMA_2320_NoDiskSwapMessage;
+    diskSwapFn = NoDiskSwapMessage;
 
     if (diskNumber == 2 || diskNumber == 5)
     {
         diskNumber = 1;
     }
 
-    D_a9bd_curDisk[0] = diskNumber;
+    curDisk[0] = diskNumber;
 
-    if (D_a9c8_diskDrives[diskNumber] != 0xff)
+    if (diskDrives[diskNumber] != 0xff)
     {
-        ULTIMA_1eac_SetDefaultDrive(D_a9c8_diskDrives[diskNumber]);
-        D_545e_lastDisk = 0xff;
+        SetDefaultDrive(diskDrives[diskNumber]);
+        lastDisk = 0xff;
     }
 
-    D_5394_diskSwapFn = ULTIMA_2322_DiskSwapMessage;
+    diskSwapFn = DiskSwapMessage;
 }

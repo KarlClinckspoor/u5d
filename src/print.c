@@ -32,13 +32,13 @@ s16 D_5402_powersOfTen[5] = { 1, 10, 100, 1000, 10000 };
 // /Zd or /Fc; lines after 19ca, in another function or before this one do nothing.
 // Less memory gives the same cut with no extra line: with 236.75 to 248.5 KB of DOS memory
 // free for C2.EXE the pool is about 280 units, and this file compiles EXACT without the
-// padding (research/c2mem.py print.c ULTIMA_1850_PrintString 15152 15920; above that the
+// padding (research/c2mem.py print.c PrintString 15152 15920; above that the
 // pool has its full size, below it the code is different again). So the original function
 // either had 123 or more further lines (comments, lines compiled out), or was compiled with
 // about 240 KB left for pass 2. Which, cannot be told from the code; the build cannot limit
 // pass 2's memory, so the comment lines stand in for either.
 // 0000:1850
-void ULTIMA_1850_PrintString(char* text)
+void PrintString(char* text)
 {
     int windowWidth_d;
     char line_e[40];
@@ -205,7 +205,7 @@ void ULTIMA_1850_PrintString(char* text)
     if (*text != '\0')
     {
         // 1872
-        window_e = &D_535e_textWindows[D_5386_textWindowIndex];
+        window_e = &textWindows[textWindowIndex];
         centered_c = window_e->flags & 2;
         windowWidth_d = (uint)window_e->right - (uint)window_e->left; // text_window_width = r - l;
 
@@ -214,13 +214,13 @@ void ULTIMA_1850_PrintString(char* text)
         {
             if (breakPending != 0)
             {
-                ULTIMA_16ba_PrintChar('\n');
+                PrintChar('\n');
             }
 
             // 18a7
             lineLength = breakPending = wrapped_h = skip_f = 0;
             room =
-                windowWidth_d - ULTIMA_1f12_GetCurrentTextX(); // remaining_length = text_window_length - column
+                windowWidth_d - GetCurrentTextX(); // remaining_length = text_window_length - column
 
             for (; text[pos_j] != '\n' && text[pos_j] != '\r' && text[pos_j] != '\0' &&
                               lineLength <= room;
@@ -234,7 +234,7 @@ void ULTIMA_1850_PrintString(char* text)
             {
                 if (text[pos_j] != '\0')
                 {
-                    ULTIMA_16ba_PrintChar((byte)text[pos_j++]);
+                    PrintChar((byte)text[pos_j++]);
                 }
                 else
                 {
@@ -265,7 +265,7 @@ void ULTIMA_1850_PrintString(char* text)
 
                         if (window_e->currentX != 0)
                         {
-                            ULTIMA_16ba_PrintChar('\n');
+                            PrintChar('\n');
                             wrapped_h = 1;
                         }
                     }
@@ -299,11 +299,11 @@ void ULTIMA_1850_PrintString(char* text)
                 {
                     if (lineLength > windowWidth_d)
                     {
-                        ULTIMA_16ba_PrintChar('\n');
+                        PrintChar('\n');
                     }
 
                     // 19ea
-                    ULTIMA_1bf2_SetTextPosition((room - lineLength) / 2, ULTIMA_1cee_GetCurrentTextY());
+                    SetTextPosition((room - lineLength) / 2, GetCurrentTextY());
                 }
 
                 // 19fd; 1a03: skip_f in CX
@@ -320,7 +320,7 @@ void ULTIMA_1850_PrintString(char* text)
                 for (printIndex_f = skip_f; printIndex_f <= lineLength; printIndex_f++)
                 {
                     // 1a1c
-                    ULTIMA_16ba_PrintChar((byte)line_e[printIndex_f]);
+                    PrintChar((byte)line_e[printIndex_f]);
                 }
             }
             if (finished_a != 0)
@@ -334,7 +334,7 @@ void ULTIMA_1850_PrintString(char* text)
 // print_integer(val, min_len, filler)
 // fillChar is a char: as an int, MSC 5.0 turns the fill loop into "rep stosb" and needs a
 // temporary (frame 0x34); the original's loop stores AL each time.
-void ULTIMA_1a3e_PrintNumber(int value, int minWidth, char fillChar)
+void PrintNumber(int value, int minWidth, char fillChar)
 {
     int index;
     int negative; // is_negative
@@ -405,5 +405,5 @@ void ULTIMA_1a3e_PrintNumber(int value, int minWidth, char fillChar)
     // 1afb
     buffer_f[outPos_f] = '\0';
 
-    ULTIMA_1850_PrintString(buffer_f);
+    PrintString(buffer_f);
 }

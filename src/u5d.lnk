@@ -107,60 +107,60 @@ wrapper  PLSTART  stackgap=0100 sp=0064
 # The lines below start a new line at each turn the rule gives (with u5d's objects): ULTIMA 6,
 # TOWN 19, MAINOUT 15, DUNGEON 17, INTRO 5, FLAMES 1, COMBAT 41, BLCKTHRN 2, LOOKOBJ 3, DNGLOOK
 # 3, OUTSUBS 1, SHOPPES 14, SJOG 3, CMDS 10, CAST 18, TALK 4, CAST2 1, FONT 1.
-stubs    DUNGEON_0e2e_MainLoop OUTSUBS_0368_GetWorldSavefile INTRO_0986_Main MAINOUT_0d22_Entry
-stubs    TOWN_11f0_Entry TOWN_141e_MainLoop
-stubs    BLCKTHRN_0910_Death CAST2_0e76_Shrine NPC_0000_LoadNpcFile TOWN_10da_ShoutBegone
-stubs    TOWN_1694_PlaceActors TOWN_0170_SwapDayNightTiles NPC_00d6_PlaceNpcs NPC_0db4_MoveNpcs
-stubs    BLCKTHRN_060e_Capture TOWN_0b82_KlimbCmd TOWN_0958_RaiseAlarm TALK_031e_TalkToNpc
-stubs    TOWN_09e6_AttackCmd TOWN_0000_CheckNpcKilled TOWN_0052_SetNpcKilled
-stubs    TOWN_00b0_DespawnNpc TOWN_011e_FindNpcByActor TOWN_1726_PlaceNpcActor
-stubs    NPC_12e0_ScheduleSlot
-stubs    OUTSUBS_0458_Falls OUTSUBS_05fc_StepOnPoisonTile OUTSUBS_05ee_StepOnBurningTile
-stubs    MAINOUT_08de_EnterCmd MAINOUT_1a60_MonstersTurn MAINOUT_0000_SetUpOverworld
-stubs    OUTSUBS_01b4_LoadViewChunks OUTSUBS_0566_PlaceAmuletShards MAINOUT_007a_WaitIfActorNear
-stubs    MAINOUT_06ec_AttackCmd OUTSUBS_0388_EnterTown MAINOUT_0354_MoveParty
-stubs    OUTSUBS_02c8_ShiftChunks MAINOUT_105c_IsMovingActor COMSUBS_12de_FlyMissile
-stubs    DUNGEON_1be0_Redraw DNGLOOK_1130_FreeDungeonImages DNGLOOK_109e_LoadDungeonImages
-stubs    DNGLOOK_093a_ApplyClearedRooms DNGLOOK_0d3e_SetUpDungeonFight COMBAT_0b94_MainLoop
-stubs    DNGLOOK_117e_PlaceCombatants ENDGAME_0648_EndgameMain DUNGEON_1a90_DrawView
-stubs    DNGLOOK_0844_MarkRoomCleared DNGLOOK_0fda_StepAfterCombat DUNGEON_0134_SetUpMonster
-stubs    DUNGEON_1e10_KlimbCmd DUNGEON_1c6a_Klimb DUNGEON_1d08_Exit DUNGEON_1d4a_AttackCmd
-stubs    DNGLOOK_0c6c_BuildWallRing
-stubs    INTRO_043e_PrintCaptionBar FONT_0b0a_CreateCharacter FONT_04a4_PlayIntroStory
-stubs    FONT_0000_DrawJustifiedText INTRO_2090_AnimateWD
+stubs    DungeonMainLoop GetWorldSavefile INTRO_0986_Main MainoutEntry
+stubs    TownEntry TownMainLoop
+stubs    Death Shrine LoadNpcFile TOWN_10da_ShoutBegone
+stubs    PlaceActors SwapDayNightTiles NPC_00d6_PlaceNpcs MoveNpcs
+stubs    Capture KlimbCmd RaiseAlarm TalkToNpc
+stubs    AttackCmd CheckNpcKilled SetNpcKilled
+stubs    DespawnNpc FindNpcByActor PlaceNpcActor
+stubs    ScheduleSlot
+stubs    Falls StepOnPoisonTile StepOnBurningTile
+stubs    EnterCmd MonstersTurn SetUpOverworld
+stubs    LoadViewChunks PlaceAmuletShards WaitIfActorNear
+stubs    MainoutAttackCmd EnterTown MainoutMoveParty
+stubs    ShiftChunks IsMovingActor FlyMissile
+stubs    Redraw FreeDungeonImages LoadDungeonImages
+stubs    ApplyClearedRooms SetUpDungeonFight CombatMainLoop
+stubs    PlaceCombatants EndgameMain DrawView
+stubs    MarkRoomCleared StepAfterCombat SetUpMonster
+stubs    DungeonKlimbCmd Klimb DUNGEON_1d08_Exit DungeonAttackCmd
+stubs    BuildWallRing
+stubs    PrintCaptionBar CreateCharacter PlayIntroStory
+stubs    DrawJustifiedText AnimateWD
 stubs    FLAMES_0000_RETURNADDRESS
-stubs    CMDS_161a_PushCmd SJOG_2012_TurnUpkeep COMBAT_14d6_RollToHit COMBAT_1574_ApplyDamage
-stubs    SJOG_1c56_CombatMovePlayer SJOG_1f7a_CombatSetActivePlayer COMBAT_194a_ResolveHit
-stubs    COMBAT_1a5c_WoundLevel CMDS_1418_YellCmd COMBAT_0000_IsCellFree
-stubs    COMBAT_1236_RemoveEntity CMDS_17ec_Escape COMSUBS_0094_PrintName
-stubs    COMSUBS_00f4_MonsterSpecial COMSUBS_0312_ReportHit COMSUBS_04d4_CombatantDistance
-stubs    SJOG_1f26_CombatMiscCmd COMSUBS_0822_ResolveShot COMSUBS_09fc_EnemyInterferes
-stubs    COMSUBS_0bf8_MeleeBlow COMSUBS_0d96_AttackCmd SJOG_18ce_GetCmd SJOG_0d4a_JimmyCmd
-stubs    SJOG_1374_OpenCmd SJOG_095c_SearchCmd ZSTATS_0a3a_ZstatsCmd CAST_1792_UseCmd
-stubs    ZSTATS_1296_ReadyCmd CAST_0dba_CastSpellCmd SJOG_1ea4_CheckMirror SJOG_1d6a_CombatKlimb
-stubs    SJOG_21ce_BreakCharm SJOG_1b6c_CountCombatants COMBAT_120e_RandomCell
-stubs    SJOG_20d8_IsCellBlocked SJOG_2148_IsSurrounded COMBAT_111a_FireMapTrigger
-stubs    COMBAT_13e2_QueryStat COMSUBS_048a_Distance COMSUBS_07d4_PickNearbyCell
-stubs    COMBAT_18ba_Poison
-stubs    CAST2_05e0_Resurrect CAST2_08ea_SetLightTurns
-stubs    LOOKOBJ_10fc_ViewCmd LOOKOBJ_0366_LookSky LOOKOBJ_099c_LookCmd
-stubs    DNGLOOK_0000_LookCmdInDungeon SJOG_006c_AskDungeonCell DNGLOOK_06a8_ViewCmd
-stubs    OUTSUBS_0658_Apparition
-stubs    SHOPPES_0280_AskYesNo SHOPPES_0026_PrintShopText SHOPPES_04a2_Provisioner
-stubs    ZSTATS_056c_PrevItem ZSTATS_05a4_NextItem ZSTATS_05e2_PrintItemRow SHOPPES_14f8_Healer
-stubs    SHOPPES_017a_PrintShopFileText SHOPPES_12b2_Armourer SHOPPES_075e_Reagents
-stubs    SHOPPES_019a_FalsehoodSurcharge SHOPPES_01b6_Greet SHOPPES_0202_Farewell
-stubs    SHOPPES_07be_Stables
-stubs    SJOG_1b34_UnequipAll SJOG_203e_EndCombat COMSUBS_0056_FadeFields
-stubs    CMDS_0552_HoleUpCmd CMDS_07f6_BoardCmd CMDS_0aea_FireCmd CMDS_0d98_IgniteTorchCmd
-stubs    CMDS_0ddc_NewOrderCmd CMDS_0eb4_XitCmd CMDS_0000_HoleUpRest CMDS_1ad8_MixCmd
-stubs    CAST2_00de_SelectSpell CMDS_1c20_KlimbCmd
-stubs    CAST2_07bc_AnGrav CAST2_08f8_SetSpellStatus CAST2_06ec_PrintPosition
-stubs    COMSUBS_0c52_AttackWith CAST2_03c2_HealMember CAST2_0306_AskDirection
-stubs    CAST2_0768_InExPor CAST2_046c_WisAnYlem CAST2_0000_CastEffect CAST2_04c2_KalXenCorp
-stubs    COMSUBS_0000_TargetResists CAST2_009e_OnWho CAST2_040a_ChangeWindDirection
-stubs    COMSUBS_0504_AimCrosshair COMSUBS_0748_CombatantAt ZSTATS_045e_DrawListFrame
-stubs    ZSTATS_099a_FillItemCounts ZSTATS_0f2e_SelectItem
-stubs    SHOPPES2_066c_Pub SHOPPES2_0abc_Shipwright TALK_041c_TalkCmd SHOPPES3_08b4_Inn
-stubs    CAST2_10fe_SaveGame
-stubs    FONT_02fc_AnimateScene
+stubs    PushCmd TurnUpkeep RollToHit ApplyDamage
+stubs    CombatMovePlayer CombatSetActivePlayer ResolveHit
+stubs    WoundLevel YellCmd IsCellFree
+stubs    RemoveEntity Escape PrintName
+stubs    MonsterSpecial ReportHit CombatantDistance
+stubs    CombatMiscCmd ResolveShot EnemyInterferes
+stubs    MeleeBlow ComsubsAttackCmd GetCmd JimmyCmd
+stubs    OpenCmd SearchCmd ZstatsCmd UseCmd
+stubs    ReadyCmd CastSpellCmd CheckMirror CombatKlimb
+stubs    BreakCharm CountCombatants RandomCell
+stubs    IsCellBlocked IsSurrounded FireMapTrigger
+stubs    QueryStat ComsubsDistance PickNearbyCell
+stubs    CombatPoison
+stubs    Resurrect SetLightTurns
+stubs    LookobjViewCmd LookSky LookCmd
+stubs    LookCmdInDungeon AskDungeonCell DnglookViewCmd
+stubs    Apparition
+stubs    AskYesNo PrintShopText Provisioner
+stubs    PrevItem NextItem PrintItemRow Healer
+stubs    PrintShopFileText Armourer Reagents
+stubs    FalsehoodSurcharge Greet ShoppesFarewell
+stubs    Stables
+stubs    UnequipAll EndCombat FadeFields
+stubs    CmdsHoleUpCmd BoardCmd FireCmd IgniteTorchCmd
+stubs    NewOrderCmd XitCmd HoleUpRest MixCmd
+stubs    SelectSpell CmdsKlimbCmd
+stubs    AnGrav SetSpellStatus PrintPosition
+stubs    AttackWith HealMember AskDirection
+stubs    InExPor WisAnYlem CastEffect KalXenCorp
+stubs    TargetResists OnWho ChangeWindDirection
+stubs    AimCrosshair CombatantAt DrawListFrame
+stubs    FillItemCounts SelectItem
+stubs    Pub Shipwright TalkCmd Inn
+stubs    SaveGame
+stubs    AnimateScene

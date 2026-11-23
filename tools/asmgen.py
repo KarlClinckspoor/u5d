@@ -7,7 +7,7 @@
 For the resident image (CS offsets START..END of ULTIMA.EXE), writes src/asm/NAME.ASM:
 MASM 4.0 source in Microsoft C's small-model segments, which tools/asmbuild.py assembles to
 the original bytes. With --ovl, START..END are offsets in OVERLAY.OVL (as u5d's names have
-them: FONT_0000_DrawJustifiedText is offset 0 of FONT.OVL), and the module is an assembly part of that overlay
+them: DrawJustifiedText is offset 0 of FONT.OVL), and the module is an assembly part of that overlay
 (first line "OVERLAY.OVL START-END"; tools/u5link.py places it by its functions' names). The
 code is decoded at the overlay's CS addresses, calls into the resident code name their
 targets, and labels inside it carry file offsets. The source is drafted from the bytes, then
@@ -65,8 +65,10 @@ def overlay_function_names():
         if kind != 'ovl' or ovl not in u5.OVERLAY_BASE:
             continue
         s = open(os.path.join(u5.SRC, f), encoding='utf-8', errors='replace').read()
-        for m in re.finditer(r'^(?:static\s+)?[\w\s\*]*?\b(%s_([0-9a-fA-F]{4})\w*)\s*\([^;{)]*\)\s*(?://[^\n]*)?\s*\{' % ovl, s, re.M):
-            out[(u5.OVERLAY_NUMBER[ovl], u5.OVERLAY_BASE[ovl] + int(m.group(2), 16))] = exported(m.group(1))
+        for m in re.finditer(r'^(?:static\s+)?[\w\s\*]*?\b(\w+)\s*\([^;{)]*\)\s*(?://[^\n]*)?\s*\{', s, re.M):
+            info = u5.name_info(m.group(1))
+            if info and info[0] == ovl and info[1] == 'code':
+                out[(u5.OVERLAY_NUMBER[ovl], u5.OVERLAY_BASE[ovl] + info[2])] = exported(m.group(1))
     return out
 
 
@@ -93,15 +95,18 @@ def overlay_functions(ovl):
         if kind != 'ovl' or o != ovl:
             continue
         s = open(os.path.join(u5.SRC, f), encoding='utf-8', errors='replace').read()
-        for m in re.finditer(r'^(?:static\s+)?[\w\s\*]*?\b(%s_([0-9a-fA-F]{4})\w*)\s*\([^;{)]*\)\s*(?://[^\n]*)?\s*\{' % ovl,
-                             s, re.M):
-            out.setdefault(int(m.group(2), 16), exported(m.group(1)))
+        for m in re.finditer(r'^(?:static\s+)?[\w\s\*]*?\b(\w+)\s*\([^;{)]*\)\s*(?://[^\n]*)?\s*\{', s, re.M):
+            info = u5.name_info(m.group(1))
+            if info and info[0] == ovl and info[1] == 'code':
+                out.setdefault(info[2], exported(m.group(1)))
     for p in glob.glob(os.path.join(ASM_DIR, '*.ASM')):
         s = open(p, encoding='latin-1').read()
         if not re.search(r'\b%s\.OVL [0-9a-f]{4}-[0-9a-f]{4}' % ovl, s.split('\n', 1)[0]):
             continue
-        for m in re.finditer(r'^\tPUBLIC\t(%s_([0-9A-Fa-f]{4})\w*)' % ovl, s, re.M):
-            out.setdefault(int(m.group(2), 16), m.group(1))
+        for m in re.finditer(r'^\tPUBLIC\t(\w+)', s, re.M):
+            info = u5.name_info(m.group(1))
+            if info and info[0] == ovl and info[1] == 'code':
+                out.setdefault(info[2], m.group(1))
     return out
 
 
@@ -109,10 +114,13 @@ def data_symbols():
     """{DS address: (name, size or None)} for the D_xxxx variables (vars.h) and S_ arrays."""
     out = {}
     p = os.path.join(u5.SRC, 'vars.h')
-    for m in re.finditer(r'^\s*STUB\s+([\w\s\*]+?)\b(D_([0-9a-f]{4})\w*)\s*((?:\[[^\]]*\])*)\s*;', open(p, encoding='utf-8').read(), re.M):
+    for m in re.finditer(r'^\s*STUB\s+([\w\s\*]+?)\b(\w+)\s*((?:\[[^\]]*\])*)\s*;', open(p, encoding='utf-8').read(), re.M):
+        info = u5.name_info(m.group(2))
+        if not info or info[0] != 'D':
+            continue
         typ = m.group(1).strip()
         size = 1 if typ.split()[-1] in ('u8', 's8', 'byte', 'char', 'bool') and '*' not in typ else 2
-        out[int(m.group(3), 16)] = (exported(m.group(2)), size if not m.group(4) else None, typ)
+        out[info[2]] = (exported(m.group(2)), size if not m.group(3) else None, typ)
     return out
 
 

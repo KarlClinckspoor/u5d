@@ -76,9 +76,9 @@ def gather(gd, notes):
         seg = code_segment(m.obj)
         base = u5.OVERLAY_BASE[ovl]
         for pn, off in sorted(seg.publics.items(), key=lambda kv: kv[1]) if seg else ():
-            mm = u5.NAME_RE.match(pn)
-            if mm and mm.group(1).upper() == ovl:
-                base += int(mm.group(2), 16) - off
+            info = u5.name_info(pn)
+            if info and info[0] == ovl and info[1] == 'code':
+                base += info[2] - off
                 break
         m.code = (seg, base) if seg else None
         m.cfile = cfile

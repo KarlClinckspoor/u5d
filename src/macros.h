@@ -131,14 +131,14 @@
 #define GetCopiedMap(x, y) (D_6708_map.town[y][x])
 
 // current map viewport (for rendering)
-#define GetMapViewport(x, y) (D_ab02_viewTiles[(y) * 0x20 + (x)])
+#define GetMapViewport(x, y) (viewTiles[(y) * 0x20 + (x)])
 
 // actor map
-#define GetActorMap(x, y) (D_ac64_viewActors[(y) * 0x10 + (x)])
+#define GetActorMap(x, y) (viewActors[(y) * 0x10 + (x)])
 
 // dungeon map
-#define GetDungeonMap(x, y, level) (D_595a_dungeonMap[(level) * 0x40 + (y) * 8 + (x)])
-#define GetDungeonMap2(x, y, level) (D_595a_dungeonMap[((y) & 7) * 8 + ((x) & 7) + (level) * 0x40])
+#define GetDungeonMap(x, y, level) (dungeonMap[(level) * 0x40 + (y) * 8 + (x)])
+#define GetDungeonMap2(x, y, level) (dungeonMap[((y) & 7) * 8 + ((x) & 7) + (level) * 0x40])
 
 // combat map
 // ref: https://wiki.ultimacodex.com/wiki/Ultima_V_internal_formats#*.CBT
@@ -165,7 +165,7 @@
 #define COMBAT_MAP_SPECIAL_NEW_TILE_1 9
 #define COMBAT_MAP_SPECIAL_NEW_TILE_2 10
 
-#define GetCombatMap(x, y) (D_ad14_combatMap[(y) * COMBAT_MAP_STRIDE + (x)])
+#define GetCombatMap(x, y) (combatMap[(y) * COMBAT_MAP_STRIDE + (x)])
 #define GetCombatMapSpecial(type, idx) GetCombatMap((idx), (type))
 
 #define GetCombatMapNewTileId(idx) GetCombatMapSpecial(COMBAT_MAP_SPECIAL_NEW_TILES, COMBAT_MAP_SPECIAL_BASE + (idx))

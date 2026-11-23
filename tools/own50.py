@@ -25,7 +25,7 @@ import u5  # noqa: E402
 import movevar  # noqa: E402
 import slots  # noqa: E402
 
-DEF = re.compile(r'^(?:static\s+)?(?:const\s+)?[A-Za-z_]\w*\*?\s+\*?(D_([0-9a-f]{4})\w*)((?:\[[^\]]*\])*)\s*(=|;)', re.M)
+DEF = re.compile(r'^(?:static\s+)?(?:const\s+)?[A-Za-z_]\w*\*?\s+\*?(\w+)((?:\[[^\]]*\])*)\s*(=|;)', re.M)
 ADDR = re.compile(r'(?:_(?:STATIC_)?TEXT\(|/\*)0x([0-9a-fA-F]{4})')
 
 
@@ -41,7 +41,8 @@ def main():
     nl = '\r\n' if '\r\n' in ms else '\n'
     lo = int(re.match(r'D_([0-9a-f]{4})', a.first).group(1), 16)
     hi = int(re.match(r'D_([0-9a-f]{4})', a.last).group(1), 16)
-    names = sorted({(int(m.group(2), 16), m.group(1)) for m in DEF.finditer(vs) if lo <= int(m.group(2), 16) <= hi})
+    names = sorted({(info[2], m.group(1)) for m in DEF.finditer(vs)
+                    for info in [u5.name_info(m.group(1))] if info and info[0] == 'D' and lo <= info[2] <= hi})
 
     # cut the definitions from vars.c
     tables = []

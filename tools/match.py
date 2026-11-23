@@ -69,8 +69,10 @@ def root_starts():
     """Every known function start in ULTIMA.EXE's resident code."""
     starts = set()
     for p in glob.glob(os.path.join(u5.SRC, '*.c')):
-        for m in re.finditer(r'\bULTIMA_([0-9a-fA-F]{4})', open(p, encoding='utf-8', errors='replace').read()):
-            starts.add(int(m.group(1), 16))
+        for w in re.findall(r'\b\w+\b', open(p, encoding='utf-8', errors='replace').read()):
+            info = u5.name_info(w)                       # a name with an address (names.tsv)
+            if info and info[0] == 'ULTIMA':
+                starts.add(info[2])
     starts.update(off for kind, off in runtime_symbols().values())
     return sorted(starts)
 
@@ -86,17 +88,19 @@ def overlay_starts(ovl, cfile):
             continue
         text = omf.Object(p).seg('_TEXT')
         for name in (text.publics if text else ()):
-            m = u5.NAME_RE.match(name)
-            if m and m.group(1).upper() == ovl:
-                starts.add(int(m.group(2), 16))
+            info = u5.name_info(name)
+            if info and info[0] == ovl and info[1] == 'code':
+                starts.add(info[2])
     # and the overlay's assembly parts (src/asm, "NAME.OVL xxxx-yyyy"), by their PUBLIC names
     import asmbuild
     for p in u5.asm_modules():
         place = asmbuild.module_place(p)
         if place and place[0] == ovl:
             starts.add(place[1])
-            for m in re.finditer(r'^\tPUBLIC\t%s_([0-9A-Fa-f]{4})' % ovl, open(p, encoding='latin-1').read(), re.M):
-                starts.add(int(m.group(1), 16))
+            for m in re.finditer(r'^\tPUBLIC\t(\w+)', open(p, encoding='latin-1').read(), re.M):
+                info = u5.name_info(m.group(1))
+                if info and info[0] == ovl and info[1] == 'code':
+                    starts.add(info[2])
     return starts
 
 
@@ -211,9 +215,9 @@ class Module:
         if self.kind == 'ovl':
             known = []
             for name, off, end in ours:
-                m = u5.NAME_RE.match(name)
-                if m and m.group(1).upper() == self.ovl:
-                    known.append((name, off, end, int(m.group(2), 16)))
+                info = u5.name_info(name)
+                if info and info[0] == self.ovl and info[1] == 'code':
+                    known.append((name, off, end, info[2]))
                 elif self.ovl == 'FLAMES' and len(ours) == 1:
                     known.append((name, off, end, 0))
             # an overlay may be built from more than one object (a 5.1 part and a 5.0

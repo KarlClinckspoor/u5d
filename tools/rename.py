@@ -90,6 +90,7 @@ def source_files(docs=False):
     for p in glob.glob(os.path.join(u5.HERE, '*.py')):
         if os.path.basename(p) != 'rename.py':
             out[p] = 'both'
+    out[u5.NAMES_TSV] = 'both'            # the names that carry an address (tools/names.py)
     if docs:
         for p in glob.glob(os.path.join(u5.ROOT, 'docs', '*.md')) + glob.glob(os.path.join(u5.ROOT, 'README*.md')):
             out[p] = 'text'

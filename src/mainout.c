@@ -13,54 +13,54 @@
 #include "mainout.h"
 #include "outsubs.h"
 
-static u16 D_a524_capeToggle; // this object's _BSS (DS:a524)
+static u16 capeToggle; // this object's _BSS (DS:a524)
 
 // defined in mainoutb.c, the part of MAINOUT.OVL built with MSC 5.0
-extern u8 D_2bc0_landMonsters[];
-extern u8 D_2bcc_deepLandMonsters[];
-extern u8 D_2bd4_seaMonsters[];
-extern u8 D_2bda_deepSeaMonsters[];
-extern u8 D_2bdc_landWeights[];
-extern u8 D_2be8_deepLandWeights[];
-extern u8 D_2bf0_seaWeights[];
-extern u8 D_2bf6_deepSeaWeights[];
-int MAINOUT_1a60_MonstersTurn(void);
-void MAINOUT_109e_DamageVehicle(void);
-void MAINOUT_1be8_BridgeTrolls(void);
+extern u8 landMonsters[];
+extern u8 deepLandMonsters[];
+extern u8 seaMonsters[];
+extern u8 deepSeaMonsters[];
+extern u8 landWeights[];
+extern u8 deepLandWeights[];
+extern u8 seaWeights[];
+extern u8 deepSeaWeights[];
+int MonstersTurn(void);
+void DamageVehicle(void);
+void BridgeTrolls(void);
 
 // enters the overworld: clears the sky, sets the view origin around the party, loads the map chunks, the light map, wind, sun and moons, the underworld's items
-void MAINOUT_0000_SetUpOverworld(void)
+void SetUpOverworld(void)
 {
-    ULTIMA_4be8_ClearSky();
-    ULTIMA_4f7c_AdvanceTime(0);
+    ClearSky();
+    AdvanceTime(0);
 
-    D_58a4_viewOn = D_5956_newPrompt = D_24e6_viewDirty = 1;
-    D_5955_sailDir = 0;
-    D_589b_mapOriginX = D_5896_mapX & 0xf0;
+    viewOn = newPrompt = viewDirty = 1;
+    sailDir = 0;
+    mapOriginX = D_5896_mapX & 0xf0;
     if ((D_5896_mapX & 0xf) < 8)
     {
-        D_589b_mapOriginX = (D_589b_mapOriginX - 0x10) & 0xf0;
+        mapOriginX = (mapOriginX - 0x10) & 0xf0;
     }
 
     // 0034
-    D_589c_mapOriginY = D_5897_mapY & 0xf0;
+    mapOriginY = D_5897_mapY & 0xf0;
     if ((D_5897_mapY & 0xf) < 8)
     {
-        D_589c_mapOriginY = (D_589c_mapOriginY - 0x10) & 0xf0;
+        mapOriginY = (mapOriginY - 0x10) & 0xf0;
     }
 
     // 004f
-    OUTSUBS_01b4_LoadViewChunks(0, 1);
-    OUTSUBS_01b4_LoadViewChunks(0, -1);
-    ULTIMA_4f7c_AdvanceTime(0);
-    ULTIMA_5e4a_BuildLightMap();
-    ULTIMA_2e96_SetWindDirection(-1);
-    ULTIMA_4a84_DrawSunAndMoons();
-    OUTSUBS_0566_PlaceAmuletShards();
+    LoadViewChunks(0, 1);
+    LoadViewChunks(0, -1);
+    AdvanceTime(0);
+    BuildLightMap();
+    SetWindDirection(-1);
+    DrawSunAndMoons();
+    PlaceAmuletShards();
 }
 
 // one frame's wait when an actor of the table is within five cells (only actor 1 is looked at: the loop breaks at once)
-void MAINOUT_007a_WaitIfActorNear(void)
+void WaitIfActorNear(void)
 {
     int distX;
     int distY;
@@ -70,14 +70,14 @@ void MAINOUT_007a_WaitIfActorNear(void)
 
     for (index = 1; index < 32; index++)
     {
-        actor_h = &D_5c5a_actors[index];
+        actor_h = &actors[index];
 
         distX = abs(D_5896_mapX - actor_h->x);
         distY = abs(D_5897_mapY - actor_h->y);
 
         if (actor_h->tile != 0 && actor_h->z == D_5895_mapLevel && distX < 6 && distY < 6)
         {
-            ULTIMA_3ae6_WaitFrames(1);
+            WaitFrames(1);
         }
 
         break;
@@ -85,79 +85,79 @@ void MAINOUT_007a_WaitIfActorNear(void)
 }
 
 // "Ride/Fly/Row/Head": turns the party's tile to the direction; 1 when the party only turned (no step), also a frigate under no wind
-static int MAINOUT_00da_TurnVehicle(int dir)
+static int TurnVehicle(int dir)
 {
     int oldTile;
     int turned = 0;
 
-    switch (D_587c_partyTile & 0xfc)
+    switch (partyTile & 0xfc)
     {
     case TILE_ACTOR_HORSE:
         // 010a
-        ULTIMA_1850_PrintString(/*0x2946*/ "Ride ");
+        PrintString(/*0x2946*/ "Ride ");
         if (dir == 1)
         {
-            D_587c_partyTile = TILE_ACTOR_RIDING_HORSE;
+            partyTile = TILE_ACTOR_RIDING_HORSE;
         }
         else if (dir == 3)
         {
-            D_587c_partyTile = TILE_ACTOR_RIDING_HORSE + 1;
+            partyTile = TILE_ACTOR_RIDING_HORSE + 1;
         }
         break;
 
     case TILE_ACTOR_FLYING_CARPET:
         // 0130
-        ULTIMA_1850_PrintString(/*0x294c*/ "Fly ");
+        PrintString(/*0x294c*/ "Fly ");
         if (dir == 1)
         {
-            D_587c_partyTile = TILE_ACTOR_FLYING_CARPET;
+            partyTile = TILE_ACTOR_FLYING_CARPET;
         }
         else if (dir == 3)
         {
-            D_587c_partyTile = TILE_ACTOR_FLYING_CARPET + 1;
+            partyTile = TILE_ACTOR_FLYING_CARPET + 1;
         }
         break;
 
     case TILE_ACTOR_SKIFF:
         // 0152
-        ULTIMA_1850_PrintString(/*0x2951*/ "Row ");
-        D_587c_partyTile = (char)dir + (D_587c_partyTile & 0xfc);
+        PrintString(/*0x2951*/ "Row ");
+        partyTile = (char)dir + (partyTile & 0xfc);
         break;
 
     case TILE_ACTOR_FRIGATE_20:
     case TILE_ACTOR_FRIGATE_24:
         // 016a
-        oldTile = D_587c_partyTile;
-        D_587c_partyTile = (char)dir + (D_587c_partyTile & 0xfc);
-        if (oldTile != D_587c_partyTile)
+        oldTile = partyTile;
+        partyTile = (char)dir + (partyTile & 0xfc);
+        if (oldTile != partyTile)
         {
-            ULTIMA_1850_PrintString(/*0x2956*/ "Head ");
+            PrintString(/*0x2956*/ "Head ");
 
             switch (dir)
             {
             case 0:
-                ULTIMA_1850_PrintString(/*0x295c*/ "North\n");
+                PrintString(/*0x295c*/ "North\n");
                 break;
             case 2:
-                ULTIMA_1850_PrintString(/*0x2963*/ "South\n");
+                PrintString(/*0x2963*/ "South\n");
                 break;
             case 1:
-                ULTIMA_1850_PrintString(/*0x296a*/ "East\n");
+                PrintString(/*0x296a*/ "East\n");
                 break;
             case 3:
-                ULTIMA_1850_PrintString(/*0x2970*/ "West\n");
+                PrintString(/*0x2970*/ "West\n");
                 break;
             }
 
             // 01ad
-            D_5956_newPrompt = turned = 1;
-            if (D_5c5a_actors[0].value < 0x32)
+            newPrompt = turned = 1;
+            if (actors[0].value < 0x32)
             {
-                ULTIMA_1850_PrintString(/*0x2976*/ "Hull weak!\n");
+                PrintString(/*0x2976*/ "Hull weak!\n");
             }
         }
         // 01dc
-        else if (D_587c_partyTile < TILE_ACTOR_FRIGATE_24 && D_5892_windDir == 0)
+        else if (partyTile < TILE_ACTOR_FRIGATE_24 && windDir == 0)
         {
             turned = 1;
         }
@@ -170,23 +170,23 @@ static int MAINOUT_00da_TurnVehicle(int dir)
 }
 
 // whether the party may step by (x, y): the actor there and the walkable tile decide; prints Blocked!, OUCH!, COLLISION!, BREAKING UP!, Docked!
-static int MAINOUT_01fe_CanStepTo(int stepX, int stepY)
+static int MainoutCanStepTo(int stepX, int stepY)
 {
     int destTile;
     int blockerTile;
     bool canStep_c;
 
-    if ((D_587c_partyTile & 0xfc) == TILE_ACTOR_FRIGATE_24)
+    if ((partyTile & 0xfc) == TILE_ACTOR_FRIGATE_24)
     {
-        ULTIMA_1850_PrintString(/*0x2982*/ "Rowing!\n");
+        PrintString(/*0x2982*/ "Rowing!\n");
     }
 
     canStep_c = 1;
-    blockerTile = ULTIMA_368e_FindActorTileAtPos(stepX + (uint)D_5896_mapX, stepY + (uint)D_5897_mapY, D_5895_mapLevel);
+    blockerTile = FindActorTileAtPos(stepX + (uint)D_5896_mapX, stepY + (uint)D_5897_mapY, D_5895_mapLevel);
     if (blockerTile != 0)
     {
         canStep_c = 0;
-        if (D_587c_partyTile >= TILE_ACTOR_30 || D_587c_partyTile < TILE_ACTOR_FRIGATE_20)
+        if (partyTile >= TILE_ACTOR_30 || partyTile < TILE_ACTOR_FRIGATE_20)
         {
             if ((blockerTile >= TILE_ACTOR_FRIGATE_24 && blockerTile < TILE_ACTOR_PIRATE) || blockerTile == TILE_ACTOR_CARPET || (blockerTile & 0xfe) == TILE_ACTOR_HORSE)
             {
@@ -195,7 +195,7 @@ static int MAINOUT_01fe_CanStepTo(int stepX, int stepY)
         }
         else
         {
-            if (D_587c_partyTile >= TILE_ACTOR_SKIFF && blockerTile >= TILE_ACTOR_FRIGATE_24 && blockerTile < TILE_ACTOR_SKIFF)
+            if (partyTile >= TILE_ACTOR_SKIFF && blockerTile >= TILE_ACTOR_FRIGATE_24 && blockerTile < TILE_ACTOR_SKIFF)
             {
                 canStep_c = 1;
             }
@@ -204,47 +204,47 @@ static int MAINOUT_01fe_CanStepTo(int stepX, int stepY)
 
     destTile = GetMapViewport(stepX + 5, stepY + 5);
 
-    canStep_c = canStep_c && ULTIMA_2c4c_IsWalkableTile(D_587c_partyTile, destTile) != 0 ? 1 : 0;
+    canStep_c = canStep_c && IsWalkableTile(partyTile, destTile) != 0 ? 1 : 0;
     if (canStep_c == 0)
     {
-        if (D_5955_sailDir != 0)
+        if (sailDir != 0)
         {
             if (destTile == TILE_MAP_WATER_3)
             {
-                ULTIMA_1850_PrintString(/*0x298b*/ "BREAKING UP!\n");
+                PrintString(/*0x298b*/ "BREAKING UP!\n");
             }
             else if (destTile != TILE_MAP_47)
             {
-                ULTIMA_1850_PrintString(/*0x2999*/ "COLLISION!\n");
+                PrintString(/*0x2999*/ "COLLISION!\n");
             }
 
             if (destTile == TILE_MAP_47)
             {
-                ULTIMA_1850_PrintString(/*0x29a5*/ "Docked!\n");
-                D_587c_partyTile += 4;
+                PrintString(/*0x29a5*/ "Docked!\n");
+                partyTile += 4;
             }
             else
             {
-                ULTIMA_223c_AudioWhiteNoise(100, 2000, 300);
-                MAINOUT_109e_DamageVehicle();
+                AudioWhiteNoise(100, 2000, 300);
+                DamageVehicle();
             }
 
-            D_5955_sailDir = 0;
-            D_5956_newPrompt = 1;
+            sailDir = 0;
+            newPrompt = 1;
         }
-        else if (D_587c_partyTile < TILE_ACTOR_FRIGATE_20 || (blockerTile & 0xfc) != TILE_ACTOR_WHIRLPOOL)
+        else if (partyTile < TILE_ACTOR_FRIGATE_20 || (blockerTile & 0xfc) != TILE_ACTOR_WHIRLPOOL)
         {
-            ULTIMA_1850_PrintString(/*0x29ae*/ "Blocked!\n");
+            PrintString(/*0x29ae*/ "Blocked!\n");
             if (destTile == TILE_MAP_2F)
             {
-                ULTIMA_1850_PrintString(/*0x29b8*/ "OUCH!\n");
-                ULTIMA_2aa8_DamageParty();
+                PrintString(/*0x29b8*/ "OUCH!\n");
+                DamageParty();
             }
             else
             {
-                ULTIMA_22c0_AudioTone(0xa5, 200);
+                AudioTone(0xa5, 200);
             }
-            ULTIMA_1b16_ClearKbdBuffer();
+            ClearKbdBuffer();
         }
     }
 
@@ -252,29 +252,29 @@ static int MAINOUT_01fe_CanStepTo(int stepX, int stepY)
 }
 
 // the party moves by (x, y); near the edge of the 32x32 view the chunks are shifted and loaded
-void MAINOUT_0354_MoveParty(int stepX, int stepY)
+void MainoutMoveParty(int stepX, int stepY)
 {
     int relY;
     int relX;
 
     D_5896_mapX += stepX;
     D_5897_mapY += stepY;
-    D_24e6_viewDirty = 1;
-    relX = D_5896_mapX - D_589b_mapOriginX & 0x1f;
-    relY = D_5897_mapY - D_589c_mapOriginY & 0x1f;
+    viewDirty = 1;
+    relX = D_5896_mapX - mapOriginX & 0x1f;
+    relY = D_5897_mapY - mapOriginY & 0x1f;
 
     if (relX < 5 || relX > 0x1a || relY < 5 || relY > 0x1a)
     {
-        OUTSUBS_02c8_ShiftChunks(stepX, stepY); // 7bd2
-        D_589b_mapOriginX = (char)stepX * 16 + D_589b_mapOriginX & 0xf0; // wrap x?
-        D_589c_mapOriginY = (char)stepY * 16 + D_589c_mapOriginY & 0xf0; // wrap y?
-        OUTSUBS_01b4_LoadViewChunks(stepX, stepY); // 7b8a
-        ULTIMA_5e4a_BuildLightMap();
+        ShiftChunks(stepX, stepY); // 7bd2
+        mapOriginX = (char)stepX * 16 + mapOriginX & 0xf0; // wrap x?
+        mapOriginY = (char)stepY * 16 + mapOriginY & 0xf0; // wrap y?
+        LoadViewChunks(stepX, stepY); // 7b8a
+        BuildLightMap();
     }
 }
 
 // after a step: on rough terrain (forest, hills, mountains) the monsters move once or twice more, "Slow progress!" / "Very slow!"
-static void MAINOUT_03e0_SlowTerrain(void)
+static void SlowTerrain(void)
 {
     int tile;
     int terrainClass;
@@ -282,7 +282,7 @@ static void MAINOUT_03e0_SlowTerrain(void)
 
     moved = 0;
 
-    tile = *ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY);
+    tile = *GetTileAddr(D_5896_mapX, D_5897_mapY);
     if (tile == TILE_MAP_GRASS)
     {
         // 0406
@@ -312,60 +312,60 @@ static void MAINOUT_03e0_SlowTerrain(void)
     {
     case 1:
         // 0448
-        moved += MAINOUT_1a60_MonstersTurn();
-        MAINOUT_007a_WaitIfActorNear();
+        moved += MonstersTurn();
+        WaitIfActorNear();
 
         if (moved == 0)
         {
-            ULTIMA_1850_PrintString(/*0x29bf*/ "Slow progress!\n");
+            PrintString(/*0x29bf*/ "Slow progress!\n");
         }
 
-        ULTIMA_4f7c_AdvanceTime(2);
+        AdvanceTime(2);
         break;
 
     case 2:
         // 0468
-        moved += MAINOUT_1a60_MonstersTurn();
-        MAINOUT_007a_WaitIfActorNear();
+        moved += MonstersTurn();
+        WaitIfActorNear();
 
-        moved += MAINOUT_1a60_MonstersTurn();
-        MAINOUT_007a_WaitIfActorNear();
+        moved += MonstersTurn();
+        WaitIfActorNear();
 
         if (moved == 0)
         {
-            ULTIMA_1850_PrintString(/*0x29cf*/ "Very slow!\n");
+            PrintString(/*0x29cf*/ "Very slow!\n");
         }
 
-        ULTIMA_4f7c_AdvanceTime(4);
+        AdvanceTime(4);
         break;
     }
 }
 
-u8 D_29f6_windDx[4] = { 0x00, 0x00, 0xFF, 0x01 };
+u8 windDx[4] = { 0x00, 0x00, 0xFF, 0x01 };
 
-u8 D_29fa_windDy[4] = { 0x01, 0xFF, 0x00, 0x00 };
+u8 windDy[4] = { 0x01, 0xFF, 0x00, 0x00 };
 
 // a direction key: prints the direction, turns the vehicle, steps when allowed (and the frigate sets sail); 1 when it stepped
-static int MAINOUT_0490_WalkInDirection(int dir, int noMove)
+static int WalkInDirection(int dir, int noMove)
 {
     int stepY;
     int stepX;
     int result_b;
 
-    if ((D_587c_partyTile & 0xfc) == TILE_ACTOR_FRIGATE_20)
+    if ((partyTile & 0xfc) == TILE_ACTOR_FRIGATE_20)
     {
-        if (dir != D_5955_sailDir)
+        if (dir != sailDir)
         {
-            D_5955_sailDir = dir;
-            D_5883_sailCounter = 0;
+            sailDir = dir;
+            sailCounter = 0;
         }
-        D_5956_newPrompt = 0;
+        newPrompt = 0;
     }
 
     // 04b8
-    if (D_587c_partyTile == TILE_ACTOR_AVATAR || (D_587c_partyTile & 0xfe) == TILE_ACTOR_RIDING_HORSE)
+    if (partyTile == TILE_ACTOR_AVATAR || (partyTile & 0xfe) == TILE_ACTOR_RIDING_HORSE)
     {
-        ULTIMA_433e_AudioFootstep();
+        AudioFootstep();
     }
 
     // 04cb
@@ -376,69 +376,69 @@ static int MAINOUT_0490_WalkInDirection(int dir, int noMove)
     case DIR_UP:
         // 04f0
         stepY--;
-        if (MAINOUT_00da_TurnVehicle(0))
+        if (TurnVehicle(0))
         {
             return;
         }
 
         // 0500
-        if (D_5955_sailDir == 0)
+        if (sailDir == 0)
         {
-            ULTIMA_1850_PrintString(/*0x29db*/ "North\n");
+            PrintString(/*0x29db*/ "North\n");
         }
         break;
 
     case DIR_DOWN:
         // 054e
         stepY++;
-        if (MAINOUT_00da_TurnVehicle(2))
+        if (TurnVehicle(2))
         {
             return;
         }
-        if (D_5955_sailDir == 0)
+        if (sailDir == 0)
         {
-            ULTIMA_1850_PrintString(/*0x29e2*/ "South\n");
+            PrintString(/*0x29e2*/ "South\n");
         }
         break;
 
     case DIR_RIGHT:
         // 055c
         stepX++;
-        if (MAINOUT_00da_TurnVehicle(1))
+        if (TurnVehicle(1))
         {
             return;
         }
-        if (D_5955_sailDir == 0)
+        if (sailDir == 0)
         {
-            ULTIMA_1850_PrintString(/*0x29e9*/ "East\n");
+            PrintString(/*0x29e9*/ "East\n");
         }
         break;
 
     case DIR_LEFT:
         // 0576
         stepX--;
-        if (MAINOUT_00da_TurnVehicle(3))
+        if (TurnVehicle(3))
         {
             return;
         }
-        if (D_5955_sailDir == 0)
+        if (sailDir == 0)
         {
-            ULTIMA_1850_PrintString(/*0x29ef*/ "West\n");
+            PrintString(/*0x29ef*/ "West\n");
         }
         break;
     }
 
     // 050e
-    result_b = MAINOUT_01fe_CanStepTo(stepX, stepY);
+    result_b = MainoutCanStepTo(stepX, stepY);
     if (noMove == 0 && result_b != 0)
     {
-        if ((D_587c_partyTile & 0xfe) == TILE_ACTOR_RIDING_HORSE)
+        if ((partyTile & 0xfe) == TILE_ACTOR_RIDING_HORSE)
         {
-            ULTIMA_433e_AudioFootstep();
+            AudioFootstep();
         }
         // 0530
-        MAINOUT_0354_MoveParty(stepX, stepY);
-        MAINOUT_03e0_SlowTerrain();
+        MainoutMoveParty(stepX, stepY);
+        SlowTerrain();
     }
     return result_b;
 }
@@ -448,46 +448,46 @@ static int MAINOUT_0490_WalkInDirection(int dir, int noMove)
 // u8 D_29f9[4]; // wind-releated
 
 // redraws, handles the falling tile, prints the prompt; a frigate under sail moves with the wind until a key; returns the key
-static int MAINOUT_0598_WaitForKey(void)
+static int MainoutWaitForKey(void)
 {
     int windStepY;
     int windStepX;
     int key_h;
     int windScore_c;
 
-    ULTIMA_5910_UpdateFrame();
-    if (D_a9fa_vitalsDirty != 0)
+    UpdateFrame();
+    if (vitalsDirty != 0)
     {
-        ULTIMA_2900_UpdateVitalsDisplay();
-        D_a9fa_vitalsDirty = 0;
+        UpdateVitalsDisplay();
+        vitalsDirty = 0;
     }
 
     // 05b2
     if ((GetMapViewport(5, 6) & 0xfc) == 0xd4)
     {
-        OUTSUBS_0458_Falls();
+        Falls();
         key_h = 0;
     }
     else
     {
         // 05c6
-        if (D_5956_newPrompt != 0)
+        if (newPrompt != 0)
         {
-            ULTIMA_16ba_PrintChar('\n');
-            ULTIMA_4c2a_PrintLeftCap();
+            PrintChar('\n');
+            PrintLeftCap();
         }
 
         // 05d7
-        D_5956_newPrompt = 1;
-        while (D_5955_sailDir != 0)
+        newPrompt = 1;
+        while (sailDir != 0)
         {
-            key_h = ULTIMA_2032_ToUpper(ULTIMA_1b38_PollKeyWithCursor());
-            if (key_h != 0 && key_h != D_5955_sailDir)
+            key_h = ToUpperChar(PollKeyWithCursor());
+            if (key_h != 0 && key_h != sailDir)
                 break;
 
             // 05e6
-            key_h = (uint)D_5955_sailDir;
-            if (D_5892_windDir != 0)
+            key_h = (uint)sailDir;
+            if (windDir != 0)
             {
                 windStepX = windStepY = 0;
 
@@ -513,46 +513,46 @@ static int MAINOUT_0598_WaitForKey(void)
 
                 // 0619
                 windScore_c = 1;
-                if (D_29f6_windDx[D_5892_windDir - 1] != windStepX)
+                if (windDx[windDir - 1] != windStepX)
                 {
                     windScore_c++;
                 }
                 // 062e
-                if (D_29fa_windDy[D_5892_windDir - 1] != windStepY)
+                if (windDy[windDir - 1] != windStepY)
                 {
                     windScore_c++;
                 }
                 // 0640
-                if (windScore_c % 3 <= (uint)D_5883_sailCounter)
+                if (windScore_c % 3 <= (uint)sailCounter)
                 {
-                    D_5883_sailCounter = 0;
+                    sailCounter = 0;
                     break;
                 }
             }
 
             // 0670
-            if (D_57bb_hmsCapePlans > 0x7f)
+            if (hmsCapePlans > 0x7f)
             {
-                D_a524_capeToggle = (uint)(D_a524_capeToggle == 0);
-                ULTIMA_4f7c_AdvanceTime(1);
+                capeToggle = (uint)(capeToggle == 0);
+                AdvanceTime(1);
             }
             else
             {
-                ULTIMA_4f7c_AdvanceTime(2);
+                AdvanceTime(2);
             }
 
-            if (D_a524_capeToggle == 0 || D_57bb_hmsCapePlans < 0x80)
+            if (capeToggle == 0 || hmsCapePlans < 0x80)
             {
-                MAINOUT_1a60_MonstersTurn();
+                MonstersTurn();
             }
 
-            ULTIMA_3ae6_WaitFrames(1);
-            D_5883_sailCounter = D_5883_sailCounter + 1;
+            WaitFrames(1);
+            sailCounter = sailCounter + 1;
         }
 
-        if (D_5955_sailDir == 0)
+        if (sailDir == 0)
         {
-            key_h = ULTIMA_266c_GetChar();
+            key_h = GetChar();
         }
     }
 
@@ -560,34 +560,34 @@ static int MAINOUT_0598_WaitForKey(void)
 }
 
 // the Attack command: a direction, then combat with what is there, if it can be fought (not on a skiff or carpet over water)
-int MAINOUT_06ec_AttackCmd(void)
+int MainoutAttackCmd(void)
 {
     int targetX_b;
     int targetY_b;
     int result_b = 0;
     int targetTile;
 
-    ULTIMA_1850_PrintString(/*0x29fe*/ "Attack-");
-    if ((*ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY) < TILE_MAP_POISON) &&
-        ((D_587c_partyTile & 0xfc) == TILE_ACTOR_SKIFF || (D_587c_partyTile & 0xfe) == TILE_ACTOR_FLYING_CARPET))
+    PrintString(/*0x29fe*/ "Attack-");
+    if ((*GetTileAddr(D_5896_mapX, D_5897_mapY) < TILE_MAP_POISON) &&
+        ((partyTile & 0xfc) == TILE_ACTOR_SKIFF || (partyTile & 0xfe) == TILE_ACTOR_FLYING_CARPET))
     {
-        ULTIMA_1850_PrintString(/*0x2a06*/ "On foot!\n");
+        PrintString(/*0x2a06*/ "On foot!\n");
         result_b = 0;
     }
     else
     {
-        if (ULTIMA_35ec_SelectDirection() != 0)
+        if (SelectDirection() != 0)
         {
-            targetX_b = (uint)D_5896_mapX + D_5876_tempX;
-            targetY_b = (uint)D_5897_mapY + D_5878_tempY;
-            targetTile = ULTIMA_368e_FindActorTileAtPos(targetX_b, targetY_b, D_5895_mapLevel) & 0xfc;
+            targetX_b = (uint)D_5896_mapX + tempX;
+            targetY_b = (uint)D_5897_mapY + tempY;
+            targetTile = FindActorTileAtPos(targetX_b, targetY_b, D_5895_mapLevel) & 0xfc;
             if (targetTile == TILE_ACTOR_PIRATE || (targetTile != TILE_ACTOR_SHARD && targetTile != TILE_ACTOR_E8 && targetTile >= TILE_ACTOR_WIZARD))
             {
-                ULTIMA_6150_Combat(D_5876_tempX);
+                Combat(tempX);
             }
             else
             {
-                ULTIMA_1850_PrintString(/*0x2a10*/ "Nothing to attack!\n");
+                PrintString(/*0x2a10*/ "Nothing to attack!\n");
             }
         }
     }
@@ -595,81 +595,81 @@ int MAINOUT_06ec_AttackCmd(void)
 }
 
 // prints what is entered, finds the dungeon at the party's position (D_1e8a/D_1eb2, entries 0x20-0x27), saves the actors and reads its DUNGEON.DAT level; Doom's entrance may be guarded
-static int MAINOUT_0790_LoadDungeon(char* verb)
+static int LoadDungeon(char* verb)
 {
     int slot;
     int dungeonIndex_i;
 
-    ULTIMA_1850_PrintString(verb);
+    PrintString(verb);
     for (dungeonIndex_i = 0x20; dungeonIndex_i < 0x28; dungeonIndex_i++)
     {
-        if (D_1e8a_placeX[dungeonIndex_i] == D_5896_mapX && D_1eb2_placeY[dungeonIndex_i] == D_5897_mapY)
+        if (placeX[dungeonIndex_i] == D_5896_mapX && placeY[dungeonIndex_i] == D_5897_mapY)
             break;
     }
 
     if (dungeonIndex_i < 0x28)
     {
-        if (D_587c_partyTile != TILE_ACTOR_AVATAR)
+        if (partyTile != TILE_ACTOR_AVATAR)
         {
-            ULTIMA_1850_PrintString(/*0x2a24*/ "\nOn foot!\n");
+            PrintString(/*0x2a24*/ "\nOn foot!\n");
             return; // sic
         }
 
         if (dungeonIndex_i == 0x27)
         {
-            if ((D_58c8_shadowlordTowns[0] & D_58c8_shadowlordTowns[1] & D_58c8_shadowlordTowns[2]) < 0x80)
+            if ((shadowlordTowns[0] & shadowlordTowns[1] & shadowlordTowns[2]) < 0x80)
             {
-                ULTIMA_1850_PrintString(/*0x2a2f*/ "\nAttacked at entrance!\n");
-                slot = ULTIMA_38e4_FindActorSlot();
-                D_5c5a_actors[slot].tile = TILE_ACTOR_SHADOWLORD;
-                ULTIMA_6150_Combat(slot);
+                PrintString(/*0x2a2f*/ "\nAttacked at entrance!\n");
+                slot = FindActorSlot();
+                actors[slot].tile = TILE_ACTOR_SHADOWLORD;
+                Combat(slot);
                 return; // sic
             }
         }
         else
         {
-            ULTIMA_1850_PrintString(/*0x2a47*/ "\n\n");
-            ULTIMA_16ba_PrintChar(CTRL_CHAR_CENTER_TEXT);
-            ULTIMA_1850_PrintString(D_1e3a_mapNames[dungeonIndex_i]);
-            ULTIMA_16ba_PrintChar(CTRL_CHAR_UNCENTER_TEXT);
+            PrintString(/*0x2a47*/ "\n\n");
+            PrintChar(CTRL_CHAR_CENTER_TEXT);
+            PrintString(mapNames[dungeonIndex_i]);
+            PrintChar(CTRL_CHAR_UNCENTER_TEXT);
         }
 
-        ULTIMA_16ba_PrintChar('\n');
-        if (D_a9bd_curDisk[0] != 1)
+        PrintChar('\n');
+        if (curDisk[0] != 1)
         {
-            ULTIMA_251e_SwitchDisks(1);
-            while (ULTIMA_1674_TestOpenFile(/*0x2a4a*/ "BRIT.DAT") == 0) {}
+            SwitchDisks(1);
+            while (TestOpenFile(/*0x2a4a*/ "BRIT.DAT") == 0) {}
         }
 
-        ULTIMA_25d8_WriteFileToDisk(OUTSUBS_0368_GetWorldSavefile(), D_5c5a_actors, 0x100);
-        ULTIMA_251e_SwitchDisks(2);
-        ULTIMA_256e_ReadFileFromDisk(/*0x2a53*/ "DUNGEON.DAT", D_595a_dungeonMap, 0x200, dungeonIndex_i * 0x200 + -0x4000);
-        D_5893_mapId = dungeonIndex_i + 1;
+        WriteFileToDisk(GetWorldSavefile(), actors, 0x100);
+        SwitchDisks(2);
+        ReadFileFromDisk(/*0x2a53*/ "DUNGEON.DAT", dungeonMap, 0x200, dungeonIndex_i * 0x200 + -0x4000);
+        mapId = dungeonIndex_i + 1;
         if (D_5895_mapLevel != 0 && (byte)(dungeonIndex_i + 1) != 0x28)
         {
             D_5895_mapLevel = 7;
-            D_6603_dungeonFacing = 3;
-            D_6602_dungeonMoveDir = 4;
+            dungeonFacing = 3;
+            dungeonMoveDir = 4;
             D_5896_mapX = D_5897_mapY = 7;
         }
         else
         {
             D_5895_mapLevel = 0;
             D_5896_mapX = D_5897_mapY = 1;
-            D_6603_dungeonFacing = 1;
-            D_6602_dungeonMoveDir = 5;
+            dungeonFacing = 1;
+            dungeonMoveDir = 5;
         }
     }
     else
     {
-        ULTIMA_1850_PrintString(/*0x2a5f*/ "\nWhat dungeon?\n");
+        PrintString(/*0x2a5f*/ "\nWhat dungeon?\n");
     }
 
     return 1;
 }
 
 // the Enter command: by the tile under the party, a shrine, a town, castle, keep, hut, lighthouse, dungeon, cave, mine or the palace of Blackthorn; 1 when it went in
-int MAINOUT_08de_EnterCmd(void)
+int EnterCmd(void)
 {
     int shrineIndex;
     int result_b;
@@ -677,79 +677,79 @@ int MAINOUT_08de_EnterCmd(void)
 
     result_b = 1;
 
-    ULTIMA_1850_PrintString(/*0x2a6f*/ "Enter ");
+    PrintString(/*0x2a6f*/ "Enter ");
 
-    tile = *ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY);
+    tile = *GetTileAddr(D_5896_mapX, D_5897_mapY);
     switch (tile)
     {
     case TILE_MAP_SHRINE:
-        ULTIMA_1850_PrintString(/*0x2a76*/ "the shrine of\n");
+        PrintString(/*0x2a76*/ "the shrine of\n");
         for (shrineIndex = 0; shrineIndex < 8; shrineIndex++)
         {
-            if (D_1f6e_shrineX[shrineIndex] == D_5896_mapX && D_1f76_shrineY[shrineIndex] == D_5897_mapY)
+            if (shrineX[shrineIndex] == D_5896_mapX && shrineY[shrineIndex] == D_5897_mapY)
                 break;
         }
 
-        ULTIMA_1850_PrintString(D_1f4e_virtueNames[shrineIndex]);
-        ULTIMA_16ba_PrintChar('\n');
-        CAST2_0e76_Shrine();
+        PrintString(virtueNames[shrineIndex]);
+        PrintChar('\n');
+        Shrine();
         break;
 
     case TILE_MAP_HUT:
-        result_b = OUTSUBS_0388_EnterTown(/*0x2a85*/ "hut");
+        result_b = EnterTown(/*0x2a85*/ "hut");
         break;
 
     case TILE_MAP_CODEX:
-        ULTIMA_1850_PrintString(/*0x2a89*/ "the Shrine of the Codex!\n");
-        CAST2_0e76_Shrine();
+        PrintString(/*0x2a89*/ "the Shrine of the Codex!\n");
+        Shrine();
         break;
 
     case TILE_MAP_KEEP:
-        result_b = OUTSUBS_0388_EnterTown(/*0x2aa3*/ "keep");
+        result_b = EnterTown(/*0x2aa3*/ "keep");
         break;
 
     case TILE_MAP_VILLAGE:
-        result_b = OUTSUBS_0388_EnterTown(/*0x2aa8*/ "village");
+        result_b = EnterTown(/*0x2aa8*/ "village");
         break;
 
     case TILE_MAP_TOWNE:
-        result_b = OUTSUBS_0388_EnterTown(/*0x2ab0*/ "towne");
+        result_b = EnterTown(/*0x2ab0*/ "towne");
         break;
 
     case TILE_MAP_CASTLE:
-        result_b = OUTSUBS_0388_EnterTown(/*0x2ab6*/ "castle");
+        result_b = EnterTown(/*0x2ab6*/ "castle");
         break;
 
     case TILE_MAP_CAVE:
-        result_b = MAINOUT_0790_LoadDungeon(/*0x2abd*/ "cave");
+        result_b = LoadDungeon(/*0x2abd*/ "cave");
         break;
 
     case TILE_MAP_MINE:
-        result_b = MAINOUT_0790_LoadDungeon(/*0x2ac2*/ "mine");
+        result_b = LoadDungeon(/*0x2ac2*/ "mine");
         break;
 
     case TILE_MAP_DUNGEON:
-        result_b = MAINOUT_0790_LoadDungeon(/*0x2ac7*/ "dungeon");
+        result_b = LoadDungeon(/*0x2ac7*/ "dungeon");
         break;
 
     case TILE_MAP_RUINS:
-        ULTIMA_1850_PrintString(/*0x2acf*/ "ruins");
+        PrintString(/*0x2acf*/ "ruins");
         break;
 
     case TILE_MAP_LIGHTHOUSE:
-        result_b = OUTSUBS_0388_EnterTown(/*0x2ad5*/ "lighthouse");
+        result_b = EnterTown(/*0x2ad5*/ "lighthouse");
         break;
 
     case TILE_MAP_PALACEBT:
-        result_b = OUTSUBS_0388_EnterTown(/*0x2ae0*/ "the palace of Blackthorn!");
+        result_b = EnterTown(/*0x2ae0*/ "the palace of Blackthorn!");
         break;
 
     case TILE_MAP_CASTLELB:
-        result_b = OUTSUBS_0388_EnterTown(/*0x2afa*/ "the Castle of Lord British!");
+        result_b = EnterTown(/*0x2afa*/ "the Castle of Lord British!");
         break;
 
     default:
-        ULTIMA_1850_PrintString(/*0x2b16*/ "What?\n");
+        PrintString(/*0x2b16*/ "What?\n");
         result_b = 0;
         break;
     }
@@ -758,42 +758,42 @@ int MAINOUT_08de_EnterCmd(void)
 }
 
 // on a blank (0xff) tile without the status 0xe the light level is 0, the view is redrawn once
-static int MAINOUT_0a1a_UpdateDarkness(int wasDark)
+static int UpdateDarkness(int wasDark)
 {
-    if (*ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY) == 0xff && D_587a_statusIcon != 0xe)
+    if (*GetTileAddr(D_5896_mapX, D_5897_mapY) == 0xff && statusIcon != 0xe)
     {
         D_58a5_lightLevel = 0;
         if (wasDark == 0)
         {
-            ULTIMA_5910_UpdateFrame();
+            UpdateFrame();
             wasDark = 1;
         }
     }
     else
     {
         wasDark = 0;
-        ULTIMA_4f7c_AdvanceTime(0);
+        AdvanceTime(0);
     }
 
     return wasDark;
 }
 
 // underground: one in 256 turns "EARTHQUAKE!" damages the party
-static void MAINOUT_0a60_CheckEarthquake(void)
+static void CheckEarthquake(void)
 {
     if (D_5895_mapLevel != 0)
     {
-        if (ULTIMA_2092_RandomRange(0, 0xff) == 0x69)
+        if (RandomRange(0, 0xff) == 0x69)
         {
-            ULTIMA_1850_PrintString(/*0x2b1d*/ "EARTHQUAKE!\n");
-            ULTIMA_3072_ShakeScreen();
-            ULTIMA_2aa8_DamageParty();
+            PrintString(/*0x2b1d*/ "EARTHQUAKE!\n");
+            ShakeScreen();
+            DamageParty();
         }
     }
 }
 
 // the overworld's command loop: sleeping, death, moongates, a key (Ctrl-K karma, E exit, V version, S sound, direction, commands), then the tile's effects and the monsters' turn
-static void MAINOUT_0a84_MainLoop(void)
+static void MainoutMainLoop(void)
 {
     int tileUnder;
     int unused1_h; // not used
@@ -808,95 +808,95 @@ static void MAINOUT_0a84_MainLoop(void)
         // 0a8f
         done_g = 0;
         turnTaken = 1;
-        dark = MAINOUT_0a1a_UpdateDarkness(dark);
-        awake = ULTIMA_39fc_GetFirstActivePartyMember();
+        dark = UpdateDarkness(dark);
+        awake = GetFirstActivePartyMember();
         if (awake == 1)
         {
-            ULTIMA_16ba_PrintChar('\n');
-            ULTIMA_4c2a_PrintLeftCap();
+            PrintChar('\n');
+            PrintLeftCap();
             // 0aba
-            ULTIMA_1850_PrintString(/*0x2b2a*/ "Zzzzzz...\n");
+            PrintString(/*0x2b2a*/ "Zzzzzz...\n");
         }
         else if (awake == -1) // 0ac2
         {
-            if (D_a9bd_curDisk[0] != 1)
+            if (curDisk[0] != 1)
             {
-                ULTIMA_251e_SwitchDisks(1);
+                SwitchDisks(1);
                 // 0ad6
-                while (ULTIMA_1674_TestOpenFile(/*0x2b35*/ "BRIT.DAT") == 0) {}
+                while (TestOpenFile(/*0x2b35*/ "BRIT.DAT") == 0) {}
             }
             // 0ae1
-            ULTIMA_25d8_WriteFileToDisk(OUTSUBS_0368_GetWorldSavefile(), D_5c5a_actors, 0x100);
-            BLCKTHRN_0910_Death();
+            WriteFileToDisk(GetWorldSavefile(), actors, 0x100);
+            Death();
             done_g = 1;
             turnTaken = 0;
         }
         else
         {
             // 0b00
-            if (ULTIMA_48a8_EnterMoongate() != 0)
+            if (EnterMoongate() != 0)
             {
-                CAST2_0e76_Shrine();
+                Shrine();
             }
             // 0b0a
-            if (D_5893_mapId != 0)
+            if (mapId != 0)
             {
                 return;
             }
             // 0b14
-            key = MAINOUT_0598_WaitForKey();
+            key = MainoutWaitForKey();
             if (key < 0x20)
             {
                 switch (key & 0xff)
                 {
                 case U5_KEY_CTRL_K: // 0b34
-                    ULTIMA_1a3e_PrintNumber(D_5888_karma, 1, 0x20);
+                    PrintNumber(karma, 1, 0x20);
                     // -> 0b75
-                    ULTIMA_16ba_PrintChar('\n');
+                    PrintChar('\n');
                     // -> 0af8
                     turnTaken = 0;
                     break; // -> 0c12
 
                 case U5_KEY_CTRL_E: // 0b48
-                    ULTIMA_1850_PrintString(/*0x2b3e*/ "Exit to DOS? ");
-                    key = ULTIMA_266c_GetChar();
+                    PrintString(/*0x2b3e*/ "Exit to DOS? ");
+                    key = GetChar();
                     if (key == 'Y')
                     {
-                        ULTIMA_0878_RestoreVideoMode();
+                        RestoreVideoMode();
                         exit(0);
                     }
                     else
                     {
-                        ULTIMA_1850_PrintString(/*0x2b4c*/ "N\n");
+                        PrintString(/*0x2b4c*/ "N\n");
                     }
                     break;
 
                 case U5_KEY_CTRL_V: // 0b6e
-                    ULTIMA_1850_PrintString(/*0x2b4f*/ "1.16");
+                    PrintString(/*0x2b4f*/ "1.16");
                     // 0b75
-                    ULTIMA_16ba_PrintChar('\n');
+                    PrintChar('\n');
                     turnTaken = 0;
                     break;
 
                 case U5_KEY_CTRL_S: // 0b80
-                    ULTIMA_1850_PrintString(/*0x2b54*/ "Sound ");
-                    if (D_a9ce_soundOn != 0)
+                    PrintString(/*0x2b54*/ "Sound ");
+                    if (soundOn != 0)
                     {
-                        ULTIMA_1850_PrintString(/*0x2b5b*/ "Off\n");
+                        PrintString(/*0x2b5b*/ "Off\n");
                     }
                     else
                     {
-                        ULTIMA_1850_PrintString(/*0x2b60*/ "On\n");
+                        PrintString(/*0x2b60*/ "On\n");
                     }
                     // ?
-                    D_a9ce_soundOn = !D_a9ce_soundOn;
+                    soundOn = !soundOn;
                     break;
 
                 case U5_KEY_LEFT: // 0baa
                 case U5_KEY_RIGHT:
                 case U5_KEY_UP:
                 case U5_KEY_DOWN:
-                    turnTaken = MAINOUT_0490_WalkInDirection(key, dark);
+                    turnTaken = WalkInDirection(key, dark);
                     break;
 
                 case 0: // 0af8
@@ -904,7 +904,7 @@ static void MAINOUT_0a84_MainLoop(void)
                     break;
 
                 default: // 0bb8
-                    ULTIMA_1850_PrintString(/*0x2b64*/ "What?\n");
+                    PrintString(/*0x2b64*/ "What?\n");
                     break;
                 }
             }
@@ -914,22 +914,22 @@ static void MAINOUT_0a84_MainLoop(void)
                 if (key < 0x30 || key > 0x39)
                 {
                     // 0bfa
-                    turnTaken = ULTIMA_3178_ProcessCommand(key & 0xff);
+                    turnTaken = ProcessCommand(key & 0xff);
                 }
                 else
                 {
                     // 0c06
-                    turnTaken = ULTIMA_4080_SetActivePlayer(key);
+                    turnTaken = SetActivePlayer(key);
                 }
             }
         }
         // 0c12
-        if ((D_587c_partyTile & 0xfc) != TILE_ACTOR_FRIGATE_20)
+        if ((partyTile & 0xfc) != TILE_ACTOR_FRIGATE_20)
         {
-            D_5955_sailDir = 0;
+            sailDir = 0;
         }
         // 0c20
-        if (D_5893_mapId != 0)
+        if (mapId != 0)
         {
             done_g = 1;
         }
@@ -938,75 +938,75 @@ static void MAINOUT_0a84_MainLoop(void)
             if (turnTaken != 0)
             {
                 // 0c39
-                ULTIMA_4f7c_AdvanceTime(2);
-                tileUnder = *ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY);
+                AdvanceTime(2);
+                tileUnder = *GetTileAddr(D_5896_mapX, D_5897_mapY);
                 if ((tileUnder & 0xfe) == TILE_MAP_6A)
                 {
-                    MAINOUT_1be8_BridgeTrolls();
+                    BridgeTrolls();
                 }
                 // 0c64
-                else if (tileUnder == TILE_MAP_POISON && D_587c_partyTile == TILE_ACTOR_AVATAR)
+                else if (tileUnder == TILE_MAP_POISON && partyTile == TILE_ACTOR_AVATAR)
                 {
-                    OUTSUBS_05fc_StepOnPoisonTile();
-                    ULTIMA_3ae6_WaitFrames(1);
+                    StepOnPoisonTile();
+                    WaitFrames(1);
                 }
                 else if (tileUnder == TILE_MAP_LAVA)
                 {
-                    OUTSUBS_05ee_StepOnBurningTile();
+                    StepOnBurningTile();
                 }
-                else if (D_5896_mapX == 0xe9 && D_5897_mapY == 0xeb && D_5895_mapLevel == 0 && D_5893_mapId == 0)
+                else if (D_5896_mapX == 0xe9 && D_5897_mapY == 0xeb && D_5895_mapLevel == 0 && mapId == 0)
                 {
-                    ULTIMA_1850_PrintString(/*0x2b6b*/ "\n\"");
-                    if ((byte)D_58cc_questsOrdained != 0)
+                    PrintString(/*0x2b6b*/ "\n\"");
+                    if ((byte)questsOrdained != 0)
                     {
-                        ULTIMA_1850_PrintString(/*0x2b6e*/ "Pass, Seeker!\"\n");
+                        PrintString(/*0x2b6e*/ "Pass, Seeker!\"\n");
                     }
                     else
                     {
-                        ULTIMA_1850_PrintString(/*0x2b7e*/ "Thou art not upon a Sacred Quest!\n");
-                        ULTIMA_1850_PrintString(/*0x2ba1*/ "Passage denied!\"\n");
+                        PrintString(/*0x2b7e*/ "Thou art not upon a Sacred Quest!\n");
+                        PrintString(/*0x2ba1*/ "Passage denied!\"\n");
                         D_5897_mapY++;
                     }
                 }
 
                 // 0cd0
-                MAINOUT_0a60_CheckEarthquake();
-                ULTIMA_2ae8_EndTurn();
-                if (tileUnder == 1 && ((D_587c_partyTile & 0xfc) == TILE_ACTOR_SKIFF || (D_587c_partyTile & 0xfe) == TILE_ACTOR_FLYING_CARPET))
+                CheckEarthquake();
+                EndTurn();
+                if (tileUnder == 1 && ((partyTile & 0xfc) == TILE_ACTOR_SKIFF || (partyTile & 0xfe) == TILE_ACTOR_FLYING_CARPET))
                 {
-                    ULTIMA_1850_PrintString(/*0x2bb3*/ "Rough seas!\n");
-                    ULTIMA_3522_HitEffectAt(D_5896_mapX, D_5897_mapY);
-                    MAINOUT_109e_DamageVehicle();
+                    PrintString(/*0x2bb3*/ "Rough seas!\n");
+                    HitEffectAt(D_5896_mapX, D_5897_mapY);
+                    DamageVehicle();
                 }
                 if ((tileUnder & 0xfc) == TILE_MAP_WATERFALL)
                 {
-                    OUTSUBS_0458_Falls();
+                    Falls();
                 }
-                MAINOUT_1a60_MonstersTurn();
+                MonstersTurn();
             }
         }
     } while (!done_g);
 }
 
 // the overlay's entry: sets up the overworld, puts a bought ship at its place, runs the main loop
-void MAINOUT_0d22_Entry(void)
+void MainoutEntry(void)
 {
     int shipTile;
     int slot;
     ActorFmt* ship_m;
 
-    MAINOUT_0000_SetUpOverworld();
+    SetUpOverworld();
 
-    if (D_6605_boughtShip >= 0x40)
+    if (boughtShip >= 0x40)
     {
-        slot = ULTIMA_38e4_FindActorSlot();
-        ship_m = &D_5c5a_actors[slot]; // get some actor
-        ship_m->extra = D_6605_boughtShip & 0x3f;
-        ship_m->x = D_5953_boughtShipX; // ship_x
-        ship_m->y = D_5954_boughtShipY; // ship_y
+        slot = FindActorSlot();
+        ship_m = &actors[slot]; // get some actor
+        ship_m->extra = boughtShip & 0x3f;
+        ship_m->x = boughtShipX; // ship_x
+        ship_m->y = boughtShipY; // ship_y
         ship_m->z = 0;
 
-        if (D_6605_boughtShip > 0x7f)
+        if (boughtShip > 0x7f)
         {
             shipTile = TILE_ACTOR_FRIGATE_25;
         }
@@ -1017,14 +1017,14 @@ void MAINOUT_0d22_Entry(void)
 
         ship_m->tile = ship_m->animTile = shipTile;
         ship_m->value = 99;
-        D_6605_boughtShip = 0;
+        boughtShip = 0;
     }
 
-    MAINOUT_0a84_MainLoop();
+    MainoutMainLoop();
 }
 
 // how likely a monster spawn is, 0 (towns, castles) to 5: by the tile under the party, + 3 at night; 3 in the underworld
-int MAINOUT_0d8c_SpawnChance(void)
+int SpawnChance(void)
 {
     int tile;
     int chance;
@@ -1034,7 +1034,7 @@ int MAINOUT_0d8c_SpawnChance(void)
         return 3;
     }
 
-    tile = *ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY);
+    tile = *GetTileAddr(D_5896_mapX, D_5897_mapY);
     if (tile >= TILE_MAP_20 && tile <= TILE_MAP_26)
     {
         chance = 0;
@@ -1061,53 +1061,53 @@ int MAINOUT_0d8c_SpawnChance(void)
 
 // The original adds the index and the pointer as integers (mov bx,cx / add bx,si),
 // not with the [bx][si] addressing mode that param_1[i] gives.
-#define MAINOUT_0E04_AT(i) (*(byte*)((uint)(i) + (uint)weights))
+#define AT(i) (*(byte*)((uint)(i) + (uint)weights))
 
 // an index picked by weights that add up to 256 (a roll of 0-255 minus each weight)
-static int MAINOUT_0e04_PickWeighted(byte* weights)
+static int PickWeighted(byte* weights)
 {
     int index;
     int roll_h;
 
-    roll_h = ULTIMA_2092_RandomRange(0, 0xff);
+    roll_h = RandomRange(0, 0xff);
 
-    for (index = 0; MAINOUT_0E04_AT(index) <= roll_h; index++)
+    for (index = 0; AT(index) <= roll_h; index++)
     {
-        roll_h -= MAINOUT_0E04_AT(index);
+        roll_h -= AT(index);
     }
     return index;
 }
 
 // the monster (actor tile) that may appear on that terrain: sea, land or underworld tables, whirlpools in deep water; 0 for none
-static byte MAINOUT_0e4e_MonsterForTile(int tile)
+static byte MonsterForTile(int tile)
 {
     int unused;
 
     if (tile < TILE_MAP_POISON || (tile >= TILE_MAP_60 && tile <= TILE_MAP_6F) || (tile >= TILE_MAP_WATERFALL && tile <= TILE_MAP_WATERFALL + 3) ||
         (tile >= TILE_MAP_WATER_E4 && tile <= TILE_MAP_WATER_E7))
     {
-        if (ULTIMA_2092_RandomRange(0, 0x40) < 0x10)
+        if (RandomRange(0, 0x40) < 0x10)
         {
             if (D_5895_mapLevel < 0x80)
             {
-                if (tile == 1 && ULTIMA_2092_RandomRange(0, 7) == 7)
+                if (tile == 1 && RandomRange(0, 7) == 7)
                 {
                     return TILE_ACTOR_WHIRLPOOL;
                 }
                 else
                 {
-                    return D_2bd4_seaMonsters[MAINOUT_0e04_PickWeighted(D_2bf0_seaWeights)];
+                    return seaMonsters[PickWeighted(seaWeights)];
                 }
             }
             else
             {
-                return D_2bda_deepSeaMonsters[MAINOUT_0e04_PickWeighted(D_2bf6_deepSeaWeights)];
+                return deepSeaMonsters[PickWeighted(deepSeaWeights)];
             }
         }
     }
     else if (tile == TILE_MAP_7)
     {
-        if (ULTIMA_2092_RandomRange(0, 3) == 0)
+        if (RandomRange(0, 3) == 0)
         {
             return TILE_ACTOR_E0;
         }
@@ -1128,10 +1128,10 @@ static byte MAINOUT_0e4e_MonsterForTile(int tile)
         {
             if (D_5895_mapLevel < 0x80)
             {
-                return D_2bc0_landMonsters[MAINOUT_0e04_PickWeighted(D_2bdc_landWeights)];
+                return landMonsters[PickWeighted(landWeights)];
             }
 
-            return D_2bcc_deepLandMonsters[MAINOUT_0e04_PickWeighted(D_2be8_deepLandWeights)];
+            return deepLandMonsters[PickWeighted(deepLandWeights)];
         }
     }
 
@@ -1139,18 +1139,18 @@ static byte MAINOUT_0e4e_MonsterForTile(int tile)
 }
 
 // a random cell of the 32x32 view more than six away from the party, into D_5876/D_5878
-static void MAINOUT_0f4e_PickSpawnCell(void)
+static void PickSpawnCell(void)
 {
     do
     {
-        D_5876_tempX = (byte)(ULTIMA_2092_RandomRange(0, 0x1f) + D_589b_mapOriginX);
-        D_5878_tempY = (byte)(ULTIMA_2092_RandomRange(0, 0x1f) + D_589c_mapOriginY);
-    } while (abs(D_5876_tempX - D_5896_mapX) <= 6 || abs(D_5878_tempY - D_5897_mapY) <= 6 ||
-        abs(D_5876_tempX - D_5896_mapX) >= 0xfa || abs(D_5878_tempY - D_5897_mapY) >= 0xfa);
+        tempX = (byte)(RandomRange(0, 0x1f) + mapOriginX);
+        tempY = (byte)(RandomRange(0, 0x1f) + mapOriginY);
+    } while (abs(tempX - D_5896_mapX) <= 6 || abs(tempY - D_5897_mapY) <= 6 ||
+        abs(tempX - D_5896_mapX) >= 0xfa || abs(tempY - D_5897_mapY) >= 0xfa);
 }
 
 // looks up to 128 times for a cell and a monster that fit, and puts it there (pirates get hull value 100)
-void MAINOUT_0fc4_SpawnMonster(void)
+void SpawnMonster(void)
 {
     int spawnY;
     int spawnX;
@@ -1159,15 +1159,15 @@ void MAINOUT_0fc4_SpawnMonster(void)
 
     for (tries_j = 0; tries_j < 0x80; tries_j++)
     {
-        MAINOUT_0f4e_PickSpawnCell();
+        PickSpawnCell();
 
-        spawnX = D_5876_tempX;
-        spawnY = D_5878_tempY;
+        spawnX = tempX;
+        spawnY = tempY;
 
-        monsterTile_k = MAINOUT_0e4e_MonsterForTile(*ULTIMA_4402_GetTileAddr(spawnX, spawnY));
+        monsterTile_k = MonsterForTile(*GetTileAddr(spawnX, spawnY));
         if (monsterTile_k != 0)
         {
-            if (monsterTile_k != TILE_ACTOR_PIRATE || (*ULTIMA_4402_GetTileAddr(spawnX, spawnY) & 0xf0) != TILE_MAP_60)
+            if (monsterTile_k != TILE_ACTOR_PIRATE || (*GetTileAddr(spawnX, spawnY) & 0xf0) != TILE_MAP_60)
             {
                 break;
             }
@@ -1176,17 +1176,17 @@ void MAINOUT_0fc4_SpawnMonster(void)
 
     if (tries_j != 0x80)
     {
-        tries_j = ULTIMA_38e4_FindActorSlot();
-        ULTIMA_3a74_SetActor(monsterTile_k, monsterTile_k, spawnX, spawnY, D_5895_mapLevel, 0, tries_j);
+        tries_j = FindActorSlot();
+        SetActor(monsterTile_k, monsterTile_k, spawnX, spawnY, D_5895_mapLevel, 0, tries_j);
         if (monsterTile_k == TILE_ACTOR_PIRATE)
         {
-            D_5c5a_actors[tries_j].value = 100;
+            actors[tries_j].value = 100;
         }
     }
 }
 
 // whether an actor tile is one that moves by itself: 0x2c-0x2f and 0x80 up except 0xb4-0xb7 and 0xe8-0xeb
-int MAINOUT_105c_IsMovingActor(int tile)
+int IsMovingActor(int tile)
 {
     if (tile >= 0x2c && tile <= 0x2f)
     {
