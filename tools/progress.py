@@ -32,7 +32,8 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = os.path.join(ROOT, 'src')
 NAME = 'u5d'
 ASM_EXCLUDED = {'gog': (), '1988': ('A2322', 'AINTRO2')}      # as tools/u5.py
-COLORS = dict(matched='#2a8c3c', attempt='#b8860b', open='#64748b', aside='#b94a53')
+COLORS = dict(matched='#2a8c3c', attempt='#b8860b', open='#64748b', aside='#3b5b8a')
+HEADLINE = 'functions matched'
 LABELS = dict(matched='Matched', attempt='Attempt', open='Open', aside='Aside')
 NAMED = re.compile(r'^([A-Za-z][A-Za-z0-9]*)_([0-9A-Fa-f]{3,4})(_\w+)?$')
 C_DEF = re.compile(
@@ -43,7 +44,7 @@ ASM_LABEL = re.compile(r'^([A-Za-z][A-Za-z0-9]*_[0-9A-Fa-f]{4}(?:_\w+)?):', re.M
 
 def read(path):
     with open(path, encoding='latin1', newline='') as f:
-        return f.read()
+        return f.read().replace('\r\n', '\n')
 
 
 def preprocess(text, target):
@@ -113,12 +114,12 @@ def svg(flat, target):
     a = out.append
     a('<svg xmlns="http://www.w3.org/2000/svg" width="%d" height="%d" viewBox="0 0 %d %d" '
       'font-family="Roboto, Helvetica, Arial, sans-serif" role="img" aria-label="%s">'
-      % (W, H, W, H, escape('Decompilation progress: %d of %d functions matched' % (s['matched'], s['total']))))
+      % (W, H, W, H, escape('Decompilation progress: %d of %d %s' % (s['matched'], s['total'], HEADLINE))))
     a('<rect width="%d" height="%d" rx="14" fill="#0f172a"/>' % (W, H))
     a('<text x="%d" y="38" font-size="21" fill="#ffffff">Decompilation progress</text>' % PAD)
     a('<text x="%d" y="38" font-size="15" fill="#ffffff" text-anchor="end">%s</text>' % (W - PAD, escape(NAME)))
-    a('<text x="%d" y="62" font-size="15" fill="#e5e7eb">%s / %s functions matched (%.1f%%)</text>'
-      % (PAD, format(s['matched'], ','), format(s['total'], ','), s['percent']))
+    a('<text x="%d" y="62" font-size="15" fill="#e5e7eb">%s / %s %s (%.1f%%)</text>'
+      % (PAD, format(s['matched'], ','), format(s['total'], ','), HEADLINE, s['percent']))
     a('<rect x="%d" y="74" width="%d" height="18" rx="5" fill="#334155"/>' % (PAD, inner))
     if s['total']:
         a('<rect x="%d" y="74" width="%.2f" height="18" rx="5" fill="%s"/>'
