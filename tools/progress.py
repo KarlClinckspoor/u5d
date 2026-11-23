@@ -5,14 +5,18 @@ u5d rebuilds both releases byte for byte (tools/check.py), and tools/match.py is
 function, whether it is EXACT; that needs the game files and the compiler. This script counts
 from the sources alone, for one target (gog by default, --target 1988), one tile per function:
 
-  - a C function of src/*.c (named MODULE_ADDR_Name; the `#if defined(RELEASE_1988)` blocks are in
-    the 1988 build only), and
-  - an assembly routine of src/asm/*.ASM (a MODULE_ADDR_NAME label; local L_xxxx labels are not
-    functions; ASM_EXCLUDED of tools/u5.py leaves A2322 and AINTRO2 out of the 1988 build),
+  - a C function of src/*.c (the `#if defined(RELEASE_1988)` blocks are in the 1988 build only),
+    and
+  - an assembly routine of src/asm/*.ASM (a label; local L_xxxx labels are not functions;
+    ASM_EXCLUDED of tools/u5.py leaves A2322 and AINTRO2 out of the 1988 build),
 
-ULTIMA (the resident code) first, then the overlays, each by address, and its status is:
+when it carries an address: either in its name (MODULE_ADDR or MODULE_ADDR_Name, as before the
+natural names) or through tools/names.tsv, which gives the module and address of every natural
+name (kind "code"; MASM's labels are upper case, so the lookup ignores case). One tile per
+module and address, ULTIMA (the resident code) first, then the overlays, each by address. Its
+status is:
 
-  matched  the function is in src/ with a descriptive name (MODULE_ADDR_Name)
+  matched  the function is in src/ with a descriptive name (a natural name, or MODULE_ADDR_Name)
   attempt  reserved (a function being worked on)
   open     the function is named by its address only (MODULE_ADDR)
   aside    reserved for code that is not Ultima V's own: none (the C runtime library is linked from
@@ -38,8 +42,9 @@ LABELS = dict(matched='Matched', attempt='Attempt', open='Open', aside='Aside')
 NAMED = re.compile(r'^([A-Za-z][A-Za-z0-9]*)_([0-9A-Fa-f]{3,4})(_\w+)?$')
 C_DEF = re.compile(
     r'^(?!(?:extern|typedef|return|else|if|while|for|switch)\b)'
-    r'(?:[A-Za-z_]\w*[ \t*]+)+\**([A-Za-z][A-Za-z0-9]*_[0-9A-Fa-f]{3,4}\w*)[ \t]*\(([^;{}]*)\)[ \t]*\n?[ \t]*\{', re.M)
-ASM_LABEL = re.compile(r'^([A-Za-z][A-Za-z0-9]*_[0-9A-Fa-f]{4}(?:_\w+)?):', re.M)
+    r'(?:[A-Za-z_]\w*[ \t*]+)+\**([A-Za-z_]\w*)[ \t]*\(([^;{}]*)\)[ \t]*\n?[ \t]*\{', re.M)
+ASM_LABEL = re.compile(r'^([A-Za-z_]\w*):', re.M)
+NAMES_TSV = os.path.join(ROOT, 'tools', 'names.tsv')
 
 
 def read(path):
@@ -72,17 +77,32 @@ def functions(target):
     return rows
 
 
+def name_table():
+    """{NAME (upper case): (MODULE, address)} of the code rows of tools/names.tsv (none before it existed)."""
+    table = {}
+    if os.path.exists(NAMES_TSV):
+        for line in read(NAMES_TSV).splitlines()[1:]:
+            name, kind, module, addr = line.split('\t')
+            if kind == 'code':
+                table[name.upper()] = (module.upper(), int(addr, 16))
+    return table
+
+
 def classify(target):
+    table = name_table()
     flat, seen = [], set()
     for name, kind, file in functions(target):
-        key = name.upper()
-        if key in seen:                       # a C function and its assembly twin, or a repeat
-            continue
-        seen.add(key)
         m = NAMED.match(name)
-        module, addr = (m.group(1).upper(), int(m.group(2), 16)) if m else ('?', 0)
-        flat.append(dict(module=module, addr=addr, name=name, kind=kind, file=file,
-                         status='open' if m and not m.group(3) else 'matched'))
+        if m:
+            where, status = (m.group(1).upper(), int(m.group(2), 16)), 'matched' if m.group(3) else 'open'
+        elif name.upper() in table:
+            where, status = table[name.upper()], 'matched'
+        else:
+            continue                          # no address: a helper, a data label, a local label
+        if where in seen:                     # a C function and its assembly twin, or a repeat
+            continue
+        seen.add(where)
+        flat.append(dict(module=where[0], addr=where[1], name=name, kind=kind, file=file, status=status))
     flat.sort(key=lambda r: (r['module'] != 'ULTIMA', r['module'], r['addr']))
     return flat
 
