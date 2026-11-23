@@ -1,0 +1,215 @@
+{
+ "target": "gog",
+ "all": {
+  "matched": 690,
+  "attempt": 0,
+  "open": 0,
+  "aside": 0,
+  "total": 690,
+  "percent": 100.0
+ },
+ "by_module": {
+  "ULTIMA": {
+   "matched": 197,
+   "attempt": 0,
+   "open": 0,
+   "aside": 0,
+   "total": 197,
+   "percent": 100.0
+  },
+  "BLCKTHRN": {
+   "matched": 11,
+   "attempt": 0,
+   "open": 0,
+   "aside": 0,
+   "total": 11,
+   "percent": 100.0
+  },
+  "CAST": {
+   "matched": 35,
+   "attempt": 0,
+   "open": 0,
+   "aside": 0,
+   "total": 35,
+   "percent": 100.0
+  },
+  "CAST2": {
+   "matched": 20,
+   "attempt": 0,
+   "open": 0,
+   "aside": 0,
+   "total": 20,
+   "percent": 100.0
+  },
+  "CMDS": {
+   "matched": 26,
+   "attempt": 0,
+   "open": 0,
+   "aside": 0,
+   "total": 26,
+   "percent": 100.0
+  },
+  "COMBAT": {
+   "matched": 23,
+   "attempt": 0,
+   "open": 0,
+   "aside": 0,
+   "total": 23,
+   "percent": 100.0
+  },
+  "COMSUBS": {
+   "matched": 23,
+   "attempt": 0,
+   "open": 0,
+   "aside": 0,
+   "total": 23,
+   "percent": 100.0
+  },
+  "DNGLOOK": {
+   "matched": 17,
+   "attempt": 0,
+   "open": 0,
+   "aside": 0,
+   "total": 17,
+   "percent": 100.0
+  },
+  "DUNGEON": {
+   "matched": 34,
+   "attempt": 0,
+   "open": 0,
+   "aside": 0,
+   "total": 34,
+   "percent": 100.0
+  },
+  "ENDGAME": {
+   "matched": 9,
+   "attempt": 0,
+   "open": 0,
+   "aside": 0,
+   "total": 9,
+   "percent": 100.0
+  },
+  "FLAMES": {
+   "matched": 2,
+   "attempt": 0,
+   "open": 0,
+   "aside": 0,
+   "total": 2,
+   "percent": 100.0
+  },
+  "FONT": {
+   "matched": 10,
+   "attempt": 0,
+   "open": 0,
+   "aside": 0,
+   "total": 10,
+   "percent": 100.0
+  },
+  "INTRO": {
+   "matched": 21,
+   "attempt": 0,
+   "open": 0,
+   "aside": 0,
+   "total": 21,
+   "percent": 100.0
+  },
+  "LOOKOBJ": {
+   "matched": 26,
+   "attempt": 0,
+   "open": 0,
+   "aside": 0,
+   "total": 26,
+   "percent": 100.0
+  },
+  "MAINOUT": {
+   "matched": 35,
+   "attempt": 0,
+   "open": 0,
+   "aside": 0,
+   "total": 35,
+   "percent": 100.0
+  },
+  "NPC": {
+   "matched": 17,
+   "attempt": 0,
+   "open": 0,
+   "aside": 0,
+   "total": 17,
+   "percent": 100.0
+  },
+  "OUTSUBS": {
+   "matched": 12,
+   "attempt": 0,
+   "open": 0,
+   "aside": 0,
+   "total": 12,
+   "percent": 100.0
+  },
+  "SHOPPES": {
+   "matched": 25,
+   "attempt": 0,
+   "open": 0,
+   "aside": 0,
+   "total": 25,
+   "percent": 100.0
+  },
+  "SHOPPES2": {
+   "matched": 14,
+   "attempt": 0,
+   "open": 0,
+   "aside": 0,
+   "total": 14,
+   "percent": 100.0
+  },
+  "SHOPPES3": {
+   "matched": 8,
+   "attempt": 0,
+   "open": 0,
+   "aside": 0,
+   "total": 8,
+   "percent": 100.0
+  },
+  "SJOG": {
+   "matched": 36,
+   "attempt": 0,
+   "open": 0,
+   "aside": 0,
+   "total": 36,
+   "percent": 100.0
+  },
+  "TALK": {
+   "matched": 39,
+   "attempt": 0,
+   "open": 0,
+   "aside": 0,
+   "total": 39,
+   "percent": 100.0
+  },
+  "TOWN": {
+   "matched": 32,
+   "attempt": 0,
+   "open": 0,
+   "aside": 0,
+   "total": 32,
+   "percent": 100.0
+  },
+  "ZSTATS": {
+   "matched": 18,
+   "attempt": 0,
+   "open": 0,
+   "aside": 0,
+   "total": 18,
+   "percent": 100.0
+  }
+ },
+ "other_target": {
+  "1988": {
+   "matched": 690,
+   "attempt": 0,
+   "open": 0,
+   "aside": 0,
+   "total": 690,
+   "percent": 100.0
+  }
+ }
+}
