@@ -68,45 +68,45 @@ void DamageVehicle(void)
     int skiffs;
     int damage;
 
-    if ((D_587c_partyTile & 0xf8) == TILE_ACTOR_FRIGATE_20)
+    if ((partyTile & 0xf8) == TILE_ACTOR_FRIGATE_20)
     {
-        damage = ULTIMA_2092_RandomRange(1, 0x1e);
-        if (damage < D_5c5a_actors[0].value)
+        damage = RandomRange(1, 0x1e);
+        if (damage < actors[0].value)
         {
-            D_5c5a_actors[0].value -= damage;
-            ULTIMA_2900_UpdateVitalsDisplay();
+            actors[0].value -= damage;
+            UpdateVitalsDisplay();
         }
         else
         {
-            ULTIMA_1850_PrintString(/*0x6ada*/ "Ship sunk!\n");
-            skiffs = D_5c5a_actors[0].extra;
+            PrintString(/*0x6ada*/ "Ship sunk!\n");
+            skiffs = actors[0].extra;
             if (skiffs > 0 || carpets != 0)
             {
-                ULTIMA_1850_PrintString(/*0x6ae6*/ "Abandon ship!\n");
+                PrintString(/*0x6ae6*/ "Abandon ship!\n");
                 if (skiffs > 0)
                 {
-                    D_587c_partyTile = (D_587c_partyTile & 3) + TILE_ACTOR_SKIFF;
+                    partyTile = (partyTile & 3) + TILE_ACTOR_SKIFF;
                 }
                 else
                 {
                     carpets--;
-                    D_587c_partyTile = ULTIMA_2092_RandomRange(0, 1) + TILE_ACTOR_FLYING_CARPET;
+                    partyTile = RandomRange(0, 1) + TILE_ACTOR_FLYING_CARPET;
                 }
 
-                D_a9fa_vitalsDirty = 1;
+                vitalsDirty = 1;
             }
             else
             {
-                D_587c_partyTile = 0;
-                ULTIMA_2900_UpdateVitalsDisplay();
-                ULTIMA_5910_UpdateFrame();
+                partyTile = 0;
+                UpdateVitalsDisplay();
+                UpdateFrame();
                 AudioSweepTone(0x294, 0x96, 0x28, 0x1e78);
-                ULTIMA_1850_PrintString(/*0x6af6*/ "DROWNING!!!\n");
+                PrintString(/*0x6af6*/ "DROWNING!!!\n");
 
                 while (GetFirstActivePartyMember() != -1)
                 {
-                    ULTIMA_3522_HitEffectAt(D_5896_mapX, D_5897_mapY);
-                    ULTIMA_2aa8_DamageParty();
+                    HitEffectAt(D_5896_mapX, D_5897_mapY);
+                    DamageParty();
                 }
                 return; // needed to match: drops the jump over the else branch
             }
@@ -114,7 +114,7 @@ void DamageVehicle(void)
     }
     else
     {
-        ULTIMA_2aa8_DamageParty();
+        DamageParty();
     }
 }
 
@@ -127,30 +127,30 @@ static void PirateFire(int actor, int distX, int distY)
 
     if (distX == 0)
     {
-        if (D_5c5a_actors[actor].animTile == TILE_ACTOR_PIRATE || D_5c5a_actors[actor].animTile == TILE_ACTOR_2E)
+        if (actors[actor].animTile == TILE_ACTOR_PIRATE || actors[actor].animTile == TILE_ACTOR_2E)
         {
-            D_5c5a_actors[actor].animTile = (ULTIMA_2092_RandomRange(0, 3) & 2) + TILE_ACTOR_2D;
+            actors[actor].animTile = (RandomRange(0, 3) & 2) + TILE_ACTOR_2D;
         }
     }
 
     if (distY == 0)
     {
-        if (D_5c5a_actors[actor].animTile == TILE_ACTOR_2D || D_5c5a_actors[actor].animTile == TILE_ACTOR_2F)
+        if (actors[actor].animTile == TILE_ACTOR_2D || actors[actor].animTile == TILE_ACTOR_2F)
         {
-            D_5c5a_actors[actor].animTile = (ULTIMA_2092_RandomRange(0, 3) & 2) + TILE_ACTOR_PIRATE;
+            actors[actor].animTile = (RandomRange(0, 3) & 2) + TILE_ACTOR_PIRATE;
         }
     }
 
-    ULTIMA_5910_UpdateFrame();
+    UpdateFrame();
     AudioSweepTone(0x514, 300, 5, 100);
 
-    shotX = D_5c5a_actors[actor].x - D_5896_mapX + 5;
-    shotY = D_5c5a_actors[actor].y - D_5897_mapY + 5;
+    shotX = actors[actor].x - D_5896_mapX + 5;
+    shotY = actors[actor].y - D_5897_mapY + 5;
     hit = FlyMissile(shotX, shotY, 5, 5, 1);
     if (hit != 0)
     {
-        ULTIMA_5910_UpdateFrame();
-        ULTIMA_3522_HitEffectAt(D_5896_mapX, D_5897_mapY);
+        UpdateFrame();
+        HitEffectAt(D_5896_mapX, D_5897_mapY);
         DamageVehicle();
     }
 }
@@ -160,24 +160,24 @@ static void ActorTouchesParty(int actor)
 {
     int savedTile;
 
-    if ((D_5c5a_actors[actor].tile & 0xfc) == TILE_ACTOR_WHIRLPOOL)
+    if ((actors[actor].tile & 0xfc) == TILE_ACTOR_WHIRLPOOL)
     {
-        if (D_587c_partyTile == TILE_ACTOR_AVATAR)
+        if (partyTile == TILE_ACTOR_AVATAR)
         {
             DamageVehicle();
             return;
         }
         else
         {
-            D_5c5a_actors[actor].tile = D_5c5a_actors[actor].animTile = 0;
-            ULTIMA_1850_PrintString(/*0x6b04*/ "\nWHIRLPOOL!\n");
+            actors[actor].tile = actors[actor].animTile = 0;
+            PrintString(/*0x6b04*/ "\nWHIRLPOOL!\n");
 
-            savedTile = D_587c_partyTile;
-            D_587c_partyTile = TILE_ACTOR_WHIRLPOOL;
-            ULTIMA_5910_UpdateFrame();
+            savedTile = partyTile;
+            partyTile = TILE_ACTOR_WHIRLPOOL;
+            UpdateFrame();
             AudioSweepTone(0x294, 0x96, 0x28, 0x1e78);
 
-            D_587c_partyTile = savedTile;
+            partyTile = savedTile;
             DamageVehicle();
 
             D_5895_mapLevel = 0xff;
@@ -186,20 +186,20 @@ static void ActorTouchesParty(int actor)
             SetUpOverworld();
         }
     }
-    else if ((D_5c5a_actors[actor].tile & 0xfc) != TILE_ACTOR_E0)
+    else if ((actors[actor].tile & 0xfc) != TILE_ACTOR_E0)
     {
-        ULTIMA_5910_UpdateFrame();
-        ULTIMA_1850_PrintString(/*0x6b12*/ "\nAttacked!\n");
+        UpdateFrame();
+        PrintString(/*0x6b12*/ "\nAttacked!\n");
 
-        if (*ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY) < TILE_MAP_POISON &&
-            ((D_587c_partyTile & 0xfe) == TILE_ACTOR_FLYING_CARPET || (D_587c_partyTile & 0xfc) == TILE_ACTOR_SKIFF))
+        if (*GetTileAddr(D_5896_mapX, D_5897_mapY) < TILE_MAP_POISON &&
+            ((partyTile & 0xfe) == TILE_ACTOR_FLYING_CARPET || (partyTile & 0xfc) == TILE_ACTOR_SKIFF))
         {
             DamageVehicle();
             return;
         }
         else
         {
-            ULTIMA_6150_Combat(actor);
+            Combat(actor);
         }
     }
     else
@@ -219,14 +219,14 @@ static int ActorAttack(int actor)
     int distX;
     int hit;
 
-    tile = D_5c5a_actors[actor].tile;
-    distX = abs(D_5c5a_actors[actor].x - D_5896_mapX);
+    tile = actors[actor].tile;
+    distX = abs(actors[actor].x - D_5896_mapX);
     if (distX > 0x7f)
     {
         distX = 0x100 - distX;
     }
 
-    distY = abs(D_5c5a_actors[actor].y - D_5897_mapY);
+    distY = abs(actors[actor].y - D_5897_mapY);
     if (distY > 0x7f)
     {
         distY = 0x100 - distY;
@@ -240,18 +240,18 @@ static int ActorAttack(int actor)
 
     if (tile == TILE_ACTOR_88 || tile == TILE_ACTOR_DC)
     {
-        if (distX <= 3 && distY <= 3 && ULTIMA_2092_RandomRange(0, 7) == 0)
+        if (distX <= 3 && distY <= 3 && RandomRange(0, 7) == 0)
         {
-            ULTIMA_5910_UpdateFrame();
+            UpdateFrame();
             AudioSweepTone(0x514, 300, 5, 100);
 
-            shotX_h = D_5c5a_actors[actor].x - D_5896_mapX + 5;
-            shotY_g = D_5c5a_actors[actor].y - D_5897_mapY + 5;
+            shotX_h = actors[actor].x - D_5896_mapX + 5;
+            shotY_g = actors[actor].y - D_5897_mapY + 5;
 
             hit = FlyMissile(shotX_h, shotY_g, 5, 5, 3);
             if (hit != 0)
             {
-                ULTIMA_3522_HitEffectAt(D_5896_mapX, D_5897_mapY);
+                HitEffectAt(D_5896_mapX, D_5897_mapY);
                 DamageVehicle();
             }
 
@@ -260,7 +260,7 @@ static int ActorAttack(int actor)
     }
     else if ((tile & 0xfc) == TILE_ACTOR_PIRATE && ((distX == 0 && distY < 4) || (distY == 0 && distX < 4)))
     {
-        ULTIMA_1850_PrintString(/*0x6b1e*/ "* BOOOM! *\n\n");
+        PrintString(/*0x6b1e*/ "* BOOOM! *\n\n");
         PirateFire(actor, distX, distY);
         return 1;
     }
@@ -271,10 +271,10 @@ static int ActorAttack(int actor)
 // the cell is walkable for the actor and holds no other actor
 static int CanActorEnter(int actor, int destX, int destY)
 {
-    if (ULTIMA_2c4c_IsWalkableTile(D_5c5a_actors[actor].tile, *ULTIMA_4402_GetTileAddr(destX, destY)) == 0)
+    if (IsWalkableTile(actors[actor].tile, *GetTileAddr(destX, destY)) == 0)
         return 0;
 
-    if (ULTIMA_3702_FindLastActorTileAt(destX, destY, D_5895_mapLevel) != 0)
+    if (FindLastActorTileAt(destX, destY, D_5895_mapLevel) != 0)
         return 0;
 
     return 1;
@@ -297,13 +297,13 @@ static int InChaseRange(int actor)
     int distY;
     int distX;
 
-    distX = abs(D_5c5a_actors[actor].x - D_5896_mapX);
+    distX = abs(actors[actor].x - D_5896_mapX);
     if (distX > 0x7f)
     {
         distX = 0x100 - distX;
     }
 
-    distY = abs(D_5c5a_actors[actor].y - D_5897_mapY);
+    distY = abs(actors[actor].y - D_5897_mapY);
     if (distY > 0x7f)
     {
         distY = 0x100 - distY;
@@ -326,10 +326,10 @@ static void MoveActor(int actor, int stepX, int stepY)
     int destX;
     int facing_h;
 
-    tile_b = D_5c5a_actors[actor].tile;
-    destX = D_5c5a_actors[actor].x + stepX;
-    destY = D_5c5a_actors[actor].y + stepY;
-    destTile = *ULTIMA_4402_GetTileAddr(destX, destY);
+    tile_b = actors[actor].tile;
+    destX = actors[actor].x + stepX;
+    destY = actors[actor].y + stepY;
+    destTile = *GetTileAddr(destX, destY);
     if ((tile_b & 0xfc) == TILE_ACTOR_PIRATE)
     {
         if (stepX == 0 && stepY == -1)
@@ -349,7 +349,7 @@ static void MoveActor(int actor, int stepX, int stepY)
             facing_h = 3;
         }
 
-        D_5c5a_actors[actor].tile = D_5c5a_actors[actor].animTile = facing_h + TILE_ACTOR_PIRATE;
+        actors[actor].tile = actors[actor].animTile = facing_h + TILE_ACTOR_PIRATE;
     }
     else if (tile_b != TILE_ACTOR_DC && tile_b != TILE_ACTOR_94 && tile_b != TILE_ACTOR_D8 && tile_b != TILE_ACTOR_F0)
     {
@@ -361,7 +361,7 @@ static void MoveActor(int actor, int stepX, int stepY)
         case TILE_MAP_8:
         case TILE_MAP_1E:
         case TILE_MAP_1F:
-            if (ULTIMA_2092_RandomRange(0, 1) == 0)
+            if (RandomRange(0, 1) == 0)
             {
                 return;
             }
@@ -373,23 +373,23 @@ static void MoveActor(int actor, int stepX, int stepY)
         case TILE_MAP_D:
         case TILE_MAP_E:
         case TILE_MAP_F:
-            if (ULTIMA_2092_RandomRange(0, 2) != 2)
+            if (RandomRange(0, 2) != 2)
             {
                 return;
             }
         }
     }
 
-    lastX = D_5c5a_actors[actor].x;
-    lastY = D_5c5a_actors[actor].y;
+    lastX = actors[actor].x;
+    lastY = actors[actor].y;
 
-    D_5c5a_actors[actor].x = destX;
-    D_5c5a_actors[actor].y = destY;
-    D_24e6_viewDirty |= 2;
+    actors[actor].x = destX;
+    actors[actor].y = destY;
+    viewDirty |= 2;
 
-    if (*ULTIMA_4402_GetTileAddr(destX, destY) == TILE_MAP_MOONGATE)
+    if (*GetTileAddr(destX, destY) == TILE_MAP_MOONGATE)
     {
-        D_5c5a_actors[actor].tile = D_5c5a_actors[actor].animTile = 0;
+        actors[actor].tile = actors[actor].animTile = 0;
     }
 }
 
@@ -404,8 +404,8 @@ static void MoveRandomly(int actor)
     int x;
     int tries;
 
-    x = D_5c5a_actors[actor].x;
-    y = D_5c5a_actors[actor].y;
+    x = actors[actor].x;
+    y = actors[actor].y;
 
     tries = 0;
     westX = x - 1;
@@ -416,7 +416,7 @@ static void MoveRandomly(int actor)
     // bug?
     for (; tries < 3; tries++)
     {
-        switch (ULTIMA_2092_RandomRange(0, 3))
+        switch (RandomRange(0, 3))
         {
         case 0:
             // 1760
@@ -476,15 +476,15 @@ static void MoveTowardParty(int actor, int mode)
     int stepY;
     int stepX;
 
-    x = D_5c5a_actors[actor].x;
-    y = D_5c5a_actors[actor].y;
-    relX_m = (D_5c5a_actors[actor].x - D_5896_mapX) & 0xff;
+    x = actors[actor].x;
+    y = actors[actor].y;
+    relX_m = (actors[actor].x - D_5896_mapX) & 0xff;
     if (relX_m > 0x7f)
     {
         relX_m -= 0x100;
     }
 
-    relY = (D_5c5a_actors[actor].y - D_5897_mapY) & 0xff;
+    relY = (actors[actor].y - D_5897_mapY) & 0xff;
     if (relY > 0x7f)
     {
         relY -= 0x100;
@@ -566,7 +566,7 @@ L_18ee:
     }
 
 L_18ae:
-    if (ULTIMA_2092_RandomRange(0, 1) == 1)
+    if (RandomRange(0, 1) == 1)
     {
         // 18bd
         if (stepX != 0 && CanActorEnter(actor, x + stepX, y) != 0 &&
@@ -617,16 +617,16 @@ static void ActorTurn(int actor)
     int facing;
     uint delay;
 
-    tile = D_5c5a_actors[actor].tile;
+    tile = actors[actor].tile;
     if ((tile & 0xfc) == TILE_ACTOR_WHIRLPOOL)
     {
-        D_5c5a_actors[actor].value ^= 1;
-        if (D_5c5a_actors[actor].value == 0)
+        actors[actor].value ^= 1;
+        if (actors[actor].value == 0)
         {
             return;
         }
 
-        if (ULTIMA_2092_RandomRange(0, 1) == 0)
+        if (RandomRange(0, 1) == 0)
         {
             MoveRandomly(actor);
             return;
@@ -634,7 +634,7 @@ static void ActorTurn(int actor)
     }
     else if (tile == TILE_ACTOR_SHADOWLORD)
     {
-        if (InChaseRange(actor) != 0 && D_5c5a_actors[actor].value++ < 0x14)
+        if (InChaseRange(actor) != 0 && actors[actor].value++ < 0x14)
         {
             MoveTowardParty(actor, 0);
             return;
@@ -647,12 +647,12 @@ static void ActorTurn(int actor)
             return;
         }
 
-        facing = D_5c5a_actors[actor].tile - TILE_ACTOR_PIRATE;
+        facing = actors[actor].tile - TILE_ACTOR_PIRATE;
 
         delay = sailDelay[facing][windDir - 1];
-        if (delay != 4 && delay < ++D_5c5a_actors[actor].extra)
+        if (delay != 4 && delay < ++actors[actor].extra)
         {
-            D_5c5a_actors[actor].extra = 0;
+            actors[actor].extra = 0;
             return;
         }
     }
@@ -681,7 +681,7 @@ int MonstersTurn(void)
         }
     }
 
-    if ((D_587c_partyTile & 0xfe) == TILE_ACTOR_RIDING_HORSE || (D_587c_partyTile & 0xfe) == TILE_ACTOR_FLYING_CARPET)
+    if ((partyTile & 0xfe) == TILE_ACTOR_RIDING_HORSE || (partyTile & 0xfe) == TILE_ACTOR_FLYING_CARPET)
     {
         D_2c57_mountToggle = D_2c57_mountToggle ^ 1;
         if (D_2c57_mountToggle != 0)
@@ -690,14 +690,14 @@ int MonstersTurn(void)
         }
     }
 
-    if (SpawnChance() > ULTIMA_2092_RandomRange(1, 0x1e))
+    if (SpawnChance() > RandomRange(1, 0x1e))
     {
         SpawnMonster();
     }
 
     for (index = 0x1f; 0 < index; index--)
     {
-        if (IsMovingActor(D_5c5a_actors[index].tile) != 0)
+        if (IsMovingActor(actors[index].tile) != 0)
         {
             acted += ActorAttack(index);
             if (acted == 0)
@@ -709,8 +709,8 @@ int MonstersTurn(void)
 
     for (index = 0x1f; 0 < index; index--)
     {
-        if (IsMovingActor(D_5c5a_actors[index].tile) != 0 &&
-            ((byte)(D_5c5a_actors[index].x - D_589b_mapOriginX) > 0x1f || (byte)(D_5c5a_actors[index].y - D_589c_mapOriginY) > 0x1f))
+        if (IsMovingActor(actors[index].tile) != 0 &&
+            ((byte)(actors[index].x - mapOriginX) > 0x1f || (byte)(actors[index].y - mapOriginY) > 0x1f))
         {
             SetActor(0, 0, 0, 0, 0, 0, index);
         }
@@ -726,22 +726,22 @@ static void TrollToll(void)
     int slot;
     byte answer;
 
-    ULTIMA_1850_PrintString(/*0x6b2c*/ "Caught!\n\nThe trolls demand a ");
+    PrintString(/*0x6b2c*/ "Caught!\n\nThe trolls demand a ");
     GetFirstActivePartyMember();
-    toll = -(D_55a8_party[D_5876_tempX].str * 3 - 99);
+    toll = -(party[tempX].str * 3 - 99);
     PrintNumber(toll, 2, 0x20);
-    ULTIMA_1850_PrintString(/*0x6b4a*/ " gp toll!\n\nDost thou pay?");
+    PrintString(/*0x6b4a*/ " gp toll!\n\nDost thou pay?");
 
-    while ((answer = ULTIMA_266c_GetChar()) != 'Y' && answer != 'N')
+    while ((answer = GetChar()) != 'Y' && answer != 'N')
     {
     }
 
-    ULTIMA_16ba_PrintChar(answer);
-    ULTIMA_16ba_PrintChar('\n');
+    PrintChar(answer);
+    PrintChar('\n');
     if (answer == 'Y')
     {
         gold -= toll;
-        D_a9fa_vitalsDirty = 1;
+        vitalsDirty = 1;
         if (gold >= 0)
         {
             return;
@@ -750,9 +750,9 @@ static void TrollToll(void)
         gold += toll;
     }
 
-    slot = ULTIMA_38e4_FindActorSlot();
+    slot = FindActorSlot();
     SetActor(TILE_ACTOR_E4, 0, D_5896_mapX, D_5897_mapY, 0, 0, slot);
-    ULTIMA_6150_Combat(slot);
+    Combat(slot);
 }
 
 // crossing a bridge: one in eight, each party member's dexterity tests whether the trolls under it see them
@@ -761,28 +761,28 @@ void BridgeTrolls(void)
     int dot;
     int member_h;
 
-    if (ULTIMA_2092_RandomRange(0, 7) == 0 && D_587c_partyTile == TILE_ACTOR_AVATAR)
+    if (RandomRange(0, 7) == 0 && partyTile == TILE_ACTOR_AVATAR)
     {
-        ULTIMA_5910_UpdateFrame();
-        ULTIMA_1850_PrintString(/*0x6b64*/ "\nThou spieth trolls under the bridge!\n\n");
+        UpdateFrame();
+        PrintString(/*0x6b64*/ "\nThou spieth trolls under the bridge!\n\n");
         WaitFrames(10);
 
-        for (member_h = 0; member_h < D_585b_partyCount; member_h++)
+        for (member_h = 0; member_h < partyCount; member_h++)
         {
-            if (D_55a8_party[member_h].status != STATUS_DEAD && D_55a8_party[member_h].status != STATUS_SLEEP)
+            if (party[member_h].status != STATUS_DEAD && party[member_h].status != STATUS_SLEEP)
             {
-                ULTIMA_1850_PrintString(D_55a8_party[member_h].name);
-                ULTIMA_1850_PrintString(/*0x6b8c*/ " sneaks across");
+                PrintString(party[member_h].name);
+                PrintString(/*0x6b8c*/ " sneaks across");
 
                 for (dot = 0; dot < 3; dot++)
                 {
                     WaitFrames(5);
-                    ULTIMA_16ba_PrintChar('.');
+                    PrintChar('.');
                 }
 
-                ULTIMA_1850_PrintString(/*0x6b9c*/ "\n\n");
+                PrintString(/*0x6b9c*/ "\n\n");
 
-                if (D_55a8_party[member_h].dex < ULTIMA_2092_RandomRange(1, 0x1e))
+                if (party[member_h].dex < RandomRange(1, 0x1e))
                 {
                     TrollToll();
                     return;
@@ -790,6 +790,6 @@ void BridgeTrolls(void)
             }
         }
 
-        ULTIMA_1850_PrintString(/*0x6ba0*/ "Trolls evaded!\n");
+        PrintString(/*0x6ba0*/ "Trolls evaded!\n");
     }
 }

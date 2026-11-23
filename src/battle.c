@@ -30,28 +30,28 @@ void SpecialMapHandler(int mapFlags, int actorOrGuard, int hours)
     savedY = D_5897_mapY;
     savedLevel = D_5895_mapLevel;
 
-    D_5894_savedMapId = D_5893_mapId;
+    D_5894_savedMapId = mapId;
     savedPlayer = activePlayer;
-    D_5893_mapId = 0xff;
+    mapId = 0xff;
 
     // copy actors
     for (i_e = 0; i_e < 0x20; i_e++)
     {
-        savedActors[i_e] = D_5c5a_actors[i_e];
+        savedActors[i_e] = actors[i_e];
     }
 
     if (mapFlags == 0)
     {
-        if ((D_5c5a_actors[actorOrGuard].tile & 0xfc) == TILE_ACTOR_PIRATE)
+        if ((actors[actorOrGuard].tile & 0xfc) == TILE_ACTOR_PIRATE)
         {
             enemyType = 0x1;
         }
         else
         {
-            enemyType = ((D_5c5a_actors[actorOrGuard].tile - TILE_ACTOR_WIZARD) >> 2);
+            enemyType = ((actors[actorOrGuard].tile - TILE_ACTOR_WIZARD) >> 2);
         }
 
-        if (D_5c5a_actors[actorOrGuard].value > 0x7f)
+        if (actors[actorOrGuard].value > 0x7f)
         {
             enemyType += 0x100;
         }
@@ -100,12 +100,12 @@ L_606c:
     D_5896_mapX = savedX;
     D_5897_mapY = savedY;
     D_5895_mapLevel = savedLevel;
-    D_5893_mapId = D_5894_savedMapId;
-    D_24e6_viewDirty = 1;
+    mapId = D_5894_savedMapId;
+    viewDirty = 1;
 
-    ULTIMA_2900_UpdateVitalsDisplay();
+    UpdateVitalsDisplay();
 
-    if (D_55a8_party[savedPlayer].status != STATUS_DEAD && D_55a8_party[savedPlayer].status != STATUS_SLEEP)
+    if (party[savedPlayer].status != STATUS_DEAD && party[savedPlayer].status != STATUS_SLEEP)
     {
         activePlayer = savedPlayer;
     }
@@ -116,7 +116,7 @@ L_606c:
 
     for (i_e = 0; i_e < 0x20; i_e++)
     {
-        D_5c5a_actors[i_e] = savedActors[i_e];
+        actors[i_e] = savedActors[i_e];
     }
 }
 
@@ -125,7 +125,7 @@ static void LoadSpecialMap(int mapIndex)
 {
     int i;
 
-    ULTIMA_256e_ReadFileFromDisk(/*0xa3f0*/ "BRIT.CBT", combatMap, 0x160, mapIndex * 0x160);
+    ReadFileFromDisk(/*0xa3f0*/ "BRIT.CBT", combatMap, 0x160, mapIndex * 0x160);
 
     for (i = 0; i < 6; i++)
     {
@@ -140,30 +140,30 @@ static void LoadSpecialMap(int mapIndex)
     }
 }
 
-void ULTIMA_6150_Combat(int actorIndex)
+void Combat(int actorIndex)
 {
     int tileUnder_j;
     bool atSea_j;
     int actorTile;
     int mapIndex;
 
-    actorTile = D_5c5a_actors[actorIndex].tile & 0xfc;
+    actorTile = actors[actorIndex].tile & 0xfc;
 
-    ULTIMA_16ba_PrintChar('\n');
-    ULTIMA_16ba_PrintChar(CTRL_CHAR_CENTER_TEXT);
+    PrintChar('\n');
+    PrintChar(CTRL_CHAR_CENTER_TEXT);
     if (actorTile < 0x40) // TILE_ACTOR_40
     {
-        ULTIMA_1850_PrintString(/*0xa3fa*/ "PIRATES");
+        PrintString(/*0xa3fa*/ "PIRATES");
     }
     else
     {
-        ULTIMA_1850_PrintString(enemyNamesPlural[(actorTile - 0x40) / 4]); // TILE_ACTOR_40
+        PrintString(enemyNamesPlural[(actorTile - 0x40) / 4]); // TILE_ACTOR_40
     }
 
-    ULTIMA_16ba_PrintChar(CTRL_CHAR_UNCENTER_TEXT);
-    ULTIMA_1850_PrintString(/*0xa402*/ "\n\n");
+    PrintChar(CTRL_CHAR_UNCENTER_TEXT);
+    PrintString(/*0xa402*/ "\n\n");
 
-    tileUnder_j = *ULTIMA_4402_GetTileAddr(D_5c5a_actors[actorIndex].x, D_5c5a_actors[actorIndex].y);
+    tileUnder_j = *GetTileAddr(actors[actorIndex].x, actors[actorIndex].y);
     if (tileUnder_j < TILE_MAP_POISON || (tileUnder_j & 0xfe) != TILE_MAP_6A && ((tileUnder_j & 0xf0) == TILE_MAP_60))
     {
         atSea_j = true;
@@ -178,8 +178,8 @@ void ULTIMA_6150_Combat(int actorIndex)
         mapIndex = 10;
         if (sceptre != 0)
         {
-            ULTIMA_1850_PrintString(/*0xa406*/ "The Sceptre is reclaimed!\n");
-            ULTIMA_2192_AudioPulse(0xfd2, 1, 65000, 1, 1);
+            PrintString(/*0xa406*/ "The Sceptre is reclaimed!\n");
+            AudioPulse(0xfd2, 1, 65000, 1, 1);
             sceptre = 0;
         }
     }
@@ -190,7 +190,7 @@ void ULTIMA_6150_Combat(int actorIndex)
             atSea_j = 1;
         }
 
-        if ((D_587c_partyTile & 0xf8) == TILE_ACTOR_FRIGATE_20) // 623a
+        if ((partyTile & 0xf8) == TILE_ACTOR_FRIGATE_20) // 623a
         {
             if (actorTile == TILE_ACTOR_PIRATE)
             {
@@ -259,7 +259,7 @@ void ULTIMA_6150_Combat(int actorIndex)
                 mapIndex = 8;
                 break;
             default:
-                if (D_5893_mapId != 0)
+                if (mapId != 0)
                 {
                     mapIndex = 8;
                 }
@@ -276,15 +276,15 @@ void ULTIMA_6150_Combat(int actorIndex)
     SpecialMapHandler(0, actorIndex, 0);
 
     EndCombat(actorIndex);
-    ULTIMA_5e4a_BuildLightMap();
-    ULTIMA_4f7c_AdvanceTime(0);
+    BuildLightMap();
+    AdvanceTime(0);
 }
 
 void Camping(int guard, int hours)
 {
     LoadSpecialMap(0);
     SpecialMapHandler(4, guard, hours);
-    ULTIMA_5e4a_BuildLightMap();
+    BuildLightMap();
 }
 
 // draw frame
@@ -293,27 +293,27 @@ void DrawFrame(void)
     int unused; // unused
  
     // black
-    ULTIMA_0a70_GRAP_2d_SetPenColor(0);
-    ULTIMA_0aa6_GRAP_3f_FillRect(0, 0, 319, 199);
+    GRAP_2d_SetPenColor(0);
+    GRAP_3f_FillRect(0, 0, 319, 199);
 
-    ULTIMA_0a70_GRAP_2d_SetPenColor(blueColor);
-    ULTIMA_0aa6_GRAP_3f_FillRect(0, 0, 319, 6);
-    ULTIMA_0aa6_GRAP_3f_FillRect(0, 185, 191, 191);
-    ULTIMA_0aa6_GRAP_3f_FillRect(0, 0, 6, 191);
-    ULTIMA_0aa6_GRAP_3f_FillRect(185, 0, 191, 191);
-    ULTIMA_0aa6_GRAP_3f_FillRect(313, 0, 319, 87);
-    ULTIMA_0aa6_GRAP_3f_FillRect(192, 80, 312, 87);
-    ULTIMA_0aa6_GRAP_3f_FillRect(192, 0x39, 312, 63);
+    GRAP_2d_SetPenColor(blueColor);
+    GRAP_3f_FillRect(0, 0, 319, 6);
+    GRAP_3f_FillRect(0, 185, 191, 191);
+    GRAP_3f_FillRect(0, 0, 6, 191);
+    GRAP_3f_FillRect(185, 0, 191, 191);
+    GRAP_3f_FillRect(313, 0, 319, 87);
+    GRAP_3f_FillRect(192, 80, 312, 87);
+    GRAP_3f_FillRect(192, 0x39, 312, 63);
 
     SetTextForegroundColor(blueColor);
     SetTextPosition(0, 0);
-    ULTIMA_16ba_PrintChar(0x7b);
+    PrintChar(0x7b);
     SetTextPosition(39, 0);
-    ULTIMA_16ba_PrintChar(0x7c);
+    PrintChar(0x7c);
     SetTextPosition(0, 23);
-    ULTIMA_16ba_PrintChar(0x7d);
+    PrintChar(0x7d);
 
-    ULTIMA_0a70_GRAP_2d_SetPenColor(brightWhiteColor);
+    GRAP_2d_SetPenColor(brightWhiteColor);
     GRAP_Line(7, 7, 7, 184);
     GRAP_LineTo(184, 184);
     GRAP_LineTo(184, 7);
@@ -366,14 +366,14 @@ int PlaceCombatant(int entity, int kind, int cellX, int cellY, int mapLevel)
                 result = slot_n;
 
                 // 6587
-                if (kind == 1 && D_55a8_party[entity].status != STATUS_DEAD) // player?
+                if (kind == 1 && party[entity].status != STATUS_DEAD) // player?
                 {
                     // 65a0
-                    combatant_f->dex = D_55a8_party[entity].dex;
+                    combatant_f->dex = party[entity].dex;
                     combatant_f->turnTimer = 36 - combatant_f->dex;
                     combatant_f->flags = COMBAT_FLAGS_PLAYER;
                     // 65b4
-                    if (D_55a8_party[entity].status != STATUS_GOOD && D_55a8_party[entity].status != STATUS_POISONED)
+                    if (party[entity].status != STATUS_GOOD && party[entity].status != STATUS_POISONED)
                     {
                         combatant_f->flags |= COMBAT_FLAGS_ASLEEP;
                     }
@@ -417,14 +417,14 @@ int PlaceCombatant(int entity, int kind, int cellX, int cellY, int mapLevel)
         // 6634
         for (slot_n = 0; slot_n < 0x20; slot_n++)
         {
-            if (D_5c5a_actors[slot_n].tile == 0)
+            if (actors[slot_n].tile == 0)
             {
                 // 6685
                 if (kind == 0)
                 {
                     combatant_f->actorIdx = slot_n;
                     
-                    D_5c5a_actors[slot_n].animTile = D_5c5a_actors[slot_n].tile = entity * 4 + TILE_ACTOR_WIZARD; // local_14
+                    actors[slot_n].animTile = actors[slot_n].tile = entity * 4 + TILE_ACTOR_WIZARD; // local_14
                 }
 
                 // 669a
@@ -436,22 +436,22 @@ int PlaceCombatant(int entity, int kind, int cellX, int cellY, int mapLevel)
                 // 66a6
                 if (kind == 2)
                 {
-                    D_5c5a_actors[slot_n].animTile = D_5c5a_actors[slot_n].tile = entity;
+                    actors[slot_n].animTile = actors[slot_n].tile = entity;
                     result = slot_n;
                 }
 
                 // 66bb
-                D_5c5a_actors[slot_n].x = cellX;
-                D_5c5a_actors[slot_n].y = cellY;
-                D_5c5a_actors[slot_n].z = mapLevel;
-                D_5c5a_actors[slot_n].extra = 0xff;
+                actors[slot_n].x = cellX;
+                actors[slot_n].y = cellY;
+                actors[slot_n].z = mapLevel;
+                actors[slot_n].extra = 0xff;
                 if (kind == 0)
                 {
-                    D_5c5a_actors[slot_n].value = combatant_f->hp;
+                    actors[slot_n].value = combatant_f->hp;
                 }
                 else
                 {
-                    D_5c5a_actors[slot_n].value = entity;
+                    actors[slot_n].value = entity;
                 }
 
                 // 66f8
@@ -480,9 +480,9 @@ int PlaceCombatant(int entity, int kind, int cellX, int cellY, int mapLevel)
     {
         for (slot_n = 0; slot_n < 0x20; slot_n++)
         {
-            if (D_5c5a_actors[combatants[slot_n].actorIdx].extra == result)
+            if (actors[combatants[slot_n].actorIdx].extra == result)
             {
-                D_5c5a_actors[combatants[slot_n].actorIdx].extra = 0xff;
+                actors[combatants[slot_n].actorIdx].extra = 0xff;
             }
         }
     }
@@ -496,12 +496,12 @@ void ApplyRing(int combatantIndex)
     CombatEntity* combatant = &combatants[combatantIndex];
     if ((combatant->flags & COMBAT_FLAGS_PLAYER) != 0 && (combatant->flags & (COMBAT_FLAGS_DEAD | COMBAT_FLAGS_ASLEEP)) == 0)
     {
-        if (D_55a8_party[combatant->entityIdx].equips[4] == 42)
+        if (party[combatant->entityIdx].equips[4] == 42)
         {
-            D_5c5a_actors[combatant->actorIdx].animTile = TILE_ACTOR_1D;
+            actors[combatant->actorIdx].animTile = TILE_ACTOR_1D;
             combatant->flags |= COMBAT_FLAGS_INVISIBLE;
         }
-        else if (D_55a8_party[combatant->entityIdx].equips[4] == 44)
+        else if (party[combatant->entityIdx].equips[4] == 44)
         {
             RingRegeneration(combatant->entityIdx); // sic
         }
@@ -516,30 +516,30 @@ void WakeCombatant(int combatantIndex)
     {
         if ((combatant->flags & COMBAT_FLAGS_PLAYER) != 0)
         {
-            D_55a8_party[combatant->entityIdx].status = STATUS_GOOD;
+            party[combatant->entityIdx].status = STATUS_GOOD;
             if ((combatant->flags & COMBAT_FLAGS_INVISIBLE) != 0)
             {
-                D_5c5a_actors[combatant->actorIdx].animTile = TILE_ACTOR_1D;
+                actors[combatant->actorIdx].animTile = TILE_ACTOR_1D;
             }
             else
             {
-                D_5c5a_actors[combatant->actorIdx].animTile = D_5c5a_actors[combatant->actorIdx].tile;
+                actors[combatant->actorIdx].animTile = actors[combatant->actorIdx].tile;
             }
         }
         else
         {
-            D_5c5a_actors[combatant->actorIdx].animState = 0;
+            actors[combatant->actorIdx].animState = 0;
         }
         combatant->flags &= ~COMBAT_FLAGS_ASLEEP;
     }
 
-    ULTIMA_2900_UpdateVitalsDisplay();
+    UpdateVitalsDisplay();
 }
 
 // Put a combatant to sleep, unless a poisoned party member.
 void SleepIfNotPoisoned(int combatantIndex)
 {
-    if ((combatants[combatantIndex].flags & COMBAT_FLAGS_PLAYER) == 0 || D_55a8_party[combatants[combatantIndex].entityIdx].status != STATUS_POISONED)
+    if ((combatants[combatantIndex].flags & COMBAT_FLAGS_PLAYER) == 0 || party[combatants[combatantIndex].entityIdx].status != STATUS_POISONED)
     {
         PutToSleep(combatantIndex);
     }
@@ -551,11 +551,11 @@ void PutToSleep(int combatantIndex)
     CombatEntity* combatant = &combatants[combatantIndex];
     if ((combatant->flags & COMBAT_FLAGS_PLAYER) != 0)
     {
-        if (D_55a8_party[combatant->entityIdx].status != STATUS_DEAD)
+        if (party[combatant->entityIdx].status != STATUS_DEAD)
         {
-            D_55a8_party[combatant->entityIdx].status = STATUS_SLEEP;
+            party[combatant->entityIdx].status = STATUS_SLEEP;
             combatant->flags |= COMBAT_FLAGS_ASLEEP;
-            D_5c5a_actors[combatant->actorIdx].animTile = TILE_ACTOR_SLEEP;
+            actors[combatant->actorIdx].animTile = TILE_ACTOR_SLEEP;
 
             if (combatantIndex == activePlayer)
             {
@@ -564,11 +564,11 @@ void PutToSleep(int combatantIndex)
 
             combatEvents = 4;
 
-            ULTIMA_2900_UpdateVitalsDisplay();
+            UpdateVitalsDisplay();
 
             if ((combatFlags & 4) == 0)
             {
-                ULTIMA_5910_UpdateFrame();
+                UpdateFrame();
             }
         }
     }
@@ -576,9 +576,9 @@ void PutToSleep(int combatantIndex)
     {
         combatant->flags |= COMBAT_FLAGS_ASLEEP;
         combatEvents = 4;
-        D_5c5a_actors[combatant->actorIdx].animState = 0xff;
+        actors[combatant->actorIdx].animState = 0xff;
 
-        ULTIMA_5910_UpdateFrame();
+        UpdateFrame();
     }
 }
 
@@ -602,8 +602,8 @@ void InitCombatants(void)
     {
         entry = &combatants[i_k];
 
-        D_5c5a_actors[i_k].tile = D_5c5a_actors[i_k].animTile = D_5c5a_actors[i_k].x = D_5c5a_actors[i_k].animState = 0;
-        D_5c5a_actors[i_k].y = D_5c5a_actors[i_k].z = D_5c5a_actors[i_k].value = 0;
+        actors[i_k].tile = actors[i_k].animTile = actors[i_k].x = actors[i_k].animState = 0;
+        actors[i_k].y = actors[i_k].z = actors[i_k].value = 0;
 
         entry->hp = entry->dex = entry->flags = entry->entityIdx = 0;
 
@@ -611,26 +611,26 @@ void InitCombatants(void)
     }
 
     // place player party
-    for (i_k = 0; i_k < D_585b_partyCount; i_k++)
+    for (i_k = 0; i_k < partyCount; i_k++)
     {
-        if (D_55a8_party[i_k].status != STATUS_DEAD)
+        if (party[i_k].status != STATUS_DEAD)
         {
-            if (D_55a8_party[i_k].equips[4] == 42)
+            if (party[i_k].equips[4] == 42)
             {
                 ringItem_i = 42;
             }
 
-            if (D_55a8_party[i_k].equips[4] == 44)
+            if (party[i_k].equips[4] == 44)
             {
                 ringItem_i = 44;
             }
 
             if (ringItem_i != 0)
             {
-                combatantIndex = ULTIMA_2092_RandomRange(0, 0xf);
+                combatantIndex = RandomRange(0, 0xf);
                 if (combatantIndex == 0xb)
                 {
-                    ULTIMA_1850_PrintString(/*0xa422*/ "A ring has vanished!\n");
+                    PrintString(/*0xa422*/ "A ring has vanished!\n");
                     AudioSweepTone(0x4b0, 2000, 1, 0x28);
                     Unequip(i_k, ringItem_i);
                 }
@@ -641,33 +641,33 @@ void InitCombatants(void)
             startY = combatPartyY[i_k];
             combatantIndex = PlaceCombatant(i_k, 1, startX_m, startY, D_5895_mapLevel);
 
-            D_5c5a_actors[combatants[combatantIndex].actorIdx].extra = 0xff;
+            actors[combatants[combatantIndex].actorIdx].extra = 0xff;
 
             // setup tile (according to class)
-            switch (D_55a8_party[i_k].cls)
+            switch (party[i_k].cls)
             {
             case CLASS_AVATAR:
-                D_5c5a_actors[combatants[combatantIndex].actorIdx].tile = TILE_ACTOR_4C;
+                actors[combatants[combatantIndex].actorIdx].tile = TILE_ACTOR_4C;
                 break;
             case CLASS_FIGHTER:
             case CLASS_PALADIN:
             case CLASS_RANGER:
-                D_5c5a_actors[combatants[combatantIndex].actorIdx].tile = TILE_ACTOR_FIGHTER;
+                actors[combatants[combatantIndex].actorIdx].tile = TILE_ACTOR_FIGHTER;
                 break;
             case CLASS_DRUID:
             case CLASS_MAGE:
-                D_5c5a_actors[combatants[combatantIndex].actorIdx].tile = TILE_ACTOR_WIZARD;
+                actors[combatants[combatantIndex].actorIdx].tile = TILE_ACTOR_WIZARD;
                 break;
             case CLASS_BARD:
             case CLASS_SHEPHERD:
             case CLASS_TINKER:
-                D_5c5a_actors[combatants[combatantIndex].actorIdx].tile = TILE_ACTOR_BARD_44;
+                actors[combatants[combatantIndex].actorIdx].tile = TILE_ACTOR_BARD_44;
                 break;
             }
 
-            D_5c5a_actors[combatants[combatantIndex].actorIdx].animTile = D_5c5a_actors[combatants[combatantIndex].actorIdx].tile;
+            actors[combatants[combatantIndex].actorIdx].animTile = actors[combatants[combatantIndex].actorIdx].tile;
 
-            if (D_55a8_party[i_k].status == STATUS_SLEEP)
+            if (party[i_k].status == STATUS_SLEEP)
             {
                 PutToSleep(combatantIndex);
             }
@@ -681,7 +681,7 @@ void InitCombatants(void)
     if (GetCombatMap(5, 5) == 0xdc)
     {
         objectSlot_i = PlaceCombatant(1, 2, 5, 5, D_5895_mapLevel);
-        D_5c5a_actors[objectSlot_i].value = D_5895_mapLevel * 3 + 7;
+        actors[objectSlot_i].value = D_5895_mapLevel * 3 + 7;
         GetCombatMap(5, 5) = D_bb15_floorTile;
     }
 }
@@ -726,7 +726,7 @@ void SetUpCombat(int flags, int enemy)
         // shuffle
         for (i_n = 0; i_n < 0xf; i_n++)
         {
-            pick = ULTIMA_2092_RandomRange(0, 0xf);
+            pick = RandomRange(0, 0xf);
             // swap
             count_m = order_j[i_n];
             order_j[i_n] = order_j[pick];
@@ -736,7 +736,7 @@ void SetUpCombat(int flags, int enemy)
 
     if (flags != 0x80 || flags != 0x4) // BUG: expression always true
     {
-        ULTIMA_1850_PrintString(/*0xa438*/ "*** CONFLICT ***\n");
+        PrintString(/*0xa438*/ "*** CONFLICT ***\n");
     }
 
     if (D_5894_savedMapId != 0 && D_5894_savedMapId < 0x21 && enemy != 0xc && fromWorld_i != 0)
@@ -750,12 +750,12 @@ void SetUpCombat(int flags, int enemy)
 
     if (count_m != 8 && count_m != 0x10 && count_m != 1)
     {
-        count_m = ULTIMA_2092_RandomRange(1, count_m);
+        count_m = RandomRange(1, count_m);
         if (fewerEnemies != 0)
         {
-            count_m = ULTIMA_2092_RandomRange(1, count_m);
+            count_m = RandomRange(1, count_m);
         }
-        ULTIMA_5910_UpdateFrame();
+        UpdateFrame();
         if (count_m > 0x1f - 6)
         {
             count_m = 0x1a;
@@ -801,7 +801,7 @@ int PlayerDefense(int playerIndex)
     S_55a8* player_c;
 
     defense = 0;
-    player_c = &D_55a8_party[playerIndex];
+    player_c = &party[playerIndex];
 
     if (D_5894_savedMapId == 40 && player_c->equips[1] != 0x0f)
     {
@@ -865,34 +865,34 @@ int Unequip(int playerIndex, int item)
 
     result = 1;
 
-    if (item == D_55a8_party[playerIndex].equips[0])
+    if (item == party[playerIndex].equips[0])
     {
-        D_55a8_party[playerIndex].equips[0] = 0xff;
+        party[playerIndex].equips[0] = 0xff;
     }
-    else if (item == D_55a8_party[playerIndex].equips[1])
+    else if (item == party[playerIndex].equips[1])
     {
-        D_55a8_party[playerIndex].equips[1] = 0xff;
+        party[playerIndex].equips[1] = 0xff;
     }
-    else if (item == D_55a8_party[playerIndex].equips[2])
+    else if (item == party[playerIndex].equips[2])
     {
-        D_55a8_party[playerIndex].equips[2] = 0xff;
+        party[playerIndex].equips[2] = 0xff;
     }
-    else if (item == D_55a8_party[playerIndex].equips[3])
+    else if (item == party[playerIndex].equips[3])
     {
-        D_55a8_party[playerIndex].equips[3] = 0xff;
+        party[playerIndex].equips[3] = 0xff;
     }
-    else if (item == D_55a8_party[playerIndex].equips[4])
+    else if (item == party[playerIndex].equips[4])
     {
-        D_55a8_party[playerIndex].equips[4] = 0xff;
+        party[playerIndex].equips[4] = 0xff;
 
-        if (item == 0x2a && D_5893_mapId > 0x7f && curCombatant < 0x20)
+        if (item == 0x2a && mapId > 0x7f && curCombatant < 0x20)
         {
             combatants[curCombatant].flags &= ~COMBAT_FLAGS_INVISIBLE;
         }
     }
-    else if (item == D_55a8_party[playerIndex].equips[5])
+    else if (item == party[playerIndex].equips[5])
     {
-        D_55a8_party[playerIndex].equips[5] = 0xff;
+        party[playerIndex].equips[5] = 0xff;
     }
     else
     {

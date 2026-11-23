@@ -122,7 +122,7 @@ static void LoadChunk(char* fileName, int slot, int chunkWord)
     }
 
     // 00f0
-    ULTIMA_256e_ReadFileFromDisk(fileName, D_6608 + slot * 0x100, 0x100, fileOffset_j);
+    ReadFileFromDisk(fileName, D_6608 + slot * 0x100, 0x100, fileOffset_j);
     baseX = chunkWord >> 4 & 0xf0;
     baseY = chunkWord >> 8 & 0xf0;
 
@@ -139,14 +139,14 @@ static void LoadChunk(char* fileName, int slot, int chunkWord)
                 // 012c
                 if (DungeonSealedAt(chunkWord) != 0)
                 {
-                    *ULTIMA_4402_GetTileAddr(col_g + baseX, row + baseY) = TILE_MAP_DF;
+                    *GetTileAddr(col_g + baseX, row + baseY) = TILE_MAP_DF;
                 }
                 break;
             case 0x19:
                 // 017d
                 if (ShrineDestroyedAt(chunkWord) != 0)
                 {
-                    *ULTIMA_4402_GetTileAddr(col_g + baseX, row + baseY) = TILE_MAP_RUINS;
+                    *GetTileAddr(col_g + baseX, row + baseY) = TILE_MAP_RUINS;
                 }
                 break;
             }
@@ -163,9 +163,9 @@ void LoadViewChunks(int stepX, int stepY)
     int rightStep;
     char* fileName;
 
-    originWord_k = D_589b_mapOriginX * 0x10 + D_589c_mapOriginY * 0x100;
+    originWord_k = mapOriginX * 0x10 + mapOriginY * 0x100;
 
-    if (D_589b_mapOriginX == 0xf0)
+    if (mapOriginX == 0xf0)
     {
         rightStep = -0xf00; // 0xf100?
     }
@@ -271,11 +271,11 @@ int EnterTown(char* verb)
     int failed;
 
     failed = 1;
-    ULTIMA_1850_PrintString(verb);
+    PrintString(verb);
 
     for (placeIndex = 0; placeIndex < 0x20; placeIndex++)
     {
-        if (D_1e8a_placeX[placeIndex] == D_5896_mapX && (D_1eb2_placeY[placeIndex] == D_5897_mapY))
+        if (placeX[placeIndex] == D_5896_mapX && (placeY[placeIndex] == D_5897_mapY))
             break;
     }
 
@@ -283,13 +283,13 @@ int EnterTown(char* verb)
     {
         if (placeIndex < 0xd || placeIndex > 0x11)
         {
-            ULTIMA_1850_PrintString(/*0x399c*/ "\n\n");
-            ULTIMA_16ba_PrintChar(CTRL_CHAR_CENTER_TEXT);
-            ULTIMA_1850_PrintString(mapNames[placeIndex]);
-            ULTIMA_16ba_PrintChar(CTRL_CHAR_UNCENTER_TEXT);
+            PrintString(/*0x399c*/ "\n\n");
+            PrintChar(CTRL_CHAR_CENTER_TEXT);
+            PrintString(mapNames[placeIndex]);
+            PrintChar(CTRL_CHAR_UNCENTER_TEXT);
         }
 
-        ULTIMA_16ba_PrintChar('\n');
+        PrintChar('\n');
         if (curDisk[0] != 1)
         {
             SwitchDisks(1);
@@ -298,8 +298,8 @@ int EnterTown(char* verb)
                 ;
         }
 
-        WriteFileToDisk(GetWorldSavefile(), D_5c5a_actors, 0x100);
-        D_5893_mapId = placeIndex + 1;
+        WriteFileToDisk(GetWorldSavefile(), actors, 0x100);
+        mapId = placeIndex + 1;
         D_5895_mapLevel = 0;
         D_5896_mapX = 0xf;
         D_5897_mapY = 0x1e;
@@ -307,7 +307,7 @@ int EnterTown(char* verb)
     }
     else
     {
-        ULTIMA_1850_PrintString(/*0x39a8*/ "\nWhat town?\n");
+        PrintString(/*0x39a8*/ "\nWhat town?\n");
     }
 
     return failed;
@@ -328,42 +328,42 @@ void Falls(void)
     int savedTile;
     int member_i;
 
-    ULTIMA_1850_PrintString(/*0x39b5*/ "F-A-L-L-S!!!\n");
+    PrintString(/*0x39b5*/ "F-A-L-L-S!!!\n");
     MainoutMoveParty(0, 1);
     WaitFrames(1);
     MainoutMoveParty(0, 1);
     AudioSweepTone(0x9c4, 800, 1, 300);
 
-    savedTile = D_587c_partyTile;
-    D_587c_partyTile = 0;
+    savedTile = partyTile;
+    partyTile = 0;
 
     WaitFrames(1);
 
-    for (member_i = 0; member_i < D_585b_partyCount; member_i++)
+    for (member_i = 0; member_i < partyCount; member_i++)
     {
-        if (D_55a8_party[member_i].status != STATUS_DEAD && D_55a8_party[member_i].dex <= Random1To30())
+        if (party[member_i].status != STATUS_DEAD && party[member_i].dex <= Random1To30())
         {
             DamagePlayer(member_i, 1);
         }
     }
 
     WaitFrames(2);
-    D_587c_partyTile = savedTile;
+    partyTile = savedTile;
 
     if (D_5896_mapX == 0x36 && D_5897_mapY == 0x8a)
     {
-        ULTIMA_1850_PrintString(/*0x39c3*/ "Falling into underworld!!\n");
+        PrintString(/*0x39c3*/ "Falling into underworld!!\n");
 
         D_5895_mapLevel = 0xff;
 
-        WriteFileToDisk(/*0x39de*/ "BRIT.OOL", D_5c5a_actors, 0x100);
-        ULTIMA_256e_ReadFileFromDisk(/*0x39e7*/ "UNDER.OOL", D_5c5a_actors, 0x100, 0);
+        WriteFileToDisk(/*0x39de*/ "BRIT.OOL", actors, 0x100);
+        ReadFileFromDisk(/*0x39e7*/ "UNDER.OOL", actors, 0x100, 0);
         SwitchDisks(5);
 
         while (TestOpenFile(/*0x39f1*/ "UNDER.DAT") == 0)
             ;
 
-        WriteFileToDisk(/*0x39fb*/ "UNDER.OOL", D_5c5a_actors, 0x100);
+        WriteFileToDisk(/*0x39fb*/ "UNDER.OOL", actors, 0x100);
         SetUpOverworld(); // THUNK 7b7e
     }
 }
@@ -378,8 +378,8 @@ void PlaceAmuletShards(void)
     {
         if (amulet == 0)
         {
-            // D_5c5a_actors[28] == 5d3a
-            actor_h = &D_5c5a_actors[28];
+            // actors[28] == 5d3a
+            actor_h = &actors[28];
             actor_h->tile = actor_h->animTile = TILE_ACTOR_AMULET_LB;
             actor_h->x = 0x69;
             actor_h->y = 0xe1;
@@ -390,10 +390,10 @@ void PlaceAmuletShards(void)
         // 059d
         for (index = 0; index < 3; index++)
         {
-            if (shards[index] == 0 && D_58c8_shadowlordTowns[index] < 0x80)
+            if (shards[index] == 0 && shadowlordTowns[index] < 0x80)
             {
-                // D_5c5a_actors[29] == 5d42
-                actor_h = &D_5c5a_actors[index + 29];
+                // actors[29] == 5d42
+                actor_h = &actors[index + 29];
                 actor_h->tile = actor_h->animTile = TILE_ACTOR_SHARD;
                 actor_h->x = D_3a06_shardX[index];
                 actor_h->y = D_3a0a_shardY[index];
@@ -407,9 +407,9 @@ void PlaceAmuletShards(void)
 // "Burning!": the party is damaged
 void StepOnBurningTile(void)
 {
-    ULTIMA_5910_UpdateFrame();
-    ULTIMA_1850_PrintString(/*0x3a11*/ "Burning!\n");
-    ULTIMA_2aa8_DamageParty();
+    UpdateFrame();
+    PrintString(/*0x3a11*/ "Burning!\n");
+    DamageParty();
 }
 
 // each living member may be poisoned (dexterity against a roll of 1 to 30)
@@ -417,14 +417,14 @@ void StepOnPoisonTile(void)
 {
     int member;
 
-    for (member = 0; member < D_585b_partyCount; member++)
+    for (member = 0; member < partyCount; member++)
     {
-        if (D_55a8_party[member].status != STATUS_DEAD && D_55a8_party[member].status != STATUS_POISONED)
+        if (party[member].status != STATUS_DEAD && party[member].status != STATUS_POISONED)
         {
-            if (D_55a8_party[member].dex < ULTIMA_2092_RandomRange(1, 0x1e))
+            if (party[member].dex < RandomRange(1, 0x1e))
             {
-                D_55a8_party[member].status = STATUS_POISONED;
-                ULTIMA_1850_PrintString(/*0x3a1b*/ "Poisoned!\n");
+                party[member].status = STATUS_POISONED;
+                PrintString(/*0x3a1b*/ "Poisoned!\n");
             }
         }
     }

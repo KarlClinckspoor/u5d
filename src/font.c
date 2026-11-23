@@ -134,7 +134,7 @@ int AnimateScene(int frames)
 
         for (index_h = 0; index_h < 32; index_h++)
         {
-            actor_g = &D_5c5a_actors[index_h];
+            actor_g = &actors[index_h];
 
             if (actor_g->tile != 0)
             {
@@ -174,7 +174,7 @@ int AnimateScene(int frames)
 
         if (sceneNo == 2)
         {
-            ULTIMA_223c_AudioWhiteNoise(0x14, 0x3c, 10000);
+            AudioWhiteNoise(0x14, 0x3c, 10000);
         }
         else if (sceneNo == 3)
         {
@@ -186,11 +186,11 @@ int AnimateScene(int frames)
 
             if (toneStep == 0)
             {
-                ULTIMA_22c0_AudioTone(3000, 3);
+                AudioTone(3000, 3);
             }
             else if (toneStep == 4)
             {
-                ULTIMA_22c0_AudioTone(2000, 3);
+                AudioTone(2000, 3);
             }
         }
     } while (--frames != 0);
@@ -250,15 +250,15 @@ void PlayIntroStory(void)
     stripLeft = stripRight = 9;
     stripWiden = 0;
 
-    ULTIMA_0a70_GRAP_2d_SetPenColor(blueColor);
-    ULTIMA_0aa6_GRAP_3f_FillRect(0x78, 0x78, 199, 0x7e);
-    ULTIMA_0a70_GRAP_2d_SetPenColor(brightWhiteColor);
+    GRAP_2d_SetPenColor(blueColor);
+    GRAP_3f_FillRect(0x78, 0x78, 199, 0x7e);
+    GRAP_2d_SetPenColor(brightWhiteColor);
     GRAP_Line(0x78, 0x7f, 199, 0x7f);
 
-    if (D_5893_mapId != 0x42)
+    if (mapId != 0x42)
     {
-        ULTIMA_256e_ReadFileFromDisk(/*0xa044*/ "MISCMAPS.DAT", scratch, 2000, 0x2c0);
-        if (D_5893_mapId == 0x40)
+        ReadFileFromDisk(/*0xa044*/ "MISCMAPS.DAT", scratch, 2000, 0x2c0);
+        if (mapId == 0x40)
         {
             SaveVideoPage();
             while (LoadTileset(*tilesFileName) == 0) {}
@@ -266,14 +266,14 @@ void PlayIntroStory(void)
         }
     }
 
-    D_5893_mapId = 0x42;
+    mapId = 0x42;
 
     for (pos_h = 0x200; pos_h < 2000; pos_h++)
     {
         switch (scratch[pos_h])
         {
         case 0:
-            actor = &D_5c5a_actors[scratch[++pos_h]];
+            actor = &actors[scratch[++pos_h]];
             actor->tile = actor->animTile = scratch[++pos_h];
             actor->x = scratch[++pos_h];
             actor->y = scratch[++pos_h];
@@ -281,14 +281,14 @@ void PlayIntroStory(void)
             break;
 
         case 1:
-            actor = &D_5c5a_actors[scratch[++pos_h]];
+            actor = &actors[scratch[++pos_h]];
             actor->tile = actor->animTile = actor->animState = 0;
 
             GetMap(actor->x, actor->y) = GetCopiedMap(actor->x, actor->y);
             break;
 
         case 2:
-            actor = &D_5c5a_actors[scratch[++pos_h]];
+            actor = &actors[scratch[++pos_h]];
             dir = scratch[++pos_h];
             GetMap(actor->x, actor->y) = GetCopiedMap(actor->x, actor->y);
             actor->x += facingDx[dir];
@@ -349,7 +349,7 @@ void PlayIntroStory(void)
             break;
 
         case 7:
-            actor = &D_5c5a_actors[scratch[++pos_h]];
+            actor = &actors[scratch[++pos_h]];
             tile_l = actor->tile;
 
             actor->tile = actor->animTile = TILE_ACTOR_CIRCLE;
@@ -362,7 +362,7 @@ void PlayIntroStory(void)
             break;
 
         case 8:
-            actor = &D_5c5a_actors[scratch[++pos_h]];
+            actor = &actors[scratch[++pos_h]];
             argX_j = actor->x;
             argY_i = actor->y;
             tile_l = actor->tile;
@@ -399,7 +399,7 @@ void PlayIntroStory(void)
                 {
                     return;
                 }
-                ULTIMA_0a70_GRAP_2d_SetPenColor(brightWhiteColor);
+                GRAP_2d_SetPenColor(brightWhiteColor);
                 GRAP_Line(argX_j + 0x80, argY_i + 0x98, argX_j + 0x89, argY_i + 0x9b);
                 GRAP_Line(argX_j + 0x80, argY_i + 0x99, argX_j + 0x89, argY_i + 0x9c);
                 argX_j += 9;
@@ -409,9 +409,9 @@ void PlayIntroStory(void)
 
             pos_h++;
             pos_h++;
-            actor = &D_5c5a_actors[scratch[pos_h]];
+            actor = &actors[scratch[pos_h]];
             GRAP_51_PutTile(0, actor->x, actor->y + 7);
-            ULTIMA_223c_AudioWhiteNoise(1, 0x4b0, 4000);
+            AudioWhiteNoise(1, 0x4b0, 4000);
             if (AnimateScene(3) != 0)
             {
                 return;
@@ -421,12 +421,12 @@ void PlayIntroStory(void)
         case 0xc:
             for (step = 0; step < 0x20; step++)
             {
-                D_5c5a_actors[step].animTile = D_5c5a_actors[step].tile = D_5c5a_actors[step].animState = 0;
+                actors[step].animTile = actors[step].tile = actors[step].animState = 0;
             }
             break;
 
         case 0xd:
-            actor = &D_5c5a_actors[scratch[++pos_h]];
+            actor = &actors[scratch[++pos_h]];
             dir = scratch[++pos_h];
             GetMap(actor->x, actor->y) = GetCopiedMap(actor->x, actor->y);
             actor->x += facingDx[dir];
@@ -467,7 +467,7 @@ static int PickVirtue(void)
 
     do
     {
-        virtue = ULTIMA_2092_RandomRange(0, 7);
+        virtue = RandomRange(0, 7);
     } while (virtueOffered[virtue] != 0 || virtueRejected[virtue] != 0);
 
     virtueOffered[virtue] = 1;
@@ -488,7 +488,7 @@ static void AskVirtueQuestion(byte* fontImage, byte* cardImage)
     byte key_g;
 
     GRAP_0f_SelectPage(1);
-    ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
+    PrintChar(CTRL_CHAR_CLEAR_WINDOW);
     GRAP_4b_PutImage(cardImage, 1, 0x10, 0, 0);
     GRAP_4b_PutImage(cardImage, 1, 200, 0, 0);
 
@@ -512,7 +512,7 @@ static void AskVirtueQuestion(byte* fontImage, byte* cardImage)
 
     GRAP_4b_PutImage(cardImage, leftCard + 2, cardX[leftCard], cardY[leftCard], 0);
     GRAP_4b_PutImage(cardImage, rightCard + 2, cardX[rightCard] + 0xb8, cardY[rightCard], 0);
-    ULTIMA_256e_ReadFileFromDisk(/*0xa052*/ "QUESTION.DAT", scratch, 2000, questionOffset[virtueA][virtueB_o]);
+    ReadFileFromDisk(/*0xa052*/ "QUESTION.DAT", scratch, 2000, questionOffset[virtueA][virtueB_o]);
     DrawJustifiedText(fontImage, (char*)scratch);
     GRAP_1b_TransferFullscreen(1, 0);
 
@@ -546,7 +546,7 @@ void CreateCharacter(void)
     byte* gypsyImage;
     byte key_g;
 
-    if (D_5893_mapId != 64)
+    if (mapId != 64)
     {
         UnloadTileset();
     }
@@ -563,24 +563,24 @@ void CreateCharacter(void)
         gypsyImage = LoadImageFile(fileNames[0x10]);
     } while (gypsyImage == 0);
 
-    ULTIMA_256e_ReadFileFromDisk(/*0xa060*/ "INIT.GAM", &saveStart, (int)&saveEnd - (int)&saveStart, 0);
-    ULTIMA_0a70_GRAP_2d_SetPenColor(blueColor);
-    ULTIMA_0aa6_GRAP_3f_FillRect(0x78, 0x78, 200, 0x7e);
-    ULTIMA_0a70_GRAP_2d_SetPenColor(brightWhiteColor);
+    ReadFileFromDisk(/*0xa060*/ "INIT.GAM", &saveStart, (int)&saveEnd - (int)&saveStart, 0);
+    GRAP_2d_SetPenColor(blueColor);
+    GRAP_3f_FillRect(0x78, 0x78, 200, 0x7e);
+    GRAP_2d_SetPenColor(brightWhiteColor);
     GRAP_Line(0x78, 0x7f, 200, 0x7f);
-    ULTIMA_0a70_GRAP_2d_SetPenColor(0);
-    ULTIMA_0aa6_GRAP_3f_FillRect(8, 0x80, 0x137, 0xbf);
+    GRAP_2d_SetPenColor(0);
+    GRAP_3f_FillRect(8, 0x80, 0x137, 0xbf);
     SetTextPosition(3, 0x11);
 
-    ULTIMA_1850_PrintString(/*0xa06a*/ "By what name shalt thou be known?");
+    PrintString(/*0xa06a*/ "By what name shalt thou be known?");
     SetTextPosition(0xe, 0x13);
-    ULTIMA_16ba_PrintChar(':');
-    IntroGetString(D_55a8_party[0].name, 8);
+    PrintChar(':');
+    IntroGetString(party[0].name, 8);
 
-    if (D_55a8_party[0].name[0] != 0)
+    if (party[0].name[0] != 0)
     {
         SetTextPosition(8, 0x15);
-        ULTIMA_1850_PrintString(/*0xa08c*/ "Art thou Male or Female? ");
+        PrintString(/*0xa08c*/ "Art thou Male or Female? ");
 
         do
         {
@@ -589,14 +589,14 @@ void CreateCharacter(void)
                 break;
         } while (key_g != 'F');
 
-        ULTIMA_16ba_PrintChar(key_g);
+        PrintChar(key_g);
         if (key_g == 'M')
         {
-            D_55a8_party[0].gender = 0xb;
+            party[0].gender = 0xb;
         }
         else
         {
-            D_55a8_party[0].gender = 0xc;
+            party[0].gender = 0xc;
         }
 
         D_5156_penX = 0;
@@ -608,11 +608,11 @@ void CreateCharacter(void)
         D_5150_regionTop = 0x59;
         D_5152_regionBottom = 200;
 
-        ULTIMA_256e_ReadFileFromDisk(/*0xa0a6*/ "QUESTION.DAT", scratch, 2000, 0);
+        ReadFileFromDisk(/*0xa0a6*/ "QUESTION.DAT", scratch, 2000, 0);
 
         GRAP_0f_SelectPage(1);
         promptMode = 2;
-        ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
+        PrintChar(CTRL_CHAR_CLEAR_WINDOW);
         GRAP_4b_PutImage(gypsyImage, 0, 0, 0x60, 0);
         DrawJustifiedText(fontImage, scratch);
         GRAP_1b_TransferFullscreen(1, 0);
@@ -621,9 +621,9 @@ void CreateCharacter(void)
 
         while (PollKey() == 0) {}
 
-        newInt = D_55a8_party[0].intel;
-        newDex = D_55a8_party[0].dex;
-        newStr = D_55a8_party[0].str;
+        newInt = party[0].intel;
+        newDex = party[0].dex;
+        newStr = party[0].str;
 
         for (round = 0; round < 8; round++)
         {
@@ -658,9 +658,9 @@ void CreateCharacter(void)
         textRightX[1] = 0xa6;
         spaceWidth = 4;
 
-        ULTIMA_256e_ReadFileFromDisk(/*0xa0b4*/ "QUESTION.DAT", scratch, 2000, 0x322);
+        ReadFileFromDisk(/*0xa0b4*/ "QUESTION.DAT", scratch, 2000, 0x322);
         GRAP_0f_SelectPage(1);
-        ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
+        PrintChar(CTRL_CHAR_CLEAR_WINDOW);
         GRAP_4b_PutImage(gypsyImage, 10, 0xa8, 100, 0);
 
         DrawJustifiedText(fontImage, scratch);
@@ -674,17 +674,17 @@ void CreateCharacter(void)
         FreeBitImage(fontImage);
 
         GRAP_0f_SelectPage(1);
-        ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
+        PrintChar(CTRL_CHAR_CLEAR_WINDOW);
         GRAP_0f_SelectPage(0);
 
         promptMode = 0;
         
-        D_55a8_party[0].mag = D_55a8_party[0].intel = newInt;
-        D_55a8_party[0].dex = newDex;
-        //D_55a8_party[0].actorIdx = (newStr - 0x14 & ~-(newStr < 0x14)) + 0x14;
-        D_55a8_party[0].str = newStr <= 0x14 ? 0x14 : newStr;
-        ULTIMA_256e_ReadFileFromDisk(/*0xa0c2*/ "INIT.OOL", D_b31e, 0x100, 0);
-        ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
+        party[0].mag = party[0].intel = newInt;
+        party[0].dex = newDex;
+        //party[0].actorIdx = (newStr - 0x14 & ~-(newStr < 0x14)) + 0x14;
+        party[0].str = newStr <= 0x14 ? 0x14 : newStr;
+        ReadFileFromDisk(/*0xa0c2*/ "INIT.OOL", D_b31e, 0x100, 0);
+        PrintChar(CTRL_CHAR_CLEAR_WINDOW);
         SetTextPosition(0, 10);
         SwitchDisks(3);
 
@@ -696,6 +696,6 @@ void CreateCharacter(void)
     }
 
     SwitchDisks(0);
-    D_5893_mapId = 0x40;
+    mapId = 0x40;
 }
 

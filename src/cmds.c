@@ -20,14 +20,16 @@ int IsMovingActor(int tile);
 // stays awake), moving the sun and moons; in 1 of 64 hours an ambush starts a combat (returns 1), else the
 // party heals (once per 14 hours, with a chance of an apparition outside dungeons).
 // HoleUpRest sits at a limit of pass 2's memory: its loop optimization runs out of
-// memory unless the module's global symbols take about 72 * (22 + 8) bytes more than u5d's
+// memory unless the module's global symbols take about 85 * (22 + 8) bytes more than u5d's
 // readable names give (MATCHING.md, "What pass 2 counts, measured"). The original had
-// something there that u5d does not; what it was is not known. The stand-in: 72 dead
+// something there that u5d does not; what it was is not known. The stand-in: 85 dead
 // references (never compiled to code, never defined; the object lists them as externals
-// without a fixup, as TOWN_0f02's fill) on one line in CMDS_0000. Exact for 64 to 80 of
-// them: names cmds.c uses may grow or shrink by about 240 characters before the window
-// moves; if CMDS_0000 breaks after a rename, change the count (one reference is 30 bytes).
-extern int Q0000000, Q0000001, Q0000002, Q0000003, Q0000004, Q0000005, Q0000006, Q0000007, Q0000008, Q0000009, Q0000010, Q0000011, Q0000012, Q0000013, Q0000014, Q0000015, Q0000016, Q0000017, Q0000018, Q0000019, Q0000020, Q0000021, Q0000022, Q0000023, Q0000024, Q0000025, Q0000026, Q0000027, Q0000028, Q0000029, Q0000030, Q0000031, Q0000032, Q0000033, Q0000034, Q0000035, Q0000036, Q0000037, Q0000038, Q0000039, Q0000040, Q0000041, Q0000042, Q0000043, Q0000044, Q0000045, Q0000046, Q0000047, Q0000048, Q0000049, Q0000050, Q0000051, Q0000052, Q0000053, Q0000054, Q0000055, Q0000056, Q0000057, Q0000058, Q0000059, Q0000060, Q0000061, Q0000062, Q0000063, Q0000064, Q0000065, Q0000066, Q0000067, Q0000068, Q0000069, Q0000070, Q0000071;
+// without a fixup, as TOWN_0f02's fill) on one line in CMDS_0000. Exact for 75 to 95 of
+// them (70 to 90 before the resident names town.c uses lost their prefixes: 140 characters
+// fewer in CMDS_0000, 5 references): names cmds.c uses may grow or shrink by about 300
+// characters before the window moves; if CMDS_0000 breaks after a rename, change the count
+// (one reference is about 30 bytes).
+extern int Q0000000, Q0000001, Q0000002, Q0000003, Q0000004, Q0000005, Q0000006, Q0000007, Q0000008, Q0000009, Q0000010, Q0000011, Q0000012, Q0000013, Q0000014, Q0000015, Q0000016, Q0000017, Q0000018, Q0000019, Q0000020, Q0000021, Q0000022, Q0000023, Q0000024, Q0000025, Q0000026, Q0000027, Q0000028, Q0000029, Q0000030, Q0000031, Q0000032, Q0000033, Q0000034, Q0000035, Q0000036, Q0000037, Q0000038, Q0000039, Q0000040, Q0000041, Q0000042, Q0000043, Q0000044, Q0000045, Q0000046, Q0000047, Q0000048, Q0000049, Q0000050, Q0000051, Q0000052, Q0000053, Q0000054, Q0000055, Q0000056, Q0000057, Q0000058, Q0000059, Q0000060, Q0000061, Q0000062, Q0000063, Q0000064, Q0000065, Q0000066, Q0000067, Q0000068, Q0000069, Q0000070, Q0000071, Q0000072, Q0000073, Q0000074, Q0000075, Q0000076, Q0000077, Q0000078, Q0000079, Q0000080, Q0000081, Q0000082, Q0000083, Q0000084;
 // CHECKED
 int HoleUpRest(int mode, int watchIdx, int hours)
 {
@@ -45,7 +47,7 @@ int HoleUpRest(int mode, int watchIdx, int hours)
     int poisoned_k[8];
     int bardSlot;
     ActorFmt* bardActor; // not read
-    if (0) { Q0000000 = 0; Q0000001 = 0; Q0000002 = 0; Q0000003 = 0; Q0000004 = 0; Q0000005 = 0; Q0000006 = 0; Q0000007 = 0; Q0000008 = 0; Q0000009 = 0; Q0000010 = 0; Q0000011 = 0; Q0000012 = 0; Q0000013 = 0; Q0000014 = 0; Q0000015 = 0; Q0000016 = 0; Q0000017 = 0; Q0000018 = 0; Q0000019 = 0; Q0000020 = 0; Q0000021 = 0; Q0000022 = 0; Q0000023 = 0; Q0000024 = 0; Q0000025 = 0; Q0000026 = 0; Q0000027 = 0; Q0000028 = 0; Q0000029 = 0; Q0000030 = 0; Q0000031 = 0; Q0000032 = 0; Q0000033 = 0; Q0000034 = 0; Q0000035 = 0; Q0000036 = 0; Q0000037 = 0; Q0000038 = 0; Q0000039 = 0; Q0000040 = 0; Q0000041 = 0; Q0000042 = 0; Q0000043 = 0; Q0000044 = 0; Q0000045 = 0; Q0000046 = 0; Q0000047 = 0; Q0000048 = 0; Q0000049 = 0; Q0000050 = 0; Q0000051 = 0; Q0000052 = 0; Q0000053 = 0; Q0000054 = 0; Q0000055 = 0; Q0000056 = 0; Q0000057 = 0; Q0000058 = 0; Q0000059 = 0; Q0000060 = 0; Q0000061 = 0; Q0000062 = 0; Q0000063 = 0; Q0000064 = 0; Q0000065 = 0; Q0000066 = 0; Q0000067 = 0; Q0000068 = 0; Q0000069 = 0; Q0000070 = 0; Q0000071 = 0; }
+    if (0) { Q0000000 = 0; Q0000001 = 0; Q0000002 = 0; Q0000003 = 0; Q0000004 = 0; Q0000005 = 0; Q0000006 = 0; Q0000007 = 0; Q0000008 = 0; Q0000009 = 0; Q0000010 = 0; Q0000011 = 0; Q0000012 = 0; Q0000013 = 0; Q0000014 = 0; Q0000015 = 0; Q0000016 = 0; Q0000017 = 0; Q0000018 = 0; Q0000019 = 0; Q0000020 = 0; Q0000021 = 0; Q0000022 = 0; Q0000023 = 0; Q0000024 = 0; Q0000025 = 0; Q0000026 = 0; Q0000027 = 0; Q0000028 = 0; Q0000029 = 0; Q0000030 = 0; Q0000031 = 0; Q0000032 = 0; Q0000033 = 0; Q0000034 = 0; Q0000035 = 0; Q0000036 = 0; Q0000037 = 0; Q0000038 = 0; Q0000039 = 0; Q0000040 = 0; Q0000041 = 0; Q0000042 = 0; Q0000043 = 0; Q0000044 = 0; Q0000045 = 0; Q0000046 = 0; Q0000047 = 0; Q0000048 = 0; Q0000049 = 0; Q0000050 = 0; Q0000051 = 0; Q0000052 = 0; Q0000053 = 0; Q0000054 = 0; Q0000055 = 0; Q0000056 = 0; Q0000057 = 0; Q0000058 = 0; Q0000059 = 0; Q0000060 = 0; Q0000061 = 0; Q0000062 = 0; Q0000063 = 0; Q0000064 = 0; Q0000065 = 0; Q0000066 = 0; Q0000067 = 0; Q0000068 = 0; Q0000069 = 0; Q0000070 = 0; Q0000071 = 0; Q0000072 = 0; Q0000073 = 0; Q0000074 = 0; Q0000075 = 0; Q0000076 = 0; Q0000077 = 0; Q0000078 = 0; Q0000079 = 0; Q0000080 = 0; Q0000081 = 0; Q0000082 = 0; Q0000083 = 0; Q0000084 = 0; }
 
     lastHour_m = D_587f_hour;
     bardSlot = -1;
@@ -79,7 +81,7 @@ int HoleUpRest(int mode, int watchIdx, int hours)
         poisoned_k[member_g] = 0;
     }
 
-    for (member_g = 0; member_g < D_585b_partyCount; member_g++)
+    for (member_g = 0; member_g < partyCount; member_g++)
     {
         for (slot_m = 0; slot_m < 0x20; slot_m++)
         {
@@ -90,7 +92,7 @@ int HoleUpRest(int mode, int watchIdx, int hours)
             }
         }
 
-        switch (D_55a8_party[member_g].status)
+        switch (party[member_g].status)
         {
         case STATUS_POISONED:
             poisoned_k[member_g]++;
@@ -102,7 +104,7 @@ int HoleUpRest(int mode, int watchIdx, int hours)
                 SleepIfNotPoisoned(slot_m);
             }
 
-            if (D_55a8_party[member_g].cls == CLASS_BARD && member_g == watchIdx && D_a9ce_soundOn != 0)
+            if (party[member_g].cls == CLASS_BARD && member_g == watchIdx && soundOn != 0)
             {
                 bardSlot = slot_m;
             }
@@ -110,11 +112,11 @@ int HoleUpRest(int mode, int watchIdx, int hours)
         }
     }
 
-    ULTIMA_5910_UpdateFrame();
+    UpdateFrame();
 
     if (bardSlot != -1)
     {
-        bardActor = &D_5c5a_actors[combatants[bardSlot].actorIdx];
+        bardActor = &actors[combatants[bardSlot].actorIdx];
         oldTile_b = bardActor->tile;
         oldAnim_k = bardActor->animTile;
         
@@ -128,10 +130,10 @@ int HoleUpRest(int mode, int watchIdx, int hours)
             SleepIfNotPoisoned(bardSlot);
         }
 
-        ULTIMA_5910_UpdateFrame();
+        UpdateFrame();
     }
 
-    ULTIMA_1850_PrintString(/*0x41d4*/ "Zzzzzz...\n\n");
+    PrintString(/*0x41d4*/ "Zzzzzz...\n\n");
 
     if (watchIdx != -1)
     {
@@ -144,7 +146,7 @@ int HoleUpRest(int mode, int watchIdx, int hours)
             }
         }
 
-        watchTile_g = D_5c5a_actors[watcher->actorIdx].tile;
+        watchTile_g = actors[watcher->actorIdx].tile;
     }
 
     while (wakeHour_i != D_587f_hour)
@@ -154,16 +156,16 @@ int HoleUpRest(int mode, int watchIdx, int hours)
             D_587f_hour -= 0x18;
         }
 
-        ULTIMA_5910_UpdateFrame();
+        UpdateFrame();
         RingRegeneration();
-        ULTIMA_2900_UpdateVitalsDisplay();
+        UpdateVitalsDisplay();
         if (lastHour_m != D_587f_hour)
         {
-            if (ULTIMA_2092_RandomRange(0, 0x3f) == 0)
+            if (RandomRange(0, 0x3f) == 0)
             {
-                ULTIMA_207e_srand(ULTIMA_2056_GetTime());
-                ambush_o = (uint)ambushEnemies[ULTIMA_2092_RandomRange(0, 7)];
-                ULTIMA_1850_PrintString(/*0x41e0*/ "Ambushed!\n\n");
+                SeedRandom(GetTime());
+                ambush_o = (uint)ambushEnemies[RandomRange(0, 7)];
+                PrintString(/*0x41e0*/ "Ambushed!\n\n");
 
                 if (watchIdx > -1)
                 {
@@ -171,22 +173,22 @@ int HoleUpRest(int mode, int watchIdx, int hours)
                     for (idx_j = 0; idx_j < 6; idx_j++)
                     {
                         // 0283
-                        if ((member_g = combatants[idx_j].entityIdx) >= 0 && member_g < D_585b_partyCount)
+                        if ((member_g = combatants[idx_j].entityIdx) >= 0 && member_g < partyCount)
                         {
                             WakeCombatant(idx_j);
                             if (poisoned_k[member_g] != 0)
                             {
-                                D_55a8_party[member_g].status = STATUS_POISONED;
+                                party[member_g].status = STATUS_POISONED;
                             }
                             else
                             {
-                                D_55a8_party[member_g].status = STATUS_GOOD;
+                                party[member_g].status = STATUS_GOOD;
                             }
                         }
                     }
                 }
 
-                ULTIMA_2900_UpdateVitalsDisplay();
+                UpdateVitalsDisplay();
                 if ((mode & 2) != 0)
                 {
                     PlaceCombatants(GetDungeonMap((uint)D_5896_mapX, (uint)D_5897_mapY, D_5895_mapLevel & 0xff), 1);
@@ -201,41 +203,41 @@ int HoleUpRest(int mode, int watchIdx, int hours)
         }
 
         lastHour_m = D_587f_hour;
-        ULTIMA_4f7c_AdvanceTime(5);
+        AdvanceTime(5);
         WaitTicks(1);
         if (D_5894_savedMapId < 0x21)
         {
-            D_5893_mapId = D_5894_savedMapId;
-            ULTIMA_4a84_DrawSunAndMoons();
-            D_5893_mapId = 0xff;
+            mapId = D_5894_savedMapId;
+            DrawSunAndMoons();
+            mapId = 0xff;
         }
 
-        if (watchIdx != -1 && ULTIMA_2092_RandomRange(0, 3) == 2)
+        if (watchIdx != -1 && RandomRange(0, 3) == 2)
         {
-            D_5876_tempX = (uint)watcher->x;
-            D_5878_tempY = (uint)watcher->y;
+            tempX = (uint)watcher->x;
+            tempY = (uint)watcher->y;
 
-            switch (ULTIMA_2092_RandomRange(0, 3))
+            switch (RandomRange(0, 3))
             {
             case 0:
-                D_5878_tempY--;
+                tempY--;
                 break;
             case 1:
-                D_5878_tempY++;
+                tempY++;
                 break;
             case 2:
-                D_5876_tempX++;
+                tempX++;
                 break;
             case 3:
-                D_5876_tempX--;
+                tempX--;
                 break;
             }
 
-            if (IsInView(D_5876_tempX, D_5878_tempY) != 0 && IsCellFree(watchTile_g, D_5876_tempX, D_5878_tempY) != 0)
+            if (IsInView(tempX, tempY) != 0 && IsCellFree(watchTile_g, tempX, tempY) != 0)
             {
-                watcher->x = D_5c5a_actors[watcher->actorIdx].x = D_5876_tempX;
-                watcher->y = D_5c5a_actors[watcher->actorIdx].y = D_5878_tempY;
-                ULTIMA_5910_UpdateFrame();
+                watcher->x = actors[watcher->actorIdx].x = tempX;
+                watcher->y = actors[watcher->actorIdx].y = tempY;
+                UpdateFrame();
             }
         }
     }
@@ -250,35 +252,35 @@ int HoleUpRest(int mode, int watchIdx, int hours)
 
     if (campHealWait < 1 && hours > 5)
     {
-        ULTIMA_1850_PrintString(/*0x41ec*/ "Party rested!\n");
+        PrintString(/*0x41ec*/ "Party rested!\n");
 
-        for (member_g = 0; member_g < D_585b_partyCount; member_g++)
+        for (member_g = 0; member_g < partyCount; member_g++)
         {
-            if (poisoned_k[member_g] == 0 && campHealWait < 1 && hours > 5 && D_55a8_party[member_g].status != STATUS_DEAD && member_g != watchIdx)
+            if (poisoned_k[member_g] == 0 && campHealWait < 1 && hours > 5 && party[member_g].status != STATUS_DEAD && member_g != watchIdx)
             {
-                D_55a8_party[member_g].hp += ULTIMA_2092_RandomRange(1, 0x3f);
-                if (D_55a8_party[member_g].hp > D_55a8_party[member_g].maxHp)
+                party[member_g].hp += RandomRange(1, 0x3f);
+                if (party[member_g].hp > party[member_g].maxHp)
                 {
-                    D_55a8_party[member_g].hp = D_55a8_party[member_g].maxHp;
+                    party[member_g].hp = party[member_g].maxHp;
                 }
 
                 if (member_g != watchIdx)
                 {
-                    switch (D_55a8_party[member_g].cls)
+                    switch (party[member_g].cls)
                     {
                     case CLASS_AVATAR:
                     case CLASS_MAGE:
-                        D_55a8_party[member_g].mag = D_55a8_party[member_g].intel;
+                        party[member_g].mag = party[member_g].intel;
                         break;
                     case CLASS_BARD:
-                        D_55a8_party[member_g].mag = D_55a8_party[member_g].intel >> 1;
+                        party[member_g].mag = party[member_g].intel >> 1;
                         break;
                     }
                 }
             }
         }
 
-        if ((mode & 0x82) == 0 && ULTIMA_2092_RandomRange(0, 99) < 0x19)
+        if ((mode & 0x82) == 0 && RandomRange(0, 99) < 0x19)
         {
             apparitionMonth = D_587d_month;
             Apparition();
@@ -288,19 +290,19 @@ int HoleUpRest(int mode, int watchIdx, int hours)
     }
     else
     {
-        ULTIMA_1850_PrintString(/*0x41fb*/ "No effect...\n");
+        PrintString(/*0x41fb*/ "No effect...\n");
     }
 
-    for (member_g = 0; member_g < D_585b_partyCount; member_g++)
+    for (member_g = 0; member_g < partyCount; member_g++)
     {
-        if (D_55a8_party[member_g].status == STATUS_SLEEP)
+        if (party[member_g].status == STATUS_SLEEP)
         {
-            D_55a8_party[member_g].status = STATUS_GOOD;
+            party[member_g].status = STATUS_GOOD;
         }
     }
 
     activePlayer = oldActive_d;
-    ULTIMA_2900_UpdateVitalsDisplay();
+    UpdateVitalsDisplay();
 
     return 0;
 }
@@ -316,16 +318,16 @@ void CmdsHoleUpCmd(void)
     byte key_h;
     int savedActive_b;
 
-    ULTIMA_1850_PrintString(/*0x4209*/ "For how many hours? ");
+    PrintString(/*0x4209*/ "For how many hours? ");
 
-    while ((key_h = ULTIMA_266c_GetChar()) != U5_KEY_SPACE && (key_h < 0x30 || key_h > 0x39))
+    while ((key_h = GetChar()) != U5_KEY_SPACE && (key_h < 0x30 || key_h > 0x39))
     {
     }
 
     if (key_h != U5_KEY_SPACE && key_h != 0x30)
     {
-        ULTIMA_16ba_PrintChar(key_h);
-        ULTIMA_16ba_PrintChar('\n');
+        PrintChar(key_h);
+        PrintChar('\n');
 
         wakeHour = (int)D_587f_hour + (int)key_h - 0x30;
         if (wakeHour > 0x17)
@@ -336,7 +338,7 @@ void CmdsHoleUpCmd(void)
         for (i = 0; i < 0x10; i++)
         {
             MoveNpcs(D_587f_hour);
-            ULTIMA_5910_UpdateFrame();
+            UpdateFrame();
             if (npcApproach == 0x61)
             {
                 return;
@@ -345,36 +347,36 @@ void CmdsHoleUpCmd(void)
 
         savedActive_b = activePlayer;
 
-        for (i = 0; i < D_585b_partyCount; i++)
+        for (i = 0; i < partyCount; i++)
         {
-            if (D_55a8_party[i].status == STATUS_GOOD)
+            if (party[i].status == STATUS_GOOD)
             {
-                D_55a8_party[i].status = STATUS_SLEEP;
+                party[i].status = STATUS_SLEEP;
             }
         }
 
-        ULTIMA_2900_UpdateVitalsDisplay();
-        ULTIMA_1850_PrintString(/*0x421e*/ "Zzzzzzz...\n");
+        UpdateVitalsDisplay();
+        PrintString(/*0x421e*/ "Zzzzzzz...\n");
 
-        ULTIMA_0a70_GRAP_2d_SetPenColor(0);
-        ULTIMA_0aa6_GRAP_3f_FillRect(8, 8, 0xb7, 0xb7);
+        GRAP_2d_SetPenColor(0);
+        GRAP_3f_FillRect(8, 8, 0xb7, 0xb7);
 
         lastHour_h = D_587f_hour;
         while (wakeHour != D_587f_hour)
         {
-            ULTIMA_4f7c_AdvanceTime(10);
+            AdvanceTime(10);
             if (lastHour_h != D_587f_hour && (D_587f_hour == 0x14 || D_587f_hour == 0x05))
             {
-                TOWN_0170_SwapDayNightTiles();
+                SwapDayNightTiles();
             }
 
             lastHour_h = D_587f_hour;
-            ULTIMA_4a84_DrawSunAndMoons();
-            ULTIMA_2ae8_EndTurn();
-            ULTIMA_2900_UpdateVitalsDisplay();
-            TOWN_1694_PlaceActors();
+            DrawSunAndMoons();
+            EndTurn();
+            UpdateVitalsDisplay();
+            PlaceActors();
 
-            if (ULTIMA_368e_FindActorTileAtPos(D_5896_mapX, D_5897_mapY, D_5895_mapLevel) != 0)
+            if (FindActorTileAtPos(D_5896_mapX, D_5897_mapY, D_5895_mapLevel) != 0)
             {
                 wakeHour = -1;
                 break;
@@ -384,33 +386,33 @@ void CmdsHoleUpCmd(void)
 
         if (wakeHour == -1)
         {
-            ULTIMA_1850_PrintString(/*0x422a*/ "Thrown out of bed!\n");
+            PrintString(/*0x422a*/ "Thrown out of bed!\n");
         }
 
-        for (i = 0; i < D_585b_partyCount; i++)
+        for (i = 0; i < partyCount; i++)
         {
-            if (D_55a8_party[i].status == STATUS_SLEEP)
+            if (party[i].status == STATUS_SLEEP)
             {
-                D_55a8_party[i].status = STATUS_GOOD;
+                party[i].status = STATUS_GOOD;
             }
         }
 
         activePlayer = savedActive_b;
         D_5896_mapX++;
-        D_24e6_viewDirty = 1;
-        D_5c5a_actors[0].x++;
+        viewDirty = 1;
+        actors[0].x++;
 
-        ULTIMA_2900_UpdateVitalsDisplay();
-        ULTIMA_5910_UpdateFrame();
+        UpdateVitalsDisplay();
+        UpdateFrame();
     }
 }
 
 // 1 when the party is on foot (the Avatar tile); else prints "On foot" and returns 0.
 static int RequireOnFoot(void)
 {
-    if (D_587c_partyTile != TILE_ACTOR_AVATAR && D_587c_partyTile != TILE_ACTOR_1D)
+    if (partyTile != TILE_ACTOR_AVATAR && partyTile != TILE_ACTOR_1D)
     {
-        ULTIMA_1850_PrintString(/*0x423e*/ "\nOn foot\n");
+        PrintString(/*0x423e*/ "\nOn foot\n");
         return 0;
     }
     else
@@ -422,7 +424,7 @@ static int RequireOnFoot(void)
 // 1 when the party is on foot, on a carpet or on a skiff; else prints "On foot" and returns 0.
 static int CanBoardShip(void)
 {
-    switch (D_587c_partyTile)
+    switch (partyTile)
     {
     case TILE_ACTOR_FLYING_CARPET:
     case TILE_ACTOR_FLYING_CARPET + 1:
@@ -435,7 +437,7 @@ static int CanBoardShip(void)
         return 1;
 
     default:
-        ULTIMA_1850_PrintString(/*0x4248*/ "\nOn foot\n");
+        PrintString(/*0x4248*/ "\nOn foot\n");
         return 0;
     }
 }
@@ -463,7 +465,7 @@ static int IsLandAt(int viewY, int viewX)
     tile = GetMapViewport(viewX, viewY);
     if (tile != 0)
     {
-        return ULTIMA_2c4c_IsWalkableTile(0x1c, tile);
+        return IsWalkableTile(0x1c, tile);
     }
 
     tile = GetActorMap(viewX, viewY);
@@ -494,23 +496,23 @@ int BoardCmd(void)
     int actorSlot_g;
     int npc;
 
-    if (D_5893_mapId > 0x20 && D_5893_mapId < 0x29)
+    if (mapId > 0x20 && mapId < 0x29)
     {
-        ULTIMA_1850_PrintString(/*0x4252*/ "\nNot here!\n");
+        PrintString(/*0x4252*/ "\nNot here!\n");
 
         return 1;
     }
 
-    tile = ULTIMA_368e_FindActorTileAtPos(D_5896_mapX, D_5897_mapY, D_5895_mapLevel);
-    actorSlot_g = D_5876_tempX;
+    tile = FindActorTileAtPos(D_5896_mapX, D_5897_mapY, D_5895_mapLevel);
+    actorSlot_g = tempX;
     if ((tile & 0xfe) == TILE_ACTOR_HORSE)
     {
-        if (D_5893_mapId != 0)
+        if (mapId != 0)
         {
-            npc = TOWN_011e_FindNpcByActor(actorSlot_g);
-            if (npc != -1 && D_5f5e_npcs[npc].dialogNumber != 0)
+            npc = FindNpcByActor(actorSlot_g);
+            if (npc != -1 && npcs[npc].dialogNumber != 0)
             {
-                ULTIMA_1850_PrintString(/*0x425e*/ "\"Nay!\"\n");
+                PrintString(/*0x425e*/ "\"Nay!\"\n");
                 return 1;
             }
         }
@@ -520,9 +522,9 @@ int BoardCmd(void)
             return 1;
         }
 
-        ULTIMA_1850_PrintString(/*0x4266*/ "horse\n");
+        PrintString(/*0x4266*/ "horse\n");
 
-        D_587c_partyTile = tile + 2;
+        partyTile = tile + 2;
     }
     else if (tile == TILE_ACTOR_CARPET)
     {
@@ -531,9 +533,9 @@ int BoardCmd(void)
             return 1;
         }
 
-        ULTIMA_1850_PrintString(/*0x426d*/ "carpet\n");
+        PrintString(/*0x426d*/ "carpet\n");
 
-        D_587c_partyTile = TILE_ACTOR_FLYING_CARPET;
+        partyTile = TILE_ACTOR_FLYING_CARPET;
     }
     else if ((tile & 0xfc) == TILE_ACTOR_SKIFF)
     {
@@ -542,9 +544,9 @@ int BoardCmd(void)
             return 1;
         }
 
-        ULTIMA_1850_PrintString(/*0x4275*/ "skiff\n");
+        PrintString(/*0x4275*/ "skiff\n");
 
-        D_587c_partyTile = tile;
+        partyTile = tile;
     }
     else if ((tile & 0xfc) == TILE_ACTOR_FRIGATE_24)
     {
@@ -553,44 +555,44 @@ int BoardCmd(void)
             return 1;
         }
 
-        ULTIMA_1850_PrintString(/*0x427c*/ "Ship\n");
+        PrintString(/*0x427c*/ "Ship\n");
 
-        hull = D_5c5a_actors[actorSlot_g].value;
+        hull = actors[actorSlot_g].value;
         if (hull < 10)
         {
-            ULTIMA_1850_PrintString(/*0x4282*/ "\nDANGER: SHIP BADLY DAMAGED!\n");
+            PrintString(/*0x4282*/ "\nDANGER: SHIP BADLY DAMAGED!\n");
         }
 
-        D_5c5a_actors[0].value = hull;
-        skiffs_l = D_5c5a_actors[actorSlot_g].extra;
+        actors[0].value = hull;
+        skiffs_l = actors[actorSlot_g].extra;
 
-        if ((D_587c_partyTile & 0xfe) == TILE_ACTOR_FLYING_CARPET)
+        if ((partyTile & 0xfe) == TILE_ACTOR_FLYING_CARPET)
         {
             carpets++;
         }
 
-        if ((D_587c_partyTile & 0xfc) == TILE_ACTOR_SKIFF)
+        if ((partyTile & 0xfc) == TILE_ACTOR_SKIFF)
         {
             skiffs_l++;
         }
 
         if (skiffs_l == 0)
         {
-            ULTIMA_1850_PrintString(/*0x42a0*/ "\nWARNING: NO SKIFFS ON BOARD!\n");
+            PrintString(/*0x42a0*/ "\nWARNING: NO SKIFFS ON BOARD!\n");
         }
 
-        D_587c_partyTile = tile;
-        D_5c5a_actors[0].extra = skiffs_l;
-        D_a9fa_vitalsDirty = 1;
+        partyTile = tile;
+        actors[0].extra = skiffs_l;
+        vitalsDirty = 1;
     }
     else
     {
-        ULTIMA_1850_PrintString(/*0x42bf*/ "What?\n");
+        PrintString(/*0x42bf*/ "What?\n");
         return 0;
     }
 
     SetActor(0, 0, 0, 0, 0, 0, actorSlot_g);
-    D_24e6_viewDirty |= 2;
+    viewDirty |= 2;
 
     return 1;
 }
@@ -610,24 +612,24 @@ static void FireBroadsides(void)
     int actorSlot_f;
     int hit_l;
 
-    if (D_587c_partyTile < TILE_ACTOR_FRIGATE_20 || D_587c_partyTile > TILE_ACTOR_FRIGATE_20_END)
+    if (partyTile < TILE_ACTOR_FRIGATE_20 || partyTile > TILE_ACTOR_FRIGATE_20_END)
     {
-        ULTIMA_1850_PrintString(/*0x42c6*/ "What?\n");
+        PrintString(/*0x42c6*/ "What?\n");
     }
     else
     {
-        if (ULTIMA_35ec_SelectDirection() == 0)
+        if (SelectDirection() == 0)
         {
             return;
         }
 
-        dirX = D_5876_tempX;
-        dirY = D_5878_tempY;
+        dirX = tempX;
+        dirY = tempY;
 
-        if (dirX == 0 && (D_587c_partyTile & 1) == 0 || dirX != 0 && (D_587c_partyTile & 1) != 0)
+        if (dirX == 0 && (partyTile & 1) == 0 || dirX != 0 && (partyTile & 1) != 0)
         {
             // 09b2
-            ULTIMA_1850_PrintString(/*0x42cd*/ "Fire broadsides only!\n");
+            PrintString(/*0x42cd*/ "Fire broadsides only!\n");
         }
         else
         {
@@ -642,26 +644,26 @@ static void FireBroadsides(void)
                 x += dirX;
                 y += dirY;
 
-                tile_c = ULTIMA_368e_FindActorTileAtPos(x, y, D_5895_mapLevel);
+                tile_c = FindActorTileAtPos(x, y, D_5895_mapLevel);
 
                 if (IsMovingActor(tile_c) != 0 && (tile_c & 0xfc) != 0xec)
                 {
                     // 0a10
-                    actorSlot_f = D_5876_tempX;
+                    actorSlot_f = tempX;
 
-                    targetX_b = D_5c5a_actors[actorSlot_f].x - D_5896_mapX + 5;
-                    targetY = D_5c5a_actors[actorSlot_f].y - D_5897_mapY + 5;
+                    targetX_b = actors[actorSlot_f].x - D_5896_mapX + 5;
+                    targetY = actors[actorSlot_f].y - D_5897_mapY + 5;
                     hit_l = FlyMissile(5, 5, targetX_b, targetY, 1);
                     if (hit_l != 0)
                     {
-                        ULTIMA_5910_UpdateFrame();
-                        ULTIMA_3522_HitEffectAt(x, y);
+                        UpdateFrame();
+                        HitEffectAt(x, y);
 
-                        D_5c5a_actors[actorSlot_f].value -= ULTIMA_2092_RandomRange(1, 0x14);
-                        if (D_5c5a_actors[actorSlot_f].value > 0x7f)
+                        actors[actorSlot_f].value -= RandomRange(1, 0x14);
+                        if (actors[actorSlot_f].value > 0x7f)
                         {
                             SetActor(0, 0, 0, 0, 0, 0, actorSlot_f);
-                            D_24e6_viewDirty |= 2;
+                            viewDirty |= 2;
                         }
                     }
 
@@ -697,19 +699,19 @@ void FireCmd(void)
     int npc_e;
     int hitWall;
 
-    if (0x20 < D_5893_mapId && D_5893_mapId < 0x29)
+    if (0x20 < mapId && mapId < 0x29)
     {
-        ULTIMA_1850_PrintString(/*0x42e4*/ "What?\n");
+        PrintString(/*0x42e4*/ "What?\n");
         return;
     }
 
-    if (D_5893_mapId == 0)
+    if (mapId == 0)
     {
         FireBroadsides();
         return;
     }
 
-    SetTile(D_594f_openDoorTile, openDoorX, openDoorY);
+    SetTile(openDoorTile, openDoorX, openDoorY);
 
     if (((cannonTile_e = GetMapViewport(5, 4)) & 0xfc) == 0xb4)
     {
@@ -733,7 +735,7 @@ void FireCmd(void)
     }
     else
     {
-        ULTIMA_1850_PrintString(/*0x42eb*/ "What?\n");
+        PrintString(/*0x42eb*/ "What?\n");
         return;
     }
 
@@ -763,9 +765,9 @@ void FireCmd(void)
         break;
     }
 
-    ULTIMA_1850_PrintString(/*0x42f2*/ "BOOOM!\n");
+    PrintString(/*0x42f2*/ "BOOOM!\n");
     AudioSweepTone(1000, 200, 5, 300);
-    TOWN_0958_RaiseAlarm();
+    RaiseAlarm();
 
     hitWall = 0;
     hitActor_b = 0;
@@ -780,10 +782,10 @@ void FireCmd(void)
         endX += dirX_i;
         endY_p += dirY_h;
 
-        tileAt_m = ULTIMA_3702_FindLastActorTileAt(x_h, y_g, D_5895_mapLevel);
+        tileAt_m = FindLastActorTileAt(x_h, y_g, D_5895_mapLevel);
         if (tileAt_m == 0)
         {
-            switch (*ULTIMA_4402_GetTileAddr(x_h, y_g))
+            switch (*GetTileAddr(x_h, y_g))
             {
             case TILE_MAP_97:
             case TILE_MAP_98:
@@ -801,50 +803,50 @@ void FireCmd(void)
                  || tileAt_m == 0x10 || tileAt_m == 0x11)
         {
             hitActor_b = 1;
-            target = D_5876_tempX;
+            target = tempX;
         }
     }
 
     FlyMissile(startX, startY, endX, endY_p, 1);
     if (hitWall || hitActor_b)
     {
-        ULTIMA_3522_HitEffectAt(x_h, y_g);
+        HitEffectAt(x_h, y_g);
     }
 
     if (hitWall)
     {
-        ULTIMA_1850_PrintString(/*0x42fa*/ "Door destroyed!\n");
-        *ULTIMA_4402_GetTileAddr(x_h, y_g) = TILE_MAP_44;
-        D_24e6_viewDirty = 1;
-        D_594f_openDoorTile = 0;
+        PrintString(/*0x42fa*/ "Door destroyed!\n");
+        *GetTileAddr(x_h, y_g) = TILE_MAP_44;
+        viewDirty = 1;
+        openDoorTile = 0;
     }
 
     if (hitActor_b && target != 0)
     {
         SetActor(0, 0, 0, 0, 0, 0, target);
 
-        D_24e6_viewDirty |= 2;
-        if (D_5888_karma > 5)
+        viewDirty |= 2;
+        if (karma > 5)
         {
-            D_5888_karma -= 5;
+            karma -= 5;
         }
         else
         {
-            D_5888_karma = 0;
+            karma = 0;
         }
 
-        if ((npc_e = TOWN_011e_FindNpcByActor(target)) == -1)
+        if ((npc_e = FindNpcByActor(target)) == -1)
         {
             return;
         }
 
-        TOWN_0052_SetNpcKilled(npc_e);
-        TOWN_00b0_DespawnNpc(npc_e);
+        SetNpcKilled(npc_e);
+        DespawnNpc(npc_e);
     }
 
     if (hitActor_b && target == 0)
     {
-        ULTIMA_2aa8_DamageParty();
+        DamageParty();
     }
 }
 
@@ -853,14 +855,14 @@ void IgniteTorchCmd(void)
 {
     if (torches == 0)
     {
-        ULTIMA_1850_PrintString(/*0x430b*/ "None owned!\n");
+        PrintString(/*0x430b*/ "None owned!\n");
     }
     else
     {
         torches--;
-        if (D_5893_mapId > 0x20 && D_5893_mapId < 0x29)
+        if (mapId > 0x20 && mapId < 0x29)
         {
-            IncreaseByte(&torchTurns, ULTIMA_2092_RandomRange(0, 0xf) + 0x70, 0xff);
+            IncreaseByte(&torchTurns, RandomRange(0, 0xf) + 0x70, 0xff);
         }
         else
         {
@@ -876,46 +878,46 @@ void NewOrderCmd(void)
     int second;
     S_55a8 swap_f;
 
-    ULTIMA_1850_PrintString(/*0x4318*/ "\n\nSwap ");
+    PrintString(/*0x4318*/ "\n\nSwap ");
     if ((first = SelectPlayer()) == -1)
     {
-        ULTIMA_1850_PrintString(/*0x4320*/ "nobody!\n");
+        PrintString(/*0x4320*/ "nobody!\n");
         return;
     }
 
-    ULTIMA_1850_PrintString(D_55a8_party[first].name);
+    PrintString(party[first].name);
     if (first == 0)
     {
-        ULTIMA_1850_PrintString(/*0x4329*/ "\n\n");
-        ULTIMA_1850_PrintString(D_55a8_party[0].name);
-        ULTIMA_1850_PrintString(/*0x432c*/ " must lead!\n");
+        PrintString(/*0x4329*/ "\n\n");
+        PrintString(party[0].name);
+        PrintString(/*0x432c*/ " must lead!\n");
         return;
     }
 
-    ULTIMA_1850_PrintString(/*0x4339*/ "\nwith ");
+    PrintString(/*0x4339*/ "\nwith ");
 
     if ((second = SelectPlayer()) == -1)
     {
-        ULTIMA_1850_PrintString(/*0x4340*/ "nobody!\n");
+        PrintString(/*0x4340*/ "nobody!\n");
         return;
     }
 
-    ULTIMA_1850_PrintString(D_55a8_party[second].name);
+    PrintString(party[second].name);
     if (second == 0)
     {
-        ULTIMA_1850_PrintString(/*0x4349*/ "\n\n");
-        ULTIMA_1850_PrintString(D_55a8_party[0].name);
-        ULTIMA_1850_PrintString(/*0x434c*/ " must lead!\n");
+        PrintString(/*0x4349*/ "\n\n");
+        PrintString(party[0].name);
+        PrintString(/*0x434c*/ " must lead!\n");
         return;
     }
 
-    ULTIMA_1850_PrintString(/*0x4359*/ "!\n");
+    PrintString(/*0x4359*/ "!\n");
 
-    swap_f = D_55a8_party[first];
-    D_55a8_party[first] = D_55a8_party[second];
-    D_55a8_party[second] = swap_f;
+    swap_f = party[first];
+    party[first] = party[second];
+    party[second] = swap_f;
 
-    D_a9fa_vitalsDirty = 1;
+    vitalsDirty = 1;
 }
 
 // The Xit command: leaves the horse, carpet, skiff or ship (onto land only; a ship hands out a skiff or a
@@ -928,105 +930,105 @@ void XitCmd(void)
     int slot;
     byte newTile_i;
 
-    if (D_5893_mapId < 0x20 && D_5893_mapId > 0x29) // TODO: sic; BUG
+    if (mapId < 0x20 && mapId > 0x29) // TODO: sic; BUG
     {
         // ce4c
-        ULTIMA_1850_PrintString(/*0x435c*/ "\nNot here!\n");
+        PrintString(/*0x435c*/ "\nNot here!\n");
         return; // -> cfaa
     }
 
-    tileUnder_g = *ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY);
+    tileUnder_g = *GetTileAddr(D_5896_mapX, D_5897_mapY);
 
-    switch (D_587c_partyTile & 0xfc)
+    switch (partyTile & 0xfc)
     {
     case TILE_ACTOR_AVATAR:
-        ULTIMA_1850_PrintString(/*0x4368*/ "what?\n");
+        PrintString(/*0x4368*/ "what?\n");
         return;
 
     case TILE_ACTOR_FRIGATE_20:
-        ULTIMA_1850_PrintString(/*0x436f*/ "\nUnder sail!\n");
+        PrintString(/*0x436f*/ "\nUnder sail!\n");
         return;
 
     case TILE_ACTOR_FLYING_CARPET:
-        if (IsLandNearby() != 0 || ULTIMA_2c4c_IsWalkableTile(0x1c, tileUnder_g) != 0)
+        if (IsLandNearby() != 0 || IsWalkableTile(0x1c, tileUnder_g) != 0)
         {
-            ULTIMA_1850_PrintString(/*0x437d*/ "carpet!\n");
+            PrintString(/*0x437d*/ "carpet!\n");
             newTile_i = 0x1b;
-            D_587c_partyTile = TILE_ACTOR_AVATAR;
+            partyTile = TILE_ACTOR_AVATAR;
             break;
         }
 
         if (IsLandNearby() == 0)
         {
-            ULTIMA_1850_PrintString(/*0x4386*/ "\nNo land nearby!\n");
+            PrintString(/*0x4386*/ "\nNo land nearby!\n");
             return;
         }
 
-        ULTIMA_1850_PrintString(/*0x4398*/ "\nNot here!\n");
+        PrintString(/*0x4398*/ "\nNot here!\n");
         return;
 
     case TILE_ACTOR_HORSE:
-        ULTIMA_1850_PrintString(/*0x43a4*/ "horse!\n");
-        newTile_i = D_587c_partyTile - 2;
-        D_587c_partyTile = TILE_ACTOR_AVATAR;
+        PrintString(/*0x43a4*/ "horse!\n");
+        newTile_i = partyTile - 2;
+        partyTile = TILE_ACTOR_AVATAR;
         break;
 
     case TILE_ACTOR_SKIFF:
         // cef2
         if (IsLandNearby() == 0)
         {
-            ULTIMA_1850_PrintString(/*0x43ac*/ "\nNo land nearby!\n");
+            PrintString(/*0x43ac*/ "\nNo land nearby!\n");
             return;
         }
 
         if ((tileUnder_g & 0xfe) == TILE_MAP_6A)
         {
-            ULTIMA_1850_PrintString(/*0x43be*/ "\nNot here!\n");
+            PrintString(/*0x43be*/ "\nNot here!\n");
             return;
         }
 
-        ULTIMA_1850_PrintString(/*0x43ca*/ "skiff!\n");
-        newTile_i = D_587c_partyTile;
-        D_587c_partyTile = TILE_ACTOR_AVATAR;
+        PrintString(/*0x43ca*/ "skiff!\n");
+        newTile_i = partyTile;
+        partyTile = TILE_ACTOR_AVATAR;
         break;
 
     case TILE_ACTOR_FRIGATE_24:
         // cf1c
-        ULTIMA_1850_PrintString(/*0x43d2*/ "ship!\n");
+        PrintString(/*0x43d2*/ "ship!\n");
         if (IsLandNearby() != 0)
         {
-            newTile_i = D_587c_partyTile;
-            D_587c_partyTile = TILE_ACTOR_AVATAR;
+            newTile_i = partyTile;
+            partyTile = TILE_ACTOR_AVATAR;
 
-            skiffs = D_5c5a_actors[0].extra;
+            skiffs = actors[0].extra;
         }
-        else if (D_5c5a_actors[0].extra != 0)
+        else if (actors[0].extra != 0)
         {
-            newTile_i = D_587c_partyTile;
-            D_587c_partyTile += 4;
-            skiffs = D_5c5a_actors[0].extra - 1;
+            newTile_i = partyTile;
+            partyTile += 4;
+            skiffs = actors[0].extra - 1;
         }
         else if (carpets != 0)
         {
             carpets--;
-            newTile_i = D_587c_partyTile;
-            D_587c_partyTile = TILE_ACTOR_FLYING_CARPET;
+            newTile_i = partyTile;
+            partyTile = TILE_ACTOR_FLYING_CARPET;
 
-            skiffs = D_5c5a_actors[0].extra;
+            skiffs = actors[0].extra;
         }
         else
         {
-            ULTIMA_1850_PrintString(/*0x43d9*/ "\nNo skiffs on board!\n");
+            PrintString(/*0x43d9*/ "\nNo skiffs on board!\n");
             return;
         }
 
         break;
     }
 
-    slot = ULTIMA_38e4_FindActorSlot();
-    SetActor(newTile_i, newTile_i, D_5896_mapX, D_5897_mapY, D_5895_mapLevel, D_5c5a_actors[0].value, slot);
-    D_5c5a_actors[slot].extra = skiffs; // BUG: skiffs NOT INITIALIZED when (D_587c & 0xfc) != 0x24
-    ULTIMA_2900_UpdateVitalsDisplay();
+    slot = FindActorSlot();
+    SetActor(newTile_i, newTile_i, D_5896_mapX, D_5897_mapY, D_5895_mapLevel, actors[0].value, slot);
+    actors[slot].extra = skiffs; // BUG: skiffs NOT INITIALIZED when (D_587c & 0xfc) != 0x24
+    UpdateVitalsDisplay();
 }
 
 char* shadowlordNames[3] =
@@ -1050,7 +1052,7 @@ int YellShadowlord(char* word)
 
     result_c = 1;
 
-    if (D_5893_mapId == 0x1e || D_5893_mapId == 0x1f || D_5893_mapId == 0x20)
+    if (mapId == 0x1e || mapId == 0x1f || mapId == 0x20)
     {
         for (which_o = 0; which_o < 3; which_o++)
         {
@@ -1058,64 +1060,64 @@ int YellShadowlord(char* word)
                 break;
         }
 
-        if (which_o == 3 || D_5897_mapY < 2 || D_58c8_shadowlordTowns[which_o] == 0xff)
+        if (which_o == 3 || D_5897_mapY < 2 || shadowlordTowns[which_o] == 0xff)
         {
             // d002
-            ULTIMA_1850_PrintString(/*0x440b*/ "\nNo effect!\n");
+            PrintString(/*0x440b*/ "\nNo effect!\n");
             return /* AX: result_c */;
         }
         else
         {
             for (slot = 0; slot < 0x20; slot++)
             {
-                if (D_5c5a_actors[slot].tile == TILE_ACTOR_SHADOWLORD)
+                if (actors[slot].tile == TILE_ACTOR_SHADOWLORD)
                 {
-                    ULTIMA_1850_PrintString(/*0x4418*/ "\nNo effect!\n");
+                    PrintString(/*0x4418*/ "\nNo effect!\n");
                     return /* AX: result_c */;
                 }
             }
 
             summonedLord = which_o;
-            slot = ULTIMA_38e4_FindActorSlot();
+            slot = FindActorSlot();
             SetActor(TILE_ACTOR_SHADOWLORD, TILE_ACTOR_SHADOWLORD, D_5896_mapX, D_5897_mapY - 2, D_5895_mapLevel, 0, slot);
 
             npc = 0x1f;
             for (j_h = 0x1f; j_h >= 0; j_h--)
             {
-                if (D_659e_npcTypes[j_h] == 0)
+                if (npcTypes[j_h] == 0)
                 {
                     npc = j_h;
                     break;
                 }
             }
 
-            D_5f5e_npcs[npc].mode = 1;
-            D_5f5e_npcs[npc].actorIdx = slot;
-            D_5f5e_npcs[npc].x = D_5896_mapX;
-            D_5f5e_npcs[npc].y = D_5897_mapY - 2;
-            D_5f5e_npcs[npc].z = D_5895_mapLevel;
+            npcs[npc].mode = 1;
+            npcs[npc].actorIdx = slot;
+            npcs[npc].x = D_5896_mapX;
+            npcs[npc].y = D_5897_mapY - 2;
+            npcs[npc].z = D_5895_mapLevel;
 
             for (j_h = 0; j_h < 4; j_h++)
             {
-                D_5d5e_npcSchedules[npc].time[j_h] = 0;
+                npcSchedules[npc].time[j_h] = 0;
             }
 
             for (j_h = 0; j_h < 3; j_h++)
             {
-                D_5d5e_npcSchedules[npc].type[j_h] = 6;
-                D_5d5e_npcSchedules[npc].x[j_h] = D_5896_mapX;
-                D_5d5e_npcSchedules[npc].y[j_h] = D_5897_mapY - 2;
-                D_5d5e_npcSchedules[npc].z[j_h] = D_5895_mapLevel;
+                npcSchedules[npc].type[j_h] = 6;
+                npcSchedules[npc].x[j_h] = D_5896_mapX;
+                npcSchedules[npc].y[j_h] = D_5897_mapY - 2;
+                npcSchedules[npc].z[j_h] = D_5895_mapLevel;
             }
 
-            D_659e_npcTypes[npc] = 0xfc;
+            npcTypes[npc] = 0xfc;
 
-            ULTIMA_1850_PrintString(/*0x4425*/ "\nA shadowlord appears\n");
-            ULTIMA_2192_AudioPulse(0x28a0, 1, 30000, 2000, 2);
+            PrintString(/*0x4425*/ "\nA shadowlord appears\n");
+            AudioPulse(0x28a0, 1, 30000, 2000, 2);
 
-            D_5c5a_actors[slot].tile = D_5c5a_actors[slot].animTile = TILE_ACTOR_CIRCLE;
+            actors[slot].tile = actors[slot].animTile = TILE_ACTOR_CIRCLE;
             ULTIMA_1068_RevealTile(0x1fc, 5, 3);
-            D_5c5a_actors[slot].tile = D_5c5a_actors[slot].animTile = TILE_ACTOR_SHADOWLORD;
+            actors[slot].tile = actors[slot].animTile = TILE_ACTOR_SHADOWLORD;
 
             /* FMT
                 if (DAT_0003e08a_587a != 0x54) { // Icon != 0x54
@@ -1134,7 +1136,7 @@ int YellShadowlord(char* word)
     }
     else
     {
-        ULTIMA_1850_PrintString(/*0x443c*/ "\nNo effect!\n");
+        PrintString(/*0x443c*/ "\nNo effect!\n");
         return /* AX: result_c */;
     }
 }

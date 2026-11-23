@@ -34,7 +34,7 @@ static void RestoreShrine(int virtue, int x, int y)
 
     right = 1;
 
-    ULTIMA_1850_PrintString(/*0x4450*/ "\nUpon what virtue\ndost thou\nmeditate?\n\n:");
+    PrintString(/*0x4450*/ "\nUpon what virtue\ndost thou\nmeditate?\n\n:");
     GetString(spoken, 0xf);
 
     if (CompareWord((byte*)virtueNames[virtue], spoken) == -1)
@@ -44,7 +44,7 @@ static void RestoreShrine(int virtue, int x, int y)
 
     for (i = 0; i < 3; i++)
     {
-        ULTIMA_1850_PrintString(/*0x4479*/ "\nMantra:");
+        PrintString(/*0x4479*/ "\nMantra:");
         GetString(spoken, 0xf);
 
         if (CompareWord((byte*)mantras[virtue], spoken) == -1)
@@ -56,14 +56,14 @@ static void RestoreShrine(int virtue, int x, int y)
     if (right && shrineX[virtue] == x && shrineY[virtue] == y)
     {
         shrineDestroyed[virtue] &= 0x7f;
-        ULTIMA_1850_PrintString(/*0x4482*/ "\n\nThe Shrine is\nrestored!\n");
-        ULTIMA_3072_ShakeScreen();
-        *ULTIMA_4402_GetTileAddr(x, y) = TILE_MAP_SHRINE;
-        D_24e6_viewDirty |= 2;
+        PrintString(/*0x4482*/ "\n\nThe Shrine is\nrestored!\n");
+        ShakeScreen();
+        *GetTileAddr(x, y) = TILE_MAP_SHRINE;
+        viewDirty |= 2;
     }
     else
     {
-        ULTIMA_16ba_PrintChar('\n');
+        PrintChar('\n');
     }
 }
 
@@ -100,8 +100,8 @@ static void YellWordOfPower(char* word)
     {
         if (CompareWord((byte*)*wordPtr_m, word) > -1)
         {
-            ULTIMA_1850_PrintString(/*0x44d7*/ "\nA word of power is uttered\n");
-            ULTIMA_3072_ShakeScreen();
+            PrintString(/*0x44d7*/ "\nA word of power is uttered\n");
+            ShakeScreen();
 
             tile = GetMapViewport(4, 5);
             if (wordTile[virtue_b] == tile || tile == TILE_MAP_DF || tile == TILE_MAP_RUINS)
@@ -147,12 +147,12 @@ static void YellWordOfPower(char* word)
                 return;
             }
 
-            if (dx + D_5896_mapX == D_1e8a_placeX[virtue_b + 0x20] &&
-                dy + D_5897_mapY == D_1eb2_placeY[virtue_b + 0x20])
+            if (dx + D_5896_mapX == placeX[virtue_b + 0x20] &&
+                dy + D_5897_mapY == placeY[virtue_b + 0x20])
             {
                 dungeonOpen[virtue_b] ^= 0x80;
-                *ULTIMA_4402_GetTileAddr(dx + D_5896_mapX, dy + D_5897_mapY) ^= wordTile[virtue_b] ^ TILE_MAP_DF;
-                D_24e6_viewDirty |= 2;
+                *GetTileAddr(dx + D_5896_mapX, dy + D_5897_mapY) ^= wordTile[virtue_b] ^ TILE_MAP_DF;
+                viewDirty |= 2;
             }
 
             found = 1;
@@ -163,7 +163,7 @@ static void YellWordOfPower(char* word)
 
     if (!found)
     {
-        ULTIMA_1850_PrintString(/*0x44f4*/ "\nNo effect!\n");
+        PrintString(/*0x44f4*/ "\nNo effect!\n");
     }
 }
 
@@ -176,44 +176,44 @@ int YellCmd(void)
 
     result = 1;
 
-    if ((D_587c_partyTile & 0xf8) == TILE_ACTOR_FRIGATE_20 && D_5893_mapId < 0x80)
+    if ((partyTile & 0xf8) == TILE_ACTOR_FRIGATE_20 && mapId < 0x80)
     {
-        if ((D_587c_partyTile & 0xfc) == TILE_ACTOR_FRIGATE_20)
+        if ((partyTile & 0xfc) == TILE_ACTOR_FRIGATE_20)
         {
-            ULTIMA_1850_PrintString(/*0x451a*/ "FURL!\n");
-            D_587c_partyTile += 4;
+            PrintString(/*0x451a*/ "FURL!\n");
+            partyTile += 4;
             return; // sic
         }
         else
         {
-            ULTIMA_1850_PrintString(/*0x4521*/ "HOIST!\n");
-            D_587c_partyTile -= 4;
+            PrintString(/*0x4521*/ "HOIST!\n");
+            partyTile -= 4;
             return; // sic
         }
     }
     else
     {
-        ULTIMA_1850_PrintString(/*0x4529*/ "what?\n:");
+        PrintString(/*0x4529*/ "what?\n:");
         GetString(word, 0x1e);
         if (word[0] == 0)
         {
-            ULTIMA_1850_PrintString(/*0x4531*/ "Nothing\n");
+            PrintString(/*0x4531*/ "Nothing\n");
             return; // sic
         }
         else
         {
-            ULTIMA_16ba_PrintChar('\n');
-            if (D_5893_mapId >= 1 && D_5893_mapId <= 0x20)
+            PrintChar('\n');
+            if (mapId >= 1 && mapId <= 0x20)
             {
                 result = YellShadowlord(word);
             }
-            else if (D_5893_mapId == 0)
+            else if (mapId == 0)
             {
                 YellWordOfPower(word);
             }
             else
             {
-                ULTIMA_1850_PrintString(/*0x453a*/ "\nNo effect!\n");
+                PrintString(/*0x453a*/ "\nNo effect!\n");
             }
         }
     }
@@ -277,13 +277,13 @@ static int FacingTile(int dx, int dy, int tile, int reverse)
 static void PutPushed(int objTile, int beyondTile, int objX, int objY, int beyondX, int beyondY, int dx,
                  int dy)
 {
-    ULTIMA_1850_PrintString(/*0x4547*/ "Pushed!\n");
-    *ULTIMA_4402_GetTileAddr(beyondX, beyondY) = objTile;
-    *ULTIMA_4402_GetTileAddr(objX, objY) = beyondTile;
+    PrintString(/*0x4547*/ "Pushed!\n");
+    *GetTileAddr(beyondX, beyondY) = objTile;
+    *GetTileAddr(objX, objY) = beyondTile;
     objTile &= 0xfc;
     if (objTile == TILE_MAP_CHAIR_90 || objTile == TILE_MAP_CANNON_B4)
     {
-        *ULTIMA_4402_GetTileAddr(beyondX, beyondY) = FacingTile(dx, dy, objTile, 0);
+        *GetTileAddr(beyondX, beyondY) = FacingTile(dx, dy, objTile, 0);
     }
 }
 
@@ -292,13 +292,13 @@ static void PutPushed(int objTile, int beyondTile, int objX, int objY, int beyon
 static void PutPulled(int floorTile, int objTile, int partyX, int partyY, int objX, int objY, int dx,
                  int dy)
 {
-    ULTIMA_1850_PrintString(/*0x4550*/ "Pulled!\n");
-    *ULTIMA_4402_GetTileAddr(partyX, partyY) = objTile;
-    *ULTIMA_4402_GetTileAddr(objX, objY) = floorTile;
+    PrintString(/*0x4550*/ "Pulled!\n");
+    *GetTileAddr(partyX, partyY) = objTile;
+    *GetTileAddr(objX, objY) = floorTile;
     objTile &= 0xfc;
     if (objTile == TILE_MAP_CHAIR_90 || objTile == TILE_MAP_CANNON_B4)
     {
-        *ULTIMA_4402_GetTileAddr(partyX, partyY) = FacingTile(dx, dy, objTile, 1);
+        *GetTileAddr(partyX, partyY) = FacingTile(dx, dy, objTile, 1);
     }
 }
 
@@ -320,16 +320,16 @@ void PushCmd(void)
     int beyondTile;
     int objTile;
 
-    SetTile(D_594f_openDoorTile, openDoorX, openDoorY);
-    if (ULTIMA_35ec_SelectDirection() == 0)
+    SetTile(openDoorTile, openDoorX, openDoorY);
+    if (SelectDirection() == 0)
     {
         return;
     }
 
-    dx_d = D_5876_tempX;
-    dy_c = D_5878_tempY;
+    dx_d = tempX;
+    dy_c = tempY;
 
-    if (D_5893_mapId > 0x7f)
+    if (mapId > 0x7f)
     {
         savedX_e = D_5896_mapX;
         savedY_d = D_5897_mapY;
@@ -340,24 +340,24 @@ void PushCmd(void)
     objX_m = dx_d + (uint)D_5896_mapX;
     objY_l = dy_c + (uint)D_5897_mapY;
 
-    if (D_5893_mapId > 0x7f && FireMapTrigger(objX_m, objY_l) != 0)
+    if (mapId > 0x7f && FireMapTrigger(objX_m, objY_l) != 0)
     {
         return;
     }
 
-    objTile = *ULTIMA_4402_GetTileAddr(objX_m, objY_l);
-    if (ULTIMA_368e_FindActorTileAtPos(objX_m, objY_l, D_5895_mapLevel) != 0 || IsPushable(objTile) == 0)
+    objTile = *GetTileAddr(objX_m, objY_l);
+    if (FindActorTileAtPos(objX_m, objY_l, D_5895_mapLevel) != 0 || IsPushable(objTile) == 0)
     {
-        ULTIMA_1850_PrintString(/*0x4559*/ "Won't budge!\n");
+        PrintString(/*0x4559*/ "Won't budge!\n");
     }
     else
     {
         emptyTile_c = (objTile & 0xfc) == TILE_MAP_CANNON_B4 ? TILE_MAP_45 : TILE_MAP_44;
         beyondX_g = objX_m + dx_d;
         beyondY_f = objY_l + dy_c;
-        beyondTile = *ULTIMA_4402_GetTileAddr(beyondX_g, beyondY_f);
-        floorUnder_p = *ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY);
-        if (ULTIMA_368e_FindActorTileAtPos(beyondX_g, beyondY_f, D_5895_mapLevel) == 0 && beyondTile == emptyTile_c)
+        beyondTile = *GetTileAddr(beyondX_g, beyondY_f);
+        floorUnder_p = *GetTileAddr(D_5896_mapX, D_5897_mapY);
+        if (FindActorTileAtPos(beyondX_g, beyondY_f, D_5895_mapLevel) == 0 && beyondTile == emptyTile_c)
         {
             PutPushed(objTile, beyondTile, objX_m, objY_l, beyondX_g, beyondY_f, dx_d, dy_c);
         }
@@ -369,29 +369,29 @@ void PushCmd(void)
             }
             else
             {
-                ULTIMA_1850_PrintString(/*0x4567*/ "Won't budge\n");
+                PrintString(/*0x4567*/ "Won't budge\n");
                 return;
             }
         }
 
         D_5896_mapX += dx_d;
         D_5897_mapY += dy_c;
-        D_24e6_viewDirty = 1;
+        viewDirty = 1;
 
-        if (D_5893_mapId > 0x7f)
+        if (mapId > 0x7f)
         {
             entity_c = combatants[curCombatant].entityIdx;
 
             combatants[curCombatant].x += dx_d;
             combatants[curCombatant].y += dy_c;
 
-            D_5c5a_actors[entity_c].x += dx_d;
-            D_5c5a_actors[entity_c].y += dy_c;
+            actors[entity_c].x += dx_d;
+            actors[entity_c].y += dy_c;
 
             D_5896_mapX = savedX_e;
             D_5897_mapY = savedY_d;
 
-            ULTIMA_5910_UpdateFrame();
+            UpdateFrame();
         }
     }
 }
@@ -404,7 +404,7 @@ int Escape(void)
     int refused_h;
     bool anyPlayer;
 
-    ULTIMA_1850_PrintString(/*0x4574*/ "Escape");
+    PrintString(/*0x4574*/ "Escape");
 
     anyPlayer = refused_h = 0;
     for (i = 0; i < 0x20; i++)
@@ -420,42 +420,42 @@ int Escape(void)
     {
         if ((combatFlags & 0x80) != 0)
         {
-            ULTIMA_1850_PrintString(/*0x457b*/ "-Not here!\n");
+            PrintString(/*0x457b*/ "-Not here!\n");
             refused_h = 1;
         }
         else if (combatOver == 0)
         {
-            ULTIMA_1850_PrintString(/*0x4587*/ "-Not yet!\n");
+            PrintString(/*0x4587*/ "-Not yet!\n");
             refused_h = 1;
         }
     }
 
     if (refused_h == 0)
     {
-        ULTIMA_16ba_PrintChar('!');
+        PrintChar('!');
 
         for (i = 0; i < 0x20; i++)
         {
             if (combatants[i].flags != 0)
             {
                 RemoveEntity(-i - 1);
-                ULTIMA_5910_UpdateFrame();
+                UpdateFrame();
             }
         }
 
         for (i = 0; i < 0x20; i++)
         {
-            if (D_5c5a_actors[i].tile != 0)
+            if (actors[i].tile != 0)
             {
                 RemoveEntity(i + 1);
-                ULTIMA_5910_UpdateFrame();
+                UpdateFrame();
             }
         }
 
         AudioSweepTone(0x4b0, 2000, 1, 0x28);
     }
 
-    D_a9fa_vitalsDirty = 1;
+    vitalsDirty = 1;
     return refused_h;
 }
 

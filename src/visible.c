@@ -71,7 +71,7 @@ static void BuildVisibilityMap(int lightLevel, int originY, int originX, int row
         queue_l[++tail_g] = 5;
         ++tail_g;
         map[rowOffset * 0x20 + colOffset + 0xa5] =
-            *ULTIMA_4402_GetTileAddr(originX + (uint)D_589b_mapOriginX + 5, originY + (uint)D_589c_mapOriginY + 5);
+            *GetTileAddr(originX + (uint)mapOriginX + 5, originY + (uint)mapOriginY + 5);
 
         while (head != tail_g)
         {
@@ -143,7 +143,7 @@ static void BuildVisibilityMap(int lightLevel, int originY, int originX, int row
                 if (valid != 0)
                 {
                     // 5ba5
-                    tile = *ULTIMA_4402_GetTileAddr(originX + nextX + (uint)D_589b_mapOriginX, originY + nextY + (uint)D_589c_mapOriginY);
+                    tile = *GetTileAddr(originX + nextX + (uint)mapOriginX, originY + nextY + (uint)mapOriginY);
                     if (DistanceFromCenter(nextX, nextY) >= lightLevel)
                     {
                         if (combatMode_h)
@@ -260,9 +260,9 @@ void BuildView(int light, int mapX, int mapY, int size)
         {
             for (col_f = 0; col_f < 0xb; col_f++)
             {
-                GetMapViewport(col_f, row) = *ULTIMA_4402_GetTileAddr(
-                    originX + col_f + (uint)D_589b_mapOriginX,
-                    originY + row + (uint)D_589c_mapOriginY);
+                GetMapViewport(col_f, row) = *GetTileAddr(
+                    originX + col_f + (uint)mapOriginX,
+                    originY + row + (uint)mapOriginY);
             }
         }
     }
@@ -288,7 +288,7 @@ static bool IsTransparentTile(byte tile, int distance)
 }
 
 // Build the 32x32 light map: the cells lit by the lamps, fires and moongates of the map buffer.
-void ULTIMA_5e4a_BuildLightMap(void)
+void BuildLightMap(void)
 {
     byte tile;
     int count;
@@ -311,7 +311,7 @@ void ULTIMA_5e4a_BuildLightMap(void)
         for (scanX_d = 0; scanX_d < 0x20; scanX_d++)
         {
             // 5e78
-            tile = *ULTIMA_4402_GetTileAddr(D_589b_mapOriginX + scanX_d, D_589c_mapOriginY + scanY_c);
+            tile = *GetTileAddr(mapOriginX + scanX_d, mapOriginY + scanY_c);
             if (memchr(lightTiles, tile, 10) != 0)
             {
                 // 5eb0

@@ -34,7 +34,7 @@ void AnimateLighthouse(void)
         return;
     }
 
-    D_24e6_viewDirty = 1;
+    viewDirty = 1;
     if (beaconStep == 0xff)
     {
         beaconStep++;
@@ -42,28 +42,28 @@ void AnimateLighthouse(void)
         SetBeamCells(1, 1, D_217e_beaconX, D_2180_beaconY);
         SetBeamCells(2, 1, D_217e_beaconX, D_2180_beaconY);
 
-        if (D_2182_beacon2X != -1)
+        if (beacon2X != -1)
         {
-            SetBeamCells(0, 1, D_2182_beacon2X, D_2184_beacon2Y);
-            SetBeamCells(1, 1, D_2182_beacon2X, D_2184_beacon2Y);
-            SetBeamCells(2, 1, D_2182_beacon2X, D_2184_beacon2Y);
+            SetBeamCells(0, 1, beacon2X, beacon2Y);
+            SetBeamCells(1, 1, beacon2X, beacon2Y);
+            SetBeamCells(2, 1, beacon2X, beacon2Y);
         }
     }
     else
     {
         SetBeamCells(beaconStep, 0, D_217e_beaconX, D_2180_beaconY);
 
-        if (D_2182_beacon2X != -1)
+        if (beacon2X != -1)
         {
-            SetBeamCells(beaconStep, 0, D_2182_beacon2X, D_2184_beacon2Y);
+            SetBeamCells(beaconStep, 0, beacon2X, beacon2Y);
         }
 
         beaconStep++;
         SetBeamCells(beaconStep + 2, 1, D_217e_beaconX, D_2180_beaconY);
 
-        if (D_2182_beacon2X != -1)
+        if (beacon2X != -1)
         {
-            SetBeamCells(beaconStep + 2, 1, D_2182_beacon2X, D_2184_beacon2Y);
+            SetBeamCells(beaconStep + 2, 1, beacon2X, beacon2Y);
         }
     }
 

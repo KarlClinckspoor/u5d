@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-int ULTIMA_266c_GetChar(void)
+int GetChar(void)
 {
     int key;
 
@@ -19,9 +19,9 @@ int ULTIMA_266c_GetChar(void)
     do
     {
         key = ToUpperChar(PollKeyWithCursor());
-        if ((key == 0) && (D_5893_mapId < 0x21 || 0x7f < D_5893_mapId))
+        if ((key == 0) && (mapId < 0x21 || 0x7f < mapId))
         {
-            ULTIMA_5910_UpdateFrame();
+            UpdateFrame();
         }
     } while (key == 0);
 
@@ -72,12 +72,12 @@ static void PrintPartyRow(int rowIndex)
 
     SetTextPosition(0, rowIndex);
 
-    if (D_585b_partyCount <= rowIndex)
+    if (partyCount <= rowIndex)
     {
         for (col = 0; col < 0xf; col++)
         {
             // 2748
-            ULTIMA_16ba_PrintChar(' ');
+            PrintChar(' ');
         }
 
         return;
@@ -85,61 +85,61 @@ static void PrintPartyRow(int rowIndex)
 
     // 2758
     combatant = &combatants[curCombatant];
-    if (D_5893_mapId > 0x7f && curCombatant != 0xff && (combatant->flags & COMBAT_FLAGS_PLAYER) != 0 && combatant->entityIdx == rowIndex)
+    if (mapId > 0x7f && curCombatant != 0xff && (combatant->flags & COMBAT_FLAGS_PLAYER) != 0 && combatant->entityIdx == rowIndex)
     {
-        ULTIMA_16ba_PrintChar(CTRL_CHAR_TOGGLE_INVERSION);
+        PrintChar(CTRL_CHAR_TOGGLE_INVERSION);
     }
 
     // 278e
-    ULTIMA_1850_PrintString(D_55a8_party[rowIndex].name);
-    for (col = StringLength(D_55a8_party[rowIndex].name); col < 9; col++)
+    PrintString(party[rowIndex].name);
+    for (col = StringLength(party[rowIndex].name); col < 9; col++)
     {
         // 27b8
-        ULTIMA_16ba_PrintChar(' ');
+        PrintChar(' ');
     }
 
     // 27c2
     if (rowIndex == activePlayer)
     {
-        if (D_55a8_party[rowIndex].status != STATUS_DEAD && D_55a8_party[rowIndex].status != STATUS_SLEEP)
+        if (party[rowIndex].status != STATUS_DEAD && party[rowIndex].status != STATUS_SLEEP)
         {
-            ULTIMA_16ba_PrintChar(0x1a);
+            PrintChar(0x1a);
         }
         else
         {
-            ULTIMA_16ba_PrintChar(' ');
+            PrintChar(' ');
             activePlayer = 0xff;
         }
     }
     else
     {
         // 27f6
-        ULTIMA_16ba_PrintChar(' ');
+        PrintChar(' ');
     }
 
     // 27fd
-    PrintNumber(D_55a8_party[rowIndex].hp, 4, 0x20);
+    PrintNumber(party[rowIndex].hp, 4, 0x20);
 
-    if (D_5893_mapId > 0x7f)
+    if (mapId > 0x7f)
     {
         if ((combatants[rowIndex].flags & (COMBAT_FLAGS_PLAYER | COMBAT_FLAGS_MONSTER | COMBAT_FLAGS_DEAD | COMBAT_FLAGS_CHARMED)) ==
             (COMBAT_FLAGS_PLAYER | COMBAT_FLAGS_CHARMED) &&
             combatants[rowIndex].entityIdx == rowIndex)
         {
             // -> 2849
-            ULTIMA_16ba_PrintChar('C');
+            PrintChar('C');
         }
         else
         {
             // 283c -> 2849
-            ULTIMA_16ba_PrintChar(D_55a8_party[rowIndex].status);
+            PrintChar(party[rowIndex].status);
         }
 
         if (curCombatant != 0xff && (combatant->flags & COMBAT_FLAGS_PLAYER) != 0)
         {
             if (combatant->entityIdx == rowIndex)
             {
-                ULTIMA_16ba_PrintChar(CTRL_CHAR_TOGGLE_INVERSION);
+                PrintChar(CTRL_CHAR_TOGGLE_INVERSION);
             }
         }
 
@@ -148,7 +148,7 @@ static void PrintPartyRow(int rowIndex)
     }
 
     // 286c
-    ULTIMA_16ba_PrintChar(D_55a8_party[rowIndex].status);
+    PrintChar(party[rowIndex].status);
 }
 
 void UpdateGoldDisplay(void)
@@ -160,27 +160,27 @@ void UpdateGoldDisplay(void)
     SetTextPosition(8, 7);
     if (gold < 1000)
     {
-        ULTIMA_16ba_PrintChar(' ');
+        PrintChar(' ');
     }
     if (gold < 100)
     {
-        ULTIMA_16ba_PrintChar(' ');
+        PrintChar(' ');
     }
     if (gold < 10)
     {
-        ULTIMA_16ba_PrintChar(' ');
+        PrintChar(' ');
     }
-    ULTIMA_1850_PrintString(/*0x54b6*/ " G:");
+    PrintString(/*0x54b6*/ " G:");
     PrintNumber(gold, 1, ' ');
     while (0xf > GetCurrentTextX())
     {
-        ULTIMA_16ba_PrintChar(' ');
+        PrintChar(' ');
     }
 
     SelectTextWindow(savedWindow);
 }
 
-void ULTIMA_2900_UpdateVitalsDisplay(void)
+void UpdateVitalsDisplay(void)
 {
     int row;
 
@@ -196,22 +196,22 @@ void ULTIMA_2900_UpdateVitalsDisplay(void)
     SetTextPosition(0, 7);
 
     // food
-    ULTIMA_1850_PrintString(/*0x54ba*/ "F:");
+    PrintString(/*0x54ba*/ "F:");
     PrintNumber(food, 1, ' ');
 
     while (GetCurrentTextX() < 8)
     {
-        ULTIMA_16ba_PrintChar(' ');
+        PrintChar(' ');
     }
 
-    if ((D_5893_mapId < 0x80) && ((D_587c_partyTile & 0xf8) == TILE_ACTOR_FRIGATE_20))
+    if ((mapId < 0x80) && ((partyTile & 0xf8) == TILE_ACTOR_FRIGATE_20))
     {
         // ship
-        ULTIMA_1850_PrintString(/*0x54bd*/ "Ship:");
-        PrintNumber(D_5c5a_actors[0].value, 1, ' ');
-        if (D_5c5a_actors[0].value < 10)
+        PrintString(/*0x54bd*/ "Ship:");
+        PrintNumber(actors[0].value, 1, ' ');
+        if (actors[0].value < 10)
         {
-            ULTIMA_16ba_PrintChar(' ');
+            PrintChar(' ');
         }
     }
     else
@@ -219,23 +219,23 @@ void ULTIMA_2900_UpdateVitalsDisplay(void)
         UpdateGoldDisplay();
     }
 
-    ULTIMA_1850_PrintString(/*0x54c3*/ "\n   ");
+    PrintString(/*0x54c3*/ "\n   ");
 
     if ((D_587d_month < 10) && (D_587e_day < 10))
     {
-        ULTIMA_16ba_PrintChar(' ');
+        PrintChar(' ');
     }
 
     // date (m/d/y)
     PrintNumber(D_587d_month, 1, ' ');
-    ULTIMA_16ba_PrintChar('-');
+    PrintChar('-');
     PrintNumber(D_587e_day, 1, ' ');
-    ULTIMA_16ba_PrintChar('-');
+    PrintChar('-');
     PrintNumber(year, 3, '0');
 
     while (GetCurrentTextX() < 0xf)
     {
-        ULTIMA_16ba_PrintChar(' ');
+        PrintChar(' ');
     }
 
     SetTextPosition(6, 6);
@@ -243,8 +243,8 @@ void ULTIMA_2900_UpdateVitalsDisplay(void)
     // icon?
     if (statusIcon != 0)
     {
-        ULTIMA_4c2a_PrintLeftCap();
-        ULTIMA_16ba_PrintChar(statusIcon);
+        PrintLeftCap();
+        PrintChar(statusIcon);
         PrintRightCap();
     }
     else
@@ -258,7 +258,7 @@ void ULTIMA_2900_UpdateVitalsDisplay(void)
 // Invert the party member's row in the stats window (the selection bar, the flash of a hit).
 void InvertPlayerRow(int playerIndex)
 {
-    ULTIMA_0a70_GRAP_2d_SetPenColor(brightWhiteColor);
+    GRAP_2d_SetPenColor(brightWhiteColor);
     GRAP_XorFillRect(0xc0, playerIndex * 8 + 8, 0x137, playerIndex * 8 + 0xf);
 }
 
@@ -267,33 +267,33 @@ void InvertPlayerRow(int playerIndex)
 void DamagePlayer(int playerIndex, uint damage)
 {
     InvertPlayerRow(playerIndex);
-    ULTIMA_223c_AudioWhiteNoise(10, 0x640, 2000);
+    AudioWhiteNoise(10, 0x640, 2000);
     InvertPlayerRow(playerIndex);
 
-    D_55a8_party[playerIndex].hp -= damage;
-    if (D_55a8_party[playerIndex].hp <= 0)
+    party[playerIndex].hp -= damage;
+    if (party[playerIndex].hp <= 0)
     {
-        D_55a8_party[playerIndex].hp = 0;
-        D_55a8_party[playerIndex].status = STATUS_DEAD;
+        party[playerIndex].hp = 0;
+        party[playerIndex].status = STATUS_DEAD;
         if (playerIndex == activePlayer)
         {
             activePlayer = 0xff;
         }
     }
 
-    ULTIMA_2900_UpdateVitalsDisplay();
+    UpdateVitalsDisplay();
 }
 
 // process party damage
 // Hurt every living party member by 1-8 points.
-void ULTIMA_2aa8_DamageParty(void)
+void DamageParty(void)
 {
     int i;
     for (i = 0; i < 6; i++)
     {
-        if (i < D_585b_partyCount && D_55a8_party[i].status != STATUS_DEAD)
+        if (i < partyCount && party[i].status != STATUS_DEAD)
         {
-            DamagePlayer(i, ULTIMA_2092_RandomRange(1, 8));
+            DamagePlayer(i, RandomRange(1, 8));
         }
     }
 }
@@ -302,7 +302,7 @@ void IncreaseByte(byte* value, int amount, int limit);
 
 // CHECKED
 // The end of a turn: poison, food (three meals a day, starving without), the turn count, the protection spell, the regeneration rings.
-void ULTIMA_2ae8_EndTurn(void)
+void EndTurn(void)
 {
     int playerIndex_l;
     int status;
@@ -310,9 +310,9 @@ void ULTIMA_2ae8_EndTurn(void)
 
     ableCount_d = 0;
 
-    for (playerIndex_l = 0; playerIndex_l < D_585b_partyCount; playerIndex_l++)
+    for (playerIndex_l = 0; playerIndex_l < partyCount; playerIndex_l++)
     {
-        status = D_55a8_party[playerIndex_l].status;
+        status = party[playerIndex_l].status;
         if ((uint)status == STATUS_DEAD && playerIndex_l == activePlayer)
         {
             activePlayer = 0xff;
@@ -333,8 +333,8 @@ void ULTIMA_2ae8_EndTurn(void)
     {
         if (food == 0)
         {
-            ULTIMA_1850_PrintString(/*0x54c8*/ "Starving!\n");
-            ULTIMA_2aa8_DamageParty();
+            PrintString(/*0x54c8*/ "Starving!\n");
+            DamageParty();
         }
         else if (D_587f_hour == 6 || D_587f_hour == 12 || D_587f_hour == 18)
         {
@@ -350,7 +350,7 @@ void ULTIMA_2ae8_EndTurn(void)
         if (protectTurns == 0)
         {
             statusIcon = 0;
-            ULTIMA_2900_UpdateVitalsDisplay();
+            UpdateVitalsDisplay();
         }
     }
 
@@ -427,7 +427,7 @@ static int IsWaterTile(int tile)
 // their own "jmp L_ret1" instead of joining case 2's tail); cases 7-10 as "if (t == X)
 // return 1; return 0;", so that case 7's own "return 1" becomes a jmp to L_ret1 and cases
 // 8-10 join case 7's tail.
-int ULTIMA_2c4c_IsWalkableTile(int actorTile, int targetTile)
+int IsWalkableTile(int actorTile, int targetTile)
 {
     switch (moveType[actorTile >> 2])
     {
@@ -501,7 +501,7 @@ int SelectPlayerOrNone(int allowNone)
     selected_h = 0;
     shownRow_d = -1;
     done = 0;
-    if (D_5893_mapId > 0x7f && (combatants[curCombatant].flags & COMBAT_FLAGS_PLAYER) != 0)
+    if (mapId > 0x7f && (combatants[curCombatant].flags & COMBAT_FLAGS_PLAYER) != 0)
     {
         InvertPlayerRow(combatants[curCombatant].entityIdx);
     }
@@ -521,10 +521,10 @@ int SelectPlayerOrNone(int allowNone)
 
         do
         {
-            key = ULTIMA_266c_GetChar();
+            key = GetChar();
         } while ((uint)key > '7');
 
-        if ((uint)key > '0' && (uint)key < '7' && (uint)key - '1' < D_585b_partyCount)
+        if ((uint)key > '0' && (uint)key < '7' && (uint)key - '1' < partyCount)
         {
             selected_h = (uint)key - '1';
         }
@@ -539,7 +539,7 @@ int SelectPlayerOrNone(int allowNone)
 
             case U5_KEY_RIGHT:
             case U5_KEY_DOWN:
-                IncreaseInt(&selected_h, 1, D_585b_partyCount - 1);
+                IncreaseInt(&selected_h, 1, partyCount - 1);
                 break;
 
             case 0x30:
@@ -583,7 +583,7 @@ int SelectPlayer(void)
     return SelectPlayerOrNone(0);
 }
 
-void ULTIMA_2e96_SetWindDirection(int direction)
+void SetWindDirection(int direction)
 {
     if (direction != -1)
     {
@@ -591,45 +591,45 @@ void ULTIMA_2e96_SetWindDirection(int direction)
         sailCounter = 0;
     }
 
-    if (D_5893_mapId >= 0x21 || D_5893_mapId == 0x19)
+    if (mapId >= 0x21 || mapId == 0x19)
         return;
 
     if (D_5895_mapLevel < 0x80) // s8 level >= 0?
     {
         SelectTextWindow(0);
         SetTextPosition(6, 0x17);
-        ULTIMA_4c2a_PrintLeftCap();
+        PrintLeftCap();
 
         switch (windDir)
         {
         case 0:
-            ULTIMA_1850_PrintString(/*0x555c*/ "Calm ");
+            PrintString(/*0x555c*/ "Calm ");
             break;
         case 1:
-            ULTIMA_1850_PrintString(/*0x5562*/ "North");
+            PrintString(/*0x5562*/ "North");
             break;
         case 2:
-            ULTIMA_1850_PrintString(/*0x5568*/ "South");
+            PrintString(/*0x5568*/ "South");
             break;
         case 3:
-            ULTIMA_1850_PrintString(/*0x556e*/ "East ");
+            PrintString(/*0x556e*/ "East ");
             break;
         case 4:
-            ULTIMA_1850_PrintString(/*0x5574*/ "West ");
+            PrintString(/*0x5574*/ "West ");
             break;
         }
 
-        ULTIMA_1850_PrintString(/*0x557a*/ " Winds");
+        PrintString(/*0x557a*/ " Winds");
         PrintRightCap();
         SelectTextWindow(2);
     }
     else
     {
         // level < 0
-        ULTIMA_0a70_GRAP_2d_SetPenColor(brightWhiteColor);
+        GRAP_2d_SetPenColor(brightWhiteColor);
         GRAP_Line(0x30, 0xb8, 0x98, 0xb8);
-        ULTIMA_0a70_GRAP_2d_SetPenColor(blueColor);
-        ULTIMA_0aa6_GRAP_3f_FillRect(0x30, 0xb9, 0x98, 0xbf);
+        GRAP_2d_SetPenColor(blueColor);
+        GRAP_3f_FillRect(0x30, 0xb9, 0x98, 0xbf);
     }
 }
 
@@ -637,25 +637,25 @@ void ULTIMA_2e96_SetWindDirection(int direction)
 void UpdateWindDirectionRandomly(void)
 {
     int newDirection;
-    if (ULTIMA_2092_RandomRange(0, 0x3f) == 0)
+    if (RandomRange(0, 0x3f) == 0)
     {
-        newDirection = ULTIMA_2092_RandomRange(0, 4);
-        while (newDirection == 0 && ULTIMA_2092_RandomRange(0, 0xff) < 0xc0)
+        newDirection = RandomRange(0, 4);
+        while (newDirection == 0 && RandomRange(0, 0xff) < 0xc0)
         {
-            newDirection = ULTIMA_2092_RandomRange(0, 4);
+            newDirection = RandomRange(0, 4);
         }
 
-        ULTIMA_2e96_SetWindDirection(newDirection);
+        SetWindDirection(newDirection);
     }
 }
 
 // Poison a living party member (the trap effect).
 static void PoisonPlayer(int playerIndex)
 {
-    if (playerIndex < D_585b_partyCount && D_55a8_party[playerIndex].status != STATUS_DEAD)
+    if (playerIndex < partyCount && party[playerIndex].status != STATUS_DEAD)
     {
-        D_55a8_party[playerIndex].status = STATUS_POISONED;
-        ULTIMA_2900_UpdateVitalsDisplay();
+        party[playerIndex].status = STATUS_POISONED;
+        UpdateVitalsDisplay();
     }
 }
 
@@ -665,33 +665,33 @@ void SpringTrap(int playerIndex)
     int trapKind;
     int playerIndex_j;
 
-    ULTIMA_223c_AudioWhiteNoise(0x28, 3000, 500);
+    AudioWhiteNoise(0x28, 3000, 500);
 
-    if (D_5893_mapId > 0x7f)
+    if (mapId > 0x7f)
     {
-        trapKind = ULTIMA_2092_RandomRange(0, 1);
+        trapKind = RandomRange(0, 1);
     }
     else
     {
-        trapKind = (uint)trapKinds[ULTIMA_2092_RandomRange(0, 7)];
+        trapKind = (uint)trapKinds[RandomRange(0, 7)];
     }
 
     switch (trapKind)
     {
     case 0:
-        ULTIMA_1850_PrintString(/*0x5581*/ "ACID!\n");
+        PrintString(/*0x5581*/ "ACID!\n");
         DamagePlayer(playerIndex, Random1To30());
         break;
     case 1:
-        ULTIMA_1850_PrintString(/*0x5588*/ "POISON!\n");
+        PrintString(/*0x5588*/ "POISON!\n");
         PoisonPlayer(playerIndex);
         break;
     case 2:
-        ULTIMA_1850_PrintString(/*0x5591*/ "BOMB!\n");
-        ULTIMA_2aa8_DamageParty();
+        PrintString(/*0x5591*/ "BOMB!\n");
+        DamageParty();
         break;
     case 3:
-        ULTIMA_1850_PrintString(/*0x5598*/ "GAS!\n");
+        PrintString(/*0x5598*/ "GAS!\n");
         playerIndex_j = 0;
         do
         {

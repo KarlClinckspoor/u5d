@@ -16,21 +16,21 @@ static int ChoosePlayer(int allowAll)
 
     player = -1;
 
-    if (D_5893_mapId > 0x80 && (combatants[curCombatant].flags & COMBAT_FLAGS_PLAYER) != 0)
+    if (mapId > 0x80 && (combatants[curCombatant].flags & COMBAT_FLAGS_PLAYER) != 0)
     {
         player = combatants[curCombatant].entityIdx;
     }
     else
     {
         // 202e
-        ULTIMA_1850_PrintString(/*0x96b4*/ "Player: ");
+        PrintString(/*0x96b4*/ "Player: ");
         player = SelectPlayerOrNone(allowAll); // Select player
         if (player >= 0)
         {
-            ULTIMA_1850_PrintString(D_55a8_party[player].name);
+            PrintString(party[player].name);
             if (GetCurrentTextX() != 0)
             {
-                ULTIMA_16ba_PrintChar('\n');
+                PrintChar('\n');
             }
         }
     }
@@ -38,12 +38,12 @@ static int ChoosePlayer(int allowAll)
     // 205b
     if (player == -1)
     {
-        ULTIMA_1850_PrintString(/*0x96be*/ "None!\n");
+        PrintString(/*0x96be*/ "None!\n");
     }
     // 206a
     else if (player == -2)
     {
-        ULTIMA_16ba_PrintChar('\n');
+        PrintChar('\n');
     }
 
     // 2077
@@ -60,11 +60,11 @@ static void ShowPlayerStats(int member)
 
     HideScrollArrow();
 
-    player_c = &D_55a8_party[member];
+    player_c = &party[member];
 
     ShowStatsTitle(player_c->name);
     SetTextWindowSize(1, 0x18, 1, 0x26, 9);
-    ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
+    PrintChar(CTRL_CHAR_CLEAR_WINDOW);
     SetTextWindowSize(1, 0x18, 1, 0x27, 9);
 
     classIdx_e = FindIndex(/*0x96c6*/ CLASS_LIST, player_c->cls);
@@ -72,34 +72,34 @@ static void ShowPlayerStats(int member)
 
     for (pad = 0; pad < classNamePad[classIdx_e]; pad++)
     {
-        ULTIMA_16ba_PrintChar(' ');
+        PrintChar(' ');
     }
 
-    ULTIMA_16ba_PrintChar(player_c->gender);
-    ULTIMA_1850_PrintString(/*0x96d6*/ " Lv-");
+    PrintChar(player_c->gender);
+    PrintString(/*0x96d6*/ " Lv-");
     PrintNumber(player_c->level, 1, 0x20);
-    ULTIMA_16ba_PrintChar(' ');
-    ULTIMA_1850_PrintString(classNames[classIdx_e]);
+    PrintChar(' ');
+    PrintString(classNames[classIdx_e]);
     SetTextWindowSize(1, 0x18, 1, 0x26, 9);
     SetTextPosition(0, 1);
-    ULTIMA_16ba_PrintChar(CTRL_CHAR_CENTER_TEXT);
-    ULTIMA_1850_PrintString(statusNames[statusIdx]);
+    PrintChar(CTRL_CHAR_CENTER_TEXT);
+    PrintString(statusNames[statusIdx]);
     SetTextWindowSize(1, 0x18, 1, 0x27, 9);
     SetTextPosition(0, 3);
-    ULTIMA_16ba_PrintChar(CTRL_CHAR_UNCENTER_TEXT);
-    ULTIMA_1850_PrintString(/*0x96dc*/ "Str=");
+    PrintChar(CTRL_CHAR_UNCENTER_TEXT);
+    PrintString(/*0x96dc*/ "Str=");
     PrintNumber(player_c->str, 2, 0x30);
-    ULTIMA_1850_PrintString(/*0x96e2*/ "  HP:");
+    PrintString(/*0x96e2*/ "  HP:");
     PrintNumber(player_c->hp, 4, 0x20);
-    ULTIMA_1850_PrintString(/*0x96e8*/ "\nInt=");
+    PrintString(/*0x96e8*/ "\nInt=");
     PrintNumber(player_c->intel, 2, 0x30);
-    ULTIMA_1850_PrintString(/*0x96ee*/ "  HM:");
+    PrintString(/*0x96ee*/ "  HM:");
     PrintNumber(player_c->maxHp, 4, 0x20);
-    ULTIMA_1850_PrintString(/*0x96f4*/ "\nDex=");
+    PrintString(/*0x96f4*/ "\nDex=");
     PrintNumber(player_c->dex, 2, 0x30);
-    ULTIMA_1850_PrintString(/*0x96fa*/ "  Ex:");
+    PrintString(/*0x96fa*/ "  Ex:");
     PrintNumber(player_c->exp, 4, 0x20);
-    ULTIMA_1850_PrintString(/*0x9700*/ "\n\n    Magic:");
+    PrintString(/*0x9700*/ "\n\n    Magic:");
     PrintNumber(player_c->mag, 2, 0x20);
 }
 
@@ -112,9 +112,9 @@ static bool PrintArm(int item)
     }
     else
     {
-        ULTIMA_16ba_PrintChar(' ');
-        ULTIMA_1850_PrintString(equipShortNames[item]);
-        ULTIMA_16ba_PrintChar('\n');
+        PrintChar(' ');
+        PrintString(equipShortNames[item]);
+        PrintChar('\n');
         return 1;
     }
 }
@@ -127,15 +127,15 @@ static void ShowPlayerArms(int member)
 
     HideScrollArrow();
 
-    player = &D_55a8_party[member];
+    player = &party[member];
     ShowStatsTitle(player->name);
     SetTextWindowSize(1, 0x18, 1, 0x26, 9);
-    ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
-    ULTIMA_16ba_PrintChar(CTRL_CHAR_CENTER_TEXT);
-    ULTIMA_16ba_PrintChar(CTRL_CHAR_TOGGLE_UNDERLINE);
-    ULTIMA_1850_PrintString(/*0x970e*/ "Arms\n\n");
-    ULTIMA_16ba_PrintChar(CTRL_CHAR_UNCENTER_TEXT);
-    ULTIMA_16ba_PrintChar(CTRL_CHAR_TOGGLE_UNDERLINE);
+    PrintChar(CTRL_CHAR_CLEAR_WINDOW);
+    PrintChar(CTRL_CHAR_CENTER_TEXT);
+    PrintChar(CTRL_CHAR_TOGGLE_UNDERLINE);
+    PrintString(/*0x970e*/ "Arms\n\n");
+    PrintChar(CTRL_CHAR_UNCENTER_TEXT);
+    PrintChar(CTRL_CHAR_TOGGLE_UNDERLINE);
 
     shown = PrintArm(player->equips[0]);
     shown += PrintArm(player->equips[1]);
@@ -147,9 +147,9 @@ static void ShowPlayerArms(int member)
     if (shown == 0)
     {
         SetTextPosition(0, 4);
-        ULTIMA_16ba_PrintChar(CTRL_CHAR_CENTER_TEXT);
-        ULTIMA_1850_PrintString(/*0x9716*/ "(None ready)");
-        ULTIMA_16ba_PrintChar(CTRL_CHAR_UNCENTER_TEXT);
+        PrintChar(CTRL_CHAR_CENTER_TEXT);
+        PrintString(/*0x9716*/ "(None ready)");
+        PrintChar(CTRL_CHAR_UNCENTER_TEXT);
     }
 
     SetTextWindowSize(1, 0x18, 1, 0x27, 9);
@@ -161,22 +161,22 @@ static void ShowSupplies(void)
     HideScrollArrow();
     ShowStatsTitle(/*0x9724*/ "Equipment");
     SetTextWindowSize(1, 0x18, 1, 0x26, 9);
-    ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
+    PrintChar(CTRL_CHAR_CLEAR_WINDOW);
     SetTextWindowSize(1, 0x18, 1, 0x27, 9);
-    ULTIMA_1850_PrintString(/*0x972e*/ "\n Food: ");
+    PrintString(/*0x972e*/ "\n Food: ");
     PrintNumber(food, 4, 0x20); // Food
-    ULTIMA_1850_PrintString(/*0x9738*/ "\n Gold: ");
+    PrintString(/*0x9738*/ "\n Gold: ");
     PrintNumber(gold, 4, 0x20); // Gold
-    ULTIMA_1850_PrintString(/*0x9742*/ "\n\n Keys.......");
+    PrintString(/*0x9742*/ "\n\n Keys.......");
     PrintNumber(keys, 2, 0x20); // Keys
-    ULTIMA_1850_PrintString(/*0x9752*/ "\n Gems.......");
+    PrintString(/*0x9752*/ "\n Gems.......");
     PrintNumber(gems, 2, 0x20); // Gems
-    ULTIMA_1850_PrintString(/*0x9760*/ "\n Torches....");
+    PrintString(/*0x9760*/ "\n Torches....");
     PrintNumber(torches, 2, 0x20); // Torches
     if (grapple != 0)
     {
         // Grapple
-        ULTIMA_1850_PrintString(/*0x976e*/ "\n Grapple");
+        PrintString(/*0x976e*/ "\n Grapple");
     }
 }
 
@@ -186,40 +186,40 @@ void DrawListFrame(int lastRow)
     int i;
 
     SetTextWindowSize(1, 0x18, 1, 0x26, lastRow + 1);
-    ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
+    PrintChar(CTRL_CHAR_CLEAR_WINDOW);
     SetTextWindowSize(1, 0x18, 1, 0x27, 9);
-    ULTIMA_16ba_PrintChar(0x10);
+    PrintChar(0x10);
 
     for (i = 0; i < 0xd; i++)
     {
-        ULTIMA_16ba_PrintChar(0x11);
+        PrintChar(0x11);
     }
 
-    ULTIMA_16ba_PrintChar(0x13);
+    PrintChar(0x13);
 
     for (i = 1; i != lastRow; i++)
     {
         SetTextPosition(0, i);
-        ULTIMA_16ba_PrintChar(0x17);
+        PrintChar(0x17);
         SetTextPosition(0xe, i);
-        ULTIMA_16ba_PrintChar(0x17);
+        PrintChar(0x17);
     }
 
-    ULTIMA_16ba_PrintChar('\n');
-    ULTIMA_16ba_PrintChar(0x14);
+    PrintChar('\n');
+    PrintChar(0x14);
 
     for (i = 0; i < 0xd; i++)
     {
-        ULTIMA_16ba_PrintChar(0x15);
+        PrintChar(0x15);
     }
 
-    ULTIMA_16ba_PrintChar(0x16);
+    PrintChar(0x16);
 }
 
 // 1 when the member has the item among the six equipped slots.
 static int IsEquipped(int member, uint item)
 {
-    S_55a8* player = &D_55a8_party[member];
+    S_55a8* player = &party[member];
 
     return player->equips[0] == item || player->equips[1] == item || player->equips[2] == item ||
            player->equips[3] == item || player->equips[4] == item || player->equips[5] == item;
@@ -290,7 +290,7 @@ void PrintItemRow(int index, byte* counts, char** names, uint marker)
         }
         else
         {
-            ULTIMA_1850_PrintString(/*0x9778*/ "--");
+            PrintString(/*0x9778*/ "--");
         }
 
         if (marker < 0x20)
@@ -298,34 +298,34 @@ void PrintItemRow(int index, byte* counts, char** names, uint marker)
             SelectCharset(1);
         }
 
-        ULTIMA_16ba_PrintChar(marker);
+        PrintChar(marker);
         SelectCharset(0);
     }
 
     if (names[index][0] == '*')
     {
         SelectCharset(1);
-        ULTIMA_1850_PrintString(/*0x977c*/ "\x1c + ");
-        ULTIMA_1850_PrintString(&names[index][1]);
+        PrintString(/*0x977c*/ "\x1c + ");
+        PrintString(&names[index][1]);
         SelectCharset(0);
     }
     else if (names[index][0] == '!')
     {
         SelectCharset(1);
-        ULTIMA_1850_PrintString(/*0x9782*/ "\x1d + ");
+        PrintString(/*0x9782*/ "\x1d + ");
         SelectCharset(0);
-        ULTIMA_1850_PrintString(equipShortNames[40 + index]);
+        PrintString(equipShortNames[40 + index]);
     }
     else if (names[index][0] == '(')
     {
-        ULTIMA_1850_PrintString(/*0x9788*/ "Moonstone ");
+        PrintString(/*0x9788*/ "Moonstone ");
         SelectCharset(1);
-        ULTIMA_16ba_PrintChar((byte)names[index][1]);
+        PrintChar((byte)names[index][1]);
         SelectCharset(0);
     }
     else
     {
-        ULTIMA_1850_PrintString(names[index]);
+        PrintString(names[index]);
     }
 
     column_n = GetCurrentTextX();
@@ -336,11 +336,11 @@ void PrintItemRow(int index, byte* counts, char** names, uint marker)
 
         do
         {
-            ULTIMA_16ba_PrintChar(' ');
+            PrintChar(' ');
             si--;
         } while (si != 0);
     }
-    ULTIMA_16ba_PrintChar('\n');
+    PrintChar('\n');
 }
 
 #pragma loop_opt(off)
@@ -372,10 +372,10 @@ static int BrowseList(char* title, int count, byte* counts, char** names)
     {
         DrawListFrame(8);
         SetTextPosition(1, 4);
-        ULTIMA_1850_PrintString(/*0x9794*/ "(None owned!)");
+        PrintString(/*0x9794*/ "(None owned!)");
         HideScrollArrow();
         SelectTextWindow(2);
-        return ULTIMA_266c_GetChar();
+        return GetChar();
     }
 
     // 092d: enter the loop at its test, which sits after the END case
@@ -432,7 +432,7 @@ static int BrowseList(char* title, int count, byte* counts, char** names)
 
         // 07d3
         SelectTextWindow(2);
-        key = ULTIMA_266c_GetChar();
+        key = GetChar();
         switch (key)
         {
         case U5_KEY_UP:
@@ -578,7 +578,7 @@ void ZstatsCmd(void)
     }
 
     // ec3f
-    ULTIMA_1850_PrintString(/*0x97a2*/ "\nStatus: ");
+    PrintString(/*0x97a2*/ "\nStatus: ");
     FillItemCounts();
     OpenStatsDivider();
     page_c = member << 1;
@@ -600,7 +600,7 @@ void ZstatsCmd(void)
             // 0aa6
             if (page_c == 0xc)
             {
-                page_c = D_585b_partyCount * 2 - 1;
+                page_c = partyCount * 2 - 1;
             }
             else if (page_c > 0)
             {
@@ -615,7 +615,7 @@ void ZstatsCmd(void)
         case U5_KEY_RIGHT:
         case U5_KEY_DOWN:
             // 0aea
-            if (D_585b_partyCount * 2 - 1 == page_c)
+            if (partyCount * 2 - 1 == page_c)
             {
                 page_c = 0xc;
             }
@@ -644,7 +644,7 @@ void ZstatsCmd(void)
         case 0x35:
         case 0x36:
             // 0b12 (NOT MATCHING)
-            if (key - 0x31 < D_585b_partyCount)
+            if (key - 0x31 < partyCount)
             {
                 page_c = key * 2 - 0x62;
             }
@@ -666,7 +666,7 @@ void ZstatsCmd(void)
 
             // ed3f
             SelectTextWindow(2);
-            key = ULTIMA_266c_GetChar();
+            key = GetChar();
         }
         else if (page_c == 0xc)
         {
@@ -674,7 +674,7 @@ void ZstatsCmd(void)
 
             // ed3f
             SelectTextWindow(2);
-            key = ULTIMA_266c_GetChar();
+            key = GetChar();
         }
         else
         {
@@ -702,22 +702,22 @@ void ZstatsCmd(void)
     HideScrollArrow();
     ClearStatsTitle();
     DrawStatsDivider();
-    ULTIMA_2900_UpdateVitalsDisplay();
-    ULTIMA_1850_PrintString(/*0x97ce*/ "Done\n");
+    UpdateVitalsDisplay();
+    PrintString(/*0x97ce*/ "Done\n");
 }
 
 // Print a refusal message and the "Item:" prompt again.
 static void PrintEquipRefusal(char* message)
 {
-    ULTIMA_1850_PrintString(/*0x97d4*/ "\n\n");
-    ULTIMA_1850_PrintString(message);
-    ULTIMA_1850_PrintString(/*0x97d8*/ "\n\nItem: ");
+    PrintString(/*0x97d4*/ "\n\n");
+    PrintString(message);
+    PrintString(/*0x97d8*/ "\n\nItem: ");
 }
 
 // Which hand is free: 2 both, 0 the first (equips[2]), 1 the second (equips[3], when the first holds a one-handed item), 0xff none.
 static int FreeHandSlot(int member)
 {
-    S_55a8* player = &D_55a8_party[member];
+    S_55a8* player = &party[member];
 
     if ((player->equips[2] == 0xff) && (player->equips[3] == 0xff))
     {
@@ -753,16 +753,16 @@ static int EquipOrRemove(int member, int item)
     ActorFmt* actor_g;
     uint load;
 
-    if (D_5893_mapId > 0x7f)
+    if (mapId > 0x7f)
     {
-        actor_g = &D_5c5a_actors[combatants[curCombatant].actorIdx];
+        actor_g = &actors[combatants[curCombatant].actorIdx];
     }
 
     if (item == 0x1b || item == 0x1d)
     {
         return 0;
     }
-    if (item >= 9 && item <= 0xf && D_5893_mapId > 0x7f && combatOver == 0)
+    if (item >= 9 && item <= 0xf && mapId > 0x7f && combatOver == 0)
     {
         PrintEquipRefusal(/*0x97e2*/ "Thou canst not change armour in heated battle!");
     }
@@ -774,9 +774,9 @@ static int EquipOrRemove(int member, int item)
             equipment[item]++;
         }
 
-        if (D_5893_mapId > 0x7f && item == 0x2a)
+        if (mapId > 0x7f && item == 0x2a)
         {
-            classIdx_e = FindIndex(/*0x9812*/ "AMBFDTPRS", D_55a8_party[member].cls);
+            classIdx_e = FindIndex(/*0x9812*/ "AMBFDTPRS", party[member].cls);
             actor_g->tile = actor_g->animTile = classTile[classIdx_e];
         }
     }
@@ -787,7 +787,7 @@ static int EquipOrRemove(int member, int item)
     else
     {
         load = 0;
-        slot_i = D_55a8_party[member].equips;
+        slot_i = party[member].equips;
         for (i = 0; i < 6; i++)
         {
             if (*slot_i != 0xff)
@@ -797,25 +797,25 @@ static int EquipOrRemove(int member, int item)
             slot_i++;
         }
 
-        strongEnough_g = equipWeight[item] + load <= D_55a8_party[member].str;
+        strongEnough_g = equipWeight[item] + load <= party[member].str;
 
         switch (equipSlotKind[item])
         {
         case 0x80:
-            if (D_55a8_party[member].equips[0] != 0xff)
+            if (party[member].equips[0] != 0xff)
             {
                 PrintEquipRefusal(/*0x9846*/ "Remove first thy present helm!");
                 return 0;
             }
-            slot_i = &D_55a8_party[member].equips[0];
+            slot_i = &party[member].equips[0];
             break;
         case 0x40:
-            if (D_55a8_party[member].equips[1] != 0xff)
+            if (party[member].equips[1] != 0xff)
             {
                 PrintEquipRefusal(/*0x9866*/ "Thou must first remove thine other armour!");
                 return 0;
             }
-            slot_i = &D_55a8_party[member].equips[1];
+            slot_i = &party[member].equips[1];
             break;
         case 0x20:
             hand = FreeHandSlot(member);
@@ -828,7 +828,7 @@ static int EquipOrRemove(int member, int item)
             {
                 hand = 0;
             }
-            slot_i = &D_55a8_party[member].equips[hand + 2];
+            slot_i = &party[member].equips[hand + 2];
             break;
         case 0x30:
             hand = FreeHandSlot(member);
@@ -837,23 +837,23 @@ static int EquipOrRemove(int member, int item)
                 PrintEquipRefusal(/*0x98ba*/ "Both hands must be free before thou canst wield that!");
                 return 0;
             }
-            slot_i = &D_55a8_party[member].equips[2];
+            slot_i = &party[member].equips[2];
             break;
         case 4:
-            if (D_55a8_party[member].equips[5] != 0xff)
+            if (party[member].equips[5] != 0xff)
             {
                 PrintEquipRefusal(/*0x98f0*/ "Thou must remove thine other amulet!");
                 return 0;
             }
-            slot_i = &D_55a8_party[member].equips[5];
+            slot_i = &party[member].equips[5];
             break;
         case 2:
-            if (D_55a8_party[member].equips[4] != 0xff)
+            if (party[member].equips[4] != 0xff)
             {
                 PrintEquipRefusal(/*0x9916*/ "Only one magic ring may be worn at a time!");
                 return 0;
             }
-            slot_i = &D_55a8_party[member].equips[4];
+            slot_i = &party[member].equips[4];
             break;
         }
 
@@ -868,15 +868,15 @@ L_wear:
         *slot_i = item;
         equipment[item]--;
 
-        if ((item == 0x2a || item == 0x2c) && ULTIMA_2092_RandomRange(0, 0xf) == 0)
+        if ((item == 0x2a || item == 0x2c) && RandomRange(0, 0xf) == 0)
         {
-            ULTIMA_1850_PrintString(/*0x995e*/ "\n\nRing vanishes!\n");
-            D_55a8_party[member].equips[4] = 0xff;
+            PrintString(/*0x995e*/ "\n\nRing vanishes!\n");
+            party[member].equips[4] = 0xff;
             AudioSweepTone(0x4b0, 0x7d0, 1, 0x28);
             return 1;
         }
 
-        if (item == 0x2a && D_5893_mapId > 0x7f)
+        if (item == 0x2a && mapId > 0x7f)
         {
             actor_g->tile = actor_g->animTile = 0x1d;
         }
@@ -935,7 +935,7 @@ int SelectItem(int first, int member, int mode)
 
             if (GetCurrentTextY() == cursorRow_i)
             {
-                ULTIMA_16ba_PrintChar(CTRL_CHAR_TOGGLE_INVERSION);
+                PrintChar(CTRL_CHAR_TOGGLE_INVERSION);
                 selected_f = item_a;
             }
 
@@ -970,7 +970,7 @@ int SelectItem(int first, int member, int mode)
 
             if (GetCurrentTextY() - 1 == cursorRow_i)
             {
-                ULTIMA_16ba_PrintChar(CTRL_CHAR_TOGGLE_INVERSION);
+                PrintChar(CTRL_CHAR_TOGGLE_INVERSION);
             }
 
             // f19c
@@ -1020,7 +1020,7 @@ int SelectItem(int first, int member, int mode)
         // L_1077
         // f257
         SelectTextWindow(2);
-        key_g = ULTIMA_266c_GetChar();
+        key_g = GetChar();
 
         switch (key_g)
         {
@@ -1149,7 +1149,7 @@ int SelectItem(int first, int member, int mode)
             break;
         case U5_KEY_ESC:
             // 1238
-            ULTIMA_1850_PrintString(mode == 0x52 ? /*0x9970*/ "Done\n" : /*0x9976*/ "None!\n");
+            PrintString(mode == 0x52 ? /*0x9970*/ "Done\n" : /*0x9976*/ "None!\n");
             leave_c = 1;
             selected_f = -1;
 
@@ -1176,15 +1176,15 @@ void ReadyCmd(void)
     first = NextItem(-1, 0x30, equipment, member);
     if (first == -1)
     {
-        ULTIMA_1850_PrintString(/*0x997e*/ "Thou art empty-\nhanded!\n");
+        PrintString(/*0x997e*/ "Thou art empty-\nhanded!\n");
         return;
     }
 
-    ULTIMA_1850_PrintString(/*0x9998*/ "Item: ");
+    PrintString(/*0x9998*/ "Item: ");
     OpenStatsDivider();
     SelectTextWindow(1);
 
-    ShowStatsTitle(D_55a8_party[member].name);
+    ShowStatsTitle(party[member].name);
 
     DrawListFrame(0x08);
 
@@ -1193,5 +1193,5 @@ void ReadyCmd(void)
     HideScrollArrow();
     ClearStatsTitle();
     DrawStatsDivider();
-    ULTIMA_2900_UpdateVitalsDisplay();
+    UpdateVitalsDisplay();
 }

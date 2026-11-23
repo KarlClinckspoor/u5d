@@ -54,7 +54,7 @@ static int CompareStringNoCase(char* first, char* second)
 // reaches one tile further (TalkCmd).
 static int CanTalkAcrossTile(int x, int y)
 {
-    switch (*ULTIMA_4402_GetTileAddr(x, y))
+    switch (*GetTileAddr(x, y))
     {
     case TILE_MAP_29:
     case TILE_MAP_TABLE_94:
@@ -85,19 +85,19 @@ static int AskPay(void)
 {
     char ch;
 
-    ULTIMA_1850_PrintString(/*0x9052*/ "\n\nDost thou pay?\n\n:");
+    PrintString(/*0x9052*/ "\n\nDost thou pay?\n\n:");
 
     do
     {
-        ch = ToUpperChar(ULTIMA_266c_GetChar());
+        ch = ToUpperChar(GetChar());
         if (ch == 'Y')
         {
-            ULTIMA_1850_PrintString(/*0x9066*/ "Yes\n");
+            PrintString(/*0x9066*/ "Yes\n");
             return 0;
         }
     } while (ch != 'N');
 
-    ULTIMA_1850_PrintString(/*0x906c*/ "No!\n");
+    PrintString(/*0x906c*/ "No!\n");
     return 1;
 }
 
@@ -111,9 +111,9 @@ static void TalkToMerchant(int merchantCode)
 {
     int playerIndex;
 
-    if ((D_587c_partyTile & 0xfe) == TILE_ACTOR_RIDING_HORSE && merchantCode != 0x83)
+    if ((partyTile & 0xfe) == TILE_ACTOR_RIDING_HORSE && merchantCode != 0x83)
     {
-        ULTIMA_1850_PrintString(/*0x9072*/ "A merchant says:\n\"GET THAT HORSE OUT OF HERE!\"\n");
+        PrintString(/*0x9072*/ "A merchant says:\n\"GET THAT HORSE OUT OF HERE!\"\n");
     }
     else
     {
@@ -124,12 +124,12 @@ static void TalkToMerchant(int merchantCode)
         else
         {
             GetFirstActivePartyMember();
-            playerIndex = D_5876_tempX;
+            playerIndex = tempX;
         }
 
         shopKind = merchantCode - 0x81;
 
-        for (shopIndex = 0; (&shopMapIds[0][0])[shopIndex + shopKind * 16] != D_5893_mapId && shopIndex < 0x10; shopIndex++)
+        for (shopIndex = 0; (&shopMapIds[0][0])[shopIndex + shopKind * 16] != mapId && shopIndex < 0x10; shopIndex++)
         {
         }
 
@@ -179,14 +179,14 @@ static int GuardDemandsTribute(void)
     uint member;
     char answer[0xf];
 
-    if (D_5893_mapId != 0x12)
+    if (mapId != 0x12)
     {
         // 01f3
-        if (D_5893_mapId == 5)
+        if (mapId == 5)
         {
-            ULTIMA_16ba_PrintChar('\"');
-            ULTIMA_1850_PrintString(/*0x90a2*/ "Thou wilt give\nhalf thy gold to\ncharity!");
-            ULTIMA_16ba_PrintChar('\"');
+            PrintChar('\"');
+            PrintString(/*0x90a2*/ "Thou wilt give\nhalf thy gold to\ncharity!");
+            PrintChar('\"');
 
             if (AskPay() != 0)
             {
@@ -198,7 +198,7 @@ static int GuardDemandsTribute(void)
             gold /= 2;
 
             // 0228
-            ULTIMA_2900_UpdateVitalsDisplay();
+            UpdateVitalsDisplay();
             // 022b
             return 0;
         }
@@ -210,19 +210,19 @@ static int GuardDemandsTribute(void)
             // 0243 With an unsigned index MSC keeps the count in one more temporary (bp-1Ch),
             // as the original; the (int) cast makes it an end-pointer loop (cmp si,dx) and !=
             // gives the je for an empty party.
-            for (member = 0; member != (int)D_585b_partyCount; member++)
+            for (member = 0; member != (int)partyCount; member++)
             {
                 // 025a
-                if (D_55a8_party[member].status != STATUS_DEAD)
+                if (party[member].status != STATUS_DEAD)
                 {
                     tribute_i += 10;
                 }
             }
 
             // 026c
-            ULTIMA_1850_PrintString(/*0x90cc*/ "A guard demands\na ");
+            PrintString(/*0x90cc*/ "A guard demands\na ");
             PrintNumber(tribute_i, 2, 0x20);
-            ULTIMA_1850_PrintString(/*0x90e0*/ " gp tribute\nto Blackthorn!");
+            PrintString(/*0x90e0*/ " gp tribute\nto Blackthorn!");
 
             if (AskPay() != 0)
             {
@@ -236,7 +236,7 @@ static int GuardDemandsTribute(void)
                 // 029a
                 gold -= tribute_i;
 
-                ULTIMA_2900_UpdateVitalsDisplay();
+                UpdateVitalsDisplay();
                 return 0;
             }
 
@@ -250,22 +250,22 @@ static int GuardDemandsTribute(void)
         if (statusIcon == 0x1d)
         {
             // 02ae
-            ULTIMA_16ba_PrintChar('\"');
-            ULTIMA_1850_PrintString(/*0x90fc*/ "Give now the\npassword, bearer\nof the Badge!");
-            ULTIMA_16ba_PrintChar('\"');
-            ULTIMA_1850_PrintString(/*0x9128*/ "\n\nYour response?\n");
+            PrintChar('\"');
+            PrintString(/*0x90fc*/ "Give now the\npassword, bearer\nof the Badge!");
+            PrintChar('\"');
+            PrintString(/*0x9128*/ "\n\nYour response?\n");
             GetString(answer, 0xe);
-            ULTIMA_16ba_PrintChar('\n');
+            PrintChar('\n');
             answer[4] = 0;
 
             if (CompareStringNoCase(password, answer) != 0)
             {
                 // 02f2
-                ULTIMA_16ba_PrintChar('\n');
-                ULTIMA_16ba_PrintChar('\"');
-                ULTIMA_1850_PrintString(/*0x913a*/ "Pass, friend!");
-                ULTIMA_16ba_PrintChar('\"');
-                ULTIMA_16ba_PrintChar('\n');
+                PrintChar('\n');
+                PrintChar('\"');
+                PrintString(/*0x913a*/ "Pass, friend!");
+                PrintChar('\"');
+                PrintChar('\n');
                 // 0315 -> 022b
                 return 0;
             }
@@ -287,11 +287,11 @@ int TalkToNpc(int npcIndex)
     NpcFmt* npc;
     NpcScheduleFmt* schedule;
 
-    ULTIMA_16ba_PrintChar('\n');
+    PrintChar('\n');
 
     talkNpcIndex = npcIndex;
-    npc = &D_5f5e_npcs[npcIndex];
-    schedule = &D_5d5e_npcSchedules[npcIndex];
+    npc = &npcs[npcIndex];
+    schedule = &npcSchedules[npcIndex];
 
     if (schedule->type[npc->scheduleIdx] == 4)
     {
@@ -303,16 +303,16 @@ int TalkToNpc(int npcIndex)
     // jmp near are that then-branch's dead jump over its else) and BX still holds npc.
     else
     {
-        if (D_5c5a_actors[npc->actorIdx].tile != TILE_ACTOR_GUARD || ((npc->scheduleIdx & 1) != 0 && (npc->dialogNumber) != 0))
+        if (actors[npc->actorIdx].tile != TILE_ACTOR_GUARD || ((npc->scheduleIdx & 1) != 0 && (npc->dialogNumber) != 0))
             goto L_join;
-        ULTIMA_1850_PrintString(/*0x9148*/ "The guard offers\nno response!\n");
+        PrintString(/*0x9148*/ "The guard offers\nno response!\n");
         return 0;
     }
 L_join:
     dialogNumber_f = npc->dialogNumber;
     if (dialogNumber_f == 0)
     {
-        ULTIMA_1850_PrintString(/*0x9168*/ "No response!\n");
+        PrintString(/*0x9168*/ "No response!\n");
         return 0;
     }
     else
@@ -326,10 +326,10 @@ L_join:
 
         if (dialogNumber_f == 0xfd)
         {
-            ULTIMA_16ba_PrintChar('\"');
-            ULTIMA_1850_PrintString(/*0x9176*/ "Don't hurt me!\nPlease go away!");
-            ULTIMA_16ba_PrintChar('\"');
-            ULTIMA_16ba_PrintChar('\n');
+            PrintChar('\"');
+            PrintString(/*0x9176*/ "Don't hurt me!\nPlease go away!");
+            PrintChar('\"');
+            PrintChar('\n');
             return 0;
         }
 
@@ -352,8 +352,8 @@ L_join:
         }
         else
         {
-            ULTIMA_1850_PrintString(/*0x9196*/ "A merchant says:\n\"Come see me at\nmy shoppe, ");
-            ULTIMA_1850_PrintString(/*0x91c4*/ "when\nit's open!\"\n");
+            PrintString(/*0x9196*/ "A merchant says:\n\"Come see me at\nmy shoppe, ");
+            PrintString(/*0x91c4*/ "when\nit's open!\"\n");
             return 0;
         }
     }
@@ -367,36 +367,36 @@ int TalkCmd(void)
     int x_i;
     int npcIndex_f;
 
-    if (ULTIMA_35ec_SelectDirection() == 0)
+    if (SelectDirection() == 0)
     {
         return 0;
     }
 
-    dirX = D_5876_tempX;
-    dirY = D_5878_tempY;
+    dirX = tempX;
+    dirY = tempY;
     x_i = dirX + D_5896_mapX;
     y_o = dirY + D_5897_mapY;
 
-    if (ULTIMA_368e_FindActorTileAtPos(x_i, y_o, D_5895_mapLevel) == 0 && CanTalkAcrossTile(x_i, y_o) != 0)
+    if (FindActorTileAtPos(x_i, y_o, D_5895_mapLevel) == 0 && CanTalkAcrossTile(x_i, y_o) != 0)
     {
         x_i += dirX;
         y_o += dirY;
     }
 
-    if (ULTIMA_368e_FindActorTileAtPos(x_i, y_o, D_5895_mapLevel) == 0)
+    if (FindActorTileAtPos(x_i, y_o, D_5895_mapLevel) == 0)
     {
-        ULTIMA_1850_PrintString(/*0x91d6*/ "\nNobody's here!\n");
+        PrintString(/*0x91d6*/ "\nNobody's here!\n");
     }
     else
     {
-        npcIndex_f = TOWN_011e_FindNpcByActor(D_5876_tempX);
-        switch (*ULTIMA_4402_GetTileAddr(x_i, y_o))
+        npcIndex_f = FindNpcByActor(tempX);
+        switch (*GetTileAddr(x_i, y_o))
         {
         case TILE_MAP_BED:
-            ULTIMA_1850_PrintString(/*0x91e8*/ "\n\"Zzzzzz...\"\n");
+            PrintString(/*0x91e8*/ "\n\"Zzzzzz...\"\n");
             break;
         case TILE_MAP_MIRROR:
-            ULTIMA_1850_PrintString(/*0x91f6*/ "\nNo response!\n");
+            PrintString(/*0x91f6*/ "\nNo response!\n");
             break;
         default:
             return TalkToNpc(npcIndex_f);
@@ -446,7 +446,7 @@ static void PrintWord(void)
                     }
 
                     // c4b3
-                    ULTIMA_16ba_PrintChar(ch);
+                    PrintChar(ch);
                 }
                 else if (ch == 10) // c4be
                 {
@@ -476,7 +476,7 @@ static void BuildOrPrintWord(byte ch)
 
         if (GetCurrentTextX() + (uint)talkWordLength >= 0x12)
         {
-            ULTIMA_16ba_PrintChar('\n');
+            PrintChar('\n');
         }
     }
 
@@ -557,14 +557,14 @@ static int PayGold(void)
     if (gold >= amount)
     {
         gold -= amount;
-        ULTIMA_2900_UpdateVitalsDisplay();
-        if ((D_5c5a_actors[D_5f5e_npcs[talkNpcIndex].actorIdx].tile & 0xfc) == TILE_ACTOR_BEGGAR && turnCount >= 100)
+        UpdateVitalsDisplay();
+        if ((actors[npcs[talkNpcIndex].actorIdx].tile & 0xfc) == TILE_ACTOR_BEGGAR && turnCount >= 100)
         {
             turnCount = 0;
-            IncreaseByte(&D_5888_karma, 1, 99);
+            IncreaseByte(&karma, 1, 99);
             if (gold == 0)
             {
-                IncreaseByte(&D_5888_karma, 2, 99);
+                IncreaseByte(&karma, 2, 99);
             }
         }
 
@@ -573,10 +573,10 @@ static int PayGold(void)
     else
     {
         talkWordLength = 0;
-        ULTIMA_16ba_PrintChar('\"');
-        ULTIMA_1850_PrintString(/*0x9328*/ "Thou hast not enough gold!");
-        ULTIMA_16ba_PrintChar('\"');
-        ULTIMA_1850_PrintString(/*0x9344*/ "\n\n");
+        PrintChar('\"');
+        PrintString(/*0x9328*/ "Thou hast not enough gold!");
+        PrintChar('\"');
+        PrintString(/*0x9344*/ "\n\n");
 
         talkCodeArgCount = talkPendingCode = 0;
 
@@ -599,11 +599,11 @@ static void ReceiveItem(byte itemCode)
     {
     case 0x41:
         IncreaseInt(&food, 1, 9999);
-        ULTIMA_2900_UpdateVitalsDisplay();
+        UpdateVitalsDisplay();
         break;
     case 0x42:
         IncreaseInt(&gold, 1, 9999);
-        ULTIMA_2900_UpdateVitalsDisplay();
+        UpdateVitalsDisplay();
         break;
     case 0x43:
         IncreaseByte(&keys, 1, 99);
@@ -718,7 +718,7 @@ static int ProcessOrAnswer(void)
 static void PrintAvatarName(void)
 {
     byte* name;
-    name = D_55a8_party[0].name;
+    name = party[0].name;
 
     while (*name != 0)
     {
@@ -741,11 +741,11 @@ static int Join(void)
     savedPtr_o = talkPtr;
     rosterIndex_h = 0xf;
 
-    if (D_585b_partyCount == 6)
+    if (partyCount == 6)
     {
-        ULTIMA_266c_GetChar();
-        ULTIMA_1850_PrintString(/*0x9348*/ "\"Thou hast no room for me in thy party! ");
-        ULTIMA_1850_PrintString(/*0x9372*/ "Seek me again if one of thy members doth leave\nthee.");
+        GetChar();
+        PrintString(/*0x9348*/ "\"Thou hast no room for me in thy party! ");
+        PrintString(/*0x9372*/ "Seek me again if one of thy members doth leave\nthee.");
 
         return 0;
     }
@@ -765,7 +765,7 @@ static int Join(void)
     while (1)
     {
         for (i = 0; i < 3; i++)
-            rosterName_h[i] = D_55a8_party[rosterIndex_h].name[i];
+            rosterName_h[i] = party[rosterIndex_h].name[i];
 
         // c805
         if (CompareStringNoCase(npcName, rosterName_h) != 0)
@@ -780,7 +780,7 @@ static int Join(void)
             // c824
             BuildOrPrintWord(0x22);
             BuildOrPrintWord(10);
-            ULTIMA_1850_PrintString(/*0x93a8*/ "\nSystem Error -\nNo Match!");
+            PrintString(/*0x93a8*/ "\nSystem Error -\nNo Match!");
             talkPtr = savedPtr_o;
             // i = DI;
 
@@ -790,18 +790,18 @@ static int Join(void)
     }
 
     // c848
-    D_55a8_party[rosterIndex_h].innMapId = 0;
+    party[rosterIndex_h].innMapId = 0;
 
-    member = D_55a8_party[rosterIndex_h];
-    D_55a8_party[rosterIndex_h] = D_55a8_party[D_585b_partyCount];
-    D_55a8_party[D_585b_partyCount] = member;
+    member = party[rosterIndex_h];
+    party[rosterIndex_h] = party[partyCount];
+    party[partyCount] = member;
 
-    D_585b_partyCount++;
+    partyCount++;
 
-    TOWN_0052_SetNpcKilled(talkNpcIndex);
-    TOWN_00b0_DespawnNpc(talkNpcIndex);
+    SetNpcKilled(talkNpcIndex);
+    DespawnNpc(talkNpcIndex);
 
-    ULTIMA_2900_UpdateVitalsDisplay();
+    UpdateVitalsDisplay();
     PrintWord();
 
     talkPtr = savedPtr_o;
@@ -920,7 +920,7 @@ static int AnswerStandardWord(byte wordIndex)
             return 2;
         }
 
-        ULTIMA_1850_PrintString(/*0x93c2*/ "\"My name is ");
+        PrintString(/*0x93c2*/ "\"My name is ");
         if (ProcessNthTalkString(TALK_KEY_NAME) != 0)
         {
             return 1;
@@ -962,21 +962,21 @@ static int AnswerStandardWord(byte wordIndex)
 
     default:
         // c9f8
-        ULTIMA_1850_PrintString(/*0x93d0*/ "\"With language like that, how did you become an Avatar?");
+        PrintString(/*0x93d0*/ "\"With language like that, how did you become an Avatar?");
         PrintQuoteMark();
         PrintCr();
         PrintCr();
 
         for (tick = 0; tick < 0x1c; tick++)
         {
-            ULTIMA_5910_UpdateFrame();
+            UpdateFrame();
             if (PollKey() != 0)
                 break;
 
             WaitTicks(1);
         }
 
-        ULTIMA_1b16_ClearKbdBuffer();
+        ClearKbdBuffer();
         return 0;
     }
 }
@@ -991,11 +991,11 @@ static int AskInterest(void)
     while (1)
     {
         talkInLabel = 0;
-        ULTIMA_1850_PrintString(/*0x9408*/ "Your interest?\n:");
+        PrintString(/*0x9408*/ "Your interest?\n:");
         TalkGetString();
         if (inputText[0] == 0)
         {
-            ULTIMA_1850_PrintString(/*0x941a*/ "BYE\n\n");
+            PrintString(/*0x941a*/ "BYE\n\n");
             return SayBye();
         }
         PrintCr();
@@ -1022,7 +1022,7 @@ static int AskInterest(void)
         {
             if (FindKeyword() == 0)
             {
-                ULTIMA_1850_PrintString(/*0x9420*/ "\"I cannot help thee with that.");
+                PrintString(/*0x9420*/ "\"I cannot help thee with that.");
                 PrintQuoteMark();
                 PrintCr();
                 PrintCr();
@@ -1102,11 +1102,11 @@ static int AskLabelQuestion(void)
             PrintCr();
             PrintCr();
             talkInLabel = 0xff;
-            ULTIMA_1850_PrintString(/*0x9440*/ "You respond-\n:");
+            PrintString(/*0x9440*/ "You respond-\n:");
             TalkGetString();
             if (inputText[0] == 0)
             {
-                ULTIMA_1850_PrintString(/*0x9450*/ "\n\n\"What didst thou say?");
+                PrintString(/*0x9450*/ "\n\n\"What didst thou say?");
             }
         } while (inputText[0] == 0);
 
@@ -1171,7 +1171,7 @@ static int SetNpcMet(int npcIndex)
 
     mask = 1;
     mask <<= npcIndex; // aNNalshl
-    (*(u32*)&npcMet[(D_5893_mapId - 1) * 4]) |= mask;
+    (*(u32*)&npcMet[(mapId - 1) * 4]) |= mask;
 }
 
 // NOT MATCHING (u32 operation)
@@ -1182,7 +1182,7 @@ static int IsNpcMet(int npcIndex)
 
     mask = 1;
     mask <<= npcIndex; // aNNalshl
-    return (*(u32*)&npcMet[(D_5893_mapId - 1) * 4] & mask) != 0;
+    return (*(u32*)&npcMet[(mapId - 1) * 4] & mask) != 0;
 }
 
 // The bytes after a script code that takes arguments (talkPendingCode): 0x85 gold,
@@ -1259,7 +1259,7 @@ static int ProcessCodeArgument(byte value)
 
         talkCodeArgCount = talkPendingCode = 0;
 
-        if (D_5888_karma < talkCodeArgs[0])
+        if (karma < talkCodeArgs[0])
         {
             // 0dfc
             return 0;
@@ -1285,23 +1285,23 @@ static void AskName(void)
     member = 0;
     PrintQuoteMark();
     PrintWord();
-    ULTIMA_1850_PrintString(/*0x9468*/ "What is thy name?\"\n");
-    ULTIMA_1850_PrintString(/*0x947c*/ "\nYou respond-\n:");
+    PrintString(/*0x9468*/ "What is thy name?\"\n");
+    PrintString(/*0x947c*/ "\nYou respond-\n:");
     TalkGetString();
 
     talkPendingCode = talkCodeArgCount = 0;
 
     if (inputText[0] == 0)
     {
-        ULTIMA_1850_PrintString(/*0x948c*/ "\n\n\"If you say so...");
+        PrintString(/*0x948c*/ "\n\n\"If you say so...");
     }
     else
     {
-        for (; member < D_585b_partyCount; member++)
+        for (; member < partyCount; member++)
         {
             for (i = 0; i < 4; i++)
             {
-                name[i] = D_55a8_party[member].name[i];
+                name[i] = party[member].name[i];
             }
 
             name[4] = 0;
@@ -1310,12 +1310,12 @@ static void AskName(void)
             if (matchPos_i != -1 && (matchPos_i == 0 || (inputText[matchPos_i - 1] == ' ')))
             {
                 SetNpcMet(talkNpcIndex);
-                ULTIMA_1850_PrintString(/*0x94a0*/ "\n\n\"A pleasure!");
+                PrintString(/*0x94a0*/ "\n\n\"A pleasure!");
                 return;
             }
         }
 
-        ULTIMA_1850_PrintString(/*0x94b0*/ "\n\n\"If you say so...");
+        PrintString(/*0x94b0*/ "\n\n\"If you say so...");
     }
 }
 
@@ -1357,12 +1357,12 @@ static int ProcessChar(byte code)
         // 0f92
         for (tick = 0; tick < 0x1c; tick++)
         {
-            ULTIMA_5910_UpdateFrame();
+            UpdateFrame();
             if (PollKey() != 0)
                 break;
             WaitTicks(1);
         }
-        ULTIMA_1b16_ClearKbdBuffer();
+        ClearKbdBuffer();
         return 0; // -> 0f5e
     case 0x84:    // join
         // 0fb6
@@ -1382,15 +1382,15 @@ static int ProcessChar(byte code)
         return 0; // -> 0f5e
     case 0x89:    // karma +1
         // 0fd8
-        IncreaseByte(&D_5888_karma, 1, 99);
+        IncreaseByte(&karma, 1, 99);
         return 0; // -> 0f5e
     case 0x8a:    // karma -1
         // 0fea
-        ULTIMA_3f36_DecreaseByte(&D_5888_karma, 1);
+        DecreaseByte(&karma, 1);
         return 0; // -> 0f5e
     case 0x8b:    // call guards
         // 0ff8
-        TOWN_0958_RaiseAlarm();
+        RaiseAlarm();
         return 0; // -> 0f5e
     case 0x8e:    // rune
         // 0ffe
@@ -1402,7 +1402,7 @@ static int ProcessChar(byte code)
         return AskInterest(); // -> 1114
     case 0x8f:                // wait
         // 1010
-        ULTIMA_266c_GetChar();
+        GetChar();
         return 0; // -> 0f5e
     case 0xfe:
     case 0x85: // gold-
@@ -1479,7 +1479,7 @@ static int ProcessChar(byte code)
 // NPC knows the Avatar's name, else (one time in two) "I am called" and the name.
 static int Introduce(void)
 {
-    ULTIMA_1850_PrintString(/*0x94c4*/ "You see ");
+    PrintString(/*0x94c4*/ "You see ");
 
     if (ProcessNthTalkString(TALK_KEY_DESC) != 0)
     {
@@ -1491,11 +1491,11 @@ static int Introduce(void)
         PrintCr();
         if (IsNpcMet(talkNpcIndex) == 0)
         {
-            ULTIMA_207e_srand(ULTIMA_2056_GetTime());
-            if (ULTIMA_2092_RandomRange(0, 1) != 0)
+            SeedRandom(GetTime());
+            if (RandomRange(0, 1) != 0)
             {
                 // "I am called\nNAME"\n\n
-                ULTIMA_1850_PrintString(/*0x94ce*/ "\"I am called ");
+                PrintString(/*0x94ce*/ "\"I am called ");
                 if (ProcessNthTalkString(TALK_KEY_NAME) == 0)
                 {
                     PrintQuoteMark();
@@ -1527,18 +1527,18 @@ static int Introduce(void)
     }
 }
 
-// After a conversation in a town where shadowlord 0 is (D_5958_townShadowlord; Falsehood,
+// After a conversation in a town where shadowlord 0 is (townShadowlord; Falsehood,
 // if the Codex's order of the three is right): something is stolen. A key, a gem or a
 // torch; when there are none a piece of equipment, a potion, a scroll, else gold.
 static void FalsehoodSteals(void)
 {
     int item;
 
-    if (D_5958_townShadowlord == 0)
+    if (townShadowlord == 0)
     {
-        ULTIMA_1850_PrintString(/*0x94dc*/ "\nSomething was stolen!\n");
+        PrintString(/*0x94dc*/ "\nSomething was stolen!\n");
         AudioSweepTone(800, 2000, 1, 0x32);
-        ULTIMA_207e_srand(ULTIMA_2056_GetTime());
+        SeedRandom(GetTime());
 
         if ((keys | gems | torches) != 0)
         {
@@ -1546,12 +1546,12 @@ static void FalsehoodSteals(void)
             {
                 while (1)
                 {
-                    switch (ULTIMA_2092_RandomRange(0, 2))
+                    switch (RandomRange(0, 2))
                     {
                     case 0:
                         if (keys != 0)
                         {
-                            ULTIMA_3f36_DecreaseByte(&keys, 1);
+                            DecreaseByte(&keys, 1);
                             return;
                         }
                         break;
@@ -1559,7 +1559,7 @@ static void FalsehoodSteals(void)
                     case 1:
                         if (gems != 0)
                         {
-                            ULTIMA_3f36_DecreaseByte(&gems, 1);
+                            DecreaseByte(&gems, 1);
                             return;
                         }
                         break;
@@ -1567,7 +1567,7 @@ static void FalsehoodSteals(void)
                     case 2:
                         if (torches != 0)
                         {
-                            ULTIMA_3f36_DecreaseByte(&torches, 1);
+                            DecreaseByte(&torches, 1);
                             return;
                         }
                         break;
@@ -1577,7 +1577,7 @@ static void FalsehoodSteals(void)
                 }
             } while (gems == 0);
 
-            ULTIMA_3f36_DecreaseByte(&gems, 1); // BUG?
+            DecreaseByte(&gems, 1); // BUG?
         }
         else
         {
@@ -1585,7 +1585,7 @@ static void FalsehoodSteals(void)
             {
                 if (equipment[item] != 0)
                 {
-                    ULTIMA_3f36_DecreaseByte(&equipment[item], 1);
+                    DecreaseByte(&equipment[item], 1);
                     return;
                 }
             }
@@ -1594,7 +1594,7 @@ static void FalsehoodSteals(void)
             {
                 if (potions[item] != 0)
                 {
-                    ULTIMA_3f36_DecreaseByte(&potions[item], 1);
+                    DecreaseByte(&potions[item], 1);
                     return;
                 }
             }
@@ -1603,13 +1603,13 @@ static void FalsehoodSteals(void)
             {
                 if (scrolls[item] != 0)
                 {
-                    ULTIMA_3f36_DecreaseByte(&scrolls[item], 1);
+                    DecreaseByte(&scrolls[item], 1);
                     return;
                 }
             }
 
-            DecreaseInt(&gold, ULTIMA_2092_RandomRange(1, 0xf));
-            ULTIMA_2900_UpdateVitalsDisplay();
+            DecreaseInt(&gold, RandomRange(1, 0xf));
+            UpdateVitalsDisplay();
         }
     }
 }
@@ -1624,8 +1624,8 @@ static void StartTalk(int dialogNumber)
     s16* index;
     uint fileIndex;
 
-    fileIndex = (D_5893_mapId - 1) >> 3;
-    ULTIMA_256e_ReadFileFromDisk(talkFileNames[fileIndex], scratch, 0x200, 0);
+    fileIndex = (mapId - 1) >> 3;
+    ReadFileFromDisk(talkFileNames[fileIndex], scratch, 0x200, 0);
 
     // 12a9
     index = (s16*)scratch;
@@ -1638,7 +1638,7 @@ static void StartTalk(int dialogNumber)
 
     // 12d6
     offset_b = *index;
-    ULTIMA_256e_ReadFileFromDisk(talkFileNames[fileIndex], scratch, 0x400, offset_b);
+    ReadFileFromDisk(talkFileNames[fileIndex], scratch, 0x400, offset_b);
 
     if (Introduce() == 0)
     {

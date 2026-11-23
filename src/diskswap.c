@@ -74,48 +74,48 @@ void far DiskSwapMessage(void)
             {
                 GRAP_0f_SelectPage(0);
                 SetTextWindowSize(0, 6, 0xc, 0x21, 0xd);
-                ULTIMA_0a70_GRAP_2d_SetPenColor(0);
-                ULTIMA_0aa6_GRAP_3f_FillRect(0x28, 0x58, 0x117, 0x77);
+                GRAP_2d_SetPenColor(0);
+                GRAP_3f_FillRect(0x28, 0x58, 0x117, 0x77);
             }
 
             // 2400
             lastDisk = 0xff;
 
             // 2405
-            ULTIMA_1850_PrintString(/*0x545f*/ "\nPlease insert the Ultima ");
+            PrintString(/*0x545f*/ "\nPlease insert the Ultima ");
             if (curDisk[0] == 4)
             {
-                ULTIMA_16ba_PrintChar('I');
+                PrintChar('I');
             }
 
-            ULTIMA_1850_PrintString(/*0x547a*/ "V ");
+            PrintString(/*0x547a*/ "V ");
 
             // 360k: 0=Program 1,3=Britannia 4=Player 2=Dungeon 5=Underworld
             // 720k: 0=Program 1,3=Britannia 4=Player (2, 5 => 1)
             switch (curDisk[0])
             {
             case 0:
-                ULTIMA_1850_PrintString(/*0x547d*/ "Program");
+                PrintString(/*0x547d*/ "Program");
                 break;
             case 1:
             case 3:
-                ULTIMA_1850_PrintString(/*0x5485*/ "Britannia");
+                PrintString(/*0x5485*/ "Britannia");
                 break;
 
             case 4:
-                ULTIMA_1850_PrintString(/*0x548f*/ "Player");
+                PrintString(/*0x548f*/ "Player");
                 break;
             }
 
-            ULTIMA_1850_PrintString(/*0x5496*/ " Disk");
+            PrintString(/*0x5496*/ " Disk");
 
             if (diskDrives[curDisk[0]] == 0xff)
             {
-                ULTIMA_1850_PrintString(/*0x549c*/ " and press drive letter: ");
+                PrintString(/*0x549c*/ " and press drive letter: ");
             }
             else
             {
-                ULTIMA_16ba_PrintChar('.');
+                PrintChar('.');
             }
 
             do
@@ -134,7 +134,7 @@ void far DiskSwapMessage(void)
             {
                 // 24aa
                 // GOG: PATCHED (3 nops)
-                ULTIMA_16ba_PrintChar(currentDrive_d);
+                PrintChar(currentDrive_d);
 
                 if (currentDrive_d == 'B')
                 {
@@ -150,7 +150,7 @@ void far DiskSwapMessage(void)
 
             if (promptMode == 0)
             {
-                ULTIMA_16ba_PrintChar('\n');
+                PrintChar('\n');
             }
             else if (promptMode == 2)
             {

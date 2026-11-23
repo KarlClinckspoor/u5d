@@ -35,7 +35,7 @@ typedef struct S_55a8
 	s16 maxHp;		// 12 / 55ba; max_hp (HM)
 	s16 exp;		// 14 / 55bc; exp
 	u8 level;		// 16 / 55be; level
-	u8 monthsAtInn;	// 17 / 55bf; counted up each month, to 25 (ULTIMA_4f7c_AdvanceTime); the inn bills for it (SHOPPES3)
+	u8 monthsAtInn;	// 17 / 55bf; counted up each month, to 25 (AdvanceTime); the inn bills for it (SHOPPES3)
 	u8 defense;			// 18 / 55c0; def? (read once, in COMBAT)
 	u8 equips[6];	// 19 / 55c1 ; equips ([0]: helmet, [1]: armour, [2], [3]: weapon and shield (the hands), [4]: magic_ring, [5]: amulet); 0xff none
 	u8 innMapId;		// 1f / 55c7; 0: in the party; 0x7f: gone (probably); else the map of the inn where the member waits
@@ -98,7 +98,7 @@ typedef struct TextWindow
 
 // 5c5a: Actor. size: 8 "Obj": the 32 objects and monsters on the map; [0] is the party.
 // (the Codex's "monster/object table", SAVED.GAM +0x6B4)
-typedef struct ActorFmt // D_5c5a_actors..
+typedef struct ActorFmt // actors..
 {
 	u8 tile; // base tile (shape)
 	u8 animTile; // animated tile
@@ -119,7 +119,7 @@ typedef struct NpcFmt
 	u16 z; // 6 / 5f64 z
 	u16 npcType;   // 8 / 5f66
 	u16 dialogNumber;   // a / 5f68
-	u16 actorIdx;   // c / 5f6a; the NPC's slot in D_5c5a_actors   // TODO: s16?
+	u16 actorIdx;   // c / 5f6a; the NPC's slot in actors   // TODO: s16?
 	u16 scheduleIdx;   // e / 5f6c; which entry of the NPC's schedule is in force
 } NpcFmt;
 

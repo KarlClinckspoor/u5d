@@ -12,11 +12,11 @@ u8 floppyCount;
 u8* itemsImage; // loaded image pointer
 u8* monsterImage; // loaded image pointer
 u8 diskDrives[6]; // the drive of each disk; 0xff: not set
-u8 D_a9ce_soundOn; // use sound effect?
+u8 soundOn; // use sound effect?
 u16 rayBalance[0x15];
-u8 D_a9fa_vitalsDirty; // dirty flag for vital
+u8 vitalsDirty; // dirty flag for vital
 u8 stepVolume; // footstep sfx duration in dungeon
-ActorFmt savedActors[0x20]; // D_5c5a_actors during combat
+ActorFmt savedActors[0x20]; // actors during combat
 char* shopName; // current shop name
 char* shopOwner; // current shop owner
 char* itemName;
@@ -49,7 +49,7 @@ u8  loadFlags;
 #include "outsubs.h"
 #include "town.h"
 
-u8 D_13a6_shadowlordStartY[8] =
+u8 shadowlordStartY[8] =
 {
     0x04, 0x09, 0x0f, 0x08, 0x11, 0x0a, 0x0b, 0x0a
 };
@@ -875,7 +875,7 @@ u8 cellPattern[0x100] =
     0x06, 0x06, 0x05, 0x05, 0x05, 0x05, 0x07, 0x00
 };
 
-u8 D_1e1a_townMapOffset[0x20] =
+u8 townMapOffset[0x20] =
 {
     0x0, 0x2, 0x4, 0x7, 0x8, 0xA, 0xC, 0xE,
     0x0, 0x3, 0x6, 0x9, 0xC, 0xD, 0xE, 0xF,
@@ -926,7 +926,7 @@ char* mapNames[0x28] = {
     /*0x0b83*/ "DOOM"
 };
 
-u8 D_1e8a_placeX[0x28] =
+u8 placeX[0x28] =
 {
     0xE8, 0x51, 0x24, 0x3A, 0x9F, 0x6A, 0x16, 0xBB,
     0x58, 0x98, 0x68, 0xD8, 0x2D, 0xB0, 0xC9, 0x99,
@@ -935,7 +935,7 @@ u8 D_1e8a_placeX[0x28] =
     0xF0, 0x5B, 0x48, 0x7E, 0x9C, 0x3A, 0xEF, 0x80,
 };
 
-u8 D_1eb2_placeY[0x28] =
+u8 placeY[0x28] =
 {
     0x87, 0x6A, 0xDE, 0x2B, 0x14, 0xB8, 0x80, 0xA9,
     0x78, 0x18, 0xD8, 0x78, 0x3E, 0xD0, 0x3B, 0x5B,
@@ -1069,9 +1069,9 @@ s16 D_217e_beaconX = -1;
 
 s16 D_2180_beaconY = -1;
 
-s16 D_2182_beacon2X = -1;
+s16 beacon2X = -1;
 
-s16 D_2184_beacon2Y = -1;
+s16 beacon2Y = -1;
 
 u8 beaconStep = 0xff;
 
@@ -1430,7 +1430,7 @@ s16 facingDx[4] = {0, 1, 0, -1};
 
 s16 facingDy[4] = {-1, 0, 1, 0};
 
-u8 D_24e6_viewDirty = 1;
+u8 viewDirty = 1;
 
 u8 stepToggle = 0;
 
@@ -1645,7 +1645,7 @@ int cdecl main(int argc, char** argv/*, char** envp*/)
     keyBufferOff = 1;
 
     INTRO_0986_Main(); // 00ad
-    ULTIMA_2900_UpdateVitalsDisplay();
+    UpdateVitalsDisplay();
 
     local_8_al = 0;
 
@@ -1655,7 +1655,7 @@ int cdecl main(int argc, char** argv/*, char** envp*/)
     {
         local_2 = 0;
 
-        if (D_5893_mapId == 0)
+        if (mapId == 0)
         {
             MainoutEntry();
             local_2 = 1;
@@ -1663,10 +1663,10 @@ int cdecl main(int argc, char** argv/*, char** envp*/)
         }
         
         // 00d1
-        if (D_5893_mapId != 0)
+        if (mapId != 0)
         {
             // 00db
-            if (D_5893_mapId < 0x21)
+            if (mapId < 0x21)
             {
                 TownEntry(local_2 != 0 || local_8_al != 0);
                 TownMainLoop();
@@ -1686,15 +1686,15 @@ int cdecl main(int argc, char** argv/*, char** envp*/)
 
             // 0122
             while (!TestOpenFile(/*0x1393*/ "BRIT.DAT")) {}
-            ULTIMA_256e_ReadFileFromDisk(GetWorldSavefile(), D_5c5a_actors, 0x100, 0);
+            ReadFileFromDisk(GetWorldSavefile(), actors, 0x100, 0);
 
-            if (D_5893_mapId == 0 && D_5895_mapLevel != 0)
+            if (mapId == 0 && D_5895_mapLevel != 0)
             {
                 SwitchDisks(5);
 
                 // 0154
                 while (!TestOpenFile(/*0x139c*/ "UNDER.DAT")) {}
-                WriteFileToDisk(GetWorldSavefile(), D_5c5a_actors, 0x100);
+                WriteFileToDisk(GetWorldSavefile(), actors, 0x100);
             }
         }
         // 016e

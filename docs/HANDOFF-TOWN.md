@@ -1,5 +1,10 @@
 # Handoff: TOWN_0f02 with the natural names
 
+**Status (2026-11-23): done.** The 96 names town.c uses are renamed in every file; TOWN_0f02
+matches with 276 fill references (window 274-277), CMDS_0000 with 85 (window 75-95); the gate
+passes for both targets. The measurements are in docs/MATCHING.md, "TOWN_0f02 with the natural
+names". The text below is the brief as it was.
+
 ## Where things stand
 
 - Worktree `C:\Users\karl9\Downloads\Claude\u5-decompiled\u5d-w24-natural`, branch

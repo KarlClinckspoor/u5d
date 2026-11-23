@@ -34,14 +34,14 @@ u8 lightSlope[6] = { 0x02, 0x05, 0x0A, 0x14, 0x22, 0x31 };
 void RingRegeneration(void)
 {
     int member;
-    for (member = 0; member < D_585b_partyCount; member++)
+    for (member = 0; member < partyCount; member++)
 	{
-		if (D_55a8_party[member].status != STATUS_DEAD && D_55a8_party[member].equips[4] == 0x2c)
+		if (party[member].status != STATUS_DEAD && party[member].equips[4] == 0x2c)
 		{
-			if (ULTIMA_2092_RandomRange(0, 7) == 7)
+			if (RandomRange(0, 7) == 7)
 			{
-				IncreaseInt(&D_55a8_party[member].hp, 1, D_55a8_party[member].maxHp);
-				D_a9fa_vitalsDirty = 1;
+				IncreaseInt(&party[member].hp, 1, party[member].maxHp);
+				vitalsDirty = 1;
 			}
 		}
 	}
@@ -49,7 +49,7 @@ void RingRegeneration(void)
 
 // select active player
 // The keys 0-6: set the active player (0 none).
-int ULTIMA_4080_SetActivePlayer(int key)
+int SetActivePlayer(int key)
 {
     int index;
 	int result;
@@ -57,30 +57,30 @@ int ULTIMA_4080_SetActivePlayer(int key)
     result = 1;
     index = key - 0x31;
 
-    ULTIMA_1850_PrintString(/*0xa396*/ "Set Active Plr:\n");
+    PrintString(/*0xa396*/ "Set Active Plr:\n");
     if (key == 0x30)
     {
-        ULTIMA_1850_PrintString(/*0xa3a8*/ "None!\n");
+        PrintString(/*0xa3a8*/ "None!\n");
         activePlayer = 0xff;
 
-		ULTIMA_2900_UpdateVitalsDisplay();
+		UpdateVitalsDisplay();
 		result = 0;
     }
     else
     {
-        if (D_585b_partyCount > index && D_55a8_party[index].status != STATUS_DEAD && D_55a8_party[index].status != STATUS_SLEEP)
+        if (partyCount > index && party[index].status != STATUS_DEAD && party[index].status != STATUS_SLEEP)
         {
             activePlayer = index;
 
-            ULTIMA_1850_PrintString(D_55a8_party[index].name);
-            ULTIMA_16ba_PrintChar('\n');
+            PrintString(party[index].name);
+            PrintChar('\n');
 
-            ULTIMA_2900_UpdateVitalsDisplay();
+            UpdateVitalsDisplay();
             result = 0;
         }
 		else
 		{
-            ULTIMA_1850_PrintString(/*0xa3b0*/ "Invalid!\n");
+            PrintString(/*0xa3b0*/ "Invalid!\n");
         }
     }
 
@@ -104,7 +104,7 @@ void AudioPlayAmbientSfx(void)
 	soundKind_k = 0;
 	nearest2 = 0x33;
 
-	if (D_5893_mapId < 0x80)
+	if (mapId < 0x80)
 	{
 		centerX = (uint)D_5896_mapX;
 		centerY = (uint)D_5897_mapY;
@@ -124,7 +124,7 @@ void AudioPlayAmbientSfx(void)
 			if (dist2 >= nearest2)
 				continue;
 			{
-				tile = *ULTIMA_4402_GetTileAddr(mapX_e, mapY_d);
+				tile = *GetTileAddr(mapX_e, mapY_d);
 				if ((tile & 0xfe) == TILE_MAP_CLOCK)
 				{
 					soundKind_k = 1;
@@ -158,35 +158,35 @@ void AudioPlayAmbientSfx(void)
 		// clock
         if (clockChimes != 0 && (ambientTick == 0 || ambientTick == 4))
         {
-            ULTIMA_2192_AudioPulse(0xc2c, 1, 2000, 20000, -10);
+            AudioPulse(0xc2c, 1, 2000, 20000, -10);
         }
         else
         {
             if (ambientTick == 0)
             {
-                ULTIMA_22c0_AudioTone(3000, 3);
+                AudioTone(3000, 3);
             }
             else if (ambientTick == 4)
             {
-                ULTIMA_22c0_AudioTone(2000, 3);
+                AudioTone(2000, 3);
             }
         }
         break;
 
     case 2:
 		// waterfall
-        ULTIMA_223c_AudioWhiteNoise(0x14, 0x3c, 10000);
+        AudioWhiteNoise(0x14, 0x3c, 10000);
         break;
 
     case 3:
 		// fountain
-        ULTIMA_223c_AudioWhiteNoise(10, 0x1e, 25000);
+        AudioWhiteNoise(10, 0x1e, 25000);
         break;
 
     case 4:
         if (banjoSong[songPos] != 0)
         {
-            ULTIMA_2192_AudioPulse(banjoFreq[banjoSong[songPos] - 1], 1, 2000, 20000, -10);
+            AudioPulse(banjoFreq[banjoSong[songPos] - 1], 1, 2000, 20000, -10);
         }
 
         songPos++;
@@ -208,11 +208,11 @@ void AudioPlayAmbientSfx(void)
 	}
 }
 
-void ULTIMA_433e_AudioFootstep(void)
+void AudioFootstep(void)
 {
-	ULTIMA_223c_AudioWhiteNoise(1, 0x19, 1000);
+	AudioWhiteNoise(1, 0x19, 1000);
 	ULTIMA_20c8_Delay(1, 0x14);
-	ULTIMA_223c_AudioWhiteNoise(1, 0x19, 1500);
+	AudioWhiteNoise(1, 0x19, 1500);
 }
 
 void AudioVictoryTune(void)
@@ -221,10 +221,10 @@ void AudioVictoryTune(void)
 
     for (i = 0; i < 3; i++)
     {
-        ULTIMA_2192_AudioPulse(0x11f8, 1, 0x2a30, 300, 6);
+        AudioPulse(0x11f8, 1, 0x2a30, 300, 6);
     }
 
-    ULTIMA_2192_AudioPulse(0x17d4, 1, 0x5460, 300, 3);
+    AudioPulse(0x17d4, 1, 0x5460, 300, 3);
 }
 
 void AudioSweepTone(int startFreq, int endFreq, int stepTime, int duration)
@@ -241,31 +241,31 @@ void AudioSweepTone(int startFreq, int endFreq, int stepTime, int duration)
 
 	for (elapsed_l = 0; elapsed_l < duration; elapsed_l += stepTime)
 	{
-		ULTIMA_22e2_PcspkOn(freq);
+		PcspkOn(freq);
 		ULTIMA_20c8_Delay(1, stepTime);
 		freq += freqStep;
 	}
 
-	ULTIMA_230e_PcspkOff();
+	PcspkOff();
 }
 
 // CHECKED (NOT MATCHING: optimization)
-byte* ULTIMA_4402_GetTileAddr(int x, int y)
+byte* GetTileAddr(int x, int y)
 {
 	int quadrant;
 	byte* addr_e;
 
-	if (D_5893_mapId > 0x7f) // combat?
+	if (mapId > 0x7f) // combat?
 	{
 		// 440f
         // There are cases where y < 0. original bug
 
 		addr_e = &GetCombatMap(x, y);
 	}
-	else if (D_5893_mapId == 0) // 4420; overworld
+	else if (mapId == 0) // 4420; overworld
 	{
-		x = (x - D_589b_mapOriginX) & 0x1f;
-		y = (y - D_589c_mapOriginY) & 0x1f;
+		x = (x - mapOriginX) & 0x1f;
+		y = (y - mapOriginY) & 0x1f;
 		quadrant = 0;
 		if (y > 0xf)
 		{
@@ -362,7 +362,7 @@ void AnimateActors(void)
 
 	for (actorIndex = 0; actorIndex < 0x20; actorIndex++)
 	{
-		actor_g = &D_5c5a_actors[actorIndex];
+		actor_g = &actors[actorIndex];
 		if (actor_g->tile == 0)
 		{
 			continue;
@@ -398,7 +398,7 @@ void AnimateActors(void)
 
 		if (baseTile_g != 0x5c && baseTile_g != 0xa8)
 		{
-			if (ULTIMA_2092_RandomRange(0, 0xff) < 0x80)
+			if (RandomRange(0, 0xff) < 0x80)
 			{
 				continue;
 			}
@@ -426,7 +426,7 @@ void AnimateActors(void)
                 goto L_done;
 
             case 5:
-                if (ULTIMA_2092_RandomRange(0, 0xff) < 0x40)
+                if (RandomRange(0, 0xff) < 0x40)
                 {
                     actor_g->animTile = actor_g->tile;
                     if (baseTile_g == 0x5c)
@@ -445,7 +445,7 @@ void AnimateActors(void)
                 break;
 
             case 6:
-                if (ULTIMA_2092_RandomRange(0, 0xff) < 0xc0)
+                if (RandomRange(0, 0xff) < 0xc0)
                 {
                 L_restart:
                     step = 0;
@@ -482,16 +482,16 @@ static int IsMoonstoneInView(int stoneIndex)
 
 	inView = 0;
 
-	if (moonstoneMap[stoneIndex] == D_5893_mapId && moonstoneZ[stoneIndex] == D_5895_mapLevel)
+	if (moonstoneMap[stoneIndex] == mapId && moonstoneZ[stoneIndex] == D_5895_mapLevel)
 	{
-		if (D_5893_mapId != 0)
+		if (mapId != 0)
 		{
 			inView = 1;
 		}
 		else
 		{
-			viewX = (byte)(moonstoneX[stoneIndex] - D_589b_mapOriginX);
-			viewY = (byte)(moonstoneY[stoneIndex] - D_589c_mapOriginY);
+			viewX = (byte)(moonstoneX[stoneIndex] - mapOriginX);
+			viewY = (byte)(moonstoneY[stoneIndex] - mapOriginY);
 
 			if (viewX < 0x20 && viewY < 0x20)
 			{
@@ -518,7 +518,7 @@ void UpdateMoongates(void)
     }
 	else
 	{
-        ULTIMA_3f36_DecreaseByte(&moongateHeight, 1);
+        DecreaseByte(&moongateHeight, 1);
         if (moongateHeight == 0)
         {
             gateTile_l = 5;
@@ -529,13 +529,13 @@ void UpdateMoongates(void)
 	{
 		if (IsMoonstoneInView(stone) != 0)
 		{
-			cell = ULTIMA_4402_GetTileAddr(moonstoneX[stone], moonstoneY[stone]);
+			cell = GetTileAddr(moonstoneX[stone], moonstoneY[stone]);
 			changed = *cell != gateTile_l;
 			*cell = gateTile_l;
-			D_24e6_viewDirty |= 2;
+			viewDirty |= 2;
 			if (changed != 0)
 			{
-				ULTIMA_5e4a_BuildLightMap();
+				BuildLightMap();
 			}
 		}
 	}
@@ -551,30 +551,30 @@ int GoToMoonstone(int stoneIndex)
 		return 0;
 	}
 
-    if (D_5893_mapId == 0)
+    if (mapId == 0)
     {
         SwitchDisks(1);
 
         while (TestOpenFile(/*0xa3ba*/ "BRIT.DAT") == 0) {}
 
-        WriteFileToDisk(GetWorldSavefile(), &D_5c5a_actors[0].tile, 0x100);
+        WriteFileToDisk(GetWorldSavefile(), &actors[0].tile, 0x100);
     }
 
-    oldMapId = D_5893_mapId;
-    D_5893_mapId = moonstoneMap[stoneIndex];
+    oldMapId = mapId;
+    mapId = moonstoneMap[stoneIndex];
     D_5896_mapX = moonstoneX[stoneIndex];
     D_5897_mapY = moonstoneY[stoneIndex];
     D_5895_mapLevel = moonstoneZ[stoneIndex];
 
-    if (D_5893_mapId != 0 && oldMapId != 0 && D_5893_mapId < 0x21 && oldMapId < 0x21)
+    if (mapId != 0 && oldMapId != 0 && mapId < 0x21 && oldMapId < 0x21)
     {
         TownEntry(1);
     }
     else
     {
-        if (D_5893_mapId == 0 && oldMapId == 0)
+        if (mapId == 0 && oldMapId == 0)
         {
-            ULTIMA_256e_ReadFileFromDisk(GetWorldSavefile(), &D_5c5a_actors[0].tile, 0x100, 0);
+            ReadFileFromDisk(GetWorldSavefile(), &actors[0].tile, 0x100, 0);
             SetUpOverworld();
         }
     }
@@ -590,14 +590,14 @@ int EnterMoongate(void)
 	int savedTile;
 
 	midnight = 0;
-	if (*ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY) == TILE_MAP_MOONGATE)
+	if (*GetTileAddr(D_5896_mapX, D_5897_mapY) == TILE_MAP_MOONGATE)
 	{
 		WaitFrames(1);
-		ULTIMA_2192_AudioPulse(0x170c, 1, 30000, 2000, 2);
-		savedTile = D_587c_partyTile;
-		D_587c_partyTile = TILE_ACTOR_CIRCLE;
+		AudioPulse(0x170c, 1, 30000, 2000, 2);
+		savedTile = partyTile;
+		partyTile = TILE_ACTOR_CIRCLE;
 		ULTIMA_1068_RevealTile(0xdc, 5, 5);
-		D_587c_partyTile = 0;
+		partyTile = 0;
 		WaitFrames(1);
 
 		for (moongateHeight = 0xf; moongateHeight != 0; moongateHeight--)
@@ -606,9 +606,9 @@ int EnterMoongate(void)
 			WaitTicks(2);
 		}
 
-		*ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY) = TILE_MAP_GRASS;
+		*GetTileAddr(D_5896_mapX, D_5897_mapY) = TILE_MAP_GRASS;
 
-		D_24e6_viewDirty |= 2;
+		viewDirty |= 2;
 
 		GRAP_51_PutTile(5, 5, 5);
 		if (D_587f_hour == 0 && minute < 10)
@@ -620,7 +620,7 @@ int EnterMoongate(void)
 			GoToMoonstone((D_587f_hour < 0xc ? trammelPhase : feluccaPhase) - 0x30);
 		}
 
-		D_587c_partyTile = savedTile;
+		partyTile = savedTile;
 	}
 
 	return midnight;
@@ -635,7 +635,7 @@ int GetActingPlayer(void)
     bool chosen;
 
     player = -1;
-    if (D_5893_mapId > 0x80)
+    if (mapId > 0x80)
     {
         player = combatants[curCombatant].entityIdx;
     }
@@ -646,9 +646,9 @@ int GetActingPlayer(void)
     else
     {
         ableCount = 0;
-        for (member = 0; member != D_585b_partyCount; member++)
+        for (member = 0; member != partyCount; member++)
         {
-            if (D_55a8_party[member].status == STATUS_GOOD || D_55a8_party[member].status == STATUS_POISONED)
+            if (party[member].status == STATUS_GOOD || party[member].status == STATUS_POISONED)
             {
 				player = member;
                 ableCount++;
@@ -660,7 +660,7 @@ int GetActingPlayer(void)
             chosen = 0;
             while (!chosen)
             {
-                ULTIMA_1850_PrintString(/*0xa3c4*/ "Player: ");
+                PrintString(/*0xa3c4*/ "Player: ");
                 player = SelectPlayer();
                 if (player < 0)
                 {
@@ -668,19 +668,19 @@ int GetActingPlayer(void)
                 }
                 else
                 {
-                    if (D_55a8_party[player].status == STATUS_GOOD || D_55a8_party[player].status == STATUS_POISONED)
+                    if (party[player].status == STATUS_GOOD || party[player].status == STATUS_POISONED)
                     {
-                        ULTIMA_1850_PrintString(D_55a8_party[player].name);
+                        PrintString(party[player].name);
                         if (GetCurrentTextX() != 0)
                         {
-                            ULTIMA_16ba_PrintChar('\n');
+                            PrintChar('\n');
                         }
 
                         chosen = 1;
                     }
                     else
                     {
-                        ULTIMA_1850_PrintString(/*0xa3ce*/ "Disabled!\n\n");
+                        PrintString(/*0xa3ce*/ "Disabled!\n\n");
                     }
                 }
             }
@@ -689,11 +689,11 @@ int GetActingPlayer(void)
 
     if (player == -1)
     {
-        ULTIMA_1850_PrintString(/*0xa3da*/ "None!\n");
+        PrintString(/*0xa3da*/ "None!\n");
     }
     else if (player == -2)
     {
-        ULTIMA_16ba_PrintChar('\n');
+        PrintChar('\n');
     }
 
     return player;
@@ -701,14 +701,14 @@ int GetActingPlayer(void)
 
 // draw moon phase
 // Draw the sun and the two moons in the top border for the hour and the day (moonPhases); blank underground.
-void ULTIMA_4a84_DrawSunAndMoons(void)
+void DrawSunAndMoons(void)
 {
 	u16 savedWindow;
 	int i;
 	byte skyRow[12 + 1];
 	int pos_n;
 
-	if (D_5893_mapId < 0x21)
+	if (mapId < 0x21)
 	{
 		// 4a96
 		for (i = 0; i < 12; i++)
@@ -758,7 +758,7 @@ void ULTIMA_4a84_DrawSunAndMoons(void)
 
 		// 4b53
 		SetTextPosition(6, 0);
-		if (D_5893_mapId != 0x19 && D_5895_mapLevel < 0x80)
+		if (mapId != 0x19 && D_5895_mapLevel < 0x80)
 		{
 			for (i = 0; skyRow[i] != 0;)
 			{
@@ -773,7 +773,7 @@ void ULTIMA_4a84_DrawSunAndMoons(void)
 					SetTextForegroundColor(lightGrayColor);
 				}
 
-				ULTIMA_16ba_PrintChar(skyRow[i++]);
+				PrintChar(skyRow[i++]);
 			}
 
 			SetTextForegroundColor(brightWhiteColor);
@@ -781,9 +781,9 @@ void ULTIMA_4a84_DrawSunAndMoons(void)
 		else
 		{
 			// 4ba2
-			ULTIMA_0a70_GRAP_2d_SetPenColor(blueColor);
-			ULTIMA_0aa6_GRAP_3f_FillRect(0x28, 0, 0x98, 6);
-			ULTIMA_0a70_GRAP_2d_SetPenColor(brightWhiteColor);
+			GRAP_2d_SetPenColor(blueColor);
+			GRAP_3f_FillRect(0x28, 0, 0x98, 6);
+			GRAP_2d_SetPenColor(brightWhiteColor);
 			GRAP_Line(0x28, 7, 0x98, 7);
 		}
 
@@ -795,18 +795,18 @@ void ULTIMA_4a84_DrawSunAndMoons(void)
 
 // print map name?
 // Blank the sky in the top border.
-void ULTIMA_4be8_ClearSky(void)
+void ClearSky(void)
 {
 	int savedWindow;
 
 	savedWindow = textWindowIndex;
 	SelectTextWindow(0);
 
-	if (D_5893_mapId != 0x19 && D_5895_mapLevel < 0x80)
+	if (mapId != 0x19 && D_5895_mapLevel < 0x80)
 	{
 		SetTextPosition(5, 0);
-		ULTIMA_4c2a_PrintLeftCap();
-		ULTIMA_1850_PrintString(/*0xa3e2*/ "            ");
+		PrintLeftCap();
+		PrintString(/*0xa3e2*/ "            ");
 		PrintRightCap();
 	}
 
@@ -815,7 +815,7 @@ void ULTIMA_4be8_ClearSky(void)
 
 // print >
 // Print the left end cap of a title in a border.
-void ULTIMA_4c2a_PrintLeftCap(void)
+void PrintLeftCap(void)
 {
 	int pixelY_c;
 	int pixelX_d;
@@ -830,8 +830,8 @@ void ULTIMA_4c2a_PrintLeftCap(void)
 	savedColors_g = (uint)win->colors;
 	SetTextForegroundColor(blueColor);
 	SetTextBackgroundColor(0);
-	ULTIMA_16ba_PrintChar(2);
-	ULTIMA_0a70_GRAP_2d_SetPenColor(brightWhiteColor);
+	PrintChar(2);
+	GRAP_2d_SetPenColor(brightWhiteColor);
 	GRAP_Line(pixelX_d, pixelY_c, pixelX_d + 5, pixelY_c + 3);
 	GRAP_Line(pixelX_d + 5, pixelY_c + 4, pixelX_d, pixelY_c + 7);
 	SetTextForegroundColor(savedColors_g & 0xf);
@@ -855,8 +855,8 @@ void PrintRightCap(void)
 	savedColors_g = (uint)win->colors;
 	SetTextForegroundColor(blueColor);
 	SetTextBackgroundColor(0);
-	ULTIMA_16ba_PrintChar(1);
-	ULTIMA_0a70_GRAP_2d_SetPenColor(brightWhiteColor);
+	PrintChar(1);
+	GRAP_2d_SetPenColor(brightWhiteColor);
 	GRAP_Line(pixelX_d + 7, pixelY_c, pixelX_d + 2, pixelY_c + 3);
 	GRAP_Line(pixelX_d + 2, pixelY_c + 4, pixelX_d + 7, pixelY_c + 7);
 	SetTextForegroundColor(savedColors_g & 0xf);
@@ -882,9 +882,9 @@ int FindIndex(char* str, int ch)
 // Remove the scroll arrow from the border under the stats window.
 void HideScrollArrow(void)
 {
-	ULTIMA_0a70_GRAP_2d_SetPenColor(blueColor);
-	ULTIMA_0aa6_GRAP_3f_FillRect(0xf0, 0x51, 0x107, 0x56);
-	ULTIMA_0a70_GRAP_2d_SetPenColor(brightWhiteColor);
+	GRAP_2d_SetPenColor(blueColor);
+	GRAP_3f_FillRect(0xf0, 0x51, 0x107, 0x56);
+	GRAP_2d_SetPenColor(brightWhiteColor);
 	GRAP_39_HorizLine(0xf0, 0x50, 0x107);
 	GRAP_39_HorizLine(0xf0, 0x57, 0x107);
 }
@@ -897,8 +897,8 @@ void ShowScrollArrow(int arrowChar)
 	savedWindow = textWindowIndex;
 	SelectTextWindow(0);
 	SetTextPosition(0x1e, 10);
-	ULTIMA_4c2a_PrintLeftCap();
-	ULTIMA_16ba_PrintChar(arrowChar);
+	PrintLeftCap();
+	PrintChar(arrowChar);
 	PrintRightCap();
 	SelectTextWindow(savedWindow);
 }
@@ -906,9 +906,9 @@ void ShowScrollArrow(int arrowChar)
 // Remove the title from the top border of the stats window.
 void ClearStatsTitle(void)
 {
-	ULTIMA_0a70_GRAP_2d_SetPenColor(blueColor);
-	ULTIMA_0aa6_GRAP_3f_FillRect(0xc0, 0, 0x137, 0x6);
-	ULTIMA_0a70_GRAP_2d_SetPenColor(brightWhiteColor);
+	GRAP_2d_SetPenColor(blueColor);
+	GRAP_3f_FillRect(0xc0, 0, 0x137, 0x6);
+	GRAP_2d_SetPenColor(brightWhiteColor);
 	GRAP_39_HorizLine(0xc0, 0x7, 0x137);
 }
 
@@ -921,17 +921,17 @@ void ShowStatsTitle(char* title)
 
 	startCol = -(StringLength(title) / 2 - 30);
 	endCol = StringLength(title) + startCol + 2;
-	ULTIMA_0a70_GRAP_2d_SetPenColor(blueColor);
-	ULTIMA_0aa6_GRAP_3f_FillRect(192, 0, startCol * 8, 6);
-	ULTIMA_0aa6_GRAP_3f_FillRect(endCol * 8, 0, 311, 6);
-	ULTIMA_0a70_GRAP_2d_SetPenColor(brightWhiteColor);
+	GRAP_2d_SetPenColor(blueColor);
+	GRAP_3f_FillRect(192, 0, startCol * 8, 6);
+	GRAP_3f_FillRect(endCol * 8, 0, 311, 6);
+	GRAP_2d_SetPenColor(brightWhiteColor);
 	GRAP_39_HorizLine(192, 7, startCol * 8);
 	GRAP_39_HorizLine(endCol * 8, 7, 311);
 	savedWindow = textWindowIndex;
 	SelectTextWindow(0);
 	SetTextPosition(startCol, 0);
-	ULTIMA_4c2a_PrintLeftCap();
-	ULTIMA_1850_PrintString(title);
+	PrintLeftCap();
+	PrintString(title);
 	PrintRightCap();
 	SelectTextWindow(savedWindow);
 }
@@ -939,19 +939,19 @@ void ShowStatsTitle(char* title)
 // Open the divider between the party and the food line, so that a list can use the whole stats window.
 void OpenStatsDivider(void)
 {
-	ULTIMA_0a70_GRAP_2d_SetPenColor(brightWhiteColor);
+	GRAP_2d_SetPenColor(brightWhiteColor);
 	GRAP_3c_VertLine(0xbf, 0x38, 0x3f);
 	GRAP_3c_VertLine(0x138, 0x38, 0x3f);
-	ULTIMA_0a70_GRAP_2d_SetPenColor(0);
-	ULTIMA_0aa6_GRAP_3f_FillRect(0xc0, 0x38, 0x137, 0x3f);
+	GRAP_2d_SetPenColor(0);
+	GRAP_3f_FillRect(0xc0, 0x38, 0x137, 0x3f);
 }
 
 // Draw the divider between the party and the food line.
 void DrawStatsDivider(void)
 {
-	ULTIMA_0a70_GRAP_2d_SetPenColor(blueColor);
-	ULTIMA_0aa6_GRAP_3f_FillRect(0xbf, 0x39, 0x138, 0x3e);
-	ULTIMA_0a70_GRAP_2d_SetPenColor(brightWhiteColor);
+	GRAP_2d_SetPenColor(blueColor);
+	GRAP_3f_FillRect(0xbf, 0x39, 0x138, 0x3e);
+	GRAP_2d_SetPenColor(brightWhiteColor);
 	GRAP_39_HorizLine(0xc0, 0x38, 0x137);
 	GRAP_39_HorizLine(0xc0, 0x3f, 0x137);
 }
@@ -959,7 +959,7 @@ void DrawStatsDivider(void)
 // CHECKED (stack, loop)
 // time related
 // Let `minutes` pass: the clock and the calendar, the light and torch turns, the shadowlords' move at midnight, the light level for the hour.
-void ULTIMA_4f7c_AdvanceTime(int minutes)
+void AdvanceTime(int minutes)
 {
 	int oldLight;
 	int other;
@@ -979,15 +979,15 @@ void ULTIMA_4f7c_AdvanceTime(int minutes)
 		if (statusIcon != 'T')
 		{
 			minute += minutes;
-			ULTIMA_3f36_DecreaseByte(&torchTurns, minutes);
-			ULTIMA_3f36_DecreaseByte(&lightSpellTurns, minutes);
+			DecreaseByte(&torchTurns, minutes);
+			DecreaseByte(&lightSpellTurns, minutes);
 		}
 		// 4fc8
 		if (minute > 59)
 		{
 			// 4fd2
 			minute -= 60;
-			ULTIMA_3f36_DecreaseByte(&campHealWait, 1);
+			DecreaseByte(&campHealWait, 1);
 			D_587f_hour++;
 			if (D_587f_hour > 23)
 			{
@@ -996,13 +996,13 @@ void ULTIMA_4f7c_AdvanceTime(int minutes)
 				for (slot = 0; slot < 3; slot++)
 				{
 					// 4ffa
-					if (D_58c8_shadowlordTowns[slot] < 0x80)
+					if (shadowlordTowns[slot] < 0x80)
 					{
 						do
 						{
 							// 5004
-							town_h = ULTIMA_2092_RandomRange(1, 8);
-							if (D_5893_mapId == town_h)
+							town_h = RandomRange(1, 8);
+							if (mapId == town_h)
 							{
 								town_h = 0;
 							}
@@ -1010,14 +1010,14 @@ void ULTIMA_4f7c_AdvanceTime(int minutes)
 							for (other = 0; other < 3; other++)
 							{
 								// 5020
-								if (D_58c8_shadowlordTowns[other] == town_h)
+								if (shadowlordTowns[other] == town_h)
 								{
 									town_h = 0;
 								}
 							}
 						} while (town_h == 0);
 
-						D_58c8_shadowlordTowns[slot] = (u8)town_h;
+						shadowlordTowns[slot] = (u8)town_h;
 					}
 				}
 
@@ -1036,9 +1036,9 @@ void ULTIMA_4f7c_AdvanceTime(int minutes)
 					for (slot = 0; slot < 0x10; slot++)
 					{
 						// 507a
-						if (D_55a8_party[slot].monthsAtInn < 0x19)
+						if (party[slot].monthsAtInn < 0x19)
 						{
-							D_55a8_party[slot].monthsAtInn++;
+							party[slot].monthsAtInn++;
 						}
 					}
 
@@ -1051,7 +1051,7 @@ void ULTIMA_4f7c_AdvanceTime(int minutes)
 				}
 
 				// 509e
-				ULTIMA_2900_UpdateVitalsDisplay();
+				UpdateVitalsDisplay();
 			}
 		}
 	}
@@ -1062,7 +1062,7 @@ void ULTIMA_4f7c_AdvanceTime(int minutes)
 	{
 		// 50ab
 		oldLight = D_58a5_lightLevel;
-		if (D_5893_mapId == 0x19 || D_5895_mapLevel > 0x7f || D_587f_hour < 5 || D_587f_hour > 0x13)
+		if (mapId == 0x19 || D_5895_mapLevel > 0x7f || D_587f_hour < 5 || D_587f_hour > 0x13)
 		{
 			// 50cf
 			D_58a5_lightLevel = 2;
@@ -1098,16 +1098,16 @@ void ULTIMA_4f7c_AdvanceTime(int minutes)
 		// 513b
 		if (oldLight != D_58a5_lightLevel)
 		{
-			D_24e6_viewDirty = 1;
+			viewDirty = 1;
 		}
 	}
 
 	// 514a
 	if (D_587f_hour != lastHour)
 	{
-		if (D_5893_mapId < 0x21 && D_5895_mapLevel < 0x80)
+		if (mapId < 0x21 && D_5895_mapLevel < 0x80)
 		{
-			ULTIMA_4a84_DrawSunAndMoons();
+			DrawSunAndMoons();
 		}
 
 		// 5164
@@ -1129,7 +1129,7 @@ void ULTIMA_4f7c_AdvanceTime(int minutes)
 		}
 	}
 
-	if (D_5893_mapId != 0 && D_5893_mapId < 0x21)
+	if (mapId != 0 && mapId < 0x21)
 	{
 		UpdateClockTiles();
 	}

@@ -28,7 +28,7 @@ void PutBackdropStrips(void)
     int band;
 
     GRAP_0f_SelectPage(1);
-    ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
+    PrintChar(CTRL_CHAR_CLEAR_WINDOW);
 
     for (band = 0; band < 4; band++)
     {
@@ -54,7 +54,7 @@ int LordBritishAnim(int x, int y)
 
     penColor_n = brightWhiteColor;
 
-    ULTIMA_0a70_GRAP_2d_SetPenColor(penColor_n);
+    GRAP_2d_SetPenColor(penColor_n);
 
     savedCalibration = timerCalibration;
     timerCalibration = 0x113;

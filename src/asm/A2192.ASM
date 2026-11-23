@@ -15,7 +15,7 @@ DGROUP	GROUP	CONST, _BSS, _DATA
 
 	EXTRN	ULTIMA_20C8_DELAY:NEAR
 	EXTRN	TIMERCALIBRATION:WORD
-	EXTRN	D_A9CE_SOUNDON:BYTE
+	EXTRN	SOUNDON:BYTE
 
 ; this module's own data in DGROUP (DS:5450-545e)
 _DATA	SEGMENT
@@ -44,8 +44,8 @@ _DATA	ENDS
 
 _TEXT	SEGMENT
 
-	PUBLIC	ULTIMA_2192_AUDIOPULSE
-ULTIMA_2192_AUDIOPULSE:
+	PUBLIC	AUDIOPULSE
+AUDIOPULSE:
 	push bp
 	mov bp,sp
 	push si
@@ -69,7 +69,7 @@ L_21a9:
 	mov bx,[bp+6]
 	mov cx,[bp+8]
 	xor dx,dx
-	cmp BYTE PTR D_A9CE_SOUNDON,0
+	cmp BYTE PTR SOUNDON,0
 	jne	L_21f1
 L_21c4:
 	mov ax,[bp+0ch]
@@ -138,15 +138,15 @@ L_2234:
 	ret 0ah
 	db	000h
 
-	PUBLIC	ULTIMA_223C_AUDIOWHITENOISE
-ULTIMA_223C_AUDIOWHITENOISE:
+	PUBLIC	AUDIOWHITENOISE
+AUDIOWHITENOISE:
 	push bp
 	mov bp,sp
 	push si
 	push di
 	push ds
 	mov word ptr D_5456,0
-	cmp BYTE PTR D_A9CE_SOUNDON,0
+	cmp BYTE PTR SOUNDON,0
 	je	L_2255
 	in al,61h
 	or al,3
@@ -200,32 +200,32 @@ L_229e:
 	ret 6
 	db	000h
 
-	PUBLIC	ULTIMA_22C0_AUDIOTONE
-ULTIMA_22C0_AUDIOTONE:
+	PUBLIC	AUDIOTONE
+AUDIOTONE:
 	push bp
 	mov bp,sp
-	cmp BYTE PTR D_A9CE_SOUNDON,0
+	cmp BYTE PTR SOUNDON,0
 	je	L_22d0
 	push word ptr [bp+6]
-	call	ULTIMA_22E2_PCSPKON
+	call	PCSPKON
 L_22d0:
 	mov ax,1
 	push ax
 	push word ptr [bp+4]
 	call	ULTIMA_20C8_DELAY
-	call	ULTIMA_230E_PCSPKOFF
+	call	PCSPKOFF
 	pop bp
 	ret 4
 	db	090h
 
-	PUBLIC	ULTIMA_22E2_PCSPKON
-ULTIMA_22E2_PCSPKON:
+	PUBLIC	PCSPKON
+PCSPKON:
 	push bp
 	mov bp,sp
 	push si
 	push di
 	push ds
-	cmp WORD PTR D_A9CE_SOUNDON,0
+	cmp WORD PTR SOUNDON,0
 	je	L_2306
 	mov cx,[bp+4]
 	mov dx,12h
@@ -245,8 +245,8 @@ L_2306:
 	ret 2
 	db	000h
 
-	PUBLIC	ULTIMA_230E_PCSPKOFF
-ULTIMA_230E_PCSPKOFF:
+	PUBLIC	PCSPKOFF
+PCSPKOFF:
 	in al,61h
 	and al,0fch
 	out 61h,al

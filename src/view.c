@@ -22,7 +22,7 @@ static int RandomFrame(void)
     }
     else
     {
-        return ULTIMA_2092_RandomRange(0, 3);
+        return RandomRange(0, 3);
     }
 }
 
@@ -34,7 +34,7 @@ static void PutViewActor(int viewX, int viewY, int mapX, int mapY, int shape)
     if (shape == 0x1c || shape >= 0x12 && shape < 0x16 || shape >= 0x40 || shape >= 0x28 && shape < 0x2c)
     {
         // 51e9
-        tileUnder = *ULTIMA_4402_GetTileAddr(mapX, mapY);
+        tileUnder = *GetTileAddr(mapX, mapY);
         if (tileUnder == TILE_MAP_EC || tileUnder == TILE_MAP_A)
             return;
 
@@ -100,8 +100,8 @@ static void PutViewActor(int viewX, int viewY, int mapX, int mapY, int shape)
 
                 case TILE_MAP_CHAIR_92: // 146
                     // 52aa
-                    if ((*ULTIMA_4402_GetTileAddr(mapX, mapY + 1) == TILE_MAP_TABLE_9A) ||
-                        (*ULTIMA_4402_GetTileAddr(mapX, mapY + 1) == TILE_MAP_TABLE_9C))
+                    if ((*GetTileAddr(mapX, mapY + 1) == TILE_MAP_TABLE_9A) ||
+                        (*GetTileAddr(mapX, mapY + 1) == TILE_MAP_TABLE_9C))
                     {
                         shape = RandomFrame() + 0x34;
                     }
@@ -113,8 +113,8 @@ static void PutViewActor(int viewX, int viewY, int mapX, int mapY, int shape)
 
                 case TILE_MAP_CHAIR_90: // 144
                     // 52da
-                    if ((*ULTIMA_4402_GetTileAddr(mapX, mapY - 1) == TILE_MAP_TABLE_9B) ||
-                        (*ULTIMA_4402_GetTileAddr(mapX, mapY - 1) == TILE_MAP_TABLE_9C))
+                    if ((*GetTileAddr(mapX, mapY - 1) == TILE_MAP_TABLE_9B) ||
+                        (*GetTileAddr(mapX, mapY - 1) == TILE_MAP_TABLE_9C))
                     {
                         shape = RandomFrame() + 0x38;
                     }
@@ -132,7 +132,7 @@ static void PutViewActor(int viewX, int viewY, int mapX, int mapY, int shape)
 
                 default:
                     // 532c
-                    if ((*ULTIMA_4402_GetTileAddr(mapX, mapY - 1) == TILE_MAP_MIRROR) && (viewY != 0))
+                    if ((*GetTileAddr(mapX, mapY - 1) == TILE_MAP_MIRROR) && (viewY != 0))
                     {
                         GetMapViewport(viewX, viewY - 1) = TILE_MAP_MIRROR_9E;
                     }
@@ -163,12 +163,12 @@ void PutActorsInView(void)
     byte mapY_i;
     byte mapX_j;
 
-    if (D_5893_mapId < 0x80)
+    if (mapId < 0x80)
     {
-        D_5c5a_actors[0].x = D_5896_mapX;
-        D_5c5a_actors[0].y = D_5897_mapY;
-        D_5c5a_actors[0].z = D_5895_mapLevel;
-        D_5c5a_actors[0].animTile = D_5c5a_actors[0].tile = D_587c_partyTile;
+        actors[0].x = D_5896_mapX;
+        actors[0].y = D_5897_mapY;
+        actors[0].z = D_5895_mapLevel;
+        actors[0].animTile = actors[0].tile = partyTile;
         
         for (row = 0; row < 0xb; row++)
         {
@@ -191,52 +191,52 @@ void PutActorsInView(void)
     // 542a
     for (index_m = 31; index_m >= 0; index_m--)
     {
-        if (D_5c5a_actors[index_m].tile != 0)
+        if (actors[index_m].tile != 0)
         {
-            viewX = mapX_j = D_5c5a_actors[index_m].x;
-            viewY = mapY_i = D_5c5a_actors[index_m].y;
+            viewX = mapX_j = actors[index_m].x;
+            viewY = mapY_i = actors[index_m].y;
 
-            if (D_5893_mapId < 0x80)
+            if (mapId < 0x80)
             {
                 viewX -= D_5896_mapX - 5;
                 viewY -= D_5897_mapY - 5;
-                if (D_5c5a_actors[index_m].z != D_5895_mapLevel || viewX > 10 || viewY > 10)
+                if (actors[index_m].z != D_5895_mapLevel || viewX > 10 || viewY > 10)
                     continue;
             }
 
-            if (D_5c5a_actors[index_m].animTile != 0 &&
+            if (actors[index_m].animTile != 0 &&
                 GetMapViewport(viewX, viewY) != 0xff &&
                 GetMapViewport(viewX, viewY) != TILE_MAP_87)
             {
-                if ((D_5c5a_actors[index_m].tile & 0xfc) == TILE_ACTOR_E8 || D_5c5a_actors[index_m].tile == TILE_ACTOR_SLEEP || D_5c5a_actors[index_m].tile == TILE_ACTOR_DEAD)
+                if ((actors[index_m].tile & 0xfc) == TILE_ACTOR_E8 || actors[index_m].tile == TILE_ACTOR_SLEEP || actors[index_m].tile == TILE_ACTOR_DEAD)
                 {
                     // 5503
                     if (GetMapViewport(viewX, viewY) != 0)
                     {
-                        GetActorMap(viewX, viewY) = D_5c5a_actors[index_m].animTile;
+                        GetActorMap(viewX, viewY) = actors[index_m].animTile;
                         GetMapViewport(viewX, viewY) = 0;
                     }
                 }
-                else if (D_5c5a_actors[index_m].animTile == TILE_ACTOR_1D || D_5c5a_actors[index_m].animTile == TILE_ACTOR_SLEEP)
+                else if (actors[index_m].animTile == TILE_ACTOR_1D || actors[index_m].animTile == TILE_ACTOR_SLEEP)
                 {
-                    GetActorMap(viewX, viewY) = D_5c5a_actors[index_m].animTile;
+                    GetActorMap(viewX, viewY) = actors[index_m].animTile;
                     GetMapViewport(viewX, viewY) = 0;
                 }
-                else if (D_5c5a_actors[index_m].tile == TILE_ACTOR_BARD)
+                else if (actors[index_m].tile == TILE_ACTOR_BARD)
                 {
                     if (GetMapViewport(viewX, viewY) == TILE_MAP_CHAIR_92)
                     {
-                        GetActorMap(viewX, viewY) = D_5c5a_actors[index_m].animTile;
+                        GetActorMap(viewX, viewY) = actors[index_m].animTile;
                         GetMapViewport(viewX, viewY) = 0;
                     }
                     else
                     {
-                        PutViewActor(viewX, viewY, mapX_j, mapY_i, D_5c5a_actors[index_m].animTile - 8);
+                        PutViewActor(viewX, viewY, mapX_j, mapY_i, actors[index_m].animTile - 8);
                     }
                 }
                 else
                 {
-                    PutViewActor(viewX, viewY, mapX_j, mapY_i, D_5c5a_actors[index_m].animTile);
+                    PutViewActor(viewX, viewY, mapX_j, mapY_i, actors[index_m].animTile);
                 }
             }
         }
@@ -260,7 +260,7 @@ int ULTIMA_5646_IsEnemy(int combatantIndex)
     // 566e
     if ((flags & COMBAT_FLAGS_PLAYER) != 0)
     {
-        if (entityIndex != 0 && D_55a8_party[entityIndex].name[4] == 'j')
+        if (entityIndex != 0 && party[entityIndex].name[4] == 'j')
         {
             return 1;
         }
@@ -314,12 +314,12 @@ void DrawMap(void)
         }
     }
 
-    if (0x7f < D_5893_mapId && (focusBlink = !focusBlink) != 0 && curCombatant != 0xff && ULTIMA_5646_IsEnemy(curCombatant) == 0)
+    if (0x7f < mapId && (focusBlink = !focusBlink) != 0 && curCombatant != 0xff && ULTIMA_5646_IsEnemy(curCombatant) == 0)
     {
         pixelX = (uint)combatants[curCombatant].x * 0x10 + 8;
         pixelY = (uint)combatants[curCombatant].y * 0x10 + 8;
 
-        ULTIMA_0a70_GRAP_2d_SetPenColor(brightWhiteColor);
+        GRAP_2d_SetPenColor(brightWhiteColor);
 
         for (col = 0; col < 2; col++)
         {
@@ -343,10 +343,10 @@ void DrawMap(void)
                 for (row_f = 0; row_f < 2; row_f++)
                 {
                     // 5887
-                    ULTIMA_0a70_GRAP_2d_SetPenColor(brightWhiteColor);
+                    GRAP_2d_SetPenColor(brightWhiteColor);
                     GRAP_Line(row_f * 0xb + pixelX + 2, col * 3 + pixelY + 6, row_f * 3 + pixelX + 6, col * 3 + pixelY + 6);
                     GRAP_LineTo(row_f * 3 + pixelX + 6, col * 0xb + pixelY + 2);
-                    ULTIMA_0a70_GRAP_2d_SetPenColor(0);
+                    GRAP_2d_SetPenColor(0);
                     GRAP_Line(row_f * 0xb + pixelX + 2, col * 5 + pixelY + 5, row_f * 5 + pixelX + 5, col * 5 + pixelY + 5);
                     GRAP_LineTo(row_f * 5 + pixelX + 5, col * 0xb + pixelY + 2);
                     GRAP_Line(row_f * 0xb + pixelX + 2, pixelY + col + 7, row_f * 3 + pixelX + 6, pixelY + col + 7);
@@ -359,7 +359,7 @@ void DrawMap(void)
 }
 
 // Animate / Update
-void ULTIMA_5910_UpdateFrame(void)
+void UpdateFrame(void)
 {
     int col_b;
     int row;
@@ -378,19 +378,19 @@ void ULTIMA_5910_UpdateFrame(void)
                 AnimateActors();
             }
             UpdateWindDirectionRandomly();
-            if (D_5893_mapId < 0x80)
+            if (mapId < 0x80)
             {
                 UpdateMoongates();
                 AnimateLighthouse();
             }
         }
 
-        if (D_5893_mapId < 0x80)
+        if (mapId < 0x80)
         {
-            if (D_24e6_viewDirty != 0)
+            if (viewDirty != 0)
             {
-                BuildView(D_58a5_lightLevel, (uint)D_5896_mapX - (uint)D_589b_mapOriginX, (uint)D_5897_mapY - (uint)D_589c_mapOriginY, 0xb);
-                D_24e6_viewDirty = 0;
+                BuildView(D_58a5_lightLevel, (uint)D_5896_mapX - (uint)mapOriginX, (uint)D_5897_mapY - (uint)mapOriginY, 0xb);
+                viewDirty = 0;
             }
             else
             {
@@ -401,7 +401,7 @@ void ULTIMA_5910_UpdateFrame(void)
                         if (GetMapViewport(col_b, row) == 0)
                         {
                             GetMapViewport(col_b, row) =
-                                *ULTIMA_4402_GetTileAddr((byte)col_b + (uint)D_5896_mapX - 5, (byte)row + (uint)D_5897_mapY - 5);
+                                *GetTileAddr((byte)col_b + (uint)D_5896_mapX - 5, (byte)row + (uint)D_5897_mapY - 5);
                         }
                     }
                 }

@@ -25,7 +25,7 @@ void Backspace(int char_count)
         for (charIndex = 0; charIndex < char_count; charIndex++)
         {
             textX = GetCurrentTextX();
-            ULTIMA_16ba_PrintChar(' ');
+            PrintChar(' ');
             if (textX != 0)
             {
                 SetTextPosition(textX - 1, GetCurrentTextY());

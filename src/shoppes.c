@@ -123,13 +123,13 @@ void PrintShopText(char* text)
     // 014a
     strcpy(out_h, text);
 
-    ULTIMA_1850_PrintString(shopTextOut);
+    PrintString(shopTextOut);
 }
 
 // Print the text at fileOffset of SHOPPE.DAT.
 void PrintShopFileText(int fileOffset)
 {
-    ULTIMA_256e_ReadFileFromDisk(/*0x7840*/ "SHOPPE.DAT", scratch, 1500, fileOffset);
+    ReadFileFromDisk(/*0x7840*/ "SHOPPE.DAT", scratch, 1500, fileOffset);
     PrintShopText(scratch);
 }
 
@@ -137,32 +137,32 @@ void PrintShopFileText(int fileOffset)
 // loses up to 64 gold more.
 void FalsehoodSurcharge(void)
 {
-    if (D_5958_townShadowlord == 0)
+    if (townShadowlord == 0)
     {
         // FMT: int local_8 = gold;
         // 3f54(&local_8)
         // gold = local_8
-        DecreaseInt(&gold, ULTIMA_2092_RandomRange(1, 0x40));
+        DecreaseInt(&gold, RandomRange(1, 0x40));
     }
 }
 
 // One of the shop kind's four greetings (greetTexts), then the prompt.
 void Greet(void)
 {
-    ULTIMA_16ba_PrintChar('\"');
-    PrintShopFileText(greetTexts[shopKind][ULTIMA_2092_RandomRange(0, 3)]);
+    PrintChar('\"');
+    PrintShopFileText(greetTexts[shopKind][RandomRange(0, 3)]);
 
     if (GetCurrentTextX() > 0xb)
     {
-        ULTIMA_1850_PrintString(/*0x784c*/ "\n\n:");
+        PrintString(/*0x784c*/ "\n\n:");
     }
     else if (GetCurrentTextX() == 0)
     {
-        ULTIMA_1850_PrintString(/*0x7850*/ "\n:");
+        PrintString(/*0x7850*/ "\n:");
     }
     else
     {
-        ULTIMA_16ba_PrintChar(' ');
+        PrintChar(' ');
     }
 }
 
@@ -171,20 +171,20 @@ void ShoppesFarewell(int outcome)
 {
     if (outcome == 0)
     {
-        ULTIMA_1850_PrintString(/*0x7854*/ "\n\n\"");
-        PrintShopFileText(farewellTexts[shopKind][ULTIMA_2092_RandomRange(0, 3)]);
+        PrintString(/*0x7854*/ "\n\n\"");
+        PrintShopFileText(farewellTexts[shopKind][RandomRange(0, 3)]);
     }
     else if (outcome == 1)
     {
-        ULTIMA_1850_PrintString(/*0x7858*/ "\n\n\"");
-        PrintShopFileText(farewellTexts1[shopKind][ULTIMA_2092_RandomRange(0, 3)]);
+        PrintString(/*0x7858*/ "\n\n\"");
+        PrintShopFileText(farewellTexts1[shopKind][RandomRange(0, 3)]);
     }
 
     if (outcome == 0 || outcome == 1)
     {
         if (GetCurrentTextX() != 0)
         {
-            ULTIMA_16ba_PrintChar('\n');
+            PrintChar('\n');
         }
 
         PrintShopText(/*0x785c*/ "says $.\n");
@@ -199,14 +199,14 @@ int AskYesNo(void)
 
     do
     {
-        key = ULTIMA_266c_GetChar();
+        key = GetChar();
         if ((uint)key == 0x4e)
         {
-            ULTIMA_1850_PrintString(/*0x7866*/ "No");
+            PrintString(/*0x7866*/ "No");
         }
         else if ((uint)key == 0x59)
         {
-            ULTIMA_1850_PrintString(/*0x786a*/ "Yes");
+            PrintString(/*0x786a*/ "Yes");
         }
     } while ((uint)key != 0x4e && (uint)key != 0x59);
 
@@ -220,22 +220,22 @@ static int OfferProvision(int member, int item, int outcome)
 
 
     shopPrice = provisionPrices[shopIndex][item];
-    shopPrice += (shopPrice * -((s32)(D_55a8_party[member].intel * 3) - 100) / (u32)100);
+    shopPrice += (shopPrice * -((s32)(party[member].intel * 3) - 100) / (u32)100);
 
-    ULTIMA_1850_PrintString(/*0x786e*/ "\n\n\"");
+    PrintString(/*0x786e*/ "\n\n\"");
     PrintShopFileText(provisionTexts[item]);
-    ULTIMA_1850_PrintString(/*0x7872*/ "\n\nInterested?\" ");
+    PrintString(/*0x7872*/ "\n\nInterested?\" ");
 
     do
     {
-        key = ULTIMA_266c_GetChar();
+        key = GetChar();
         if (key == 'N')
         {
-            ULTIMA_1850_PrintString(/*0x7882*/ "No\n\n\"What else, then?\n\n");
+            PrintString(/*0x7882*/ "No\n\n\"What else, then?\n\n");
         }
         else if (key == 'Y')
         {
-            ULTIMA_1850_PrintString(/*0x789a*/ "Yes\n");
+            PrintString(/*0x789a*/ "Yes\n");
             if (gold < shopPrice)
             {
                 PrintShopFileText(0x21e6);
@@ -245,7 +245,7 @@ static int OfferProvision(int member, int item, int outcome)
             {
                 gold -= shopPrice;
                 FalsehoodSurcharge();
-                ULTIMA_2900_UpdateVitalsDisplay();
+                UpdateVitalsDisplay();
                 switch (item)
                 {
                 case 0:
@@ -261,16 +261,16 @@ static int OfferProvision(int member, int item, int outcome)
 
                 outcome = 1;
                 PrintShopText(/*0x78a0*/ "\n\"Sold!\"\nsays $.\n\n\"What else, \n");
-                if (D_55a8_party[member].gender == 12)
+                if (party[member].gender == 12)
                 {
-                    ULTIMA_1850_PrintString(/*0x78c0*/ "m'lady");
+                    PrintString(/*0x78c0*/ "m'lady");
                 }
                 else
                 {
-                    ULTIMA_1850_PrintString(/*0x78c8*/ "m'lord");
+                    PrintString(/*0x78c8*/ "m'lord");
                 }
 
-                ULTIMA_1850_PrintString(/*0x78d0*/ "?\n\n");
+                PrintString(/*0x78d0*/ "?\n\n");
             }
         }
     } while (key != 'N' && key != 'Y');
@@ -289,20 +289,20 @@ static int ProvisionMenu(int member)
 
     while (!done)
     {
-        ULTIMA_1850_PrintString(/*0x78d4*/ "a.........Keys\n");
-        ULTIMA_1850_PrintString(/*0x78e4*/ "b.........Gems\n");
-        ULTIMA_1850_PrintString(/*0x78f4*/ "c......Torches\n\n");
-        ULTIMA_1850_PrintString(/*0x7906*/ "Thy concern?\" ");
+        PrintString(/*0x78d4*/ "a.........Keys\n");
+        PrintString(/*0x78e4*/ "b.........Gems\n");
+        PrintString(/*0x78f4*/ "c......Torches\n\n");
+        PrintString(/*0x7906*/ "Thy concern?\" ");
 
         do
         {
-            key_g = ULTIMA_266c_GetChar();
+            key_g = GetChar();
             switch (key_g)
             {
             case 0x41:
             case 0x42:
             case 0x43:
-                ULTIMA_16ba_PrintChar(key_g | 0x20);
+                PrintChar(key_g | 0x20);
                 outcome = OfferProvision(member, key_g - 0x41, outcome);
                 if (outcome == -1)
                     done = 1;
@@ -340,18 +340,18 @@ void Provisioner(int member)
 
     do
     {
-        key_g = ULTIMA_266c_GetChar();
+        key_g = GetChar();
         switch (key_g)
         {
         case 0x59:
-            ULTIMA_1850_PrintString(/*0x7916*/ "Yes\n\n\"We sell:\n\n");
+            PrintString(/*0x7916*/ "Yes\n\n\"We sell:\n\n");
             outcome = ProvisionMenu(member);
             done = 1;
             break;
 
         case U5_KEY_SPACE:
         case 0x4e:
-            ULTIMA_1850_PrintString(/*0x7928*/ "No");
+            PrintString(/*0x7928*/ "No");
             done = 1;
             break;
         }
@@ -387,34 +387,34 @@ static int OfferReagent(int member, int choice, int outcome)
 
     if (D_5850_reagents[reagent] == 99)
     {
-        ULTIMA_1850_PrintString(/*0x792c*/ "\n\n\"Thou canst not carry any more!\"\n\n");
-        ULTIMA_266c_GetChar();
+        PrintString(/*0x792c*/ "\n\n\"Thou canst not carry any more!\"\n\n");
+        GetChar();
         return outcome;
     }
     else
     {
         shopPrice = reagentPrices[shopIndex][reagent];
-        shopPrice += shopPrice * -((s32)(D_55a8_party[member].intel * 3) - 100) / (u32)100;
+        shopPrice += shopPrice * -((s32)(party[member].intel * 3) - 100) / (u32)100;
         shopQuantity = reagentLots[shopIndex][reagent];
 
-        ULTIMA_1850_PrintString(/*0x7952*/ "\n\n\"");
+        PrintString(/*0x7952*/ "\n\n\"");
         PrintShopText((char*)&scratch[reagentTexts[reagent] - 0x1a67]); // 0x1a67: file load offset
-        ULTIMA_1850_PrintString(/*0x7956*/ " Is this thy need?\" ");
+        PrintString(/*0x7956*/ " Is this thy need?\" ");
         if (GetCurrentTextX() > 0xc)
         {
-            ULTIMA_1850_PrintString(/*0x796c*/ "\n:");
+            PrintString(/*0x796c*/ "\n:");
         }
 
         do
         {
-            key_g = ULTIMA_266c_GetChar();
+            key_g = GetChar();
             if (key_g == 'N')
             {
-                ULTIMA_1850_PrintString(/*0x7970*/ "No\n\n\"What else?\n\n");
+                PrintString(/*0x7970*/ "No\n\n\"What else?\n\n");
             }
             else if (key_g == 'Y')
             {
-                ULTIMA_1850_PrintString(/*0x7982*/ "Yes\n");
+                PrintString(/*0x7982*/ "Yes\n");
                 if (gold < shopPrice)
                 {
                     PrintShopText((char*)&scratch[0x4c4]);
@@ -424,11 +424,11 @@ static int OfferReagent(int member, int choice, int outcome)
                 {
                     gold -= shopPrice;
                     FalsehoodSurcharge();
-                    ULTIMA_2900_UpdateVitalsDisplay();
+                    UpdateVitalsDisplay();
                     IncreaseByte(&D_5850_reagents[reagent], shopQuantity, 99);
                     outcome = 1;
                     PrintShopText(/*0x7988*/ "\n\"I thank thee!\"\nsays $.\n");
-                    ULTIMA_1850_PrintString(/*0x79a2*/ "\"Anything else?\n\n");
+                    PrintString(/*0x79a2*/ "\"Anything else?\n\n");
                 }
             }
         } while (key_g != 'N' && key_g != 'Y');
@@ -536,7 +536,7 @@ static int ReagentMenu(int member)
 
     outcome = done = 0;
 
-    ULTIMA_256e_ReadFileFromDisk(/*0x7a0a*/ "SHOPPE.DAT", scratch, 1500, 6759); //offset: 0x1a67
+    ReadFileFromDisk(/*0x7a0a*/ "SHOPPE.DAT", scratch, 1500, 6759); //offset: 0x1a67
 
     while (!done)
     {
@@ -546,19 +546,19 @@ static int ReagentMenu(int member)
         {
             if (reagentPrices[shopIndex][reagent] != 0) // size = max_b114 * 8 + 8
             {
-                ULTIMA_16ba_PrintChar(letter_h++);
-                ULTIMA_1850_PrintString(/*0x7a16*/ "...");
-                ULTIMA_1850_PrintString(D_3c20_reagentNames[reagent]);
-                ULTIMA_16ba_PrintChar('\n');
+                PrintChar(letter_h++);
+                PrintString(/*0x7a16*/ "...");
+                PrintString(D_3c20_reagentNames[reagent]);
+                PrintChar('\n');
             }
             reagent++;
         } while (reagent < 8);
 
-        ULTIMA_1850_PrintString(/*0x7a1a*/ "\nThy interest?\" ");
+        PrintString(/*0x7a1a*/ "\nThy interest?\" ");
 
         do
         {
-            key_g = ULTIMA_266c_GetChar();
+            key_g = GetChar();
 
             switch (key_g)
             {
@@ -613,18 +613,18 @@ void Reagents(int member)
 
     do
     {
-        key_g = ULTIMA_266c_GetChar();
+        key_g = GetChar();
         switch (key_g)
         {
         case 0x59:
-            ULTIMA_1850_PrintString(/*0x7a2c*/ "Yes\n\n\"Fine! We sell:\n\n");
+            PrintString(/*0x7a2c*/ "Yes\n\n\"Fine! We sell:\n\n");
             outcome = ReagentMenu(member);
             done = 1;
             break;
 
         case U5_KEY_SPACE:
         case 0x4e:
-            ULTIMA_1850_PrintString(/*0x7a44*/ "No");
+            PrintString(/*0x7a44*/ "No");
             done = 1;
             break;
         }
@@ -649,7 +649,7 @@ void Stables(int member)
 
     for (i = 0; i < 32; i++)
     {
-        if (D_5c5a_actors[i].tile == 0)
+        if (actors[i].tile == 0)
             break;
     }
     freeActor = i;
@@ -658,9 +658,9 @@ void Stables(int member)
     {
         x = stableDx[i] + D_5896_mapX;
         y = stableDy[i] + D_5897_mapY;
-        tile = *ULTIMA_4402_GetTileAddr(x, y);
+        tile = *GetTileAddr(x, y);
 
-        if (ULTIMA_368e_FindActorTileAtPos(x, y, D_5895_mapLevel) == 0)
+        if (FindActorTileAtPos(x, y, D_5895_mapLevel) == 0)
         {
             if (tile == TILE_MAP_44 || tile == TILE_MAP_45 || tile == TILE_MAP_GRASS)
                 break;
@@ -670,44 +670,44 @@ void Stables(int member)
     // aabf
     if (i == 4 || freeActor == 0x20)
     {
-        ULTIMA_1850_PrintString(/*0x7a48*/ "The stables are closed.\n");
+        PrintString(/*0x7a48*/ "The stables are closed.\n");
     }
     else
     {
         outcome = done = 0;
 
         shopPrice = horsePrices[shopIndex];
-        shopPrice += (shopPrice * -((s32)(D_55a8_party[member].intel * 3) - 100) / (u32)100);
+        shopPrice += (shopPrice * -((s32)(party[member].intel * 3) - 100) / (u32)100);
 
         Greet();
         do
         {
-            key_g = ULTIMA_266c_GetChar();
+            key_g = GetChar();
             switch (key_g)
             {
             case 0x59:
-                ULTIMA_1850_PrintString(/*0x7a62*/ "Yes\n\n\"");
+                PrintString(/*0x7a62*/ "Yes\n\n\"");
                 PrintShopFileText(5699); // 0x1643
-                ULTIMA_1850_PrintString(/*0x7a6a*/ "\n\nDeal?\" ");
+                PrintString(/*0x7a6a*/ "\n\nDeal?\" ");
 
                 do
                 {
-                    key_g = ULTIMA_266c_GetChar();
+                    key_g = GetChar();
                     if (key_g == 'Y')
                         break;
                 } while (key_g != 'N');
 
                 if (key_g == 'N')
                 {
-                    ULTIMA_1850_PrintString(/*0x7a74*/ "No");
+                    PrintString(/*0x7a74*/ "No");
                     done = 1;
                 }
                 else
                 {
-                    ULTIMA_1850_PrintString(/*0x7a78*/ "Yes!");
+                    PrintString(/*0x7a78*/ "Yes!");
                     if (gold < shopPrice)
                     {
-                        ULTIMA_1850_PrintString(/*0x7a7e*/ "\n\n\"Thou couldst not afford to ");
+                        PrintString(/*0x7a7e*/ "\n\n\"Thou couldst not afford to ");
                         PrintShopText(/*0x7a9e*/ "feed it!\"\nyells $.\n");
                         outcome = -1;
                     }
@@ -717,15 +717,15 @@ void Stables(int member)
                         gold -= shopPrice;
                         FalsehoodSurcharge();
 
-                        horse = &D_5c5a_actors[freeActor];
+                        horse = &actors[freeActor];
                         horse->animState = horse->extra = horse->value = 0;
                         horse->tile = horse->animTile = TILE_ACTOR_HORSE;
                         horse->x = x;
                         horse->y = y;
                         horse->z = D_5895_mapLevel;
 
-                        ULTIMA_5910_UpdateFrame();
-                        ULTIMA_2900_UpdateVitalsDisplay();
+                        UpdateFrame();
+                        UpdateVitalsDisplay();
                         outcome = 1;
                     }
 
@@ -735,7 +735,7 @@ void Stables(int member)
 
             case U5_KEY_SPACE:
             case 0x4e:
-                ULTIMA_1850_PrintString(/*0x7ab2*/ "No");
+                PrintString(/*0x7ab2*/ "No");
                 done = 1;
                 break;
             }
@@ -782,34 +782,34 @@ static int OfferArm(int member, int item, int outcome)
     byte key;
 
     shopPrice = itemBasePrices[item];
-    shopPrice += (shopPrice * -((s32)(D_55a8_party[member].intel * 3) - 100) / (u32)100);
+    shopPrice += (shopPrice * -((s32)(party[member].intel * 3) - 100) / (u32)100);
 
-    ULTIMA_1850_PrintString(/*0x7b5e*/ "\n\n\"");
+    PrintString(/*0x7b5e*/ "\n\n\"");
     PrintShopFileText(armsTexts[item]);
-    ULTIMA_1850_PrintString(/*0x7b62*/ "\n\n");
-    ULTIMA_1850_PrintString(buyOffers[ULTIMA_2092_RandomRange(0, 3)]);
-    ULTIMA_1850_PrintString(/*0x7b66*/ "\" ");
+    PrintString(/*0x7b62*/ "\n\n");
+    PrintString(buyOffers[RandomRange(0, 3)]);
+    PrintString(/*0x7b66*/ "\" ");
 
     do
     {
-        key = ULTIMA_266c_GetChar();
+        key = GetChar();
         if (key == 'N')
         {
-            ULTIMA_1850_PrintString(/*0x7b6a*/ "No\n\n");
+            PrintString(/*0x7b6a*/ "No\n\n");
         }
         else if (key == 'Y')
         {
-            ULTIMA_1850_PrintString(/*0x7b70*/ "Yes\n");
+            PrintString(/*0x7b70*/ "Yes\n");
             if (equipment[item] == 99)
             {
-                ULTIMA_1850_PrintString(/*0x7b76*/ "\n\"Thou canst not carry any more!\"\n");
+                PrintString(/*0x7b76*/ "\n\"Thou canst not carry any more!\"\n");
                 PrintShopText(/*0x7b9a*/ "says $.\n\n");
-                ULTIMA_266c_GetChar();
+                GetChar();
             }
             else if (gold < shopPrice)
             {
-                ULTIMA_1850_PrintString(/*0x7ba4*/ "\n\"");
-                ULTIMA_1850_PrintString(cantPayInsults[ULTIMA_2092_RandomRange(0, 3)]);
+                PrintString(/*0x7ba4*/ "\n\"");
+                PrintString(cantPayInsults[RandomRange(0, 3)]);
                 PrintShopText(/*0x7ba8*/ "\"\nyells $.\n");
                 outcome = -1;
             }
@@ -817,7 +817,7 @@ static int OfferArm(int member, int item, int outcome)
             {
                 gold -= shopPrice;
                 FalsehoodSurcharge();
-                ULTIMA_2900_UpdateVitalsDisplay();
+                UpdateVitalsDisplay();
                 if (item == 0x1b || item == 0x1d)
                 {
                     equipment[item] = 99;
@@ -835,21 +835,21 @@ static int OfferArm(int member, int item, int outcome)
 
     if (outcome != -1)
     {
-        ULTIMA_1850_PrintString(/*0x7bbc*/ "\"Anything else,\n");
+        PrintString(/*0x7bbc*/ "\"Anything else,\n");
         if (outcome != 0)
         {
-            if (D_55a8_party[member].gender == 12)
+            if (party[member].gender == 12)
             {
-                ULTIMA_1850_PrintString(/*0x7bce*/ "milady?");
+                PrintString(/*0x7bce*/ "milady?");
             }
             else
             {
-                ULTIMA_1850_PrintString(/*0x7bd6*/ "sir?");
+                PrintString(/*0x7bd6*/ "sir?");
             }
         }
         else
         {
-            ULTIMA_1850_PrintString(/*0x7bdc*/ "then?");
+            PrintString(/*0x7bdc*/ "then?");
         }
     }
 
@@ -878,7 +878,7 @@ static int BuyMenu(int member)
 
     do
     {
-        ULTIMA_1850_PrintString(/*0x7c44*/ "\n\n");
+        PrintString(/*0x7c44*/ "\n\n");
 
         for (rows = 0; rows < 8; rows++)
         {
@@ -887,36 +887,36 @@ static int BuyMenu(int member)
                 break;
 
             // ae5c
-            ULTIMA_16ba_PrintChar((uint)rows + 0x61);
-            ULTIMA_1850_PrintString(/*0x7c48*/ "...");
+            PrintChar((uint)rows + 0x61);
+            PrintString(/*0x7c48*/ "...");
 
             if (StringLength(equipNames[item]) < 0xd)
             {
-                ULTIMA_1850_PrintString(equipNames[item]);
+                PrintString(equipNames[item]);
             }
             else
             {
-                ULTIMA_1850_PrintString(equipShortNames[item]);
+                PrintString(equipShortNames[item]);
             }
 
             if (GetCurrentTextX() != 0)
             {
-                ULTIMA_16ba_PrintChar('\n');
+                PrintChar('\n');
             }
         }
 
-        ULTIMA_16ba_PrintChar('\n');
-        ULTIMA_1850_PrintString(showPrompts[ULTIMA_2092_RandomRange(0, 3)]);
-        ULTIMA_1850_PrintString(/*0x7c4c*/ "\" ");
+        PrintChar('\n');
+        PrintString(showPrompts[RandomRange(0, 3)]);
+        PrintString(/*0x7c4c*/ "\" ");
 
         do
         {
             // ae1b
-            key_g = ULTIMA_266c_GetChar();
+            key_g = GetChar();
             item = key_g - 0x41; // - 'A'
             if (item < rows && item >= 0)
             {
-                ULTIMA_16ba_PrintChar((uint)item + 0x61);
+                PrintChar((uint)item + 0x61);
                 outcome = OfferArm(member, armsStock[shopIndex][item], outcome);
                 if (outcome == -1)
                 {
@@ -998,7 +998,7 @@ static int DrawSellList(int* first, int* cursor)
     {
         if (*cursor == item)
         {
-            ULTIMA_16ba_PrintChar(CTRL_CHAR_TOGGLE_INVERSION);
+            PrintChar(CTRL_CHAR_TOGGLE_INVERSION);
             cursorRow = GetCurrentTextY();
         }
 
@@ -1006,7 +1006,7 @@ static int DrawSellList(int* first, int* cursor)
 
         if (*cursor == item)
         {
-            ULTIMA_16ba_PrintChar(CTRL_CHAR_TOGGLE_INVERSION);
+            PrintChar(CTRL_CHAR_TOGGLE_INVERSION);
         }
 
         SetTextPosition(1, GetCurrentTextY());
@@ -1019,7 +1019,7 @@ static int DrawSellList(int* first, int* cursor)
     for (row = GetCurrentTextY(); row != 5; row = row + 1)
     {
         SetTextPosition(1, row);
-        ULTIMA_1850_PrintString(/*0x7c50*/ "             ");
+        PrintString(/*0x7c50*/ "             ");
     }
 
     arrows = 0;
@@ -1036,7 +1036,7 @@ static int DrawSellList(int* first, int* cursor)
     if (arrows != 0)
     {
         SetTextPosition(6, 6);
-        ULTIMA_4c2a_PrintLeftCap();
+        PrintLeftCap();
     }
 
     switch (arrows)
@@ -1045,15 +1045,15 @@ static int DrawSellList(int* first, int* cursor)
         DrawStatsDivider();
         break;
     case 1:
-        ULTIMA_16ba_PrintChar(0x19);
+        PrintChar(0x19);
         PrintRightCap();
         break;
     case 2:
-        ULTIMA_16ba_PrintChar(0x18);
+        PrintChar(0x18);
         PrintRightCap();
         break;
     case 3:
-        ULTIMA_16ba_PrintChar(0x12);
+        PrintChar(0x12);
         PrintRightCap();
         break;
     }
@@ -1128,10 +1128,10 @@ static int SellItem(int member, int item)
     }
     else
     {
-        ULTIMA_1850_PrintString(/*0x7d64*/ "\n\n\"");
+        PrintString(/*0x7d64*/ "\n\n\"");
         if (itemBasePrices[item] != 0)
         {
-            shopPrice = (D_55a8_party[member].intel * itemBasePrices[item] * (u32)3) / (u32)100 + 1;
+            shopPrice = (party[member].intel * itemBasePrices[item] * (u32)3) / (u32)100 + 1;
 
             itemName = shopItemNames[item];
             if (shopItemNames[item] == 0)
@@ -1140,22 +1140,22 @@ static int SellItem(int member, int item)
             }
 
             //PrintShopText(buybackTexts[iVar5] + 0xa65e);
-            PrintShopText((char*)&scratch[buybackTexts[ULTIMA_2092_RandomRange(0, 7)] + 0xa65e - 0xb21e]);
-            ULTIMA_1850_PrintString(/*0x7d68*/ "\n\nDeal?\" ");
+            PrintShopText((char*)&scratch[buybackTexts[RandomRange(0, 7)] + 0xa65e - 0xb21e]);
+            PrintString(/*0x7d68*/ "\n\nDeal?\" ");
             do
             {
-                key = ULTIMA_266c_GetChar();
+                key = GetChar();
             } while (key != 'N' && key != 'Y');
 
             if (key == 'N')
             {
-                ULTIMA_1850_PrintString(/*0x7d72*/ "No");
+                PrintString(/*0x7d72*/ "No");
             }
             else
             {
                 PrintShopText(/*0x7d76*/ "Yes\n\n\"Done!\"\nsays $.");
                 IncreaseInt(&gold, shopPrice, 9999);
-                ULTIMA_3f36_DecreaseByte(&equipment[item], 1);
+                DecreaseByte(&equipment[item], 1);
             }
             UpdateGoldDisplay();
         }
@@ -1208,51 +1208,51 @@ static void SellMenu(int member)
 
     if (HasEquipment() != 0)
     {
-        ULTIMA_1850_PrintString(sellPrompts[ULTIMA_2092_RandomRange(0, 3)]);
-        ULTIMA_1850_PrintString(/*0x7ef0*/ "\" ");
+        PrintString(sellPrompts[RandomRange(0, 3)]);
+        PrintString(/*0x7ef0*/ "\" ");
         ShowStatsTitle(/*0x7ef4*/ "Arms");
         SelectTextWindow(1);
         SetTextWindowSize(1, 0x18, 1, 0x26, 6);
-        ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
+        PrintChar(CTRL_CHAR_CLEAR_WINDOW);
         SetTextWindowSize(1, 0x18, 1, 0x27, 9);
-        ULTIMA_16ba_PrintChar(0x10);
+        PrintChar(0x10);
 
         for (i = 0; i < 0xd; i++)
         {
-            ULTIMA_16ba_PrintChar(0x11);
+            PrintChar(0x11);
         }
 
-        ULTIMA_16ba_PrintChar(0x13);
+        PrintChar(0x13);
 
         for (i = 1; i < 5; i++)
         {
             SetTextPosition(0, i);
-            ULTIMA_16ba_PrintChar(0x17);
+            PrintChar(0x17);
             SetTextPosition(0xe, i);
-            ULTIMA_16ba_PrintChar(0x17);
+            PrintChar(0x17);
         }
 
-        ULTIMA_16ba_PrintChar('\n');
-        ULTIMA_16ba_PrintChar(0x14);
+        PrintChar('\n');
+        PrintChar(0x14);
 
         for (i = 0; i < 0xd; i++)
         {
-            ULTIMA_16ba_PrintChar(0x15);
+            PrintChar(0x15);
         }
 
-        ULTIMA_16ba_PrintChar(0x16);
+        PrintChar(0x16);
 
         cursor = first_h = NextItem(-1, 0x30, equipment, 0xff);
         cursorRow = DrawSellList(&first_h, &cursor);
         done = sold_m = 0;
 
-        ULTIMA_256e_ReadFileFromDisk(/*0x7efa*/ "SHOPPE.DAT", scratch, 1500, 3008); // offset: 0xbc0
+        ReadFileFromDisk(/*0x7efa*/ "SHOPPE.DAT", scratch, 1500, 3008); // offset: 0xbc0
 
         // b317
         while (done == 0)
         {
             // b320
-            key_g = ULTIMA_266c_GetChar();
+            key_g = GetChar();
 
             switch (key_g)
             {
@@ -1352,9 +1352,9 @@ static void SellMenu(int member)
                 if (sold_m == 0 && HasEquipment() != 0)
                 {
                     cursorRow = DrawSellList(&first_h, &cursor);
-                    ULTIMA_1850_PrintString(/*0x7f06*/ "\n\n\"");
-                    ULTIMA_1850_PrintString(sellMorePrompts[ULTIMA_2092_RandomRange(0, 3)]);
-                    ULTIMA_1850_PrintString(/*0x7f0a*/ "\" ");
+                    PrintString(/*0x7f06*/ "\n\n\"");
+                    PrintString(sellMorePrompts[RandomRange(0, 3)]);
+                    PrintString(/*0x7f0a*/ "\" ");
                 }
                 else
                 {
@@ -1370,7 +1370,7 @@ static void SellMenu(int member)
         }
 
         // b4f6 (OK)
-        ULTIMA_2900_UpdateVitalsDisplay();
+        UpdateVitalsDisplay();
         ClearStatsTitle();
 
         if (sold_m != 0)
@@ -1378,9 +1378,9 @@ static void SellMenu(int member)
             return;
         }
 
-        ULTIMA_1850_PrintString(/*0x7f0e*/ "\n\n\"");
-        ULTIMA_1850_PrintString(farewells[ULTIMA_2092_RandomRange(0, 3)]);
-        ULTIMA_1850_PrintString(/*0x7f12*/ "\"\n");
+        PrintString(/*0x7f0e*/ "\n\n\"");
+        PrintString(farewells[RandomRange(0, 3)]);
+        PrintString(/*0x7f12*/ "\"\n");
 
         if (HasEquipment() == 0)
         {
@@ -1434,30 +1434,30 @@ void Armourer(int member)
     outcome = 0;
 
     PrintShopText(/*0x8018*/ "\"Good @, and welcome to #!\"\n");
-    ULTIMA_266c_GetChar();
+    GetChar();
     PrintShopText(/*0x8036*/ "\n$ says,\n\"");
 
-    ULTIMA_1850_PrintString(buyOrSellGreetings[ULTIMA_2092_RandomRange(0, 1)]);
-    ULTIMA_1850_PrintString(/*0x8042*/ "\" ");
+    PrintString(buyOrSellGreetings[RandomRange(0, 1)]);
+    PrintString(/*0x8042*/ "\" ");
 
     do
     {
-        key = ULTIMA_266c_GetChar();
+        key = GetChar();
         switch (key)
         {
         case 0x42:
-            ULTIMA_1850_PrintString(/*0x8046*/ "Buy\n\n\"");
-            ULTIMA_1850_PrintString(goodReplies[ULTIMA_2092_RandomRange(0, 3)]);
-            ULTIMA_1850_PrintString(stockIntros[ULTIMA_2092_RandomRange(0, 3)]);
+            PrintString(/*0x8046*/ "Buy\n\n\"");
+            PrintString(goodReplies[RandomRange(0, 3)]);
+            PrintString(stockIntros[RandomRange(0, 3)]);
             outcome = BuyMenu(member);
             break;
         case 0x53:
-            ULTIMA_1850_PrintString(/*0x804e*/ "Sell\n\n\"");
+            PrintString(/*0x804e*/ "Sell\n\n\"");
             SellMenu(member);
             outcome = -1;
             break;
         case U5_KEY_SPACE:
-            ULTIMA_1850_PrintString(/*0x8056*/ "No");
+            PrintString(/*0x8056*/ "No");
             break;
         }
     } while (key != 'B' && key != 'S' && key != U5_KEY_SPACE);
@@ -1470,17 +1470,17 @@ static int ChoosePatient(void)
 {
     int patient;
 
-    if (D_585b_partyCount == 1)
+    if (partyCount == 1)
     {
         patient = 0;
     }
     else
     {
-        ULTIMA_1850_PrintString(/*0x805a*/ "\n\n\"Who needs my aid?\" ");
+        PrintString(/*0x805a*/ "\n\n\"Who needs my aid?\" ");
         patient = SelectPlayer();
         if (patient == -1)
         {
-            ULTIMA_1850_PrintString(/*0x8072*/ "No one");
+            PrintString(/*0x8072*/ "No one");
         }
     }
 
@@ -1490,17 +1490,17 @@ static int ChoosePatient(void)
 // Healer: the screen flashes (red, white) with sounds as the spell is cast.
 static void HealingFlash(void)
 {
-    ULTIMA_0a70_GRAP_2d_SetPenColor(redColor);
+    GRAP_2d_SetPenColor(redColor);
     GRAP_XorFillRect(8, 8, 0xb7, 0xb7);
-    ULTIMA_2192_AudioPulse(0x100e, 1, 0x57e4, 5000, 1);
-    ULTIMA_2192_AudioPulse(0x100e, 1, 0x57e4, 0x6b6c, -1);
-    ULTIMA_0a70_GRAP_2d_SetPenColor(brightWhiteColor);
+    AudioPulse(0x100e, 1, 0x57e4, 5000, 1);
+    AudioPulse(0x100e, 1, 0x57e4, 0x6b6c, -1);
+    GRAP_2d_SetPenColor(brightWhiteColor);
     GRAP_XorFillRect(8, 8, 0xb7, 0xb7);
-    ULTIMA_2192_AudioPulse(0x11b2, 1, 40000, 1, 1);
-    ULTIMA_2192_AudioPulse(0x11b2, 1, 40000, 40000, -1);
+    AudioPulse(0x11b2, 1, 40000, 1, 1);
+    AudioPulse(0x11b2, 1, 40000, 40000, -1);
     GRAP_XorFillRect(8, 8, 0xb7, 0xb7);
-    ULTIMA_2192_AudioPulse(0x8fc, 1, 18000, 1, 2);
-    ULTIMA_2192_AudioPulse(0x8fc, 1, 18000, 36000, -2);
+    AudioPulse(0x8fc, 1, 18000, 1, 2);
+    AudioPulse(0x8fc, 1, 18000, 36000, -2);
 }
 
 // Healer: "for N gold. Wilt thou pay?"; takes the gold. Returns 1 when refused or when the party is too poor.
@@ -1514,14 +1514,14 @@ static int AskPayment(void)
     do
     {
         // b708
-        key = ULTIMA_266c_GetChar();
+        key = GetChar();
         if ((uint)key == 'Y')
         {
-            ULTIMA_1850_PrintString(/*0x8098*/ "Yes");
+            PrintString(/*0x8098*/ "Yes");
         }
         else if ((uint)key == 'N')
         {
-            ULTIMA_1850_PrintString(/*0x809c*/ "No");
+            PrintString(/*0x809c*/ "No");
         }
 
         // b726
@@ -1531,7 +1531,7 @@ static int AskPayment(void)
     refused = key == 'N';
 
     // b742
-    if (refused == 0 && gold < shopPrice && (shopPrice > 100 || D_5893_mapId != 7))
+    if (refused == 0 && gold < shopPrice && (shopPrice > 100 || mapId != 7))
     {
         // b75e
         PrintShopFileText(9131); // 0x23ab
@@ -1571,26 +1571,26 @@ void Healer(int unused)
     {
         do
         {
-            key_g = ULTIMA_266c_GetChar();
+            key_g = GetChar();
             if (key_g == 'N')
             {
-                ULTIMA_1850_PrintString(/*0x80a0*/ "No");
+                PrintString(/*0x80a0*/ "No");
             }
             else if (key_g == 'Y')
             {
-                ULTIMA_1850_PrintString(/*0x80a4*/ "Yes\n\n");
+                PrintString(/*0x80a4*/ "Yes\n\n");
             }
         } while (key_g != 'N' && key_g != 'Y');
 
         if (key_g == 'N')
             break;
 
-        ULTIMA_1850_PrintString(/*0x80aa*/ "\"We have powers to Cure, Heal, or Resurrect.\"\n");
+        PrintString(/*0x80aa*/ "\"We have powers to Cure, Heal, or Resurrect.\"\n");
         PrintShopText(/*0x80da*/ "says $.\n\n\"What is the nature of thy need?\" ");
 
         do
         {
-            key_g = ULTIMA_266c_GetChar();
+            key_g = GetChar();
         } while (key_g != 'C' && key_g != 'H' && key_g != 'R' &&
                  key_g != U5_KEY_SPACE && key_g != U5_KEY_ENTER);
 
@@ -1598,13 +1598,13 @@ void Healer(int unused)
         {
         case 0x43:
             // b826
-            ULTIMA_1850_PrintString(/*0x8106*/ "Curing");
+            PrintString(/*0x8106*/ "Curing");
             patient = ChoosePatient();
             if (patient == -1)
                 goto L_b838;
             {
                 // b856
-                if (D_55a8_party[patient].status != STATUS_POISONED)
+                if (party[patient].status != STATUS_POISONED)
                 {
                     // b864
                     PrintShopText(noNeedOfArt);
@@ -1612,24 +1612,24 @@ void Healer(int unused)
                 else
                 {
                     // b86e
-                    ULTIMA_1850_PrintString(/*0x810e*/ "\n\n\"");
-                    if (D_5893_mapId == 5)
+                    PrintString(/*0x810e*/ "\n\n\"");
+                    if (mapId == 5)
                     {
-                        ULTIMA_1850_PrintString(/*0x8112*/ "Receive now the Light!\"");
+                        PrintString(/*0x8112*/ "Receive now the Light!\"");
                         // -> b8a1
                         goto L_b8a1;
                     }
                     else
                     {
                         // b886
-                        ULTIMA_1850_PrintString(/*0x812a*/ "I can cure thy poisoned body ");
+                        PrintString(/*0x812a*/ "I can cure thy poisoned body ");
                         shopPrice = curePrices[shopIndex];
                         if (AskPayment() == 0)
                         {
                             // b8a1
 L_b8a1:
                             HealingFlash();
-                            D_55a8_party[patient].status = STATUS_GOOD;
+                            party[patient].status = STATUS_GOOD;
                         }
                     }
                 }
@@ -1637,31 +1637,31 @@ L_b8a1:
             break;
         case 0x48:
             // b8b2
-            ULTIMA_1850_PrintString(/*0x8148*/ "Healing");
+            PrintString(/*0x8148*/ "Healing");
             patient = ChoosePatient();
             if (patient != -1)
             {
                 // b8c7
-                if (D_55a8_party[patient].status != STATUS_DEAD && D_55a8_party[patient].hp != D_55a8_party[patient].maxHp)
+                if (party[patient].status != STATUS_DEAD && party[patient].hp != party[patient].maxHp)
                 {
-                    ULTIMA_1850_PrintString(/*0x8150*/ "\n\n\"");
-                    if (D_5893_mapId == 5)
+                    PrintString(/*0x8150*/ "\n\n\"");
+                    if (mapId == 5)
                     {
-                        ULTIMA_1850_PrintString(/*0x8154*/ "Receive now the Light!\"");
+                        PrintString(/*0x8154*/ "Receive now the Light!\"");
                         // -> b914
                         goto L_b914;
                     }
                     else
                     {
                         // b8f6
-                        ULTIMA_1850_PrintString(/*0x816c*/ "I can heal thee ");
+                        PrintString(/*0x816c*/ "I can heal thee ");
                         shopPrice = healPrices[shopIndex];
                         if (AskPayment() == 0)
                         {
                             // b914
 L_b914:
                             HealingFlash();
-                            D_55a8_party[patient].hp = D_55a8_party[patient].maxHp;
+                            party[patient].hp = party[patient].maxHp;
                         }
                     }
                 }
@@ -1674,15 +1674,15 @@ L_b914:
             break;
         case 0x52:
             // b92a
-            ULTIMA_1850_PrintString(/*0x817e*/ "Resurrect");
+            PrintString(/*0x817e*/ "Resurrect");
             patient = ChoosePatient();
             if (patient != -1)
             {
-                if (D_55a8_party[patient].status == STATUS_DEAD)
+                if (party[patient].status == STATUS_DEAD)
                 {
-                    ULTIMA_1850_PrintString(/*0x8188*/ "\n\n\"");
-                    ULTIMA_1850_PrintString(/*0x818c*/ "I can raise this unfortunate person from ");
-                    ULTIMA_1850_PrintString(/*0x81b6*/ "the dead ");
+                    PrintString(/*0x8188*/ "\n\n\"");
+                    PrintString(/*0x818c*/ "I can raise this unfortunate person from ");
+                    PrintString(/*0x81b6*/ "the dead ");
 
                     shopPrice = raisePrices[shopIndex];
 
@@ -1691,8 +1691,8 @@ L_b914:
 L_b9c1:
                         HealingFlash();
                         Resurrect(patient, 0xff);
-                        D_55a8_party[patient].hp = D_55a8_party[patient].maxHp;
-                        ULTIMA_2900_UpdateVitalsDisplay();
+                        party[patient].hp = party[patient].maxHp;
+                        UpdateVitalsDisplay();
                     }
                 }
                 else
@@ -1704,7 +1704,7 @@ L_b9c1:
         case U5_KEY_ENTER:
         case U5_KEY_SPACE:
             // b99e
-            ULTIMA_1850_PrintString(/*0x81c0*/ "Nothing");
+            PrintString(/*0x81c0*/ "Nothing");
             done_j = 1;
             break;
         default:
@@ -1715,9 +1715,9 @@ L_b9c1:
 L_b838:
         if (!done_j)
         {
-            ULTIMA_2900_UpdateVitalsDisplay();
-            ULTIMA_1850_PrintString(/*0x81c8*/ "\n\n\"Is there any other way in which I may\n");
-            ULTIMA_1850_PrintString(/*0x81f2*/ "aid thee?\" ");
+            UpdateVitalsDisplay();
+            PrintString(/*0x81c8*/ "\n\n\"Is there any other way in which I may\n");
+            PrintString(/*0x81f2*/ "aid thee?\" ");
         }
     }
 

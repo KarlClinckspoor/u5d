@@ -802,14 +802,13 @@ comment above each function.
   (a local of the same name, or a case-insensitive clash at link: `ULTIMA_1068_RevealTile`
   beside `revealTile`; `srand`, `strlen`, `ToUpper` clashed with stdlib.h and were given
   `SeedRandom`, `StringLength`, `ToUpperChar`). Overlay functions that share a name take their
-  module (`DungeonMainLoop`, `TownMainLoop`). Shorter names freed pass 2's memory, which moved
-  the three limits: TOWN_0f02 could not be brought back by the fill (the dead references of
-  TOWN_0f02 changed nothing at any count from 10 to 285 with the names renamed), so the names
-  `town.c` uses (97, functions and globals, `docs/names/natural.txt` leaves them out) keep their
-  prefixes and town.c is the same text as on `main`. CMDS_0000 matches with its 72 dead
-  references (as on `main`). ULTIMA_1850 still matches with its comment lines unchanged.
-  Still prefixed on this branch: 215 names of the 1,339 in `names.tsv` (67 functions, 148
-  globals: the 97 town.c names, the refused and clashing ones, the 31 bare `D_xxxx` globals).
+  module (`DungeonMainLoop`, `TownMainLoop`). The names `town.c` uses were left out of that
+  first batch (TOWN_0f02's window moved, and the report that its fill could not bring it back
+  was wrong); a second batch of 96 renamed them, with TOWN_0f02's fill at 276 references and
+  CMDS_0000's at 85 ("TOWN_0f02 with the natural names" below). ULTIMA_1850 still matches with
+  its comment lines unchanged. Still prefixed on this branch: 119 names of the 1,339 in
+  `names.tsv` (7 functions, 112 globals: the names a rename refuses or that clash, eight of
+  them used by town.c, and the 31 bare `D_xxxx` globals).
   The assembly-only labels (`src/asm`, about 580 names) are not in the table and keep theirs.
 - **TOWN_0f02** was the one known hazard: its fill of 266 dead references named 266 globals
   of other modules, so that naming any of them (TALK's eight state bytes were among them)
@@ -894,6 +893,58 @@ batch per module). Each module took one batch, one compile of its files and the 
   matching notes, `// CHECKED` and the compiler notes were kept, with the new names in them.
 - After a merge, run the gate on the merged tree: every group lengthens names other
   modules use (cmds.c gained 9 to 90 characters from each group).
+
+### TOWN_0f02 with the natural names
+
+The first natural-names batch left out the 96 names `town.c` uses (23 of its own TOWN
+functions, 37 resident functions such as `ULTIMA_1850_PrintString`, 36 globals), because
+with them shortened TOWN_0f02 compiled to 476 bytes against 472 and the worker reported that
+no fill count from 10 to 285 helped. That report was wrong. Measured again (each count
+compiled into a private object folder from a copy of `src/`, and the `F_` externals of each
+object counted with `omf.py` to be sure the count reached the object):
+
+- **The rename** (`--batch`, all files): the global names town.c uses get 921 characters
+  shorter (cmds.c 431, every module some). Before TOWN_0f02 that is all of town.c, which ends
+  with it.
+- **The 4 bytes.** Below the window the poison loop (the third party loop) gets the loop
+  optimization too: pointers in SI/DI, `add si,20h` each pass, instead of the original's
+  index recomputed as `i << 5` in SI with the `for`'s plain layout. That is the memory limit
+  the note at the function describes, not symbol order or hashing.
+- **Fill counts, 245 refs + plain `int` extras** (`F_e000`...): 10, 100, 200, 240-274 give
+  476; **275-278 EXACT**; 279 476 (a different 476: see below), 280 494, 285 and 290 486,
+  300 464, 320 468, 350 460. The worker's range 10-285 did include the window; whatever was
+  compiled there, it was not this.
+- **With the 6 declared but unused `F_` names first** (251, then extras): 251-273 476,
+  **274-277 EXACT**, 278 476, 279-280 494. The source now has 276: the 251 and 25 extras
+  (`F_e000`-`F_e018`), two counts of room each way.
+- **Above the window** the poison loop has the original's form, but the countdown loop in
+  the trapdoor branch (`[bp-4]` from 1000 to 250) takes SI: also 476 bytes, other code. So
+  the size alone does not say which side of the window a count is on; look at `--dis`.
+- **Shorter, not fewer.** With 245 references and the fill names lengthened instead
+  (characters spread over the 245 names): +700 to +828 476, **+829 to +930 EXACT**,
+  +931 to +950 476 (the upper-side code), +1000 494, +1050 to +1200 486. Giving back exactly
+  the 921 characters matches: characters of names are what counts, not the number of
+  symbols. The window is about 102 characters wide, and one reference is about 30 (22 + L
+  with L = 6 to 8), so four counts.
+- **town.c's names, not the other files'.** (a) The `main`-state sources with only town.c
+  and the headers taken from the renamed tree give a TOWN.OBJ identical byte for byte to the
+  fully renamed one (476). (b) The renamed town.c with `#define PrintString
+  ULTIMA_1850_PrintString` (and the other 95) put before its includes gives a TOWN.OBJ
+  identical to `main`'s and EXACT: the text of the source does not count, only the symbol
+  names the object references.
+- **CMDS_0000 moved too** (1,364 bytes against 1,362, the loop optimization as before): the
+  15 renamed names HoleUpRest references are 140 characters shorter. On `natural-names`
+  before this batch its window was 70-90 dead references (72 was near the low edge; the
+  64-80 above was measured before the natural names); after it 75-95, five references for
+  140 characters. The source now has 85. ULTIMA_1850 and the 1988 target needed nothing.
+- **Time.** On this machine `match.py --compile town.c` (one module, compile and compare)
+  takes about 5 seconds, not 1.5 minutes; a sweep of 20 counts is two minutes.
+
+Not renamed in town.c (refused, as everywhere): `D_217e_beaconX`, `D_2180_beaconY`,
+`D_587e_day`, `D_587f_hour`, `D_5895_mapLevel`, `D_5896_mapX`, `D_5897_mapY` (a local of the
+same name) and `ULTIMA_20c8_Delay` (`delay` at link). Renaming those later frees about 60
+characters: TOWN_0f02 would want about two more references, and CMDS_0000 (which uses four
+  of them, 30 characters) about one.
 
 ### How to go on
 
@@ -1791,6 +1842,7 @@ moves a probe function's window edge). MSC 5.0 and 5.1 give the same costs, and 
   240 characters of names either way), and the gate passes for both targets. The 27 short
   link names and their `LINK_DEFINES` (stubs included) are gone. TOWN_0f02's fill is now
   written four references to a line (62 lines instead of 245: dead lines cost nothing).
+  With the natural names (that branch) CMDS_0000 has 85 and TOWN_0f02 276 (69 lines).
 
 **The order of communal variables** (both compilers): C1 gives each symbol-table entry the
 next serial number from 9 at the top of the file (every declared name of any kind, a named

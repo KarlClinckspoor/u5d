@@ -2,8 +2,9 @@
 # readable name loses its address prefix. OLD NEW, one per line. A name used by two
 # functions of different overlays takes the module (MainoutEntry, TownEntry); the
 # resident one keeps the plain name. The globals that clash keep their addresses.
-# TOWN_0f02 (town.c) keeps its readable window: the names town.c uses keep their
-# addresses here (97 names), so town.c is the same text as before (MATCHING.md, the TOWN_0f02 note).
+# The names town.c uses were left out at first (TOWN_0f02's window moved); they are the last
+# block below, applied with TOWN_0f02's fill at 276 references and CMDS_0000's at 85
+# (MATCHING.md, "TOWN_0f02 with the natural names").
 BLCKTHRN_0000_Footsteps Footsteps
 BLCKTHRN_002e_MoveActorOf MoveActorOf
 BLCKTHRN_00be_RunScript RunScript
@@ -1128,3 +1129,103 @@ ZSTATS_0c0a_FreeHandSlot FreeHandSlot
 ZSTATS_0c5c_EquipOrRemove EquipOrRemove
 ZSTATS_0f2e_SelectItem SelectItem
 ZSTATS_1296_ReadyCmd ReadyCmd
+# The names town.c uses (96: 23 TOWN functions of town.c, 37 resident functions, 36 globals).
+# Not renamed: D_217e_beaconX, D_2180_beaconY, D_587e_day, D_587f_hour, D_5895_mapLevel,
+# D_5896_mapX, D_5897_mapY (a local has the name) and ULTIMA_20c8_Delay (delay at link);
+# ULTIMA_207e_srand is SeedRandom (srand is stdlib.h's).
+D_13a6_shadowlordStartY shadowlordStartY
+D_1e1a_townMapOffset townMapOffset
+D_1e8a_placeX placeX
+D_1eb2_placeY placeY
+D_2182_beacon2X beacon2X
+D_2184_beacon2Y beacon2Y
+D_24e6_viewDirty viewDirty
+D_2652_townFileNames townFileNames
+D_2742_drunkDirs drunkDirs
+D_2746_harpsichordFreq harpsichordFreq
+D_275a_secretTune secretTune
+D_2767_tuneStep tuneStep
+D_55a8_party party
+D_585b_partyCount partyCount
+D_5876_tempX tempX
+D_5878_tempY tempY
+D_587c_partyTile partyTile
+D_5888_karma karma
+D_5893_mapId mapId
+D_589b_mapOriginX mapOriginX
+D_589c_mapOriginY mapOriginY
+D_58c8_shadowlordTowns shadowlordTowns
+D_58ee_annotX annotX
+D_590e_annotY annotY
+D_592e_annotTile annotTile
+D_594e_annotCount annotCount
+D_594f_openDoorTile openDoorTile
+D_5957_drunkTurns drunkTurns
+D_5958_townShadowlord townShadowlord
+D_5b5a_npcKilled npcKilled
+D_5c5a_actors actors
+D_5d5e_npcSchedules npcSchedules
+D_5f5e_npcs npcs
+D_659e_npcTypes npcTypes
+D_a9ce_soundOn soundOn
+D_a9fa_vitalsDirty vitalsDirty
+TOWN_0000_CheckNpcKilled CheckNpcKilled
+TOWN_0052_SetNpcKilled SetNpcKilled
+TOWN_00b0_DespawnNpc DespawnNpc
+TOWN_011e_FindNpcByActor FindNpcByActor
+TOWN_0170_SwapDayNightTiles SwapDayNightTiles
+TOWN_0212_BlightLand BlightLand
+TOWN_02ae_SetupShadowlord SetupShadowlord
+TOWN_0408_LoadTownMap LoadTownMap
+TOWN_052e_TakeStairs TakeStairs
+TOWN_057c_SetPartyIcon SetPartyIcon
+TOWN_0600_MoveParty MoveParty
+TOWN_085e_SetPursue SetPursue
+TOWN_08d4_SetFlee SetFlee
+TOWN_0958_RaiseAlarm RaiseAlarm
+TOWN_09bc_FightNpc FightNpc
+TOWN_09e6_AttackCmd AttackCmd
+TOWN_0b82_KlimbCmd KlimbCmd
+TOWN_0c4a_IsTileA2Or43 IsTileA2Or43
+TOWN_0c78_WanderHorses WanderHorses
+TOWN_0dc4_GetTownKey GetTownKey
+TOWN_0e34_NumberKey NumberKey
+TOWN_0f02_TileEffects TileEffects
+TOWN_1694_PlaceActors PlaceActors
+ULTIMA_0a70_GRAP_2d_SetPenColor GRAP_2d_SetPenColor
+ULTIMA_0aa6_GRAP_3f_FillRect GRAP_3f_FillRect
+ULTIMA_16ba_PrintChar PrintChar
+ULTIMA_1850_PrintString PrintString
+ULTIMA_1b16_ClearKbdBuffer ClearKbdBuffer
+ULTIMA_2056_GetTime GetTime
+ULTIMA_207e_srand SeedRandom
+ULTIMA_2092_RandomRange RandomRange
+ULTIMA_2192_AudioPulse AudioPulse
+ULTIMA_223c_AudioWhiteNoise AudioWhiteNoise
+ULTIMA_22c0_AudioTone AudioTone
+ULTIMA_22e2_PcspkOn PcspkOn
+ULTIMA_230e_PcspkOff PcspkOff
+ULTIMA_256e_ReadFileFromDisk ReadFileFromDisk
+ULTIMA_266c_GetChar GetChar
+ULTIMA_2900_UpdateVitalsDisplay UpdateVitalsDisplay
+ULTIMA_2aa8_DamageParty DamageParty
+ULTIMA_2ae8_EndTurn EndTurn
+ULTIMA_2c4c_IsWalkableTile IsWalkableTile
+ULTIMA_2e96_SetWindDirection SetWindDirection
+ULTIMA_3072_ShakeScreen ShakeScreen
+ULTIMA_3522_HitEffectAt HitEffectAt
+ULTIMA_35ec_SelectDirection SelectDirection
+ULTIMA_368e_FindActorTileAtPos FindActorTileAtPos
+ULTIMA_3702_FindLastActorTileAt FindLastActorTileAt
+ULTIMA_38e4_FindActorSlot FindActorSlot
+ULTIMA_3f36_DecreaseByte DecreaseByte
+ULTIMA_4080_SetActivePlayer SetActivePlayer
+ULTIMA_433e_AudioFootstep AudioFootstep
+ULTIMA_4402_GetTileAddr GetTileAddr
+ULTIMA_4a84_DrawSunAndMoons DrawSunAndMoons
+ULTIMA_4be8_ClearSky ClearSky
+ULTIMA_4c2a_PrintLeftCap PrintLeftCap
+ULTIMA_4f7c_AdvanceTime AdvanceTime
+ULTIMA_5910_UpdateFrame UpdateFrame
+ULTIMA_5e4a_BuildLightMap BuildLightMap
+ULTIMA_6150_Combat Combat

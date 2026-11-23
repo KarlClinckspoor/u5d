@@ -67,7 +67,7 @@ void IntroGetString(char* buffer, int maxLength)
         {
             buffer[length] = key;
             length++;
-            ULTIMA_16ba_PrintChar(key);
+            PrintChar(key);
         }
     } while (key != U5_KEY_ENTER);
 

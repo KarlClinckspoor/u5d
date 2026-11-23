@@ -13,7 +13,7 @@
 #include <time.h>
 
 // CHECKED
-void ULTIMA_256e_ReadFileFromDisk(char* fileName, void* addr, u16 size, u16 offset)
+void ReadFileFromDisk(char* fileName, void* addr, u16 size, u16 offset)
 {
     int done = 0;
 
@@ -32,7 +32,7 @@ void ULTIMA_256e_ReadFileFromDisk(char* fileName, void* addr, u16 size, u16 offs
 
 static void far WriteError(void)
 {
-    ULTIMA_1850_PrintString(/*0xa0e0*/ "\nYour disk may be write-protected. Try again.\n");
+    PrintString(/*0xa0e0*/ "\nYour disk may be write-protected. Try again.\n");
     WaitForKeystroke(0);
 }
 

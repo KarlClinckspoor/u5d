@@ -27,9 +27,9 @@ void LoadNpcFile(void)
     char* fileName;
     int kind_j;
 
-    D_5893_mapId--;
+    mapId--;
 
-    kind_j = (uint)D_5893_mapId >> 3;
+    kind_j = (uint)mapId >> 3;
     switch (kind_j)
     {
     case 0:
@@ -46,19 +46,19 @@ void LoadNpcFile(void)
         break;
     }
 
-    mapIndex = (uint)D_5893_mapId - (kind_j << 3);
+    mapIndex = (uint)mapId - (kind_j << 3);
 
     fileOffset = mapIndex * 0x240;
-    ULTIMA_256e_ReadFileFromDisk(fileName, D_5d5e_npcSchedules, 0x200, fileOffset);
-    ULTIMA_256e_ReadFileFromDisk(fileName, D_659e_npcTypes, 0x20, fileOffset + 0x200);
-    ULTIMA_256e_ReadFileFromDisk(fileName, dialogNumbers_d, 0x20, fileOffset + 0x220);
+    ReadFileFromDisk(fileName, npcSchedules, 0x200, fileOffset);
+    ReadFileFromDisk(fileName, npcTypes, 0x20, fileOffset + 0x200);
+    ReadFileFromDisk(fileName, dialogNumbers_d, 0x20, fileOffset + 0x220);
 
     for (kind_j = 0; kind_j < 0x20; kind_j++)
     {
-        D_5f5e_npcs[kind_j].dialogNumber = (u16)dialogNumbers_d[kind_j];
+        npcs[kind_j].dialogNumber = (u16)dialogNumbers_d[kind_j];
     }
 
-    D_5893_mapId++;
+    mapId++;
 }
 
 // On entering a town: every NPC with a type appears at the place of the schedule entry in force at the hour, mode 1, with an empty move list.
@@ -69,22 +69,22 @@ void NPC_00d6_PlaceNpcs(int hour)
 
     for (npc = 1; npc < 0x20; npc++)
     {
-        if (D_659e_npcTypes[npc] == 0)
+        if (npcTypes[npc] == 0)
         {
-            D_5f5e_npcs[npc].mode = 0;
+            npcs[npc].mode = 0;
         }
         else
         {
             slot = ScheduleSlot(npc, hour);
-            D_5f5e_npcs[npc].mode = 1;
+            npcs[npc].mode = 1;
 
-            D_5f5e_npcs[npc].x = D_5d5e_npcSchedules[npc].x[slot];
-            D_5f5e_npcs[npc].y = D_5d5e_npcSchedules[npc].y[slot];
-            D_5f5e_npcs[npc].z = D_5d5e_npcSchedules[npc].z[slot];
+            npcs[npc].x = npcSchedules[npc].x[slot];
+            npcs[npc].y = npcSchedules[npc].y[slot];
+            npcs[npc].z = npcSchedules[npc].z[slot];
 
-            D_5f5e_npcs[npc].npcType = D_659e_npcTypes[npc];
-            D_5f5e_npcs[npc].scheduleIdx = slot;
-            D_5f5e_npcs[npc].actorIdx = 0;
+            npcs[npc].npcType = npcTypes[npc];
+            npcs[npc].scheduleIdx = slot;
+            npcs[npc].actorIdx = 0;
 
             moveListPos[npc] = -1;
             moveLists[npc].data[0] = 0;
@@ -153,11 +153,11 @@ static void BuildSearchGrid(int startX, int startY, int goalX, int goalY, int mo
     }
 
     // 0272
-    npcRec_e = &D_5f5e_npcs[npc];
+    npcRec_e = &npcs[npc];
 
     for (y_h = 0x1f; y_h > 0; --y_h)
     {
-        actor = &D_5c5a_actors[y_h];
+        actor = &actors[y_h];
         if (actor->tile > TILE_ACTOR_WIZARD - 1)
         {
             if (NpcDistance(actor->x, actor->y, npcRec_e->x, npcRec_e->y) < 4)
@@ -167,7 +167,7 @@ static void BuildSearchGrid(int startX, int startY, int goalX, int goalY, int mo
         }
     }
 
-    actor = &D_5c5a_actors[0];
+    actor = &actors[0];
     if (NpcDistance(actor->x, actor->y, npcRec_e->x, npcRec_e->y) < 4)
     {
         searchGrid[actor->y * 0x20 + actor->x] = 0x90;
@@ -262,8 +262,8 @@ static int SearchPath(int startX, int startY, int goalX, int goalY, int mode, in
                     if (state == 5)
                     {
                         state = 1;
-                        D_5876_tempX = x_i;
-                        D_5878_tempY = y_h;
+                        tempX = x_i;
+                        tempY = y_h;
                         break;
                     }
 
@@ -407,34 +407,34 @@ static void StepTemp(int dir)
     switch (dir)
     {
     case 1:
-        D_5876_tempX++;
-        if (D_5878_tempY > 0x20)
+        tempX++;
+        if (tempY > 0x20)
         {
-            D_5876_tempX = 0x20;
+            tempX = 0x20;
         }
         break;
 
     case 2:
-        D_5878_tempY--;
-        if (D_5876_tempX < 0)
+        tempY--;
+        if (tempX < 0)
         {
-            D_5878_tempY = 0;
+            tempY = 0;
         }
         break;
 
     case 3:
-        D_5876_tempX--;
-        if (D_5878_tempY < 0)
+        tempX--;
+        if (tempY < 0)
         {
-            D_5876_tempX = 0;
+            tempX = 0;
         }
         break;
 
     case 4:
-        D_5878_tempY++;
-        if (D_5876_tempX > 0x20)
+        tempY++;
+        if (tempX > 0x20)
         {
-            D_5878_tempY = 0x20;
+            tempY = 0x20;
         }
         break;
     }
@@ -484,10 +484,10 @@ static void PursueOrFlee(int npc, int slot)
     int type_n;
 
 
-    avatar_d = &D_5c5a_actors[0];
-    npcRec_e = &D_5f5e_npcs[npc];
-    type_n = D_5d5e_npcSchedules[npc].type[slot];
-    distance_e = NpcDistance(D_5c5a_actors[0].x, D_5c5a_actors[0].y, npcRec_e->x, npcRec_e->y);
+    avatar_d = &actors[0];
+    npcRec_e = &npcs[npc];
+    type_n = npcSchedules[npc].type[slot];
+    distance_e = NpcDistance(actors[0].x, actors[0].y, npcRec_e->x, npcRec_e->y);
     if (distance_e == 1 && type_n > 3)
     {
         if (type_n == 4 || type_n == 5)
@@ -512,12 +512,12 @@ static void PursueOrFlee(int npc, int slot)
     for (dir_d = 1; dir_d < 5; dir_d++)
     {
         // aa09
-        D_5876_tempX = npcRec_e->x;
-        D_5878_tempY = npcRec_e->y;
+        tempX = npcRec_e->x;
+        tempY = npcRec_e->y;
         StepTemp(dir_d);
-        newX = D_5876_tempX;
-        newY = D_5878_tempY;
-        if (NpcCanStepTo(D_5876_tempX, D_5878_tempY, npc, -1) != 0)
+        newX = tempX;
+        newY = tempY;
+        if (NpcCanStepTo(tempX, tempY, npc, -1) != 0)
         {
             distances[dir_d - 1] = NpcDistance(avatar_d->x, avatar_d->y, newX, newY);
         }
@@ -541,7 +541,7 @@ static void PursueOrFlee(int npc, int slot)
             {
                 if (distance_e < distances[dir_d - 1])
                 {
-                    if (best == -1 || ULTIMA_2092_RandomRange(0, 1) != 0)
+                    if (best == -1 || RandomRange(0, 1) != 0)
                     {
                         best = dir_d;
                     }
@@ -573,7 +573,7 @@ static void PursueOrFlee(int npc, int slot)
     }
 
     // ab22 (OK below)
-    if ((type_n == 5 || type_n == 7) && ULTIMA_2092_RandomRange(0, 0x3f) < 0x10)
+    if ((type_n == 5 || type_n == 7) && RandomRange(0, 0x3f) < 0x10)
     {
         // ab3d
         alternative_n = best;
@@ -581,7 +581,7 @@ static void PursueOrFlee(int npc, int slot)
         {
             // ab4b
             if (dir_d != best && distances[dir_d - 1] != 99 &&
-                (alternative_n == best || ULTIMA_2092_RandomRange(0, 0x3f) < 0x10))
+                (alternative_n == best || RandomRange(0, 0x3f) < 0x10))
             {
                 alternative_n = dir_d;
             }
@@ -591,13 +591,13 @@ static void PursueOrFlee(int npc, int slot)
 
     if (best > -1)
     {
-        D_5876_tempX = npcRec_e->x;
-        D_5878_tempY = npcRec_e->y;
+        tempX = npcRec_e->x;
+        tempY = npcRec_e->y;
         StepTemp(best);
 
-        D_5c5a_actors[npcRec_e->actorIdx].x = npcRec_e->x = D_5876_tempX;
-        D_5c5a_actors[npcRec_e->actorIdx].y = npcRec_e->y = D_5878_tempY;
-        D_24e6_viewDirty |= 2;
+        actors[npcRec_e->actorIdx].x = npcRec_e->x = tempX;
+        actors[npcRec_e->actorIdx].y = npcRec_e->y = tempY;
+        viewDirty |= 2;
     }
 }
 
@@ -611,8 +611,8 @@ static int ScheduleDue(int npc, int hour)
     NpcScheduleFmt* schedule_b;
 
     slot_k = -1;
-    npcRec = &D_5f5e_npcs[npc];
-    schedule_b = &D_5d5e_npcSchedules[npc];
+    npcRec = &npcs[npc];
+    schedule_b = &npcSchedules[npc];
 
     for (i = 0; i < 4; i++)
     {
@@ -687,11 +687,11 @@ static int StandsOnStairs(int npc, int slot)
     int onStairs;
     NpcFmt* npcRec_e;
 
-    npcRec_e = &D_5f5e_npcs[npc];
+    npcRec_e = &npcs[npc];
 
     // 0a4a
-    tile = *ULTIMA_4402_GetTileAddr(D_5c5a_actors[npcRec_e->actorIdx].x, D_5c5a_actors[npcRec_e->actorIdx].y);
-    if ((char)D_5d5e_npcSchedules[npc].z[slot] < (char)D_5895_mapLevel)
+    tile = *GetTileAddr(actors[npcRec_e->actorIdx].x, actors[npcRec_e->actorIdx].y);
+    if ((char)npcSchedules[npc].z[slot] < (char)D_5895_mapLevel)
     {
         if (tile != TILE_MAP_LADDER_DOWN)
         {
@@ -714,7 +714,7 @@ static int StandsOnStairs(int npc, int slot)
     else
     {
         // 0aa2
-        tile = *ULTIMA_4402_GetTileAddr(D_5c5a_actors[npcRec_e->actorIdx].x, D_5c5a_actors[npcRec_e->actorIdx].y);
+        tile = *GetTileAddr(actors[npcRec_e->actorIdx].x, actors[npcRec_e->actorIdx].y);
         if (tile == TILE_MAP_LADDER_UP)
         {
             // -> 0a9b
@@ -744,7 +744,7 @@ static int CanEnter(int x, int y, int z, int npc, int slot)
     NpcScheduleFmt* schedule_b;
 
     result = 0;
-    schedule_b = &D_5d5e_npcSchedules[npc];
+    schedule_b = &npcSchedules[npc];
 
     if (slot > -1 && schedule_b->x[slot] == x && schedule_b->y[slot] == y && schedule_b->z[slot] == z)
     {
@@ -761,7 +761,7 @@ static int CanEnter(int x, int y, int z, int npc, int slot)
             tile = GetMap(x, y);
         }
 
-        if (D_5f5e_npcs[npc].mode == 3 && (tile == TILE_MAP_LADDER_UP || tile == TILE_MAP_LADDER_DOWN))
+        if (npcs[npc].mode == 3 && (tile == TILE_MAP_LADDER_UP || tile == TILE_MAP_LADDER_DOWN))
         {
             result = 1;
         }
@@ -787,8 +787,8 @@ static int NpcCanStepTo(int x, int y, int npc, int slot)
         return 0;
     }
 
-    tile = *ULTIMA_4402_GetTileAddr(x, y) & 0xfc;
-    if (D_659e_npcTypes[npc] == 0xfc)
+    tile = *GetTileAddr(x, y) & 0xfc;
+    if (npcTypes[npc] == 0xfc)
     {
         result = 1;
     }
@@ -796,7 +796,7 @@ static int NpcCanStepTo(int x, int y, int npc, int slot)
     {
         result = 1;
     }
-    else if (tile == TILE_MAP_CHAIR_90 && D_5f5e_npcs[npc].mode != 2)
+    else if (tile == TILE_MAP_CHAIR_90 && npcs[npc].mode != 2)
     {
         result = 0;
     }
@@ -805,7 +805,7 @@ static int NpcCanStepTo(int x, int y, int npc, int slot)
         result = CanEnter(x, y, D_5895_mapLevel, npc, slot);
     }
 
-    actorHere_b = ULTIMA_3702_FindLastActorTileAt(x, y, D_5895_mapLevel);
+    actorHere_b = FindLastActorTileAt(x, y, D_5895_mapLevel);
     if (result == 0 || actorHere_b != 0)
     {
         result = 0;
@@ -822,23 +822,23 @@ static void Wander(NpcFmt* npcRec, int maxDist, int slot, int npc, NpcScheduleFm
     int x;
     int dir_a;
 
-    if ((ULTIMA_2092_RandomRange(0, 0xff) & 8) != 0)
+    if ((RandomRange(0, 0xff) & 8) != 0)
     {
         dir_a = Random(0x40);
         dir_a = (dir_a & 3) + 1;
-        D_5876_tempX = npcRec->x;
-        D_5878_tempY = npcRec->y;
+        tempX = npcRec->x;
+        tempY = npcRec->y;
         StepTemp(dir_a);
-        x = D_5876_tempX;
-        y = D_5878_tempY;
+        x = tempX;
+        y = tempY;
 
-        if ((maxDist == 0 || NpcDistance(schedule->x[slot], schedule->y[slot], D_5876_tempX, D_5878_tempY) <= maxDist) &&
-            NpcCanStepTo(D_5876_tempX, D_5878_tempY, npc, slot) != 0)
+        if ((maxDist == 0 || NpcDistance(schedule->x[slot], schedule->y[slot], tempX, tempY) <= maxDist) &&
+            NpcCanStepTo(tempX, tempY, npc, slot) != 0)
         {
-            D_5c5a_actors[npcRec->actorIdx].x = npcRec->x = x;
-            D_5c5a_actors[npcRec->actorIdx].y = npcRec->y = y;
+            actors[npcRec->actorIdx].x = npcRec->x = x;
+            actors[npcRec->actorIdx].y = npcRec->y = y;
 
-            D_24e6_viewDirty |= 2;
+            viewDirty |= 2;
         }
     }
 }
@@ -850,8 +850,8 @@ static void ActBySchedule(int npc, int slot)
     NpcScheduleFmt* schedule;
     NpcFmt* npcRec;
 
-    npcRec = &D_5f5e_npcs[npc];
-    schedule = &D_5d5e_npcSchedules[npc];
+    npcRec = &npcs[npc];
+    schedule = &npcSchedules[npc];
 
     switch (schedule->type[slot])
     {
@@ -920,11 +920,11 @@ void MoveNpcs(int hour)
     for (npc = 1; npc < 0x20; npc++)
     {
         // 126d
-        if (D_659e_npcTypes[npc] == 0)
+        if (npcTypes[npc] == 0)
             continue;
 
         slot_g = ScheduleSlot(npc, hour);
-        npcRec_k = &D_5f5e_npcs[npc];
+        npcRec_k = &npcs[npc];
 
         // 128e
         if ((int)npcRec_k->mode > 1 || ScheduleDue(npc, hour) != 0)
@@ -950,19 +950,19 @@ void MoveNpcs(int hour)
 
                         // 0dd9
                         result_j =
-                            FindLadder(D_5d5e_npcSchedules[npc].x[slot_g], D_5d5e_npcSchedules[npc].y[slot_g], mode == 3, npc);
+                            FindLadder(npcSchedules[npc].x[slot_g], npcSchedules[npc].y[slot_g], mode == 3, npc);
                         if (result_j != 0)
                         {
-                            x = D_5876_tempX;
-                            y = D_5878_tempY;
-                            result_j = SearchPath(x, y, D_5d5e_npcSchedules[npc].x[slot_g],
-                                                D_5d5e_npcSchedules[npc].y[slot_g], mode, npc);
+                            x = tempX;
+                            y = tempY;
+                            result_j = SearchPath(x, y, npcSchedules[npc].x[slot_g],
+                                                npcSchedules[npc].y[slot_g], mode, npc);
                         }
 
                         // 0e32
                         if (result_j != 0)
                         {
-                            BuildMoveList(npc, mode, D_5d5e_npcSchedules[npc].x[slot_g], D_5d5e_npcSchedules[npc].y[slot_g]);
+                            BuildMoveList(npc, mode, npcSchedules[npc].x[slot_g], npcSchedules[npc].y[slot_g]);
 
                             tile = GetMap(x, y);
                             if ((mode == 3 && tile == TILE_MAP_LADDER_UP) ||
@@ -980,8 +980,8 @@ void MoveNpcs(int hour)
                 else if ((npcRec_k->mode != 6 && npcRec_k->mode != 7) || StandsOnStairs(npc, slot_g) != 0)
                 {
                     // 0ebf
-                    PlaceNpcActor(npc, D_5d5e_npcSchedules[npc].x[slot_g], D_5d5e_npcSchedules[npc].y[slot_g],
-                              D_5d5e_npcSchedules[npc].z[slot_g]);
+                    PlaceNpcActor(npc, npcSchedules[npc].x[slot_g], npcSchedules[npc].y[slot_g],
+                              npcSchedules[npc].z[slot_g]);
 
                     npcRec_k->scheduleIdx = slot_g;
                     moveListPos[npc] = -1;
@@ -1005,8 +1005,8 @@ void MoveNpcs(int hour)
                         result_j = FindLadder(npcRec_k->x, npcRec_k->y, mode == 1, npc);
                         if (result_j != 0)
                         {
-                            x = D_5876_tempX;
-                            y = D_5878_tempY;
+                            x = tempX;
+                            y = tempY;
                             result_j = SearchPath(npcRec_k->x, npcRec_k->y, x, y, mode, npc);
                         }
                         // 0f71
@@ -1024,18 +1024,18 @@ void MoveNpcs(int hour)
                 if (moveListPos[npc] > -1 && moveLists[npc].data[moveListPos[npc]] != 0)
                 {
                     // 0fb8
-                    D_5876_tempX = npcRec_k->x;
-                    D_5878_tempY = npcRec_k->y;
+                    tempX = npcRec_k->x;
+                    tempY = npcRec_k->y;
                     StepTemp(moveLists[npc].data[moveListPos[npc] + 1]);
-                    x = D_5876_tempX;
-                    y = D_5878_tempY;
-                    result_j = NpcCanStepTo(D_5876_tempX, y, npc, slot_g);
+                    x = tempX;
+                    y = tempY;
+                    result_j = NpcCanStepTo(tempX, y, npc, slot_g);
                     if (result_j != 0)
                     {
                         // 0ff9
-                        npcRec_k->x = D_5c5a_actors[npcRec_k->actorIdx].x = x;
-                        npcRec_k->y = D_5c5a_actors[npcRec_k->actorIdx].y = y;
-                        D_24e6_viewDirty |= 2;
+                        npcRec_k->x = actors[npcRec_k->actorIdx].x = x;
+                        npcRec_k->y = actors[npcRec_k->actorIdx].y = y;
+                        viewDirty |= 2;
 
                         moveLists[npc].data[moveListPos[npc]]--;
                         npcStuckCount[npc] = 0;
@@ -1061,7 +1061,7 @@ void MoveNpcs(int hour)
                     else
                     {
                         npcStuckCount[npc]++;
-                        Wander(&D_5f5e_npcs[npc], 0, slot_g, npc, &D_5d5e_npcSchedules[npc]);
+                        Wander(&npcs[npc], 0, slot_g, npc, &npcSchedules[npc]);
                         if (npcStuckCount[npc] > 3)
                         {
                             // 10d0
@@ -1076,7 +1076,7 @@ void MoveNpcs(int hour)
                     // 10e0
                     if (moveListPos[npc] == -1 && npcRec_k->mode == 3)
                     {
-                        if ((s8)D_5895_mapLevel < (s8)D_5d5e_npcSchedules[npc].z[ScheduleSlot(npc, hour)])
+                        if ((s8)D_5895_mapLevel < (s8)npcSchedules[npc].z[ScheduleSlot(npc, hour)])
                         {
                             npcRec_k->mode = 6;
                             return;
@@ -1092,30 +1092,30 @@ void MoveNpcs(int hour)
                         if (npcRec_k->mode != 1)
                         {
                             // 1138
-                            if (npcStuckCount[npc] < 200 && (npcStuckCount[npc] == 0 || ULTIMA_2092_RandomRange(0, 2) == 1))
+                            if (npcStuckCount[npc] < 200 && (npcStuckCount[npc] == 0 || RandomRange(0, 2) == 1))
                             {
                                 // 1160
                                 if (moveListPos[npc] == -1)
                                 {
                                     pathSearched = pathSearched + 1;
-                                    if ((result_j = SearchPath(npcRec_k->x, npcRec_k->y, D_5d5e_npcSchedules[npc].x[slot_g],
-                                                                   D_5d5e_npcSchedules[npc].y[slot_g], 0, npc)) != 0)
+                                    if ((result_j = SearchPath(npcRec_k->x, npcRec_k->y, npcSchedules[npc].x[slot_g],
+                                                                   npcSchedules[npc].y[slot_g], 0, npc)) != 0)
                                     {
-                                        result_j = BuildMoveList(npc, 0, D_5d5e_npcSchedules[npc].x[slot_g],
-                                                                  D_5d5e_npcSchedules[npc].y[slot_g]);
+                                        result_j = BuildMoveList(npc, 0, npcSchedules[npc].x[slot_g],
+                                                                  npcSchedules[npc].y[slot_g]);
                                         npcStuckCount[npc] = 0;
                                     }
                                     else
                                     {
                                         // 11ba
                                         npcStuckCount[npc] = 200;
-                                        Wander(&D_5f5e_npcs[npc], 0, slot_g, npc, &D_5d5e_npcSchedules[npc]);
+                                        Wander(&npcs[npc], 0, slot_g, npc, &npcSchedules[npc]);
                                     }
                                 }
                                 else
                                 {
                                     // 11c5
-                                    Wander(&D_5f5e_npcs[npc], 0, slot_g, npc, &D_5d5e_npcSchedules[npc]);
+                                    Wander(&npcs[npc], 0, slot_g, npc, &npcSchedules[npc]);
                                 }
                             }
                             else

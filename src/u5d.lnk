@@ -110,10 +110,10 @@ wrapper  PLSTART  stackgap=0100 sp=0064
 stubs    DungeonMainLoop GetWorldSavefile INTRO_0986_Main MainoutEntry
 stubs    TownEntry TownMainLoop
 stubs    Death Shrine LoadNpcFile TOWN_10da_ShoutBegone
-stubs    TOWN_1694_PlaceActors TOWN_0170_SwapDayNightTiles NPC_00d6_PlaceNpcs MoveNpcs
-stubs    Capture TOWN_0b82_KlimbCmd TOWN_0958_RaiseAlarm TalkToNpc
-stubs    TOWN_09e6_AttackCmd TOWN_0000_CheckNpcKilled TOWN_0052_SetNpcKilled
-stubs    TOWN_00b0_DespawnNpc TOWN_011e_FindNpcByActor PlaceNpcActor
+stubs    PlaceActors SwapDayNightTiles NPC_00d6_PlaceNpcs MoveNpcs
+stubs    Capture KlimbCmd RaiseAlarm TalkToNpc
+stubs    AttackCmd CheckNpcKilled SetNpcKilled
+stubs    DespawnNpc FindNpcByActor PlaceNpcActor
 stubs    ScheduleSlot
 stubs    Falls StepOnPoisonTile StepOnBurningTile
 stubs    EnterCmd MonstersTurn SetUpOverworld

@@ -33,17 +33,17 @@ static void EnterRoom(byte cell)
     int savedX;
     int savedPlayer;
 
-    ULTIMA_1850_PrintString(/*0x2c58*/ "Entering room...\n");
+    PrintString(/*0x2c58*/ "Entering room...\n");
 
     dungeonFacing = facingOfDir[dungeonMoveDir];
 
-    ULTIMA_1b16_ClearKbdBuffer();
+    ClearKbdBuffer();
 
     room = cell & 0xf;
     savedPlayer = activePlayer;
     curCombatant = activePlayer = 0xff;
 
-    level_f = D_5893_mapId - 0x21;
+    level_f = mapId - 0x21;
     if (level_f >= 1)
     {
         level_f--;
@@ -53,20 +53,20 @@ static void EnterRoom(byte cell)
 
     memset(combatMap, 0, 0x160);
 
-    ULTIMA_256e_ReadFileFromDisk(/*0x2c6a*/ "dungeon.cbt", combatMap, 0x160, fileOffset_f);
+    ReadFileFromDisk(/*0x2c6a*/ "dungeon.cbt", combatMap, 0x160, fileOffset_f);
 
-    D_5894_savedMapId = D_5893_mapId;
+    D_5894_savedMapId = mapId;
     savedX = D_5896_mapX;
     savedY = D_5897_mapY;
 
-    savedMonster1 = D_5c5a_actors[1];
-    savedMonster2 = D_5c5a_actors[2];
+    savedMonster1 = actors[1];
+    savedMonster2 = actors[2];
 
-    D_5893_mapId = 0xff;
+    mapId = 0xff;
     combatExitDir = 0;
 
     PlaceCombatants(cell, 3);
-    ULTIMA_5910_UpdateFrame();
+    UpdateFrame();
 
     combatFlags = 0x82;
 
@@ -77,19 +77,19 @@ static void EnterRoom(byte cell)
             EndgameMain();
         }
 
-        D_5893_mapId = D_5894_savedMapId;
+        mapId = D_5894_savedMapId;
         MarkRoomCleared(room);
         GetDungeonMap((uint)savedX, (uint)savedY, (uint)D_5895_mapLevel) &= 0xaf;
     }
 
     D_5897_mapY = savedY;
     D_5896_mapX = savedX;
-    D_5893_mapId = D_5894_savedMapId;
+    mapId = D_5894_savedMapId;
 
     StepAfterCombat();
 
-    D_5c5a_actors[1] = savedMonster1;
-    D_5c5a_actors[2] = savedMonster2;
+    actors[1] = savedMonster1;
+    actors[2] = savedMonster2;
     activePlayer = savedPlayer;
 }
 
@@ -102,16 +102,16 @@ void SetUpMonster(int respawn)
     int oldValue;
     ActorFmt* monster;
 
-    monster = &D_5c5a_actors[1];
-    oldValue = D_5c5a_actors[1].value;
+    monster = &actors[1];
+    oldValue = actors[1].value;
     if (respawn != 0)
     {
-        type_k = ULTIMA_2092_RandomRange(0, 7);
-        D_5c5a_actors[1].tile = D_5c5a_actors[1].animTile = type_k;
-        D_5c5a_actors[1].extra = 0;
-        D_5c5a_actors[1].animState = monsterAnimStates[type_k];
-        D_5c5a_actors[1].value = monsterTypes[type_k];
-        D_5c5a_actors[1].z = D_5895_mapLevel;
+        type_k = RandomRange(0, 7);
+        actors[1].tile = actors[1].animTile = type_k;
+        actors[1].extra = 0;
+        actors[1].animState = monsterAnimStates[type_k];
+        actors[1].value = monsterTypes[type_k];
+        actors[1].z = D_5895_mapLevel;
         if (oldValue != 0xff)
         {
             FreeImage(monsterImage);
@@ -149,19 +149,19 @@ void PrintWalkDir(void)
     switch (dungeonFacing)
     {
     case 0:
-        ULTIMA_1850_PrintString(/*0x2c7c*/ "North");
+        PrintString(/*0x2c7c*/ "North");
         break;
     case 1:
-        ULTIMA_1850_PrintString(/*0x2c82*/ " East");
+        PrintString(/*0x2c82*/ " East");
         break;
     case 2:
-        ULTIMA_1850_PrintString(/*0x2c88*/ "South");
+        PrintString(/*0x2c88*/ "South");
         break;
     case 3:
-        ULTIMA_1850_PrintString(/*0x2c8e*/ " West");
+        PrintString(/*0x2c8e*/ " West");
         break;
     default:
-        ULTIMA_1850_PrintString(/*0x2c94*/ " ????");
+        PrintString(/*0x2c94*/ " ????");
         break;
     }
 
@@ -182,7 +182,7 @@ static int PlaceMonster(void)
     {
         // 0262
         cellPtr_c = &GetDungeonMap(0, 0, D_5895_mapLevel);
-        offset = ULTIMA_2092_RandomRange(0, 0x3f);
+        offset = RandomRange(0, 0x3f);
         cellPtr_c += offset;
         kind_b = *cellPtr_c & 0xf0;
         if (kind_b < 0x60 || kind_b == 0x70)
@@ -192,12 +192,12 @@ static int PlaceMonster(void)
             cellX_i = offset % 8;
             if (cellX_i != D_5896_mapX && cellY_h != D_5897_mapY)
             {
-                D_5c5a_actors[1].x = D_5c5a_actors[2].x = cellX_i;
-                D_5c5a_actors[1].y = D_5c5a_actors[2].y = cellY_h;
+                actors[1].x = actors[2].x = cellX_i;
+                actors[1].y = actors[2].y = cellY_h;
 
-                if ((D_5c5a_actors[1].value == 0x16 || D_5c5a_actors[1].value == 0x18) && (int)ULTIMA_2092_RandomRange(0, 99) > 0x30)
+                if ((actors[1].value == 0x16 || actors[1].value == 0x18) && (int)RandomRange(0, 99) > 0x30)
                 {
-                    D_5c5a_actors[1].extra = 0xff;
+                    actors[1].extra = 0xff;
                 }
 
                 offset = 1;
@@ -208,7 +208,7 @@ static int PlaceMonster(void)
 
     if (tries == 8)
     {
-        D_5c5a_actors[1].x = D_5c5a_actors[2].x = D_5c5a_actors[1].y = D_5c5a_actors[2].y = 0xff;
+        actors[1].x = actors[2].x = actors[1].y = actors[2].y = 0xff;
         offset = 0;
     }
 
@@ -221,20 +221,20 @@ static void DungeonDrawFrame(void)
     int savedWindow;
 
     savedWindow = textWindowIndex;
-    ULTIMA_0a70_GRAP_2d_SetPenColor(blueColor);
-    ULTIMA_0aa6_GRAP_3f_FillRect(0x28, 0, 0x98, 7);
-    ULTIMA_0aa6_GRAP_3f_FillRect(0x30, 0xb9, 0x98, 0xbf);
-    ULTIMA_0a70_GRAP_2d_SetPenColor(brightWhiteColor);
+    GRAP_2d_SetPenColor(blueColor);
+    GRAP_3f_FillRect(0x28, 0, 0x98, 7);
+    GRAP_3f_FillRect(0x30, 0xb9, 0x98, 0xbf);
+    GRAP_2d_SetPenColor(brightWhiteColor);
     GRAP_Line(0x28, 7, 0x98, 7);
     GRAP_Line(0x30, 0xb8, 0x98, 0xb8);
     SelectTextWindow(0);
     SetTextPosition(10, 0);
-    ULTIMA_4c2a_PrintLeftCap();
-    ULTIMA_1850_PrintString(/*0x2c9a*/ "L ");
+    PrintLeftCap();
+    PrintString(/*0x2c9a*/ "L ");
     PrintRightCap();
     SetTextPosition(6, 0x17);
-    ULTIMA_4c2a_PrintLeftCap();
-    ULTIMA_1850_PrintString(/*0x2c9d*/ "Dir:      ");
+    PrintLeftCap();
+    PrintString(/*0x2c9d*/ "Dir:      ");
     PrintRightCap();
     SelectTextWindow(savedWindow);
 }
@@ -247,14 +247,14 @@ static int DungeonWaitForKey(void)
     int key;
     int fullView_c;
 
-    if (D_a9fa_vitalsDirty != 0)
+    if (vitalsDirty != 0)
     {
-        ULTIMA_2900_UpdateVitalsDisplay();
-        D_a9fa_vitalsDirty = 0;
+        UpdateVitalsDisplay();
+        vitalsDirty = 0;
     }
 
-    ULTIMA_16ba_PrintChar('\n');
-    ULTIMA_4c2a_PrintLeftCap();
+    PrintChar('\n');
+    PrintLeftCap();
 
     fullView_c = 1;
     do
@@ -293,13 +293,13 @@ static int DungeonWaitForKey(void)
 static void ElectricField(int direction)
 {
     Redraw();
-    ULTIMA_1850_PrintString(/*0x2ca8*/ "Ouch!\n");
-    ULTIMA_1850_PrintString(/*0x2caf*/ "Electric field!\n");
-    ULTIMA_0a70_GRAP_2d_SetPenColor(brightWhiteColor);
+    PrintString(/*0x2ca8*/ "Ouch!\n");
+    PrintString(/*0x2caf*/ "Electric field!\n");
+    GRAP_2d_SetPenColor(brightWhiteColor);
     GRAP_XorFillRect(8, 8, 0xb7, 0xb7);
     WaitTicks(1);
     GRAP_XorFillRect(8, 8, 0xb7, 0xb7);
-    ULTIMA_223c_AudioWhiteNoise(1, 500, 20000);
+    AudioWhiteNoise(1, 500, 20000);
     if (direction > 0)
     {
         D_5896_mapX -= facingDx[dungeonFacing];
@@ -310,7 +310,7 @@ static void ElectricField(int direction)
         D_5896_mapX += facingDx[dungeonFacing];
         D_5897_mapY += facingDy[dungeonFacing];
     }
-    ULTIMA_2aa8_DamageParty();
+    DamageParty();
     Redraw();
 }
 
@@ -330,7 +330,7 @@ static int WalkCmd(int key, byte cell)
     {
     case DIR_UP:
         // 0542
-        ULTIMA_1850_PrintString(/*0x2cc0*/ "Advance\n");
+        PrintString(/*0x2cc0*/ "Advance\n");
         stepDir_f = 1;
         break;
 
@@ -338,19 +338,19 @@ static int WalkCmd(int key, byte cell)
         // 0628
         if ((cell & 0xf0) == 0xe0)
         {
-            ULTIMA_1850_PrintString(/*0x2cc9*/ "Not in doorway!\n"); // -> 0666
+            PrintString(/*0x2cc9*/ "Not in doorway!\n"); // -> 0666
         }
         else
         {
             // 0636
-            ULTIMA_1850_PrintString(/*0x2cda*/ "Turn right\n");
+            PrintString(/*0x2cda*/ "Turn right\n");
             dungeonFacing = (dungeonFacing + 1) & 3;
         }
         break;
 
     case DIR_DOWN:
         // 064a
-        ULTIMA_1850_PrintString(/*0x2ce6*/ "Back up\n");
+        PrintString(/*0x2ce6*/ "Back up\n");
         stepDir_f = -1;
         break;
 
@@ -359,19 +359,19 @@ static int WalkCmd(int key, byte cell)
         if ((cell & 0xf0) == 0xe0)
         {
             // 0666
-            ULTIMA_1850_PrintString(/*0x2cef*/ "Not in doorway!\n");
+            PrintString(/*0x2cef*/ "Not in doorway!\n");
         }
         else
         {
             // 066e
-            ULTIMA_1850_PrintString(/*0x2d00*/ "Turn left\n");
+            PrintString(/*0x2d00*/ "Turn left\n");
             dungeonFacing = (dungeonFacing + 3) & 3;
         }
         break;
 
     default:
         // 0533
-        ULTIMA_1850_PrintString(/*0x2d0b*/ "Turn around.\n");
+        PrintString(/*0x2d0b*/ "Turn around.\n");
         dungeonFacing = (dungeonFacing + 2) & 3; // -> 0642 -> 054e
         break;
     }
@@ -419,14 +419,14 @@ static int WalkCmd(int key, byte cell)
         if (destCell_j > 0xa0 && destCell_j < 0xe0 || stepDir_f == -1 && (destCell_j == 0xa0 || destCell_j == 0xf0))
         {
             // 061d
-            ULTIMA_1850_PrintString(/*0x2d19*/ "Blocked!\n");
+            PrintString(/*0x2d19*/ "Blocked!\n");
         }
         else
         {
             // 067c~: OK
-            if (destX == D_5c5a_actors[1].x && destY == D_5c5a_actors[1].y)
+            if (destX == actors[1].x && destY == actors[1].y)
             {
-                ULTIMA_1850_PrintString(/*0x2d23*/ "Blocked!\n");
+                PrintString(/*0x2d23*/ "Blocked!\n");
             }
             else
             {
@@ -457,14 +457,14 @@ static int DungeonProcessCommand(int key)
     {
     case U5_KEY_CTRL_K:
         // 06f2
-        PrintNumber(D_5888_karma, 1, 0x20);
-        ULTIMA_16ba_PrintChar('\n');
+        PrintNumber(karma, 1, 0x20);
+        PrintChar('\n');
         break;
 
     case U5_KEY_CTRL_E:
         // 0710
-        ULTIMA_1850_PrintString(/*0x2d2d*/ "Exit to DOS? ");
-        key = ULTIMA_266c_GetChar();
+        PrintString(/*0x2d2d*/ "Exit to DOS? ");
+        key = GetChar();
         if (key == 0x59)
         {
             RestoreVideoMode();
@@ -472,13 +472,13 @@ static int DungeonProcessCommand(int key)
             // nop?
             break;
         }
-        ULTIMA_1850_PrintString(/*0x2d3b*/ "N\n");
+        PrintString(/*0x2d3b*/ "N\n");
         break;
 
     case U5_KEY_CTRL_V:
         // 073a
-        ULTIMA_1850_PrintString(/*0x2d3e*/ "1.16");
-        ULTIMA_16ba_PrintChar('\n');
+        PrintString(/*0x2d3e*/ "1.16");
+        PrintChar('\n');
         break;
 
     case U5_KEY_LEFT:
@@ -495,22 +495,22 @@ static int DungeonProcessCommand(int key)
 
     case U5_KEY_CTRL_S:
         // 0776
-        ULTIMA_1850_PrintString(/*0x2d43*/ "Sound ");
-        if (D_a9ce_soundOn != 0)
+        PrintString(/*0x2d43*/ "Sound ");
+        if (soundOn != 0)
         {
-            ULTIMA_1850_PrintString(/*0x2d4a*/ "Off\n");
+            PrintString(/*0x2d4a*/ "Off\n");
         }
         else
         {
-            ULTIMA_1850_PrintString(/*0x2d4f*/ "On\n");
+            PrintString(/*0x2d4f*/ "On\n");
         }
-        D_a9ce_soundOn = !D_a9ce_soundOn;
+        soundOn = !soundOn;
         break;
 
     default:
         if ((uint)key >= 0x30 && (uint)key <= 0x39)
         {
-            result_b = ULTIMA_4080_SetActivePlayer(key);
+            result_b = SetActivePlayer(key);
             result_b = 0;
         }
         else
@@ -541,10 +541,10 @@ static int MoveMonster(void)
     tries = 0;
     reached = 0;
     moved = 999;
-    monster_i = &D_5c5a_actors[1];
-    previous = &D_5c5a_actors[2];
+    monster_i = &actors[1];
+    previous = &actors[2];
 
-    if (D_5c5a_actors[1].value != 0xff)
+    if (actors[1].value != 0xff)
     {
         if (monster_i->value != 0x1b)
         {
@@ -552,7 +552,7 @@ static int MoveMonster(void)
             for (tries = 0; tries < 8; tries++)
             {
                 // 083e
-                dir_i = ULTIMA_2092_RandomRange(0, 3);
+                dir_i = RandomRange(0, 3);
                 newX_k = facingDx[dir_i] + monster_i->x;
                 if (newX_k > 7)
                 {
@@ -582,7 +582,7 @@ static int MoveMonster(void)
                 {
                     oldX = previous->x;
                     oldY_p = previous->y;
-                    if (newX_k != oldX || newY_j != oldY_p || ULTIMA_2092_RandomRange(0, 7) == 1)
+                    if (newX_k != oldX || newY_j != oldY_p || RandomRange(0, 7) == 1)
                     {
                         moved = 900;
                         break;
@@ -616,16 +616,16 @@ static void SleepSpell(void)
 {
     int member;
 
-    ULTIMA_1850_PrintString(/*0x2d53*/ "Sleep spell!\n");
+    PrintString(/*0x2d53*/ "Sleep spell!\n");
 
-    for (member = 0; member < D_585b_partyCount; member++)
+    for (member = 0; member < partyCount; member++)
     {
-        if (D_55a8_party[member].dex <= ULTIMA_2092_RandomRange(1, 0x1e) && D_55a8_party[member].status != STATUS_DEAD)
+        if (party[member].dex <= RandomRange(1, 0x1e) && party[member].status != STATUS_DEAD)
         {
-            D_55a8_party[member].status = STATUS_SLEEP;
+            party[member].status = STATUS_SLEEP;
             InvertPlayerRow(member);
-            ULTIMA_223c_AudioWhiteNoise(1, 0x32, 0xdac);
-            D_a9fa_vitalsDirty = 1;
+            AudioWhiteNoise(1, 0x32, 0xdac);
+            vitalsDirty = 1;
         }
     }
 
@@ -637,14 +637,14 @@ static void DungeonPoison(void)
 {
     int member;
 
-    ULTIMA_1850_PrintString(/*0x2d61*/ "Poison!\n");
+    PrintString(/*0x2d61*/ "Poison!\n");
 
-    for (member = 0; member < D_585b_partyCount; member++)
+    for (member = 0; member < partyCount; member++)
     {
-        if (D_55a8_party[member].dex <= ULTIMA_2092_RandomRange(1, 0x1e) && D_55a8_party[member].status != STATUS_DEAD)
+        if (party[member].dex <= RandomRange(1, 0x1e) && party[member].status != STATUS_DEAD)
         {
-            D_55a8_party[member].status = STATUS_POISONED;
-            ULTIMA_223c_AudioWhiteNoise(1, 0x32, 0xdac);
+            party[member].status = STATUS_POISONED;
+            AudioWhiteNoise(1, 0x32, 0xdac);
         }
     }
 }
@@ -656,8 +656,8 @@ static void FallThroughPit(byte cell)
 
     while ((cell == 0x61 || cell == 0x69) && D_5895_mapLevel < 8)
     {
-        ULTIMA_1850_PrintString(/*0x2d6a*/ "Pit Trap!\n");
-        ULTIMA_1850_PrintString(/*0x2d75*/ "Falling...\n");
+        PrintString(/*0x2d6a*/ "Pit Trap!\n");
+        PrintString(/*0x2d75*/ "Falling...\n");
 
         GetDungeonMap(D_5896_mapX, D_5897_mapY, D_5895_mapLevel) &= 0xf8;
 
@@ -671,16 +671,16 @@ static void FallThroughPit(byte cell)
         }
 
         Redraw();
-        ULTIMA_1850_PrintString(/*0x2d81*/ "      ...splat!\n");
-        ULTIMA_2aa8_DamageParty();
+        PrintString(/*0x2d81*/ "      ...splat!\n");
+        DamageParty();
     }
 
     if (D_5895_mapLevel == 8)
     {
-        D_5893_mapId = 0;
+        mapId = 0;
     }
 
-    if (D_5893_mapId != 0)
+    if (mapId != 0)
     {
         cell = GetDungeonMap(D_5896_mapX, D_5897_mapY, D_5895_mapLevel);
         cell &= 0xf0;
@@ -688,7 +688,7 @@ static void FallThroughPit(byte cell)
         {
             FreeDungeonImages();
             EnterRoom(GetDungeonMap(D_5896_mapX, D_5897_mapY, D_5895_mapLevel));
-            if (D_5893_mapId == 0)
+            if (mapId == 0)
             {
                 return;
             }
@@ -705,9 +705,9 @@ static void MonsterAttacks(void)
 {
     ActorFmt* monster;
 
-    ULTIMA_1850_PrintString(/*0x2d92*/ "Attacked");
+    PrintString(/*0x2d92*/ "Attacked");
 
-    monster = &D_5c5a_actors[2];
+    monster = &actors[2];
 
     if (((monster->x - 1) & 7) == D_5896_mapX)
     {
@@ -728,40 +728,40 @@ static void MonsterAttacks(void)
 
     if (dungeonMoveDir != dungeonFacing)
     {
-        ULTIMA_1850_PrintString(/*0x2d9b*/ " from the ");
+        PrintString(/*0x2d9b*/ " from the ");
 
         switch (dungeonMoveDir)
         {
         case 0:
-            ULTIMA_1850_PrintString(/*0x2da6*/ "north");
+            PrintString(/*0x2da6*/ "north");
             break;
         case 1:
-            ULTIMA_1850_PrintString(/*0x2dac*/ "east");
+            PrintString(/*0x2dac*/ "east");
             break;
         case 2:
-            ULTIMA_1850_PrintString(/*0x2db1*/ "south");
+            PrintString(/*0x2db1*/ "south");
             break;
         case 3:
-            ULTIMA_1850_PrintString(/*0x2db7*/ "west");
+            PrintString(/*0x2db7*/ "west");
             break;
         }
 
         dungeonFacing = dungeonMoveDir;
     }
 
-    ULTIMA_1850_PrintString(/*0x2dbc*/ "!\n");
+    PrintString(/*0x2dbc*/ "!\n");
     Redraw();
-    ULTIMA_1b16_ClearKbdBuffer();
+    ClearKbdBuffer();
     WaitTicks(2);
     FreeDungeonImages();
     combatExitDir = 0;
     combatFlags = 2;
     SetUpDungeonFight();
-    SpecialMapHandler(2, D_5c5a_actors[1].value, 0);
+    SpecialMapHandler(2, actors[1].value, 0);
     StepAfterCombat();
     LoadDungeonImages(1);
     SetUpMonster(1);
-    if (D_5893_mapId != 0)
+    if (mapId != 0)
     {
         Redraw();
     }
@@ -779,18 +779,18 @@ void AfterStep(byte cell, int monsterMoves)
     kind = cell & 0xf0;
     woken_e = 0;
 
-    for (member = 0; member < D_585b_partyCount; member++)
+    for (member = 0; member < partyCount; member++)
     {
-        if (D_55a8_party[member].status == STATUS_SLEEP && ULTIMA_2092_RandomRange(0, 0x3f) < 4)
+        if (party[member].status == STATUS_SLEEP && RandomRange(0, 0x3f) < 4)
         {
-            D_55a8_party[member].status = STATUS_GOOD;
+            party[member].status = STATUS_GOOD;
             woken_e++;
         }
     }
 
     if (woken_e != 0)
     {
-        ULTIMA_2900_UpdateVitalsDisplay();
+        UpdateVitalsDisplay();
     }
 
     if (monsterMoves != 0)
@@ -818,7 +818,7 @@ void AfterStep(byte cell, int monsterMoves)
             if (GetFirstActivePartyMember() > -1)
             {
                 EnterRoom(cell);
-                if (D_5893_mapId == 0)
+                if (mapId == 0)
                 {
                     break;
                 }
@@ -836,7 +836,7 @@ void AfterStep(byte cell, int monsterMoves)
         // 0d4a
         LoadDungeonImages(1);
 
-        if (D_5893_mapId > 0x20)
+        if (mapId > 0x20)
         {
             // 0d5b
             Redraw();
@@ -859,16 +859,16 @@ void AfterStep(byte cell, int monsterMoves)
 
         case 0x82:
         case 0x8a:
-            ULTIMA_1850_PrintString(/*0x2dbf*/ "Fire!!\n");
-            ULTIMA_2aa8_DamageParty();
+            PrintString(/*0x2dbf*/ "Fire!!\n");
+            DamageParty();
             break;
 
         case 0x62:
         case 0x6a:
-            ULTIMA_1850_PrintString(/*0x2dc7*/ "Bomb Trap!\n");
-            ULTIMA_1850_PrintString(/*0x2dd3*/ "KABOOM!!\n");
+            PrintString(/*0x2dc7*/ "Bomb Trap!\n");
+            PrintString(/*0x2dd3*/ "KABOOM!!\n");
             GetDungeonMap(D_5896_mapX, D_5897_mapY, D_5895_mapLevel) &= 8;
-            ULTIMA_2aa8_DamageParty();
+            DamageParty();
             break;
 
         case 0x61:
@@ -877,10 +877,10 @@ void AfterStep(byte cell, int monsterMoves)
             break;
         }
 
-        ULTIMA_2900_UpdateVitalsDisplay();
+        UpdateVitalsDisplay();
     }
 
-    ULTIMA_2ae8_EndTurn();
+    EndTurn();
 }
 
 // the dungeon's overlay entry and command loop: sets the dungeon's wall and floor tiles by its number, loads the pictures, runs until the party leaves or dies
@@ -903,7 +903,7 @@ void DungeonMainLoop(int fresh)
     kind &= 0xf0;
     DungeonDrawFrame();
     PrintWalkDir();
-    key = D_5893_mapId - 0x20;
+    key = mapId - 0x20;
     if (key == 1 || key == 4 || key == 5)
     {
         // 0e95
@@ -936,7 +936,7 @@ void DungeonMainLoop(int fresh)
         EnterRoom(GetDungeonMap(D_5896_mapX, D_5897_mapY, D_5895_mapLevel));
     }
 
-    if (D_5893_mapId > 0x20)
+    if (mapId > 0x20)
     {
         LoadDungeonImages(fresh);
         SetUpMonster(fresh);
@@ -944,16 +944,16 @@ void DungeonMainLoop(int fresh)
     }
 
     // 0f15
-    while (running_i != 0 && D_5893_mapId > 0x20) // 0f93
+    while (running_i != 0 && mapId > 0x20) // 0f93
     {
         running_i = 1;
         turnTaken_n = 1;
         awake = GetFirstActivePartyMember();
         if (awake == turnTaken_n)
         {
-            ULTIMA_16ba_PrintChar('\n');
-            ULTIMA_4c2a_PrintLeftCap();
-            ULTIMA_1850_PrintString(/*0x2ddd*/ "Zzzzzz...\n");
+            PrintChar('\n');
+            PrintLeftCap();
+            PrintString(/*0x2ddd*/ "Zzzzzz...\n");
         }
 
         // 0fc3
@@ -971,7 +971,7 @@ void DungeonMainLoop(int fresh)
         {
             // 0fea -> 0f2e
             quickToggle_b = 1;
-            ULTIMA_4f7c_AdvanceTime(1);
+            AdvanceTime(1);
         }
         else
         {
@@ -980,7 +980,7 @@ void DungeonMainLoop(int fresh)
                 quickToggle_b ^= 1;
                 if (quickToggle_b != 0)
                 {
-                    ULTIMA_4f7c_AdvanceTime(1);
+                    AdvanceTime(1);
                 }
             }
             else
@@ -996,7 +996,7 @@ void DungeonMainLoop(int fresh)
             turnTaken_n = DungeonProcessCommand(key);
         }
 
-        if (D_5893_mapId < 0x21)
+        if (mapId < 0x21)
         {
             turnTaken_n = 0;
             running_i = turnTaken_n;
@@ -1010,7 +1010,7 @@ void DungeonMainLoop(int fresh)
             AfterStep(cell, quickToggle_b);
         }
 
-        if (D_5893_mapId >= 0x21)
+        if (mapId >= 0x21)
         {
             continue;
         }
@@ -1043,7 +1043,7 @@ void StepSound(void)
     stepToggle ^= 1;
     if (stepToggle != 0 && stepVolume != 0)
     {
-        ULTIMA_223c_AudioWhiteNoise(1, stepVolume, 20000);
-        ULTIMA_3f36_DecreaseByte(&stepVolume, 4);
+        AudioWhiteNoise(1, stepVolume, 20000);
+        DecreaseByte(&stepVolume, 4);
     }
 }

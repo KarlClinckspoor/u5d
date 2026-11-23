@@ -20,7 +20,7 @@ static int CountGuests(void)
 
     for (member = 0; member < 0x10; member++)
     {
-        if (D_55a8_party[member].innMapId == D_5893_mapId)
+        if (party[member].innMapId == mapId)
         {
             count_h++;
         }
@@ -37,7 +37,7 @@ u8 innRooms[6] = {0x03, 0x04, 0x03, 0x02, 0x02, 0x02};
 // gender is the party member's gender character: 0xc is addressed as "milady".
 static int HasRoom(int gender)
 {
-    ULTIMA_1850_PrintString(/*0x4d84*/ "\n\n");
+    PrintString(/*0x4d84*/ "\n\n");
 
     if (CountGuests() < innRooms[shopIndex])
     {
@@ -45,17 +45,17 @@ static int HasRoom(int gender)
     }
     else
     {
-        ULTIMA_1850_PrintString(/*0x4d87*/ "\"I am sorry,\n");
+        PrintString(/*0x4d87*/ "\"I am sorry,\n");
         if (gender == 0xc)
         {
-            ULTIMA_1850_PrintString(/*0x4d95*/ "milady");
+            PrintString(/*0x4d95*/ "milady");
         }
         else
         {
-            ULTIMA_1850_PrintString(/*0x4d9c*/ "sir");
+            PrintString(/*0x4d9c*/ "sir");
         }
 
-        ULTIMA_1850_PrintString(/*0x4da0*/ ", but we\nhave no room\navailable.\"\n\n");
+        PrintString(/*0x4da0*/ ", but we\nhave no room\navailable.\"\n\n");
         return 0;
     }
 }
@@ -79,88 +79,88 @@ static int Rest(int intelligence, int gender, int outcome)
     S_55a8* player_d;
     byte activePlayer_h;
 
-    ULTIMA_16ba_PrintChar('R');
+    PrintChar('R');
     if (HasRoom(gender) != 0)
     {
-        ULTIMA_16ba_PrintChar('\"');
+        PrintChar('\"');
 
-        shopPrice = innRates[shopIndex] * D_585b_partyCount;
+        shopPrice = innRates[shopIndex] * partyCount;
         shopPrice += shopPrice * -((s32)(intelligence * 3) - 100) / 100;
 
         PrintShopFileText(innOfferTexts[shopIndex]);
-        ULTIMA_1850_PrintString(/*0x4dca*/ "\nWilt thou take\nit?\" ");
+        PrintString(/*0x4dca*/ "\nWilt thou take\nit?\" ");
         answer = AskYesNo();
-        ULTIMA_1850_PrintString(/*0x4de0*/ "\n\n");
+        PrintString(/*0x4de0*/ "\n\n");
         if (answer == 'Y')
         {
             if (gold < shopPrice)
             {
-                ULTIMA_1850_PrintString(/*0x4de3*/ "\"Highwaymen!\nCheap, at that!\nOUT!\" ");
+                PrintString(/*0x4de3*/ "\"Highwaymen!\nCheap, at that!\nOUT!\" ");
                 PrintShopText(/*0x4e07*/ "screams\n$.\n");
             }
             else
             {
                 gold -= shopPrice;
                 FalsehoodSurcharge();
-                ULTIMA_2900_UpdateVitalsDisplay();
+                UpdateVitalsDisplay();
 
-                ULTIMA_1850_PrintString(/*0x4e13*/ "\"Have a pleasant\nnight, ");
+                PrintString(/*0x4e13*/ "\"Have a pleasant\nnight, ");
                 if (gender == 0xc)
                 {
-                    ULTIMA_1850_PrintString(/*0x4e2c*/ "milady");
+                    PrintString(/*0x4e2c*/ "milady");
                 }
                 else
                 {
-                    ULTIMA_1850_PrintString(/*0x4e33*/ "sir");
+                    PrintString(/*0x4e33*/ "sir");
                 }
 
                 PrintShopText(/*0x4e37*/ "!\"\nsays $.\n\n");
 
                 WaitFrames(10);
-                SetTile(D_594f_openDoorTile, openDoorX, openDoorY);
+                SetTile(openDoorTile, openDoorX, openDoorY);
 
                 D_5896_mapX = innBedX[shopIndex];
                 D_5897_mapY = innBedY[shopIndex];
-                D_24e6_viewDirty = 1;
+                viewDirty = 1;
 
                 activePlayer_h = activePlayer;
 
-                for (member = 0; member < D_585b_partyCount; member++)
+                for (member = 0; member < partyCount; member++)
                 {
-                    if (D_55a8_party[member].status == STATUS_GOOD)
+                    if (party[member].status == STATUS_GOOD)
                     {
-                        D_55a8_party[member].status = STATUS_SLEEP;
+                        party[member].status = STATUS_SLEEP;
                     }
                 }
 
-                ULTIMA_2900_UpdateVitalsDisplay();
-                ULTIMA_5910_UpdateFrame();
-                ULTIMA_1850_PrintString(/*0x4e44*/ "Zzzzzz....\n\n");
+                UpdateVitalsDisplay();
+                UpdateFrame();
+                PrintString(/*0x4e44*/ "Zzzzzz....\n\n");
 
                 for (member = 0; member < 0xc; member++)
                 {
-                    ULTIMA_4f7c_AdvanceTime(5);
+                    AdvanceTime(5);
                 }
 
                 while (D_587f_hour != 6)
                 {
                     WaitFrames(1);
                     RingRegeneration();
-                    ULTIMA_2900_UpdateVitalsDisplay();
-                    ULTIMA_4f7c_AdvanceTime(9);
+                    UpdateVitalsDisplay();
+                    AdvanceTime(9);
                     if (D_587f_hour == 0x14 || D_587f_hour == 0x05)
                     {
-                        TOWN_0170_SwapDayNightTiles();
+                        SwapDayNightTiles();
                     }
                 }
 
-                ULTIMA_1850_PrintString(/*0x4e51*/ "Morning!\n");
-                TOWN_1694_PlaceActors();
+                PrintString(/*0x4e51*/ "Morning!\n");
+                PlaceActors();
 
                 // e3e0
-                for (member = 0; member < D_585b_partyCount; member++)
+                for (member = 0; member < partyCount; member++)
                 {
-                    player_d = &D_55a8_party[member];
+                    player_d = &party[member];
 
                     if (player_d->status != STATUS_DEAD)
                     {
@@ -183,9 +183,9 @@ static int Rest(int intelligence, int gender, int outcome)
                             player_d->status = STATUS_DEAD;
                             player_d->hp = 0;
 
-                            ULTIMA_16ba_PrintChar('\n');
-                            ULTIMA_1850_PrintString(player_d->name);
-                            ULTIMA_1850_PrintString(/*0x4e5b*/ " has\npassed away.\n");
+                            PrintChar('\n');
+                            PrintString(player_d->name);
+                            PrintString(/*0x4e5b*/ " has\npassed away.\n");
                         }
                         else if (player_d->status == STATUS_SLEEP)
                         {
@@ -196,8 +196,8 @@ static int Rest(int intelligence, int gender, int outcome)
 
                 activePlayer = activePlayer_h;
                 D_5896_mapX++;
-                D_24e6_viewDirty = 1;
-                ULTIMA_2900_UpdateVitalsDisplay();
+                viewDirty = 1;
+                UpdateVitalsDisplay();
 
                 outcome = -1;
             }
@@ -221,14 +221,14 @@ static int LeaveCompanion(int intelligence, int gender, int outcome)
     int member;
     S_55a8 saved_n;
 
-    ULTIMA_16ba_PrintChar('L');
+    PrintChar('L');
 
     if (HasRoom(gender) == 0)
     {
         return outcome;
     }
 
-    if (D_585b_partyCount == 1)
+    if (partyCount == 1)
     {
         PrintShopFileText(0x26e8);
         outcome = -1;
@@ -242,23 +242,23 @@ static int LeaveCompanion(int intelligence, int gender, int outcome)
             member = SelectPlayer();
             if (member == -1)
             {
-                ULTIMA_1850_PrintString(/*0x4ea0*/ "Nobody\n\n");
+                PrintString(/*0x4ea0*/ "Nobody\n\n");
                 outcome = -2;
             }
             else
             {
-                ULTIMA_1850_PrintString(/*0x4ea9*/ "\n\n");
+                PrintString(/*0x4ea9*/ "\n\n");
                 if (member == 0)
                 {
-                    ULTIMA_1850_PrintString(/*0x4eac*/ "Thy friend");
-                    if (D_585b_partyCount > 2)
+                    PrintString(/*0x4eac*/ "Thy friend");
+                    if (partyCount > 2)
                     {
-                        ULTIMA_16ba_PrintChar('s');
+                        PrintChar('s');
                     }
-                    ULTIMA_1850_PrintString(/*0x4eb7*/ " will not leave thee!\n\n");
+                    PrintString(/*0x4eb7*/ " will not leave thee!\n\n");
                     asked_i = 0;
                 }
-                else if (D_55a8_party[member].status == STATUS_DEAD)
+                else if (party[member].status == STATUS_DEAD)
                 {
                     PrintShopFileText(0x2723);
                     outcome = -1;
@@ -268,11 +268,11 @@ static int LeaveCompanion(int intelligence, int gender, int outcome)
                     shopPrice = (uint)innRates[shopIndex] * 10;
                     shopPrice += shopPrice * -((s32)(intelligence * 3) - 100) / 100;
 
-                    ULTIMA_1850_PrintString(/*0x4ecf*/ "\"The rate for\nour most comfortable room will be ");
+                    PrintString(/*0x4ecf*/ "\"The rate for\nour most comfortable room will be ");
                     PrintShopText(/*0x4f00*/ "% gold per month, due at check-out.");
-                    ULTIMA_1850_PrintString(/*0x4f24*/ "\nWilt thou take\nit?\" ");
+                    PrintString(/*0x4f24*/ "\nWilt thou take\nit?\" ");
                     answer_b = AskYesNo();
-                    ULTIMA_1850_PrintString(/*0x4f3a*/ "\n\n");
+                    PrintString(/*0x4f3a*/ "\n\n");
                     if (answer_b == 'Y')
                     {
                         outcome = 1;
@@ -285,20 +285,20 @@ static int LeaveCompanion(int intelligence, int gender, int outcome)
                             activePlayer--;
                         }
 
-                        D_55a8_party[member].innMapId = D_5893_mapId;
-                        D_55a8_party[member].monthsAtInn = 0;
+                        party[member].innMapId = mapId;
+                        party[member].monthsAtInn = 0;
 
-                        saved_n = D_55a8_party[member];
+                        saved_n = party[member];
 
                         for (slot = member; slot < 0xf; slot++)
                         {
-                            D_55a8_party[slot] = D_55a8_party[slot + 1];
+                            party[slot] = party[slot + 1];
                         }
 
-                        D_55a8_party[0x10 - 1] = saved_n;
+                        party[0x10 - 1] = saved_n;
 
-                        D_585b_partyCount--;
-                        ULTIMA_2900_UpdateVitalsDisplay();
+                        partyCount--;
+                        UpdateVitalsDisplay();
                         PrintShopText(/*0x4f3d*/ "\"I thank thee.\"\nsays $.\n\n");
                     }
                 }
@@ -314,7 +314,7 @@ static int PrevGuest(int slot)
 {
     while (--slot)
     {
-        if (D_55a8_party[slot].innMapId == D_5893_mapId)
+        if (party[slot].innMapId == mapId)
         {
             break;
         }
@@ -327,7 +327,7 @@ static int NextGuest(int slot)
 {
     while (++slot < 0x10)
     {
-        if (D_55a8_party[slot].innMapId == D_5893_mapId)
+        if (party[slot].innMapId == mapId)
         {
             break;
         }
@@ -358,9 +358,9 @@ static int PickUpCompanion(int intelligence, int outcome)
 
     guestCount = CountGuests();
 
-    if (D_585b_partyCount == 6)
+    if (partyCount == 6)
     {
-        ULTIMA_1850_PrintString(/*0x4f57*/ "\n\nOne must first be left behind!\n\n");
+        PrintString(/*0x4f57*/ "\n\nOne must first be left behind!\n\n");
     }
     else if (guestCount == 0)
     {
@@ -371,52 +371,52 @@ static int PickUpCompanion(int intelligence, int outcome)
         if (guestCount > 1)
         {
             // e6ff
-            ULTIMA_1850_PrintString(/*0x4fa7*/ "\n\n\"Who will\ncheck out?\" ");
+            PrintString(/*0x4fa7*/ "\n\n\"Who will\ncheck out?\" ");
             SelectTextWindow(1);
             OpenStatsDivider();
             SetTextWindowSize(1, 0x18, 1, 0x26, 9);
-            ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
+            PrintChar(CTRL_CHAR_CLEAR_WINDOW);
             SetTextWindowSize(1, 0x18, 1, 0x27, 9);
-            ULTIMA_16ba_PrintChar(0x10);
+            PrintChar(0x10);
 
             for (i = 0; i < 0xd; i++)
             {
-                ULTIMA_16ba_PrintChar(0x11);
+                PrintChar(0x11);
             }
 
-            ULTIMA_16ba_PrintChar(0x13);
+            PrintChar(0x13);
 
             for (i = 1; i < 8; i++)
             {
                 SetTextPosition(0, i);
-                ULTIMA_16ba_PrintChar(0x17);
+                PrintChar(0x17);
                 SetTextPosition(0xe, i);
-                ULTIMA_16ba_PrintChar(0x17);
+                PrintChar(0x17);
             }
 
-            ULTIMA_16ba_PrintChar('\n');
-            ULTIMA_16ba_PrintChar(0x14);
+            PrintChar('\n');
+            PrintChar(0x14);
 
             for (i = 0; i < 0xd; i++)
             {
-                ULTIMA_16ba_PrintChar(0x15);
+                PrintChar(0x15);
             }
 
-            ULTIMA_16ba_PrintChar(0x16);
+            PrintChar(0x16);
             SetTextPosition(1, 1);
-            ULTIMA_1850_PrintString(/*0x4fc0*/ "    GUEST");
+            PrintString(/*0x4fc0*/ "    GUEST");
             SetTextPosition(1, 2);
-            ULTIMA_1850_PrintString(/*0x4fca*/ "  REGISTER:\n\n");
+            PrintString(/*0x4fca*/ "  REGISTER:\n\n");
 
             // e7d6
             for (guest_b = 1; guest_b < 0x10; guest_b++)
             {
-                if (D_55a8_party[guest_b].innMapId == D_5893_mapId)
+                if (party[guest_b].innMapId == mapId)
                 {
                     SetTextPosition(4, GetCurrentTextY());
 
-                    ULTIMA_1850_PrintString(D_55a8_party[guest_b].name);
-                    ULTIMA_16ba_PrintChar('\n');
+                    PrintString(party[guest_b].name);
+                    PrintChar('\n');
                 }
             }
 
@@ -424,7 +424,7 @@ static int PickUpCompanion(int intelligence, int outcome)
             chosen_d = 0;
             guest_b = NextGuest(0);
             barY_l = 0x28;
-            ULTIMA_0a70_GRAP_2d_SetPenColor(brightWhiteColor);
+            GRAP_2d_SetPenColor(brightWhiteColor);
 
             while (!chosen_d)
             {
@@ -434,7 +434,7 @@ static int PickUpCompanion(int intelligence, int outcome)
 
                 do
                 {
-                    key = ULTIMA_266c_GetChar();
+                    key = GetChar();
                     switch (key)
                     {
                     case U5_KEY_LEFT:
@@ -464,7 +464,7 @@ static int PickUpCompanion(int intelligence, int outcome)
 
                     case U5_KEY_ESC:
                         // e8a8
-                        ULTIMA_1850_PrintString(/*0x4fd8*/ "No one\n\n");
+                        PrintString(/*0x4fd8*/ "No one\n\n");
                         guest_b = 0;
 
                         moved_i = 1;
@@ -490,7 +490,7 @@ static int PickUpCompanion(int intelligence, int outcome)
 
             // e8e0
             DrawStatsDivider();
-            ULTIMA_2900_UpdateVitalsDisplay();
+            UpdateVitalsDisplay();
         }
         else
         {
@@ -499,7 +499,7 @@ static int PickUpCompanion(int intelligence, int outcome)
 
         if (guest_b != 0)
         {
-            months = (uint)D_55a8_party[guest_b].monthsAtInn;
+            months = (uint)party[guest_b].monthsAtInn;
             if (months == 0)
             {
                 months = 1;
@@ -514,7 +514,7 @@ static int PickUpCompanion(int intelligence, int outcome)
             if (gold < shopPrice)
             {
                 PrintShopFileText(0x275a);
-                TOWN_0958_RaiseAlarm();
+                RaiseAlarm();
                 outcome = -1;
             }
             else
@@ -522,20 +522,20 @@ static int PickUpCompanion(int intelligence, int outcome)
                 gold -= shopPrice;
 
                 FalsehoodSurcharge();
-                ULTIMA_2900_UpdateVitalsDisplay();
+                UpdateVitalsDisplay();
                 outcome = 1;
 
-                saved = D_55a8_party[guest_b];
+                saved = party[guest_b];
 
-                for (i = guest_b; i > (int)D_585b_partyCount; i--)
+                for (i = guest_b; i > (int)partyCount; i--)
                 {
-                    D_55a8_party[i] = D_55a8_party[i - 1];
+                    party[i] = party[i - 1];
                 }
 
                 // e9ff
-                D_55a8_party[D_585b_partyCount] = saved;
+                party[partyCount] = saved;
 
-                player_g = &D_55a8_party[D_585b_partyCount++];
+                player_g = &party[partyCount++];
 
                 player_g->innMapId = 0;
                 if (player_g->status == STATUS_POISONED)
@@ -543,7 +543,7 @@ static int PickUpCompanion(int intelligence, int outcome)
                     player_g->status = STATUS_DEAD;
                     player_g->hp = 0;
 
-                    ULTIMA_1850_PrintString(/*0x5005*/ "Thy friend has died, by the way.\"\n");
+                    PrintString(/*0x5005*/ "Thy friend has died, by the way.\"\n");
                 }
                 else
                 {
@@ -560,11 +560,11 @@ static int PickUpCompanion(int intelligence, int outcome)
                         break;
                     }
 
-                    ULTIMA_1850_PrintString(/*0x5028*/ "I hope thou hast found thy stay enjoyable,\"\n");
+                    PrintString(/*0x5028*/ "I hope thou hast found thy stay enjoyable,\"\n");
                 }
 
                 PrintShopText(/*0x5055*/ "says $.\n\n");
-                ULTIMA_2900_UpdateVitalsDisplay();
+                UpdateVitalsDisplay();
             }
         }
     }
@@ -584,12 +584,12 @@ void Inn(int playerIndex)
 
     done_k = outcome_j = 0;
 
-    intelligence = D_55a8_party[playerIndex].intel;
-    gender = D_55a8_party[playerIndex].gender;
+    intelligence = party[playerIndex].intel;
+    gender = party[playerIndex].gender;
 
     statusIcon = protectTurns = 0;
 
-    ULTIMA_2900_UpdateVitalsDisplay();
+    UpdateVitalsDisplay();
 
     Greet();
 
@@ -597,7 +597,7 @@ void Inn(int playerIndex)
     {
         do
         {
-            key = ULTIMA_266c_GetChar();
+            key = GetChar();
             if (key == U5_KEY_SPACE)
             {
                 key = 'N';
@@ -605,11 +605,11 @@ void Inn(int playerIndex)
 
             if (key == 'N')
             {
-                ULTIMA_1850_PrintString(/*0x505f*/ "No");
+                PrintString(/*0x505f*/ "No");
             }
             else if (key == 'Y')
             {
-                ULTIMA_1850_PrintString(/*0x5062*/ "Yes");
+                PrintString(/*0x5062*/ "Yes");
             }
         } while (key != 'N' && key != 'Y');
 
@@ -617,11 +617,11 @@ void Inn(int playerIndex)
             break;
 
         PrintShopText(/*0x5066*/ "\n\n$ asks,\n\"Art thou here\nto Pick up or\n");
-        ULTIMA_1850_PrintString(/*0x508e*/ "Leave a\ncompanion, or\nto Rest for the\nnight?\" ");
+        PrintString(/*0x508e*/ "Leave a\ncompanion, or\nto Rest for the\nnight?\" ");
 
         do
         {
-            key = ULTIMA_266c_GetChar();
+            key = GetChar();
 
             switch (key)
             {
@@ -679,7 +679,7 @@ void Inn(int playerIndex)
 
         if (!done_k)
         {
-            ULTIMA_1850_PrintString(/*0x50bd*/ "\"Is there\nanything more\nI can do for\nthee?\" ");
+            PrintString(/*0x50bd*/ "\"Is there\nanything more\nI can do for\nthee?\" ");
         }
     }
 

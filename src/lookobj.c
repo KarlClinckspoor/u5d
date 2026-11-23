@@ -19,9 +19,9 @@ static void PrintTileName(int tile)
     u16 textOffset_c;
 
     textOffset_c = 0;
-    ULTIMA_256e_ReadFileFromDisk(/*0x71f8*/ "LOOK2.DAT", &textOffset_c, 2, tile << 1);
-    ULTIMA_256e_ReadFileFromDisk(/*0x7202*/ "LOOK2.DAT", text, 0x80, textOffset_c);
-    ULTIMA_1850_PrintString(text);
+    ReadFileFromDisk(/*0x71f8*/ "LOOK2.DAT", &textOffset_c, 2, tile << 1);
+    ReadFileFromDisk(/*0x7202*/ "LOOK2.DAT", text, 0x80, textOffset_c);
+    PrintString(text);
 }
 
 // "a well": drop a coin and wish; a vehicle's name (Corvette, Horse...) in towns 0x16 or 0x1f makes a horse appear
@@ -31,30 +31,30 @@ static void Well(byte wellX, byte wellY, byte wellLevel)
     char wish_e[14];
     int slot_o;
 
-    ULTIMA_1850_PrintString(/*0x720c*/ "a well.\n\nDrop a coin?");
+    PrintString(/*0x720c*/ "a well.\n\nDrop a coin?");
 
-    while ((answer = ULTIMA_266c_GetChar()) != 'Y' && answer != 'N')
+    while ((answer = GetChar()) != 'Y' && answer != 'N')
     {
     }
 
     if (answer == 'N')
     {
-        ULTIMA_1850_PrintString(/*0x7222*/ "No\n");
+        PrintString(/*0x7222*/ "No\n");
     }
     else
     {
-        ULTIMA_1850_PrintString(/*0x7226*/ "Yes\n");
+        PrintString(/*0x7226*/ "Yes\n");
         if (gold == 0)
         {
             return;
         }
 
-        ULTIMA_1850_PrintString(/*0x722c*/ "\nThy wish?\n");
+        PrintString(/*0x722c*/ "\nThy wish?\n");
         gold--;
         GetString(wish_e, 0xc);
         if (wish_e[0] == 0)
         {
-            ULTIMA_1850_PrintString(/*0x7238*/ "Nothing\n");
+            PrintString(/*0x7238*/ "Nothing\n");
             return;
         }
 
@@ -62,21 +62,21 @@ static void Well(byte wellX, byte wellY, byte wellLevel)
             CompareWord(/*0x7254*/ "Lamborghini", wish_e) > -1 || CompareWord(/*0x7260*/ "Lotus", wish_e) > -1 ||
             CompareWord(/*0x7266*/ "Porsche", wish_e) > -1 || CompareWord(/*0x726e*/ "Horse", wish_e) > -1)
         {
-            if (D_5893_mapId != 0x16 && D_5893_mapId != 0x1f)
+            if (mapId != 0x16 && mapId != 0x1f)
             {
-                ULTIMA_1850_PrintString(/*0x7274*/ "\nNo effect...\n");
+                PrintString(/*0x7274*/ "\nNo effect...\n");
             }
             else
             {
-                ULTIMA_1850_PrintString(/*0x7284*/ "\nPoof!\n");
-                ULTIMA_223c_AudioWhiteNoise(10, 3000, 2000);
-                slot_o = ULTIMA_38e4_FindActorSlot();
+                PrintString(/*0x7284*/ "\nPoof!\n");
+                AudioWhiteNoise(10, 3000, 2000);
+                slot_o = FindActorSlot();
                 SetActor(TILE_ACTOR_HORSE, TILE_ACTOR_HORSE, wellX + 1, wellY, wellLevel, 0, slot_o);
             }
         }
         else
         {
-            ULTIMA_1850_PrintString(/*0x728c*/ "\nNo effect...\n");
+            PrintString(/*0x728c*/ "\nNo effect...\n");
         }
     }
 }
@@ -87,23 +87,23 @@ static void Fountain(void)
     byte status;
     int member_h;
 
-    ULTIMA_1850_PrintString(/*0x729c*/ "a gurgling fountain!\n\n");
-    ULTIMA_1850_PrintString(/*0x72b4*/ "Who will drink?\n");
+    PrintString(/*0x729c*/ "a gurgling fountain!\n\n");
+    PrintString(/*0x72b4*/ "Who will drink?\n");
 
     if ((member_h = SelectPlayer()) == -1)
     {
-        ULTIMA_1850_PrintString(/*0x72c6*/ "None!\n");
+        PrintString(/*0x72c6*/ "None!\n");
     }
     else
     {
-        status = D_55a8_party[member_h].status;
+        status = party[member_h].status;
         if (status == STATUS_DEAD || status == STATUS_SLEEP)
         {
-            ULTIMA_1850_PrintString(/*0x72ce*/ "Incapacitated!\n\n");
+            PrintString(/*0x72ce*/ "Incapacitated!\n\n");
         }
         else
         {
-            ULTIMA_1850_PrintString(/*0x72e0*/ "Refreshing...\n");
+            PrintString(/*0x72e0*/ "Refreshing...\n");
         }
     }
 }
@@ -114,7 +114,7 @@ static void DrawStar(int starX, int starY)
     int dx;
     int dy_d;
 
-    ULTIMA_0a70_GRAP_2d_SetPenColor(brightWhiteColor);
+    GRAP_2d_SetPenColor(brightWhiteColor);
     GRAP_30_Pset(starX * 8 + 6, starY * 8 + 8);
 
     for (dy_d = 0; dy_d < 3; dy_d++)
@@ -143,7 +143,7 @@ static void DrawRedMark(int starX, int starY)
     pixelX = starX * 8;
     pixelY = starY * 8;
 
-    ULTIMA_0a70_GRAP_2d_SetPenColor(redColor);
+    GRAP_2d_SetPenColor(redColor);
 
     if (pixelX > 2)
     {
@@ -203,18 +203,18 @@ void LookSky(void)
 
     if (D_587f_hour >= 6 && D_587f_hour < 0x12)
     {
-        ULTIMA_1850_PrintString(/*0x72f0*/ "the sun!\n");
+        PrintString(/*0x72f0*/ "the sun!\n");
         if (activePlayer == 0xff && GetFirstActivePartyMember() == 0)
         {
-            activePlayer = D_5876_tempX;
+            activePlayer = tempX;
         }
 
         DamagePlayer(activePlayer, 1);
-        ULTIMA_2900_UpdateVitalsDisplay();
+        UpdateVitalsDisplay();
     }
     else
     {
-        D_24e6_viewDirty = 1;
+        viewDirty = 1;
         for (row_k = 0; row_k < 0xb; row_k++)
         {
             // memset?
@@ -226,11 +226,11 @@ void LookSky(void)
 
         GetMapViewport(5, 10) = 0x59;
         DrawMap();
-        ULTIMA_0a70_GRAP_2d_SetPenColor(blueColor + 8);
+        GRAP_2d_SetPenColor(blueColor + 8);
 
         for (row_k = 0; row_k < 0x50; row_k++)
         {
-            GRAP_30_Pset(ULTIMA_2092_RandomRange(9, 0xb6), ULTIMA_2092_RandomRange(9, 0xac));
+            GRAP_30_Pset(RandomRange(9, 0xb6), RandomRange(9, 0xac));
         }
 
         for (planet = 0; planet < 8; planet++)
@@ -270,14 +270,14 @@ void LookSky(void)
             starX--;
             for (col_e = 0; col_e < 3; col_e++)
             {
-                if (D_58c8_shadowlordTowns[col_e] == planet + 1)
+                if (shadowlordTowns[col_e] == planet + 1)
                 {
                     DrawRedMark(starX, starY);
                 }
             }
         }
 
-        ULTIMA_1850_PrintString(/*0x72fa*/ "the night sky! ");
+        PrintString(/*0x72fa*/ "the night sky! ");
 
         do
         {
@@ -307,7 +307,7 @@ static void DescribeTile(int tile, int tileX, int tileY)
             break;
         }
 
-        tile = *ULTIMA_4402_GetTileAddr(tileX, tileY);
+        tile = *GetTileAddr(tileX, tileY);
     }
 
     if (tile == TILE_MAP_59)
@@ -334,32 +334,32 @@ static void DescribeTile(int tile, int tileX, int tileY)
             }
 
             PrintNumber(hour12, 1, 0x20);
-            ULTIMA_16ba_PrintChar(':');
+            PrintChar(':');
             PrintNumber(minute, 2, 0x30);
 
             if (D_587f_hour > 0xb)
             {
-                ULTIMA_1850_PrintString(/*0x730a*/ " PM.\n");
+                PrintString(/*0x730a*/ " PM.\n");
             }
             else
             {
-                ULTIMA_1850_PrintString(/*0x7310*/ " AM.\n");
+                PrintString(/*0x7310*/ " AM.\n");
             }
         }
         else if (tile == TILE_MAP_DE)
         {
-            switch (D_5893_mapId)
+            switch (mapId)
             {
             case 0x1e:
-                ULTIMA_1850_PrintString(/*0x7316*/ "Truth\n");
+                PrintString(/*0x7316*/ "Truth\n");
                 break;
 
             case 0x1f:
-                ULTIMA_1850_PrintString(/*0x731e*/ "Love\n");
+                PrintString(/*0x731e*/ "Love\n");
                 break;
 
             case 0x20:
-                ULTIMA_1850_PrintString(/*0x7324*/ "Courage\n");
+                PrintString(/*0x7324*/ "Courage\n");
                 break;
             }
         }
@@ -368,35 +368,35 @@ static void DescribeTile(int tile, int tileX, int tileY)
             switch (tileX)
             {
             case 0xf0:
-                ULTIMA_1850_PrintString(/*0x732e*/ "Deceit\n");
+                PrintString(/*0x732e*/ "Deceit\n");
                 break;
 
             case 0x5b:
-                ULTIMA_1850_PrintString(/*0x7336*/ "Despise\n");
+                PrintString(/*0x7336*/ "Despise\n");
                 break;
 
             case 0x48:
-                ULTIMA_1850_PrintString(/*0x7340*/ "Destard\n");
+                PrintString(/*0x7340*/ "Destard\n");
                 break;
 
             case 0x7e:
-                ULTIMA_1850_PrintString(/*0x734a*/ "Wrong\n");
+                PrintString(/*0x734a*/ "Wrong\n");
                 break;
 
             case 0x9c:
-                ULTIMA_1850_PrintString(/*0x7352*/ "Covetous\n");
+                PrintString(/*0x7352*/ "Covetous\n");
                 break;
 
             case 0x3a:
-                ULTIMA_1850_PrintString(/*0x735c*/ "Shame\n");
+                PrintString(/*0x735c*/ "Shame\n");
                 break;
 
             case 0xef:
-                ULTIMA_1850_PrintString(/*0x7364*/ "Hythloth\n");
+                PrintString(/*0x7364*/ "Hythloth\n");
                 break;
 
             case 0x80:
-                ULTIMA_1850_PrintString(/*0x736e*/ "Doom\n");
+                PrintString(/*0x736e*/ "Doom\n");
                 break;
             }
         }
@@ -404,7 +404,7 @@ static void DescribeTile(int tile, int tileX, int tileY)
         {
             if (GetCurrentTextX() != 0)
             {
-                ULTIMA_16ba_PrintChar('\n');
+                PrintChar('\n');
             }
         }
     }
@@ -420,14 +420,14 @@ static void DescribeActor(int actorTile)
 
     // NOTE: FMT does some other things here
 
-    ULTIMA_256e_ReadFileFromDisk(/*0x7374*/ "LOOK2.DAT", &textOffset_c, 2, actorTile * 2 + 0x200);
-    ULTIMA_256e_ReadFileFromDisk(/*0x737e*/ "LOOK2.DAT", text, 0x80, textOffset_c);
+    ReadFileFromDisk(/*0x7374*/ "LOOK2.DAT", &textOffset_c, 2, actorTile * 2 + 0x200);
+    ReadFileFromDisk(/*0x737e*/ "LOOK2.DAT", text, 0x80, textOffset_c);
 
-    ULTIMA_1850_PrintString(text);
+    PrintString(text);
 
     if (GetCurrentTextX() != 0)
     {
-        ULTIMA_16ba_PrintChar('\n');
+        PrintChar('\n');
     }
 }
 u8 planetStartPos[8] = { 0x12, 0x02, 0x08, 0x0f, 0x0b, 0x06, 0x04, 0x02 };
@@ -490,8 +490,8 @@ static void PrintSignText(int signPos)
     if (signPos == -1)
     {
         SelectCharset(1);
-        ULTIMA_1850_PrintString(/*0x742a*/ "abbbbbbbbbbbbbbc\ng              g\ng  LIVE@BY@[E  g\n");
-        ULTIMA_1850_PrintString(/*0x745e*/ "g  EIGHT@LAWS  g\ng              g\ndeeeeeeeeeeeeeef\n");
+        PrintString(/*0x742a*/ "abbbbbbbbbbbbbbc\ng              g\ng  LIVE@BY@[E  g\n");
+        PrintString(/*0x745e*/ "g  EIGHT@LAWS  g\ng              g\ndeeeeeeeeeeeeeef\n");
         SelectCharset(0);
     }
     else
@@ -514,24 +514,24 @@ static void PrintSignText(int signPos)
 
             if (code == 0x26 || code == 0x27)
             {
-                ULTIMA_16ba_PrintChar(0x6c);
+                PrintChar(0x6c);
             }
             else if (code >= 0x29 && code <= 0x31)
             {
                 SelectCharset(1);
                 for (picture_c = lookPictures[code - 0x29]; *picture_c != '\0';)
                 {
-                    ULTIMA_16ba_PrintChar((byte)*picture_c++);
+                    PrintChar((byte)*picture_c++);
                 }
             }
             else if (code == 0xd)
             {
                 SelectCharset(0);
-                code = ULTIMA_266c_GetChar();
+                code = GetChar();
             }
             else
             {
-                ULTIMA_16ba_PrintChar(code & 0x7f);
+                PrintChar(code & 0x7f);
             }
         } while (scratch[++signPos] != 0);
 
@@ -539,7 +539,7 @@ static void PrintSignText(int signPos)
 
         if (GetCurrentTextX() != 0)
         {
-            ULTIMA_16ba_PrintChar('\n');
+            PrintChar('\n');
         }
     }
 }
@@ -552,43 +552,43 @@ static void ReadSign(byte signLevel, byte signX, byte signY)
     int done_j;
 
     done_j = 0;
-    if (D_5893_mapId == 0x4 && signLevel == 0 && signX == 0x11 && signY == 0x15)
+    if (mapId == 0x4 && signLevel == 0 && signX == 0x11 && signY == 0x15)
     {
         SelectCharset(1);
-        ULTIMA_1850_PrintString(/*0x7492*/ "abbbbbbbbbbbbbc\ng   ");
+        PrintString(/*0x7492*/ "abbbbbbbbbbbbbc\ng   ");
         SelectCharset(0);
-        ULTIMA_1850_PrintString(/*0x74a8*/ "Wanted:   ");
+        PrintString(/*0x74a8*/ "Wanted:   ");
         SelectCharset(1);
-        ULTIMA_1850_PrintString(/*0x74b4*/ "g\ng");
+        PrintString(/*0x74b4*/ "g\ng");
         SetTextPosition(0xe, GetCurrentTextY());
-        ULTIMA_1850_PrintString(/*0x74b8*/ "g\ng");
+        PrintString(/*0x74b8*/ "g\ng");
         for (signPos = 0; signPos < 3; signPos++)
         {
-            if (signPos < D_585b_partyCount)
+            if (signPos < partyCount)
             {
                 SelectCharset(0);
-                SetTextPosition(7 - (StringLength(D_55a8_party[signPos].name) / 2),
+                SetTextPosition(7 - (StringLength(party[signPos].name) / 2),
                     GetCurrentTextY());
-                ULTIMA_1850_PrintString(D_55a8_party[signPos].name);
+                PrintString(party[signPos].name);
                 SelectCharset(1);
             }
 
             SetTextPosition(0xe, GetCurrentTextY());
-            ULTIMA_1850_PrintString(/*0x74bc*/ "g\ng");
+            PrintString(/*0x74bc*/ "g\ng");
         }
 
         SetTextPosition(0xe, GetCurrentTextY());
-        ULTIMA_1850_PrintString(/*0x74c0*/ "g\ng");
+        PrintString(/*0x74c0*/ "g\ng");
         SelectCharset(0);
-        ULTIMA_1850_PrintString(/*0x74c4*/ "Dead or Alive");
+        PrintString(/*0x74c4*/ "Dead or Alive");
         SelectCharset(1);
-        ULTIMA_1850_PrintString(/*0x74d2*/ "g\ndeeeeeeeeeeeeef\n");
+        PrintString(/*0x74d2*/ "g\ndeeeeeeeeeeeeef\n");
         SelectCharset(0);
     }
     else
     {
-        ULTIMA_256e_ReadFileFromDisk(/*0x74e6*/ "signs.dat", signOffsets, 0x42, 0);
-        signPos = signOffsets[D_5893_mapId];
+        ReadFileFromDisk(/*0x74e6*/ "signs.dat", signOffsets, 0x42, 0);
+        signPos = signOffsets[mapId];
         memset(scratch, 0xff, SCRATCH_SIZE);
 
         if (signPos == 0)
@@ -597,7 +597,7 @@ static void ReadSign(byte signLevel, byte signX, byte signY)
         }
         else
         {
-            ULTIMA_256e_ReadFileFromDisk(/*0x74f0*/ "signs.dat", scratch, SCRATCH_SIZE, signPos);
+            ReadFileFromDisk(/*0x74f0*/ "signs.dat", scratch, SCRATCH_SIZE, signPos);
             signPos = 0;
             // di = done_j
             // si = signPos
@@ -636,15 +636,15 @@ void LookCmd(void)
     int actorTile;
     int tile_b;
 
-    if (ULTIMA_35ec_SelectDirection() == 0)
+    if (SelectDirection() == 0)
     {
         return;
     }
 
-    lookX = D_5896_mapX + D_5876_tempX;
-    lookY = D_5897_mapY + D_5878_tempY;
-    tile_b = *ULTIMA_4402_GetTileAddr(lookX, lookY);
-    actorTile = ULTIMA_368e_FindActorTileAtPos(lookX, lookY, D_5895_mapLevel);
+    lookX = D_5896_mapX + tempX;
+    lookY = D_5897_mapY + tempY;
+    tile_b = *GetTileAddr(lookX, lookY);
+    actorTile = FindActorTileAtPos(lookX, lookY, D_5895_mapLevel);
     if (tile_b == TILE_MAP_29)
     {
         if ((member_g = GetActingPlayer()) == -1)
@@ -652,19 +652,19 @@ void LookCmd(void)
             return;
         }
 
-        if (D_55a8_party[member_g].intel <= ULTIMA_2092_RandomRange(1, 0x1e))
+        if (party[member_g].intel <= RandomRange(1, 0x1e))
         {
-            ULTIMA_1850_PrintString(/*0x74fa*/ "Death vision!\n");
+            PrintString(/*0x74fa*/ "Death vision!\n");
             DamagePlayer(member_g, 1);
-            ULTIMA_2900_UpdateVitalsDisplay();
+            UpdateVitalsDisplay();
             return;
         }
-        ULTIMA_1850_PrintString(/*0x750a*/ "Strange vision!\n");
+        PrintString(/*0x750a*/ "Strange vision!\n");
         LookobjViewCmd(D_5896_mapX, D_5897_mapY);
         return;
     }
 
-    ULTIMA_1850_PrintString(/*0x751c*/ "\nThou dost see\n");
+    PrintString(/*0x751c*/ "\nThou dost see\n");
     if (actorTile != 0)
     {
         DescribeActor(actorTile);
@@ -678,7 +678,7 @@ void LookCmd(void)
     case TILE_MAP_A0:
     case TILE_MAP_A4:
     case TILE_MAP_SIGN_F8:
-        ULTIMA_1850_PrintString(/*0x752c*/ "\n");
+        PrintString(/*0x752c*/ "\n");
         ReadSign(D_5895_mapLevel, lookX, lookY);
         break;
 
@@ -691,79 +691,79 @@ void LookCmd(void)
 // the pixel position (D_5876/D_5878) of the vision's cell (x, y): 4 pixels a cell, at 0x20
 static void SetCellOrigin(int cellX, int cellY)
 {
-    D_5876_tempX = cellX * 4 + 0x20;
-    D_5878_tempY = cellY * 4 + 0x20;
+    tempX = cellX * 4 + 0x20;
+    tempY = cellY * 4 + 0x20;
 }
 
 // 4 green dots in a checker
 static void DrawGreenDots(void)
 {
-    ULTIMA_0a70_GRAP_2d_SetPenColor(greenColor + 8);
-    GRAP_30_Pset(D_5876_tempX + 1, D_5878_tempY);
-    GRAP_30_Pset(D_5876_tempX + 1, D_5878_tempY + 2);
-    GRAP_30_Pset(D_5876_tempX + 3, D_5878_tempY + 1);
-    GRAP_30_Pset(D_5876_tempX + 3, D_5878_tempY + 3);
+    GRAP_2d_SetPenColor(greenColor + 8);
+    GRAP_30_Pset(tempX + 1, tempY);
+    GRAP_30_Pset(tempX + 1, tempY + 2);
+    GRAP_30_Pset(tempX + 3, tempY + 1);
+    GRAP_30_Pset(tempX + 3, tempY + 3);
 }
 
 // a solid light green 4x4 cell
 static void DrawGreenBlock(void)
 {
-    ULTIMA_0a70_GRAP_2d_SetPenColor(greenColor + 8);
-    ULTIMA_0aa6_GRAP_3f_FillRect(D_5876_tempX, D_5878_tempY, D_5876_tempX + 3, D_5878_tempY + 3);
+    GRAP_2d_SetPenColor(greenColor + 8);
+    GRAP_3f_FillRect(tempX, tempY, tempX + 3, tempY + 3);
 }
 
 // two white vertical bars
 static void DrawVertBars(void)
 {
-    ULTIMA_0a70_GRAP_2d_SetPenColor(brightWhiteColor);
-    GRAP_Line(D_5876_tempX, D_5878_tempY, D_5876_tempX, D_5878_tempY + 3);
-    GRAP_Line(D_5876_tempX + 2, D_5878_tempY, D_5876_tempX + 2, D_5878_tempY + 3);
+    GRAP_2d_SetPenColor(brightWhiteColor);
+    GRAP_Line(tempX, tempY, tempX, tempY + 3);
+    GRAP_Line(tempX + 2, tempY, tempX + 2, tempY + 3);
 }
 
 // white lines along the top and bottom
 static void DrawHorizBars(void)
 {
-    ULTIMA_0a70_GRAP_2d_SetPenColor(brightWhiteColor);
-    GRAP_Line(D_5876_tempX, D_5878_tempY, D_5876_tempX + 3, D_5878_tempY);
-    GRAP_Line(D_5876_tempX, D_5878_tempY + 3, D_5876_tempX + 3, D_5878_tempY + 3);
+    GRAP_2d_SetPenColor(brightWhiteColor);
+    GRAP_Line(tempX, tempY, tempX + 3, tempY);
+    GRAP_Line(tempX, tempY + 3, tempX + 3, tempY + 3);
 }
 
 // two short white lines in the middle
 static void DrawInnerBars(void)
 {
-    ULTIMA_0a70_GRAP_2d_SetPenColor(brightWhiteColor);
-    GRAP_Line(D_5876_tempX + 1, D_5878_tempY + 1, D_5876_tempX + 2, D_5878_tempY + 1);
-    GRAP_Line(D_5876_tempX + 1, D_5878_tempY + 2, D_5876_tempX + 2, D_5878_tempY + 2);
+    GRAP_2d_SetPenColor(brightWhiteColor);
+    GRAP_Line(tempX + 1, tempY + 1, tempX + 2, tempY + 1);
+    GRAP_Line(tempX + 1, tempY + 2, tempX + 2, tempY + 2);
 }
 
 // a white frame around the cell
 static void LookobjDrawFrame(void)
 {
-    ULTIMA_0a70_GRAP_2d_SetPenColor(brightWhiteColor);
-    GRAP_Line(D_5876_tempX, D_5878_tempY, D_5876_tempX + 3, D_5878_tempY);
-    GRAP_Line(D_5876_tempX, D_5878_tempY + 3, D_5876_tempX + 3, D_5878_tempY + 3);
-    GRAP_Line(D_5876_tempX, D_5878_tempY + 1, D_5876_tempX, D_5878_tempY + 2);
-    GRAP_Line(D_5876_tempX + 3, D_5878_tempY + 1, D_5876_tempX + 3, D_5878_tempY + 2);
+    GRAP_2d_SetPenColor(brightWhiteColor);
+    GRAP_Line(tempX, tempY, tempX + 3, tempY);
+    GRAP_Line(tempX, tempY + 3, tempX + 3, tempY + 3);
+    GRAP_Line(tempX, tempY + 1, tempX, tempY + 2);
+    GRAP_Line(tempX + 3, tempY + 1, tempX + 3, tempY + 2);
 }
 
 // yellow blocks in two corners
 static void DrawYellowSteps(void)
 {
-    ULTIMA_0a70_GRAP_2d_SetPenColor(brightYellowColor);
-    GRAP_Line(D_5876_tempX, D_5878_tempY, D_5876_tempX + 1, D_5878_tempY);
-    GRAP_Line(D_5876_tempX, D_5878_tempY + 1, D_5876_tempX + 1, D_5878_tempY + 1);
-    GRAP_Line(D_5876_tempX + 2, D_5878_tempY + 2, D_5876_tempX + 3, D_5878_tempY + 2);
-    GRAP_Line(D_5876_tempX + 2, D_5878_tempY + 3, D_5876_tempX + 3, D_5878_tempY + 3);
+    GRAP_2d_SetPenColor(brightYellowColor);
+    GRAP_Line(tempX, tempY, tempX + 1, tempY);
+    GRAP_Line(tempX, tempY + 1, tempX + 1, tempY + 1);
+    GRAP_Line(tempX + 2, tempY + 2, tempX + 3, tempY + 2);
+    GRAP_Line(tempX + 2, tempY + 3, tempX + 3, tempY + 3);
 }
 
 // green lines on rows 0 and 2 and two dots
 static void DrawGreenStripes(void)
 {
-    ULTIMA_0a70_GRAP_2d_SetPenColor(greenColor + 8);
-    GRAP_Line(D_5876_tempX, D_5878_tempY, D_5876_tempX + 3, D_5878_tempY);
-    GRAP_Line(D_5876_tempX, D_5878_tempY + 2, D_5876_tempX + 3, D_5878_tempY + 2);
-    GRAP_30_Pset(D_5876_tempX + 2, D_5878_tempY + 1);
-    GRAP_30_Pset(D_5876_tempX, D_5878_tempY + 3);
+    GRAP_2d_SetPenColor(greenColor + 8);
+    GRAP_Line(tempX, tempY, tempX + 3, tempY);
+    GRAP_Line(tempX, tempY + 2, tempX + 3, tempY + 2);
+    GRAP_30_Pset(tempX + 2, tempY + 1);
+    GRAP_30_Pset(tempX, tempY + 3);
 }
 
 // CHECKED
@@ -795,14 +795,14 @@ static void DrawShore(int tile)
         cornerBit >>= 1;
     }
 
-    ULTIMA_0a70_GRAP_2d_SetPenColor(colors[0]);
-    GRAP_30_Pset(D_5876_tempX + 1, D_5878_tempY);
-    ULTIMA_0a70_GRAP_2d_SetPenColor(colors[1]);
-    GRAP_30_Pset(D_5876_tempX + 3, D_5878_tempY + 1);
-    ULTIMA_0a70_GRAP_2d_SetPenColor(colors[2]);
-    GRAP_30_Pset(D_5876_tempX + 1, D_5878_tempY + 2);
-    ULTIMA_0a70_GRAP_2d_SetPenColor(colors[3]);
-    GRAP_30_Pset(D_5876_tempX + 3, D_5878_tempY + 3);
+    GRAP_2d_SetPenColor(colors[0]);
+    GRAP_30_Pset(tempX + 1, tempY);
+    GRAP_2d_SetPenColor(colors[1]);
+    GRAP_30_Pset(tempX + 3, tempY + 1);
+    GRAP_2d_SetPenColor(colors[2]);
+    GRAP_30_Pset(tempX + 1, tempY + 2);
+    GRAP_2d_SetPenColor(colors[3]);
+    GRAP_30_Pset(tempX + 3, tempY + 3);
 }
 
 // two water-coloured dots (magenta on drivers 0 and 3, else light blue)
@@ -810,35 +810,35 @@ static void DrawWaterDots(void)
 {
     if (D_52c8_videoDriver == 0 || D_52c8_videoDriver == 3)
     {
-        ULTIMA_0a70_GRAP_2d_SetPenColor(magentaColor);
+        GRAP_2d_SetPenColor(magentaColor);
     }
     else
     {
-        ULTIMA_0a70_GRAP_2d_SetPenColor(blueColor + 8);
+        GRAP_2d_SetPenColor(blueColor + 8);
     }
 
-    GRAP_30_Pset(D_5876_tempX, D_5878_tempY);
-    GRAP_30_Pset(D_5876_tempX + 2, D_5878_tempY + 2);
+    GRAP_30_Pset(tempX, tempY);
+    GRAP_30_Pset(tempX + 2, tempY + 2);
 }
 
 // two green dots and two water-coloured dots
 static void DrawMarsh(void)
 {
-    ULTIMA_0a70_GRAP_2d_SetPenColor(greenColor + 8);
-    GRAP_30_Pset(D_5876_tempX + 1, D_5878_tempY);
-    GRAP_30_Pset(D_5876_tempX + 3, D_5878_tempY + 1);
+    GRAP_2d_SetPenColor(greenColor + 8);
+    GRAP_30_Pset(tempX + 1, tempY);
+    GRAP_30_Pset(tempX + 3, tempY + 1);
 
     if ((D_52c8_videoDriver == 0) || (D_52c8_videoDriver == 3))
     {
-        ULTIMA_0a70_GRAP_2d_SetPenColor(magentaColor);
+        GRAP_2d_SetPenColor(magentaColor);
     }
     else
     {
-        ULTIMA_0a70_GRAP_2d_SetPenColor(blueColor + 8);
+        GRAP_2d_SetPenColor(blueColor + 8);
     }
 
-    GRAP_30_Pset(D_5876_tempX, D_5878_tempY + 2);
-    GRAP_30_Pset(D_5876_tempX + 2, D_5878_tempY + 3);
+    GRAP_30_Pset(tempX, tempY + 2);
+    GRAP_30_Pset(tempX + 2, tempY + 3);
 }
 
 // tiles 0x20-0x26: green dots, a red centre, white edges as D_3832 says and a black dot in the corner of some
@@ -847,46 +847,46 @@ static void DrawEdgedBlock(int tile)
     int edges;
 
     DrawGreenDots();
-    ULTIMA_0a70_GRAP_2d_SetPenColor(redColor);
-    ULTIMA_0aa6_GRAP_3f_FillRect(D_5876_tempX + 1, D_5878_tempY + 1, D_5876_tempX + 2, D_5878_tempY + 2);
+    GRAP_2d_SetPenColor(redColor);
+    GRAP_3f_FillRect(tempX + 1, tempY + 1, tempX + 2, tempY + 2);
 
     // tile: 0x20 ~ 0x26 (DrawMapCell -> cellPattern -> val == 0x10)
     edges = edgeBits[tile - 0x20];
     if ((edges & 8) != 0)
     {
-        GRAP_Line(D_5876_tempX + 1, D_5878_tempY, D_5876_tempX + 2, D_5878_tempY);
+        GRAP_Line(tempX + 1, tempY, tempX + 2, tempY);
     }
     if ((edges & 4) != 0)
     {
-        GRAP_Line(D_5876_tempX + 3, D_5878_tempY + 1, D_5876_tempX + 3, D_5878_tempY + 2);
+        GRAP_Line(tempX + 3, tempY + 1, tempX + 3, tempY + 2);
     }
     if ((edges & 2) != 0)
     {
-        GRAP_Line(D_5876_tempX + 1, D_5878_tempY + 3, D_5876_tempX + 2, D_5878_tempY + 3);
+        GRAP_Line(tempX + 1, tempY + 3, tempX + 2, tempY + 3);
     }
     if ((edges & 1) != 0)
     {
-        GRAP_Line(D_5876_tempX, D_5878_tempY + 1, D_5876_tempX, D_5878_tempY + 2);
+        GRAP_Line(tempX, tempY + 1, tempX, tempY + 2);
     }
 
-    ULTIMA_0a70_GRAP_2d_SetPenColor(0);
+    GRAP_2d_SetPenColor(0);
 
     switch (tile)
     {
     case 0x22:
-        GRAP_30_Pset(D_5876_tempX + 1, D_5878_tempY + 2);
+        GRAP_30_Pset(tempX + 1, tempY + 2);
         break;
 
     case 0x23:
-        GRAP_30_Pset(D_5876_tempX + 1, D_5878_tempY + 1);
+        GRAP_30_Pset(tempX + 1, tempY + 1);
         break;
 
     case 0x24:
-        GRAP_30_Pset(D_5876_tempX + 2, D_5878_tempY + 1);
+        GRAP_30_Pset(tempX + 2, tempY + 1);
         break;
 
     case 0x25:
-        GRAP_30_Pset(D_5876_tempX + 2, D_5878_tempY + 2);
+        GRAP_30_Pset(tempX + 2, tempY + 2);
         break;
     }
 }
@@ -910,8 +910,8 @@ static void DrawMapCell(int tile, int cellX, int cellY)
         DrawGreenBlock();
         break;
     case 3: // 0fc6
-        ULTIMA_0a70_GRAP_2d_SetPenColor(redColor);
-        ULTIMA_0aa6_GRAP_3f_FillRect(D_5876_tempX, D_5878_tempY, D_5876_tempX + 3, D_5878_tempY + 3);
+        GRAP_2d_SetPenColor(redColor);
+        GRAP_3f_FillRect(tempX, tempY, tempX + 3, tempY + 3);
         break;
     case 4: // 0fea
         DrawHorizBars();
@@ -923,8 +923,8 @@ static void DrawMapCell(int tile, int cellX, int cellY)
         LookobjDrawFrame();
         break;
     case 7: // 0ffc -> 0fca
-        ULTIMA_0a70_GRAP_2d_SetPenColor(brightWhiteColor);
-        ULTIMA_0aa6_GRAP_3f_FillRect(D_5876_tempX, D_5878_tempY, D_5876_tempX + 3, D_5878_tempY + 3);
+        GRAP_2d_SetPenColor(brightWhiteColor);
+        GRAP_3f_FillRect(tempX, tempY, tempX + 3, tempY + 3);
         break;
     case 8: // 1002
         DrawYellowSteps();
@@ -941,32 +941,32 @@ static void DrawMapCell(int tile, int cellX, int cellY)
     case 12: // 101e
         if ((D_52c8_videoDriver == 0) || (D_52c8_videoDriver == 3))
         {
-            ULTIMA_0a70_GRAP_2d_SetPenColor(magentaColor);
+            GRAP_2d_SetPenColor(magentaColor);
         }
         else
         {
-            ULTIMA_0a70_GRAP_2d_SetPenColor(blueColor + 8);
+            GRAP_2d_SetPenColor(blueColor + 8);
         }
-        GRAP_30_Pset(D_5876_tempX + 2, D_5878_tempY + 2);
+        GRAP_30_Pset(tempX + 2, tempY + 2);
         break;
     case 13: // 1050
         DrawMarsh();
         break;
     case 14: // 1056
-        ULTIMA_0a70_GRAP_2d_SetPenColor(brightWhiteColor);
-        GRAP_Line(D_5876_tempX + 1, D_5878_tempY, D_5876_tempX + 1, D_5878_tempY + 3);
-        GRAP_Line(D_5876_tempX + 2, D_5878_tempY, D_5876_tempX + 2, D_5878_tempY + 3);
+        GRAP_2d_SetPenColor(brightWhiteColor);
+        GRAP_Line(tempX + 1, tempY, tempX + 1, tempY + 3);
+        GRAP_Line(tempX + 2, tempY, tempX + 2, tempY + 3);
         break;
     case 15: // 108c
-        ULTIMA_0a70_GRAP_2d_SetPenColor(blueColor + 8);
-        ULTIMA_0aa6_GRAP_3f_FillRect(D_5876_tempX, D_5878_tempY, D_5876_tempX + 3, D_5878_tempY + 3);
+        GRAP_2d_SetPenColor(blueColor + 8);
+        GRAP_3f_FillRect(tempX, tempY, tempX + 3, tempY + 3);
         break;
     case 16: // 1096
         DrawEdgedBlock(tile);
         break;
     case 90: // 0ffc
-        ULTIMA_0a70_GRAP_2d_SetPenColor(brightWhiteColor);
-        ULTIMA_0aa6_GRAP_3f_FillRect(D_5876_tempX, D_5878_tempY, D_5876_tempX + 3, D_5878_tempY + 3);
+        GRAP_2d_SetPenColor(brightWhiteColor);
+        GRAP_3f_FillRect(tempX, tempY, tempX + 3, tempY + 3);
         break;
     }
 }
@@ -977,20 +977,20 @@ void LookobjViewCmd(int viewX, int viewY)
     int col;
     int row;
 
-    viewX -= D_589b_mapOriginX;
-    viewY -= D_589c_mapOriginY;
+    viewX -= mapOriginX;
+    viewY -= mapOriginY;
     viewX &= 0xff;
     viewY &= 0xff;
 
     GRAP_0f_SelectPage(1);
-    ULTIMA_0a70_GRAP_2d_SetPenColor(0);
-    ULTIMA_0aa6_GRAP_3f_FillRect(8, 8, 0xb7, 0xb7);
+    GRAP_2d_SetPenColor(0);
+    GRAP_3f_FillRect(8, 8, 0xb7, 0xb7);
 
     for (row = 0; row < 0x20; row++)
     {
         for (col = 0; col < 0x20; col++)
         {
-            DrawMapCell(*ULTIMA_4402_GetTileAddr((uint)D_589b_mapOriginX + col, (uint)D_589c_mapOriginY + row),
+            DrawMapCell(*GetTileAddr((uint)mapOriginX + col, (uint)mapOriginY + row),
                            col, row);
         }
     }
@@ -1006,10 +1006,10 @@ void LookobjViewCmd(int viewX, int viewY)
         if (row == 4)
         {
             row = 0;
-            ULTIMA_0a70_GRAP_2d_SetPenColor(brightWhiteColor);
-            GRAP_XorFillRect(D_5876_tempX, D_5878_tempY, D_5876_tempX + 3, D_5878_tempY + 3);
+            GRAP_2d_SetPenColor(brightWhiteColor);
+            GRAP_XorFillRect(tempX, tempY, tempX + 3, tempY + 3);
         }
     }
 
-    ULTIMA_5910_UpdateFrame();
+    UpdateFrame();
 }

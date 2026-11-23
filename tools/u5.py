@@ -256,7 +256,7 @@ MODULES['intro0.c'] = ('ovl', 'INTRO')
 MODULES['intro2.c'] = ('ovl', 'INTRO')
 # Likewise CMDS.OVL: cmds.c (to YellShadowlord), cmds2.c (from RestoreShrine), cmdsb.c.
 MODULES['cmds2.c'] = ('ovl', 'CMDS')
-# TOWN.OVL: town.c (to TOWN_0f02_TileEffects) and town2.c (from TOWN_10da_ShoutBegone).
+# TOWN.OVL: town.c (to TileEffects) and town2.c (from TOWN_10da_ShoutBegone).
 MODULES['town2.c'] = ('ovl', 'TOWN')
 # SHOPPES2.OVL is two MSC 5.0 objects: shoppes2.c (to Pub) and shoppe2b.c (from
 # CanAfford, the shipwright).
@@ -401,8 +401,9 @@ def exe_image(gamedata):
     return d[hdr:]
 
 
-# u5d's names carry their addresses: ULTIMA_1850_PrintString is CS:1850, TOWN_0052 is
-# offset 0x52 in TOWN.OVL, D_5893_mapId is DS:5893. With /Gc (Pascal names) the object
+# u5d's names carry their addresses (ULTIMA_1850 is CS:1850, TOWN_0052 is offset 0x52 in
+# TOWN.OVL, D_5893 is DS:5893), or names.tsv does for a name without one (PrintString,
+# mapId). With /Gc (Pascal names) the object
 # files hold them in upper case.
 NAME_RE = re.compile(r'^_?([A-Z][A-Z0-9]*)_([0-9A-Fa-f]{4})(?:_|$)')
 

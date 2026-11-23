@@ -24,7 +24,7 @@ int EnterCmd(void);
 // at 55a6) and this module's tables (6a0a); which of the two is not known (the bytes are
 // the same either way).
 u16 saveStart = 0; // +0x0
-S_55a8 D_55a8_party[0x10] = {0}; // ~57a8)
+S_55a8 party[0x10] = {0}; // ~57a8)
 s16 food = 0; // +0x0202 Food // int (ReceiveItem, MOVSX)
 s16 gold = 0; // +0x0204 Gold // int (TrollToll, MOVSX)
 u8 keys = 0; // +0x0206 #Keys
@@ -54,14 +54,14 @@ u8 moonstoneMap[8] = {0}; // +0x029A 0=buried,0xFF=Inventory moonstone flags
 u8 moonstoneZ[8] = {0}; // +0x02A2 0=Britannia,0xFF=Underworld moonstone Z-coordinates (valid only if buried)
 u8 D_5850_reagents[8] = {0}; // +0x02AA Reagents (A..H)
 u8 harvestDay[3] = {0}; // +0x02B2 Day each of the three nightshade/mandrake spots was last harvested [5858..585b)
-u8 D_585b_partyCount = 0; // +0x02B5 party member count
+u8 partyCount = 0; // +0x02B5 party member count
 u8 takenItemFlags[0x18] = {0}; // [585c..5874)
 u16 year = 0; // +0x02CE Current year (TODO: int?)
-s16 D_5876_tempX = 0; // selected x direction? // +0x02D0 first party member that is not dead or sleeping? # of active monsters & charmed PCs[2]?
-s16 D_5878_tempY = 0; // selected y direction? // +0x02D2 # of active PCs and charmed monsters[2]?
+s16 tempX = 0; // selected x direction? // +0x02D0 first party member that is not dead or sleeping? # of active monsters & charmed PCs[2]?
+s16 tempY = 0; // selected y direction? // +0x02D2 # of active PCs and charmed monsters[2]?
 u8 statusIcon = 0; // +0x02D4 Icon
 u8 activePlayer = 0; // +0x02D5 Active character
-u8 D_587c_partyTile = 0; // +0x02D6 party tile
+u8 partyTile = 0; // +0x02D6 party tile
 u8 D_587d_month = 0; // +0x02D7 Current month
 u8 D_587e_day = 0; // +0x02D8 Current day
 u8 D_587f_hour = 0; // +0x02D9 Current hour
@@ -73,7 +73,7 @@ u8 clockChimes = 0;
 u8 trammelPhase = 0; // +0x02DF Phase of Trammel
 u8 feluccaPhase = 0; // +0x02E0 Phase of Felucca
 u8 moongateHeight = 0; // +0x02E1 Current moongate height (in pixels)
-u8 D_5888_karma = 0; // +0x02E2 Karma
+u8 karma = 0; // +0x02E2 Karma
 u8 D_5889_savedUnused = 0;
 u8 D_588a_savedUnused = 0;
 u8 turnCount = 0; // +0x02E5 Current turn count
@@ -84,7 +84,7 @@ u8 castCircle = 0;
 u8 D_5890_spellAttack = 0;
 u8 animate = 0; // +0x02EB animate flag
 u8 windDir = 0; // +0x02EC wind direction
-u8 D_5893_mapId = 0; // +0x02ED map_id (21h~: dungeon, 40: unloaded)
+u8 mapId = 0; // +0x02ED map_id (21h~: dungeon, 40: unloaded)
 u8 D_5894_savedMapId = 0; // +0x02EE Combat backup of 0x2ED
 u8 D_5895_mapLevel = 0; // +0x02EF level (depth)
 u8 D_5896_mapX = 0; // +0x02F0 map_x
@@ -92,8 +92,8 @@ u8 D_5897_mapY = 0; // +0x02F1 map_y
 u8 crosshairOn = 0; // crosshair visible
 u8 crosshairX = 0; // crosshair x
 u8 crosshairY = 0; // crosshair y
-u8 D_589b_mapOriginX = 0; // x upper left chunk
-u8 D_589c_mapOriginY = 0; // y upper left chunk
+u8 mapOriginX = 0; // x upper left chunk
+u8 mapOriginY = 0; // y upper left chunk
 u8 attackWeapon = 0; // +0x02F7 Attacker's weapon
 u8 curCombatant = 0; // +0x02F8 ?
 u8 focusBlink = 0; // +0x02F9 show focus rectangle & crosshair?
@@ -106,18 +106,18 @@ u8 D_58a5_lightLevel = 0; // +0x02FF Current light intensity
 u8 lightSpellTurns = 0;
 u8 torchTurns = 0;
 u8 lastAttacker[0x20] = {0}; // [58a8..58c8)
-u8 D_58c8_shadowlordTowns[3] = {0}; // 58cb)
+u8 shadowlordTowns[3] = {0}; // 58cb)
 u8 summonedLord = 0;
 u16 questsOrdained = 0; // shrine quest active flags TODO: u8?
 u16 questsDone = 0; // shrine quest completed flags TODO: u8?
 u8 dungeonOpen[8] = {0};
 u8 shrineDestroyed[8] = {0};
 u8 roomsCleared[0xe] = {0}; // ..58ee)
-u8 D_58ee_annotX[0x20] = {0}; // ..590e) spell counts
-u8 D_590e_annotY[0x20] = {0}; // ..592e)
-u8 D_592e_annotTile[0x20] = {0}; // .594e)
-u8 D_594e_annotCount = 0;
-u8 D_594f_openDoorTile = 0; // +0x03A9 opened door
+u8 annotX[0x20] = {0}; // ..590e) spell counts
+u8 annotY[0x20] = {0}; // ..592e)
+u8 annotTile[0x20] = {0}; // .594e)
+u8 annotCount = 0;
+u8 openDoorTile = 0; // +0x03A9 opened door
 u8 openDoorX = 0; // +0x03AA open_door_x
 u8 openDoorY = 0; // +0x03AB open_door_y
 u8 openDoorTurns = 0; // +0x03AC # of turns the door stays open
@@ -125,20 +125,20 @@ u8 boughtShipX = 0; // +0x03AD ship_x
 u8 boughtShipY = 0; // +0x03AE ship_y
 u8 sailDir = 0;
 u8 newPrompt = 0;
-u8 D_5957_drunkTurns = 0; // +0x03B1 remaining drunk turn count (TOWN_0dc4_GetTownKey)
-u8 D_5958_townShadowlord = 0;
+u8 drunkTurns = 0; // +0x03B1 remaining drunk turn count (GetTownKey)
+u8 townShadowlord = 0;
 u8 fewerEnemies = 0;
 u8 dungeonMap[0x200] = {0}; // +0x03B4 dungeon map data ..5b5a)
-u8 D_5b5a_npcKilled[0x80] = {0}; // +0x05B4 NPC killed flags (4 bytes / 32 bits per settlement) [..5bda) // TODO: u32
+u8 npcKilled[0x80] = {0}; // +0x05B4 NPC killed flags (4 bytes / 32 bits per settlement) [..5bda) // TODO: u32
 u8 npcMet[0x80] = {0}; // +0x0634 NPC met flags (4 bytes / 32 bits per settlement) [..5c5a)
-ActorFmt D_5c5a_actors[32] = {0}; // ~5d5a) "Object" struct
+ActorFmt actors[32] = {0}; // ~5d5a) "Object" struct
 u16 D_5d5a_unused = 0; // unused?
 u16 D_5d5c_unused = 0; // unused?
-NpcScheduleFmt D_5d5e_npcSchedules[32] = {0}; // +0x07B8 NPC Schedules [..5f5e) 0x200
-NpcFmt D_5f5e_npcs[32] = {0}; // +0x09B8 Character/monster states (16bytes * 32) [..615e) 0x200
+NpcScheduleFmt npcSchedules[32] = {0}; // +0x07B8 NPC Schedules [..5f5e) 0x200
+NpcFmt npcs[32] = {0}; // +0x09B8 Character/monster states (16bytes * 32) [..615e) 0x200
 MovementFmt moveLists[0x20] = {0}; // +0x0BB8 Movement list table [..655e)
 s16 moveListPos[0x20] = {0}; // +0x0FB8 Movement list pointers [..659e)
-u8 D_659e_npcTypes[0x20] = {0}; // +0x0FF8 NPC types [..65be)
+u8 npcTypes[0x20] = {0}; // +0x0FF8 NPC types [..65be)
 u8 npcApproach = 0;
 u8 npcApproaching = 0;
 u16 D_65c0_unused = 0; // unused?
@@ -164,7 +164,7 @@ u8 viewTileFlags[0x20] =
 };
 
 // shake screen
-void ULTIMA_3072_ShakeScreen(void)
+void ShakeScreen(void)
 {
     int i;
     int shakeRound;
@@ -177,30 +177,30 @@ void ULTIMA_3072_ShakeScreen(void)
         for (i = 8; i <= 0xb3; i += 3)
         {
             DRV_27_ScrollTextWindow1(8, i, 0xb7, i + 4, 2);
-            ULTIMA_22e2_PcspkOn(ULTIMA_2092_RandomRange(0x13, 0x96));
+            PcspkOn(RandomRange(0x13, 0x96));
         }
 
         for (i = 8; i <= 0xb3; i += 3)
         {
             GRAP_18_TransferArea(1, 0, 8, i, 0xb7, i + 4);
-            ULTIMA_22e2_PcspkOn(ULTIMA_2092_RandomRange(0x13, 0x96));
+            PcspkOn(RandomRange(0x13, 0x96));
         }
 
         for (i = 0xb3; i >= 8; i -= 3)
         {
             DRV_27_ScrollTextWindow2(8, i, 0xb7, i + 4, 2);
-            ULTIMA_22e2_PcspkOn(ULTIMA_2092_RandomRange(0x13, 0x96));
+            PcspkOn(RandomRange(0x13, 0x96));
         }
 
         for (i = 0xb3; i >= 8; i -= 3)
         {
             GRAP_18_TransferArea(1, 0, 8, i, 0xb7, i + 4);
-            ULTIMA_22e2_PcspkOn(ULTIMA_2092_RandomRange(0x13, 0x96));
+            PcspkOn(RandomRange(0x13, 0x96));
         }
     }
 
     GRAP_0f_SelectPage(0);
-    ULTIMA_230e_PcspkOff();
+    PcspkOff();
 }
 
 static void HoleUpCmd(void);
@@ -214,90 +214,90 @@ int ProcessCommand(int key)
     switch (key)
     {
     case U5_KEY_CTRL_B:
-        ULTIMA_1850_PrintString(/*0xa110*/ "Buffer O");
+        PrintString(/*0xa110*/ "Buffer O");
         keyBufferOff = !keyBufferOff;
         if (keyBufferOff != 0) 
         {
-            ULTIMA_1850_PrintString(/*0xa11a*/ "ff\n");
+            PrintString(/*0xa11a*/ "ff\n");
         }
         else
         {
-            ULTIMA_1850_PrintString(/*0xa11e*/ "n\n");
+            PrintString(/*0xa11e*/ "n\n");
         }
 
         result = 0;
         break;
     case U5_KEY_SPACE:
         /* ' ' Pass */
-        if (D_5893_mapId == 0 && sailDir != 0)
+        if (mapId == 0 && sailDir != 0)
         {
-            ULTIMA_1850_PrintString(/*0xa122*/ "Sheets in irons!\n");
+            PrintString(/*0xa122*/ "Sheets in irons!\n");
             sailDir = 0;
         }
         else
         {
-            ULTIMA_1850_PrintString(/*0xa134*/ "Pass\n");
+            PrintString(/*0xa134*/ "Pass\n");
         }
         break;
     case 0x41:
         /* 'A' */
         // 3216
-        result = D_5893_mapId == 0 ?
+        result = mapId == 0 ?
             MainoutAttackCmd() :
-                D_5893_mapId < 0x21 ?
-            TOWN_09e6_AttackCmd() :
+                mapId < 0x21 ?
+            AttackCmd() :
             DungeonAttackCmd();
         break;
     case 0x42:
         /* 'B' Board */
-        ULTIMA_1850_PrintString(/*0xa13a*/ "Board ");
+        PrintString(/*0xa13a*/ "Board ");
         result = BoardCmd();
         break;
     case 0x43:
         /* 'C' Cast */
-        ULTIMA_1850_PrintString(/*0xa142*/ "Cast...\n");
+        PrintString(/*0xa142*/ "Cast...\n");
         result = CastSpellCmd();
         break;
     case 0x44:
         /* 'D' What? */
-        ULTIMA_1850_PrintString(/*0xa14c*/ "D-What?\n");
+        PrintString(/*0xa14c*/ "D-What?\n");
         result = 0;
         break;
     case 0x45:
         /* 'E' Enter */
-        if (D_5893_mapId == 0)
+        if (mapId == 0)
         {
             result = EnterCmd();
             break;
         }
-        ULTIMA_1850_PrintString(/*0xa156*/ "Enter what?\n");
+        PrintString(/*0xa156*/ "Enter what?\n");
         break;
     case 0x46:
         /* 'F' Fire */
-        ULTIMA_1850_PrintString(/*0xa164*/ "Fire-");
+        PrintString(/*0xa164*/ "Fire-");
         FireCmd();
         break;
     case 0x47:
         /* 'G' Get */
-        if (D_5893_mapId < 0x21)
+        if (mapId < 0x21)
         {
-            ULTIMA_1850_PrintString(/*0xa16a*/ "Get-");
+            PrintString(/*0xa16a*/ "Get-");
         }
         GetCmd();
         break;
     case 0x48:
         /* 'H' Hole up */
-        if (D_5893_mapId == 0 || D_5893_mapId > 0x20)
+        if (mapId == 0 || mapId > 0x20)
         {
             // outmap_hole_up_cmd
             HoleUpCmd();
             break;
         }
-        tileUnder = *ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY);
-        ULTIMA_1850_PrintString(/*0xa170*/ "Hole up- ");
+        tileUnder = *GetTileAddr(D_5896_mapX, D_5897_mapY);
+        PrintString(/*0xa170*/ "Hole up- ");
         if (tileUnder != TILE_MAP_BED)
         {
-            ULTIMA_1850_PrintString(/*0xa17a*/ "Only in bed!\n");
+            PrintString(/*0xa17a*/ "Only in bed!\n");
         }
         else
         {
@@ -306,24 +306,24 @@ int ProcessCommand(int key)
         break;
     case 0x49:
         /* 'I' Ignite torch */
-        ULTIMA_1850_PrintString(/*0xa188*/ "Ignite torch!\n");
+        PrintString(/*0xa188*/ "Ignite torch!\n");
         IgniteTorchCmd();
         break;
     case 0x4a:
         /* 'J' Jimmy */
-        ULTIMA_1850_PrintString(/*0xa198*/ "Jimmy-");
+        PrintString(/*0xa198*/ "Jimmy-");
         JimmyCmd();
         break;
     case 0x4b:
         /* 'K' Klimb */
-        if (D_5893_mapId == 0)
+        if (mapId == 0)
         {
-            ULTIMA_1850_PrintString(/*0xa1a0*/ "Klimb-");
+            PrintString(/*0xa1a0*/ "Klimb-");
             CmdsKlimbCmd();
         }
-        else if (D_5893_mapId < 0x21)
+        else if (mapId < 0x21)
         {
-            result = TOWN_0b82_KlimbCmd();
+            result = KlimbCmd();
         }
         else
         {
@@ -332,89 +332,89 @@ int ProcessCommand(int key)
         break;
     case 0x4c:
         /* 'L' Look */
-        ULTIMA_1850_PrintString(/*0xa1a8*/ "Look");
-        if (D_5893_mapId > 0x20 && D_5893_mapId < 0x29)
+        PrintString(/*0xa1a8*/ "Look");
+        if (mapId > 0x20 && mapId < 0x29)
         {
             /* 0x21..0x28 (Dungeon) */
-            ULTIMA_1850_PrintString(/*0xa1ae*/ "...\n");
+            PrintString(/*0xa1ae*/ "...\n");
             LookCmdInDungeon();
         }
         else
         {
-            ULTIMA_16ba_PrintChar('-');
+            PrintChar('-');
             LookCmd();
         }
         break;
     case 0x4d:
         /* 'M' Mix */
-        ULTIMA_1850_PrintString(/*0xa1b4*/ "Mix Reagents\n\n");
+        PrintString(/*0xa1b4*/ "Mix Reagents\n\n");
         MixCmd();
         break;
     case 0x4e:
         /* 'N' New order */
-        ULTIMA_1850_PrintString(/*0xa1c4*/ "New Order");
+        PrintString(/*0xa1c4*/ "New Order");
         NewOrderCmd();
         break;
     case 0x4f:
         /* 'O' Open */
-        ULTIMA_1850_PrintString(/*0xa1ce*/ "Open-");
+        PrintString(/*0xa1ce*/ "Open-");
         OpenCmd();
         break;
     case 0x50:
         /* 'P' Push */
-        if (D_5893_mapId > 0x20 && D_5893_mapId < 0x29)
+        if (mapId > 0x20 && mapId < 0x29)
         {
             /* Cannot push in dungeons */
-            ULTIMA_1850_PrintString(/*0xa1d4*/ "Push\nNot here!\n");
+            PrintString(/*0xa1d4*/ "Push\nNot here!\n");
             result = 0;
         }
         else
         {
-            ULTIMA_1850_PrintString(/*0xa1e4*/ "Push-");
+            PrintString(/*0xa1e4*/ "Push-");
             PushCmd();
         }
         break;
     case 0x51:
         /* 'Q' Quit */
-        ULTIMA_1850_PrintString(/*0xa1ea*/ "Quit:");
+        PrintString(/*0xa1ea*/ "Quit:");
         SaveGame();
         result = 0;
         break;
     case 0x52:
         /* 'R' Ready */
-        ULTIMA_1850_PrintString(/*0xa1f0*/ "Ready...\n\n");
+        PrintString(/*0xa1f0*/ "Ready...\n\n");
         ReadyCmd();
         break;
     case 0x53:
         /* 'S' Search */
-        if (D_5893_mapId < 0x21)
+        if (mapId < 0x21)
         {
-            ULTIMA_1850_PrintString(/*0xa1fc*/ "Search-");
+            PrintString(/*0xa1fc*/ "Search-");
         }
         else
         {
-            ULTIMA_1850_PrintString(/*0xa204*/ "Search...\n");
+            PrintString(/*0xa204*/ "Search...\n");
         }
         SearchCmd();
         break;
     case 0x54:
         /* 'T' Talk */
-        if (D_5893_mapId == 0)
+        if (mapId == 0)
         {
-            ULTIMA_1850_PrintString(/*0xa210*/ "Talk-");
-            if (ULTIMA_35ec_SelectDirection() == 0)
+            PrintString(/*0xa210*/ "Talk-");
+            if (SelectDirection() == 0)
                 break;
-            ULTIMA_1850_PrintString(/*0xa216*/ "Funny, no response!\n");
+            PrintString(/*0xa216*/ "Funny, no response!\n");
         }
         else
         {
-            if (D_5893_mapId > 0x20)
+            if (mapId > 0x20)
             {
-                ULTIMA_1850_PrintString(/*0xa22c*/ "Talk-Funny, no response!\n");
+                PrintString(/*0xa22c*/ "Talk-Funny, no response!\n");
             }
             else
             {
-                ULTIMA_1850_PrintString(/*0xa246*/ "Talk-");
+                PrintString(/*0xa246*/ "Talk-");
                 if (TalkCmd() != 0)
                 {
                     result = 2;
@@ -424,16 +424,16 @@ int ProcessCommand(int key)
         break;
     case 0x55:
         /* 'U' Use item */
-        ULTIMA_1850_PrintString(/*0xa24c*/ "Use item\n\n");
+        PrintString(/*0xa24c*/ "Use item\n\n");
         UseCmd();
         break;
     case 0x56:
         /* 'V' View a gem */
-        ULTIMA_1850_PrintString(/*0xa258*/ "View a gem!\n");
+        PrintString(/*0xa258*/ "View a gem!\n");
         if (gems != 0)
         {
             gems--;
-            if (D_5893_mapId < 0x21)
+            if (mapId < 0x21)
             {
                 LookobjViewCmd(D_5896_mapX, D_5897_mapY);
             }
@@ -443,31 +443,31 @@ int ProcessCommand(int key)
             }
             break;
         }
-        ULTIMA_1850_PrintString(/*0xa266*/ "You have none!\n");
+        PrintString(/*0xa266*/ "You have none!\n");
         break;
     case 0x57:
         /* 'W' What? */
-        ULTIMA_1850_PrintString(/*0xa276*/ "W-What?\n");
+        PrintString(/*0xa276*/ "W-What?\n");
         result = 0;
         break;
     case 0x58:
         /* 'X' X-it */
-        ULTIMA_1850_PrintString(/*0xa280*/ "X-it ");
+        PrintString(/*0xa280*/ "X-it ");
         XitCmd();
         break;
     case 0x59:
         /* 'Y' Yell */
-        ULTIMA_1850_PrintString(/*0xa286*/ "Yell ");
+        PrintString(/*0xa286*/ "Yell ");
         result = YellCmd();
         break;
     case 0x5a:
         /* 'Z' Z-stats */
-        ULTIMA_1850_PrintString(/*0xa28c*/ "Z-stats...\n");
+        PrintString(/*0xa28c*/ "Z-stats...\n");
         ZstatsCmd();
         break;
     default:
         /* default What? */
-        ULTIMA_1850_PrintString(/*0xa298*/ "What?\n");
+        PrintString(/*0xa298*/ "What?\n");
         result = 0;
         break;
     }
@@ -476,17 +476,17 @@ int ProcessCommand(int key)
 
 // "explosion effect"
 // The hit effect on the map cell (x, y): the flash tile and noise.
-void ULTIMA_3522_HitEffectAt(int cellX, int cellY)
+void HitEffectAt(int cellX, int cellY)
 {
-    if (D_5893_mapId < 0x80)
+    if (mapId < 0x80)
     {
         cellX -= D_5896_mapX - 5;
         cellY -= D_5897_mapY - 5;
     }
 
     GRAP_51_PutTile(0, cellX, cellY);
-    ULTIMA_223c_AudioWhiteNoise(10, 3000, 2000);
-    ULTIMA_5910_UpdateFrame();
+    AudioWhiteNoise(10, 3000, 2000);
+    UpdateFrame();
 }
 
 // The hit effect on an actor (in combat a combatant; a party member's stats row flashes too).
@@ -494,36 +494,36 @@ void HitEffectOnActor(int index)
 {
     CombatEntity* combatant;
 
-    if (D_5893_mapId > 0x7f)
+    if (mapId > 0x7f)
     {
         combatant = &combatants[index];
         index = combatant->actorIdx;
     }
 
-    GRAP_51_PutTile(0, D_5c5a_actors[index].x, D_5c5a_actors[index].y);
+    GRAP_51_PutTile(0, actors[index].x, actors[index].y);
 
-    if (D_5893_mapId > 0x7f && (combatant->flags & COMBAT_FLAGS_PLAYER) != 0)
+    if (mapId > 0x7f && (combatant->flags & COMBAT_FLAGS_PLAYER) != 0)
     {
         InvertPlayerRow(combatant->entityIdx);
-        ULTIMA_223c_AudioWhiteNoise(0x28, 3000, 500);
+        AudioWhiteNoise(0x28, 3000, 500);
         InvertPlayerRow(combatant->entityIdx);
     }
     else
     {
-        ULTIMA_223c_AudioWhiteNoise(10, 3000, 2000);
+        AudioWhiteNoise(10, 3000, 2000);
     }
 
-    ULTIMA_5910_UpdateFrame();
+    UpdateFrame();
 }
 
-int ULTIMA_35ec_SelectDirection(void)
+int SelectDirection(void)
 {
     u8 key;
 
-    D_5876_tempX = 0;
-    D_5878_tempY = 0;
+    tempX = 0;
+    tempY = 0;
 
-    while ((key = ULTIMA_266c_GetChar()) != U5_KEY_SPACE &&
+    while ((key = GetChar()) != U5_KEY_SPACE &&
            key != U5_KEY_UP && key != U5_KEY_DOWN &&
            key != U5_KEY_LEFT && key != U5_KEY_RIGHT)
     {
@@ -533,36 +533,36 @@ int ULTIMA_35ec_SelectDirection(void)
     {
     case U5_KEY_ESC:
     case U5_KEY_SPACE:
-        ULTIMA_1850_PrintString(/*0xa2a0*/ "Pass\n");
+        PrintString(/*0xa2a0*/ "Pass\n");
         return 0;
     case U5_KEY_UP:
-        ULTIMA_1850_PrintString(/*0xa2a6*/ "North\n");
-        D_5878_tempY--;
+        PrintString(/*0xa2a6*/ "North\n");
+        tempY--;
         return 1;
     case U5_KEY_DOWN:
-        ULTIMA_1850_PrintString(/*0xa2ae*/ "South\n");
-        D_5878_tempY++;
+        PrintString(/*0xa2ae*/ "South\n");
+        tempY++;
         return 1;
     case U5_KEY_LEFT:
-        ULTIMA_1850_PrintString(/*0xa2b6*/ "West\n");
-        D_5876_tempX--;
+        PrintString(/*0xa2b6*/ "West\n");
+        tempX--;
         return 1;
     case U5_KEY_RIGHT:
-        ULTIMA_1850_PrintString(/*0xa2bc*/ "East\n");
-        D_5876_tempX++;
+        PrintString(/*0xa2bc*/ "East\n");
+        tempX++;
         return 1;
     }
 }
 
 // CHECKED
-int ULTIMA_368e_FindActorTileAtPos(int mapX, int mapY, int mapLevel)
+int FindActorTileAtPos(int mapX, int mapY, int mapLevel)
 {
-    for (D_5876_tempX = 1; D_5876_tempX < 32; D_5876_tempX++)
+    for (tempX = 1; tempX < 32; tempX++)
     {
-        if (D_5c5a_actors[D_5876_tempX].x == mapX && D_5c5a_actors[D_5876_tempX].y == mapY &&
-            (D_5893_mapId > 0x7f || (D_5893_mapId < 0x80 && D_5c5a_actors[D_5876_tempX].z == mapLevel)))
+        if (actors[tempX].x == mapX && actors[tempX].y == mapY &&
+            (mapId > 0x7f || (mapId < 0x80 && actors[tempX].z == mapLevel)))
         {
-            return D_5c5a_actors[D_5876_tempX].tile;
+            return actors[tempX].tile;
         }
     }
 
@@ -570,15 +570,15 @@ int ULTIMA_368e_FindActorTileAtPos(int mapX, int mapY, int mapLevel)
 }
 
 // CHECKED
-// The tile of the actor at (x, y, level), searching from slot 31 down to the party (slot 0); D_5876_tempX is its slot. 0 none.
-int ULTIMA_3702_FindLastActorTileAt(int mapX, int mapY, int mapLevel)
+// The tile of the actor at (x, y, level), searching from slot 31 down to the party (slot 0); tempX is its slot. 0 none.
+int FindLastActorTileAt(int mapX, int mapY, int mapLevel)
 {
-    for (D_5876_tempX = 31; D_5876_tempX >= 0; D_5876_tempX--)
+    for (tempX = 31; tempX >= 0; tempX--)
     {
-        if (D_5c5a_actors[D_5876_tempX].x == mapX && D_5c5a_actors[D_5876_tempX].y == mapY &&
-            (D_5893_mapId > 0x7f || (D_5893_mapId < 0x80 && D_5c5a_actors[D_5876_tempX].z == mapLevel)))
+        if (actors[tempX].x == mapX && actors[tempX].y == mapY &&
+            (mapId > 0x7f || (mapId < 0x80 && actors[tempX].z == mapLevel)))
         {
-            return D_5c5a_actors[D_5876_tempX].tile;
+            return actors[tempX].tile;
         }
     }
 
@@ -596,32 +596,32 @@ static int FindFarActorSlot(byte tile)
 
     for (slot_m = 0x1f; slot_m >= 0; slot_m--)
     {
-        if (D_5c5a_actors[slot_m].tile == 0)
+        if (actors[slot_m].tile == 0)
         {
             return slot_m;
         }
 
-        if (D_5c5a_actors[slot_m].tile == tile)
+        if (actors[slot_m].tile == tile)
         {
-            if (D_5896_mapX >= D_5c5a_actors[slot_m].x)
+            if (D_5896_mapX >= actors[slot_m].x)
             {
-                distX = D_5896_mapX - D_5c5a_actors[slot_m].x;
+                distX = D_5896_mapX - actors[slot_m].x;
             }
             else
             {
-                distX = ~(D_5896_mapX - D_5c5a_actors[slot_m].x) + 1;
+                distX = ~(D_5896_mapX - actors[slot_m].x) + 1;
             }
 
-            if (D_5897_mapY >= D_5c5a_actors[slot_m].y)
+            if (D_5897_mapY >= actors[slot_m].y)
             {
-                distY = D_5897_mapY - D_5c5a_actors[slot_m].y;
+                distY = D_5897_mapY - actors[slot_m].y;
             }
             else
             {
-                distY = ~(D_5897_mapY - D_5c5a_actors[slot_m].y) + 1;
+                distY = ~(D_5897_mapY - actors[slot_m].y) + 1;
             }
 
-            if (D_5c5a_actors[slot_m].z != D_5895_mapLevel || (D_5c5a_actors[slot_m].z == D_5895_mapLevel && distX >= 6 && distY >= 6))
+            if (actors[slot_m].z != D_5895_mapLevel || (actors[slot_m].z == D_5895_mapLevel && distX >= 6 && distY >= 6))
             {
                 return slot_m;
             }
@@ -641,12 +641,12 @@ static int FindActorInRange(int minTile, int maxTile, int outOfViewOnly)
 
     for (slot_c = 1; slot_c < 0x18; slot_c++)
     {
-        if (D_5c5a_actors[slot_c].tile >= minTile && D_5c5a_actors[slot_c].tile <= maxTile && D_5c5a_actors[slot_c].tile != TILE_ACTOR_CROWN)
+        if (actors[slot_c].tile >= minTile && actors[slot_c].tile <= maxTile && actors[slot_c].tile != TILE_ACTOR_CROWN)
         {
             if (outOfViewOnly != 0)
             {
-                viewX = D_5c5a_actors[slot_c].x - D_5896_mapX + 5;
-                viewY = D_5c5a_actors[slot_c].y - D_5897_mapY + 5;
+                viewX = actors[slot_c].x - D_5896_mapX + 5;
+                viewY = actors[slot_c].y - D_5897_mapY + 5;
                 if (viewX > 10 || viewY > 10)
                 {
                     return slot_c;
@@ -662,8 +662,8 @@ static int FindActorInRange(int minTile, int maxTile, int outOfViewOnly)
     return 0;
 }
 
-// A slot of D_5c5a_actors for a new actor: a free one, else one out of sight, the least important kind first. 0 none.
-int ULTIMA_38e4_FindActorSlot(void)
+// A slot of actors for a new actor: a free one, else one out of sight, the least important kind first. 0 none.
+int FindActorSlot(void)
 {
     int ret;
 
@@ -692,9 +692,9 @@ int ULTIMA_38e4_FindActorSlot(void)
 
 void SetTile(byte new_tile_id, byte x, byte y)
 {
-    if (D_5893_mapId != 0 && D_5893_mapId < 0x21 && new_tile_id != 0)
+    if (mapId != 0 && mapId < 0x21 && new_tile_id != 0)
     {
-        *ULTIMA_4402_GetTileAddr(x, y) = new_tile_id;
+        *GetTileAddr(x, y) = new_tile_id;
     }
 }
 
@@ -707,11 +707,11 @@ int GetFirstActivePartyMember(void)
 
     sleepingCount = 0;
 
-    for (member_h = 0; member_h < D_585b_partyCount; member_h++)
+    for (member_h = 0; member_h < partyCount; member_h++)
     {
-        if ((status_l = D_55a8_party[member_h].status) == STATUS_GOOD || status_l == STATUS_POISONED)
+        if ((status_l = party[member_h].status) == STATUS_GOOD || status_l == STATUS_POISONED)
         {
-            D_5876_tempX = member_h;
+            tempX = member_h;
             return 0;
         }
         else if (status_l == STATUS_SLEEP)
@@ -730,20 +730,20 @@ int GetFirstActivePartyMember(void)
     }
 }
 
-// Fill slot `slot` of D_5c5a_actors: tile, animTile, x, y, z, value.
+// Fill slot `slot` of actors: tile, animTile, x, y, z, value.
 void SetActor(byte tile, byte animTile, byte mapX, byte mapY, byte mapLevel, byte value, int slot)
 {
-    D_5c5a_actors[slot].tile = tile;
-    D_5c5a_actors[slot].animTile = animTile;
-    D_5c5a_actors[slot].x = mapX;
-    D_5c5a_actors[slot].y = mapY;
-    D_5c5a_actors[slot].z = mapLevel;
-    D_5c5a_actors[slot].value = value;
+    actors[slot].tile = tile;
+    actors[slot].animTile = animTile;
+    actors[slot].x = mapX;
+    actors[slot].y = mapY;
+    actors[slot].z = mapLevel;
+    actors[slot].value = value;
 }
 
 int Random(int maxValue)
 {
-    return ULTIMA_2092_RandomRange(0, maxValue);
+    return RandomRange(0, maxValue);
 }
 
 // A random number from 1 to 30.
@@ -770,7 +770,7 @@ void WaitFrames(int frameCount)
 
     for (frame = 0; frame < frameCount; frame++)
     {
-        ULTIMA_5910_UpdateFrame();
+        UpdateFrame();
         WaitTicks(1);
     }
 }
@@ -787,7 +787,7 @@ void GetString(char* buffer, int maxLength)
     keyBufferOff = 0;
     do
     {
-        key_j = ULTIMA_266c_GetChar();
+        key_j = GetChar();
         if ((key_j == U5_KEY_BACKSPACE || key_j == U5_KEY_LEFT) && length != 0)
         {
             // 3b43
@@ -802,7 +802,7 @@ void GetString(char* buffer, int maxLength)
         else if (0x1f < key_j && key_j < 0x80 && length < maxLength)
         {
             buffer[length++] = (char)key_j;
-            ULTIMA_16ba_PrintChar(key_j);
+            PrintChar(key_j);
         }
     } while (key_j != U5_KEY_ENTER);
     buffer[length] = 0;
@@ -828,14 +828,14 @@ int GetNumber(int maxLen)
 
     do
     {
-        key = ULTIMA_266c_GetChar();
+        key = GetChar();
         if ((uint)key >= '0' && (uint)key <= '9')
         {
             if (charCount < maxLen)
             {
                 digits[charCount] = key;
                 charCount++;
-                ULTIMA_16ba_PrintChar(key);
+                PrintChar(key);
             }
         }
         else
@@ -844,7 +844,7 @@ int GetNumber(int maxLen)
             {
                 digits[charCount] = key;
                 charCount++;
-                ULTIMA_16ba_PrintChar(key);
+                PrintChar(key);
             }
             else if ((key == U5_KEY_BACKSPACE || key == U5_KEY_LEFT) && charCount != 0)
             {
@@ -892,19 +892,19 @@ static void HoleUpCmd(void)
     int ableCount_b;
     byte key_g;
 
-    avatar = &D_5c5a_actors[0];
-    tile = D_5c5a_actors[0].animTile;
+    avatar = &actors[0];
+    tile = actors[0].animTile;
 
-    ULTIMA_1850_PrintString(/*0xa2c2*/ "Hole up & ");
+    PrintString(/*0xa2c2*/ "Hole up & ");
 
     if ((tile & 0xf8) == TILE_ACTOR_FRIGATE_20)
     {
-        ULTIMA_1850_PrintString(/*0xa2ce*/ "\nrepair...\n\n");
+        PrintString(/*0xa2ce*/ "\nrepair...\n\n");
 
-        if (D_5c5a_actors[0].animTile < TILE_ACTOR_FRIGATE_24)
+        if (actors[0].animTile < TILE_ACTOR_FRIGATE_24)
         {
-            ULTIMA_1850_PrintString(/*0xa2dc*/ "Sails must be\n");
-            ULTIMA_1850_PrintString(/*0xa2ec*/ "lowered!\n\n");
+            PrintString(/*0xa2dc*/ "Sails must be\n");
+            PrintString(/*0xa2ec*/ "lowered!\n\n");
         }
         else
         {
@@ -912,57 +912,57 @@ static void HoleUpCmd(void)
             {
                 WaitIfActorNear();
                 MonstersTurn();
-                if ((D_587c_partyTile & 0xfc) != TILE_ACTOR_FRIGATE_24)
+                if ((partyTile & 0xfc) != TILE_ACTOR_FRIGATE_24)
                 {
                     return;
                 }
-                ULTIMA_4f7c_AdvanceTime(5);
+                AdvanceTime(5);
             }
 
             do
             {
-                avatar->value += ULTIMA_2092_RandomRange(1, 3);
+                avatar->value += RandomRange(1, 3);
                 if (avatar->value > 99)
                 {
                     avatar->value = 99;
                 }
             } while (avatar->value < 10);
 
-            ULTIMA_1850_PrintString(/*0xa2f8*/ "Hull now ");
+            PrintString(/*0xa2f8*/ "Hull now ");
             PrintNumber(avatar->value, 2, 0x20);
-            ULTIMA_1850_PrintString(/*0xa302*/ "!\n\n");
-            D_a9fa_vitalsDirty = 1;
+            PrintString(/*0xa302*/ "!\n\n");
+            vitalsDirty = 1;
         }
     }
     else
     {
-        ULTIMA_1850_PrintString(/*0xa306*/ "camp!\n\n");
+        PrintString(/*0xa306*/ "camp!\n\n");
 
-        if (D_5893_mapId < 0x21)
+        if (mapId < 0x21)
         {
-            tile = *ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY);
+            tile = *GetTileAddr(D_5896_mapX, D_5897_mapY);
         }
 
-        if (D_5893_mapId < 0x21 && tile != 0 && tile < 4)
+        if (mapId < 0x21 && tile != 0 && tile < 4)
         {
-            ULTIMA_1850_PrintString(/*0xa30e*/ "On land or ship!\n\n");
+            PrintString(/*0xa30e*/ "On land or ship!\n\n");
         }
         else
         {
-            if (D_5893_mapId < 0x21 && avatar->animTile != TILE_ACTOR_AVATAR)
+            if (mapId < 0x21 && avatar->animTile != TILE_ACTOR_AVATAR)
             {
-                ULTIMA_1850_PrintString(/*0xa322*/ "On foot!\n");
+                PrintString(/*0xa322*/ "On foot!\n");
             }
             else
             {
-                ULTIMA_1850_PrintString(/*0xa32c*/ "For how many hours? (1-9) ");
+                PrintString(/*0xa32c*/ "For how many hours? (1-9) ");
 
-                while ((key_g = ULTIMA_266c_GetChar()) != U5_KEY_SPACE && (key_g < 0x30 || key_g > 0x39))
+                while ((key_g = GetChar()) != U5_KEY_SPACE && (key_g < 0x30 || key_g > 0x39))
                 {
                 }
 
-                ULTIMA_16ba_PrintChar(key_g);
-                ULTIMA_16ba_PrintChar('\n');
+                PrintChar(key_g);
+                PrintChar('\n');
 
                 if (key_g == U5_KEY_SPACE || key_g == 0x30)
                 {
@@ -972,9 +972,9 @@ static void HoleUpCmd(void)
                 hours_m = key_g - 0x30;
 
                 ableCount_b = 0;
-                for (i = 0; i != D_585b_partyCount; i++)
+                for (i = 0; i != partyCount; i++)
                 {
-                    if (D_55a8_party[i].status == STATUS_GOOD || D_55a8_party[i].status == STATUS_POISONED)
+                    if (party[i].status == STATUS_GOOD || party[i].status == STATUS_POISONED)
                     {
                         ableCount_b++;
                     }
@@ -982,27 +982,27 @@ static void HoleUpCmd(void)
 
                 if (ableCount_b > 1)
                 {
-                    ULTIMA_1850_PrintString(/*0xa348*/ "\nWilt thou set a watch? ");
+                    PrintString(/*0xa348*/ "\nWilt thou set a watch? ");
 
-                    while ((key_g = ULTIMA_266c_GetChar()) != 'Y' && key_g != 'N')
+                    while ((key_g = GetChar()) != 'Y' && key_g != 'N')
                     {
                     }
 
                     if (key_g == 'N')
                     {
-                        ULTIMA_1850_PrintString(/*0xa362*/ "No\n\n");
+                        PrintString(/*0xa362*/ "No\n\n");
                         guard_m = -1;
                     }
                     else
                     {
-                        ULTIMA_1850_PrintString(/*0xa368*/ "Yes\n\n");
-                        ULTIMA_1850_PrintString(/*0xa36e*/ "Who will stand guard? ");
+                        PrintString(/*0xa368*/ "Yes\n\n");
+                        PrintString(/*0xa36e*/ "Who will stand guard? ");
                         guard_m = SelectPlayer();
-                        ULTIMA_16ba_PrintChar('\n');
-                        if (guard_m == -1 || D_55a8_party[guard_m].status != STATUS_GOOD)
+                        PrintChar('\n');
+                        if (guard_m == -1 || party[guard_m].status != STATUS_GOOD)
                         {
                             guard_m = -1;
-                            ULTIMA_1850_PrintString(/*0xa386*/ "None posted!\n\n");
+                            PrintString(/*0xa386*/ "None posted!\n\n");
                         }
                     }
                 }
@@ -1011,7 +1011,7 @@ static void HoleUpCmd(void)
                     guard_m = -1;
                 }
 
-                if (D_5893_mapId > 0x20)
+                if (mapId > 0x20)
                 {
                     combatFlags = 6;
                     FreeDungeonImages();
@@ -1020,7 +1020,7 @@ static void HoleUpCmd(void)
                     SwitchDisks(2);
                     LoadDungeonImages(); // NOTE: sic (bug?)
 
-                    D_5c5a_actors[1] = savedActors[1];
+                    actors[1] = savedActors[1];
 
                     SetUpMonster(0);
                 }
@@ -1032,7 +1032,7 @@ static void HoleUpCmd(void)
         }
     }
 
-    D_24e6_viewDirty = 1;
+    viewDirty = 1;
 }
 
 // TODO: int? byte?
@@ -1061,7 +1061,7 @@ void IncreaseInt(s16* value, int amount, int limit)
     }
 }
 
-void ULTIMA_3f36_DecreaseByte(byte* value, int amount)
+void DecreaseByte(byte* value, int amount)
 {
     if (*value > amount)
     {
@@ -1092,16 +1092,16 @@ bool TestViewTileFlag(int viewX, int viewY)
     return (0x80 >> (tile & 7) & viewTileFlags[tile >> 3]) != 0;
 }
 
-// Pixel coordinates to the view cell, in D_5876_tempX and D_5878_tempY; -1 outside the view.
+// Pixel coordinates to the view cell, in tempX and tempY; -1 outside the view.
 void PixelToViewCell(int pixelX, int pixelY)
 {
     if (pixelX < 8 || pixelX > 0xb7 || pixelY < 8 || pixelY > 0xb7)
     {
-        D_5876_tempX = D_5878_tempY = -1;
+        tempX = tempY = -1;
     }
     else
     {
-        D_5876_tempX = (pixelX - 8) / 0x10;
-        D_5878_tempY = (pixelY - 8) / 0x10;
+        tempX = (pixelX - 8) / 0x10;
+        tempY = (pixelY - 8) / 0x10;
     }
 }

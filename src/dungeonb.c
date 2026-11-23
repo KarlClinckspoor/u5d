@@ -52,20 +52,20 @@ static void ShowPlaceName(int number)
 {
     int nameIndex;
 
-    if (number > placeNameCount[D_5893_mapId - 0x21])
+    if (number > placeNameCount[mapId - 0x21])
     {
         return;
     }
 
     // 1063 (ok)
-    nameIndex = placeNameBase[D_5893_mapId - 0x21] + number - 1;
+    nameIndex = placeNameBase[mapId - 0x21] + number - 1;
     SetTextWindowSize(0, placeNameX[nameIndex], placeNameY[nameIndex], 0x27, 0x18);
     SelectTextWindow(0);
     SelectCharset(1);
     SetTextPosition(0, 0);
-    ULTIMA_16ba_PrintChar(CTRL_CHAR_TOGGLE_INVERSION);
-    ULTIMA_1850_PrintString(dungeonPlaceNames[nameIndex]);
-    ULTIMA_16ba_PrintChar(CTRL_CHAR_TOGGLE_INVERSION);
+    PrintChar(CTRL_CHAR_TOGGLE_INVERSION);
+    PrintString(dungeonPlaceNames[nameIndex]);
+    PrintChar(CTRL_CHAR_TOGGLE_INVERSION);
     SelectCharset(0);
     SelectTextWindow(2);
     SetTextWindowSize(0, 0, 0, 0x27, 0x18);
@@ -101,15 +101,15 @@ static void DrawMonster(int dist)
 
     if (statusIcon == 'T')
     {
-        D_5c5a_actors[1].animState = monsterAnimStates[D_5c5a_actors[1].tile];
+        actors[1].animState = monsterAnimStates[actors[1].tile];
     }
 
     // 113a
-    big_e = D_5c5a_actors[1].extra == 0xff;
+    big_e = actors[1].extra == 0xff;
     // 1148
-    flags90 = (D_5c5a_actors[1].animState & 0x90);
-    flags60 = (D_5c5a_actors[1].animState & 0x60);
-    frame_i = D_5c5a_actors[1].animState & 0xf;
+    flags90 = (actors[1].animState & 0x90);
+    flags60 = (actors[1].animState & 0x60);
+    frame_i = actors[1].animState & 0xf;
 
     if (statusIcon == 'T')
     {
@@ -118,8 +118,8 @@ static void DrawMonster(int dist)
     }
     else
     {
-        mirrorA_h = ULTIMA_2092_RandomRange(0, 100) < 0x32;
-        mirrorB = ULTIMA_2092_RandomRange(0, 100) < 0x32;
+        mirrorA_h = RandomRange(0, 100) < 0x32;
+        mirrorB = RandomRange(0, 100) < 0x32;
         switch (flags60)
         {
         case 0x20:
@@ -150,14 +150,14 @@ static void DrawMonster(int dist)
     if (monsterImage == 0)
     {
         // debug message
-        ULTIMA_1850_PrintString(/*0x6c4e*/ "Hey!! What's going on here???");
+        PrintString(/*0x6c4e*/ "Hey!! What's going on here???");
     }
     else
     {
         // 1220
         GRAP_4b_PutImage(monsterImage, mirrorA_h * 3 + dist - 1, monsterX[dist], monsterY[big_e][dist], big_e);
         GRAP_63_PutMirrored(monsterImage, mirrorB * 3 + dist - 1, 0x60, monsterY[big_e][dist], big_e);
-        D_5c5a_actors[1].animState = flags60 + flags90 + frame_i;
+        actors[1].animState = flags60 + flags90 + frame_i;
     }
 }
 
@@ -181,19 +181,19 @@ static void DrawField(int dist, int fieldKind)
     {
     case 0:
         // 12b4
-        ULTIMA_0a70_GRAP_2d_SetPenColor(magentaColor + 8);
+        GRAP_2d_SetPenColor(magentaColor + 8);
         break;
     case 1:
         // 1326
-        ULTIMA_0a70_GRAP_2d_SetPenColor(greenColor + 8);
+        GRAP_2d_SetPenColor(greenColor + 8);
         break;
     case 2:
         // 132c
-        ULTIMA_0a70_GRAP_2d_SetPenColor(redColor + 8);
+        GRAP_2d_SetPenColor(redColor + 8);
         break;
     case 3:
         // 1332
-        ULTIMA_0a70_GRAP_2d_SetPenColor(blueColor + 8);
+        GRAP_2d_SetPenColor(blueColor + 8);
         break;
     }
 
@@ -201,8 +201,8 @@ static void DrawField(int dist, int fieldKind)
     // although it makes calls (temporaries at bp-0c..-14, the count in DI, counted down).
     for (lineNo_l = 0; lineNo_l < fieldCount[dist]; lineNo_l++)
     {
-        lineX = ULTIMA_2092_RandomRange(fieldTop[dist], fieldBottom[dist] - fieldWidth[dist]);
-        lineY = ULTIMA_2092_RandomRange(fieldTop[dist], fieldBottom[dist]);
+        lineX = RandomRange(fieldTop[dist], fieldBottom[dist] - fieldWidth[dist]);
+        lineY = RandomRange(fieldTop[dist], fieldBottom[dist]);
         GRAP_39_HorizLine(lineX, lineY, fieldWidth[dist] + lineX);
     }
 
@@ -279,16 +279,16 @@ static int DrawDrip(int dropX, int dropY, int phase, int dist)
         {
             if (D_52c8_videoDriver == 0 || D_52c8_videoDriver == 3)
             {
-                ULTIMA_0a70_GRAP_2d_SetPenColor(3);
+                GRAP_2d_SetPenColor(3);
             }
             else
             {
-                ULTIMA_0a70_GRAP_2d_SetPenColor(0xb);
+                GRAP_2d_SetPenColor(0xb);
             }
         }
         else
         {
-            ULTIMA_0a70_GRAP_2d_SetPenColor(blueColor);
+            GRAP_2d_SetPenColor(blueColor);
         }
 
         GRAP_39_HorizLine(dropX - 1, dropY, dropX + 1);
@@ -296,11 +296,11 @@ static int DrawDrip(int dropX, int dropY, int phase, int dist)
 
         if (phase < 4)
         {
-            ULTIMA_0a70_GRAP_2d_SetPenColor(blueColor + 8);
+            GRAP_2d_SetPenColor(blueColor + 8);
             GRAP_30_Pset(dropX, dropY);
         }
 
-        if (phase != 0 || (int)ULTIMA_2092_RandomRange(0, 0x40) < 4)
+        if (phase != 0 || (int)RandomRange(0, 0x40) < 4)
         {
             phase++;
         }
@@ -352,9 +352,9 @@ static int DrawAhead(int x, int y, int dist)
             ShowPlaceName(cell & 0xf);
             // NOT MATCHING: nop
         }
-        else if (dungeonStyle == 3 && (cell & 0xf0) == 0xc0 && (int)ULTIMA_2092_RandomRange(0, 0x40) < 4)
+        else if (dungeonStyle == 3 && (cell & 0xf0) == 0xc0 && (int)RandomRange(0, 0x40) < 4)
         {
-            ULTIMA_0a70_GRAP_2d_SetPenColor(redColor + 8);
+            GRAP_2d_SetPenColor(redColor + 8);
             GRAP_39_HorizLine(0x5c, 0x57, 0x5d);
             GRAP_39_HorizLine(0x5b, 0x58, 0x5d);
             GRAP_39_HorizLine(0x61, 0x57, 0x62);
@@ -474,11 +474,11 @@ static void DrawWallDots(int dist, int frame)
 
     if (D_52c8_videoDriver == 0 || D_52c8_videoDriver == 3)
     {
-        ULTIMA_0a70_GRAP_2d_SetPenColor(0);
+        GRAP_2d_SetPenColor(0);
     }
     else
     {
-        ULTIMA_0a70_GRAP_2d_SetPenColor(blueColor);
+        GRAP_2d_SetPenColor(blueColor);
     }
 
     // 17a9
@@ -488,7 +488,7 @@ static void DrawWallDots(int dist, int frame)
         // 17cc
         if (D_52c8_videoDriver != 0 && D_52c8_videoDriver != 3)
         {
-            ULTIMA_0a70_GRAP_2d_SetPenColor(blueColor + 8);
+            GRAP_2d_SetPenColor(blueColor + 8);
         }
 
         // 17e4
@@ -575,7 +575,7 @@ L_field:
             DrawPiece((int)piece, 1, 1);
         }
 
-        if (dist != 0 && (u8)(cellX & 7) == D_5c5a_actors[1].x && (u8)(cellY & 7) == D_5c5a_actors[1].y)
+        if (dist != 0 && (u8)(cellX & 7) == actors[1].x && (u8)(cellY & 7) == actors[1].y)
         {
             DrawMonster(dist);
         }
@@ -628,8 +628,8 @@ void DrawView(int fullView)
 
     lastDisk = 0xff;
     GRAP_0f_SelectPage(1);
-    ULTIMA_0a70_GRAP_2d_SetPenColor(0);
-    ULTIMA_0aa6_GRAP_3f_FillRect(0x60, 0xe, 0xaf, 0xb2);
+    GRAP_2d_SetPenColor(0);
+    GRAP_3f_FillRect(0x60, 0xe, 0xaf, 0xb2);
     SetClipWindow(0x28, 0x2a, 0x98, 0xb7);
     D_52c4_clipEnabled = 0;
 
@@ -671,7 +671,7 @@ void DrawView(int fullView)
     }
     else
     {
-        ULTIMA_0aa6_GRAP_3f_FillRect(8, 8, 0xb7, 0xb7);
+        GRAP_3f_FillRect(8, 8, 0xb7, 0xb7);
     }
 
     GRAP_0f_SelectPage(0);
@@ -681,7 +681,7 @@ void DrawView(int fullView)
 // vitals, the view to the screen, step sound, level and direction
 void Redraw(void)
 {
-    ULTIMA_2900_UpdateVitalsDisplay();
+    UpdateVitalsDisplay();
     DrawView(1);
     GRAP_18_TransferArea(1, 0, 0x10, 0xe, 0xaf, 0xb2);
     StepSound();
@@ -714,11 +714,11 @@ int Klimb(int dir, int mustBeEmpty)
 
     if (dir > 0)
     {
-        ULTIMA_1850_PrintString(/*0x6c6c*/ "Down!\n");
+        PrintString(/*0x6c6c*/ "Down!\n");
     }
     else
     {
-        ULTIMA_1850_PrintString(/*0x6c74*/ "Up!\n");
+        PrintString(/*0x6c74*/ "Up!\n");
     }
 
     if (dir > 0 && D_5895_mapLevel == 7 || dir < 0 && D_5895_mapLevel == 0)
@@ -744,7 +744,7 @@ int Klimb(int dir, int mustBeEmpty)
         }
         else
         {
-            ULTIMA_1850_PrintString(/*0x6c7a*/ "Failed!\n");
+            PrintString(/*0x6c7a*/ "Failed!\n");
             AudioSweepTone(800, 2000, 1, 0x32);
         }
     }
@@ -755,22 +755,22 @@ int Klimb(int dir, int mustBeEmpty)
 // leaves the dungeon to the surface or the underworld, at the dungeon's place on the map
 void DUNGEON_1d08_Exit(void)
 {
-    D_5896_mapX = D_1e8a_placeX[D_5893_mapId - 1];
-    D_5897_mapY = D_1eb2_placeY[D_5893_mapId - 1];
+    D_5896_mapX = placeX[mapId - 1];
+    D_5897_mapY = placeY[mapId - 1];
 
-    ULTIMA_1850_PrintString(/*0x6c84*/ "\nExit to ");
+    PrintString(/*0x6c84*/ "\nExit to ");
     if (D_5895_mapLevel != 0)
     {
         D_5895_mapLevel = 0xff;
-        ULTIMA_1850_PrintString(/*0x6c8e*/ "Underworld!\n\n");
+        PrintString(/*0x6c8e*/ "Underworld!\n\n");
     }
     else
     {
         D_5895_mapLevel = 0;
-        ULTIMA_1850_PrintString(/*0x6c9c*/ "Britannia!\n\n");
+        PrintString(/*0x6c9c*/ "Britannia!\n\n");
     }
 
-    D_5893_mapId = 0;
+    mapId = 0;
 }
 
 // the Attack command: fights the monster when it is in the cell ahead
@@ -782,17 +782,17 @@ int DungeonAttackCmd(void)
 
     result = 0;
 
-    ULTIMA_1850_PrintString(/*0x6caa*/ "Attack\n");
+    PrintString(/*0x6caa*/ "Attack\n");
 
     targetX = (facingDx[dungeonFacing] + D_5896_mapX) & 7;
     targetY = (facingDy[dungeonFacing] + D_5897_mapY) & 7;
-    if (targetX == D_5c5a_actors[1].x && targetY == D_5c5a_actors[1].y)
+    if (targetX == actors[1].x && targetY == actors[1].y)
     {
         combatFlags = 2;
         FreeDungeonImages();
         BuildWallRing();
         SetUpDungeonFight();
-        SpecialMapHandler(2, D_5c5a_actors[1].value, 0);
+        SpecialMapHandler(2, actors[1].value, 0);
 
         if (combatExitDir == 5)
         {
@@ -819,7 +819,7 @@ int DungeonAttackCmd(void)
 
         LoadDungeonImages(1);
 
-        if (D_5893_mapId != 0)
+        if (mapId != 0)
         {
             SetUpMonster(1);
             Redraw();
@@ -827,7 +827,7 @@ int DungeonAttackCmd(void)
     }
     else
     {
-        ULTIMA_1850_PrintString(/*0x6cb2*/ "What?\n");
+        PrintString(/*0x6cb2*/ "What?\n");
     }
 
     return result;
@@ -857,10 +857,10 @@ int DungeonKlimbCmd(void)
 
     if (canUp && canDown_m)
     {
-        ULTIMA_1850_PrintString(/*0x6cba*/ "Klimb-U/D-");
+        PrintString(/*0x6cba*/ "Klimb-U/D-");
         while (canUp && canDown_m)
         {
-            switch (ULTIMA_266c_GetChar())
+            switch (GetChar())
             {
             case U5_KEY_UP:
             case 0x55:
@@ -873,7 +873,7 @@ int DungeonKlimbCmd(void)
                 break;
 
             case U5_KEY_SPACE:
-                ULTIMA_1850_PrintString(/*0x6cc6*/ "Pass\n\n");
+                PrintString(/*0x6cc6*/ "Pass\n\n");
                 canUp = canDown_m = 0;
                 break;
             }
@@ -882,19 +882,19 @@ int DungeonKlimbCmd(void)
     else if (canUp || canDown_m) // 1eee
     {
         // 1efa
-        ULTIMA_1850_PrintString(/*0x6cce*/ "Klimb-");
+        PrintString(/*0x6cce*/ "Klimb-");
     }
     else if (visited != 0)
     {
         // 1f08
-        ULTIMA_1850_PrintString(/*0x6cd6*/ "Klimb-\nWith What?\n");
+        PrintString(/*0x6cd6*/ "Klimb-\nWith What?\n");
 
         return 0;
     }
     else
     {
         // 1f16
-        ULTIMA_1850_PrintString(/*0x6cea*/ "Klimb-what?\n");
+        PrintString(/*0x6cea*/ "Klimb-what?\n");
 
         return 0;
     }

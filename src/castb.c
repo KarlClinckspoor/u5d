@@ -109,15 +109,15 @@ static int SprayRays(s16* outXs, s16* outYs, int color, int caster, int directio
                 {
                     if (PlotSprayPixel(rayX[ray_i], rayY[ray_i], color) != 0)
                     {
-                        if (cellCount < 0x3f && D_5876_tempX > -1 && D_5878_tempY > -1 && D_5876_tempX < 0xb && D_5878_tempY < 0xb &&
-                            GetMapViewport(D_5876_tempX, D_5878_tempY) == 0)
+                        if (cellCount < 0x3f && tempX > -1 && tempY > -1 && tempX < 0xb && tempY < 0xb &&
+                            GetMapViewport(tempX, tempY) == 0)
                         {
                             cellCount++;
 
-                            outXs[cellCount] = D_5876_tempX;
-                            outYs[cellCount] = D_5878_tempY;
+                            outXs[cellCount] = tempX;
+                            outYs[cellCount] = tempY;
 
-                            GetMapViewport(D_5876_tempX, D_5878_tempY) = 0xff;
+                            GetMapViewport(tempX, tempY) = 0xff;
                         }
                     }
                     else
@@ -195,7 +195,7 @@ static int SprayRays(s16* outXs, s16* outYs, int color, int caster, int directio
         }
     } while (endedCount_f < 0x15);
 
-    ULTIMA_230e_PcspkOff();
+    PcspkOff();
     return cellCount;
 }
 
@@ -217,7 +217,7 @@ void ConeSpell(int caster, int kind, int color)
     int dirOrCount;
 
     cellIdx = 1;
-    member_j = &D_55a8_party[combatants[caster].entityIdx];
+    member_j = &party[combatants[caster].entityIdx];
     dirOrCount = AskDirection(caster); // NOTE: original code error?
     {
         switch (kind)
@@ -234,7 +234,7 @@ void ConeSpell(int caster, int kind, int color)
         }
 
         // df30
-        ULTIMA_223c_AudioWhiteNoise(800, noisePitch_n, 700);
+        AudioWhiteNoise(800, noisePitch_n, 700);
 
         dirOrCount = SprayRays(hitXs, hitYs, color, caster, dirOrCount);
         dirOrCount++;

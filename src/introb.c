@@ -49,10 +49,10 @@ void PrintFieldLabel(int field)
 {
     SelectTextWindow(0);
     SetTextPosition(3, labelRow[field]);
-    ULTIMA_1850_PrintString(fieldLabels[field]);
+    PrintString(fieldLabels[field]);
     SelectTextWindow(1);
     SetTextPosition(3, labelRow[field]);
-    ULTIMA_1850_PrintString(fieldLabels[field]);
+    PrintString(fieldLabels[field]);
 }
 
 // Draws the framed box at the bottom of the transfer screen (rows 19 to 22).
@@ -63,26 +63,26 @@ static void DrawPromptBox(void)
     SetTextForegroundColor(blueColor);
 
     SetTextPosition(0, 0x13);
-    ULTIMA_16ba_PrintChar(0x7b);
+    PrintChar(0x7b);
     for (i = 0; i < 0x26; i++)
     {
-        ULTIMA_16ba_PrintChar(0x7f);
+        PrintChar(0x7f);
     }
-    ULTIMA_16ba_PrintChar(0x7c);
+    PrintChar(0x7c);
     for (i = 0; i < 3; i++)
     {
-        ULTIMA_16ba_PrintChar(0x7f);
+        PrintChar(0x7f);
         SetTextPosition(0x27, GetCurrentTextY());
-        ULTIMA_16ba_PrintChar(0x7f);
+        PrintChar(0x7f);
     }
-    ULTIMA_16ba_PrintChar(0x7d);
+    PrintChar(0x7d);
     for (i = 0; i < 0x26; i++)
     {
-        ULTIMA_16ba_PrintChar(0x7f);
+        PrintChar(0x7f);
     }
-    ULTIMA_16ba_PrintChar(0x7e);
+    PrintChar(0x7e);
 
-    ULTIMA_0a70_GRAP_2d_SetPenColor(brightWhiteColor);
+    GRAP_2d_SetPenColor(brightWhiteColor);
     GRAP_Line(7, 0x9f, 0x138, 0x9f);
     GRAP_LineTo(0x138, 0xb8);
     GRAP_LineTo(7, 0xb8);
@@ -93,25 +93,25 @@ static void DrawPromptBox(void)
 // Draws the framed " Ultima IV " box of one of the transfer screen's two characters at an x offset.
 static void DrawCharacterBox(int left)
 {
-    ULTIMA_0a70_GRAP_2d_SetPenColor(blueColor);
-    ULTIMA_0aa6_GRAP_3f_FillRect(left, 0, left + 6, 0x8f);
-    ULTIMA_0aa6_GRAP_3f_FillRect(left + 0x8f, 0, left + 0x97, 0x89);
-    ULTIMA_0aa6_GRAP_3f_FillRect(left + 7, 0x89, left + 0x96, 0x8f);
+    GRAP_2d_SetPenColor(blueColor);
+    GRAP_3f_FillRect(left, 0, left + 6, 0x8f);
+    GRAP_3f_FillRect(left + 0x8f, 0, left + 0x97, 0x89);
+    GRAP_3f_FillRect(left + 7, 0x89, left + 0x96, 0x8f);
     SetTextForegroundColor(blueColor);
     SetTextPosition(0, 0);
-    ULTIMA_1850_PrintString(boxTopLeft);
-    ULTIMA_4c2a_PrintLeftCap();
+    PrintString(boxTopLeft);
+    PrintLeftCap();
     SetTextForegroundColor(brightWhiteColor);
-    ULTIMA_1850_PrintString(/*0x6d3a*/ " Ultima IV ");
+    PrintString(/*0x6d3a*/ " Ultima IV ");
     SetTextForegroundColor(blueColor);
     PrintRightCap();
-    ULTIMA_1850_PrintString(boxTopRight);
-    ULTIMA_16ba_PrintChar(0x7c);
+    PrintString(boxTopRight);
+    PrintChar(0x7c);
     SetTextPosition(0, 0x11);
-    ULTIMA_16ba_PrintChar(0x7d);
+    PrintChar(0x7d);
     SetTextPosition(0x12, 0x11);
-    ULTIMA_16ba_PrintChar(0x7e);
-    ULTIMA_0a70_GRAP_2d_SetPenColor(brightWhiteColor);
+    PrintChar(0x7e);
+    GRAP_2d_SetPenColor(brightWhiteColor);
     GRAP_Line(left + 0x18, 7, left + 7, 7);
     GRAP_LineTo(left + 7, 0x88);
     GRAP_LineTo(left + 0x8f, 0x88);
@@ -132,6 +132,6 @@ void SetUpTransferScreen(void)
     SelectTextWindow(1);
     DrawCharacterBox(0xa8);
     SetTextPosition(0xc, 0);
-    ULTIMA_16ba_PrintChar(' ');
+    PrintChar(' ');
 }
 

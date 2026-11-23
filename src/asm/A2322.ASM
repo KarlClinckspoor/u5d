@@ -20,13 +20,13 @@ _BSS	ENDS
 DGROUP	GROUP	CONST, _BSS, _DATA
 	ASSUME	CS: _TEXT, DS: DGROUP, SS: DGROUP, ES: DGROUP
 
-	EXTRN	ULTIMA_0A70_GRAP_2D_SETPENCOLOR:NEAR
-	EXTRN	ULTIMA_0AA6_GRAP_3F_FILLRECT:NEAR
+	EXTRN	GRAP_2D_SETPENCOLOR:NEAR
+	EXTRN	GRAP_3F_FILLRECT:NEAR
 	EXTRN	GRAP_0F_SELECTPAGE:NEAR
 	EXTRN	GRAP_1B_TRANSFERFULLSCREEN:NEAR
 	EXTRN	GETDEFAULTDRIVE:NEAR
-	EXTRN	ULTIMA_16BA_PRINTCHAR:NEAR
-	EXTRN	ULTIMA_1850_PRINTSTRING:NEAR
+	EXTRN	PRINTCHAR:NEAR
+	EXTRN	PRINTSTRING:NEAR
 	EXTRN	SETTEXTWINDOWSIZE:NEAR
 	EXTRN	WAITFORKEYSTROKE:NEAR
 	EXTRN	SETDEFAULTDRIVE:NEAR
@@ -141,7 +141,7 @@ L_23c4:
 	call	SETTEXTWINDOWSIZE
 	sub ax,ax
 	push ax
-	call	ULTIMA_0A70_GRAP_2D_SETPENCOLOR
+	call	GRAP_2D_SETPENCOLOR
 	mov ax,28h
 	push ax
 	mov ax,58h
@@ -150,23 +150,23 @@ L_23c4:
 	push ax
 	mov ax,77h
 	push ax
-	call	ULTIMA_0AA6_GRAP_3F_FILLRECT
+	call	GRAP_3F_FILLRECT
 L_2400:
 	mov BYTE PTR LASTDISK,0ffh
 ; GOG: the drive is the default one, and no key is read (in 1.16: mov ax,OFFSET D_545F;
-; push ax; call ULTIMA_1850_PRINTSTRING)
+; push ax; call PRINTSTRING)
 	call	GETDEFAULTDRIVE
 	jmp	SHORT L_247d
-	db	044h, 0f4h	; the rest of 1.16's call ULTIMA_1850_PRINTSTRING
+	db	044h, 0f4h	; the rest of 1.16's call PRINTSTRING
 	cmp BYTE PTR CURDISK,4
 	jne	L_241a
 	mov ax,49h
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 L_241a:
 	mov ax,OFFSET DGROUP:D_547A
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	mov al,BYTE PTR CURDISK
 	sub ah,ah
 	or ax,ax
@@ -183,18 +183,18 @@ L_243c:
 	mov ax,OFFSET DGROUP:D_547D
 L_243f:
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 L_2443:
 	mov ax,OFFSET DGROUP:D_5496
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	mov bl,BYTE PTR CURDISK
 	sub bh,bh
 	cmp byte ptr [bx-5638h],0ffh
 	jne	L_246c
 	mov ax,OFFSET DGROUP:D_549C
 	push ax
-	call	ULTIMA_1850_PRINTSTRING
+	call	PRINTSTRING
 	jmp	SHORT L_2473
 L_2460:
 	mov ax,OFFSET DGROUP:D_5485
@@ -207,7 +207,7 @@ L_2466:
 L_246c:
 	mov ax,2eh
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 L_2473:
 	sub ax,ax
 	push ax
@@ -233,7 +233,7 @@ L_2497:
 	mov al,[bp-2]
 	sub ah,ah
 	push ax
-; GOG: 1.16's call ULTIMA_16BA_PRINTCHAR (echo the drive letter) made three nops
+; GOG: 1.16's call PRINTCHAR (echo the drive letter) made three nops
 	nop
 	nop
 	nop
@@ -255,7 +255,7 @@ L_24d4:
 	jne	L_24e4
 	mov ax,0ah
 	push ax
-	call	ULTIMA_16BA_PRINTCHAR
+	call	PRINTCHAR
 	jmp	SHORT L_250c
 L_24e4:
 	cmp BYTE PTR CURDISK+1,2

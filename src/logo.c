@@ -16,8 +16,8 @@ int AnimateOriginLogo(byte* image)
 
     iStack_4 = 0;
     GRAP_0f_SelectPage(1);
-    ULTIMA_0a70_GRAP_2d_SetPenColor(0);
-    ULTIMA_0aa6_GRAP_3f_FillRect(0, 0, 319, 199);
+    GRAP_2d_SetPenColor(0);
+    GRAP_3f_FillRect(0, 0, 319, 199);
 
     for (iVar1 = 0; iVar1 < 7; iVar1++)
     {

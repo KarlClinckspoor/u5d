@@ -37,8 +37,8 @@
 extern void RestoreVideoMode(void);
 extern void InitializeVideoDriver(int a);
 extern int ClipRectCoord(int* x1, int* y1, int* x2, int* y2);
-extern void ULTIMA_0a70_GRAP_2d_SetPenColor(int a);
-extern void ULTIMA_0aa6_GRAP_3f_FillRect(int x1, int y1, int x2, int y2);
+extern void GRAP_2d_SetPenColor(int a);
+extern void GRAP_3f_FillRect(int x1, int y1, int x2, int y2);
 extern void GRAP_18_TransferArea(int a, int b, int c, int d, int e, int f);
 extern void GRAP_Line(int x1, int y1, int x2, int y2);
 extern void GRAP_XorFillRect(int x1, int y1, int x2, int y2);
@@ -86,13 +86,13 @@ extern int GetDefaultDrive(void);
 
 // Text
 
-extern void ULTIMA_16ba_PrintChar(uint a);
-extern void ULTIMA_1850_PrintString(char* a);
+extern void PrintChar(uint a);
+extern void PrintString(char* a);
 extern void PrintNumber(int a, int b, char c);
 
 // Keyboard
 
-extern void ULTIMA_1b16_ClearKbdBuffer(void);
+extern void ClearKbdBuffer(void);
 extern u16 PollKeyWithCursor(void);
 
 // Text cont.
@@ -132,20 +132,20 @@ extern void Backspace(int x);
 // Utils
 
 extern u16 ToUpperChar(u8 x);
-extern uint ULTIMA_2056_GetTime(void);
-extern void ULTIMA_207e_srand(uint a);
-extern int ULTIMA_2092_RandomRange(int a, int b);
+extern uint GetTime(void);
+extern void SeedRandom(uint a);
+extern int RandomRange(int a, int b);
 extern void ULTIMA_20c8_Delay(int shiftIndex, int loopCount);
 extern void WaitTicks(int a);
 extern int StringLength(char* str);
 
 // Audio
 
-extern void ULTIMA_2192_AudioPulse(int param_1, int param_2, int param_3, int param_4, int param_5);
-extern void ULTIMA_223c_AudioWhiteNoise(uint rate, uint dur, uint limit);
-extern void ULTIMA_22c0_AudioTone(uint freq, uint dur);
-extern void ULTIMA_22e2_PcspkOn(uint freq);
-extern void ULTIMA_230e_PcspkOff(void);
+extern void AudioPulse(int param_1, int param_2, int param_3, int param_4, int param_5);
+extern void AudioWhiteNoise(uint rate, uint dur, uint limit);
+extern void AudioTone(uint freq, uint dur);
+extern void PcspkOn(uint freq);
+extern void PcspkOff(void);
 
 // File cont.
 
@@ -153,41 +153,41 @@ extern void far NoDiskSwapMessage(void);
 extern void far DiskSwapMessage(void);
 
 extern void SwitchDisks(int a);
-extern void ULTIMA_256e_ReadFileFromDisk(char* fileName, void* addr, u16 size, u16 offset);
+extern void ReadFileFromDisk(char* fileName, void* addr, u16 size, u16 offset);
 extern void WriteFileToDisk(char* fileName, void* addr, u16 size);
 
 // Input cont.
 
-extern int ULTIMA_266c_GetChar(void);
+extern int GetChar(void);
 
 // Game display
 
 extern void UpdateGoldDisplay(void);
-extern void ULTIMA_2900_UpdateVitalsDisplay(void);
+extern void UpdateVitalsDisplay(void);
 extern void InvertPlayerRow(int playerIndex);
 extern void DamagePlayer(int playerIndex, uint damage);
-extern void ULTIMA_2aa8_DamageParty(void);
-extern void ULTIMA_2ae8_EndTurn(void);
-extern int ULTIMA_2c4c_IsWalkableTile(int actorTile, int targetTile);
+extern void DamageParty(void);
+extern void EndTurn(void);
+extern int IsWalkableTile(int actorTile, int targetTile);
 extern int SelectPlayerOrNone(int a);
 extern int SelectPlayer(void);
-extern void ULTIMA_2e96_SetWindDirection(int a);
+extern void SetWindDirection(int a);
 extern void UpdateWindDirectionRandomly(void);
 extern void SpringTrap(int playerIndex);
 
 // CS:3000-3fff
 
-extern void ULTIMA_3072_ShakeScreen(void);
+extern void ShakeScreen(void);
 
 // Game
 
 extern int ProcessCommand(int key);
-extern void ULTIMA_3522_HitEffectAt(int x, int y);
+extern void HitEffectAt(int x, int y);
 extern void HitEffectOnActor(int a);
-extern int ULTIMA_35ec_SelectDirection(void);
-extern int ULTIMA_368e_FindActorTileAtPos(int x, int y, int z);
-extern int ULTIMA_3702_FindLastActorTileAt(int mapX, int mapY, int mapLevel);
-extern int ULTIMA_38e4_FindActorSlot(void);
+extern int SelectDirection(void);
+extern int FindActorTileAtPos(int x, int y, int z);
+extern int FindLastActorTileAt(int mapX, int mapY, int mapLevel);
+extern int FindActorSlot(void);
 extern void SetTile(byte new_tile_id, byte x, byte y);
 extern int GetFirstActivePartyMember(void);
 extern void SetActor(byte tile, byte animTile, byte mapX, byte mapY, byte mapLevel, byte value, int slot);
@@ -199,7 +199,7 @@ extern int GetNumber(int maxLen);
 
 extern void IncreaseByte(byte* value, int amount, int limit);
 extern void IncreaseInt(s16* a, int b, int c);
-extern void ULTIMA_3f36_DecreaseByte(byte* value, int amount);
+extern void DecreaseByte(byte* value, int amount);
 extern void DecreaseInt(s16* a, int b);
 extern bool TestViewTileFlag(int viewX, int viewY);
 extern void PixelToViewCell(int pixelX, int pixelY);
@@ -207,27 +207,27 @@ extern void PixelToViewCell(int pixelX, int pixelY);
 // CS:4000-4fff
 
 void RingRegeneration();
-int ULTIMA_4080_SetActivePlayer(int a);
+int SetActivePlayer(int a);
 
 // Audio cont.
 
 void AudioPlayAmbientSfx(void);
-void ULTIMA_433e_AudioFootstep(void);
+void AudioFootstep(void);
 void AudioVictoryTune(void);
 void AudioSweepTone(int a, int b, int c, int d);
 
 // Game cont.
 
-byte* ULTIMA_4402_GetTileAddr(int x, int y);
+byte* GetTileAddr(int x, int y);
 void AnimateActors(void);
 void UpdateMoongates(void);
 int GoToMoonstone(int stoneIndex);
 int EnterMoongate(void);
 int GetActingPlayer(void);
-void ULTIMA_4a84_DrawSunAndMoons(void);
-void ULTIMA_4be8_ClearSky(void);
+void DrawSunAndMoons(void);
+void ClearSky(void);
 
-void ULTIMA_4c2a_PrintLeftCap(void);
+void PrintLeftCap(void);
 void PrintRightCap(void);
 int FindIndex(char* a, int b);
 void HideScrollArrow(void);
@@ -237,7 +237,7 @@ void ShowStatsTitle(char* a);
 void OpenStatsDivider(void);
 
 void DrawStatsDivider(void);
-void ULTIMA_4f7c_AdvanceTime(int a);
+void AdvanceTime(int a);
 
 // CS:5000-5fff
 
@@ -246,17 +246,17 @@ void ULTIMA_4f7c_AdvanceTime(int a);
 void PutActorsInView(void);
 int ULTIMA_5646_IsEnemy(int a);
 void DrawMap(void);
-void ULTIMA_5910_UpdateFrame(void);
+void UpdateFrame(void);
 
 void BuildView(int a, int x, int y, int d);
-void ULTIMA_5e4a_BuildLightMap(void);
+void BuildLightMap(void);
 void SpecialMapHandler(int mapFlags, int actorOrGuard, int hours);
 
 // CS:6000-6fff
 
 // Game cont.
 
-void ULTIMA_6150_Combat(int a);
+void Combat(int a);
 void Camping(int guard, int hours);
 void DrawFrame(void);
 

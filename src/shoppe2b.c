@@ -59,32 +59,32 @@ static bool FinishSale(int newShip, int charge, int member)
         FalsehoodSurcharge();
     }
 
-    ULTIMA_2900_UpdateVitalsDisplay();
+    UpdateVitalsDisplay();
     PrintShopFileText(0x19da);
 
-    if (D_55a8_party[member].gender == 'F') // BUG
+    if (party[member].gender == 'F') // BUG
     {
-        ULTIMA_1850_PrintString(/*0x9fcc*/ "milady");
+        PrintString(/*0x9fcc*/ "milady");
     }
     else
     {
-        ULTIMA_1850_PrintString(/*0x9fd4*/ "sir");
+        PrintString(/*0x9fd4*/ "sir");
     }
 
-    ULTIMA_1850_PrintString(/*0x9fd8*/ "?\" ");
+    PrintString(/*0x9fd8*/ "?\" ");
 
-    while ((key = ULTIMA_266c_GetChar()) != 'Y' && key != 'N')
+    while ((key = GetChar()) != 'Y' && key != 'N')
     {
     }
 
     if (key == 'Y')
     {
-        ULTIMA_1850_PrintString(/*0x9fdc*/ "Yes");
+        PrintString(/*0x9fdc*/ "Yes");
         return 0;
     }
     else
     {
-        ULTIMA_1850_PrintString(/*0x9fe0*/ "No");
+        PrintString(/*0x9fe0*/ "No");
         return 1;
     }
 }
@@ -106,45 +106,45 @@ static void ShipMenu(int member)
     do
     {
         PrintShopFileText(0x18eb);
-        switch (ULTIMA_266c_GetChar())
+        switch (GetChar())
         {
         case 0x46:
-            ULTIMA_1850_PrintString(/*0x9fe4*/ "F\n\n");
+            PrintString(/*0x9fe4*/ "F\n\n");
             done = 1;
             if ((boughtShip & 0xc0) != 0)
             {
                 PrintShopFileText(0x19f2);
 
-                while ((key = ULTIMA_266c_GetChar()) != 'Y' && key != 'N')
+                while ((key = GetChar()) != 'Y' && key != 'N')
                 {
                 }
 
                 if (key == 'Y')
                 {
-                    ULTIMA_1850_PrintString(/*0x9fe8*/ "Yes");
+                    PrintString(/*0x9fe8*/ "Yes");
                     CanAfford(10000);
                 }
                 else
                 {
-                    ULTIMA_1850_PrintString(/*0x9fec*/ "No");
+                    PrintString(/*0x9fec*/ "No");
                     ShipMenu(member);
                 }
             }
             else
             {
                 shopPrice = frigatePrices[shopIndex];
-                shopPrice += shopPrice * -((s32)(D_55a8_party[member].intel * 3) - 100) / (u32)100;
+                shopPrice += shopPrice * -((s32)(party[member].intel * 3) - 100) / (u32)100;
 
                 PrintShopFileText(0x183e);
                 PrintShopFileText(0x1a50);
 
-                while ((key = ULTIMA_266c_GetChar()) != 'Y' && key != 'N')
+                while ((key = GetChar()) != 'Y' && key != 'N')
                 {
                 }
 
                 if (key == 'Y')
                 {
-                    ULTIMA_1850_PrintString(/*0x9ff0*/ "Yes\n\n");
+                    PrintString(/*0x9ff0*/ "Yes\n\n");
 
                     if (CanAfford(shopPrice) == 0)
                     {
@@ -156,22 +156,22 @@ static void ShipMenu(int member)
                 }
                 else
                 {
-                    ULTIMA_1850_PrintString(/*0x9ff6*/ "No");
+                    PrintString(/*0x9ff6*/ "No");
                     goto L_end;
                 }
             }
             break;
 
         case 0x53:
-            ULTIMA_1850_PrintString(/*0x9ffa*/ "S\n\n");
+            PrintString(/*0x9ffa*/ "S\n\n");
 
             shopPrice = skiffPrices[shopIndex];
-            shopPrice += shopPrice * -((s32)(D_55a8_party[member].intel * 3) - 100) / (u32)100;
+            shopPrice += shopPrice * -((s32)(party[member].intel * 3) - 100) / (u32)100;
 
             PrintShopFileText(0x188c);
             PrintShopFileText(0x1a50);
 
-            while ((key = ULTIMA_266c_GetChar()) != 'Y' && key != 'N')
+            while ((key = GetChar()) != 'Y' && key != 'N')
             {
             }
 
@@ -179,7 +179,7 @@ static void ShipMenu(int member)
 
             if (key == 'Y')
             {
-                ULTIMA_1850_PrintString(/*0x9ffe*/ "Yes\n\n");
+                PrintString(/*0x9ffe*/ "Yes\n\n");
                 if (CanAfford(shopPrice) == 0)
                 {
                     goto L_end;
@@ -204,7 +204,7 @@ static void ShipMenu(int member)
             }
             else
             {
-                ULTIMA_1850_PrintString(/*0xa004*/ "No");
+                PrintString(/*0xa004*/ "No");
                 goto L_end;
             }
             break;
@@ -231,17 +231,17 @@ void Shipwright(int member)
 
     do
     {
-        switch (ULTIMA_266c_GetChar())
+        switch (GetChar())
         {
         case 'Y':
-            ULTIMA_1850_PrintString(/*0xa008*/ "Yes");
+            PrintString(/*0xa008*/ "Yes");
             ShipMenu(member);
             done = 1;
             break;
 
         case U5_KEY_SPACE:
         case 'N':
-            ULTIMA_1850_PrintString(/*0xa00c*/ "No");
+            PrintString(/*0xa00c*/ "No");
             done = 1;
             break;
         }

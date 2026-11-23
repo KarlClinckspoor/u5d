@@ -19,7 +19,7 @@ u16 PollKeyWithCursor(void)
     savedFlag_d = cursorAdvance;
     cursorAdvance = 0;
 
-    ULTIMA_16ba_PrintChar(cursorFirstChar + cursorFrame++); // animate cursor
+    PrintChar(cursorFirstChar + cursorFrame++); // animate cursor
 
     key = PollKey();
     if ((int)cursorFrame >= (int)cursorFrameCount)
@@ -29,7 +29,7 @@ u16 PollKeyWithCursor(void)
 
     if (key != 0)
     {
-        ULTIMA_16ba_PrintChar(' ');
+        PrintChar(' ');
     }
     else
     {

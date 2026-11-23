@@ -17,7 +17,7 @@
 
 // 1300
 
-STUB u8 D_13a6_shadowlordStartY[8]; // TODO: size?
+STUB u8 shadowlordStartY[8]; // TODO: size?
 
 STUB u16 redColor;
 STUB u16 brightWhiteColor;
@@ -86,10 +86,10 @@ STUB u16 raySlopes[0x15];
 
 STUB u8 cellPattern[0x100];
 
-STUB u8 D_1e1a_townMapOffset[0x20]; // map offset table ~1e3a)
+STUB u8 townMapOffset[0x20]; // map offset table ~1e3a)
 STUB char* mapNames[0x28]; // map name table ~1e8a)
-STUB u8 D_1e8a_placeX[0x28]; // where each map's place is in the world
-STUB u8 D_1eb2_placeY[0x28]; // ~1ed9) town position y
+STUB u8 placeX[0x28]; // where each map's place is in the world
+STUB u8 placeY[0x28]; // ~1ed9) town position y
 STUB u8 moonPhases[28 * 2]; // for each day of the month: Trammel's, Felucca's
 
 STUB u8 prisonCellOf[0x30]; // TODO: size, offset
@@ -105,8 +105,8 @@ STUB PairS8 beamCells[0x100]; // ~217e) (x,y) * 0x100 (TODO: Pair)
 
 STUB s16 D_217e_beaconX; // the lighthouse lamp (tile 0x2a in a town, 0x1b outside); -1 none
 STUB s16 D_2180_beaconY;
-STUB s16 D_2182_beacon2X;
-STUB s16 D_2184_beacon2Y;
+STUB s16 beacon2X;
+STUB s16 beacon2Y;
 STUB u8 beaconStep; // s8?
 
 STUB s8 missileShapes[0x32]; // ~21ba) comsubs: some line table
@@ -136,19 +136,19 @@ STUB u8 roomMonsterY[0x10];
 STUB s16 facingDx[4]; // by facing: north, east, south, west
 STUB s16 facingDy[4]; // direction offset
 
-STUB u8 D_24e6_viewDirty; // the map view must be built again (bit 1: the light map too)
+STUB u8 viewDirty; // the map view must be built again (bit 1: the light map too)
 STUB u8 stepToggle; // footstep sfx related flag in dungeon
 
 STUB char* wordTable[0x80]; // the words that bytes of the .TLK scripts (below 0x81) and of SHOPPE.DAT (from 0x80) stand for
 STUB char* fileNames[30]; // ~2626) compressed file name table
 #define tilesFileName (&fileNames[3])
 
-STUB char* D_2652_townFileNames[4]; // town dat names
+STUB char* townFileNames[4]; // town dat names
 
-STUB u8 D_2742_drunkDirs[4]; // town
-STUB u16 D_2746_harpsichordFreq[0xa]; // town: harpsichord audio freqs
-STUB u8 D_275a_secretTune[0xd]; // town:harpsichord notes
-STUB u8 D_2767_tuneStep; // town
+STUB u8 drunkDirs[4]; // town
+STUB u16 harpsichordFreq[0xa]; // town: harpsichord audio freqs
+STUB u8 secretTune[0xd]; // town:harpsichord notes
+STUB u8 tuneStep; // town
 
 STUB char* shadowlordTraits[3]; // town
 
@@ -607,7 +607,7 @@ STUB u8 trapKinds[8]; // ~55a6)
 // [55a6..6606): savegame (0x1060)
 STUB u16 saveStart; // +0x0: two bytes of unknown use; the block is read and written from here
 
-STUB S_55a8 D_55a8_party[0x10]; // ~57a8)
+STUB S_55a8 party[0x10]; // ~57a8)
 
 // 5700
 STUB s16 food;        // +0x0202 Food // int (ReceiveItem, MOVSX)
@@ -644,14 +644,14 @@ STUB u8  moonstoneMap[8]; // +0x29A the map it is buried in (0 Britannia); 0xff:
 STUB u8  moonstoneZ[8]; // +0x2A2
 STUB u8  D_5850_reagents[8]; // +0x2AA
 STUB u8  harvestDay[3]; // +0x2B2
-STUB u8  D_585b_partyCount;        // +0x02B5 party member count
+STUB u8  partyCount;        // +0x02B5 party member count
 STUB u8  takenItemFlags[0x18]; // +0x2B6 the Codex's "non-regenerating object flags" (SJOG sets a bit per find)
 STUB u16 year; // +0x2CE
-STUB s16 D_5876_tempX; // +0x2D0 scratch: a direction chosen, a position, the actor found
-STUB s16 D_5878_tempY; // +0x2D2
+STUB s16 tempX; // +0x2D0 scratch: a direction chosen, a position, the actor found
+STUB s16 tempY; // +0x2D2
 STUB u8  statusIcon; // +0x2D4 the letter between the party and the food line: 'T', 'Q', 'P', 'N'...
 STUB u8  activePlayer;        // +0x02D5 Active character
-STUB u8  D_587c_partyTile; // +0x02D6 party tile
+STUB u8  partyTile; // +0x02D6 party tile
 STUB u8  D_587d_month; // +0x2D7
 STUB u8  D_587e_day; // +0x2D8
 STUB u8  D_587f_hour;        // +0x02D9 Current hour
@@ -663,7 +663,7 @@ STUB u8  clockChimes; // +0x2DE strokes the clock has still to chime
 STUB u8  trammelPhase; // +0x2DF
 STUB u8  feluccaPhase; // +0x2E0
 STUB u8  moongateHeight; // +0x2E1
-STUB u8  D_5888_karma;        // +0x02E2 Karma
+STUB u8  karma;        // +0x02E2 Karma
 STUB u8  D_5889_savedUnused;
 STUB u8  D_588a_savedUnused;
 STUB u8  turnCount; // +0x2E5
@@ -674,16 +674,16 @@ STUB u8  castCircle;
 STUB u8  D_5890_spellAttack;
 STUB u8  animate; // +0x2EB 0, 1 or 0xff
 STUB u8  windDir; // +0x2EC
-STUB u8  D_5893_mapId; // +0x2ED
-STUB u8  D_5894_savedMapId; // +0x2EE the map while D_5893_mapId is a combat map
+STUB u8  mapId; // +0x2ED
+STUB u8  D_5894_savedMapId; // +0x2EE the map while mapId is a combat map
 STUB u8  D_5895_mapLevel; // +0x2EF
 STUB u8  D_5896_mapX; // +0x2F0
 STUB u8  D_5897_mapY; // +0x2F1
 STUB u8  crosshairOn; // +0x2F2
 STUB u8  crosshairX; // +0x2F3
 STUB u8  crosshairY; // +0x2F4
-STUB u8  D_589b_mapOriginX; // +0x2F5 the map buffer's upper left corner in the world
-STUB u8  D_589c_mapOriginY; // +0x2F6
+STUB u8  mapOriginX; // +0x2F5 the map buffer's upper left corner in the world
+STUB u8  mapOriginY; // +0x2F6
 STUB u8  attackWeapon; // +0x2F7
 STUB u8  curCombatant; // +0x2F8 the entry of combatants whose turn it is; 0xff none
 STUB u8  focusBlink; // +0x2F9 toggled each frame: the frame around the combatant
@@ -696,19 +696,19 @@ STUB u8  D_58a5_lightLevel; // +0x2FF
 STUB u8  lightSpellTurns; // +0x300
 STUB u8  torchTurns; // +0x301
 STUB u8  lastAttacker[0x20];  // [58a8..58c8)
-STUB u8  D_58c8_shadowlordTowns[3]; // +0x322
+STUB u8  shadowlordTowns[3]; // +0x322
 STUB u8  summonedLord;
 STUB u16 questsOrdained; // +0x326
 STUB u16 questsDone; // +0x328
 STUB u8  dungeonOpen[8]; // +0x32A 0 sealed, 0x80 open
 STUB u8  shrineDestroyed[8]; // +0x332 bit 7
 STUB u8  roomsCleared[0xe]; // +0x33A
-STUB u8  D_58ee_annotX[0x20]; // +0x348 the Codex's "annotations" (TOWN lists the tiles 0x48/0x49 of the map here)
+STUB u8  annotX[0x20]; // +0x348 the Codex's "annotations" (TOWN lists the tiles 0x48/0x49 of the map here)
 // 5900
-STUB u8  D_590e_annotY[0x20]; // +0x368
-STUB u8  D_592e_annotTile[0x20]; // +0x388
-STUB u8  D_594e_annotCount; // +0x3A8
-STUB u8  D_594f_openDoorTile; // +0x3A9
+STUB u8  annotY[0x20]; // +0x368
+STUB u8  annotTile[0x20]; // +0x388
+STUB u8  annotCount; // +0x3A8
+STUB u8  openDoorTile; // +0x3A9
 STUB u8  openDoorX; // +0x3AA
 STUB u8  openDoorY; // +0x3AB
 STUB u8  openDoorTurns; // +0x3AC
@@ -716,31 +716,31 @@ STUB u8  boughtShipX; // +0x3AD
 STUB u8  boughtShipY; // +0x3AE
 STUB u8  sailDir; // +0x3AF
 STUB u8  newPrompt; // +0x3B0
-STUB u8  D_5957_drunkTurns; // +0x3B1
-STUB u8  D_5958_townShadowlord; // which of the three shadowlords (D_58c8_shadowlordTowns) is in this town, 0xff none (TOWN_02ae_SetupShadowlord)
+STUB u8  drunkTurns; // +0x3B1
+STUB u8  townShadowlord; // which of the three shadowlords (shadowlordTowns) is in this town, 0xff none (SetupShadowlord)
 STUB u8  fewerEnemies;
 STUB u8 dungeonMap[0x200]; // +0x3B4
 // 5b00
-STUB u8 D_5b5a_npcKilled[0x80]; // +0x5B4
+STUB u8 npcKilled[0x80]; // +0x5B4
 STUB u8 npcMet[0x80]; // +0x634
 
-STUB ActorFmt D_5c5a_actors[32]; // +0x6B4
+STUB ActorFmt actors[32]; // +0x6B4
 
 // 5d00
 STUB u16 D_5d5a_unused; // unused?
 STUB u16 D_5d5c_unused; // unused?
 
-STUB NpcScheduleFmt D_5d5e_npcSchedules[32]; // +0x7B8
+STUB NpcScheduleFmt npcSchedules[32]; // +0x7B8
 
 // 5f00
-STUB NpcFmt D_5f5e_npcs[32]; // +0x9B8
+STUB NpcFmt npcs[32]; // +0x9B8
 
 // 6100
 STUB MovementFmt moveLists[0x20]; // +0xBB8
 //STUB u8 moveLists[0x400];
 
 STUB s16 moveListPos[0x20]; // +0xFB8
-STUB u8 D_659e_npcTypes[0x20]; // +0xFF8
+STUB u8 npcTypes[0x20]; // +0xFF8
 STUB u8 npcApproach;
 STUB u8 npcApproaching;
 STUB u16 D_65c0_unused; // unused?
@@ -828,15 +828,15 @@ STUB u8 diskDrives[6]; // the drive of each disk; 0xff: not set
 #define D_a9cd diskDrives[5]
 
 // used in intro
-STUB u8 D_a9ce_soundOn; // use sound effect?
+STUB u8 soundOn; // use sound effect?
 
 STUB u16 rayBalance[0x15];
 
-STUB u8 D_a9fa_vitalsDirty; // dirty flag for vital
+STUB u8 vitalsDirty; // dirty flag for vital
 STUB u8 stepVolume; // footstep sfx duration in dungeon
 
 // combat?
-STUB ActorFmt savedActors[0x20]; // D_5c5a_actors during combat
+STUB ActorFmt savedActors[0x20]; // actors during combat
 
 STUB char* shopName; // current shop name
 STUB char* shopOwner; // current shop owner

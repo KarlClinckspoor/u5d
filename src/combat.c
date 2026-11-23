@@ -37,15 +37,15 @@ int IsCellFree(int actorTile, int cellX, int cellY)
     }
 
     // 0026
-    if (ULTIMA_2c4c_IsWalkableTile(actorTile, *ULTIMA_4402_GetTileAddr(cellX, cellY)) != 0 &&
-        *ULTIMA_4402_GetTileAddr(cellX, cellY) != 0xff)
+    if (IsWalkableTile(actorTile, *GetTileAddr(cellX, cellY)) != 0 &&
+        *GetTileAddr(cellX, cellY) != 0xff)
     {
         // 0043
         for (index_f = 0; index_f < 0x20; index_f++)
         {
-            if (D_5c5a_actors[index_f].x == cellX && D_5c5a_actors[index_f].y == cellY) // a317
+            if (actors[index_f].x == cellX && actors[index_f].y == cellY) // a317
             {
-                occupant = D_5c5a_actors[index_f].tile;
+                occupant = actors[index_f].tile;
                 if (occupant == TILE_ACTOR_EB)
                 {
                     return 0; // a33a
@@ -56,7 +56,7 @@ int IsCellFree(int actorTile, int cellX, int cellY)
                     continue;
                 }
 
-                if (occupant == 0 || D_5c5a_actors[index_f].animTile == 0) // a38a
+                if (occupant == 0 || actors[index_f].animTile == 0) // a38a
                 {
                     continue;
                 }
@@ -67,7 +67,7 @@ int IsCellFree(int actorTile, int cellX, int cellY)
                 flags = combatants[index_f].flags; // a3b3
                 if ((flags & (COMBAT_FLAGS_DEAD | COMBAT_FLAGS_4)) == 0 && flags != 0)
                 {
-                    if (D_5c5a_actors[combatants[index_f].actorIdx].animTile == 0)
+                    if (actors[combatants[index_f].actorIdx].animTile == 0)
                     {
                         return 0;
                     }
@@ -100,7 +100,7 @@ static int MonsterRanged(int attacker, int target, int warded)
 
     type_k = combatants[attacker].entityIdx;
     missileKind_c = enemyMissile[type_k];
-    if (type_k != 0x1a && ULTIMA_2092_RandomRange(0, 0xff) >= 0x80 || (enemyFlags[type_k] & ENEMY_FLAG_MAGIC) != 0 && (statusIcon == 'N' ||
+    if (type_k != 0x1a && RandomRange(0, 0xff) >= 0x80 || (enemyFlags[type_k] & ENEMY_FLAG_MAGIC) != 0 && (statusIcon == 'N' ||
         statusIcon == 0x1c))
     {
         return 0;
@@ -121,7 +121,7 @@ static int MonsterRanged(int attacker, int target, int warded)
         if (struck >= 0)
         {
             HitEffectOnActor(struck);
-            ULTIMA_16ba_PrintChar('\n');
+            PrintChar('\n');
             ResolveHit(struck, attacker);
             ReportHit(struck, attacker);
         }
@@ -172,10 +172,10 @@ static int MonsterAttack(int monster)
     {
         // 029c
         if ((combatants[target].flags & COMBAT_FLAGS_PLAYER) != 0 &&
-            D_55a8_party[targetType].equips[5] == 0x2d &&
+            party[targetType].equips[5] == 0x2d &&
             (enemyFlags[type_m] & ENEMY_FLAG_MAGIC) != 0)
         {
-            warded_h = ULTIMA_2092_RandomRange(0, 0xff) < 0x80;
+            warded_h = RandomRange(0, 0xff) < 0x80;
         }
 
         // 02df
@@ -183,14 +183,14 @@ static int MonsterAttack(int monster)
         {
             if (type_m == 0x1a)
             {
-                D_5c5a_actors[actorIdx].animState = 0x20;
+                actors[actorIdx].animState = 0x20;
             }
 
             if (CombatantDistance(monster, target) == 1)
             {
                 if (type_m == 0x2d)
                 {
-                    D_5c5a_actors[actorIdx].animState = 0x20;
+                    actors[actorIdx].animState = 0x20;
                 }
 
                 AudioSweepTone(0x2ee, 400, 5, 0x96);
@@ -200,19 +200,19 @@ static int MonsterAttack(int monster)
                     return 1;
                 }
 
-                if ((enemyFlags[type_m] & ENEMY_FLAG_STEAL) != 0 && ULTIMA_2092_RandomRange(0, 3) != 0 && food != 0)
+                if ((enemyFlags[type_m] & ENEMY_FLAG_STEAL) != 0 && RandomRange(0, 3) != 0 && food != 0)
                 {
-                    ULTIMA_1850_PrintString(/*0x6d74*/ "\nA ");
+                    PrintString(/*0x6d74*/ "\nA ");
                     PrintName(monster);
-                    ULTIMA_1850_PrintString(/*0x6d78*/ " stole some food!\n");
+                    PrintString(/*0x6d78*/ " stole some food!\n");
                     DecreaseInt(&food, 5);
                     AudioSweepTone(800, 2000, 1, 0x32);
-                    ULTIMA_2900_UpdateVitalsDisplay();
+                    UpdateVitalsDisplay();
                     return 1;
                 }
 
                 HitEffectOnActor(target);
-                ULTIMA_16ba_PrintChar('\n');
+                PrintChar('\n');
                 ResolveHit(target, monster);
                 ReportHit(target, monster);
                 return 1;
@@ -242,13 +242,13 @@ static void MonsterTurn(void)
     actorIdx = entity->actorIdx;
 
     if (statusIcon != 'T' &&
-        (statusIcon != 'Q' || ULTIMA_2092_RandomRange(0, 1) != 0) &&
+        (statusIcon != 'Q' || RandomRange(0, 1) != 0) &&
         (entity->flags & COMBAT_FLAGS_4) == 0)
     {
         // 0446
         if ((entity->flags & COMBAT_FLAGS_ASLEEP) != 0)
         {
-            if (ULTIMA_2092_RandomRange(0, 0x10) == 0x10)
+            if (RandomRange(0, 0x10) == 0x10)
             {
                 WakeCombatant(curCombatant);
             }
@@ -257,13 +257,13 @@ static void MonsterTurn(void)
         {
             if ((entity->entityIdx) == 0x2d)
             {
-                D_5c5a_actors[actorIdx].animState = 0;
+                actors[actorIdx].animState = 0;
             }
 
             // 047f
             if ((entity->flags & COMBAT_FLAGS_2) != 0)
             {
-                if ((entity->flags & COMBAT_FLAGS_PLAYER) == 0 && ULTIMA_2092_RandomRange(0, 3) == 3)
+                if ((entity->flags & COMBAT_FLAGS_PLAYER) == 0 && RandomRange(0, 3) == 3)
                 {
                     entity->hp++;
                 }
@@ -288,10 +288,10 @@ static void MonsterTurn(void)
             {
                 if ((combatEvents & 0x10) != 0)
                 {
-                    ULTIMA_16ba_PrintChar('\n');
+                    PrintChar('\n');
                     AudioSweepTone(0x4b0, 2000, 1, 0x28);
                     PrintName(curCombatant);
-                    ULTIMA_1850_PrintString(/*0x6d8c*/ " escapes!\n");
+                    PrintString(/*0x6d8c*/ " escapes!\n");
                     RemoveEntity(-(uint)curCombatant - 1);
 
                     if ((entity->flags & COMBAT_FLAGS_PLAYER) == 0 && entity->entityIdx == 0x2f)
@@ -299,7 +299,7 @@ static void MonsterTurn(void)
                         BreakCharm();
                     }
                 }
-                ULTIMA_5910_UpdateFrame();
+                UpdateFrame();
             }
             else
             {
@@ -316,7 +316,7 @@ static void MonsterTurn(void)
 // 5 Use); a monster says "Can't!" (returns 1).
 static int RunCommand(char* verb, int command)
 {
-    ULTIMA_1850_PrintString(verb);
+    PrintString(verb);
 
     if ((combatants[curCombatant].flags & COMBAT_FLAGS_PLAYER) != 0)
     {
@@ -343,7 +343,7 @@ static int RunCommand(char* verb, int command)
     }
     else
     {
-        ULTIMA_1850_PrintString(/*0x6d98*/ "Can't!\n");
+        PrintString(/*0x6d98*/ "Can't!\n");
         return 1;
     }
 
@@ -395,12 +395,12 @@ static void CombatProcessCommand(void)
     }
     else
     {
-        if ((combatants[curCombatant].flags & COMBAT_FLAGS_PLAYER) != 0 && (D_55a8_party[member].equips[2] == 0x23 || D_55a8_party[member].equips[3] == 0x23))
+        if ((combatants[curCombatant].flags & COMBAT_FLAGS_PLAYER) != 0 && (party[member].equips[2] == 0x23 || party[member].equips[3] == 0x23))
         {
             // a938
             combatants[curCombatant].flags |= COMBAT_FLAGS_CHARMED;
             activePlayer = 0xff;
-            D_a9fa_vitalsDirty = 1;
+            vitalsDirty = 1;
             MonsterTurn();
             // -> ae09
         }
@@ -413,24 +413,24 @@ static void CombatProcessCommand(void)
             }
 
             // a972
-            if (D_a9fa_vitalsDirty != 0)
+            if (vitalsDirty != 0)
             {
-                ULTIMA_2900_UpdateVitalsDisplay();
-                D_a9fa_vitalsDirty = 0;
+                UpdateVitalsDisplay();
+                vitalsDirty = 0;
             }
 
             // a981
             do
             {
-                ULTIMA_16ba_PrintChar('\n');
+                PrintChar('\n');
                 PrintName(curCombatant);
                 scratch[0] = 0;
                 if ((combatants[curCombatant].flags & COMBAT_FLAGS_PLAYER) != 0)
                 {
-                    ULTIMA_1850_PrintString(/*0x6da4*/ ", armed with ");
-                    weaponCount_e = AppendWeaponName(D_55a8_party[member].equips[0], 0);
-                    weaponCount_e += AppendWeaponName(D_55a8_party[member].equips[2], weaponCount_e);
-                    weaponCount_e += AppendWeaponName(D_55a8_party[member].equips[3], weaponCount_e);
+                    PrintString(/*0x6da4*/ ", armed with ");
+                    weaponCount_e = AppendWeaponName(party[member].equips[0], 0);
+                    weaponCount_e += AppendWeaponName(party[member].equips[2], weaponCount_e);
+                    weaponCount_e += AppendWeaponName(party[member].equips[3], weaponCount_e);
                     if (weaponCount_e == 0)
                     {
                         strcat(scratch, /*0x6db2*/ "bare hands");
@@ -438,35 +438,35 @@ static void CombatProcessCommand(void)
                 }
 
                 strcat(scratch, /*0x6dbe*/ ":");
-                ULTIMA_1850_PrintString(scratch);
+                PrintString(scratch);
 
                 keyDone = askAgain = 0;
 
                 // aa4a
                 while (!keyDone)
                 {
-                    ULTIMA_16ba_PrintChar('\n');
-                    ULTIMA_4c2a_PrintLeftCap();
+                    PrintChar('\n');
+                    PrintLeftCap();
                     if ((combatants[curCombatant].flags & COMBAT_FLAGS_4) != 0)
                     {
-                        ULTIMA_1850_PrintString(/*0x6dc0*/ "ARGH!\n");
-                        ULTIMA_223c_AudioWhiteNoise(0x28, 3000, 500);
+                        PrintString(/*0x6dc0*/ "ARGH!\n");
+                        AudioWhiteNoise(0x28, 3000, 500);
                         Regurgitate(curCombatant);
                         keyDone = 1;
                     }
                     else if ((combatants[curCombatant].flags & COMBAT_FLAGS_ASLEEP) != 0)
                     {
-                        if (ULTIMA_2092_RandomRange(0, 0xff) < 0x10)
+                        if (RandomRange(0, 0xff) < 0x10)
                         {
                             WakeCombatant(curCombatant);
                         }
 
-                        ULTIMA_1850_PrintString(/*0x6dc8*/ "Zzzzz...\n");
+                        PrintString(/*0x6dc8*/ "Zzzzz...\n");
                         keyDone = 1;
                     }
                     else
                     {
-                        key = ULTIMA_266c_GetChar();
+                        key = GetChar();
                         keyDone = 1;
                         askAgain = 0;
 
@@ -475,15 +475,15 @@ static void CombatProcessCommand(void)
                         case U5_KEY_CTRL_B: // ok
                             // Buffer on/off
                             // ab1a
-                            ULTIMA_1850_PrintString(/*0x6dd2*/ "Buffer O");
+                            PrintString(/*0x6dd2*/ "Buffer O");
                             keyBufferOff = !keyBufferOff;
                             if (keyBufferOff != 0)
                             {
-                                ULTIMA_1850_PrintString(/*0x6ddc*/ "ff\n");
+                                PrintString(/*0x6ddc*/ "ff\n");
                             }
                             else
                             {
-                                ULTIMA_1850_PrintString(/*0x6de0*/ "n\n");
+                                PrintString(/*0x6de0*/ "n\n");
                             }
                             // ab3d
                             keyDone = 0;
@@ -491,16 +491,16 @@ static void CombatProcessCommand(void)
 
                         case U5_KEY_CTRL_S: // ok
                             // ab46
-                            ULTIMA_1850_PrintString(/*0x6de4*/ "Sound ");
-                            if (D_a9ce_soundOn != 0)
+                            PrintString(/*0x6de4*/ "Sound ");
+                            if (soundOn != 0)
                             {
-                                ULTIMA_1850_PrintString(/*0x6dec*/ "Off\n");
+                                PrintString(/*0x6dec*/ "Off\n");
                             }
                             else
                             {
-                                ULTIMA_1850_PrintString(/*0x6df2*/ "On\n");
+                                PrintString(/*0x6df2*/ "On\n");
                             }
-                            D_a9ce_soundOn = !D_a9ce_soundOn;
+                            soundOn = !soundOn;
                             // -> ab3d
                             keyDone = 0;
                             break;
@@ -514,7 +514,7 @@ static void CombatProcessCommand(void)
                         case 0x43: // ok
                             /* 'C' Cast */
                             // ab80 / 08f0
-                            ULTIMA_1850_PrintString(/*0x6df6*/ "Cast...\n");
+                            PrintString(/*0x6df6*/ "Cast...\n");
                             askAgain = 1;
                             if ((combatants[curCombatant].flags & COMBAT_FLAGS_PLAYER) != 0)
                             {
@@ -525,8 +525,8 @@ static void CombatProcessCommand(void)
                                     askAgain = 0;
                                     if (statusIcon == 'N' || (crown == 0 && D_5894_savedMapId == 0x12))
                                     {
-                                        ULTIMA_1850_PrintString(/*0x6e00*/ "Absorbed!\n");
-                                        ULTIMA_2192_AudioPulse(0x2648, 1, 28000, 1000, 2);
+                                        PrintString(/*0x6e00*/ "Absorbed!\n");
+                                        AudioPulse(0x2648, 1, 28000, 1000, 2);
                                     }
                                     else
                                     {
@@ -537,7 +537,7 @@ static void CombatProcessCommand(void)
                             else
                             {
                                 // abf4
-                                ULTIMA_1850_PrintString(/*0x6e0c*/ "Can't!\n");
+                                PrintString(/*0x6e0c*/ "Can't!\n");
                             }
                             break;
 
@@ -572,7 +572,7 @@ static void CombatProcessCommand(void)
                         case 0x50:
                             /* 'P' Push */
                             // ac24
-                            ULTIMA_1850_PrintString(/*0x6e28*/ "Push-");
+                            PrintString(/*0x6e28*/ "Push-");
                             PushCmd();
                             break;
 
@@ -596,14 +596,14 @@ static void CombatProcessCommand(void)
                         case 0x59: // ok
                             /* 'Y' Yell */
                             // ac50
-                            ULTIMA_1850_PrintString(/*0x6e4e*/ "Yell ");
+                            PrintString(/*0x6e4e*/ "Yell ");
                             YellCmd();
                             break;
 
                         case 0x5a: // ok
                             /* 'Z' Z-stats */
                             // ac5e
-                            ULTIMA_1850_PrintString(/*0x6e54*/ "Z-stats...\n");
+                            PrintString(/*0x6e54*/ "Z-stats...\n");
                             ZstatsCmd();
                             break;
 
@@ -614,14 +614,14 @@ static void CombatProcessCommand(void)
 
                         case U5_KEY_SPACE: // ok
                             // ac72
-                            ULTIMA_1850_PrintString(/*0x6e60*/ "Pass\n");
+                            PrintString(/*0x6e60*/ "Pass\n");
                             break;
                         case 0x30: // ok
                             /* '0' */
                             // ac7c
                             activePlayer = 0xff;
-                            ULTIMA_1850_PrintString(/*0x6e66*/ "Set active plr:\nNone!\n");
-                            ULTIMA_2900_UpdateVitalsDisplay();
+                            PrintString(/*0x6e66*/ "Set active plr:\nNone!\n");
+                            UpdateVitalsDisplay();
                             break;
 
                         case 0x31:
@@ -659,7 +659,7 @@ static void CombatProcessCommand(void)
                         case 0x44:
                             /* 'D' What? */
                             // acca
-                            ULTIMA_1850_PrintString(/*0x6e84*/ "D-What?\n");
+                            PrintString(/*0x6e84*/ "D-What?\n");
                             askAgain = 1;
                             break;
 
@@ -726,7 +726,7 @@ static void CombatProcessCommand(void)
                         case 0x57: // ok
                             /* 'W' What */
                             // ad1e
-                            ULTIMA_1850_PrintString(/*0x6ed6*/ "W-What?\n");
+                            PrintString(/*0x6ed6*/ "W-What?\n");
                             askAgain = 1;
                             break;
 
@@ -739,7 +739,7 @@ static void CombatProcessCommand(void)
                         default:
                             // ad47
                             // -> ab39
-                            ULTIMA_1850_PrintString(/*0x6ee6*/ "What?\n");
+                            PrintString(/*0x6ee6*/ "What?\n");
                             keyDone = 0;
                             break;
                         }
@@ -759,7 +759,7 @@ static void CombatProcessCommand(void)
         if (key < 0x30 || key > 0x36)
         {
             TurnUpkeep();
-            ULTIMA_5910_UpdateFrame();
+            UpdateFrame();
             CheckMirror();
         }
     }
@@ -779,12 +779,12 @@ int CombatMainLoop(void)
     result = 1;
     combatExitDir = 0;
 
-    ULTIMA_5910_UpdateFrame();
-    ULTIMA_2900_UpdateVitalsDisplay();
-    ULTIMA_1b16_ClearKbdBuffer();
+    UpdateFrame();
+    UpdateVitalsDisplay();
+    ClearKbdBuffer();
     CountCombatants();
 
-    if (D_5876_tempX == 0)
+    if (tempX == 0)
     {
         combatOver = 1;
     }
@@ -800,14 +800,14 @@ int CombatMainLoop(void)
         for (curCombatant = 0; curCombatant < 0x20; curCombatant++)
         {
             // ae5f
-            D_594f_openDoorTile = 0;
+            openDoorTile = 0;
             entity = &combatants[curCombatant];
             flags = entity->flags;
 
             if (((byte)flags & (COMBAT_FLAGS_PLAYER | COMBAT_FLAGS_MONSTER)) != 0 && ((byte)flags & COMBAT_FLAGS_DEAD) == 0)
             {
                 // ae86
-                if (((byte)flags & COMBAT_FLAGS_PLAYER) != 0 && D_55a8_party[entity->entityIdx].status == STATUS_DEAD) // monster / non-dead player
+                if (((byte)flags & COMBAT_FLAGS_PLAYER) != 0 && party[entity->entityIdx].status == STATUS_DEAD) // monster / non-dead player
                 {
                     entity->flags |= COMBAT_FLAGS_DEAD;
                     HitEffectOnActor(curCombatant);
@@ -828,7 +828,7 @@ int CombatMainLoop(void)
                             if (combatTick == 10)
                             {
                                 combatTick = 0;
-                                ULTIMA_4f7c_AdvanceTime(1);
+                                AdvanceTime(1);
                             }
 
                             // af09
@@ -848,9 +848,9 @@ int CombatMainLoop(void)
                             CountCombatants();
 
                             // af39
-                            if (D_5878_tempY == 0)
+                            if (tempY == 0)
                             {
-                                if (D_5876_tempX == 0)
+                                if (tempX == 0)
                                 {
                                     // af47
                                     result = 0;
@@ -863,10 +863,10 @@ int CombatMainLoop(void)
                                 // af5a
                                 if (BreakCharm() == -1)
                                 {
-                                    ULTIMA_5910_UpdateFrame();
+                                    UpdateFrame();
                                     if (combatOver == 0)
                                     {
-                                        ULTIMA_1850_PrintString(/*0x6eee*/ "\nBATTLE IS LOST!");
+                                        PrintString(/*0x6eee*/ "\nBATTLE IS LOST!");
                                         result = 1;
                                     }
 
@@ -879,14 +879,14 @@ int CombatMainLoop(void)
                             }
 
                             // af78
-                            if (D_5876_tempX == 0 && combatOver == 0)
+                            if (tempX == 0 && combatOver == 0)
                             {
-                                ULTIMA_1850_PrintString(/*0x6f00*/ "\nVICTORY!\n");
+                                PrintString(/*0x6f00*/ "\nVICTORY!\n");
                                 combatOver = 1;
 
                                 // BGM/NOTE: no jingle when bgm is activated
                                 AudioVictoryTune();
-                                ULTIMA_1b16_ClearKbdBuffer();
+                                ClearKbdBuffer();
 
                             }
                         }
@@ -897,7 +897,7 @@ int CombatMainLoop(void)
     } while (finished_c == 0); // afa6
 
     // afaf
-    ULTIMA_1b16_ClearKbdBuffer();
+    ClearKbdBuffer();
     beaconStep = 0xff;
 
     return result;
@@ -984,32 +984,32 @@ static int ChooseTarget(int combatant)
         bestY = 5;
     }
 
-    D_5876_tempX = D_5878_tempY = 0;
+    tempX = tempY = 0;
 
     if (self_f->x > bestX)
     {
-        D_5876_tempX = -1;
+        tempX = -1;
     }
 
     if (self_f->x < bestX)
     {
-        D_5876_tempX = 1;
+        tempX = 1;
     }
 
     if (self_f->y > bestY)
     {
-        D_5878_tempY = -1;
+        tempY = -1;
     }
 
     if (self_f->y < bestY)
     {
-        D_5878_tempY = 1;
+        tempY = 1;
     }
 
     if ((self_f->flags & COMBAT_FLAGS_2) != 0)
     {
-        D_5876_tempX *= -1;
-        D_5878_tempY *= -1;
+        tempX *= -1;
+        tempY *= -1;
     }
 
     if (best_k == combatant)
@@ -1041,13 +1041,13 @@ static int MonsterMove(int combatant)
         if ((self_f->flags & COMBAT_FLAGS_PLAYER) == 0 && (enemyFlags[self_f->entityIdx] & ENEMY_FLAG_TELEPORT) != 0 && statusIcon != 0x4e && statusIcon != 0x1c &&
             (IsSurrounded(combatant) != 0 || Random(3) != 3) && RandomCell() != 0)
         {
-            if (IsCellFree(D_5c5a_actors[self_f->actorIdx].tile, D_5876_tempX, D_5878_tempY) != 0)
+            if (IsCellFree(actors[self_f->actorIdx].tile, tempX, tempY) != 0)
             {
-                D_5c5a_actors[self_f->actorIdx].x = self_f->x = D_5876_tempX;
-                D_5c5a_actors[self_f->actorIdx].y = self_f->y = D_5878_tempY;
+                actors[self_f->actorIdx].x = self_f->x = tempX;
+                actors[self_f->actorIdx].y = self_f->y = tempY;
 
-                ULTIMA_1850_PrintString(enemyNames[self_f->entityIdx]);
-                ULTIMA_1850_PrintString(/*0x6f0c*/ " teleports!\n");
+                PrintString(enemyNames[self_f->entityIdx]);
+                PrintString(/*0x6f0c*/ " teleports!\n");
                 moved_h++;
             }
         }
@@ -1057,16 +1057,16 @@ static int MonsterMove(int combatant)
         {
             // 0fc1
             target = ChooseTarget(combatant);
-            if (Random(0xff) > 0x7f && IsCellBlocked(self_f->x + D_5876_tempX, self_f->y, combatant) == 0)
+            if (Random(0xff) > 0x7f && IsCellBlocked(self_f->x + tempX, self_f->y, combatant) == 0)
             {
-                D_5878_tempY = 0;
+                tempY = 0;
                 moveCode = 999;
             }
             else
             {
-                if (IsCellBlocked(self_f->x, self_f->y + D_5878_tempY, combatant) == 0)
+                if (IsCellBlocked(self_f->x, self_f->y + tempY, combatant) == 0)
                 {
-                    D_5876_tempX = 0;
+                    tempX = 0;
                     moveCode = 998;
                 }
             }
@@ -1081,25 +1081,25 @@ static int MonsterMove(int combatant)
                     switch (moveCode)
                     {
                     case 0:
-                        D_5878_tempY = 1;
-                        D_5876_tempX = 0;
+                        tempY = 1;
+                        tempX = 0;
                         break;
                     case 1:
-                        D_5876_tempX = 1;
-                        D_5878_tempY = 0;
+                        tempX = 1;
+                        tempY = 0;
                         break;
                     case 2:
-                        D_5878_tempY = -1;
-                        D_5876_tempX = 0;
+                        tempY = -1;
+                        tempX = 0;
                         break;
                     case 3:
-                        D_5876_tempX = -1;
-                        D_5878_tempY = 0;
+                        tempX = -1;
+                        tempY = 0;
                         break;
                     }
 
                     // 1070
-                    if (IsCellBlocked(self_f->x + D_5876_tempX, self_f->y + D_5878_tempY, combatant) == 0)
+                    if (IsCellBlocked(self_f->x + tempX, self_f->y + tempY, combatant) == 0)
                     {
                         moveCode = 991;
                     }
@@ -1108,15 +1108,15 @@ static int MonsterMove(int combatant)
                         break;
 
                     
-                    D_5876_tempX = D_5878_tempY = 0;
+                    tempX = tempY = 0;
                 }
             }
 
             // 10c7
             if (moveCode != 0)
             {
-                D_5c5a_actors[self_f->actorIdx].x = self_f->x += D_5876_tempX;
-                D_5c5a_actors[self_f->actorIdx].y = self_f->y += D_5878_tempY;
+                actors[self_f->actorIdx].x = self_f->x += tempX;
+                actors[self_f->actorIdx].y = self_f->y += tempY;
 
                 moved_h = 1;
 
@@ -1185,20 +1185,20 @@ int FireMapTrigger(int cellX, int cellY)
 
         if (fired != 0)
         {
-            ULTIMA_5910_UpdateFrame();
+            UpdateFrame();
         }
     }
 
     return fired;
 }
 
-// A random cell of 16x16 into D_5876_tempX and D_5878_tempY: 1 when it is on the 11x11 map.
+// A random cell of 16x16 into tempX and tempY: 1 when it is on the 11x11 map.
 int RandomCell(void)
 {
-    D_5876_tempX = Random(0xf);
-    D_5878_tempY = Random(0xf);
+    tempX = Random(0xf);
+    tempY = Random(0xf);
 
-    if (D_5876_tempX > 0xa || D_5878_tempY > 0xa)
+    if (tempX > 0xa || tempY > 0xa)
     {
         return 0;
     }
@@ -1229,12 +1229,12 @@ void RemoveEntity(int which)
         actorIdx = which - 1;
     }
 
-    D_5c5a_actors[actorIdx].y =
-        D_5c5a_actors[actorIdx].z =
-        D_5c5a_actors[actorIdx].value =
-        D_5c5a_actors[actorIdx].tile =
-        D_5c5a_actors[actorIdx].animTile =
-        D_5c5a_actors[actorIdx].x = 0;
+    actors[actorIdx].y =
+        actors[actorIdx].z =
+        actors[actorIdx].value =
+        actors[actorIdx].tile =
+        actors[actorIdx].animTile =
+        actors[actorIdx].x = 0;
 }
 
 // Damage of a hit: a monster's attack value, or the weapon's (a random 1 to its damage; 99 kills at once; bare hands 1; weapon 0x27 shatters
@@ -1255,7 +1255,7 @@ static int RollDamage(int attacker, int victim)
         switch (attack)
         {
         case 0x27:
-            ULTIMA_1850_PrintString(/*0x6f1a*/ "Thy sword hath shattered!\n");
+            PrintString(/*0x6f1a*/ "Thy sword hath shattered!\n");
             Unequip(attacker, attack);
             attack = 99;
             break;
@@ -1272,7 +1272,7 @@ static int RollDamage(int attacker, int victim)
             attack = weaponAttack[attack];
             if (attack > 1 && attack != 99)
             {
-                attack = ULTIMA_2092_RandomRange(1, attack);
+                attack = RandomRange(1, attack);
             }
             break;
         }
@@ -1290,13 +1290,13 @@ static int RollDamage(int attacker, int victim)
         }
         else
         {
-            defense_e = D_55a8_party[combatants[victim].entityIdx].defense;
+            defense_e = party[combatants[victim].entityIdx].defense;
         }
 
         damage = attack;
         if (defense_e != 0)
         {
-            damage -= ULTIMA_2092_RandomRange(1, defense_e);
+            damage -= RandomRange(1, defense_e);
         }
     }
 
@@ -1377,7 +1377,7 @@ int QueryStat(int combatant, int stat)
         else
         {
             // 145e
-            value = D_55a8_party[entity->entityIdx].intel;
+            value = party[entity->entityIdx].intel;
         }
         break;
 
@@ -1394,7 +1394,7 @@ int QueryStat(int combatant, int stat)
         }
         else
         {
-            value = D_55a8_party[entity->entityIdx].str;
+            value = party[entity->entityIdx].str;
         }
         break;
 
@@ -1494,21 +1494,21 @@ int ApplyDamage(int target, int damage)
 
     if ((entity->flags & COMBAT_FLAGS_PLAYER) != 0)
     {
-        D_55a8_party[entity->entityIdx].hp -= damage;
-        if (D_55a8_party[entity->entityIdx].hp < 1 || damage == 99)
+        party[entity->entityIdx].hp -= damage;
+        if (party[entity->entityIdx].hp < 1 || damage == 99)
         {
-            D_55a8_party[entity->entityIdx].hp = 0;
+            party[entity->entityIdx].hp = 0;
             entity->flags |= COMBAT_FLAGS_DEAD;
-            D_55a8_party[entity->entityIdx].status = STATUS_DEAD;
+            party[entity->entityIdx].status = STATUS_DEAD;
 
-            D_5c5a_actors[entity->actorIdx].tile = D_5c5a_actors[entity->actorIdx].animTile = TILE_ACTOR_SLEEP;
+            actors[entity->actorIdx].tile = actors[entity->actorIdx].animTile = TILE_ACTOR_SLEEP;
             if (entity->entityIdx == activePlayer)
             {
                 activePlayer = 0xff;
             }
         }
 
-        ULTIMA_2900_UpdateVitalsDisplay();
+        UpdateVitalsDisplay();
     }
     else
     {
@@ -1547,13 +1547,13 @@ int ApplyDamage(int target, int damage)
             {
                 if (entity->entityIdx == 0x1c)
                 {
-                    D_5c5a_actors[entity->actorIdx].tile = D_5c5a_actors[entity->actorIdx].animTile = TILE_ACTOR_DEAD;
+                    actors[entity->actorIdx].tile = actors[entity->actorIdx].animTile = TILE_ACTOR_DEAD;
                     PlaceCombatant(0x1f, 0, cellX_g, cellY_f, D_5895_mapLevel);
-                    ULTIMA_5910_UpdateFrame();
+                    UpdateFrame();
                 }
                 else if (entity->entityIdx == 0x1e)
                 {
-                    *ULTIMA_4402_GetTileAddr(cellX_g, cellY_f) = TILE_MAP_4C;
+                    *GetTileAddr(cellX_g, cellY_f) = TILE_MAP_4C;
                     RemoveEntity(-target - 1);
                 }
                 else if (groundTile == 0x87 || groundTile < 4)
@@ -1562,25 +1562,25 @@ int ApplyDamage(int target, int damage)
                 }
                 else if (treasure_f >= Random1To30())
                 {
-                    D_5c5a_actors[entity->actorIdx].tile = D_5c5a_actors[entity->actorIdx].animTile = TILE_ACTOR_CHEST;
-                    D_5c5a_actors[entity->actorIdx].value = treasure_f;
+                    actors[entity->actorIdx].tile = actors[entity->actorIdx].animTile = TILE_ACTOR_CHEST;
+                    actors[entity->actorIdx].value = treasure_f;
 
                     if (treasure_f > Random1To30())
                     {
-                        D_5c5a_actors[entity->actorIdx].value |= 0x80;
+                        actors[entity->actorIdx].value |= 0x80;
                     }
                 }
                 else
                 {
-                    D_5c5a_actors[entity->actorIdx].tile = D_5c5a_actors[entity->actorIdx].animTile = TILE_ACTOR_DEAD;
+                    actors[entity->actorIdx].tile = actors[entity->actorIdx].animTile = TILE_ACTOR_DEAD;
                 }
             }
             else if ((enemyFlags[entity->entityIdx] & ENEMY_FLAG_VANISH) != 0)
             {
-                ULTIMA_1850_PrintString(enemyNames[entity->entityIdx]);
-                ULTIMA_1850_PrintString(/*0x6f36*/ " vanishes!");
+                PrintString(enemyNames[entity->entityIdx]);
+                PrintString(/*0x6f36*/ " vanishes!");
                 combatEvents = 2;
-                D_5c5a_actors[entity->actorIdx].tile = D_5c5a_actors[entity->actorIdx].animTile = TILE_ACTOR_CIRCLE;
+                actors[entity->actorIdx].tile = actors[entity->actorIdx].animTile = TILE_ACTOR_CIRCLE;
                 ULTIMA_1068_RevealTile(GetCombatMap(entity->x, entity->y), entity->x, entity->y);
                 RemoveEntity(-(target + 1));
                 BreakCharm();
@@ -1597,16 +1597,16 @@ int ApplyDamage(int target, int damage)
             {
                 PickNearbyCell(entity->x, entity->y);
 
-                cellX_g = D_5876_tempX;
-                cellY_f = D_5878_tempY;
-                if (IsCellFree(D_5c5a_actors[entity->actorIdx].tile, cellX_g, cellY_f) != 0)
+                cellX_g = tempX;
+                cellY_f = tempY;
+                if (IsCellFree(actors[entity->actorIdx].tile, cellX_g, cellY_f) != 0)
                 {
-                    clone = PlaceCombatant((D_5c5a_actors[entity->actorIdx].tile - TILE_ACTOR_WIZARD) >> 2, 0, cellX_g, cellY_f, D_5895_mapLevel);
+                    clone = PlaceCombatant((actors[entity->actorIdx].tile - TILE_ACTOR_WIZARD) >> 2, 0, cellX_g, cellY_f, D_5895_mapLevel);
                     if (clone > -1)
                     {
                         combatants[clone].hp = entity->hp;
-                        ULTIMA_1850_PrintString(enemyNames[entity->entityIdx]);
-                        ULTIMA_1850_PrintString(/*0x6f42*/ " divides!\n");
+                        PrintString(enemyNames[entity->entityIdx]);
+                        PrintString(/*0x6f42*/ " divides!\n");
                         break;
                     }
                 }
@@ -1622,20 +1622,20 @@ void CombatPoison(int target, int attacker)
 {
     int damage;
 
-    if ((combatants[target].flags & COMBAT_FLAGS_PLAYER) != 0 && D_55a8_party[combatants[target].entityIdx].status == STATUS_GOOD)
+    if ((combatants[target].flags & COMBAT_FLAGS_PLAYER) != 0 && party[combatants[target].entityIdx].status == STATUS_GOOD)
     {
-        D_55a8_party[combatants[target].entityIdx].status = STATUS_POISONED;
-        ULTIMA_1850_PrintString(D_55a8_party[combatants[target].entityIdx].name);
-        ULTIMA_1850_PrintString(/*0x6f4e*/ " is poisoned!\n");
+        party[combatants[target].entityIdx].status = STATUS_POISONED;
+        PrintString(party[combatants[target].entityIdx].name);
+        PrintString(/*0x6f4e*/ " is poisoned!\n");
         combatEvents = 8;
-        D_a9fa_vitalsDirty = 1;
+        vitalsDirty = 1;
     }
     else
     {
         damage = ApplyDamage(target, Random(0x14));
         if (attacker > -1 && (combatants[attacker].flags & COMBAT_FLAGS_PLAYER) != 0)
         {
-            IncreaseInt(&D_55a8_party[combatants[attacker].entityIdx].exp, damage, 9999);
+            IncreaseInt(&party[combatants[attacker].entityIdx].exp, damage, 9999);
         }
     }
 }
@@ -1655,7 +1655,7 @@ void ResolveHit(int target, int attacker)
     }
 
     // 1969
-    if (byMonster_l && (enemyFlags[combatants[attacker].entityIdx] & (ENEMY_FLAG_POISON_200 | ENEMY_FLAG_POISON_4)) != 0 && ULTIMA_2092_RandomRange(0, 3) != 0)
+    if (byMonster_l && (enemyFlags[combatants[attacker].entityIdx] & (ENEMY_FLAG_POISON_200 | ENEMY_FLAG_POISON_4)) != 0 && RandomRange(0, 3) != 0)
     {
         CombatPoison(target, attacker);
     }
@@ -1699,7 +1699,7 @@ void ResolveHit(int target, int attacker)
             if ((combatants[attacker].flags & COMBAT_FLAGS_PLAYER) != 0)
             {
                 // 1a3c
-                IncreaseInt(&D_55a8_party[combatants[attacker].entityIdx].exp, damage, 9999);
+                IncreaseInt(&party[combatants[attacker].entityIdx].exp, damage, 9999);
             }
         }
         else
@@ -1805,20 +1805,20 @@ static void TerrainEffect(int combatant)
         for (index = 0; index < 0x20; index++)
         {
             if (index != entity_c->actorIdx &&
-                entity_c->x == D_5c5a_actors[index].x &&
-                entity_c->y == D_5c5a_actors[index].y)
+                entity_c->x == actors[index].x &&
+                entity_c->y == actors[index].y)
             {
-                if (D_5c5a_actors[index].tile == TILE_ACTOR_EA)
+                if (actors[index].tile == TILE_ACTOR_EA)
                 {
                     hazard = 100;
                 }
 
-                if (D_5c5a_actors[index].tile == TILE_ACTOR_E8)
+                if (actors[index].tile == TILE_ACTOR_E8)
                 {
                     hazard = 50;
                 }
 
-                if (D_5c5a_actors[index].tile == TILE_ACTOR_E9)
+                if (actors[index].tile == TILE_ACTOR_E9)
                 {
                     hazard = 150;
                 }
@@ -1842,12 +1842,12 @@ static void TerrainEffect(int combatant)
         HitEffectOnActor(combatant);
         ApplyDamage(combatant, Random(10));
         ReportHit(combatant, 0xff);
-        D_a9fa_vitalsDirty = 1;
+        vitalsDirty = 1;
         break;
 
     case 50:
         // 1c3a
-        if (D_5c5a_actors[entity_c->actorIdx].tile < TILE_ACTOR_80)
+        if (actors[entity_c->actorIdx].tile < TILE_ACTOR_80)
         {
             CombatPoison(combatant, -1);
             HitEffectOnActor(combatant);
@@ -1863,18 +1863,18 @@ static void Regurgitate(int combatant)
     {
         if ((combatants[combatant].flags & COMBAT_FLAGS_PLAYER) != 0)
         {
-            ULTIMA_1850_PrintString(D_55a8_party[combatants[combatant].entityIdx].name);
+            PrintString(party[combatants[combatant].entityIdx].name);
         }
         else
         {
-            ULTIMA_1850_PrintString(enemyNames[combatants[combatant].entityIdx]);
+            PrintString(enemyNames[combatants[combatant].entityIdx]);
         }
 
-        ULTIMA_1850_PrintString(/*0x6f5e*/ " regurgitated!\n");
-        ULTIMA_223c_AudioWhiteNoise(1, 7000, 600);
+        PrintString(/*0x6f5e*/ " regurgitated!\n");
+        AudioWhiteNoise(1, 7000, 600);
 
         combatants[combatant].flags &= ~COMBAT_FLAGS_4;
 
-        D_5c5a_actors[combatants[combatant].actorIdx].animTile = D_5c5a_actors[combatants[combatant].actorIdx].tile;
+        actors[combatants[combatant].actorIdx].animTile = actors[combatants[combatant].actorIdx].tile;
     }
 }

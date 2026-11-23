@@ -20,16 +20,16 @@ void CastEffect(int level)
 {
     if (level < 9)
     {
-        ULTIMA_223c_AudioWhiteNoise(800, level * 0x640 + 8000, 700);
-        ULTIMA_0a70_GRAP_2d_SetPenColor(brightWhiteColor);
+        AudioWhiteNoise(800, level * 0x640 + 8000, 700);
+        GRAP_2d_SetPenColor(brightWhiteColor);
         GRAP_XorFillRect(8, 8, 0xb7, 0xb7);
-        ULTIMA_2192_AudioPulse(castFreq[level], 1, level * 4000 + 10000, castParam4Up[level], castStep[level]);
-        ULTIMA_2192_AudioPulse(castFreq[level], 1, level * 4000 + 10000, castParam4Down[level], -castStep[level]);
+        AudioPulse(castFreq[level], 1, level * 4000 + 10000, castParam4Up[level], castStep[level]);
+        AudioPulse(castFreq[level], 1, level * 4000 + 10000, castParam4Down[level], -castStep[level]);
         GRAP_XorFillRect(8, 8, 0xb7, 0xb7);
     }
     else
     {
-        ULTIMA_2192_AudioPulse(0x1180, 1, 65000, 300, 1);
+        AudioPulse(0x1180, 1, 65000, 300, 1);
     }
 }
 
@@ -38,21 +38,21 @@ int OnWho(void)
 {
     int member;
 
-    ULTIMA_1850_PrintString(/*0x94f4*/ "On who: ");
+    PrintString(/*0x94f4*/ "On who: ");
 
     member = SelectPlayer();
     if (member < 0)
     {
-        ULTIMA_1850_PrintString(/*0x94fe*/ "None!");
+        PrintString(/*0x94fe*/ "None!");
     }
     else
     {
-        ULTIMA_1850_PrintString(D_55a8_party[member].name);
+        PrintString(party[member].name);
     }
 
     if (GetCurrentTextX() != 0)
     {
-        ULTIMA_16ba_PrintChar('\n');
+        PrintChar('\n');
     }
 
     return member;
@@ -81,7 +81,7 @@ int SelectSpell(void)
 
     while (done_l == 0)
     {
-        letter_d = ToUpperChar(ULTIMA_266c_GetChar());
+        letter_d = ToUpperChar(GetChar());
         if (letter_d == 0x4a || letter_d == 0x4f)
         {}
         else if (letter_d >= 0x41 && letter_d <= 0x5a && count_i < 4)
@@ -90,12 +90,12 @@ int SelectSpell(void)
 
             if (GetCurrentTextX() + StringLength(mantraWords[letter_d - 'A']) > 0xd)
             {
-                ULTIMA_16ba_PrintChar('\n');
+                PrintChar('\n');
             }
 
             columns[count_i] = GetCurrentTextX();
-            ULTIMA_1850_PrintString(mantraWords[letter_d - 'A']);
-            ULTIMA_16ba_PrintChar(' ');
+            PrintString(mantraWords[letter_d - 'A']);
+            PrintChar(' ');
             count_i++;
         }
         else
@@ -110,7 +110,7 @@ int SelectSpell(void)
                     if (GetCurrentTextX() == 0)
                     {
                         // NOTE: FMT
-                        //ULTIMA_16ba_PrintChar(' ');
+                        //PrintChar(' ');
                         SetTextPosition(columns[count_i], GetCurrentTextY() - 1);
                     }
                     else
@@ -122,7 +122,7 @@ int SelectSpell(void)
 
                     for (index_l = 0; index_l < nameLength; index_l++)
                     {
-                        ULTIMA_16ba_PrintChar(' ');
+                        PrintChar(' ');
                     }
 
                     SetTextPosition(columns[count_i], GetCurrentTextY());
@@ -205,7 +205,7 @@ int SelectSpell(void)
     }
     else
     {
-        ULTIMA_16ba_PrintChar('\n');
+        PrintChar('\n');
         if (spell < 0)
         {
             spell = -2;
@@ -217,51 +217,51 @@ int SelectSpell(void)
 }
 
 // "Direction-": reads an arrow key (Space passes). Leaves the cell beside the party (in combat, beside the active combatant)
-// in D_5876_tempX and D_5878_tempY. Returns the key, 0 for Pass.
+// in tempX and tempY. Returns the key, 0 for Pass.
 int AskDirection(void)
 {
     int key;
     bool chosen;
 
-    if (D_5893_mapId > 0x7f)
+    if (mapId > 0x7f)
     {
-        D_5876_tempX = combatants[curCombatant].x;
-        D_5878_tempY = combatants[curCombatant].y;
+        tempX = combatants[curCombatant].x;
+        tempY = combatants[curCombatant].y;
     }
     else
     {
-        D_5876_tempX = D_5896_mapX;
-        D_5878_tempY = D_5897_mapY;
+        tempX = D_5896_mapX;
+        tempY = D_5897_mapY;
     }
 
     // 033e
-    ULTIMA_1850_PrintString(/*0x9504*/ "Direction-");
+    PrintString(/*0x9504*/ "Direction-");
     chosen = 0;
 
     do
     {
-        key = ULTIMA_266c_GetChar();
+        key = GetChar();
         chosen = 1;
         switch (key)
         {
         case U5_KEY_UP:
-            ULTIMA_1850_PrintString(/*0x9510*/ "North\n");
-            D_5878_tempY--;
+            PrintString(/*0x9510*/ "North\n");
+            tempY--;
             break;
         case U5_KEY_RIGHT:
-            ULTIMA_1850_PrintString(/*0x9518*/ "East\n");
-            D_5876_tempX++;
+            PrintString(/*0x9518*/ "East\n");
+            tempX++;
             break;
         case U5_KEY_DOWN:
-            ULTIMA_1850_PrintString(/*0x951e*/ "South\n");
-            D_5878_tempY++;
+            PrintString(/*0x951e*/ "South\n");
+            tempY++;
             break;
         case U5_KEY_LEFT:
-            ULTIMA_1850_PrintString(/*0x9526*/ "West\n");
-            D_5876_tempX--;
+            PrintString(/*0x9526*/ "West\n");
+            tempX--;
             break;
         case U5_KEY_SPACE:
-            ULTIMA_1850_PrintString(/*0x952c*/ "Pass\n");
+            PrintString(/*0x952c*/ "Pass\n");
             key = 0;
             break;
         default:
@@ -278,16 +278,16 @@ int HealMember(int member)
 {
     int healed;
 
-    if (D_55a8_party[member].status == STATUS_DEAD)
+    if (party[member].status == STATUS_DEAD)
     {
         healed = 0;
     }
     else
     {
-        IncreaseInt(&D_55a8_party[member].hp, Random1To30(), D_55a8_party[member].maxHp);
+        IncreaseInt(&party[member].hp, Random1To30(), party[member].maxHp);
 
         healed = 1;
-        D_a9fa_vitalsDirty = 1;
+        vitalsDirty = 1;
     }
 
     return healed;
@@ -311,27 +311,27 @@ void ChangeWindDirection(int direction, int fromScroll)
         {
         case DIR_UP:
             // 0448
-            ULTIMA_2e96_SetWindDirection(1);
+            SetWindDirection(1);
             break;
 
         case DIR_DOWN:
             // 0452
-            ULTIMA_2e96_SetWindDirection(2);
+            SetWindDirection(2);
             break;
 
         case DIR_RIGHT:
             // 0458
-            ULTIMA_2e96_SetWindDirection(3);
+            SetWindDirection(3);
             break;
 
         case DIR_LEFT:
             // 045e
-            ULTIMA_2e96_SetWindDirection(4);
+            SetWindDirection(4);
             break;
 
         case 0:
             // 0464
-            ULTIMA_2e96_SetWindDirection(0);
+            SetWindDirection(0);
             break;
         }
     }
@@ -342,7 +342,7 @@ void WisAnYlem(void)
 {
     int frame;
 
-    BuildView(-1, D_5896_mapX - D_589b_mapOriginX, D_5897_mapY - D_589c_mapOriginY, 0x20);
+    BuildView(-1, D_5896_mapX - mapOriginX, D_5897_mapY - mapOriginY, 0x20);
 
     for (frame = 0; frame < 0x14; frame++)
     {
@@ -356,7 +356,7 @@ void WisAnYlem(void)
         WaitTicks(1);
     }
 
-    ULTIMA_5910_UpdateFrame();
+    UpdateFrame();
 }
 
 // CHECKED (code structure)
@@ -384,30 +384,30 @@ int KalXenCorp(int fromScroll)
     tries = 0;
     while (tries < 8)
     {
-        if (RandomCell() == 0 || IsCellFree(TILE_ACTOR_D8, D_5876_tempX, D_5878_tempY) == 0 || *ULTIMA_4402_GetTileAddr(D_5876_tempX, D_5878_tempY) == 0xff)
+        if (RandomCell() == 0 || IsCellFree(TILE_ACTOR_D8, tempX, tempY) == 0 || *GetTileAddr(tempX, tempY) == 0xff)
         {
             tries++;
             continue;
         }
 
         // 0524
-        daemon = PlaceCombatant(0x26, 0, D_5876_tempX, D_5878_tempY, D_5895_mapLevel);
+        daemon = PlaceCombatant(0x26, 0, tempX, tempY, D_5895_mapLevel);
         if (daemon < 0)
         {
             break;
         }
 
         // 054c
-        ULTIMA_2192_AudioPulse(0xac8, 1, 12000, 500, 5);
-        daemonActor_g = &D_5c5a_actors[combatants[daemon].actorIdx];
+        AudioPulse(0xac8, 1, 12000, 500, 5);
+        daemonActor_g = &actors[combatants[daemon].actorIdx];
         daemonActor_g->tile = daemonActor_g->animTile = TILE_ACTOR_CIRCLE;
-        ULTIMA_1068_RevealTile(0x1d8, D_5876_tempX, D_5878_tempY);
+        ULTIMA_1068_RevealTile(0x1d8, tempX, tempY);
         daemonActor_g->tile = daemonActor_g->animTile = TILE_ACTOR_D8;
 
         if (fromScroll == 0 && Random1To30() >= QueryStat(curCombatant, QUERY_STAT_INTEL))
         {
             // 05b2
-            ULTIMA_1850_PrintString(/*0x9532*/ "Oops...\n");
+            PrintString(/*0x9532*/ "Oops...\n");
             result_i = -1;
         }
         else
@@ -440,11 +440,11 @@ int Resurrect(int memberIdx, int mode)
     {
         result_k = -1;
     }
-    else if (D_55a8_party[memberIdx].status != STATUS_DEAD)
+    else if (party[memberIdx].status != STATUS_DEAD)
     {
         if (mode != 0)
         {
-            ULTIMA_1850_PrintString(/*0x953c*/ "Not dead!\n");
+            PrintString(/*0x953c*/ "Not dead!\n");
         }
 
         result_k = 0;
@@ -452,7 +452,7 @@ int Resurrect(int memberIdx, int mode)
     else
     {
         // 061a
-        member = &D_55a8_party[memberIdx];
+        member = &party[memberIdx];
 
         member->status = STATUS_GOOD;
         member->hp = 1;
@@ -469,10 +469,10 @@ int Resurrect(int memberIdx, int mode)
             break;
         }
 
-        if (D_5888_karma < 0x62)
+        if (karma < 0x62)
         {
             // NOT MATCHING (pointer)
-            member->exp = member->exp * (s32)D_5888_karma / 100;
+            member->exp = member->exp * (s32)karma / 100;
         }
 
         newLevel_g = 1;
@@ -494,7 +494,7 @@ int Resurrect(int memberIdx, int mode)
         }
 
         result_k = 1;
-        D_a9fa_vitalsDirty = 1;
+        vitalsDirty = 1;
     }
 
     return result_k;
@@ -504,17 +504,17 @@ int Resurrect(int memberIdx, int mode)
 void PrintPosition(void)
 {
     SelectCharset(1);
-    ULTIMA_16ba_PrintChar('\n');
-    ULTIMA_16ba_PrintChar(((D_5897_mapY & 0xf0) >> 4) + 0x41);
-    ULTIMA_16ba_PrintChar('\'');
-    ULTIMA_16ba_PrintChar((D_5897_mapY & 0xf) + 0x41);
-    ULTIMA_1850_PrintString(/*0x9548*/ "\", ");
-    ULTIMA_16ba_PrintChar(((D_5896_mapX & 0xf0) >> 4) + 0x41);
-    ULTIMA_16ba_PrintChar('\'');
-    ULTIMA_16ba_PrintChar((D_5896_mapX & 0xf) + 0x41);
-    ULTIMA_16ba_PrintChar('\"');
+    PrintChar('\n');
+    PrintChar(((D_5897_mapY & 0xf0) >> 4) + 0x41);
+    PrintChar('\'');
+    PrintChar((D_5897_mapY & 0xf) + 0x41);
+    PrintString(/*0x9548*/ "\", ");
+    PrintChar(((D_5896_mapX & 0xf0) >> 4) + 0x41);
+    PrintChar('\'');
+    PrintChar((D_5896_mapX & 0xf) + 0x41);
+    PrintChar('\"');
     SelectCharset(0);
-    ULTIMA_16ba_PrintChar('\n');
+    PrintChar('\n');
 }
 
 // CHECKED (07b2 block)
@@ -530,7 +530,7 @@ int InExPor(void)
         return -1;
     }
 
-    tilePtr_k = ULTIMA_4402_GetTileAddr(D_5876_tempX, D_5878_tempY);
+    tilePtr_k = GetTileAddr(tempX, tempY);
     result = 0;
 
     switch (*tilePtr_k)
@@ -538,14 +538,14 @@ int InExPor(void)
     case TILE_MAP_97:
         // 07a0
         *tilePtr_k = TILE_MAP_DOOR_B8;
-        D_24e6_viewDirty |= 2;
+        viewDirty |= 2;
         result = 1;
         break;
 
     case TILE_MAP_98:
         // 07b2
         *tilePtr_k = TILE_MAP_DOOR_BA;
-        D_24e6_viewDirty |= 2;
+        viewDirty |= 2;
         result = 1;
         break;
     }
@@ -564,7 +564,7 @@ int AnGrav(int withEffect)
     int dx;
     int dy;
 
-    if (D_5893_mapId < 0x80)
+    if (mapId < 0x80)
     {
         if (withEffect != 0)
         {
@@ -583,7 +583,7 @@ int AnGrav(int withEffect)
         if ((*cellPtr & 0xf0) == 0x80)
         {
             *cellPtr &= 8;
-            ULTIMA_1850_PrintString(/*0x954c*/ "Field destroyed!\n");
+            PrintString(/*0x954c*/ "Field destroyed!\n");
             result_i = -1;
             // NOT MATCHING: 085d: nop (not aligned?)
         }
@@ -608,8 +608,8 @@ int AnGrav(int withEffect)
         result_i = 0;
         for (actorIdx_h = 0; actorIdx_h < 0x20; actorIdx_h++)
         {
-            if ((D_5c5a_actors[actorIdx_h].tile & 0xfc) == TILE_ACTOR_E8 && D_5876_tempX == D_5c5a_actors[actorIdx_h].x &&
-                D_5878_tempY == D_5c5a_actors[actorIdx_h].y)
+            if ((actors[actorIdx_h].tile & 0xfc) == TILE_ACTOR_E8 && tempX == actors[actorIdx_h].x &&
+                tempY == actors[actorIdx_h].y)
             {
                 result_i = 1;
                 SetActor(0, 0, 0, 0, 0, 0, actorIdx_h);
@@ -634,7 +634,7 @@ void SetSpellStatus(int icon, int turns, int level)
 
     CastEffect(level);
 
-    ULTIMA_2900_UpdateVitalsDisplay();
+    UpdateVitalsDisplay();
 }
 
 //
@@ -749,13 +749,13 @@ static void ShrineOfVirtue(void)
     }
 
     // 09a1
-    D_5c5a_actors[0].tile = D_5c5a_actors[0].animTile = TILE_ACTOR_BEGGAR;
-    ULTIMA_5910_UpdateFrame();
+    actors[0].tile = actors[0].animTile = TILE_ACTOR_BEGGAR;
+    UpdateFrame();
     // "...and thou dost kneel before the Altar.\n\n"
-    ULTIMA_1850_PrintString((char*)&scratch[0x36d]);
+    PrintString((char*)&scratch[0x36d]);
     WaitFrames(10);
     // "Upon what virtue dost thou meditate?\n\n:"
-    ULTIMA_1850_PrintString((char*)&scratch[0x398]);
+    PrintString((char*)&scratch[0x398]);
 
     GetString(D_bd08_answer, 0xc);
 
@@ -773,12 +773,12 @@ static void ShrineOfVirtue(void)
 
     // 09ee
     WaitFrames(6);
-    ULTIMA_16ba_PrintChar('\n');
+    PrintChar('\n');
 
     for (step_e = 0; step_e < 3; step_e++)
     {
         // 0a0c
-        ULTIMA_1850_PrintString(/*0x958e*/ "\nMantra:");
+        PrintString(/*0x958e*/ "\nMantra:");
         GetString(D_bd08_answer, 0xc);
         if (D_bd08_answer[0] == '\0')
         {
@@ -796,13 +796,13 @@ static void ShrineOfVirtue(void)
     }
 
     // NOTE: FMT addition
-    //ULTIMA_16ba_PrintChar('\n');
+    //PrintChar('\n');
 
     // 0a5e
     if (!allRight)
     {
         // "\n\nThine thoughts are unfocused.\n"
-        ULTIMA_1850_PrintString((char*)&scratch[0x3c0]);
+        PrintString((char*)&scratch[0x3c0]);
     }
     else
     {
@@ -811,24 +811,24 @@ static void ShrineOfVirtue(void)
         {
             // TODO: 58cc, 58ce: u8?
             *((byte*)&questsOrdained) |= (1 << virtue_c);
-            ULTIMA_1850_PrintString((char*)&scratch[0x3e1]);
+            PrintString((char*)&scratch[0x3e1]);
 
-            D_5c5a_actors[0].tile = D_5c5a_actors[0].animTile = TILE_ACTOR_AVATAR;
+            actors[0].tile = actors[0].animTile = TILE_ACTOR_AVATAR;
 
-            ULTIMA_266c_GetChar();
+            GetChar();
             // "\n\nThe Altar speaks and a Quest is ordained! "
-            ULTIMA_1850_PrintString((char*)&scratch[0x40e]);
-            ULTIMA_1850_PrintString((char*)&scratch[questTextPos[virtue_c]]);
-            ULTIMA_1850_PrintString(/*0x9598*/ "\"\n");
-            ULTIMA_266c_GetChar();
+            PrintString((char*)&scratch[0x40e]);
+            PrintString((char*)&scratch[questTextPos[virtue_c]]);
+            PrintString(/*0x9598*/ "\"\n");
+            GetChar();
             // "\n\"Return again when thy Quest is done!\"\n"
-            ULTIMA_1850_PrintString((char*)&scratch[0x44b]);
+            PrintString((char*)&scratch[0x44b]);
 
             // 0ac6: a do-while, so the loop ends jb top; jmp end
             step_e = 0;
             do
             {
-                ULTIMA_2192_AudioPulse(shrineFreq[step_e], 1, shrineParam3[step_e], shrineParam4[step_e], shrineParam5[step_e]);
+                AudioPulse(shrineFreq[step_e], 1, shrineParam3[step_e], shrineParam4[step_e], shrineParam5[step_e]);
                 step_e++;
             } while (step_e < 7);
         }
@@ -843,28 +843,28 @@ static void ShrineOfVirtue(void)
             {
                 // 0b63
                 // "\n\nOffer how many hundredweights gold? "
-                ULTIMA_1850_PrintString((char*)&scratch[0x474]);
+                PrintString((char*)&scratch[0x474]);
 
                 // 0b6a
-                while ((unsigned)(hundreds_b = ULTIMA_266c_GetChar()) < 0x30 || (unsigned)hundreds_b > 0x39)
+                while ((unsigned)(hundreds_b = GetChar()) < 0x30 || (unsigned)hundreds_b > 0x39)
                     ;
 
                 // 0b26 (OK)
-                ULTIMA_16ba_PrintChar(hundreds_b);
+                PrintChar(hundreds_b);
                 hundreds_b -= 0x30;
                 if (hundreds_b == 0)
                 {
                     // 0b2f
-                    ULTIMA_1850_PrintString(/*0x959c*/ " gp\n");
+                    PrintString(/*0x959c*/ " gp\n");
                     return; // -> 0d1d
                 }
 
                 // 0b40 (OK)
-                ULTIMA_1850_PrintString(/*0x95a2*/ "00 gp\n\n");
+                PrintString(/*0x95a2*/ "00 gp\n\n");
                 if ((int)gold < hundreds_b * 100)
                 {
                     // "Thou hast not that much gold!"
-                    ULTIMA_1850_PrintString((char*)&scratch[0x49b]);
+                    PrintString((char*)&scratch[0x49b]);
                 }
                 else
                 {
@@ -877,31 +877,31 @@ static void ShrineOfVirtue(void)
 
             // 0b82 (OK)
             gold -= hundreds_b * 100;
-            ULTIMA_2900_UpdateVitalsDisplay();
-            D_5888_karma += hundreds_b;
-            if (D_5888_karma > 99)
+            UpdateVitalsDisplay();
+            karma += hundreds_b;
+            if (karma > 99)
             {
-                D_5888_karma = 99;
+                karma = 99;
             }
 
             // 0ba1 (OK)
             SelectCharset(1);
-            ULTIMA_1850_PrintString(/*0x95aa*/ "ALAKAZAM");
+            PrintString(/*0x95aa*/ "ALAKAZAM");
             SelectCharset(0);
-            ULTIMA_1850_PrintString(/*0x95b4*/ "!\n");
-            ULTIMA_0a70_GRAP_2d_SetPenColor(brightWhiteColor);
+            PrintString(/*0x95b4*/ "!\n");
+            GRAP_2d_SetPenColor(brightWhiteColor);
             GRAP_XorFillRect(8, 8, 0xb7, 0xb7);
 
             // 0bd3 (OK)
             for (step_e = 2000; step_e < 25000; step_e += 0x32)
             {
-                ULTIMA_2192_AudioPulse(0xa8c, 1, 200, step_e, 0);
+                AudioPulse(0xa8c, 1, 200, step_e, 0);
             }
 
             // 0bf5 (OK)
             for (step_e = 25000; step_e > 2000; step_e -= 0x32)
             {
-                ULTIMA_2192_AudioPulse(0xa8c, 1, 200, step_e, 0);
+                AudioPulse(0xa8c, 1, 200, step_e, 0);
             }
         }
         else
@@ -910,69 +910,69 @@ static void ShrineOfVirtue(void)
             *((byte*)&questsOrdained) &= (1 << virtue_c & (byte)questsOrdained) ^ 0xff;
 
             // "\n\nA thunderous voice booms:\n\n\"WELL DONE!\"\n\n"
-            ULTIMA_1850_PrintString((char*)&scratch[0x4b9]);
-            ULTIMA_0a70_GRAP_2d_SetPenColor(brightWhiteColor);
+            PrintString((char*)&scratch[0x4b9]);
+            GRAP_2d_SetPenColor(brightWhiteColor);
             GRAP_XorFillRect(8, 8, 0xb7, 0xb7);
 
             // 0c47 (OK)
             for (step_e = 2000; step_e < 25000; step_e += 0x32)
             {
-                ULTIMA_2192_AudioPulse(0xc1c, 1, 0x96, step_e, 0);
+                AudioPulse(0xc1c, 1, 0x96, step_e, 0);
             }
 
             // 0c69 (OK)
             for (step_e = 25000; step_e > 2000; step_e -= 0x32)
             {
-                ULTIMA_2192_AudioPulse(0xc1c, 1, 0x96, step_e, 0);
+                AudioPulse(0xc1c, 1, 0x96, step_e, 0);
             }
 
-            ULTIMA_3072_ShakeScreen();
-            D_5888_karma += 3;
-            if (D_5888_karma > 99)
+            ShakeScreen();
+            karma += 3;
+            if (karma > 99)
             {
-                D_5888_karma = 99;
+                karma = 99;
             }
 
             // 0c9c (OK)
             if (strengthGain[virtue_c] != 0)
             {
-                D_55a8_party[0].str++;
-                if (D_55a8_party[0].str > 0x1e)
+                party[0].str++;
+                if (party[0].str > 0x1e)
                 {
-                    D_55a8_party[0].str = 0x1e;
+                    party[0].str = 0x1e;
                 }
 
-                ULTIMA_1850_PrintString(/*0x95b8*/ "Strength +1\n");
+                PrintString(/*0x95b8*/ "Strength +1\n");
             }
 
             if (dexterityGain[virtue_c] != 0)
             {
-                D_55a8_party[0].dex++;
-                if (D_55a8_party[0].dex > 0x1e)
+                party[0].dex++;
+                if (party[0].dex > 0x1e)
                 {
-                    D_55a8_party[0].dex = 0x1e;
+                    party[0].dex = 0x1e;
                 }
 
-                ULTIMA_1850_PrintString(/*0x95c6*/ "Dexterity +1\n");
+                PrintString(/*0x95c6*/ "Dexterity +1\n");
             }
 
             if (intelligenceGain[virtue_c] != 0)
             {
-                D_55a8_party[0].intel++;
-                if (D_55a8_party[0].intel > 0x1e)
+                party[0].intel++;
+                if (party[0].intel > 0x1e)
                 {
-                    D_55a8_party[0].intel = 0x1e;
+                    party[0].intel = 0x1e;
                 }
 
-                ULTIMA_1850_PrintString(/*0x95d4*/ "Intelligence +1\n");
+                PrintString(/*0x95d4*/ "Intelligence +1\n");
             }
 
             if (virtue_c == 7)
             {
-                D_5888_karma += 3;
-                if (D_5888_karma > 99)
+                karma += 3;
+                if (karma > 99)
                 {
-                    D_5888_karma = 99;
+                    karma = 99;
                 }
             }
         }
@@ -988,11 +988,11 @@ static void Codex(void)
 {
     int virtue;
 
-    ULTIMA_266c_GetChar();
-    ULTIMA_1850_PrintString((char*)&scratch[0x4e5]);
-    ULTIMA_266c_GetChar();
-    ULTIMA_1850_PrintString((char*)&scratch[0x515]);
-    ULTIMA_266c_GetChar();
+    GetChar();
+    PrintString((char*)&scratch[0x4e5]);
+    GetChar();
+    PrintString((char*)&scratch[0x515]);
+    GetChar();
 
     for (virtue = 0; virtue < 8; virtue++)
     {
@@ -1002,47 +1002,47 @@ static void Codex(void)
 
     if (virtue == 8)
     {
-        ULTIMA_1850_PrintString((char*)&scratch[0x53e]);
+        PrintString((char*)&scratch[0x53e]);
     }
     else
     {
         *((byte*)&questsDone) |= 1 << virtue;
 
-        ULTIMA_16ba_PrintChar('\"');
-        ULTIMA_1850_PrintString((char*)&scratch[codexTextPos[virtue]]);
-        ULTIMA_1850_PrintString(/*0x95e6*/ "\"\n\n");
-        ULTIMA_266c_GetChar();
+        PrintChar('\"');
+        PrintString((char*)&scratch[codexTextPos[virtue]]);
+        PrintString(/*0x95e6*/ "\"\n\n");
+        GetChar();
 
         if ((byte)questsDone == 0xff)
         {
-            ULTIMA_0a70_GRAP_2d_SetPenColor(redColor);
+            GRAP_2d_SetPenColor(redColor);
             GRAP_XorFillRect(8, 8, 0xb7, 0xb7);
-            ULTIMA_3072_ShakeScreen();
-            ULTIMA_0a70_GRAP_2d_SetPenColor(brightWhiteColor);
+            ShakeScreen();
+            GRAP_2d_SetPenColor(brightWhiteColor);
             GRAP_XorFillRect(8, 8, 0xb7, 0xb7);
-            ULTIMA_3072_ShakeScreen();
-            ULTIMA_0a70_GRAP_2d_SetPenColor(redColor);
+            ShakeScreen();
+            GRAP_2d_SetPenColor(redColor);
             GRAP_XorFillRect(8, 8, 0xb7, 0xb7);
-            ULTIMA_3072_ShakeScreen();
-            ULTIMA_1850_PrintString((char*)&scratch[0x555]);
-            ULTIMA_266c_GetChar();
-            ULTIMA_1850_PrintString(/*0x95ea*/ "Thou dost read:\n\n");
+            ShakeScreen();
+            PrintString((char*)&scratch[0x555]);
+            GetChar();
+            PrintString(/*0x95ea*/ "Thou dost read:\n\n");
             SelectCharset(1);
-            ULTIMA_1850_PrintString((char*)&scratch[0x57f]);
+            PrintString((char*)&scratch[0x57f]);
             SelectCharset(0);
-            ULTIMA_266c_GetChar();
+            GetChar();
             SelectCharset(1);
-            ULTIMA_1850_PrintString((char*)&scratch[0x5d1]);
+            PrintString((char*)&scratch[0x5d1]);
             SelectCharset(0);
-            ULTIMA_266c_GetChar();
+            GetChar();
             SelectCharset(1);
-            ULTIMA_1850_PrintString((char*)&scratch[0x60c]);
+            PrintString((char*)&scratch[0x60c]);
             SelectCharset(0);
-            ULTIMA_266c_GetChar();
+            GetChar();
             SelectCharset(1);
-            ULTIMA_1850_PrintString((char*)&scratch[0x680]);
+            PrintString((char*)&scratch[0x680]);
             SelectCharset(0);
-            ULTIMA_266c_GetChar();
+            GetChar();
         }
     }
 }
@@ -1051,7 +1051,7 @@ static void Codex(void)
 static void Footstep(void)
 {
     WaitFrames(1);
-    ULTIMA_433e_AudioFootstep();
+    AudioFootstep();
     WaitFrames(4);
 }
 
@@ -1068,29 +1068,29 @@ void Shrine(void)
 
     urnCount_f = 0;
 
-    placeTile = *ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY);
-    D_24e6_viewDirty = 1;
-    D_bd15_savedMapId = D_5893_mapId;
-    D_5893_mapId = 0xff;
+    placeTile = *GetTileAddr(D_5896_mapX, D_5897_mapY);
+    viewDirty = 1;
+    D_bd15_savedMapId = mapId;
+    mapId = 0xff;
     curCombatant = 0xff;
 
     // 0eb3: NOT MATCHING
     for (row = 0; row < 0x20; row++)
     {
-        savedActors[row] = D_5c5a_actors[row];
-        D_5c5a_actors[row].tile = 0;
+        savedActors[row] = actors[row];
+        actors[row].tile = 0;
     }
 
     if (placeTile != TILE_MAP_CODEX)
     {
-        ULTIMA_256e_ReadFileFromDisk(/*0x95fc*/ "MISCMAPS.DAT", viewActors, 0xb0, 0xb0);
+        ReadFileFromDisk(/*0x95fc*/ "MISCMAPS.DAT", viewActors, 0xb0, 0xb0);
     }
     else
     {
-        ULTIMA_256e_ReadFileFromDisk(/*0x960a*/ "MISCMAPS.DAT", viewActors, 0xb0, 0x160);
+        ReadFileFromDisk(/*0x960a*/ "MISCMAPS.DAT", viewActors, 0xb0, 0x160);
     }
 
-    ULTIMA_256e_ReadFileFromDisk(/*0x9618*/ "MISCMSG.DAT", scratch, 2000, 0x3ab);
+    ReadFileFromDisk(/*0x9618*/ "MISCMSG.DAT", scratch, 2000, 0x3ab);
 
     // 0f0c
     for (row = 0; row < 0xb; row++)
@@ -1101,12 +1101,12 @@ void Shrine(void)
         }
     }
 
-    ULTIMA_5910_UpdateFrame();
+    UpdateFrame();
 
     // 0f44 (NOT MATCHING)
     for (row = 1; row < 0x10; row++)
     {
-        if (D_55a8_party[row].innMapId == 0x7f)
+        if (party[row].innMapId == 0x7f)
         {
             urnCount_f++;
         }
@@ -1121,12 +1121,12 @@ void Shrine(void)
     if (placeTile != TILE_MAP_CODEX)
     {
         // "\nThou dost approach the tranquil Shrine...\n\n"
-        ULTIMA_1850_PrintString((char*)&scratch[0x6ae]);
+        PrintString((char*)&scratch[0x6ae]);
     }
     else
     {
         // "\nThe Codex of Ultimate Wisdom lies before thee..."
-        ULTIMA_1850_PrintString((char*)&scratch[0x6db]);
+        PrintString((char*)&scratch[0x6db]);
     }
 
     // 0f7b (OK)
@@ -1135,37 +1135,37 @@ void Shrine(void)
         Footstep();
     }
 
-    D_5c5a_actors[0].tile = D_5c5a_actors[0].animTile = TILE_ACTOR_AVATAR;
-    D_5c5a_actors[0].x = 5;
-    D_5c5a_actors[0].y = 10;
-    D_5c5a_actors[0].z = D_5895_mapLevel;
+    actors[0].tile = actors[0].animTile = TILE_ACTOR_AVATAR;
+    actors[0].x = 5;
+    actors[0].y = 10;
+    actors[0].z = D_5895_mapLevel;
 
     Footstep();
     if (placeTile == TILE_MAP_CODEX && urnCount_f > 0)
     {
-        ULTIMA_1850_PrintString(/*0x9624*/ "\n\nThou dost see\n");
+        PrintString(/*0x9624*/ "\n\nThou dost see\n");
         if (urnCount_f == 1)
         {
-            ULTIMA_1850_PrintString(/*0x9636*/ "an urn marked:\n\n");
+            PrintString(/*0x9636*/ "an urn marked:\n\n");
         }
         else
         {
-            ULTIMA_1850_PrintString(/*0x9648*/ "urns marked:\n\n");
+            PrintString(/*0x9648*/ "urns marked:\n\n");
         }
 
         // 0fcf (OK)
         for (row = 1; row < 0x10; row++)
         {
-            if (D_55a8_party[row].innMapId == 0x7f)
+            if (party[row].innMapId == 0x7f)
             {
                 column = 0;
-                while (D_55a8_party[row].name[column] != '\0')
+                while (party[row].name[column] != '\0')
                 {
-                    ULTIMA_16ba_PrintChar(ToUpperChar((byte)D_55a8_party[row].name[column++]));
+                    PrintChar(ToUpperChar((byte)party[row].name[column++]));
                 }
 
                 // 101f
-                ULTIMA_16ba_PrintChar('\n');
+                PrintChar('\n');
             }
         }
     }
@@ -1176,7 +1176,7 @@ void Shrine(void)
     for (row = 0; row < stepsIn_i; row++)
     {
         // 105c
-        D_5c5a_actors[0].y--;
+        actors[0].y--;
         Footstep();
     }
 
@@ -1191,15 +1191,15 @@ void Shrine(void)
     }
 
     // 1075
-    D_5c5a_actors[0].tile = D_5c5a_actors[0].animTile = TILE_ACTOR_AVATAR;
+    actors[0].tile = actors[0].animTile = TILE_ACTOR_AVATAR;
     WaitFrames(1);
-    for (row = D_5c5a_actors[0].y; row < 10; row++)
+    for (row = actors[0].y; row < 10; row++)
     {
-        D_5c5a_actors[0].y++;
+        actors[0].y++;
         Footstep();
     }
 
-    D_5c5a_actors[0].tile = D_5c5a_actors[0].x = D_5c5a_actors[0].y = 0;
+    actors[0].tile = actors[0].x = actors[0].y = 0;
 
     for (row = 0; row < 4; row++)
     {
@@ -1211,13 +1211,13 @@ void Shrine(void)
     // 10c6 (NOT MATCHING)
     for (row = 0; row < 0x20; row++)
     {
-        D_5c5a_actors[row] = savedActors[row];
+        actors[row] = savedActors[row];
     }
 
     // 10e7
-    D_5893_mapId = D_bd15_savedMapId;
-    ULTIMA_4f7c_AdvanceTime(0x10);
-    ULTIMA_5e4a_BuildLightMap();
+    mapId = D_bd15_savedMapId;
+    AdvanceTime(0x10);
+    BuildLightMap();
 }
 
 //
@@ -1231,9 +1231,9 @@ void SaveGame(void)
     byte local_4;
     byte local_6_an;
 
-    ULTIMA_1850_PrintString(/*0x9658*/ "\nSave game? ");
+    PrintString(/*0x9658*/ "\nSave game? ");
 
-    while ((local_6_an = ULTIMA_266c_GetChar()) != 'Y')
+    while ((local_6_an = GetChar()) != 'Y')
     {
         if (local_6_an == 'N')
             break;
@@ -1241,20 +1241,20 @@ void SaveGame(void)
 
     if (local_6_an == 'N')
     {
-        ULTIMA_1850_PrintString(/*0x9666*/ "No\n");
+        PrintString(/*0x9666*/ "No\n");
     }
     else
     {
-        ULTIMA_1850_PrintString(/*0x966a*/ "Yes\nSaving...\n");
+        PrintString(/*0x966a*/ "Yes\nSaving...\n");
         local_4 = curDisk[0];
         if (curDisk[0] != 5)
         {
             SwitchDisks(1);
         }
 
-        ULTIMA_256e_ReadFileFromDisk(/*0x967a*/ "UNDER.OOL", scratch + 0x100, 0x100, 0);
+        ReadFileFromDisk(/*0x967a*/ "UNDER.OOL", scratch + 0x100, 0x100, 0);
         SwitchDisks(1);
-        ULTIMA_256e_ReadFileFromDisk(/*0x9684*/ "BRIT.OOL", scratch, 0x100, 0);
+        ReadFileFromDisk(/*0x9684*/ "BRIT.OOL", scratch, 0x100, 0);
         if (local_4 != 1)
         {
             WriteFileToDisk(/*0x968e*/ "UNDER.OOL", scratch + 0x100, 0x100);
@@ -1264,7 +1264,7 @@ void SaveGame(void)
         WriteFileToDisk(/*0x9698*/ "SAVED.GAM", &saveStart, ((int)&saveEnd - (int)&saveStart) /*0x1060*/);
         WriteFileToDisk(/*0x96a2*/ "SAVED.OOL", scratch, 0x200);
         SwitchDisks(local_4);
-        ULTIMA_1850_PrintString(/*0x96ac*/ "Done.\n");
+        PrintString(/*0x96ac*/ "Done.\n");
     }
 }
 

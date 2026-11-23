@@ -62,7 +62,7 @@ static void ShowEndScreens(void)
         GRAP_0f_SelectPage(1);
 
         promptMode = 2;
-        ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
+        PrintChar(CTRL_CHAR_CLEAR_WINDOW);
 
         if (hasBanner[screen] == 1)
         {
@@ -99,7 +99,7 @@ static void ShowEndScreens(void)
         D_5156_penX = D_3de2_startX[screen];
         D_5158_penY = D_3de8_startY[screen];
 
-        ULTIMA_256e_ReadFileFromDisk(/*0x81fe*/ "END.DAT", scratch, 2000, textOffset[screen]);
+        ReadFileFromDisk(/*0x81fe*/ "END.DAT", scratch, 2000, textOffset[screen]);
         DrawJustifiedText(fontImage, scratch); // 7ce6 -> 1778:0566
 
         if (screen != 0)
@@ -123,7 +123,7 @@ static void ShowEndScreens(void)
         ;
 
     GRAP_0f_SelectPage(1);
-    ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
+    PrintChar(CTRL_CHAR_CLEAR_WINDOW);
 
     // a48b
     do
@@ -153,7 +153,7 @@ static void AppendToLine(char* text)
 
     if (lineBuf[lineLen - 1] == '\n')
     {
-        ULTIMA_1850_PrintString(lineBuf);
+        PrintString(lineBuf);
         lineLen = 0;
     }
 }
@@ -291,9 +291,9 @@ static void PrintCertificate(void)
     int days;
 
     SetTextPosition(0, 1);
-    ULTIMA_16ba_PrintChar(CTRL_CHAR_TOGGLE_INVERSION);
-    ULTIMA_16ba_PrintChar(CTRL_CHAR_CENTER_TEXT);
-    ULTIMA_1850_PrintString(/*0x8332*/ "Be it known that on\n");
+    PrintChar(CTRL_CHAR_TOGGLE_INVERSION);
+    PrintChar(CTRL_CHAR_CENTER_TEXT);
+    PrintString(/*0x8332*/ "Be it known that on\n");
     lineLen = 0;
     AppendToLine(/*0x8348*/ "the ");
     SpellOrdinal(D_587e_day);
@@ -301,24 +301,24 @@ static void PrintCertificate(void)
     AppendToLine(/*0x8358*/ "the ");
     SpellOrdinal(D_587d_month);
     AppendToLine(/*0x835e*/ " Month\n");
-    ULTIMA_1850_PrintString(/*0x8366*/ "of the Year\n");
+    PrintString(/*0x8366*/ "of the Year\n");
     SpellNumber((s16)year / 100);
     AppendToLine(/*0x8374*/ " Hundred\n");
     SpellNumber((s16)year % 100);
     AppendToLine(/*0x837e*/ "\n\n");
-    AppendToLine(D_55a8_party[0].name);
+    AppendToLine(party[0].name);
     AppendToLine(/*0x8382*/ " the Avatar\n\n");
-    ULTIMA_1850_PrintString(/*0x8390*/ "saved the life\n");
-    ULTIMA_1850_PrintString(/*0x83a0*/ "of our sovereign\n");
-    ULTIMA_1850_PrintString(/*0x83b2*/ "Lord British, thereby\n");
-    ULTIMA_1850_PrintString(/*0x83ca*/ "saving our people\n");
-    ULTIMA_1850_PrintString(/*0x83de*/ "and our land.\n\n");
+    PrintString(/*0x8390*/ "saved the life\n");
+    PrintString(/*0x83a0*/ "of our sovereign\n");
+    PrintString(/*0x83b2*/ "Lord British, thereby\n");
+    PrintString(/*0x83ca*/ "saving our people\n");
+    PrintString(/*0x83de*/ "and our land.\n\n");
     SelectCharset(1);
-    ULTIMA_1850_PrintString(/*0x83ee*/ "[E@QUE_@OF@[E@AVATAR\n");
-    ULTIMA_1850_PrintString(/*0x8404*/ "IS@FOREVER\n\n\n\n");
+    PrintString(/*0x83ee*/ "[E@QUE_@OF@[E@AVATAR\n");
+    PrintString(/*0x8404*/ "IS@FOREVER\n\n\n\n");
     SelectCharset(0);
-    ULTIMA_16ba_PrintChar(CTRL_CHAR_TOGGLE_INVERSION);
-    ULTIMA_1850_PrintString(/*0x8414*/ "Report now, thy Quest compleat in\n");
+    PrintChar(CTRL_CHAR_TOGGLE_INVERSION);
+    PrintString(/*0x8414*/ "Report now, thy Quest compleat in\n");
 
     // a697
     years = year - 0x8b;
@@ -380,7 +380,7 @@ static void PrintCertificate(void)
     }
 
     AppendToLine(/*0x845a*/ "\n");
-    ULTIMA_1850_PrintString(/*0x845c*/ "to Lord British at Origin Systems!");
+    PrintString(/*0x845c*/ "to Lord British at Origin Systems!");
 
     do
     {
@@ -393,7 +393,7 @@ static void PrintCertificate(void)
 static void StepPause(void)
 {
     WaitFrames(2);
-    ULTIMA_433e_AudioFootstep();
+    AudioFootstep();
     WaitFrames(3);
 }
 
@@ -408,7 +408,7 @@ static int StepActorToward(int actorIndex, int destX, int destY)
     int distY;
 
     moving = 1;
-    actor_g = &D_5c5a_actors[actorIndex];
+    actor_g = &actors[actorIndex];
 
     if (actor_g->tile == 0)
     {
@@ -460,16 +460,16 @@ static void WanderActor(int actorIndex)
     int newX;
     ActorFmt* actor_g;
     int tries;
-    actor_g = &D_5c5a_actors[actorIndex];
+    actor_g = &actors[actorIndex];
 
-    if (actor_g->tile != 0 && ULTIMA_2092_RandomRange(0, 1) != 0)
+    if (actor_g->tile != 0 && RandomRange(0, 1) != 0)
     {
         for (tries = 0; tries < 8; tries++)
         {
             newX = actor_g->x;
             newY = actor_g->y;
 
-            switch (ULTIMA_2092_RandomRange(0, 3))
+            switch (RandomRange(0, 3))
             {
             case 0:
                 newX++;
@@ -511,10 +511,10 @@ void EndgameMain(void)
     int key_g;
 
     curCombatant = 0xff;
-    ULTIMA_2900_UpdateVitalsDisplay();
+    UpdateVitalsDisplay();
     TilesetModePlus3(1);
-    ULTIMA_256e_ReadFileFromDisk(/*0x8480*/ "MISCMAPS.DAT", viewActors, 0xb0, 0x210);
-    ULTIMA_256e_ReadFileFromDisk(/*0x848e*/ "ENDMSG.DAT", scratch, 1000, 0);
+    ReadFileFromDisk(/*0x8480*/ "MISCMAPS.DAT", viewActors, 0xb0, 0x210);
+    ReadFileFromDisk(/*0x848e*/ "ENDMSG.DAT", scratch, 1000, 0);
 
     for (index = 0; index < 0xb; index++)
     {
@@ -527,11 +527,11 @@ void EndgameMain(void)
     // a949
     for (index = 0; index < 0x20; index++)
     {
-        D_5c5a_actors[index].tile = D_5c5a_actors[index].animTile = 0;
+        actors[index].tile = actors[index].animTile = 0;
     }
 
     // a966
-    actor_g = &D_5c5a_actors[31];
+    actor_g = &actors[31];
     actor_g->tile = actor_g->animTile = TILE_ACTOR_7C;
     actor_g->x = 5;
     actor_g->y = 8;
@@ -543,26 +543,26 @@ void EndgameMain(void)
 
     // a9ad
     // the party loop
-    for (index = 0; index < D_585b_partyCount; index++)
+    for (index = 0; index < partyCount; index++)
     {
-        if (D_55a8_party[index].status == STATUS_DEAD)
+        if (party[index].status == STATUS_DEAD)
         {
-            ULTIMA_16ba_PrintChar('\n');
-            ULTIMA_1850_PrintString(D_55a8_party[index].name);
-            ULTIMA_1850_PrintString(/*0x849a*/ " lives!\n");
-            D_55a8_party[index].status = STATUS_GOOD;
-            D_55a8_party[index].hp = D_55a8_party[index].maxHp;
-            ULTIMA_0a70_GRAP_2d_SetPenColor(brightWhiteColor);
+            PrintChar('\n');
+            PrintString(party[index].name);
+            PrintString(/*0x849a*/ " lives!\n");
+            party[index].status = STATUS_GOOD;
+            party[index].hp = party[index].maxHp;
+            GRAP_2d_SetPenColor(brightWhiteColor);
             GRAP_XorFillRect(8, 8, 0xb7, 0xb7);
-            ULTIMA_2192_AudioPulse(0x2260, 1, 40000, 5000, 1);
-            ULTIMA_2900_UpdateVitalsDisplay();
+            AudioPulse(0x2260, 1, 40000, 5000, 1);
+            UpdateVitalsDisplay();
         }
 
         // aa25
-        classIndex = FindIndex(/*0x84a4*/ CLASS_LIST, D_55a8_party[index].cls);
+        classIndex = FindIndex(/*0x84a4*/ CLASS_LIST, party[index].cls);
 
         // aa37
-        actor_g = &D_5c5a_actors[index];
+        actor_g = &actors[index];
         
         actor_g->tile = actor_g->animTile = classTile[classIndex];
         actor_g->x = 5;
@@ -580,22 +580,22 @@ void EndgameMain(void)
 
     // aabc
     WaitFrames(0x28);
-    ULTIMA_1850_PrintString((char*)scratch);
-    ULTIMA_1850_PrintString(D_55a8_party[0].name);
-    ULTIMA_1850_PrintString(/*0x84ae*/ "!\"\n\n");
-    ULTIMA_266c_GetChar();
-    ULTIMA_1850_PrintString((char*)&scratch[0x21]);
+    PrintString((char*)scratch);
+    PrintString(party[0].name);
+    PrintString(/*0x84ae*/ "!\"\n\n");
+    GetChar();
+    PrintString((char*)&scratch[0x21]);
 
     do
     {
-        key_g = ULTIMA_266c_GetChar();
+        key_g = GetChar();
         switch (key_g)
         {
         case 0x59:
-            ULTIMA_1850_PrintString(/*0x84b4*/ "Yes\n\n");
+            PrintString(/*0x84b4*/ "Yes\n\n");
             break;
         case 0x4e:
-            ULTIMA_1850_PrintString(/*0x84ba*/ "No\n\n");
+            PrintString(/*0x84ba*/ "No\n\n");
             break;
         }
     } while ((uint)key_g != 0x59 && (uint)key_g != 0x4e); // aaf8
@@ -603,18 +603,18 @@ void EndgameMain(void)
     // ab0c
     if (key_g == 0x4e)
     {
-        ULTIMA_1850_PrintString((char*)&scratch[0x49]);
+        PrintString((char*)&scratch[0x49]);
 
         do
         {
-            key_g = ULTIMA_266c_GetChar();
+            key_g = GetChar();
             switch (key_g)
             {
             case 0x59:
-                ULTIMA_1850_PrintString(/*0x84c0*/ "Yes\n\n");
+                PrintString(/*0x84c0*/ "Yes\n\n");
                 break;
             case 0x4e:
-                ULTIMA_1850_PrintString(/*0x84c6*/ "No\n\n");
+                PrintString(/*0x84c6*/ "No\n\n");
                 break;
             }
         } while ((uint)key_g != 0x59 && (uint)key_g != 0x4e);
@@ -633,35 +633,35 @@ void EndgameMain(void)
 
         WaitFrames(4);
 
-        actor_g = &D_5c5a_actors[6];
+        actor_g = &actors[6];
         
         actor_g->tile = actor_g->animTile = TILE_ACTOR_SANDALWOOD_BOX;
         actor_g->x = 5;
         actor_g->y = 4;
         actor_g->animState = 0;
 
-        ULTIMA_1850_PrintString((char*)&scratch[0xab]);
+        PrintString((char*)&scratch[0xab]);
         WaitFrames(0x28);
-        ULTIMA_1850_PrintString(/*0x84cc*/ "\n\nHe says:\n\n");
-        ULTIMA_266c_GetChar();
-        ULTIMA_1850_PrintString((char*)&scratch[0xd3]);
-        ULTIMA_266c_GetChar();
-        ULTIMA_1850_PrintString((char*)&scratch[0x128]);
-        ULTIMA_266c_GetChar();
-        ULTIMA_1850_PrintString((char*)&scratch[0x167]);
-        ULTIMA_266c_GetChar();
-        ULTIMA_1850_PrintString((char*)&scratch[0x1c9]);
-        ULTIMA_266c_GetChar();
-        ULTIMA_1850_PrintString((char*)&scratch[0x211]);
-        ULTIMA_266c_GetChar();
-        ULTIMA_1850_PrintString((char*)&scratch[0x24b]);
+        PrintString(/*0x84cc*/ "\n\nHe says:\n\n");
+        GetChar();
+        PrintString((char*)&scratch[0xd3]);
+        GetChar();
+        PrintString((char*)&scratch[0x128]);
+        GetChar();
+        PrintString((char*)&scratch[0x167]);
+        GetChar();
+        PrintString((char*)&scratch[0x1c9]);
+        GetChar();
+        PrintString((char*)&scratch[0x211]);
+        GetChar();
+        PrintString((char*)&scratch[0x24b]);
 
-        D_5c5a_actors[6].animTile = D_5c5a_actors[6].tile = TILE_ACTOR_GEM;
+        actors[6].animTile = actors[6].tile = TILE_ACTOR_GEM;
 
-        ULTIMA_266c_GetChar();
-        ULTIMA_2192_AudioPulse(0x1450, 1, 50000, 10000, 1);
+        GetChar();
+        AudioPulse(0x1450, 1, 50000, 10000, 1);
 
-        D_5c5a_actors[6].animTile = D_5c5a_actors[6].tile = 0;
+        actors[6].animTile = actors[6].tile = 0;
         GetCombatMap(5, 4) = 0xdc;
 
         for (moongateHeight = 1; moongateHeight < 0x10; moongateHeight++)
@@ -674,17 +674,17 @@ void EndgameMain(void)
         while (StepActorToward(0x1f, 5, 4) != 0)
             ;
 
-        D_5c5a_actors[31].tile = D_5c5a_actors[31].animTile = 0;
+        actors[31].tile = actors[31].animTile = 0;
 
         // ac64
         WaitFrames(1);
 
-        for (index = 0; index < D_585b_partyCount; index++)
+        for (index = 0; index < partyCount; index++)
         {
             while (StepActorToward(index, 5, 4) != 0)
                 ;
 
-            D_5c5a_actors[index].tile = D_5c5a_actors[index].animTile = 0;
+            actors[index].tile = actors[index].animTile = 0;
             WaitFrames(1);
         }
 
@@ -695,9 +695,9 @@ void EndgameMain(void)
 
         GRAP_51_PutTile(0x44, 5, 4);
         GRAP_0f_SelectPage(1);
-        ULTIMA_0a70_GRAP_2d_SetPenColor(0);
+        GRAP_2d_SetPenColor(0);
         UnloadTileset();
-        ULTIMA_0aa6_GRAP_3f_FillRect(0, 0, 0x13f, 199);
+        GRAP_3f_FillRect(0, 0, 0x13f, 199);
         GRAP_0f_SelectPage(0);
         ShowEndScreens();
         PrintCertificate();
@@ -705,10 +705,10 @@ void EndgameMain(void)
     }
 
     // bad endgame
-    ULTIMA_1850_PrintString(/*0x84da*/ "\"I see...\n");
+    PrintString(/*0x84da*/ "\"I see...\n");
     WaitFrames(0x28);
-    ULTIMA_1850_PrintString((char*)&scratch[0x2d5]);
-    D_5c5a_actors[0].y--;
+    PrintString((char*)&scratch[0x2d5]);
+    actors[0].y--;
     StepPause();
 
     do

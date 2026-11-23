@@ -139,12 +139,12 @@ void Introduction(void)
     byte* pageImage;
     byte* bannerImage_h;
 
-    if (D_5893_mapId != 64)
+    if (mapId != 64)
     {
         UnloadTileset();
     }
 
-    D_5893_mapId = 0x40;
+    mapId = 0x40;
     do
     {
         fontImage = LoadResourceFile(fileNames[0]);
@@ -152,9 +152,9 @@ void Introduction(void)
 
     DrawJustifiedText(fontImage, /*0x2f30*/ "");
     GRAP_0f_SelectPage(1);
-    ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
+    PrintChar(CTRL_CHAR_CLEAR_WINDOW);
     GRAP_0f_SelectPage(0);
-    ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
+    PrintChar(CTRL_CHAR_CLEAR_WINDOW);
     SetTextPosition(0, 10);
 
     do
@@ -184,7 +184,7 @@ void Introduction(void)
 
         promptMode = 2;
         GRAP_0f_SelectPage(1);
-        ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
+        PrintChar(CTRL_CHAR_CLEAR_WINDOW);
         if (pageKind[page_m] == 1)
         {
             switch (page_m)
@@ -231,13 +231,13 @@ void Introduction(void)
         }
         else
         {
-            ULTIMA_256e_ReadFileFromDisk(/*0x2f8d*/ "STORY.DAT", scratch, 2000, storyOffset[page_m]);
+            ReadFileFromDisk(/*0x2f8d*/ "STORY.DAT", scratch, 2000, storyOffset[page_m]);
             DrawJustifiedText(fontImage, scratch);
         }
 
         if (page_m != 0)
         {
-            ULTIMA_1b16_ClearKbdBuffer();
+            ClearKbdBuffer();
             while (PollKey() == 0)
                 ;
         }
@@ -256,12 +256,12 @@ void Introduction(void)
     FreeImage(bannerImage_h);
     FreeBitImage(fontImage);
 
-    ULTIMA_1b16_ClearKbdBuffer();
+    ClearKbdBuffer();
     while (PollKey() == 0)
         ;
 
     GRAP_0f_SelectPage(1);
-    ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
+    PrintChar(CTRL_CHAR_CLEAR_WINDOW);
     GRAP_0f_SelectPage(0);
     promptMode = 0;
     SwitchDisks(0);
@@ -276,15 +276,15 @@ void PrintCaptionBar(char* text)
 
     left = -(StringLength(text) / 2 - 0x12);
     right = left + StringLength(text) + 2;
-    ULTIMA_0a70_GRAP_2d_SetPenColor(blueColor);
-    ULTIMA_0aa6_GRAP_3f_FillRect(8, 0xc1, left * 8, 199);
-    ULTIMA_0aa6_GRAP_3f_FillRect(right * 8, 0xc1, 0x137, 199);
-    ULTIMA_0a70_GRAP_2d_SetPenColor(brightWhiteColor);
+    GRAP_2d_SetPenColor(blueColor);
+    GRAP_3f_FillRect(8, 0xc1, left * 8, 199);
+    GRAP_3f_FillRect(right * 8, 0xc1, 0x137, 199);
+    GRAP_2d_SetPenColor(brightWhiteColor);
     GRAP_Line(8, 0xc0, left * 8, 0xc0);
     GRAP_Line(right * 8, 0xc0, 0x137, 0xc0);
     SetTextPosition(left, 0x18);
-    ULTIMA_4c2a_PrintLeftCap();
-    ULTIMA_1850_PrintString(text);
+    PrintLeftCap();
+    PrintString(text);
     PrintRightCap();
 }
 
@@ -295,33 +295,33 @@ static void DrawMenuBorders(void)
 
     SetTextForegroundColor(blueColor);
     SetTextPosition(0, 0xf);
-    ULTIMA_16ba_PrintChar(0x7b);
+    PrintChar(0x7b);
 
     for (i = 0; i < 0x26; i++)
     {
-        ULTIMA_16ba_PrintChar(0x7f);
+        PrintChar(0x7f);
     }
 
-    ULTIMA_16ba_PrintChar(0x7c);
+    PrintChar(0x7c);
 
     for (i = 0; i < 8; i++)
     {
-        ULTIMA_16ba_PrintChar(0x7f);
+        PrintChar(0x7f);
         SetTextPosition(0x27, GetCurrentTextY());
-        ULTIMA_16ba_PrintChar(0x7f);
+        PrintChar(0x7f);
     }
 
-    ULTIMA_16ba_PrintChar(0x7d);
+    PrintChar(0x7d);
 
     for (i = 0; i < 0x26; i++)
     {
-        ULTIMA_16ba_PrintChar(0x7f);
+        PrintChar(0x7f);
     }
 
     cursorAdvance = 0;
-    ULTIMA_16ba_PrintChar(0x7e);
+    PrintChar(0x7e);
     cursorAdvance = 1;
-    ULTIMA_0a70_GRAP_2d_SetPenColor(brightWhiteColor);
+    GRAP_2d_SetPenColor(brightWhiteColor);
     GRAP_Line(7, 127, 312, 127);
     GRAP_LineTo(312, 192);
     GRAP_LineTo(7, 192);
@@ -337,17 +337,17 @@ void DisplayTitle(int withSound)
     int local_6_p; // unused
 
     promptMode = 2;
-    if (D_5893_mapId != 0x40)
+    if (mapId != 0x40)
     {
         UnloadTileset();
-        D_5893_mapId = 0x40;
+        mapId = 0x40;
     }
     do
     {
         D_bb1a_titleImage = LoadImageFile(tilesFileName[23]); // "ULTIMA.16"
     } while (D_bb1a_titleImage == 0);
     GRAP_0f_SelectPage(0);
-    ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
+    PrintChar(CTRL_CHAR_CLEAR_WINDOW);
     GRAP_0f_SelectPage(1);
     GRAP_4b_PutImage(D_bb1a_titleImage, 0, 0, 0, 0);
     if (withSound != 0)
@@ -381,17 +381,17 @@ static void WriteMenuOption(int selected, int row, int col, char* label)
 {
     if (row == selected)
     {
-        ULTIMA_16ba_PrintChar(CTRL_CHAR_TOGGLE_INVERSION);
+        PrintChar(CTRL_CHAR_TOGGLE_INVERSION);
     }
 
     SetTextPosition(col, row + 0x11);
-    ULTIMA_16ba_PrintChar(' ');
-    ULTIMA_1850_PrintString(label);
-    ULTIMA_16ba_PrintChar(' ');
+    PrintChar(' ');
+    PrintString(label);
+    PrintChar(' ');
 
     if (row == selected)
     {
-        ULTIMA_16ba_PrintChar(CTRL_CHAR_TOGGLE_INVERSION);
+        PrintChar(CTRL_CHAR_TOGGLE_INVERSION);
     }
 }
 
@@ -443,7 +443,7 @@ void Acknowledgements(void)
     } while (D_bb1a_titleImage == 0);
 
     GRAP_0f_SelectPage(1);
-    ULTIMA_16ba_PrintChar(CTRL_CHAR_CLEAR_WINDOW);
+    PrintChar(CTRL_CHAR_CLEAR_WINDOW);
     GRAP_4b_PutImage(D_bb1a_titleImage, 1, 0x10, 0x41, 0);
     FreeImage(D_bb1a_titleImage);
     DrawMenuBorders();
@@ -476,7 +476,7 @@ void Acknowledgements(void)
     GRAP_18_TransferArea(1, 0, 0x90, 199, 0xaf, 199);
     PutBackdropStrips();
     GRAP_0f_SelectPage(0);
-    ULTIMA_1b16_ClearKbdBuffer();
+    ClearKbdBuffer();
 }
 
 // Waits that many ticks, or less when a key is pressed; returns the key (0 when none).

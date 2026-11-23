@@ -51,7 +51,7 @@ static int FieldSpell(int field)
     int cellY;
     int cellX;
 
-    if (D_5893_mapId < 0x80)
+    if (mapId < 0x80)
     {
         CastEffect(field == 3 ? 4 : 3);
         cellX = (facingDx[dungeonFacing] + D_5896_mapX) & 7;
@@ -90,10 +90,10 @@ static int AnZu(void)
     {
         result_b = -1;
     }
-    else if (D_55a8_party[member].status == STATUS_SLEEP)
+    else if (party[member].status == STATUS_SLEEP)
     {
-        D_55a8_party[member].status = STATUS_GOOD;
-        if (D_5893_mapId > 0x7f)
+        party[member].status = STATUS_GOOD;
+        if (mapId > 0x7f)
         {
             for (combatant_h = 0; combatant_h < 0x20; combatant_h++)
             {
@@ -114,7 +114,7 @@ static int AnZu(void)
 
         CastEffect(1);
         result_b = -1;
-        D_a9fa_vitalsDirty = 1;
+        vitalsDirty = 1;
     }
     else
     {
@@ -137,11 +137,11 @@ static int AnNox(void)
     }
     else
     {
-        if (D_55a8_party[member].status == STATUS_POISONED)
+        if (party[member].status == STATUS_POISONED)
         {
-            D_55a8_party[member].status = STATUS_GOOD;
+            party[member].status = STATUS_GOOD;
             CastEffect(1);
-            D_a9fa_vitalsDirty = 1;
+            vitalsDirty = 1;
             result_b = 1;
         }
         else
@@ -189,7 +189,7 @@ static int AnYlem(void)
     }
 
     CastEffect(1);
-    tilePtr = ULTIMA_4402_GetTileAddr(D_5876_tempX, D_5878_tempY);
+    tilePtr = GetTileAddr(tempX, tempY);
     switch (*tilePtr)
     {
     case TILE_MAP_5B:
@@ -206,9 +206,9 @@ static int AnYlem(void)
     case TILE_MAP_AE:
     case TILE_MAP_TRUNK:
         *tilePtr = TILE_MAP_44;
-        ULTIMA_1850_PrintString(/*0x459a*/ "POOF!\n");
-        D_24e6_viewDirty |= 2;
-        ULTIMA_5910_UpdateFrame();
+        PrintString(/*0x459a*/ "POOF!\n");
+        viewDirty |= 2;
+        UpdateFrame();
         AudioSweepTone(0x4b0, 2000, 1, 0x28);
         result = -1;
         break;
@@ -232,7 +232,7 @@ static int AnSanct(void)
     int dx;
     int dy;
 
-    if (D_5893_mapId > 0x20 && D_5893_mapId < 0x80)
+    if (mapId > 0x20 && mapId < 0x80)
     {
         CastEffect(2);
 
@@ -251,12 +251,12 @@ static int AnSanct(void)
         {
             if ((*cellPtr & 1) != 0)
             {
-                ULTIMA_1850_PrintString(/*0x45a1*/ "Disarmed!\n");
+                PrintString(/*0x45a1*/ "Disarmed!\n");
             }
 
             *cellPtr = (*cellPtr & 8) | 0x70;
 
-            ULTIMA_1850_PrintString(/*0x45ac*/ "Chest opened!\n");
+            PrintString(/*0x45ac*/ "Chest opened!\n");
 
             result_l = -1;
         }
@@ -274,13 +274,13 @@ static int AnSanct(void)
 
         result_l = 0;
 
-        cellPtr = ULTIMA_4402_GetTileAddr(D_5876_tempX, D_5878_tempY);
+        cellPtr = GetTileAddr(tempX, tempY);
 
         if (*cellPtr == TILE_MAP_DOOR_B9 || *cellPtr == TILE_MAP_DOOR_BB)
         {
             --*cellPtr;
 
-            D_24e6_viewDirty |= 2;
+            viewDirty |= 2;
 
             CastEffect(2);
 
@@ -290,10 +290,10 @@ static int AnSanct(void)
         {
             for (actorIdx_n = 0; actorIdx_n < 0x20; actorIdx_n++)
             {
-                actor = &D_5c5a_actors[actorIdx_n];
+                actor = &actors[actorIdx_n];
 
-                if (actor->tile == TILE_ACTOR_CHEST && actor->x == D_5876_tempX && actor->y == D_5878_tempY &&
-                    (D_5893_mapId > 0x7f || actor->z == D_5895_mapLevel))
+                if (actor->tile == TILE_ACTOR_CHEST && actor->x == tempX && actor->y == tempY &&
+                    (mapId > 0x7f || actor->z == D_5895_mapLevel))
                 {
                     actor->value &= 0x7f;
 
@@ -353,7 +353,7 @@ static int KalXen(void)
 
     CastEffect(2);
 
-    tries_c = ULTIMA_2092_RandomRange(0, 0xf);
+    tries_c = RandomRange(0, 0xf);
 
     if (tries_c < 6)
     {
@@ -382,25 +382,25 @@ static int KalXen(void)
     // 0522
     while (tries_c < 8)
     {
-        if (RandomCell() == 0 || IsCellFree(TILE_ACTOR_90, D_5876_tempX, D_5878_tempY) == 0)
+        if (RandomCell() == 0 || IsCellFree(TILE_ACTOR_90, tempX, tempY) == 0)
         {
             tries_c++;
             continue;
         }
 
-        combatant = PlaceCombatant(animal, 0, D_5876_tempX, D_5878_tempY, D_5895_mapLevel);
+        combatant = PlaceCombatant(animal, 0, tempX, tempY, D_5895_mapLevel);
         if (combatant < 0)
         {
             break;
         }
 
-        actor = &D_5c5a_actors[combatants[combatant].actorIdx];
+        actor = &actors[combatants[combatant].actorIdx];
 
         // 056c
         actor->animTile = actor->tile = TILE_ACTOR_CIRCLE;
 
         // 0588
-        ULTIMA_1068_RevealTile(revealTile, D_5876_tempX, D_5878_tempY);
+        ULTIMA_1068_RevealTile(revealTile, tempX, tempY);
 
         actor->animTile = actor->tile = animalTile_j;
         combatants[combatant].flags |= COMBAT_FLAGS_CHARMED;
@@ -416,8 +416,8 @@ static int KalXen(void)
 static int InManiXen(void)
 {
     CastEffect(2);
-    IncreaseInt(&food, ULTIMA_2092_RandomRange(1, 3), 9999);
-    D_a9fa_vitalsDirty = 1;
+    IncreaseInt(&food, RandomRange(1, 3), 9999);
+    vitalsDirty = 1;
     return 1;
 }
 
@@ -436,9 +436,9 @@ static int InPor(void)
     ActorFmt* actor_h;
 
     result = 0;
-    if (D_5893_mapId > 0x7f)
+    if (mapId > 0x7f)
     {
-        actor_h = &D_5c5a_actors[combatants[curCombatant].actorIdx];
+        actor_h = &actors[combatants[curCombatant].actorIdx];
         if ((combatFlags & 2) != 0)
         {
             result = 0;
@@ -451,11 +451,11 @@ static int InPor(void)
                 if (RandomCell() == 0)
                     continue;
 
-                if (IsCellFree(actor_h->tile, D_5876_tempX, D_5878_tempY) == 0)
+                if (IsCellFree(actor_h->tile, tempX, tempY) == 0)
                     continue;
 
-                actor_h->x = combatants[curCombatant].x = D_5876_tempX;
-                actor_h->y = combatants[curCombatant].y = D_5878_tempY;
+                actor_h->x = combatants[curCombatant].x = tempX;
+                actor_h->y = combatants[curCombatant].y = tempY;
 
                 result = 1;
                 break;
@@ -474,16 +474,16 @@ static int InPor(void)
             // 068e
             CastEffect(3);
 
-            stepX_l = D_5876_tempX - D_5896_mapX;
-            stepY_k = D_5878_tempY - D_5897_mapY;
+            stepX_l = tempX - D_5896_mapX;
+            stepY_k = tempY - D_5897_mapY;
 
-            limitX_i = D_589b_mapOriginX + 0x20;
+            limitX_i = mapOriginX + 0x20;
             if (limitX_i > 0x100)
             {
                 limitX_i = 0x100;
             }
 
-            limitY_h = D_589c_mapOriginY + 0x20;
+            limitY_h = mapOriginY + 0x20;
             if (limitY_h > 0x100)
             {
                 limitY_h = 0x100;
@@ -491,16 +491,16 @@ static int InPor(void)
 
             // 06d9
             result = 0;
-            x = (byte)D_5876_tempX;
-            for (y = (byte)D_5878_tempY; D_589b_mapOriginX <= x && x < limitX_i && D_589c_mapOriginY <= y && y < limitY_h;
+            x = (byte)tempX;
+            for (y = (byte)tempY; mapOriginX <= x && x < limitX_i && mapOriginY <= y && y < limitY_h;
                  y += stepY_k)
             {
-                if (*ULTIMA_4402_GetTileAddr(x, y) == TILE_MAP_GRASS)
+                if (*GetTileAddr(x, y) == TILE_MAP_GRASS)
                 {
                     result = -1;
                     D_5896_mapX = x;
                     D_5897_mapY = y;
-                    D_24e6_viewDirty = 1;
+                    viewDirty = 1;
                 }
                 x += stepX_l;
             }
@@ -530,7 +530,7 @@ static void QuasWis(void)
             (combatants[combatant].flags & COMBAT_FLAGS_INVISIBLE) != 0)
         {
             combatants[combatant].flags &= ~COMBAT_FLAGS_INVISIBLE;
-            actor = &D_5c5a_actors[combatants[combatant].actorIdx];
+            actor = &actors[combatants[combatant].actorIdx];
             actor->animTile = actor->tile;
 
             PutActorsInView();
@@ -553,7 +553,7 @@ static int BetInXen(void)
     // 07c7
     for (attempt = 0; attempt < 8; attempt++)
     {
-        if (RandomCell() == 0 || IsCellFree(TILE_ACTOR_BC, D_5876_tempX, D_5878_tempY) == 0)
+        if (RandomCell() == 0 || IsCellFree(TILE_ACTOR_BC, tempX, tempY) == 0)
             continue;
 
         result = 1;
@@ -566,7 +566,7 @@ static int BetInXen(void)
 
         for (attempt = 0; attempt < 4; attempt++)
         {
-            swarm = PlaceCombatant(0x1f, 0, D_5876_tempX, D_5878_tempY, D_5895_mapLevel);
+            swarm = PlaceCombatant(0x1f, 0, tempX, tempY, D_5895_mapLevel);
             if (swarm < 0)
             {
                 break;
@@ -593,7 +593,7 @@ static int AnExPor(void)
     else
     {
         CastEffect(5);
-        tilePtr = ULTIMA_4402_GetTileAddr(D_5876_tempX, D_5878_tempY);
+        tilePtr = GetTileAddr(tempX, tempY);
         result = 0;
         switch (*tilePtr)
         {
@@ -601,14 +601,14 @@ static int AnExPor(void)
         case TILE_MAP_DOOR_B9:
             *tilePtr = TILE_MAP_97;
             result = 1;
-            D_24e6_viewDirty |= 2;
+            viewDirty |= 2;
             break;
 
         case TILE_MAP_DOOR_BA:
         case TILE_MAP_DOOR_BB:
             *tilePtr = TILE_MAP_98;
             result = 1;
-            D_24e6_viewDirty |= 2;
+            viewDirty |= 2;
             break;
         }
 
@@ -627,19 +627,19 @@ static int ManiVas(void)
     {
         result_b = -1;
     }
-    else if (D_55a8_party[member].status == STATUS_DEAD || (D_5893_mapId > 0x7f && combatOver == 0))
+    else if (party[member].status == STATUS_DEAD || (mapId > 0x7f && combatOver == 0))
     {
         result_b = 0;
     }
-    else if (D_5893_mapId > 0x7f && combatOver == 0) // sic
+    else if (mapId > 0x7f && combatOver == 0) // sic
     {
         result_b = 0;
     }
     else
     {
-        D_55a8_party[member].hp = D_55a8_party[member].maxHp;
+        party[member].hp = party[member].maxHp;
         CastEffect(5);
-        D_a9fa_vitalsDirty = 1;
+        vitalsDirty = 1;
         result_b = 1;
     }
 
@@ -652,7 +652,7 @@ static void InPorVasYlem(int caster)
     int combatant;
 
     CastEffect(6);
-    ULTIMA_3072_ShakeScreen();
+    ShakeScreen();
     for (combatant = 0; combatant < 0x20; combatant++)
     {
         if (combatants[combatant].flags != 0)
@@ -662,7 +662,7 @@ static void InPorVasYlem(int caster)
                 if (QueryStat(combatant, QUERY_STAT_DEX) <= Random1To30())
                 {
                     HitEffectOnActor(combatant);
-                    IncreaseInt(&D_55a8_party[caster].exp, ApplyDamage(combatant, ULTIMA_2092_RandomRange(1, 0x14)), 9999); // FMT: &local_8 ??
+                    IncreaseInt(&party[caster].exp, ApplyDamage(combatant, RandomRange(1, 0x14)), 9999); // FMT: &local_8 ??
                     ReportHit(combatant, curCombatant);
                 }
             }
@@ -675,7 +675,7 @@ static int AnExXen(void)
 {
     int target;
 
-    ULTIMA_1850_PrintString(/*0x45bb*/ "Creature: ");
+    PrintString(/*0x45bb*/ "Creature: ");
     if (AimCrosshair(curCombatant, 0xf) == 0)
     {
         return -1;
@@ -683,7 +683,7 @@ static int AnExXen(void)
 
     // 09c6
     CastEffect(6);
-    if ((*ULTIMA_4402_GetTileAddr(crosshairX, crosshairY) & 0xfe) == TILE_MAP_84)
+    if ((*GetTileAddr(crosshairX, crosshairY) & 0xfe) == TILE_MAP_84)
     {
         return 0;
     }
@@ -696,12 +696,12 @@ static int AnExXen(void)
             combatants[target].flags ^= COMBAT_FLAGS_CHARMED;
             if ((combatants[target].flags & COMBAT_FLAGS_PLAYER) != 0)
             {
-                D_55a8_party[combatants[target].entityIdx].status = STATUS_GOOD;
-                ULTIMA_2900_UpdateVitalsDisplay();
+                party[combatants[target].entityIdx].status = STATUS_GOOD;
+                UpdateVitalsDisplay();
             }
 
             PrintName(target);
-            ULTIMA_1850_PrintString(/*0x45c6*/ " charmed!\n");
+            PrintString(/*0x45c6*/ " charmed!\n");
 
             return -1;
         }
@@ -717,7 +717,7 @@ static int BetRelXen(void)
     int targetX;
     int target;
 
-    ULTIMA_1850_PrintString(/*0x45d1*/ "Creature: ");
+    PrintString(/*0x45d1*/ "Creature: ");
     if (AimCrosshair(curCombatant, 0xf) == 0)
     {
         return -1;
@@ -746,7 +746,7 @@ static int BetRelXen(void)
 // Sanct Lor: the caster turns invisible.
 static int LorSanct(void)
 {
-    D_5c5a_actors[combatants[curCombatant].actorIdx].animTile = TILE_ACTOR_1D;
+    actors[combatants[curCombatant].actorIdx].animTile = TILE_ACTOR_1D;
     combatants[curCombatant].flags |= COMBAT_FLAGS_INVISIBLE;
     CastEffect(7);
     return 1;
@@ -761,7 +761,7 @@ static int InQuasXen(void)
     int target;
     int freeCombatant_f;
 
-    ULTIMA_1850_PrintString(/*0x45dc*/ "Creature: ");
+    PrintString(/*0x45dc*/ "Creature: ");
     if (AimCrosshair(curCombatant, 0xf) == 0)
     {
         return -1;
@@ -779,7 +779,7 @@ static int InQuasXen(void)
         freeCombatant_f = freeActor = 0xff;
         for (index = 0; index < 0x20; index++)
         {
-            if (D_5c5a_actors[index].tile == 0)
+            if (actors[index].tile == 0)
             {
                 freeActor = index;
                 break;
@@ -804,18 +804,18 @@ static int InQuasXen(void)
                 
                 combatants[freeCombatant_f].actorIdx = freeActor;
 
-                D_5c5a_actors[freeActor] = D_5c5a_actors[combatants[target].actorIdx];
+                actors[freeActor] = actors[combatants[target].actorIdx];
 
                 do
                 {
-                    if (RandomCell() == 0 || IsCellFree(TILE_ACTOR_AVATAR, D_5876_tempX, D_5878_tempY) == 0)
+                    if (RandomCell() == 0 || IsCellFree(TILE_ACTOR_AVATAR, tempX, tempY) == 0)
                     {
                         result_i = 0;
                     }
                     else
                     {
-                        D_5c5a_actors[freeActor].x = combatants[freeCombatant_f].x = D_5876_tempX;
-                        D_5c5a_actors[freeActor].y = combatants[freeCombatant_f].y = D_5878_tempY;
+                        actors[freeActor].x = combatants[freeCombatant_f].x = tempX;
+                        actors[freeActor].y = combatants[freeCombatant_f].y = tempY;
                         result_i = 1;
                     }
                 } while (result_i == 0);
@@ -856,16 +856,16 @@ static int PorRelVas(void)
 {
     byte key;
 
-    if ((D_587c_partyTile & 0xf0) != TILE_ACTOR_FRIGATE_20)
+    if ((partyTile & 0xf0) != TILE_ACTOR_FRIGATE_20)
     {
-        ULTIMA_1850_PrintString(/*0x45e7*/ "To phase: ");
-        key = ULTIMA_266c_GetChar();
+        PrintString(/*0x45e7*/ "To phase: ");
+        key = GetChar();
         if (key >= 0x20)
         {
-            ULTIMA_16ba_PrintChar(key);
+            PrintChar(key);
         }
 
-        ULTIMA_16ba_PrintChar('\n');
+        PrintChar('\n');
 
         if (key >= 0x31 && key <= 0x38)
         {
@@ -892,10 +892,10 @@ static int AnTym(void)
 
     for (actorIdx = 0; actorIdx < 0x20; actorIdx++)
     {
-        if (D_5c5a_actors[actorIdx].tile == TILE_ACTOR_SHADOWLORD)
+        if (actors[actorIdx].tile == TILE_ACTOR_SHADOWLORD)
         {
-            ULTIMA_1850_PrintString(/*0x45f2*/ "Magic absorbed!\n");
-            ULTIMA_2192_AudioPulse(0x2648, 1, 28000, 1000, 2);
+            PrintString(/*0x45f2*/ "Magic absorbed!\n");
+            AudioPulse(0x2648, 1, 28000, 1000, 2);
             result = 0;
             break;
         }
@@ -905,7 +905,7 @@ static int AnTym(void)
     {
         statusIcon = 0x54;
         protectTurns = 10;
-        ULTIMA_2900_UpdateVitalsDisplay();
+        UpdateVitalsDisplay();
     }
 
     return result;
@@ -937,30 +937,30 @@ int CastSpellCmd(void)
         return caster_o;
     }
 
-    ULTIMA_1850_PrintString(/*0x4603*/ "Spell name:\n:");
+    PrintString(/*0x4603*/ "Spell name:\n:");
     spell = SelectSpell();
     if (spell == -1)
     {
-        ULTIMA_1850_PrintString(/*0x4611*/ "None!\n");
+        PrintString(/*0x4611*/ "None!\n");
         return; // sic
     }
 
     if (spell == -2)
     {
-        ULTIMA_1850_PrintString(/*0x4618*/ "No effect!\n");
+        PrintString(/*0x4618*/ "No effect!\n");
         return; // sic
     }
 
     castCircle = circle = spell / 6 + 1;
 
-    if (D_5893_mapId == 0)
+    if (mapId == 0)
     {
         if ((spellUsability[spell] & 8) == 0)
         {
             allowedHere = 0;
         }
     }
-    else if (D_5893_mapId > 0x7f)
+    else if (mapId > 0x7f)
     {
         if ((spellUsability[spell] & 1) == 0)
         {
@@ -969,14 +969,14 @@ int CastSpellCmd(void)
     }
     else
     {
-        if (((D_5893_mapId == 0x12) && (crown == 0)) || (D_5893_mapId == 0x1d)) // LB crown / at STONEGATE
+        if (((mapId == 0x12) && (crown == 0)) || (mapId == 0x1d)) // LB crown / at STONEGATE
         {
-            ULTIMA_1850_PrintString(/*0x4624*/ "Absorbed!\n");
-            ULTIMA_2192_AudioPulse(0x2648, 1, 28000, 1000, 2);
+            PrintString(/*0x4624*/ "Absorbed!\n");
+            AudioPulse(0x2648, 1, 28000, 1000, 2);
             return; // sic
         }
 
-        if (D_5893_mapId < 0x21)
+        if (mapId < 0x21)
         {
             if ((spellUsability[spell] & 4) == 0)
             {
@@ -994,28 +994,28 @@ int CastSpellCmd(void)
 
     if (allowedHere == 0)
     {
-        ULTIMA_1850_PrintString(/*0x462f*/ "Not here!\n");
+        PrintString(/*0x462f*/ "Not here!\n");
         AudioSweepTone(800, 2000, 1, 0x32);
         return; // sic
     }
 
     if (mixedSpells[spell] == 0)
     {
-        ULTIMA_1850_PrintString(/*0x463a*/ "None mixed!\n");
+        PrintString(/*0x463a*/ "None mixed!\n");
         return; // sic
     }
 
     mixedSpells[spell]--;
-    if (D_55a8_party[caster_o].mag < circle)
+    if (party[caster_o].mag < circle)
     {
-        ULTIMA_1850_PrintString(/*0x4647*/ "M.P. too low!\n");
+        PrintString(/*0x4647*/ "M.P. too low!\n");
         result_d = 0;
     }
     else
     {
-        D_55a8_party[caster_o].mag -= circle;
+        party[caster_o].mag -= circle;
         result_d = -1;
-        if (D_55a8_party[caster_o].level < circle)
+        if (party[caster_o].level < circle)
         {
             result_d = 0;
         }
@@ -1090,7 +1090,7 @@ int CastSpellCmd(void)
                 result_d = FieldSpell(3);
                 break;
             case 0x15: // PU
-                if (D_5893_mapId == 40)
+                if (mapId == 40)
                 {
                     result_d = 0;
                     break;
@@ -1103,7 +1103,7 @@ int CastSpellCmd(void)
                 }
                 break;
             case 0x16: // DP
-                if (D_5893_mapId == 40)
+                if (mapId == 40)
                 {
                     result_d = 0;
                     break;
@@ -1169,7 +1169,7 @@ int CastSpellCmd(void)
                 break;
             case 0x27: // IQW view?
                 CastEffect(7);
-                if (D_5893_mapId < 0x21)
+                if (mapId < 0x21)
                 {
                     LookobjViewCmd(D_5896_mapX, D_5897_mapY);
                 }
@@ -1186,7 +1186,7 @@ int CastSpellCmd(void)
                 break;
             case 0x2a: // CIM
                 result_d = Resurrect(OnWho(), 0);
-                ULTIMA_2900_UpdateVitalsDisplay();
+                UpdateVitalsDisplay();
                 break;
             case 0x2b: // CKX
                 result_d = KalXenCorp(0);
@@ -1213,11 +1213,11 @@ int CastSpellCmd(void)
 
     if (result_d == 1)
     {
-        ULTIMA_1850_PrintString(/*0x4656*/ "Success!\n");
+        PrintString(/*0x4656*/ "Success!\n");
     }
     else if (result_d == 0)
     {
-        ULTIMA_1850_PrintString(/*0x4660*/ "Failed!\n");
+        PrintString(/*0x4660*/ "Failed!\n");
         AudioSweepTone(800, 2000, 1, 0x32);
     }
 
@@ -1231,19 +1231,19 @@ static int UseScroll(int scroll)
     int result_b = 1;
 
     scrolls[scroll]--;
-    ULTIMA_1850_PrintString(S_0x466a);
+    PrintString(S_0x466a);
     switch (scroll)
     {
     case 0:
         SetLightTurns(0xf0);
-        ULTIMA_1850_PrintString(/*0x4673*/ "Light!\n");
+        PrintString(/*0x4673*/ "Light!\n");
         CastEffect(0);
         break;
 
     case 1:
-        ULTIMA_1850_PrintString(/*0x467b*/ "Wind change!\n");
+        PrintString(/*0x467b*/ "Wind change!\n");
         direction = AskDirection();
-        if (D_5893_mapId < 0x21)
+        if (mapId < 0x21)
         {
             ChangeWindDirection(direction, 1);
             break;
@@ -1252,28 +1252,28 @@ static int UseScroll(int scroll)
         break;
 
     case 2:
-        ULTIMA_1850_PrintString(/*0x4689*/ "Protection!\n");
+        PrintString(/*0x4689*/ "Protection!\n");
         SetSpellStatus(0x50, 100, 2);
         break;
 
     case 3:
-        ULTIMA_1850_PrintString(/*0x4696*/ "Negate magic!\n");
+        PrintString(/*0x4696*/ "Negate magic!\n");
         SetSpellStatus(0x4e, 0x14, 3);
         break;
 
     case 4:
         // 1278
-        ULTIMA_1850_PrintString(/*0x46a5*/ "View!\n");
-        if (D_5893_mapId > 0x7f)
+        PrintString(/*0x46a5*/ "View!\n");
+        if (mapId > 0x7f)
         {
-            ULTIMA_1850_PrintString(/*0x46ac*/ "Not here!\n");
+            PrintString(/*0x46ac*/ "Not here!\n");
             break;
         }
         else
         {
             // 1290
             CastEffect(4);
-            if (D_5893_mapId < 0x21)
+            if (mapId < 0x21)
             {
                 LookobjViewCmd(D_5896_mapX, D_5897_mapY);
                 break;
@@ -1284,38 +1284,38 @@ static int UseScroll(int scroll)
 
     case 5:
         // 12b4
-        ULTIMA_1850_PrintString(/*0x46b7*/ "Summon Daemon!\n");
-        if (D_5893_mapId > 0x7f)
+        PrintString(/*0x46b7*/ "Summon Daemon!\n");
+        if (mapId > 0x7f)
         {
             result_b = KalXenCorp(1);
             break;
         }
         else
         {
-            ULTIMA_1850_PrintString(/*0x46c7*/ "Not here!\n");
+            PrintString(/*0x46c7*/ "Not here!\n");
             break;
         }
 
     case 6:
         // 12d2
-        ULTIMA_1850_PrintString(/*0x46d2*/ "Resurrection!\n");
-        if (D_5893_mapId < 0x80)
+        PrintString(/*0x46d2*/ "Resurrection!\n");
+        if (mapId < 0x80)
         {
             result_b = Resurrect(OnWho(), 1);
-            ULTIMA_2900_UpdateVitalsDisplay();
+            UpdateVitalsDisplay();
             break;
         }
-        ULTIMA_1850_PrintString(/*0x46e1*/ "Not here!\n");
+        PrintString(/*0x46e1*/ "Not here!\n");
         break;
 
     case 7:
-        if ((D_5893_mapId == 0x1d) || (D_5893_mapId == 0x28))
+        if ((mapId == 0x1d) || (mapId == 0x28))
         {
-            ULTIMA_1850_PrintString(/*0x46ec*/ "No effect!\n");
+            PrintString(/*0x46ec*/ "No effect!\n");
             AudioSweepTone(800, 2000, 1, 0x32);
             break;
         }
-        ULTIMA_1850_PrintString(/*0x46f8*/ "Negate time!\n");
+        PrintString(/*0x46f8*/ "Negate time!\n");
         SetSpellStatus(0x54, 0x14, 7);
         break;
     }
@@ -1337,8 +1337,8 @@ static int UsePotion(int potion)
 
     result_l = 1;
     potions[potion]--;
-    ULTIMA_1850_PrintString(/*0x4706*/ "Potion\n");
-    if (D_5893_mapId > 0x7f)
+    PrintString(/*0x4706*/ "Potion\n");
+    if (mapId > 0x7f)
     {
         member_d = combatants[curCombatant].entityIdx;
     }
@@ -1353,24 +1353,24 @@ static int UsePotion(int potion)
     }
 
     CastEffect(potion);
-    roll = ULTIMA_2092_RandomRange(0, 0xf);
+    roll = RandomRange(0, 0xf);
     if (roll == 0)
     {
         potion = 4;
     }
     else if (roll == 1)
     {
-        potion = ULTIMA_2092_RandomRange(0, 7);
+        potion = RandomRange(0, 7);
     }
 
     switch (potion)
     {
     case 0:
-        if (D_55a8_party[member_d].status == STATUS_SLEEP)
+        if (party[member_d].status == STATUS_SLEEP)
         {
-            D_55a8_party[member_d].status = STATUS_GOOD;
+            party[member_d].status = STATUS_GOOD;
 
-            if (D_5893_mapId > 0x7f)
+            if (mapId > 0x7f)
             {
                 if (member_d == combatants[curCombatant].entityIdx)
                 {
@@ -1391,7 +1391,7 @@ static int UsePotion(int potion)
             }
             else
             {
-                ULTIMA_2900_UpdateVitalsDisplay();
+                UpdateVitalsDisplay();
             }
         }
         else
@@ -1404,18 +1404,18 @@ static int UsePotion(int potion)
         result_l = HealMember(member_d);
         if (result_l != 0)
         {
-            ULTIMA_1850_PrintString(/*0x470e*/ "Healed!\n");
-            ULTIMA_2900_UpdateVitalsDisplay();
+            PrintString(/*0x470e*/ "Healed!\n");
+            UpdateVitalsDisplay();
         }
         break;
 
     case 2:
-        if (D_55a8_party[member_d].status == STATUS_POISONED)
+        if (party[member_d].status == STATUS_POISONED)
         {
-            D_55a8_party[member_d].status = STATUS_GOOD;
+            party[member_d].status = STATUS_GOOD;
 
-            ULTIMA_1850_PrintString(/*0x4717*/ "Poison cured!\n");
-            ULTIMA_2900_UpdateVitalsDisplay();
+            PrintString(/*0x4717*/ "Poison cured!\n");
+            UpdateVitalsDisplay();
         }
         else
         {
@@ -1424,12 +1424,12 @@ static int UsePotion(int potion)
         break;
 
     case 3:
-        if (D_55a8_party[member_d].status == STATUS_GOOD)
+        if (party[member_d].status == STATUS_GOOD)
         {
-            D_55a8_party[member_d].status = STATUS_POISONED;
+            party[member_d].status = STATUS_POISONED;
 
-            ULTIMA_1850_PrintString(/*0x4726*/ "POISONED!\n");
-            ULTIMA_2900_UpdateVitalsDisplay();
+            PrintString(/*0x4726*/ "POISONED!\n");
+            UpdateVitalsDisplay();
         }
         else
         {
@@ -1438,19 +1438,19 @@ static int UsePotion(int potion)
         break;
 
     case 4:
-        if (D_55a8_party[member_d].status == STATUS_GOOD)
+        if (party[member_d].status == STATUS_GOOD)
         {
-            if (D_5893_mapId < 0x80)
+            if (mapId < 0x80)
             {
-                D_55a8_party[member_d].status = STATUS_SLEEP;
+                party[member_d].status = STATUS_SLEEP;
             }
             else
             {
                 PutToSleep(member_d);
             }
 
-            ULTIMA_1850_PrintString(/*0x4731*/ "Slept!\n");
-            ULTIMA_2900_UpdateVitalsDisplay();
+            PrintString(/*0x4731*/ "Slept!\n");
+            UpdateVitalsDisplay();
         }
         else
         {
@@ -1459,40 +1459,40 @@ static int UsePotion(int potion)
         break;
 
     case 5:
-        if (D_5893_mapId > 0x7f)
+        if (mapId > 0x7f)
         {
-            ULTIMA_1850_PrintString(/*0x4739*/ "Poof!\n");
-            actor = &D_5c5a_actors[combatants[curCombatant].actorIdx];
+            PrintString(/*0x4739*/ "Poof!\n");
+            actor = &actors[combatants[curCombatant].actorIdx];
             actor->tile = actor->animTile = TILE_ACTOR_90;
         }
         else
         {
-            ULTIMA_1850_PrintString(S_0x474c);
+            PrintString(S_0x474c);
         }
         break;
 
     case 6:
-        if (D_5893_mapId > 0x7f)
+        if (mapId > 0x7f)
         {
             combatants[curCombatant].flags |= COMBAT_FLAGS_INVISIBLE;
-            actor = &D_5c5a_actors[combatants[curCombatant].actorIdx];
-            ULTIMA_1850_PrintString(/*0x4740*/ "Invisible!\n");
+            actor = &actors[combatants[curCombatant].actorIdx];
+            PrintString(/*0x4740*/ "Invisible!\n");
             actor->tile = actor->animTile = TILE_ACTOR_1D;
         }
         else
         {
-            ULTIMA_1850_PrintString(S_0x474c);
+            PrintString(S_0x474c);
         }
         break;
 
     case 7:
-        if (D_5893_mapId < 0x21)
+        if (mapId < 0x21)
         {
             WisAnYlem();
         }
         else
         {
-            ULTIMA_1850_PrintString(S_0x474c);
+            PrintString(S_0x474c);
         }
         break;
     }
@@ -1505,19 +1505,19 @@ static void UseMoonstone(int stone)
 {
     int tile;
 
-    tile = *ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY);
-    ULTIMA_1850_PrintString(/*0x4768*/ "Moonstone ");
-    if (D_5893_mapId < 0x21 && (tile == TILE_MAP_CROPS_PICKED || tile == TILE_MAP_CROPS || (tile > TILE_MAP_WATER_3 && tile < TILE_MAP_B)))
+    tile = *GetTileAddr(D_5896_mapX, D_5897_mapY);
+    PrintString(/*0x4768*/ "Moonstone ");
+    if (mapId < 0x21 && (tile == TILE_MAP_CROPS_PICKED || tile == TILE_MAP_CROPS || (tile > TILE_MAP_WATER_3 && tile < TILE_MAP_B)))
     {
-        ULTIMA_1850_PrintString(/*0x4773*/ "buried!\n");
+        PrintString(/*0x4773*/ "buried!\n");
         moonstoneX[stone] = D_5896_mapX;
         moonstoneY[stone] = D_5897_mapY;
-        moonstoneMap[stone] = D_5893_mapId;
+        moonstoneMap[stone] = mapId;
         moonstoneZ[stone] = D_5895_mapLevel;
     }
     else
     {
-        ULTIMA_1850_PrintString(/*0x477c*/ "cannot be buried here!\n");
+        PrintString(/*0x477c*/ "cannot be buried here!\n");
     }
 }
 
@@ -1538,88 +1538,88 @@ static void UseGemShard(int shard)
 {
     int index;
 
-    ULTIMA_1850_PrintString(/*0x4794*/ "Gem Shard\n\nThou dost hold above thee the evil Shard of ");
+    PrintString(/*0x4794*/ "Gem Shard\n\nThou dost hold above thee the evil Shard of ");
     switch (shard)
     {
     case 0:
-        ULTIMA_1850_PrintString(/*0x47cc*/ "Falsehood...");
+        PrintString(/*0x47cc*/ "Falsehood...");
         break;
     case 1:
-        ULTIMA_1850_PrintString(/*0x47d9*/ "Hatred...");
+        PrintString(/*0x47d9*/ "Hatred...");
         break;
     case 2:
-        ULTIMA_1850_PrintString(/*0x47e3*/ "Cowardice...");
+        PrintString(/*0x47e3*/ "Cowardice...");
         break;
     }
 
     for (index = 2000; index < 25000; index += 0x32)
     {
-        ULTIMA_2192_AudioPulse(0xa50, 1, 200, index, 0);
+        AudioPulse(0xa50, 1, 200, index, 0);
     }
 
     for (index = 25000; index > 2000; index -= 0x32)
     {
-        ULTIMA_2192_AudioPulse(0xa50, 1, 200, index, 0);
+        AudioPulse(0xa50, 1, 200, index, 0);
     }
 
-    if (D_4882_shardX[shard] != D_5896_mapX || D_4886_shardY[shard] != D_5897_mapY || shardMap[shard] != D_5893_mapId ||
+    if (D_4882_shardX[shard] != D_5896_mapX || D_4886_shardY[shard] != D_5897_mapY || shardMap[shard] != mapId ||
         shardLevel[shard] != D_5895_mapLevel)
     {
-        ULTIMA_1850_PrintString(/*0x47f0*/ "\n\nNo effect!\n");
+        PrintString(/*0x47f0*/ "\n\nNo effect!\n");
         AudioSweepTone(800, 2000, 1, 0x32);
         return;
     }
 
     WaitFrames(7);
-    ULTIMA_1850_PrintString(/*0x47fe*/ "\n\n...and cast it into the Flame of ");
+    PrintString(/*0x47fe*/ "\n\n...and cast it into the Flame of ");
     switch (shard)
     {
     case 0:
-        ULTIMA_1850_PrintString(/*0x4822*/ "Truth!\n");
+        PrintString(/*0x4822*/ "Truth!\n");
         break;
     case 1:
-        ULTIMA_1850_PrintString(/*0x482a*/ "Love!\n");
+        PrintString(/*0x482a*/ "Love!\n");
         break;
     case 2:
-        ULTIMA_1850_PrintString(/*0x4831*/ "Courage!\n");
+        PrintString(/*0x4831*/ "Courage!\n");
         break;
     }
 
-    ULTIMA_3072_ShakeScreen();
-    ULTIMA_3072_ShakeScreen();
-    ULTIMA_3072_ShakeScreen();
+    ShakeScreen();
+    ShakeScreen();
+    ShakeScreen();
     WaitFrames(3);
 
-    if (ULTIMA_368e_FindActorTileAtPos(D_5896_mapX, D_5897_mapY - 1, D_5895_mapLevel) == TILE_ACTOR_SHADOWLORD &&
+    if (FindActorTileAtPos(D_5896_mapX, D_5897_mapY - 1, D_5895_mapLevel) == TILE_ACTOR_SHADOWLORD &&
         shard == summonedLord)
     {
-        TOWN_00b0_DespawnNpc(TOWN_011e_FindNpcByActor(D_5876_tempX));
+        DespawnNpc(FindNpcByActor(tempX));
 
         for (index = 0; index < 7; index++)
         {
-            ULTIMA_3522_HitEffectAt(D_5896_mapX, D_5897_mapY - 1);
+            HitEffectAt(D_5896_mapX, D_5897_mapY - 1);
         }
 
-        D_58c8_shadowlordTowns[shard] = 0xff;
+        shadowlordTowns[shard] = 0xff;
         shards[shard] = 0;
 
-        *(u32*)&D_5b5a_npcKilled[0x70] |= shardKilledBit[shard];
+        *(u32*)&npcKilled[0x70] |= shardKilledBit[shard];
 
-        ULTIMA_1850_PrintString(/*0x483b*/ "\nThe doom of the Shadowlord ");
+        PrintString(/*0x483b*/ "\nThe doom of the Shadowlord ");
         switch (shard)
         {
         case 0:
-            ULTIMA_1850_PrintString(/*0x4858*/ "Faulinei");
+            PrintString(/*0x4858*/ "Faulinei");
             break;
         case 1:
-            ULTIMA_1850_PrintString(/*0x4861*/ "Astaroth");
+            PrintString(/*0x4861*/ "Astaroth");
             break;
         case 2:
-            ULTIMA_1850_PrintString(/*0x486a*/ "Nosfentor");
+            PrintString(/*0x486a*/ "Nosfentor");
             break;
         }
 
-        ULTIMA_1850_PrintString(/*0x4874*/ " is wrought!\n");
+        PrintString(/*0x4874*/ " is wrought!\n");
         AudioVictoryTune();
     }
 }
@@ -1629,10 +1629,10 @@ static bool RemoveWornItem(int icon)
 {
     if (icon == statusIcon)
     {
-        ULTIMA_1850_PrintString(/*0x4895*/ "Removed!\n");
+        PrintString(/*0x4895*/ "Removed!\n");
 
         statusIcon = protectTurns = 0;
-        D_a9fa_vitalsDirty = 1;
+        vitalsDirty = 1;
 
         return 0;
     }
@@ -1662,11 +1662,11 @@ void UseCmd(void)
     firstItem_j = NextItem(-1, 0x26, itemCounts, 0xff);
     if (firstItem_j == -1)
     {
-        ULTIMA_1850_PrintString(/*0x489f*/ "No usable items!\n");
+        PrintString(/*0x489f*/ "No usable items!\n");
         return;
     }
 
-    ULTIMA_1850_PrintString(/*0x48b1*/ "Item: ");
+    PrintString(/*0x48b1*/ "Item: ");
     OpenStatsDivider();
     SelectTextWindow(1);
     ShowStatsTitle(/*0x48b8*/ "Items:");
@@ -1676,7 +1676,7 @@ void UseCmd(void)
     HideScrollArrow();
     ClearStatsTitle();
     DrawStatsDivider();
-    ULTIMA_2900_UpdateVitalsDisplay();
+    UpdateVitalsDisplay();
     if (item < 0)
     {
         return;
@@ -1699,85 +1699,85 @@ void UseCmd(void)
         switch (item)
         {
         case 0x10:
-            ULTIMA_1850_PrintString(/*0x48bf*/ "Carpet\n\n");
-            if (D_5893_mapId < 0x21 && *ULTIMA_4402_GetTileAddr(D_5896_mapX, D_5897_mapY) != TILE_MAP_C)
+            PrintString(/*0x48bf*/ "Carpet\n\n");
+            if (mapId < 0x21 && *GetTileAddr(D_5896_mapX, D_5897_mapY) != TILE_MAP_C)
             {
-                if (D_587c_partyTile == TILE_ACTOR_AVATAR)
+                if (partyTile == TILE_ACTOR_AVATAR)
                 {
-                    ULTIMA_1850_PrintString(/*0x48c8*/ "Boarded!\n");
-                    D_587c_partyTile = ULTIMA_2092_RandomRange(0, 1) + TILE_ACTOR_FLYING_CARPET;
+                    PrintString(/*0x48c8*/ "Boarded!\n");
+                    partyTile = RandomRange(0, 1) + TILE_ACTOR_FLYING_CARPET;
                     carpets--;
                 }
-                else if ((D_587c_partyTile & 0xf8) == TILE_ACTOR_FRIGATE_20)
+                else if ((partyTile & 0xf8) == TILE_ACTOR_FRIGATE_20)
                 {
-                    ULTIMA_1850_PrintString(/*0x48d2*/ "X-it ship first!\n");
+                    PrintString(/*0x48d2*/ "X-it ship first!\n");
                 }
                 else
                 {
-                    ULTIMA_1850_PrintString(/*0x48e4*/ "Only on foot!\n");
+                    PrintString(/*0x48e4*/ "Only on foot!\n");
                 }
             }
             else
             {
-                ULTIMA_1850_PrintString(/*0x48f3*/ "Not here!\n");
+                PrintString(/*0x48f3*/ "Not here!\n");
             }
             break;
 
         case 0x11:
             skullKeys--;
-            ULTIMA_1850_PrintString(/*0x48fe*/ "Skull Key\n");
-            if (D_5893_mapId < 0x21 || 0x7f < D_5893_mapId)
+            PrintString(/*0x48fe*/ "Skull Key\n");
+            if (mapId < 0x21 || 0x7f < mapId)
             {
                 result_e = InExPor();
-                if (result_e != 0 && D_5893_mapId < 0x80)
+                if (result_e != 0 && mapId < 0x80)
                 {
-                    ULTIMA_3522_HitEffectAt(D_5876_tempX, D_5878_tempY);
+                    HitEffectAt(tempX, tempY);
                 }
                 break;
             }
 
-            ULTIMA_1850_PrintString(/*0x4909*/ "Not here!\n");
+            PrintString(/*0x4909*/ "Not here!\n");
             break;
 
         case 0x12:
-            ULTIMA_1850_PrintString(/*0x4914*/ "Amulet\n\n");
+            PrintString(/*0x4914*/ "Amulet\n\n");
             if (RemoveWornItem(0xe) == 0)
                 break;
 
-            ULTIMA_1850_PrintString(/*0x491d*/ "Wearing the Amulet");
-            ULTIMA_1850_PrintString(S_0x4a84);
+            PrintString(/*0x491d*/ "Wearing the Amulet");
+            PrintString(S_0x4a84);
             SetSpellStatus(0xe, 0xff, 9);
             break;
 
         case 0x13:
-            ULTIMA_1850_PrintString(/*0x4930*/ "Crown\n\n");
+            PrintString(/*0x4930*/ "Crown\n\n");
             if (RemoveWornItem(0x1c) == 0)
                 break;
 
-            ULTIMA_1850_PrintString(/*0x4938*/ "Thou dost don the Crown");
-            ULTIMA_1850_PrintString(S_0x4a84);
+            PrintString(/*0x4938*/ "Thou dost don the Crown");
+            PrintString(S_0x4a84);
             SetSpellStatus(0x1c, 0xff, 9);
             break;
 
         case 0x14:
-            ULTIMA_1850_PrintString(/*0x4950*/ "Sceptre\n\n");
-            ULTIMA_1850_PrintString(/*0x495a*/ "Wielding the Sceptre");
-            ULTIMA_1850_PrintString(S_0x4a84);
-            ULTIMA_2192_AudioPulse(0x1450, 1, 50000, 5000, 1);
+            PrintString(/*0x4950*/ "Sceptre\n\n");
+            PrintString(/*0x495a*/ "Wielding the Sceptre");
+            PrintString(S_0x4a84);
+            AudioPulse(0x1450, 1, 50000, 5000, 1);
 
             cleared = 0;
-            if (D_5893_mapId < 0x21 || D_5893_mapId > 0x28)
+            if (mapId < 0x21 || mapId > 0x28)
             {
                 for (dx = -1; dx <= 1; dx++)
                 {
                     for (dy = -1; dy <= 1; dy++)
                     {
-                        tilePtr_m = ULTIMA_4402_GetTileAddr(dx + D_5896_mapX, dy + D_5897_mapY);
+                        tilePtr_m = GetTileAddr(dx + D_5896_mapX, dy + D_5897_mapY);
                         if ((*tilePtr_m & 0xf0) == TILE_MAP_70)
                         {
                             *tilePtr_m = TILE_MAP_GRASS;
-                            ULTIMA_5910_UpdateFrame();
-                            ULTIMA_223c_AudioWhiteNoise(10, 3000, 2000);
+                            UpdateFrame();
+                            AudioWhiteNoise(10, 3000, 2000);
                             cleared++;
                         }
                     }
@@ -1790,11 +1790,11 @@ void UseCmd(void)
             fieldResult = AnGrav(0);
             if (fieldResult == 1)
             {
-                ULTIMA_1850_PrintString(/*0x496f*/ "Field dissolved!\n");
+                PrintString(/*0x496f*/ "Field dissolved!\n");
             }
             else if (fieldResult == 0)
             {
-                ULTIMA_1850_PrintString(/*0x4981*/ "No effect!\n");
+                PrintString(/*0x4981*/ "No effect!\n");
             }
             break;
 
@@ -1805,59 +1805,59 @@ void UseCmd(void)
             break;
 
         case 0x20:
-            ULTIMA_1850_PrintString(/*0x498d*/ "Spyglass\n\n");
-            if (D_5893_mapId < 0x21 && D_5895_mapLevel < 0x80)
+            PrintString(/*0x498d*/ "Spyglass\n\n");
+            if (mapId < 0x21 && D_5895_mapLevel < 0x80)
             {
                 if (D_587f_hour < 6 || 0x12 < D_587f_hour)
                 {
-                    ULTIMA_1850_PrintString(/*0x4998*/ "Looking...\n");
+                    PrintString(/*0x4998*/ "Looking...\n");
                     LookSky();
                     break;
                 }
 
-                ULTIMA_1850_PrintString(/*0x49a4*/ "No stars!\n");
+                PrintString(/*0x49a4*/ "No stars!\n");
             }
             else
             {
-                ULTIMA_1850_PrintString(/*0x49af*/ "Not here!\n");
+                PrintString(/*0x49af*/ "Not here!\n");
             }
             break;
 
         case 0x21:
-            ULTIMA_1850_PrintString(/*0x49ba*/ "Plans\n\n");
-            if ((D_587c_partyTile & 0xf8) == TILE_ACTOR_FRIGATE_20)
+            PrintString(/*0x49ba*/ "Plans\n\n");
+            if ((partyTile & 0xf8) == TILE_ACTOR_FRIGATE_20)
             {
                 hmsCapePlans |= 0x80;
-                ULTIMA_1850_PrintString(/*0x49c2*/ "Ship rigged for double speed!\n");
+                PrintString(/*0x49c2*/ "Ship rigged for double speed!\n");
             }
             else
             {
-                ULTIMA_1850_PrintString(/*0x49e1*/ "Only usable on shipboard!\n");
+                PrintString(/*0x49e1*/ "Only usable on shipboard!\n");
             }
             break;
 
         case 0x22:
-            ULTIMA_1850_PrintString(/*0x49fc*/ "Sextant\n\n");
-            if (D_5895_mapLevel > 0x7f || D_5893_mapId != 0)
+            PrintString(/*0x49fc*/ "Sextant\n\n");
+            if (D_5895_mapLevel > 0x7f || mapId != 0)
             {
-                ULTIMA_1850_PrintString(/*0x4a06*/ "Only outdoors!\n");
+                PrintString(/*0x4a06*/ "Only outdoors!\n");
             }
             else
             {
                 if (D_587f_hour > 5 && D_587f_hour < 0x13)
                 {
-                    ULTIMA_1850_PrintString(/*0x4a16*/ "Only at night!\n");
+                    PrintString(/*0x4a16*/ "Only at night!\n");
                 }
                 else
                 {
-                    ULTIMA_1850_PrintString(/*0x4a26*/ "Position:");
+                    PrintString(/*0x4a26*/ "Position:");
                     PrintPosition();
                 }
             }
             break;
 
         case 0x23:
-            ULTIMA_1850_PrintString(/*0x4a30*/ "Watch\n\nThe pocket watch reads ");
+            PrintString(/*0x4a30*/ "Watch\n\nThe pocket watch reads ");
             hour12_l = (byte)(D_587f_hour % 0xc);
             if (hour12_l == 0)
             {
@@ -1865,38 +1865,38 @@ void UseCmd(void)
             }
 
             PrintNumber(hour12_l, 1, 0x20);
-            ULTIMA_16ba_PrintChar(':');
+            PrintChar(':');
             PrintNumber(minute, 2, 0x30);
             if (D_587f_hour > 0xb)
             {
-                ULTIMA_1850_PrintString(/*0x4a4f*/ " PM.\n");
+                PrintString(/*0x4a4f*/ " PM.\n");
             }
             else
             {
-                ULTIMA_1850_PrintString(/*0x4a55*/ " AM.\n");
+                PrintString(/*0x4a55*/ " AM.\n");
             }
             break;
 
         case 0x24:
-            ULTIMA_1850_PrintString(/*0x4a5b*/ "Badge\n\n");
+            PrintString(/*0x4a5b*/ "Badge\n\n");
             if (RemoveWornItem(0x1d) != 0)
             {
-                ULTIMA_1850_PrintString(/*0x4a63*/ "Badge worn!\n");
+                PrintString(/*0x4a63*/ "Badge worn!\n");
                 statusIcon = 0x1d;
                 protectTurns = 0xff;
-                D_a9fa_vitalsDirty = 1;
+                vitalsDirty = 1;
             }
             break;
 
         case 0x25:
-            ULTIMA_1850_PrintString(/*0x4a70*/ "Box\n\nHow?\n");
+            PrintString(/*0x4a70*/ "Box\n\nHow?\n");
             break;
         }
     }
 
     if (result_e == 0)
     {
-        ULTIMA_1850_PrintString(/*0x4a7b*/ "Failed!\n");
+        PrintString(/*0x4a7b*/ "Failed!\n");
         AudioSweepTone(800, 2000, 1, 0x32);
     }
 }
@@ -1907,22 +1907,22 @@ int PlotSprayPixel(int x, int y, int penColor)
 {
     if (x < 8 || x > 0xb6 || y < 8 || y > 0xb6)
     {
-        D_5876_tempX = D_5878_tempY = -1;
+        tempX = tempY = -1;
         return 0;
     }
     else
     {
-        ULTIMA_0a70_GRAP_2d_SetPenColor(penColor);
+        GRAP_2d_SetPenColor(penColor);
         GRAP_30_Pset(x, y);
         GRAP_30_Pset(x + 1, y);
-        ULTIMA_22e2_PcspkOn(ULTIMA_2092_RandomRange(100, 10000));
+        PcspkOn(RandomRange(100, 10000));
 
         if ((y & 1) != 0)
         {
             PixelToViewCell(x, y);
-            if (D_5876_tempX >= 0 && D_5878_tempY >= 0)
+            if (tempX >= 0 && tempY >= 0)
             {
-                return TestViewTileFlag(D_5876_tempX, D_5878_tempY);
+                return TestViewTileFlag(tempX, tempY);
             }
 
             return 0;
